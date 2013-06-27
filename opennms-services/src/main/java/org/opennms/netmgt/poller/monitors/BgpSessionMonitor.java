@@ -234,9 +234,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         // Establish SNMP session with interface
         //
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("poll: SnmpAgentConfig address: " +agentConfig);
     
             // Get the BGP peer state
             SnmpObjId bgpPeerStateSnmpObject = SnmpObjId.get(BGP_PEER_STATE_OID + "." + bgpPeerIp);
@@ -247,9 +245,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
                 LOG.warn("No BGP peer state received!");
                 return status;
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerState: " + bgpPeerState);
-                }
+                LOG.debug("poll: bgpPeerState: " + bgpPeerState);
                 peerStateMsg = resolvePeerState(bgpPeerState.toInt());
             }
             
@@ -258,9 +254,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
              *  service available and go away.
              */
             if (bgpPeerState.toInt() == BGP_PEER_STATE.ESTABLISHED.value()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerState: " + BGP_PEER_STATE.ESTABLISHED.name());
-                }
+                LOG.debug("poll: bgpPeerState: " + BGP_PEER_STATE.ESTABLISHED.name());
                 return PollStatus.available();
             }
             
@@ -272,9 +266,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             {
                 LOG.warn("Cannot receive bgpAdminState");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
-                }
+                LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
                 adminStateMsg = resolveAdminState(bgpPeerAdminState.toInt());
             }
             
@@ -285,9 +277,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             {
                 LOG.warn("Cannot receive bgpPeerRemoteAs");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
-                }
+                LOG.debug("poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
                 remoteAsMsg = bgpPeerRemoteAs.toString();
             }
 
@@ -298,9 +288,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             {
                 LOG.warn("Cannot receive bgpPeerLastError");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerLastError: " + bgpPeerLastError);
-                }
+                LOG.debug("poll: bgpPeerLastError: " + bgpPeerLastError);
                 lastErrorMsg = resolveBgpErrorCode(bgpPeerLastError.toHexString());
             }
             
@@ -311,9 +299,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             {
                 LOG.warn("Cannot receive bgpPeerFsmEstTime");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: bgpPeerFsmEsmTime: " + bgpPeerFsmEstTime);
-                }
+                LOG.debug("poll: bgpPeerFsmEsmTime: " + bgpPeerFsmEstTime);
                 estTimeMsg = bgpPeerFsmEstTime.toString();
             }
             

@@ -211,9 +211,7 @@ final class Executor implements Runnable, PausableFiber {
                         try {
                             int rc = dp.getProcess().exitValue();
 
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Process {} completed, rc = {}", rc, dp);
-                            }
+                            LOG.debug("Process {} completed, rc = {}", rc, dp);
 
                             i.remove();
                             continue;
@@ -309,9 +307,7 @@ final class Executor implements Runnable, PausableFiber {
             } else if (chars[x] == ' ') {
                 String arg = buf.toString().trim();
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("getExecArgument: adding argument: {}", arg);
-                }
+                LOG.debug("getExecArgument: adding argument: {}", arg);
 
                 args.add(arg);
                 buf.delete(0, buf.length());
@@ -440,9 +436,7 @@ final class Executor implements Runnable, PausableFiber {
 
             // start a new process
             //
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Parsing cmd args: {}", cmd);
-            }
+            LOG.debug("Parsing cmd args: {}", cmd);
 
             String[] execArgs = getExecArguments(cmd);
             if (execArgs != null && execArgs.length > 0) {

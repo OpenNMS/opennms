@@ -154,13 +154,11 @@ public class DataManager extends Object {
 		private Set<Integer> catConstructNodeIds (RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
-				if (LOG.isDebugEnabled())
-					LOG.debug("Category: " + cat.getLabel() + "\t" + filterRule);
+				LOG.debug("Category: " + cat.getLabel() + "\t" + filterRule);
 		
 				Set<Integer> nodeIds = FilterDaoFactory.getInstance().getNodeMap(filterRule).keySet();
 				
-		        if (LOG.isDebugEnabled())
-		            LOG.debug("Number of nodes satisfying rule: " + nodeIds.size());
+		        LOG.debug("Number of nodes satisfying rule: " + nodeIds.size());
 		
 		        return nodeIds;
 		        
@@ -220,11 +218,9 @@ public class DataManager extends Object {
 		if (regainedTimeTS != null)
 			regainedTime = regainedTimeTS.getTime();
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("lost time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + lostTimeTS + "/" + lostTime);
+		LOG.debug("lost time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + lostTimeTS + "/" + lostTime);
 
-			LOG.debug("regained time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + regainedTimeTS + "/" + regainedTime);
-		}
+		LOG.debug("regained time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + regainedTimeTS + "/" + regainedTime);
 
 		rtcN.addSvcTime(lostTime, regainedTime);
 	}
@@ -241,8 +237,7 @@ public class DataManager extends Object {
 		// Add node to category
 		cat.addNode(rtcN);
 
-		if (LOG.isDebugEnabled())
-		    LOG.debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + " added to cat: " + cat.getLabel());
+		LOG.debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + " added to cat: " + cat.getLabel());
 	}
 
     /**
@@ -378,8 +373,7 @@ public class DataManager extends Object {
     		throw new RTCException("No categories found in categories.xml");
     	}
 
-    	if (LOG.isDebugEnabled())
-    		LOG.debug("Number of categories read: " + m_categories.size());
+	LOG.debug("Number of categories read: " + m_categories.size());
 
     	// create data holder
     	m_map = new RTCHashMap(30000);
@@ -437,11 +431,9 @@ public class DataManager extends Object {
         // Include only service status 'A' and where service is not SNMP
         //
         if (svcStatus != 'A') {
-            if (LOG.isInfoEnabled())
-                LOG.info("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + " IGNORED because status is not active: " + svcStatus);
+            LOG.info("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + " IGNORED because status is not active: " + svcStatus);
         } else {
-            if (LOG.isDebugEnabled())
-                LOG.debug("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + "/" + svcStatus);
+            LOG.debug("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + "/" + svcStatus);
 
             // I ran into problems with adding new services, so I just ripped
             // all that out and added
@@ -459,9 +451,7 @@ public class DataManager extends Object {
             // 
             // This is mainly useful when SNMP is discovered on a node.
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("rtcN : Rescanning services on : " + ip);
-            }
+            LOG.debug("rtcN : Rescanning services on : " + ip);
             try {
                 rtcNodeRescan(nodeid);
             } catch (FilterParseException ex) {

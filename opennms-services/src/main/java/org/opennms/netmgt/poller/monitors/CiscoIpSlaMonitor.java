@@ -278,9 +278,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
 
         // Establish SNMP session with interface
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
-            }
+            LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
 
             // Get all configured ip sla tags
             Map<SnmpInstId, SnmpValue> tagResults = SnmpUtils.getOidValues(agentConfig,"CiscoIpSlaMonitor",SnmpObjId.get(RTT_ADMIN_TAG_OID));

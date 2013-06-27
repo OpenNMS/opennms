@@ -324,9 +324,7 @@ public class CollectionResourceWrapper {
             return null;
         }
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getAttributeValue: id=" + id + ", value= " + current);
-            }
+            LOG.debug("getAttributeValue: id=" + id + ", value= " + current);
             return current;
         } else {
             return getCounterValue(id, current);
@@ -342,9 +340,7 @@ public class CollectionResourceWrapper {
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getCounterValue: id=" + id + ", last=" + (last==null ? last : last.value +"@"+last.timestamp) + ", current=" + current);
-            }
+            LOG.debug("getCounterValue: id=" + id + ", last=" + (last==null ? last : last.value +"@"+last.timestamp) + ", current=" + current);
             if (last == null) {
                 LOG.info("getCounterValue: unknown last value, ignoring current");
                 m_localCache.put(id, Double.NaN);
@@ -400,9 +396,7 @@ public class CollectionResourceWrapper {
     public String getLabelValue(String ds) {
         if (ds == null || ds.equals(""))
             return null;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
-        }
+        LOG.debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         if ("nodeid".equals(ds))
             return Integer.toString(m_nodeId);
         if ("ipaddress".equals(ds))

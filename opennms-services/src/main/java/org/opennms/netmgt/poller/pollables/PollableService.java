@@ -414,8 +414,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             processStatusChange(new Date());
             status = getStatus();
         }
-        if (LOG.isDebugEnabled())
-            LOG.debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
+        LOG.debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
         return status;
 	}
 

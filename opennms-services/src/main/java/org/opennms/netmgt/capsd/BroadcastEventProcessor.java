@@ -204,8 +204,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 count = rs.getInt(1);
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+            LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
             return count;
         } finally {
@@ -248,8 +247,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 count = rs.getInt(1);
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+            LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
             return count;
         } finally {
@@ -288,8 +286,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 count = rs.getInt(1);
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
+            LOG.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
 
             return count;
         } finally {
@@ -328,8 +325,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             List<Event> eventsToSend = new LinkedList<Event>();
             while (rs.next()) {
 
-                if (LOG.isDebugEnabled())
-                    LOG.debug("addInterfaceHandler:  add interface: " + ipaddr + " to the database.");
+                LOG.debug("addInterfaceHandler:  add interface: " + ipaddr + " to the database.");
 
                 // Node already exists. Add the ipaddess to the ipinterface
                 // table
@@ -380,8 +376,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         if (nodeLabel == null)
             return Collections.emptyList();
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("addNode:  Add a node " + nodeLabel + " to the database");
+        LOG.debug("addNode:  Add a node " + nodeLabel + " to the database");
 
         List<Event> eventsToSend = new LinkedList<Event>();
         DbNodeEntry node = DbNodeEntry.create();
@@ -396,8 +391,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         eventsToSend.add(newEvent);
 
         if (ipaddr != null)
-            if (LOG.isDebugEnabled())
-                LOG.debug("addNode:  Add an IP Address " + ipaddr + " to the database");
+            LOG.debug("addNode:  Add an IP Address " + ipaddr + " to the database");
 
             // add the ipaddess to the database
             InetAddress ifaddress;
@@ -431,9 +425,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     private List<Event> doAddInterface(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
         List<Event> eventsToSend;
         if (interfaceExists(dbConn, nodeLabel, ipaddr)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addInterfaceHandler: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
-            }
+            LOG.debug("addInterfaceHandler: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
             eventsToSend = Collections.emptyList();
         }
 
@@ -473,9 +465,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr);
         } else {
             eventsToSend = Collections.emptyList();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("doAddNode: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
-            }
+            LOG.debug("doAddNode: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
         }
         return eventsToSend;
     }
@@ -504,9 +494,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             stmt.setString(2, serviceName);
             stmt.executeUpdate();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
-            }
+            LOG.debug("updateServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
 
             return doChangeService(dbConn, ipaddr, serviceName, "ADD", txNo);
         } finally {
@@ -540,9 +528,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             
             List<Event> eventsToSend = new LinkedList<Event>();
             while (rs.next()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
-                }
+                LOG.debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
 
                 InetAddress inetAddr;
 				try {
@@ -625,9 +611,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             stmt.setString(2, hostName);
             stmt.executeUpdate();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateServerHandler: added interface " + ipaddr + " into NMS server: " + hostName);
-            }
+            LOG.debug("updateServerHandler: added interface " + ipaddr + " into NMS server: " + hostName);
 
             // Create a addInterface event and process it.
             // FIXME: do I need to make a direct call here?
@@ -727,18 +711,14 @@ public class BroadcastEventProcessor implements InitializingBean {
             // interface/service
             // mapping
             //
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateServer: delete all services on the interface: " + ipaddr + " in the interface/service mapping.");
-            }
+            LOG.debug("updateServer: delete all services on the interface: " + ipaddr + " in the interface/service mapping.");
             stmt = dbConn.prepareStatement(SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING);
             d.watch(stmt);
             stmt.setString(1, ipaddr);
             stmt.executeUpdate();
 
             // Delete the interface on interface/server mapping
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("updateServer: delete interface: " + ipaddr + " on NMS server: " + hostName);
-            }
+            LOG.debug("updateServer: delete interface: " + ipaddr + " on NMS server: " + hostName);
             stmt = dbConn.prepareStatement(SQL_DELETE_INTERFACE_ON_SERVER);
             stmt.setString(1, ipaddr);
             stmt.setString(2, hostName);
@@ -842,9 +822,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             stmt.setInt(2, ifIndex);
             int count = stmt.executeUpdate();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId + "ifIndex: "+ifIndex);
-            }
+            LOG.debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId + "ifIndex: "+ifIndex);
 
         } finally {
             d.cleanUp();
@@ -950,9 +928,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(getClass());
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("handleUpdateService: delete service: " + serviceName + " on IPAddress: " + ipaddr);
-            }
+            LOG.debug("handleUpdateService: delete service: " + serviceName + " on IPAddress: " + ipaddr);
             stmt = dbConn.prepareStatement(SQL_DELETE_SERVICE_INTERFACE_MAPPING);
             d.watch(stmt);
 
@@ -1086,9 +1062,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             d.watch(rs);
             List<Integer> nodeIdList = new LinkedList<Integer>();
             while (rs.next()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
-                }
+                LOG.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
                 int nodeId = rs.getInt(1);
                 nodeIdList.add(nodeId);
             }
@@ -1172,8 +1146,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         if (isXmlRpcEnabled())
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
-        if (LOG.isDebugEnabled())
-            LOG.debug("addInterfaceHandler:  processing addInterface event for " + event.getInterface());
+        LOG.debug("addInterfaceHandler:  processing addInterface event for " + event.getInterface());
 
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
@@ -1363,8 +1336,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
 
         // log the event
-        if (LOG.isDebugEnabled())
-            LOG.debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid() + "\nipaddr\t\t" + (event.getInterface() != null ? event.getInterface() : "N/A" ) + "\nifIndex\t\t" + (ifIndex > -1 ? ifIndex : "N/A" ) + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
+        LOG.debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid() + "\nipaddr\t\t" + (event.getInterface() != null ? event.getInterface() : "N/A" ) + "\nifIndex\t\t" + (ifIndex > -1 ? ifIndex : "N/A" ) + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
@@ -1427,8 +1399,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         // log the event
         long nodeid = event.getNodeid();
-        if (LOG.isDebugEnabled())
-            LOG.debug("handleDeleteNode: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + nodeid + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
+        LOG.debug("handleDeleteNode: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + nodeid + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
@@ -1492,8 +1463,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkService(event);
 
         // log the event
-        if (LOG.isDebugEnabled())
-            LOG.debug("handleDeleteService: Event\nuei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeid\t\t" + event.getNodeid() + "\nipaddr\t\t" + event.getInterface() + "\nservice\t\t" + event.getService() + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
+        LOG.debug("handleDeleteService: Event\nuei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeid\t\t" + event.getNodeid() + "\nipaddr\t\t" + event.getInterface() + "\nservice\t\t" + event.getService() + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
@@ -1638,7 +1608,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         
         // new suspect event
         try {
-            if (LOG.isDebugEnabled()) LOG.debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
+            LOG.debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
             m_suspectQ.execute(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
         } catch (final Throwable ex) {
             LOG.error("onMessage: Failed to add interface to suspect queue", ex);
@@ -1704,8 +1674,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("updateServerHandler:  processing updateServer event for: " + event.getInterface() + " on OpenNMS server: " + m_localServer);
+        LOG.debug("updateServerHandler:  processing updateServer event for: " + event.getInterface() + " on OpenNMS server: " + m_localServer);
 
         Connection dbConn = null;
         List<Event> eventsToSend = null;
@@ -1774,8 +1743,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("handleUpdateService:  processing updateService event for : " + event.getService() + " on : " + event.getInterface());
+        LOG.debug("handleUpdateService:  processing updateService event for : " + event.getService() + " on : " + event.getInterface());
 
         List<Event> eventsToSend = null;
         Connection dbConn = null;
@@ -1899,8 +1867,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, serviceName, txNo));
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
+            LOG.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
 
             return eventsToSend;
         } finally {
@@ -1975,22 +1942,15 @@ public class BroadcastEventProcessor implements InitializingBean {
             }
             
             if (countip > 0) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("markInterfaceDeleted: marked ip interface deleted: node = " + nodeId + ", IP address = " + ipAddr);
-                }
+                LOG.debug("markInterfaceDeleted: marked ip interface deleted: node = " + nodeId + ", IP address = " + ipAddr);
             }
             if (countsnmp > 0) {
-                if (LOG.isDebugEnabled()) {       
-                    LOG.debug("markInterfaceDeleted: marked snmp interface deleted: node = " + nodeId + ", ifIndex = " + ifIndex);
-                }
+                LOG.debug("markInterfaceDeleted: marked snmp interface deleted: node = " + nodeId + ", ifIndex = " + ifIndex);
             }
             if (countip > 0 || countsnmp > 0) {
                 return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, ifIndex, txNo));
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("markInterfaceDeleted: Interface not found: node = " + nodeId + ", with ip address " + (ipAddr != null ? ipAddr : "null") + ", and ifIndex " + (ifIndex > -1 ? ifIndex : "N/A"));
-
-                }
+                LOG.debug("markInterfaceDeleted: Interface not found: node = " + nodeId + ", with ip address " + (ipAddr != null ? ipAddr : "null") + ", and ifIndex " + (ifIndex > -1 ? ifIndex : "N/A"));
                 return Collections.emptyList();
             }
         } finally {
@@ -2126,8 +2086,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             stmt.setString(3, service);
             int count = stmt.executeUpdate();
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
+            LOG.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
 
             if (count > 0)
                 return Collections.singletonList(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
@@ -2235,8 +2194,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             }
 
             if (serviceId < 0) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("verifyServiceExists: the specified service: " + serviceName + " does not exist in the database.");
+                LOG.debug("verifyServiceExists: the specified service: " + serviceName + " does not exist in the database.");
                 throw new FailedOperationException("Invalid service: " + serviceName);
             }
 

@@ -118,8 +118,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
 
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("poll: address = " + ipv4Addr + ", port = " + port + ", " + tracker);
+        LOG.debug("poll: address = " + ipv4Addr + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -207,8 +206,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                         socket.close();
 
                 } catch (IOException e) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("poll: Error closing socket.", e);
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

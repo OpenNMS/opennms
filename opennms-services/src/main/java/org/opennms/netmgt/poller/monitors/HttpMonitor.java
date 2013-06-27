@@ -210,10 +210,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     private void logResponseTimes(Double responseTime, String line) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("poll: response= " + line);
-            LOG.debug("poll: responseTime= " + responseTime + "ms");
-        }
+        LOG.debug("poll: response= " + line);
+        LOG.debug("poll: responseTime= " + responseTime + "ms");
     }
 
     /**

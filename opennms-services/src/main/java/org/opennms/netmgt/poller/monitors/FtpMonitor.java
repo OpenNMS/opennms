@@ -116,9 +116,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("FtpMonitor.poll: Polling interface: " + InetAddressUtils.str(ipv4Addr) + tracker);
-            }
+            LOG.debug("FtpMonitor.poll: Polling interface: " + InetAddressUtils.str(ipv4Addr) + tracker);
 
             Socket socket = null;
             try {
@@ -154,14 +152,10 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                             
                             FtpResponse passResponse = FtpResponse.readResponse(lineRdr);
                             if (passResponse.isSuccess()) {
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("FtpMonitor.poll: Login successful, parsed return code: " + passResponse.getCode());
-                                }
+                                LOG.debug("FtpMonitor.poll: Login successful, parsed return code: " + passResponse.getCode());
                                 loggedInSuccessfully = true;
                             } else {
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("FtpMonitor.poll: Login failed, parsed return code: " + passResponse.getCode() + ", full response: " + passResponse.toString());
-                                }
+                                LOG.debug("FtpMonitor.poll: Login failed, parsed return code: " + passResponse.getCode() + ", full response: " + passResponse.toString());
                                 loggedInSuccessfully = false;
                             }
                         }

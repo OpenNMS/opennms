@@ -321,9 +321,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     }
                 }
             } catch (SQLException e) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("initialize: SQL exception!!: " + e, e);
-                }
+                LOG.debug("initialize: SQL exception!!: " + e, e);
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress + ": " + e, e);
             }
 
@@ -359,9 +357,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             }
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("initialize: initialization completed for " + hostAddress);
-        }
+        LOG.debug("initialize: initialization completed for " + hostAddress);
         
         return;
     }
@@ -401,15 +397,11 @@ public abstract class JMXThresholder implements ServiceThresholder {
         int    interval  = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
 
         final String hostAddress = InetAddressUtils.str(primary);
-		if (LOG.isDebugEnabled()) {
-            LOG.debug("check: service= " + serviceName.toUpperCase() + " address= " + hostAddress + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
-        }
+	LOG.debug("check: service= " + serviceName.toUpperCase() + " address= " + hostAddress + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
 
         // RRD Repository attribute
         String repository = iface.getAttribute(RRD_REPOSITORY_KEY);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("check: rrd repository=" + repository);
-        }
+        LOG.debug("check: rrd repository=" + repository);
 
         // Nodeid attribute
         Integer nodeId = iface.getAttribute(NODE_ID_KEY);
@@ -493,14 +485,10 @@ public abstract class JMXThresholder implements ServiceThresholder {
             if(dsFile.exists()) {
                 try {
                     if (range != 0) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("checking values within " + range + " mS of last possible PDP");
-                        }
+                        LOG.debug("checking values within " + range + " mS of last possible PDP");
                         thisValue = RrdUtils.fetchLastValueInRange(dsFile.getAbsolutePath(), ds, interval, range);
                     } else {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("checking value of last possible PDP only");
-                        }
+                        LOG.debug("checking value of last possible PDP only");
                         thisValue = RrdUtils.fetchLastValue(dsFile.getAbsolutePath(), ds, interval);
                     }
                 } catch (NumberFormatException e) {
@@ -549,9 +537,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
-        }
+        LOG.debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
         
         for(Object threshKey  :thresholdMap.keySet()) {
             ThresholdEntity threshold = thresholdMap.get(threshKey);
@@ -606,14 +592,10 @@ public abstract class JMXThresholder implements ServiceThresholder {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("checkIfDir: threshold checking interface dir: " + directory.getAbsolutePath());
-        }
+        LOG.debug("checkIfDir: threshold checking interface dir: " + directory.getAbsolutePath());
 
         String ifLabel = directory.getName();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("checkIfDir: ifLabel=" + ifLabel);
-        }
+        LOG.debug("checkIfDir: ifLabel=" + ifLabel);
 
         // This is an interface directory extract the
         // interface label from the full path name of the file

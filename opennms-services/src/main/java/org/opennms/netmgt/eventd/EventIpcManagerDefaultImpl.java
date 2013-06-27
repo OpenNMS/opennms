@@ -171,9 +171,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
-                        }
+                        LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map mdc = MDC.getCopyOfContextMap();
@@ -263,9 +261,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
-        }
+        LOG.debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
 
         if (m_listeners.isEmpty()) {
             LOG.debug("No listeners interested in all events");
@@ -277,9 +273,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         if (event.getUei() == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Event ID " + event.getDbid() + " does not have a UEI, so skipping UEI matching");
-            }
+            LOG.debug("Event ID " + event.getDbid() + " does not have a UEI, so skipping UEI matching");
             return;
         }
 
@@ -310,9 +304,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
-            }
+            LOG.debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
         }
     }
 
@@ -355,9 +347,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
-        }
+        LOG.debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
 
         createListenerThread(listener);
 

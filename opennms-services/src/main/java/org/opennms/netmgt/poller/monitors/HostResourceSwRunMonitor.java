@@ -206,16 +206,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        if (LOG.isDebugEnabled()) LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= " + agentConfig);
         PollStatus status = PollStatus.unavailable("HostResourceSwRunMonitor service not found, addr=" + hostAddress + ", service-name=" + serviceName);
 
         // Establish SNMP session with interface
         //
         int matches = 0;
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
 
             if (serviceName == null) {
                 status.setReason("HostResourceSwRunMonitor no service-name defined, addr=" + hostAddress);

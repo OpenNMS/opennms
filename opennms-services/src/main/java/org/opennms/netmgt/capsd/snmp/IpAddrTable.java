@@ -108,8 +108,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        if (LOG.isDebugEnabled())
-            LOG.debug("getIfIndex: num ipAddrTable entries: " + this.size());
+        LOG.debug("getIfIndex: num ipAddrTable entries: " + this.size());
 
         for(IpAddrTableEntry entry : this) {
 

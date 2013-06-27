@@ -134,8 +134,7 @@ final class LatencyThresholder implements ServiceThresholder {
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
-        if (LOG.isDebugEnabled())
-            LOG.debug("initialize: latency thresholder for service '" + m_svcName + "'");
+        LOG.debug("initialize: latency thresholder for service '" + m_svcName + "'");
     }
     
     /**
@@ -222,13 +221,11 @@ final class LatencyThresholder implements ServiceThresholder {
                         nodeId = -1;
                 }
             } catch (SQLException sqle) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("initialize: SQL exception!!", sqle);
+                LOG.debug("initialize: SQL exception!!", sqle);
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress);
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + hostAddress);
+            LOG.debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + hostAddress);
 
             if (nodeId == -1)
                 throw new RuntimeException("Unable to retrieve node id for interface " + hostAddress);
@@ -314,8 +311,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 LOG.debug(iter.next().toString());
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("initialize: initialization completed for " + hostAddress);
+        LOG.debug("initialize: initialization completed for " + hostAddress);
         return;
     }
 
@@ -345,8 +341,7 @@ final class LatencyThresholder implements ServiceThresholder {
             // Get configuration parameters
             //
             // NodeId attribute
-            if (LOG.isDebugEnabled())
-                LOG.debug("check: service= " + m_svcName + " interface= " + latIface.getHostAddress() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
+            LOG.debug("check: service= " + m_svcName + " interface= " + latIface.getHostAddress() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
             
             // RRD Repository attribute
             //

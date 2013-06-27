@@ -293,9 +293,7 @@ public class CollectionSpecification {
                 if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
                         (outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
                 {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + agent.getHostAddress() + " will not be collected for " + this);
-                    }
+                    LOG.debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + agent.getHostAddress() + " will not be collected for " + this);
                     outageFound = true;
                     break;
                 }

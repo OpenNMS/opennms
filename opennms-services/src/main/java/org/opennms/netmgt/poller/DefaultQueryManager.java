@@ -139,8 +139,7 @@ public class DefaultQueryManager implements QueryManager {
                 return rs.getInt(1) > 0;
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug(whichEvent + nodeId + "/" + ipAddr + "/" + serviceName + " active");
+            LOG.debug(whichEvent + nodeId + "/" + ipAddr + "/" + serviceName + " active");
         } catch (SQLException sqlE) {
             LOG.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
         } finally {
@@ -165,8 +164,7 @@ public class DefaultQueryManager implements QueryManager {
             stmt.setString(1, ipaddr);
             rs = stmt.executeQuery();
             d.watch(rs);
-            if (LOG.isDebugEnabled())
-                LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
+            LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
 
             while (rs.next()) {
                 serviceIds.add(rs.getInt(1));
@@ -198,8 +196,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeid = rs.getInt(1);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("getNodeLabel: ipaddr=" + ipaddr + " nodeid=" + nodeid);
+                LOG.debug("getNodeLabel: ipaddr=" + ipaddr + " nodeid=" + nodeid);
             }
         } finally {
             d.cleanUp();
@@ -228,8 +225,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeLabel = (String) rs.getString("nodelabel");
-                if (LOG.isDebugEnabled())
-                    LOG.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
+                LOG.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
             }
         } finally {
             d.cleanUp();
@@ -259,8 +255,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             while (rs.next()) {
                 count = rs.getInt(1);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: " + ipaddr);
+                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: " + ipaddr);
             }
         } finally {
             d.cleanUp();
@@ -279,8 +274,7 @@ public class DefaultQueryManager implements QueryManager {
         java.sql.Connection dbConn = getConnection();
         d.watch(dbConn);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
+        LOG.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
 
         PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_INTERFACES);
         d.watch(stmt);

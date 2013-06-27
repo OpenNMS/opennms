@@ -188,9 +188,7 @@ public final class BroadcastEventProcessor implements EventListener {
         if (notifsOn && (checkCriticalPath(event, notifsOn))) {
             scheduleNoticesForEvent(event);
         } else if (!notifsOn) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
-            }
+            LOG.debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
         }
         automaticAcknowledge(event, notifsOn);
     }
@@ -252,9 +250,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     isPathOk = false;
                     String cip = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_IP);
                     String csvc = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_SVC);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
-                    }
+                    LOG.debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
                     boolean mapsToNotice = false;
                     boolean noticeSupressed = false;
                     Notification[] notifications = null;
@@ -285,9 +281,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        }
+                        LOG.debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
@@ -316,9 +310,7 @@ public final class BroadcastEventProcessor implements EventListener {
             if(notifId < 0) {
                 notifId *= -1;
                 wa = true;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Conditional autoNotify for notifId " + notifId);
-                }
+                LOG.debug("Conditional autoNotify for notifId " + notifId);
             }
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
@@ -357,9 +349,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (String userID : userNotifications.keySet()) {
                 List<String> cmdList = userNotifications.get(userID);
                 String[] cmds = cmdList.toArray(new String[cmdList.size()]);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
-                }
+                LOG.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
 
@@ -418,9 +408,7 @@ public final class BroadcastEventProcessor implements EventListener {
         // can't check the database if any of these are null, so let the notice
         // continue
         if (nodeID == null || ipAddr == null || service == null || ipAddr.equals("0.0.0.0")) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
-            }
+            LOG.debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
             return true;
         }
 
@@ -430,13 +418,9 @@ public final class BroadcastEventProcessor implements EventListener {
             String notify = getNotificationManager().getServiceNoticeStatus(nodeID, ipAddr, service);
             if ("Y".equals(notify)) {
                 continueNotice = true;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
-                }
+                LOG.debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
-                }
+                LOG.debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
             }
         } catch (Throwable e) {
             continueNotice = true;
@@ -599,15 +583,11 @@ public final class BroadcastEventProcessor implements EventListener {
 
                     }
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
-                    }
+                    LOG.debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
                 }
             }
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No notice match for uei: " + event.getUei());
-            }
+            LOG.debug("No notice match for uei: " + event.getUei());
         }
     }
 
@@ -751,9 +731,7 @@ public final class BroadcastEventProcessor implements EventListener {
             } else {
                 autoNotify = "C";
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Processing target " + targetName + ":" + interval);
-            }
+            LOG.debug("Processing target " + targetName + ":" + interval);
             
             NotificationTask[] tasks = null;
             
@@ -796,22 +774,16 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // it the group is not on duty
         if (next < 0) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
-            }
+            LOG.debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
             return null;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
-        }
+        LOG.debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
         String[] users = group.getUser();
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Not sending notice, no users specified for group " + group.getName());
-            }
+            LOG.debug("Not sending notice, no users specified for group " + group.getName());
             return null;
         }
 
@@ -838,9 +810,7 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Not sending notice, no users scheduled for role  " + targetName);
-            }
+            LOG.debug("Not sending notice, no users scheduled for role  " + targetName);
             return null;
         }
         
@@ -903,9 +873,7 @@ public final class BroadcastEventProcessor implements EventListener {
         user.setUserId(address);
         Contact contact = new Contact();
         contact.setType("email");
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("email address = " + address + ", using contact type " + contact.getType());
-        }
+        LOG.debug("email address = " + address + ", using contact type " + contact.getType());
         contact.setInfo(address);
         user.addContact(contact);
 
@@ -980,9 +948,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     // Does the outage apply to this interface or node?
 
                     if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
-                        }
+                        LOG.debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
                         return outageName;
                     }
                 }
@@ -1001,9 +967,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param nodeEntry Entry of node which was rescanned
      */
     private void createPathOutageEvent(int nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
-        }
+        LOG.debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
         
         EventBuilder bldr = new EventBuilder(EventConstants.PATH_OUTAGE_EVENT_UEI, "OpenNMS.notifd");
         bldr.setNodeid(nodeid);
@@ -1013,9 +977,7 @@ public final class BroadcastEventProcessor implements EventListener {
         bldr.addParam(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED, noticeSupressed);
 
         // Send the event
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating pathOutageEvent for nodeid: " + nodeid);
-        }
+        LOG.debug("Creating pathOutageEvent for nodeid: " + nodeid);
         
 	try {
             EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());

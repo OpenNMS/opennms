@@ -147,9 +147,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
         InetAddress ipAddr = iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
-        }
+        LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -207,8 +205,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     }
                 }
 
-                if (LOG.isDebugEnabled())
-                    LOG.debug("poll: banner = " + banner);
+                LOG.debug("poll: banner = " + banner);
 
                 StringTokenizer t = new StringTokenizer(banner);
                 int rc = Integer.parseInt(t.nextToken());
@@ -340,9 +337,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     }
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: Error closing socket.", e);
-                    }
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

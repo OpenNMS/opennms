@@ -131,8 +131,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (LOG.isDebugEnabled())
-            LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+	LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         // Give it a whirl
         //
@@ -168,10 +167,8 @@ final public class TcpMonitor extends AbstractServiceMonitor {
 
                 if (response == null)
                     continue;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: banner = " + response);
-                    LOG.debug("poll: responseTime= " + responseTime + "ms");
-                }
+                LOG.debug("poll: banner = " + response);
+                LOG.debug("poll: responseTime= " + responseTime + "ms");
 
                 if (response.indexOf(strBannerMatch) > -1) {
                     serviceStatus = PollStatus.available(responseTime);
@@ -201,8 +198,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("poll: Error closing socket.", e);
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

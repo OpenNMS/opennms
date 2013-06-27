@@ -115,9 +115,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             responseTimes = new ArrayList<Number>(PingerFactory.getInstance().parallelPing(host, count, timeout, pingInterval));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
-            	if (LOG.isDebugEnabled()) {
-			LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());
-            	}
+		LOG.debug("Service {} on interface {} is down, but continuing to gather latency data", svc.getSvcName(), svc.getIpAddr());
                 serviceStatus = PollStatus.unavailable("the failure ping count (" + failurePingCount + ") was reached");
             } else {
             	serviceStatus = PollStatus.available();

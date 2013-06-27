@@ -317,14 +317,10 @@ public final class NrpePlugin extends AbstractPlugin {
      */
     protected Socket wrapSocket(Socket socket, String hostAddress, int hostPort) throws Exception {
     	if (! m_useSsl) {
-    		if (LOG.isDebugEnabled()) {
-    			LOG.debug("Parameter 'usessl' is unset or false, not using SSL");
-    		}
+		LOG.debug("Parameter 'usessl' is unset or false, not using SSL");
     		return socket;
     	} else {
-    		if (LOG.isDebugEnabled()) {
-    			LOG.debug("Parameter 'usessl' is true, using SSL");
-    		}
+		LOG.debug("Parameter 'usessl' is true, using SSL");
     		return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
     	}
     }

@@ -226,8 +226,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        if (LOG.isDebugEnabled())
-            LOG.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
+        LOG.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
@@ -289,7 +288,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                if (LOG.isDebugEnabled()) LOG.debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+                LOG.debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
 
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {

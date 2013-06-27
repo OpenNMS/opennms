@@ -287,9 +287,7 @@ public class EventsArchiver {
         }
 
         // debug logs
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("EventID: " + eventID + " removed from events table");
-        }
+        LOG.debug("EventID: " + eventID + " removed from events table");
 
         return true;
     }
@@ -351,9 +349,7 @@ public class EventsArchiver {
                     ret = removeEvent(eventID);
                     if (ret) {
                         sendToArchive(eventsRS, colCount);
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("eventID " + eventID + " archived");
-                        }
+                        LOG.debug("eventID " + eventID + " archived");
 
                         archCount++;
 
@@ -380,9 +376,7 @@ public class EventsArchiver {
                         ret = removeEvent(eventID);
                         if (ret) {
                             sendToArchive(eventsRS, colCount);
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("eventID " + eventID + " archived");
-                            }
+                            LOG.debug("eventID " + eventID + " archived");
                             archCount++;
 
                             remCount++;

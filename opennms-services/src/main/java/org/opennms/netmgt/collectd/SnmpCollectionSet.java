@@ -342,9 +342,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private void logStartedWalker() {
-        if (LOG.isDebugEnabled()) {
-		LOG.debug("collect: successfully instantiated " + "SnmpNodeCollector() for " + getCollectionAgent().getHostAddress());
-        }
+        LOG.debug("collect: successfully instantiated " + "SnmpNodeCollector() for " + getCollectionAgent().getHostAddress());
     }
 
     private void logFinishedWalker() {

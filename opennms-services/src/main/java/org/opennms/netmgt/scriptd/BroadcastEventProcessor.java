@@ -95,9 +95,7 @@ final class BroadcastEventProcessor implements EventListener {
         try {
             m_execQ.add(event);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
-            }
+            LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
         }
 
         catch (FifoQueueException ex) {

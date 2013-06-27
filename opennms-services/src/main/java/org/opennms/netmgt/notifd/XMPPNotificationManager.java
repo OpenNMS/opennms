@@ -108,7 +108,7 @@ public class XMPPNotificationManager {
 
                 @Override
         public void reconnectingIn(int seconds) {
-            if (LOG.isDebugEnabled()) LOG.debug("XMPP reconnecting in " + seconds + " seconds");
+            LOG.debug("XMPP reconnecting in " + seconds + " seconds");
         }
 
                 @Override
@@ -183,9 +183,7 @@ public class XMPPNotificationManager {
 				xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
 			}
 
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("XMPP Manager connection config: " + xmppConfig.toString());
-			}
+			LOG.debug("XMPP Manager connection config: " + xmppConfig.toString());
 
 			xmpp = new XMPPConnection(xmppConfig);
 

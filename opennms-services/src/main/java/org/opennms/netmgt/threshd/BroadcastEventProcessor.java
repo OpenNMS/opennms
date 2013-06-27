@@ -176,9 +176,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // print out the uei
         //
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("received event, uei = {}", event.getUei());
-        }
+        LOG.debug("received event, uei = {}", event.getUei());
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
 		m_threshd.refreshServicePackages();
         } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {

@@ -505,8 +505,7 @@ public abstract class EventUtils {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("sendEvent: successfully sent event " + newEvent);
+            LOG.debug("sendEvent: successfully sent event " + newEvent);
         } catch (Throwable t) {
             LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
             if (isXmlRpcEnabled) {

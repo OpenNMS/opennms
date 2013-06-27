@@ -198,14 +198,12 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
         svcParams.setProperty("hex", hexstr);
 
-        if (LOG.isDebugEnabled()) LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= " + agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
             // This if block will count the number of matches within a walk and mark the service

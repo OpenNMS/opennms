@@ -112,9 +112,7 @@ public class ForceRescanState {
      */
     void sendForceRescanEvent() {
         // Log4j category
-    	if (LOG.isDebugEnabled()) {
-    		LOG.debug("generateForceRescanEvent: interface = " + getAgent().getHostAddress());
-    	}
+	LOG.debug("generateForceRescanEvent: interface = " + getAgent().getHostAddress());
     
     	// Send event via EventProxy
     	try {

@@ -89,9 +89,7 @@ public class CommandExecutor implements ExecutorStrategy {
                 }
                 if (!curArg.getValue().trim().equals("")) {
                     streamBuffer.append(curArg.getValue());
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Streamed argument value: {}", curArg.getValue());
-                    }
+                    LOG.debug("Streamed argument value: {}", curArg.getValue());
                 }
             }
         }
@@ -121,9 +119,7 @@ public class CommandExecutor implements ExecutorStrategy {
                 BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 // put the streamed arguments into the stream
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Streamed arguments: {}", streamBuffer);
-                }
+                LOG.debug("Streamed arguments: {}", streamBuffer);
 
                 processInput.write(streamBuffer.toString());
 

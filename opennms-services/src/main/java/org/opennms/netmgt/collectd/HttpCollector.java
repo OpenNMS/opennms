@@ -388,9 +388,7 @@ public class HttpCollector implements ServiceCollector {
                     return Double.valueOf(val.toString()).toString();
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Value for attribute " + this.toString() + " does not appear to be a number, skipping");
-            }
+            LOG.debug("Value for attribute " + this.toString() + " does not appear to be a number, skipping");
             return null;
         }
 

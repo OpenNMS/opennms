@@ -100,9 +100,7 @@ final class BroadcastEventProcessor implements EventListener {
                     m_execQ.add(aact.getContent()); // java.lang.String
                 }
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Added event \'{}\' to execute autoaction \'{}\'", event.getUei(), aact.getContent());
-                }
+                LOG.debug("Added event \'{}\' to execute autoaction \'{}\'", event.getUei(), aact.getContent());
             } catch (FifoQueueException ex) {
                 LOG.error("Failed to add event to execution queue", ex);
                 break;

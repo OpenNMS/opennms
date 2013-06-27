@@ -255,9 +255,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             int count = stmt.executeUpdate();
             stmt.close();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
-            }
+            LOG.debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
 
             commitRequired = transactional;
         } catch (SQLException ex) {

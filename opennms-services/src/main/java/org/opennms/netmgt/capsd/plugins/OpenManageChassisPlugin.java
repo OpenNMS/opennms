@@ -160,9 +160,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
                     LOG.warn("Cannot receive chassis status");
                     return false;
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: OpenManageChassis: " + chassisStatus);
-                    }
+                    LOG.debug("poll: OpenManageChassis: " + chassisStatus);
                 }
 
                 // Validate chassis status, check status is somewhere between OTHER and NON_RECOVERABLE
@@ -170,9 +168,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
                     Integer.parseInt(chassisStatus.toString()) <= DELL_STATUS.NON_RECOVERABLE.value())
                 {
                     // OpenManage chassis status detected
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: OpenManageChassis: is valid, protocol supported.");
-                    }
+                    LOG.debug("poll: OpenManageChassis: is valid, protocol supported.");
                     return true;
                 }
             }

@@ -186,9 +186,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     LOG.warn("Cannot receive bgpAdminState");
                     return false;
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
-                    }
+                    LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
                 }
                 
                 // If BGP peer session administratively STOP do not detect
@@ -206,9 +204,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     LOG.warn("No BGP peer state received!");
                     return false;
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: bgpPeerState: " + bgpPeerState);
-                    }
+                    LOG.debug("poll: bgpPeerState: " + bgpPeerState);
                 }
 
                 // Validate sessions, check state is somewhere between IDLE and ESTABLISHED
@@ -216,9 +212,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     Integer.parseInt(bgpPeerState.toString()) <= BGP_PEER_STATE.ESTABLISHED.value())
                 {
                     // Session detected
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: bgpPeerState: " + bgpPeerState + " is valid, protocol supported.");
-                    }
+                    LOG.debug("poll: bgpPeerState: " + bgpPeerState + " is valid, protocol supported.");
                     return true;
                 }
             }

@@ -128,12 +128,10 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        if (LOG.isDebugEnabled()) LOG.debug("capsd: service= SNMP address= " + agentConfig);
+        LOG.debug("capsd: service= SNMP address= " + agentConfig);
 
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
 
             if (serviceName == null) {
                 LOG.warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");

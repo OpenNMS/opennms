@@ -63,9 +63,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(eb.getEvent());
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-            }
+            LOG.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
         } catch (Throwable t) {
             LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
         }

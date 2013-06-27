@@ -464,14 +464,7 @@ public class Collectd extends AbstractServiceDaemon implements
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
         StringBuffer sb;
         
-        if (LOG.isDebugEnabled()) {
-            sb = new StringBuffer();
-            sb.append("scheduleInterface: found ");
-            sb.append(Integer.toString(matchingSpecs.size()));
-            sb.append(" matching specs for interface: ");
-            sb.append(iface);
-            LOG.debug(sb.toString());
-        }
+        LOG.debug("scheduleInterface: found {} matching specs for interface: {}", matchingSpecs.size(), iface);
 
         for (CollectionSpecification spec : matchingSpecs) {
 
@@ -484,15 +477,7 @@ public class Collectd extends AbstractServiceDaemon implements
                  * does not already exist in the collectable services list.
                  */
                 if (alreadyScheduled(iface, spec)) {
-                    if (LOG.isDebugEnabled()) {
-                        sb = new StringBuffer();
-                        sb.append("scheduleInterface: svc/pkgName ");
-                        sb.append(iface);
-                        sb.append('/');
-                        sb.append(spec);
-                        sb.append(" already in collectable service list, skipping.");
-                        LOG.debug(sb.toString());
-                    }
+                    LOG.debug("scheduleInterface: svc/pkgName {}/{} already in collectable service list, skipping.", iface, spec);
                     continue;
                 }
             }
@@ -502,14 +487,7 @@ public class Collectd extends AbstractServiceDaemon implements
                  * Criteria checks have all passed. The interface/service pair
                  * can be scheduled.
                  */
-                if (LOG.isDebugEnabled()) {
-                    sb = new StringBuffer();
-                    sb.append("scheduleInterface: now scheduling interface: ");
-                    sb.append(iface);
-                    sb.append('/');
-                    sb.append(svcName);
-                    LOG.debug(sb.toString());
-                }
+                LOG.debug("scheduleInterface: now scheduling interface: {}/{}", iface, svcName);
                 CollectableService cSvc = null;
 
                 /*
@@ -527,15 +505,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Schedule the collectable service for immediate collection
                 getScheduler().schedule(0, cSvc.getReadyRunnable());
 
-                if (LOG.isDebugEnabled()) {
-                    sb = new StringBuffer();
-                    sb.append("scheduleInterface: ");
-                    sb.append(iface);
-                    sb.append('/');
-                    sb.append(svcName);
-                    sb.append(" collection, scheduled");
-                    LOG.debug(sb.toString());
-                }
+                LOG.debug("scheduleInterface: {}/{} collection, scheduled", iface, svcName);
             } catch (CollectionInitializationException e) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Unable to schedule ");
@@ -554,14 +524,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     LOG.info(sb.toString());
                 }
             } catch (Throwable t) {
-                sb = new StringBuffer();
-                sb.append("scheduleInterface: Uncaught exception, failed to schedule interface ");
-                sb.append(iface);
-                sb.append('/');
-                sb.append(svcName);
-                sb.append(". ");
-                sb.append(t);
-                LOG.error(sb.toString(), t);
+                LOG.error("scheduleInterface: Uncaught exception, failed to schedule interface {}/{}.", iface, svcName, t);
             }
         } // end while more specifications exist
         
@@ -592,45 +555,18 @@ public class Collectd extends AbstractServiceDaemon implements
              * and enabled!
              */
             if (!wpkg.serviceInPackageAndEnabled(svcName)) {
-                if (LOG.isDebugEnabled()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("getSpecificationsForInterface: address/service: ");
-                    sb.append(iface);
-                    sb.append("/");
-                    sb.append(svcName);
-                    sb.append(" not scheduled, service is not enabled or does not exist in package: ");
-                    sb.append(wpkg.getName());
-                    LOG.debug(sb.toString());
-                }
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
             final String ipAddress = str(iface.getIpAddress());
 			if (!wpkg.interfaceInPackage(ipAddress)) {
-                if (LOG.isDebugEnabled()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("getSpecificationsForInterface: address/service: ");
-                    sb.append(iface);
-                    sb.append("/");
-                    sb.append(svcName);
-                    sb.append(" not scheduled, interface does not belong to package: ");
-                    sb.append(wpkg.getName());
-                    LOG.debug(sb.toString());
-                }
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
 
-            if (LOG.isDebugEnabled()) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("getSpecificationsForInterface: address/service: ");
-                sb.append(iface);
-                sb.append("/");
-                sb.append(svcName);
-                sb.append(" scheduled, interface does belong to package: ");
-                sb.append(wpkg.getName());
-                LOG.debug(sb.toString());
-            }
+            LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
             matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName)));
         }
@@ -817,9 +753,7 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      */
     private void handleConfigureSNMP(final Event event) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("configureSNMPHandler: processing configure SNMP event..."+event);
-        }
+        LOG.debug("configureSNMPHandler: processing configure SNMP event..."+event);
         
         SnmpEventInfo info = null;
         try {
@@ -916,8 +850,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
+        LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -978,8 +911,7 @@ public class Collectd extends AbstractServiceDaemon implements
 				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
+                        LOG.debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
 
                         // Retrieve the CollectorUpdates object associated
                         // with
@@ -991,15 +923,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
+                        LOG.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
                     }
                 }
             }
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
+        LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
     }
 
     /**
@@ -1018,8 +948,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
+        LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
     }
 
     /**
@@ -1036,9 +965,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
-        }
+        LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
         
         scheduleNode(nodeId.intValue(), true);
         
@@ -1185,8 +1112,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
+        LOG.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
         // Currently only support SNMP data collection.
         //
@@ -1245,8 +1171,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                             // Now set the deleted flag
                             updates.markForDeletion();
-                            if (LOG.isDebugEnabled())
-                                LOG.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
+                            LOG.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
                         }
 
                         // Now safe to remove the collectable service from
@@ -1261,8 +1186,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //
         scheduleForCollection(event);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
+        LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
     }
 
     /**
@@ -1308,8 +1232,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
-				if (LOG.isDebugEnabled())
-                    LOG.debug("Comparing CollectableService ip address = " + addrString + " and event ip interface = " + ipAddress);
+                LOG.debug("Comparing CollectableService ip address = " + addrString + " and event ip interface = " + ipAddress);
                 if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
@@ -1322,8 +1245,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                         // Now set the reinitialization flag
                         updates.markForReinitialization(iface);
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking " + ipAddress + " for reinitialization for service SNMP.");
+                        LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking " + ipAddress + " for reinitialization for service SNMP.");
                     }
                 }
             }
@@ -1394,8 +1316,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+        LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
     }
 
     /**
@@ -1500,9 +1421,7 @@ public class Collectd extends AbstractServiceDaemon implements
         for (Collector collector : collectors) {
             String svcName = collector.getService();
             try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("instantiateCollectors: Loading collector " + svcName + ", classname " + collector.getClassName());
-                }
+                LOG.debug("instantiateCollectors: Loading collector " + svcName + ", classname " + collector.getClassName());
                 Class<?> cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 

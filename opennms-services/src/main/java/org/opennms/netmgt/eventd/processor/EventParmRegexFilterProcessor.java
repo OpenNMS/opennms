@@ -64,9 +64,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
             for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters().getFilterCollection()) {
                 if (!m_filterMap.containsKey(fConf.getEventparm() + "|" + event.getUei())) {
                     m_filterMap.put(fConf.getEventparm() + "|" + event.getUei(), fConf);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("adding [{}|{}] to filter map", fConf.getEventparm(), event.getUei());
-                    }
+                    LOG.debug("adding [{}|{}] to filter map", fConf.getEventparm(), event.getUei());
                 }
             }
 
@@ -76,9 +74,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
                         && (m_filterMap.containsKey(parm.getParmName() + "|" + event.getUei()))
                 ) {
                     org.opennms.netmgt.xml.eventconf.Filter f = m_filterMap.get(parm.getParmName() + "|" + event.getUei());
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("filtering {} with {}", f.getPattern(), parm.getParmName());
-                    }
+                    LOG.debug("filtering {} with {}", f.getPattern(), parm.getParmName());
                     final Pattern pattern = Pattern.compile( f.getPattern() );
                     Matcher matcher = pattern.matcher( parm.getValue().getContent().trim() );
                     parm.getValue().setContent( matcher.replaceAll(f.getReplacement()) );

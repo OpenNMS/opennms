@@ -104,8 +104,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = svc.getAddress();
         String host = InetAddressUtils.str(ipv4Addr);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("polling interface: " + host + timeoutTracker);
+        LOG.debug("polling interface: " + host + timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 

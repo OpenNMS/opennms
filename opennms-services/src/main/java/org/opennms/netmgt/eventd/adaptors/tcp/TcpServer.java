@@ -185,24 +185,18 @@ final class TcpServer implements Runnable {
         // Stop this context
         m_stop = true;
         if (m_context != null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Interrupting and joining context thread " + m_context.getName());
-            }
+            LOG.debug("Interrupting and joining context thread " + m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Thread context stopped and joined " + m_context.getName());
-            }
+            LOG.debug("Thread context stopped and joined " + m_context.getName());
 
             m_context = null;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Attempting to stop and join all stream handlers");
-            LOG.debug("There are " + m_receivers.size() + " receivers");
-        }
+        LOG.debug("Attempting to stop and join all stream handlers");
+        LOG.debug("There are " + m_receivers.size() + " receivers");
 
         // stop all the receivers
         int ndx = 0; // for tracing!
@@ -210,15 +204,11 @@ final class TcpServer implements Runnable {
         while (i.hasNext()) {
             TcpStreamHandler t = i.next();
             if (t.isAlive()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Calling stop on handler index " + ndx);
-                }
+                LOG.debug("Calling stop on handler index " + ndx);
 
                 t.stop();
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stopped handler index " + ndx);
-                }
+                LOG.debug("Stopped handler index " + ndx);
             }
             ndx++;
             i.remove();
@@ -277,9 +267,7 @@ final class TcpServer implements Runnable {
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Server connection processor started on " + m_ipAddress + ":" + m_tcpPort);
-        }
+        LOG.debug("Server connection processor started on " + m_ipAddress + ":" + m_tcpPort);
 
         /*
          *
@@ -294,9 +282,7 @@ final class TcpServer implements Runnable {
                 LOG.warn("An I/O exception occured setting the socket timeout: " + e, e);
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Thread exiting due to socket error: " + e, e);
-            }
+            LOG.debug("Thread exiting due to socket error: " + e, e);
 
             return;
         }
@@ -312,7 +298,7 @@ final class TcpServer implements Runnable {
          */
         while (m_parent.getStatus() != Fiber.STOPPED && m_parent.getStatus() != Fiber.STOP_PENDING && !m_stop) {
             try {
-                if (LOG.isDebugEnabled() && !ioInterrupted) {
+                if (!ioInterrupted) {
                     LOG.debug("Waiting for new connection");
                 }
 
@@ -328,9 +314,7 @@ final class TcpServer implements Runnable {
                 StringBuffer connection = new StringBuffer(InetAddressUtils.str(newbie.getInetAddress()));
                 connection.append(":").append(newbie.getPort());
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("New connection accepted from " + connection);
-                }
+                LOG.debug("New connection accepted from " + connection);
 
                 // start a new handler
                 TcpStreamHandler handler = new TcpStreamHandler(m_parent, newbie, m_handlers, m_recsPerConn);

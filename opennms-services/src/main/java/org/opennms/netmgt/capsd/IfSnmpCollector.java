@@ -377,9 +377,7 @@ public final class IfSnmpCollector implements Runnable {
                 }
             }
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("getIfAlias: no ifXTable retrieved from " + m_address);
-            }
+            LOG.debug("getIfAlias: no ifXTable retrieved from " + m_address);
         }
 
         return snmpIfAlias;
@@ -407,8 +405,7 @@ public final class IfSnmpCollector implements Runnable {
         
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
         
-        if (LOG.isDebugEnabled())
-            LOG.debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
+        LOG.debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();

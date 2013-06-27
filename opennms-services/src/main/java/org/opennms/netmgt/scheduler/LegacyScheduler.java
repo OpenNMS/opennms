@@ -166,15 +166,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *             Thrown if an error occurs adding the element to the queue.
      */
     public synchronized void schedule(ReadyRunnable runnable, long interval) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
-        }
+        LOG.debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
 
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("schedule: interval queue did not exist, a new one has been created");
-            }
+            LOG.debug("schedule: interval queue did not exist, a new one has been created");
             m_queues.put(key, new PeekableFifoQueue<ReadyRunnable>());
         }
 
@@ -183,7 +179,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             if (m_scheduled++ == 0) {
                 LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
                 notifyAll();
-            } else if (LOG.isDebugEnabled()) {
+            } else {
                 LOG.debug("schedule: queue element added, notification not performed");
             }
         } catch (InterruptedException e) {
@@ -372,9 +368,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             synchronized (this) {
                 
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("run: status = " + m_status + ", time to exit");
-                    }
+                    LOG.debug("run: status = " + m_status + ", time to exit");
                     break;
                 }
 
@@ -438,9 +432,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                         try {
                             readyRun = in.peek();
                             if (readyRun != null && readyRun.isReady()) {
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("run: found ready runnable "+readyRun);
-                                }
+                                LOG.debug("run: found ready runnable "+readyRun);
 
                                 /*
                                  * Pop the interface/readyRunnable from the

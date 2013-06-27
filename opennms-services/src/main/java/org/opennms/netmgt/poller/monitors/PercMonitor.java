@@ -175,14 +175,12 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         
         String arrayNumber = ParameterMap.getKeyedString(parameters,"array","0.0");
 
-        if (LOG.isDebugEnabled()) LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= " + agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + "." + arrayNumber);
 
             // First walk the physical OID Tree and check the returned values 

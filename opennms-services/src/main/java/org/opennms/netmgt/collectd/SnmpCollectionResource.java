@@ -135,9 +135,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
 
     private void addAttribute(final SnmpAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Adding attribute " + attr.getClass().getName() + ": " + attr + " to group " + group);
-        }
+        LOG.debug("Adding attribute " + attr.getClass().getName() + ": " + attr + " to group " + group);
         group.addAttribute(attr);
     }
 

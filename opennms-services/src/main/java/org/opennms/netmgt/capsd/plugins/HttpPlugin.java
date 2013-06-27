@@ -210,9 +210,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
 
         m_queryString = "GET " + config.getKeyedString(PROPERTY_NAME_URL, DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Query: {}", m_queryString);
-        }
+        LOG.debug("Query: {}", m_queryString);
 
         try {
             BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -225,18 +223,14 @@ public class HttpPlugin extends AbstractTcpPlugin {
                 while ((chars = lineRdr.read( cbuf, 0, 1024)) != -1)
                 {
                     String line = new String( cbuf, 0, chars );
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Read: {} bytes: [{}] from socket.", line.length(), line);
-                    }
+                    LOG.debug("Read: {} bytes: [{}] from socket.", line.length(), line);
                     response.append( line );
                 }
             } catch ( java.net.SocketTimeoutException timeoutEx ) {
                 if ( timeoutEx.bytesTransferred > 0 )
                 {
                     String line = new String( cbuf, 0, timeoutEx.bytesTransferred );
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Read: {} bytes: [{}] from socket @ timeout!", line.length(), line);
-                    }
+                    LOG.debug("Read: {} bytes: [{}] from socket @ timeout!", line.length(), line);
                     response.append(line);
                 }
             }
@@ -250,9 +244,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug(getPluginName() + ": Request returned code: " + rVal);
-                    }
+                    LOG.debug(getPluginName() + ": Request returned code: " + rVal);
                     if (rVal >= 99 && rVal <= maxRetCode )
                         isAServer = true;
                 } else {

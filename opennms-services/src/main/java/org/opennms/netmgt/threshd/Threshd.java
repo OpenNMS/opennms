@@ -135,8 +135,7 @@ public final class Threshd extends AbstractServiceDaemon {
         //
         initializeScheduler();
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("start: Scheduling existing interfaces");
+        LOG.debug("start: Scheduling existing interfaces");
 
         // Schedule existing interfaces for thresholding
         //
@@ -203,9 +202,7 @@ public final class Threshd extends AbstractServiceDaemon {
         while (eiter.hasMoreElements()) {
             Thresholder thresholder = eiter.nextElement();
             try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
-                }
+                LOG.debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
                 Class<?> tc = Class.forName(thresholder.getClassName());
                 ServiceThresholder st = (ServiceThresholder) tc.newInstance();
 
@@ -232,9 +229,7 @@ public final class Threshd extends AbstractServiceDaemon {
         for(String key: m_svcThresholders.keySet()) {
             ServiceThresholder thresholder=m_svcThresholders.get(key);
 
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("reinitializeThresholders: About to reinitialize thresholder "+key);
-            }
+            LOG.debug("reinitializeThresholders: About to reinitialize thresholder "+key);
             thresholder.reinitialize();
         }
     }
@@ -378,8 +373,7 @@ public final class Threshd extends AbstractServiceDaemon {
             // and enabled!
             //
             if (!m_threshdConfig.serviceInPackageAndEnabled(svcName, pkg)) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("scheduleService: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                LOG.debug("scheduleService: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
             }
 
@@ -395,8 +389,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             }
             if (!foundInPkg) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                LOG.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
@@ -413,9 +406,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 // services list.
                 //
                 if (alreadyScheduled(ipAddress, pkg.getName())) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("scheduleService: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in thresholdable service list, skipping.");
-                    }
+                    LOG.debug("scheduleService: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in thresholdable service list, skipping.");
                     continue;
                 }
             }
@@ -454,8 +445,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 // there is data available to be fetched.
                 m_scheduler.schedule(tSvc, tSvc.getInterval());
 
-                if (LOG.isDebugEnabled())
-                    LOG.debug("scheduleService: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
+                LOG.debug("scheduleService: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
             } catch (RuntimeException rE) {
                 LOG.warn("scheduleService: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
             } catch (Throwable t) {

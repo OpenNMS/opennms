@@ -191,10 +191,8 @@ public class LdapMonitor extends AbstractServiceMonitor {
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
-                            LOG.debug("poll: responseTime= " + tracker.elapsedTimeInMillis() + "ms");
-                        }
+                        LOG.debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        LOG.debug("poll: responseTime= " + tracker.elapsedTimeInMillis() + "ms");
                     } catch (LDAPException e) {
                         try {
                             lc.disconnect();
@@ -221,8 +219,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
                     if (results != null && results.hasMore()) {
                         responseTime = tracker.elapsedTimeInMillis();
-                        if (LOG.isDebugEnabled())
-                                LOG.debug("search yielded " + results.getCount() + " result(s)");
+                        LOG.debug("search yielded " + results.getCount() + " result(s)");
                         serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         LOG.debug("no results found from search");
@@ -243,8 +240,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
                 try {
                     lc.disconnect();
-                    if (LOG.isDebugEnabled())
-                            LOG.debug("disconected from LDAP server " + address + " on port " + ldapPort);
+                    LOG.debug("disconected from LDAP server " + address + " on port " + ldapPort);
                 } catch (LDAPException e) {
                     LOG.debug(e.getMessage());
                 }

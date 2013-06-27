@@ -127,9 +127,7 @@ final class DataSender implements Fiber {
         try {
             currentThread.setPriority(priority);
         } catch (Throwable e) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Error setting thread priority: ", e);
-            }
+            LOG.debug("Error setting thread priority: ", e);
         }
 
         return oldPriority;
@@ -248,12 +246,10 @@ final class DataSender implements Fiber {
             m_catUrlMap.put(catlabel, urlList);
         }
         
-        if (!urlList.add(postInfo) && LOG.isDebugEnabled()) {
+        if (!urlList.add(postInfo)) {
             LOG.debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
-            }
+            LOG.debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
         }
 
         // send data
@@ -268,8 +264,7 @@ final class DataSender implements Fiber {
 
             inr = new PipedMarshaller(euidata).getReader();
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("DataSender: posting data to: " + url);
+            LOG.debug("DataSender: posting data to: " + url);
 
             inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
@@ -285,8 +280,7 @@ final class DataSender implements Fiber {
             // return current thread to its previous priority
             oldPriority = setCurrentThreadPriority(oldPriority);
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("DataSender: posted data for category: " + catlabel);
+            LOG.debug("DataSender: posted data for category: " + catlabel);
         } catch (IOException ioE) {
             LOG.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", ioE);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
@@ -339,8 +333,7 @@ final class DataSender implements Fiber {
             }
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Unsubscribed URL: " + url);
+        LOG.debug("Unsubscribed URL: " + url);
     }
 
     /**
@@ -355,21 +348,18 @@ final class DataSender implements Fiber {
             // get label
             String catlabel = cat.getLabel();
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("DataSender:sendData(): Category \'" + catlabel);
+            LOG.debug("DataSender:sendData(): Category \'" + catlabel);
 
             // get the post info for this category
             Set<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
             if (urlList == null || urlList.size() <= 0) {
                 // a category that no one is listening for?
-                if (LOG.isDebugEnabled())
-                    LOG.debug("DataSender: category \'" + catlabel + "\' has no listeners");
+                LOG.debug("DataSender: category \'" + catlabel + "\' has no listeners");
 
                 continue;
             }
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("DataSender: category \'" + catlabel + "\' has listeners - converting to xml...");
+            LOG.debug("DataSender: category \'" + catlabel + "\' has listeners - converting to xml...");
 
             // Run at a higher than normal priority since we do have to send
             // the update on time
@@ -398,13 +388,11 @@ final class DataSender implements Fiber {
                     try {
                         inr = new PipedMarshaller(euidata).getReader();
 
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("DataSender: posting data to: " + postInfo.getURLString());
+                        LOG.debug("DataSender: posting data to: " + postInfo.getURLString());
 
                         inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
 
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("DataSender: posted data for category: " + catlabel);
+                        LOG.debug("DataSender: posted data for category: " + catlabel);
                         
 
                         byte[] tmp = new byte[1024];

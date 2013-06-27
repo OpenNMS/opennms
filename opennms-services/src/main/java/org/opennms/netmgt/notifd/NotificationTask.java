@@ -260,22 +260,16 @@ public class NotificationTask extends Thread {
                             } else {
                                 strategy = new ClassExecutor();
                             }
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Class created is: " + command.getClass());
-                            }
+                            LOG.debug("Class created is: " + command.getClass());
 
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("command " + command.getName() + " return code = " + returnCode);
-                            }
+                            LOG.debug("command " + command.getName() + " return code = " + returnCode);
                         } catch (Throwable e) {
                             LOG.warn("Notification command failed: " + command.getName(), e);
                         }
                     }
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("User " + m_user.getUserId() + " is not on duty, skipping");
-                    }
+                    LOG.debug("User " + m_user.getUserId() + " is not on duty, skipping");
                 }
             } catch (IOException e) {
                 LOG.warn("Could not get user duty schedule information: ", e);
@@ -315,9 +309,7 @@ public class NotificationTask extends Thread {
         List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
 
         for (Argument curArg : notifArgs) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
-            }
+            LOG.debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
 
             commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }

@@ -174,13 +174,9 @@ public final class IfCollector implements Runnable {
         // for the interface
         //
         for (int i = 0; i < plugins.length; i++) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(logAddr + " testing plugin " + plugins[i].getProtocol());
-            }
+            LOG.debug(logAddr + " testing plugin " + plugins[i].getProtocol());
             if (plugins[i].isAutoEnabled()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " is auto enabled");
-                }
+                LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " is auto enabled");
                 supports.add(new SupportedProtocol(plugins[i].getProtocol(), null));
                 continue;
             }
@@ -190,9 +186,7 @@ public final class IfCollector implements Runnable {
                 Map<String, Object> q = plugins[i].getParameters();
                 boolean r = p.isProtocolSupported(target, q);
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " supported? " + (r ? "true" : "false"));
-                }
+                LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " supported? " + (r ? "true" : "false"));
 
                 if (r) {
                     supports.add(new SupportedProtocol(plugins[i].getProtocol(), q));
@@ -212,9 +206,7 @@ public final class IfCollector implements Runnable {
             } catch (Throwable t) {
                 LOG.warn("IfCollector: Caught an exception when testing for protocol " + plugins[i].getProtocol() + " on host " + logAddr, t);
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(logAddr + " plugin " + plugins[i].getProtocol() + " completed!");
-            }
+            LOG.debug(logAddr + " plugin " + plugins[i].getProtocol() + " completed!");
         }
     }
 
@@ -331,9 +323,7 @@ public final class IfCollector implements Runnable {
      */
     @Override
     public void run() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("IfCollector.run: run method invoked to collect information for address " + InetAddressUtils.str(m_target));
-        }
+        LOG.debug("IfCollector.run: run method invoked to collect information for address " + InetAddressUtils.str(m_target));
 
         // Now go throught the successful plugin checks
         // and see if either SMB, MSExchange, or SNMP is
@@ -441,9 +431,7 @@ public final class IfCollector implements Runnable {
                             // now check for loopback
                             if (subtarget.isLoopbackAddress()) {
                                 // Skip if loopback
-                                if (LOG.isDebugEnabled()) {
-                                    LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
-                                }
+                                LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
                                 continue;
                             }
 
@@ -460,17 +448,13 @@ public final class IfCollector implements Runnable {
                             // ok it appears to be ok, so probe it!
                             //
                             List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("----------------------------------------------------------------------------------------");
-                                LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
-                            }
+                            LOG.debug("----------------------------------------------------------------------------------------");
+                            LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
                             probe(subtarget, probelist);
                             m_previouslyProbed.add(subtarget);
 
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
-                                LOG.debug("----------------------------------------------------------------------------------------");
-                            }
+                            LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                            LOG.debug("----------------------------------------------------------------------------------------");
                             m_subTargets.put(subtarget, probelist);
                         } // end while(more ip addresses)
                     } // end while(more interfaces)
@@ -496,9 +480,7 @@ public final class IfCollector implements Runnable {
                         // now check for loopback
                         if (subtarget.isLoopbackAddress()) {
                             // Skip if loopback
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
-                            }
+                            LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
                             continue;
                         }
 
@@ -506,17 +488,13 @@ public final class IfCollector implements Runnable {
                         // ok it appears to be ok, so probe it!
                         //
                         List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("----------------------------------------------------------------------------------------");
-                            LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
-                        }
+                        LOG.debug("----------------------------------------------------------------------------------------");
+                        LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
                         probe(subtarget, probelist);
                         m_previouslyProbed.add(subtarget);
                         
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
-                            LOG.debug("----------------------------------------------------------------------------------------");
-                        }
+                        LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                        LOG.debug("----------------------------------------------------------------------------------------");
                         m_subTargets.put(subtarget, probelist);
                     } // end while(more ip addresses)
                 } // end if(ipAddrTable entries collected)
@@ -529,8 +507,6 @@ public final class IfCollector implements Runnable {
             LOG.debug("IfCollector.run: SNMP collection completed");
         } // end if(SNMP supported)
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("IfCollector.run: run method exiting after collecting information from address " + InetAddressUtils.str(m_target));
-        }
+        LOG.debug("IfCollector.run: run method exiting after collecting information from address " + InetAddressUtils.str(m_target));
     }
 }

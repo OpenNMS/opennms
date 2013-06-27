@@ -657,8 +657,7 @@ public class Poller extends AbstractServiceDaemon {
      */
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         if (!getPollerConfig().isServiceInPackageAndEnabled(svcName, pkg)) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+            LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
             return false;
         }
 
@@ -669,13 +668,11 @@ public class Poller extends AbstractServiceDaemon {
             if (m_initialized) {
                 getPollerConfig().rebuildPackageIpListMap();
                 if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("packageIncludesIfAndSvc: interface " + ipAddr + " gained service " + svcName + ", but the interface was not in package: " + pkg.getName());
+                    LOG.debug("packageIncludesIfAndSvc: interface " + ipAddr + " gained service " + svcName + ", but the interface was not in package: " + pkg.getName());
                     return false;
                 }
             } else {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 return false;
             }
         }

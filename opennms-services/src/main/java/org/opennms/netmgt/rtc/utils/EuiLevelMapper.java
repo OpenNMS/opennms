@@ -86,9 +86,7 @@ public class EuiLevelMapper extends Object {
         // get the rolling window
         long rWindow = RTCManager.getRollingWindow();
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("curdate: {}", curDate);
-        }
+        LOG.debug("curdate: {}", curDate);
 
         // create the data
         EuiLevel level = new EuiLevel();

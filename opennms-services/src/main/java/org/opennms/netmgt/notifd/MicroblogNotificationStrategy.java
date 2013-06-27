@@ -90,9 +90,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         String messageBody = buildMessageBody(arguments);
         Status response;
         
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Dispatching microblog notification for user '" + svc.getUserId() + "' at base URL '" + svc.getBaseURL() + "' with message '" + messageBody + "'");
-        }
+        LOG.debug("Dispatching microblog notification for user '" + svc.getUserId() + "' at base URL '" + svc.getBaseURL() + "' with message '" + messageBody + "'");
         try {
             response = svc.updateStatus(messageBody);
         } catch (TwitterException e) {
@@ -173,9 +171,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         
         // Collapse whitespace in final message
         messageBody = messageBody.replaceAll("\\s+", " ");
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Final message body after collapsing whitespace is: '" + messageBody + "'");
-        }
+        LOG.debug("Final message body after collapsing whitespace is: '" + messageBody + "'");
 
         return messageBody;
     }

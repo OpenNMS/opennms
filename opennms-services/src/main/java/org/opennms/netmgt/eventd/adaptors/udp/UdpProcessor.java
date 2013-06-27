@@ -105,14 +105,12 @@ final class UdpProcessor implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            if (LOG.isDebugEnabled())
-                LOG.debug("Stopping and joining thread context " + m_context.getName());
+            LOG.debug("Stopping and joining thread context " + m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            if (LOG.isDebugEnabled())
-                LOG.debug("Thread context stopped and joined");
+            LOG.debug("Thread context stopped and joined");
         }
     }
 
@@ -164,10 +162,8 @@ final class UdpProcessor implements Runnable {
             // Convert the Event
             Event[] events = null;
             try {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
-                    LOG.debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
-                }
+                LOG.debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
+                LOG.debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {
                 LOG.warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
@@ -180,7 +176,7 @@ final class UdpProcessor implements Runnable {
             if (events == null || events.length == 0) {
                 LOG.debug("The event log record contained no events");
                 continue;
-            } else if (LOG.isDebugEnabled()) {
+            } else {
                 LOG.debug("Processing " + events.length + " events");
             }
 

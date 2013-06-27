@@ -144,12 +144,10 @@ public class CustomSyslogParser extends SyslogParser {
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("message = {}", message);
-            LOG.trace("pattern = {}", m_forwardingPattern);
-            LOG.trace("host group = {}", m_matchingGroupHost);
-            LOG.trace("message group = {}", m_matchingGroupMessage);
-        }
+        LOG.trace("message = {}", message);
+        LOG.trace("pattern = {}", m_forwardingPattern);
+        LOG.trace("host group = {}", m_matchingGroupHost);
+        LOG.trace("message group = {}", m_matchingGroupMessage);
 
         // We will also here find out if, the host needs to
         // be replaced, the message matched to a UEI, and
@@ -172,11 +170,9 @@ public class CustomSyslogParser extends SyslogParser {
             final String matchedMessage = m.group(m_matchingGroupMessage);
             syslogMessage.setMatchedMessage(matchedMessage);
 
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
-                LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
-                LOG.trace("Found message '{}'", matchedMessage);
-            }
+            LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
+            LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
+            LOG.trace("Found message '{}'", matchedMessage);
 
             syslogMessage.setHostName(m.group(m_matchingGroupHost));
             

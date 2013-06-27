@@ -107,9 +107,7 @@ public class ThresholdingSet {
                     LOG.error("initialize: Could not get threshold group with name " + groupName);
                 }
                 m_thresholdGroups.add(thresholdGroup);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("initialize: Adding threshold group: " + thresholdGroup);
-                }
+                LOG.debug("initialize: Adding threshold group: " + thresholdGroup);
             } catch (Throwable e) {
                 LOG.error("initialize: Can't process threshold group " + groupName, e);
             }
@@ -170,17 +168,13 @@ public class ThresholdingSet {
                     LOG.error("mergeThresholdGroups: Could not get threshold group with name " + groupName);
                 } else {
                     newThresholdGroupList.add(thresholdGroup);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("mergeThresholdGroups: Adding threshold group: " + thresholdGroup);
-                    }
+                    LOG.debug("mergeThresholdGroups: Adding threshold group: " + thresholdGroup);
                 }
             } else {
                 // Merge existing data with current data
                 ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup);
                 newThresholdGroupList.add(thresholdGroup);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("mergeThresholdGroups: Merging threshold group: " + thresholdGroup);
-                }
+                LOG.debug("mergeThresholdGroups: Merging threshold group: " + thresholdGroup);
             }
         }
         m_thresholdGroups = newThresholdGroupList;
@@ -310,16 +304,12 @@ public class ThresholdingSet {
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("passedThresholdFilters: applying " + filters.length + " filters to resource " + resource);
-        }
+        LOG.debug("passedThresholdFilters: applying " + filters.length + " filters to resource " + resource);
         int count = 1;
         String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
         boolean andResult = true;
         for (ResourceFilter f : filters) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
-            }
+            LOG.debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = resource.getLabelValue(f.getField());
@@ -328,9 +318,7 @@ public class ThresholdingSet {
                     final Pattern p = Pattern.compile(f.getContent());
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
-                    }
+                    LOG.debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
                     if (operator.equals("or") && pass) {
                         return true;
                     }
@@ -393,17 +381,14 @@ public class ThresholdingSet {
 
             // Make certain the the current service is in the package and enabled!
             if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                LOG.debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
-            if (LOG.isDebugEnabled())
-                LOG.debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
+            LOG.debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
             if (!configManager.interfaceInPackage(hostAddress, pkg)) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                LOG.debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
@@ -414,9 +399,7 @@ public class ThresholdingSet {
                         if (parameter.getKey().equals("thresholding-group")) {
                             String groupName = parameter.getValue();
                             groupNameList.add(groupName);
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
-                            }
+                            LOG.debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
                         }
                     }
                 }

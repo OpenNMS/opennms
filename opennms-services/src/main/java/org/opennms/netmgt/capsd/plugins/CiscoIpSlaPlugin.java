@@ -180,9 +180,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 }
 
                 // Establish SNMP session with interface
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
-                }
+                LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
 
                 /*
                  * Get two maps one with all configured admin tags and one of

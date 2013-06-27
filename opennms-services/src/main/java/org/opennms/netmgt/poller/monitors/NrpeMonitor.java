@@ -145,9 +145,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (LOG.isDebugEnabled()) {
-            LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
-        }
+        LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
 
         // Give it a whirl
         //
@@ -207,10 +205,8 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 
                 if (response == null)
                     continue;
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: banner = {}", response);
-                    LOG.debug("poll: responseTime= {}ms", responseTime);
-                }
+                LOG.debug("poll: banner = {}", response);
+                LOG.debug("poll: responseTime= {}ms", responseTime);
 
                 if (response.indexOf(strBannerMatch) > -1) {
                 */

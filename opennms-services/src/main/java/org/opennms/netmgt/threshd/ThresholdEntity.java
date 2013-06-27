@@ -240,9 +240,7 @@ public final class ThresholdEntity implements Cloneable {
             return events; //No events to report
         }
         
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("evaluate: value= " + dsValue + " against threshold: " + this);
-        }        
+        LOG.debug("evaluate: value= " + dsValue + " against threshold: " + this);
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
@@ -274,9 +272,7 @@ public final class ThresholdEntity implements Cloneable {
         Double dsValue = null;
         try {
             if (getDatasourceType().equals("if")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Fetching last value from dataSource '" + datasource + "'");
-                }
+                LOG.debug("Fetching last value from dataSource '" + datasource + "'");
 
                 File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
                 if (!rrdFile.exists()) {
@@ -298,9 +294,7 @@ public final class ThresholdEntity implements Cloneable {
                 throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Last value from dataSource '" + datasource + "' was "+dsValue);
-            }
+            LOG.debug("Last value from dataSource '" + datasource + "' was "+dsValue);
         } catch (NumberFormatException nfe) {
             LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
         } catch (RrdException e) {

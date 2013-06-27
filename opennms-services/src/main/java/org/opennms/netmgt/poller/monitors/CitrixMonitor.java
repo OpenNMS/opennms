@@ -108,8 +108,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = svc.getAddress();
         String host = InetAddressUtils.str(ipv4Addr);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("CitrixMonitor.poll: Polling interface: " + host + timeoutTracker);
+        LOG.debug("CitrixMonitor.poll: Polling interface: " + host + timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 

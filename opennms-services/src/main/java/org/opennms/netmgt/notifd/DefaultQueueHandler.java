@@ -168,7 +168,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                     }
                     readyNotices.clear();
         
-                    if (LOG.isDebugEnabled() && m_noticeQueue != null && m_noticeQueue.size() > 0) {
+                    if (m_noticeQueue != null && m_noticeQueue.size() > 0) {
 			LOG.debug("current state of tree: {}", m_noticeQueue);
                     }
                 } catch (final Throwable e) {

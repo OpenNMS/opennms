@@ -170,9 +170,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     void logAlias(String ifAlias) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Alias for RRD directory name = " + ifAlias);
-        }
+        LOG.debug("Alias for RRD directory name = " + ifAlias);
     }
 
     String getAliasDir(String ifAlias, String ifAliasComment) {
@@ -196,9 +194,7 @@ public final class IfInfo extends SnmpCollectionResource {
 
     void logForceRescan(String ifAlias) {
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Forcing rescan.  IfAlias " + ifAlias + " for index " + getIndex() + " does not match DB value: " + getCurrentIfAlias());
-        }
+        LOG.debug("Forcing rescan.  IfAlias " + ifAlias + " for index " + getIndex() + " does not match DB value: " + getCurrentIfAlias());
     }
 
     public boolean isScheduledForCollection() {

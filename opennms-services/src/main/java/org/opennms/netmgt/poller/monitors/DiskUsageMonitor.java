@@ -185,13 +185,11 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         LOG.debug("percentfree=" + percentFree);
         LOG.debug("matchType=" + matchTypeStr);
         
-        if (LOG.isDebugEnabled()) LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= " + agentConfig);
 
         
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             SnmpObjId hrStorageDescrSnmpObject = SnmpObjId.get(hrStorageDescr);
             
             

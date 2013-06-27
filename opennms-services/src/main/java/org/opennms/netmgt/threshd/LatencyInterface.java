@@ -123,8 +123,7 @@ public class LatencyInterface {
 
 	File getLatencyDir() throws ThresholdingException {
 		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
-	    if (LOG.isDebugEnabled())
-	        LOG.debug("check: rrd repository=" + repository);
+	    LOG.debug("check: rrd repository=" + repository);
 	    // Get File object representing the
 	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
 	    File latencyDir = new File(repository + File.separator + getHostAddress());
@@ -161,9 +160,7 @@ public class LatencyInterface {
 		if (threshold == null)
 	        throw new IllegalArgumentException("threshold cannot be null.");
 	
-	    if (LOG.isDebugEnabled()) {
-	        LOG.debug("createEvent: ds=" + threshold.getDsName() + " uei=" + uei);
-	    }
+	    LOG.debug("createEvent: ds=" + threshold.getDsName() + " uei=" + uei);
 	
 	    // create the event to be sent
 	    EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd:" + threshold.getDsName(), date);

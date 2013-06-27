@@ -209,9 +209,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         // Establish SNMP session with interface
         //
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
-            }
+            LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
 
             // Get the chassis status
             SnmpObjId chassisStatusSnmpObject = SnmpObjId.get(CHASSIS_STATUS_OID);
@@ -223,9 +221,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
                 LOG.warn("No chassis status received!");
                 return status;
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: chassis status: " + chassisStatus);
-                }
+                LOG.debug("poll: chassis status: " + chassisStatus);
             }
 
             /*
@@ -233,14 +229,10 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
              * return with service available and go away.
              */
             if (chassisStatus.toInt() == DELL_STATUS.OK.value()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: chassis status: " + chassisStatus.toInt());
-                }
+                LOG.debug("poll: chassis status: " + chassisStatus.toInt());
                 return PollStatus.available();
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: chassis status: " + chassisStatus.toInt());
-                }
+                LOG.debug("poll: chassis status: " + chassisStatus.toInt());
                 chassisStatusTxt = resolveDellStatus(chassisStatus.toInt());
             }
 
@@ -251,9 +243,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             if (eventLogStatus == null) {
                 LOG.warn("Cannot receive eventLogStatus.");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: eventLogStatus: " + eventLogStatus);
-                }
+                LOG.debug("poll: eventLogStatus: " + eventLogStatus);
                 eventLogStatusTxt = resolveDellStatus(eventLogStatus.toInt());
             }
 
@@ -263,9 +253,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             if (manufacturer == null) {
                 LOG.warn("Cannot receive manufacturer.");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: manufacturer: " + manufacturer);
-                }
+                LOG.debug("poll: manufacturer: " + manufacturer);
                 manufacturerName = manufacturer.toString();
             }
 
@@ -275,9 +263,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             if (model == null) {
                 LOG.warn("Cannot receive model name.");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: model name: " + model);
-                }
+                LOG.debug("poll: model name: " + model);
                 modelName = model.toString();
             }
 
@@ -287,9 +273,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             if (serviceTag == null) {
                 LOG.warn("Cannot receive service tag");
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("poll: service tag: " + serviceTag);
-                }
+                LOG.debug("poll: service tag: " + serviceTag);
                 serviceTagTxt = serviceTag.toString();
             }
 

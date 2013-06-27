@@ -209,14 +209,12 @@ final class Scheduler implements Runnable, PausableFiber {
         // Get rescan interval from configuration factory
         //
         m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
-        if (LOG.isDebugEnabled())
-            LOG.debug("Scheduler: rescan interval(millis): " + m_interval);
+        LOG.debug("Scheduler: rescan interval(millis): " + m_interval);
 
         // Get initial rescan sleep time from configuration factory
         //
         m_initialSleep = CapsdConfigFactory.getInstance().getInitialSleepTime();
-        if (LOG.isDebugEnabled())
-            LOG.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
+        LOG.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
 
         // Schedule SMB Reparenting using special nodeId (-1)
         //
@@ -225,16 +223,14 @@ final class Scheduler implements Runnable, PausableFiber {
         Date lastSmbReparenting = new Date();
         lastSmbReparenting.setTime(System.currentTimeMillis() - m_interval);
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Scheduler: scheduling SMB reparenting...");
+        LOG.debug("Scheduler: scheduling SMB reparenting...");
         NodeInfo smbInfo = new NodeInfo(SMB_REPARENTING_IDENTIFIER, lastSmbReparenting, m_interval);
         m_knownNodes.add(smbInfo);
 
         // Load actual known nodes from the database
         //
         loadKnownNodes();
-        if (LOG.isDebugEnabled())
-            LOG.debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
+        LOG.debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
     }
 
     /**
@@ -274,22 +270,19 @@ final class Scheduler implements Runnable, PausableFiber {
 
                 int nodeId = rs.getInt(1);
                 ifStmt.setInt(1, nodeId); // set nodeid
-                if (LOG.isDebugEnabled())
-                    LOG.debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
+                LOG.debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
 
                 rset = ifStmt.executeQuery();
                 d.watch(rs);
                 if (rset.next()) {
                     Timestamp lastPolled = rset.getTimestamp(1);
                     if (lastPolled != null && rset.wasNull() == false) {
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                        LOG.debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
                         NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
                         m_knownNodes.add(nodeInfo);
                     }
                 } else {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
+                    LOG.debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
                 }
             }
         } finally {
@@ -324,8 +317,7 @@ final class Scheduler implements Runnable, PausableFiber {
             if (rset.next()) {
                 Timestamp lastPolled = rset.getTimestamp(1);
                 if (lastPolled != null && rset.wasNull() == false) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
+                    LOG.debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
                     m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
                 }
             } else
@@ -385,7 +377,7 @@ final class Scheduler implements Runnable, PausableFiber {
         m_worker.start();
         m_status = STARTING;
 
-        if (LOG.isDebugEnabled()) LOG.debug("Scheduler.start: scheduler started");
+        LOG.debug("Scheduler.start: scheduler started");
     }
 
     /**
@@ -485,8 +477,7 @@ final class Scheduler implements Runnable, PausableFiber {
             m_status = RUNNING;
         }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("Scheduler.run: scheduler running");
+        LOG.debug("Scheduler.run: scheduler running");
 
         // Loop until a fatal exception occurs or until
         // the thread is interrupted.
@@ -497,8 +488,7 @@ final class Scheduler implements Runnable, PausableFiber {
             //
             synchronized (this) {
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Scheduler.run: status = " + m_status + ", time to exit");
+                    LOG.debug("Scheduler.run: status = " + m_status + ", time to exit");
                     break;
                 }
             }
@@ -511,12 +501,10 @@ final class Scheduler implements Runnable, PausableFiber {
                 firstPass = false;
                 synchronized (this) {
                     try {
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
+                        LOG.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
                         wait(m_initialSleep);
                     } catch (InterruptedException ex) {
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
+                        LOG.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
                         break; // exit for loop
                     }
                 }
@@ -529,8 +517,7 @@ final class Scheduler implements Runnable, PausableFiber {
             int added = 0;
 
             synchronized (m_knownNodes) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Scheduler.run: iterating over known nodes list to schedule...");
+                LOG.debug("Scheduler.run: iterating over known nodes list to schedule...");
                 Iterator<NodeInfo> iter = m_knownNodes.iterator();
                 while (iter.hasNext()) {
                     NodeInfo node = iter.next();
@@ -552,8 +539,7 @@ final class Scheduler implements Runnable, PausableFiber {
                         // of the scheduled node is -1
                         //
                         if (node.getNodeId() == SMB_REPARENTING_IDENTIFIER) {
-                            if (LOG.isDebugEnabled())
-                                LOG.debug("Scheduler.run: time for reparenting via SMB...");
+                            LOG.debug("Scheduler.run: time for reparenting via SMB...");
 
                             Connection db = null;
                             try {
@@ -584,15 +570,13 @@ final class Scheduler implements Runnable, PausableFiber {
                             node.setLastScanned(new Date());
                             node.setScheduled(false);
 
-                            if (LOG.isDebugEnabled())
-                                LOG.debug("Scheduler.run: SMB reparenting completed...");
+                            LOG.debug("Scheduler.run: SMB reparenting completed...");
                         }
                         // Otherwise just add the NodeInfo to the queue which will create
                         // a rescanProcessor and run it
                         //
                         else {
-                            if (LOG.isDebugEnabled())
-                                LOG.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
+                            LOG.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
                             m_rescanQ.execute(node);
                             added++;
                         }

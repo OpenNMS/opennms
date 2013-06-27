@@ -127,10 +127,7 @@ public class EventCreator implements TrapProcessor {
         setSpecific(trapIdentity.getSpecific());
         setEnterpriseId(trapIdentity.getEnterpriseId().toString());
     
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setTrapIdentity: SNMP trap "+trapIdentity);
-        }
-    
+        LOG.debug("setTrapIdentity: SNMP trap "+trapIdentity);
     }
 
     public Event getEvent() {

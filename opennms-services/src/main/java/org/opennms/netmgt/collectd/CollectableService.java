@@ -267,9 +267,7 @@ final class CollectableService implements ReadyRunnable {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(builder.getEvent());
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
-            }
+            LOG.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
         } catch (Throwable e) {
             LOG.error("Failed to send the event " + uei + " for interface " + getHostAddress() + ": " + e, e);
         }
@@ -326,9 +324,7 @@ final class CollectableService implements ReadyRunnable {
         // Any change in status?
         if (status != m_status) {
             // Generate data collection transition events
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("run: change in collection status, generating event.");
-            }
+            LOG.debug("run: change in collection status, generating event.");
             
             String reason = null;
             if (e != null) {
@@ -426,8 +422,7 @@ final class CollectableService implements ReadyRunnable {
                 // Deletion flag is set, simply return without polling
                 // or rescheduling this collector.
                 //
-                if (LOG.isDebugEnabled())
-                    LOG.debug("Collector for  " + getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
+                LOG.debug("Collector for  " + getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
 
                 return ABORT_COLLECTION;
             }
@@ -439,13 +434,11 @@ final class CollectableService implements ReadyRunnable {
                 // Reinitialization flag is set, call initialize() to
                 // reinit the collector for this interface
                 //
-                if (LOG.isDebugEnabled())
-                    LOG.debug("ReinitializationFlag set for " + getHostAddress());
+                LOG.debug("ReinitializationFlag set for " + getHostAddress());
 
                 try {
                     reinitialize(newIface);
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
                     LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
@@ -456,8 +449,7 @@ final class CollectableService implements ReadyRunnable {
             // Update: reparenting flag
             //
             if (m_updates.isReparentingFlagSet()) {
-                if (LOG.isDebugEnabled())
-                    LOG.debug("ReparentingFlag set for " + getHostAddress());
+                LOG.debug("ReparentingFlag set for " + getHostAddress());
 
                 // The interface has been reparented under a different node
                 // (with
@@ -492,11 +484,9 @@ final class CollectableService implements ReadyRunnable {
 
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
+                        LOG.debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
                         oldNodeDir.renameTo(newNodeDir);
-                        if (LOG.isDebugEnabled())
-                            LOG.debug("Rename successful!!");
+                        LOG.debug("Rename successful!!");
                     } catch (SecurityException se) {
                         LOG.error("Insufficient authority to rename RRD directory.", se);
                     } catch (Throwable t) {
@@ -518,8 +508,7 @@ final class CollectableService implements ReadyRunnable {
                             File srcFile = new File(oldNodeDir.toString() + File.separator + filesToMove[i]);
                             File destFile = new File(newNodeDir.toString() + File.separator + filesToMove[i]);
                             try {
-                                if (LOG.isDebugEnabled())
-                                    LOG.debug("Attempting to move " + srcFile + " to " + destFile);
+                                LOG.debug("Attempting to move " + srcFile + " to " + destFile);
                                 srcFile.renameTo(destFile);
                             } catch (SecurityException se) {
                                 LOG.error("Insufficient authority to move RRD files.", se);
@@ -548,11 +537,9 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
                     LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {

@@ -127,13 +127,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
         Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
-        if (LOG.isDebugEnabled()) LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= " + agentConfig);
         
         final String hostAddress = InetAddressUtils.str(ipaddr);
 		try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             SnmpObjId virtualDiskRollUpStatusSnmpObject = SnmpObjId.get(virtualDiskRollUpStatus + "." + virtualDiskNumber);
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
