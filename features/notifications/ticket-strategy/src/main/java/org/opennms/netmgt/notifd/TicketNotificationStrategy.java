@@ -215,9 +215,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      * @return
      */
 	public void sendCreateTicketEvent(int alarmID, String alarmUEI) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Sending create ticket for alarm '" + alarmUEI + "' with id=" + alarmID);
-        }
+        LOG.debug("Sending create ticket for alarm '" + alarmUEI + "' with id=" + alarmID);
         EventBuilder ebldr = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, getName());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarmID);
         // These fields are required by the trouble ticketer, but not used
