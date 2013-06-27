@@ -147,7 +147,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     }
 
     public void setAuth(String userName, String password) {
-        LOG.debug("enabling user authentication using credentials for " + userName);
+        LOG.debug("enabling user authentication using credentials for {}", userName);
         m_httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
     }
 

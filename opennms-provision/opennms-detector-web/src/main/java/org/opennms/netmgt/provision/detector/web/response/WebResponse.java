@@ -64,14 +64,14 @@ public class WebResponse {
         }
 
         Integer statusCode = httpResponse.getStatusLine().getStatusCode();
-        LOG.debug("HTTP response status code: " + statusCode);
+        LOG.debug("HTTP response status code: {}", statusCode);
         boolean retval = inRange(expectedRange, statusCode);
 
         if (expectedText != null) {
             try {
                 String responseText = EntityUtils.toString(httpResponse.getEntity());
-                LOG.debug("HTTP response text: " + responseText);
-                LOG.debug("HTTP checking if output matches " + expectedText);
+                LOG.debug("HTTP response text: {}", responseText);
+                LOG.debug("HTTP checking if output matches {}", expectedText);
                 if (expectedText.charAt(0) == '~') {
                     final Pattern p = Pattern.compile(expectedText.substring(1), Pattern.MULTILINE);
                     final Matcher m = p.matcher(responseText);
@@ -85,7 +85,7 @@ public class WebResponse {
             }
         }
 
-        LOG.debug("HTTP detected ? " + retval);
+        LOG.debug("HTTP detected ? {}", retval);
         return retval;
     }
 
