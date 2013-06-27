@@ -399,7 +399,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 // Un-schedule the package if its dynamic and not in the list
                 // of packages we just discovered
                 if (pkg.getIsDynamic() && !dynamicPackages.containsKey(entry.getKey())) {
-                    LOG.debug("unscheduling " + pkg.getName());
+                    LOG.debug("unscheduling {}", pkg.getName());
                     p.release();
                     entries.remove();
                 }
@@ -530,7 +530,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
             }
         }
 
-        LOG.debug("isReloadConfigEventTarget: AccessPointMonitor was target of reload event: " + isTarget);
+        LOG.debug("isReloadConfigEventTarget: AccessPointMonitor was target of reload event: {}", isTarget);
         return isTarget;
     }
 

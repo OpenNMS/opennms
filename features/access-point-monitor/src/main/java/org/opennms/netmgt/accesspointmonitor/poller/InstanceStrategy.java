@@ -90,7 +90,7 @@ public class InstanceStrategy implements AccessPointPoller {
         // Retrieve this interface's SNMP peer object
         SnmpAgentConfig agentConfig = getAgentConfig(ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-        LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         String oid = ParameterMap.getKeyedString(m_parameters, "oid", null);
@@ -101,7 +101,7 @@ public class InstanceStrategy implements AccessPointPoller {
         String operand = ParameterMap.getKeyedString(m_parameters, "operand", null);
         String matchstr = ParameterMap.getKeyedString(m_parameters, "match", "true");
 
-        LOG.debug("InstanceStrategy.poll: SnmpAgentConfig address= " + agentConfig);
+        LOG.debug("InstanceStrategy.poll: SnmpAgentConfig address= {}", agentConfig);
 
         // Establish SNMP session with interface
         try {

@@ -91,7 +91,7 @@ public class AccessPointMonitorConfigFactory {
         }
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
-        LOG.debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream is = null;
         try {
@@ -113,7 +113,7 @@ public class AccessPointMonitorConfigFactory {
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
-            LOG.debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream is = null;
             try {
                 is = new FileInputStream(cfgFile);
@@ -123,7 +123,7 @@ public class AccessPointMonitorConfigFactory {
                     IOUtils.closeQuietly(is);
                 }
             }
-            LOG.debug("init: finished loading config file: " + cfgFile.getPath());
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }
     }
 
