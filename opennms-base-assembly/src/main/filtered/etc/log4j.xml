@@ -197,7 +197,7 @@
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
-    <appender class="org.apache.log4j.RollingFileAppender" nameo="JMX">
+    <appender class="org.apache.log4j.RollingFileAppender" name="JMX">
         <param value="${install.daemonlogs.dir}/jmx.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="1MB" name="MaxFileSize"/>
