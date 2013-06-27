@@ -69,7 +69,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	private static final long serialVersionUID = 6837501987137310938L;
 
 	private static final String LABEL_PROPERTY = "label";
-	private TopologyComponent m_topologyComponent;
+    private TopologyComponent m_topologyComponent;
 	private VertexSelectionTree m_tree;
 	private final GraphContainer m_graphContainer;
 	private final CommandManager m_commandManager;
@@ -102,23 +102,23 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         selectionManager.addSelectionListener(this);
 
         m_commandManager = commandManager;
-        m_commandManager.addMenuItemUpdateListener(this);
         m_historyManager = historyManager;
         m_iconRepositoryManager = iconRepoManager;
 
         // Create a per-session GraphContainer instance
         m_graphContainer = graphContainer;
         m_graphContainer.setSelectionManager(selectionManager);
-        m_graphContainer.addChangeListener(this);
-        m_graphContainer.getMapViewManager().addListener(this);
+
     }
 
-	@Override
+    @Override
     protected void init(VaadinRequest request) {
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
         m_userName = request.getRemoteUser();
         m_graphContainer.setUserName(m_userName);
         m_graphContainer.setSessionId(request.getWrappedSession().getId());
+        m_graphContainer.addChangeListener(this);
+        m_graphContainer.getMapViewManager().addListener(this);
 
         // See if the history manager has an existing fragment stored for
         // this user. Do this before laying out the UI because the history
@@ -140,7 +140,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         // Set expand ratio so that all extra space is allocated to this vertical component
         m_rootLayout.addComponent(m_layout);
         m_rootLayout.setExpandRatio(m_layout, 1);
-        
+
         //Refresher refresher = new Refresher();
         //refresher.setRefreshInterval(5000);
         //getMainWindow().addComponent(refresher);
@@ -153,7 +153,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_topologyComponent.setSizeFull();
         m_topologyComponent.addMenuItemStateListener(this);
         m_topologyComponent.addVertexUpdateListener(this);
-        
+
         final Slider slider = new Slider(0, 1);
 
         slider.setPropertyDataSource(scale);
@@ -192,17 +192,17 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
                     m_graphContainer.setSemanticZoomLevel(szl);
                     setSemanticZoomLevel(szl);
                     saveHistory();
-                } 
-                
+                }
+
             }
         });
-        
-        
+
+
         final Button panBtn = new Button();
         panBtn.setIcon(new ThemeResource("images/cursor_drag_arrow.png"));
         panBtn.setDescription("Pan Tool");
         panBtn.setStyleName("toolbar-button down");
-        
+
         final Button selectBtn = new Button();
         selectBtn.setIcon(new ThemeResource("images/selection.png"));
         selectBtn.setDescription("Selection Tool");
@@ -216,7 +216,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
                 m_topologyComponent.setActiveTool("select");
             }
         });
-        
+
         panBtn.addClickListener(new ClickListener() {
 
             @Override
@@ -231,13 +231,13 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         toolbar.setWidth("31px");
         toolbar.addComponent(panBtn);
         toolbar.addComponent(selectBtn);
-        
+
         HorizontalLayout semanticLayout = new HorizontalLayout();
         semanticLayout.addComponent(zoomInBtn);
         semanticLayout.addComponent(m_zoomLevelLabel);
         semanticLayout.addComponent(zoomOutBtn);
         semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
-        
+
         AbsoluteLayout mapLayout = new AbsoluteLayout();
 
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
@@ -253,6 +253,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_treeMapSplitPanel.setSizeFull();
 
         m_commandManager.addCommandUpdateListener(this);
+        m_commandManager.addMenuItemUpdateListener(this);
 
         menuBarUpdated(m_commandManager);
         if(m_widgetManager.widgetCount() != 0) {
@@ -260,7 +261,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         }else {
             m_layout.addComponent(m_treeMapSplitPanel);
         }
-        
+
         if(m_treeWidgetManager.widgetCount() != 0) {
             updateAccordionView(m_treeWidgetManager);
         }
@@ -279,7 +280,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     private void updateAccordionView(WidgetManager treeWidgetManager) {
         if (m_treeAccordion != null) {
             m_treeAccordion.removeAllComponents();
-            
+
             m_treeAccordion.addTab(m_tree, m_tree.getTitle());
             for(IViewContribution widget : treeWidgetManager.getWidgets()) {
                 if(widget.getIcon() != null) {
@@ -293,10 +294,10 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
     /**
      * Updates the bottom widget area with the registered widgets
-     * 
+     *
      * Any widget with the service property of 'location=bottom' are
      * included.
-     * 
+     *
      * @param widgetManager
      */
     private void updateWidgetView(WidgetManager widgetManager) {
@@ -325,14 +326,14 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
     /**
      * Gets a {@link TabSheet} view for all widgets in this manager.
-     * 
+     *
      * @return TabSheet
      */
     private Component getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
         // Use an absolute layout for the bottom panel
         AbsoluteLayout bottomLayout = new AbsoluteLayout();
         bottomLayout.setSizeFull();
-        
+
         final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
@@ -349,7 +350,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             // Icon can be null
             tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
 
-            // If the component supports the HasExtraComponents interface, then add the extra 
+            // If the component supports the HasExtraComponents interface, then add the extra
             // components to the tab bar
             try {
                 Component[] extras = ((HasExtraComponents)view).getExtraComponents();
@@ -399,20 +400,19 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
         return bottomLayout;
     }
-    
 
     /**
      * Creates the west area layout including the
      * accordion and tree views.
-     * 
+     *
      * @return
      */
 	private Layout createWestLayout() {
         m_tree = createTree();
-        
+
         final TextField filterField = new TextField("Filter");
         filterField.setTextChangeTimeout(200);
-        
+
         final Button filterBtn = new Button("Filter");
         filterBtn.addClickListener(new ClickListener() {
 
@@ -420,7 +420,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             public void buttonClick(ClickEvent event) {
             	GCFilterableContainer container = m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
-                
+
                 String filterString = (String) filterField.getValue();
                 if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
                     container.addContainerFilter(LABEL_PROPERTY, (String) filterField.getValue(), true, false);
@@ -429,28 +429,29 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
                     filterField.setValue("");
                     filterBtn.setCaption("Filter");
                 }
-                
+
             }
         });
-        
+
         HorizontalLayout filterArea = new HorizontalLayout();
         filterArea.addComponent(filterField);
         filterArea.addComponent(filterBtn);
         filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
-        
+
         m_treeAccordion = new Accordion();
         m_treeAccordion.addTab(m_tree, m_tree.getTitle());
         m_treeAccordion.setWidth("100%");
         m_treeAccordion.setHeight("100%");
-        
+
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
         absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
-        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;"); 
-        
+        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;");
+
         return absLayout;
     }
+
 
     private VertexSelectionTree createTree() {
 		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
@@ -462,7 +463,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 			Object item = it.next();
 			tree.expandItemsRecursively(item);
 		}
-		
+
 		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 
 		return tree;
@@ -483,7 +484,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		}
 	}
 
-
 	private void updateMenuItems(List<MenuItem> menuItems) {
 		for(MenuItem menuItem : menuItems) {
 			if(menuItem.hasChildren()) {
@@ -493,6 +493,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 			}
 		}
 	}
+
 
 	@Override
 	public void menuBarUpdated(CommandManager commandManager) {
@@ -513,7 +514,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		m_contextMenu.setAsContextMenuOf(this);
 		updateMenuItems();
 	}
-	
+
         @Override
 	public void show(Object target, int left, int top) {
 		updateContextMenuItems(target, m_contextMenu.getItems());
@@ -521,7 +522,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		m_contextMenu.setTarget(target);
 		m_contextMenu.open(left, top);
 	}
-
 
 	private static void updateSubMenuDisplay(List<TopoContextMenuItem> items) {
 		for (TopoContextMenuItem item : items) {
@@ -577,7 +577,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         if(m_treeWidgetManager != null) {
             m_treeWidgetManager.removeUpdateListener(this);
         }
-        
+
         m_treeWidgetManager = treeWidgetManager;
         m_treeWidgetManager.addUpdateListener(this);
     }
@@ -590,7 +590,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
 
     int m_settingFragment = 0;
-    
+
+
     @Override
     public void uriFragmentChanged(UriFragmentChangedEvent event) {
         m_settingFragment++;
@@ -598,7 +599,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
         m_settingFragment--;
     }
-
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
@@ -631,6 +631,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         saveHistory();
     }
 
+
     public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
     }
@@ -648,5 +649,12 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     public void selectionChanged(SelectionContext selectionManager) {
         saveHistory();
     }
-    
+
+    @Override
+    public void detach() {
+        m_commandManager.removeCommandUpdateListener(this);
+        m_commandManager.removeMenuItemUpdateListener(this);
+        super.detach();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
 }

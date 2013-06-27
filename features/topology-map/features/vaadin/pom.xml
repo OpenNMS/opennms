@@ -28,7 +28,7 @@
           </features>
           <bundles>
             <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.1.7</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.0</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.1</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/messagebox/1.1.1</bundle>
           </bundles>
         </configuration>
@@ -84,7 +84,7 @@
     <dependency>
       <groupId>org.vaadin.addons</groupId>
       <artifactId>contextmenu</artifactId>
-      <version>4.2.0</version>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
     	<groupId>org.vaadin.addons</groupId>

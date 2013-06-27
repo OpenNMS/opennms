@@ -2,6 +2,7 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -52,13 +53,20 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setY(location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
 		if(m_graphContainer.getStatusProvider() != null) {
-		    v.setStatus(getStatus(vertex));
-		}
-		v.setIconUrl(m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
+            //TODO: This assumes Alarm status need to provide a better api
+            v.setStatus(getStatus(vertex));
+            v.setStatusCount(getStatusCount(vertex));
+        }
+        v.setIconUrl(m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
 		m_vertices.add(v);
 	}
+
+    private String getStatusCount(Vertex vertex) {
+        Map<String,String> statusProperties = m_graphContainer.getStatusProvider().getStatusForVertex(vertex).getStatusProperties();
+        return statusProperties.get("statusCount") == null ? "" : statusProperties.get("statusCount");
+    }
 
     private String getStatus(Vertex vertex) {
         return m_statusProvider != null && m_statusProvider.getStatusForVertex(vertex) != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";

@@ -35,10 +35,14 @@ import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Cursor;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -70,7 +74,9 @@ import static org.opennms.features.topology.app.internal.gwt.client.d3.Transitio
 import static org.opennms.features.topology.app.internal.gwt.client.d3.TransitionBuilder.fadeOut;
 
 public class VTopologyComponent extends Composite implements SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
-    
+
+    private HandlerRegistration m_windowResizeRegistration;
+
     public interface TopologyViewRenderer{
         void draw(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox);
     }
@@ -391,6 +397,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
     private TopologyComponentServerRpc m_serverRpc;
 
+
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
 		m_graph = GWTGraph.create();
@@ -463,9 +470,16 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graphDrawerNoTransition = new SVGGraphDrawerNoTransition(dragBehavior, m_serviceRegistry);
 		
 		setTopologyViewRenderer(m_graphDrawer);
-		
-		sendPhysicalDimensions();
-	}
+
+        m_windowResizeRegistration = Window.addResizeHandler(new ResizeHandler() {
+            @Override
+            public void onResize(ResizeEvent resizeEvent) {
+                sendPhysicalDimensions();
+            }
+        });
+
+
+    }
 
     
 	public TopologyView<TopologyViewRenderer> getTopologyView() {
@@ -783,17 +797,13 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         GWTBoundingBox oldBBox = m_graph.getBoundingBox();
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
 		setGraph(graph, oldBBox);
-        
+
+         sendPhysicalDimensions();
 	}
 	
 	private void sendPhysicalDimensions() {
 	    int width = m_topologyView.getPhysicalWidth();
 	    int height = m_topologyView.getPhysicalHeight();
-	    Map<String, Object> dimensions = new HashMap<String, Object>();
-	    dimensions.put("width", width);
-	    dimensions.put("height", height);
-	    
-//	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
 	    m_serverRpc.mapPhysicalBounds(width, height);
 	    
 	}
@@ -978,6 +988,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     public void setComponentServerRpc(TopologyComponentServerRpc rpc) {
         m_serverRpc = rpc;
+    }
+
+    @Override
+    protected void onDetach() {
+        m_windowResizeRegistration.removeHandler();
+        super.onDetach();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
 }

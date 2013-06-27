@@ -172,7 +172,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                     computeBoundsForSelected(selectionContext);
                 }
                 requestRepaint();
-            }
+              }
 		});
 		
 		m_graphContainer.getMapViewManager().addListener(this);

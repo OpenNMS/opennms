@@ -12,7 +12,7 @@ public class SharedVertex {
     private String m_iconUrl;
     private String m_label;
     private String m_tooltipText;
-    private String m_statusCount;
+    private String m_statusCount = "0";
 
     /**
      * @return the statusCount
