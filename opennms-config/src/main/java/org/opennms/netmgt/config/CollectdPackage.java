@@ -252,9 +252,7 @@ public class CollectdPackage {
 		boolean packagePassed = has_specific
 				|| (has_range_include && !has_range_exclude);
                 if(packagePassed) {
-		    LOG.info("interfaceInPackage: Interface " + iface
-				+ " passed filter and specific/range for package "
-				+ getName() + "?: " + packagePassed);
+		    LOG.info("interfaceInPackage: Interface " + iface + " passed filter and specific/range for package " + getName() + "?: " + packagePassed);
                 } else {
 		    LOG.debug("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, getName(), packagePassed);
                 }
