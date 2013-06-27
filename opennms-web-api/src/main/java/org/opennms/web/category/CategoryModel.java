@@ -208,7 +208,7 @@ public class CategoryModel extends Object {
             m_factory.getWriteLock().unlock();
         }
 
-        LOG.debug(categoryName + " was updated");
+        LOG.debug("{} was updated", categoryName);
     }
 
     /**
