@@ -362,9 +362,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         m.appendTail(sb);
 
         if (sb.length() > 0) {
-            LOG.warn("resource ID '" + id + "' does not match pattern '"
-                                               + p.toString() + "' at '"
-                                               + sb + "'");
+            LOG.warn("resource ID '" + id + "' does not match pattern '" + p.toString() + "' at '" + sb + "'");
             return null;
         } else {
             return resource;
