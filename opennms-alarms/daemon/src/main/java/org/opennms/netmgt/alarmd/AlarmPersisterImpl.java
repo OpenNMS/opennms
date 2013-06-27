@@ -58,9 +58,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
-        LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}",
-                  event.getUei(), event.getNodeid(), event.getInterface(),
-                  event.getService());
+        LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
 
         return addOrReduceEventAsAlarm(event);
     }
