@@ -171,8 +171,7 @@ class MailAckProcessor implements AckProcessor {
             LOG.debug("createAcks: No messages for acknowledgment processing.");
         }
         
-        LOG.info("createAcks: Completed detecting and possibly creating acknowledgments.  Created {} acknowledgments.",
-                 (acks == null? 0 : acks.size()));
+        LOG.info("createAcks: Completed detecting and possibly creating acknowledgments.  Created {} acknowledgments.", (acks == null? 0 : acks.size()));
         return acks;
     }
 
@@ -278,13 +277,7 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: " +
-        		"host: " + readMailConfig.getReadmailHost().getHost() + 
-        		" port: " + readMailConfig.getReadmailHost().getPort() +
-        		" ssl: " + readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable() +
-        		" transport: " + readMailConfig.getReadmailHost().getReadmailProtocol().getTransport() +
-        		" user: "+readMailConfig.getUserAuth().getUserName() +
-        		" password: "+readMailConfig.getUserAuth().getPassword());
+        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: " + "host: " + readMailConfig.getReadmailHost().getHost() + " port: " + readMailConfig.getReadmailHost().getPort() + " ssl: " + readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable() + " transport: " + readMailConfig.getReadmailHost().getReadmailProtocol().getTransport() + " user: "+readMailConfig.getUserAuth().getUserName() + " password: "+readMailConfig.getUserAuth().getPassword());
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
@@ -300,8 +293,7 @@ class MailAckProcessor implements AckProcessor {
         Pattern alarmPattern = Pattern.compile(alarmRe);
         
         List<Message> msgs = readMailer.retrieveMessages();
-        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+
-                   " and alarm expression: "+alarmRe);
+        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+ " and alarm expression: "+alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();

@@ -208,11 +208,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
                   getSchedule().getInterval(),
                   getSchedule().getUnit());
 
-        LOG.debug("scheduleReads: executor details: active count: {}; completed task count: {}; task count: {}; queue size: {}",
-                  executor.getActiveCount(),
-                  executor.getCompletedTaskCount(),
-                  executor.getTaskCount(),
-                  executor.getQueue().size());
+        LOG.debug("scheduleReads: executor details: active count: {}; completed task count: {}; task count: {}; queue size: {}", executor.getActiveCount(), executor.getCompletedTaskCount(), executor.getTaskCount(), executor.getQueue().size());
     }
 
     /** {@inheritDoc} */
