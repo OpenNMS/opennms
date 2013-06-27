@@ -196,7 +196,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
                 relayMode = true;
             }
         }
-        LOG.debug("Setting relay mode " + relayMode);
+        LOG.debug("Setting relay mode {}", relayMode);
         
         // open the receiver socket(s)
         if(!relayMode || (dFactory.getExtendedMode() != null && dFactory.getExtendedMode().equalsIgnoreCase("true"))) {
