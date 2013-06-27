@@ -242,7 +242,7 @@ public class Reportd implements SpringServiceDaemon {
             }
         }
 
-        LOG.debug("isReloadConfigEventTarget: Reportd was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Reportd was target of reload event: {}", isTarget);
         return isTarget;
     }
   
