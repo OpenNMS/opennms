@@ -526,8 +526,7 @@ public class InventoryReportCalculator implements InitializingBean {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rnbi);
-            LOG.debug("The xml marshalled from the castor classes is saved in {}"
-                    , outputFile.getAbsoluteFile());
+            LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
             fileWriter.close();
         } catch (MarshalException me) {
             LOG.error("MarshalException ", me);

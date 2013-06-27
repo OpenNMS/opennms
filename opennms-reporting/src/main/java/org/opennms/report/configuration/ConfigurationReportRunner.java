@@ -212,8 +212,7 @@ public class ConfigurationReportRunner implements Runnable {
     @Override
     public void run() {
 
-        LOG.debug("run: getting configuration report on Date [{}]. Requested by User: {}on Date {}" 
-                    , theDate, user,  reportRequestDate.toString()); 
+        LOG.debug("run: getting configuration report on Date [{}]. Requested by User: {}on Date {}", theDate, user,  reportRequestDate.toString());
 
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);
@@ -236,8 +235,7 @@ public class ConfigurationReportRunner implements Runnable {
             String outputFile = calculator.getOutputFileName();
             LOG.debug("Written Configuration Report as XML to {}", outputFile);
             renderer.setInputFileName(outputFile);
-            LOG.debug("rendering XML {} as {}"
-                    , outputFile, renderer.getOutputFileName());
+            LOG.debug("rendering XML {} as {}", outputFile, renderer.getOutputFileName());
             renderer.render();
             ReportMailer mailer = new ReportMailer(
                                                    reportEmail,
