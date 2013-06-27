@@ -107,7 +107,7 @@ public class OpenManageChassisDetector extends SnmpDetector {
                 LOG.warn("isServiceDetected: Cannot receive chassis status");
                 return false;
             } else {
-                LOG.debug("isServiceDetected: OpenManageChassis: " + chassisStatus);
+                LOG.debug("isServiceDetected: OpenManageChassis: {}", chassisStatus);
             }
 
             // Validate chassis status, check status is somewhere between OTHER and NON_RECOVERABLE

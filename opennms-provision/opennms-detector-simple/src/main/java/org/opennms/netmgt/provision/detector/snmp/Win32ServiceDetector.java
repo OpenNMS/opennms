@@ -64,7 +64,7 @@ public class Win32ServiceDetector extends SnmpDetector {
 
     public void setWin32ServiceName(String serviceName) {
         m_win32SvcName = serviceName;
-        LOG.debug("setWin32ServiceName: setting service name to " + serviceName);
+        LOG.debug("setWin32ServiceName: setting service name to {}", serviceName);
         int snLength = serviceName.length();
         
         StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
@@ -73,7 +73,7 @@ public class Win32ServiceDetector extends SnmpDetector {
             serviceOidBuf.append(".").append(Byte.toString(thisByte));
         }
         
-        LOG.debug("setWin32ServiceName: the OID for the Win32 service  is " + serviceOidBuf.toString());
+        LOG.debug("setWin32ServiceName: the OID for the Win32 service  is {}", serviceOidBuf.toString());
         setOid(serviceOidBuf.toString());
     }
 }
