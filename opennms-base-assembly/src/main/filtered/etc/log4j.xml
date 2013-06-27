@@ -382,7 +382,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="POSTLOGDDATA"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -662,10 +662,6 @@
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
-    <logger additivity="false" name="Alarmd">
-        <level value="debug"/>
-        <appender-ref ref="ALARMD"/>
-    </logger>
     <logger additivity="false" name="com.google.gwt.user.server">
         <level value="debug"/>
         <appender-ref ref="WEB"/>
@@ -677,10 +673,6 @@
     <logger additivity="false" name="httpclient">
         <level value="info"/>
         <appender-ref ref="MISC"/>
-    </logger>
-    <logger additivity="false" name="Instrumentation">
-        <level value="debug"/>
-        <appender-ref ref="INSTRUMENT"/>
     </logger>
     <!-- TODO: is this a prefix -->
     <logger additivity="false" name="jmx">
@@ -803,21 +795,17 @@
         <level value="debug"/>
         <appender-ref ref="POLLERS"/>
     </logger>
-    <logger additivity="false" name="POSTDATALOG">
-        <level value="debug"/>
-        <appender-ref ref="RTCDATA"/>
-    </logger>
     <logger additivity="false" name="snaq.db">
         <level value="info"/>
         <appender-ref ref="MISC"/>
     </logger>
-    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.DataCollectionConfigFactory">
+    <logger name="org.opennms.netmgt.collectd.DataCollectionConfigFactory">
         <level value="info"/>
     </logger>
-    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.NumericAttributeType">
+    <logger name="org.opennms.netmgt.collectd.NumericAttributeType">
         <level value="info"/>
     </logger>
-    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.OnmsSnmpCollection">
+    <logger name="org.opennms.netmgt.collectd.OnmsSnmpCollection">
         <level value="info"/>
     </logger>
     <root>
