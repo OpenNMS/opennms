@@ -62,7 +62,7 @@ public class JMXDataCollectionConfigDao extends AbstractJaxbConfigDao<JmxDatacol
             if (collection.hasImportMbeans()) {
                 for (String importMbeans : collection.getImportGroupsList()) {
                     File file = new File(ConfigFileConstants.getHome(), "/etc/" + importMbeans);
-                    LOG.debug("parseJmxMbeans: parsing " + file);
+                    LOG.debug("parseJmxMbeans: parsing {}", file);
                     Mbeans mbeans = JaxbUtils.unmarshal(Mbeans.class, new FileSystemResource(file));
                     // TODO: What if there are some mbeans in the group ?
                     collection.getMbeans().getMbeanCollection().addAll(mbeans.getMbeanCollection());

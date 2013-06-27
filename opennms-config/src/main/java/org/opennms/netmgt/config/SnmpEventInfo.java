@@ -561,7 +561,7 @@ public class SnmpEventInfo {
             
         	// first ip address of range must be < than last ip address of range
             if (BigInteger.ZERO.compareTo(InetAddressUtils.difference(getFirstIPAddress(), getLastIPAddress())) < 0) {
-                LOG.error("createDef: Can not create Definition when specified last is < first IP address: "+ this);
+                LOG.error("createDef: Can not create Definition when specified last is < first IP address: {}", this);
                 throw new IllegalArgumentException("First: "+getFirstIPAddress()+" is greater than: "+getLastIPAddress());
             }
             
@@ -570,7 +570,7 @@ public class SnmpEventInfo {
             range.setEnd(getLastIPAddress());
             definition.addRange(range);
         }
-        LOG.debug("createDef: created new Definition from: " + this);
+        LOG.debug("createDef: created new Definition from: {}", this);
         return definition;
     }
     
