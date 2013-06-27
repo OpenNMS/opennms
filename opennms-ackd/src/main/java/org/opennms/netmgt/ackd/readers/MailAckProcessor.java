@@ -356,7 +356,7 @@ class MailAckProcessor implements AckProcessor {
             findAndProcessAcks();
             LOG.info("run: Finished processing mail acknowledgments." );
         } catch (Throwable e) {
-            LOG.debug("run: threw exception: "+e, e);
+            LOG.debug("run: threw exception", e);
         } finally {
             LOG.debug("run: method completed.");
         }
