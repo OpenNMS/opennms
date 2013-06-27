@@ -101,9 +101,7 @@ public class InstanceStrategy implements AccessPointPoller {
         String operand = ParameterMap.getKeyedString(m_parameters, "operand", null);
         String matchstr = ParameterMap.getKeyedString(m_parameters, "match", "true");
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("InstanceStrategy.poll: SnmpAgentConfig address= " + agentConfig);
-        }
+        LOG.debug("InstanceStrategy.poll: SnmpAgentConfig address= " + agentConfig);
 
         // Establish SNMP session with interface
         try {

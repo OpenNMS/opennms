@@ -183,9 +183,7 @@ public class DefaultPollingContext implements PollingContext {
 
         // Get the complete list of APs that we are responsible for polling
         OnmsAccessPointCollection apsDown = m_accessPointDao.findByPackage(getPackage().getName());
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Found " + apsDown.size() + " APs in package '" + getPackage().getName() + "'");
-        }
+        LOG.debug("Found " + apsDown.size() + " APs in package '" + getPackage().getName() + "'");
 
         // Keep track of all APs that we've confirmed to be ONLINE
         OnmsAccessPointCollection apsUp = new OnmsAccessPointCollection();
@@ -234,9 +232,7 @@ public class DefaultPollingContext implements PollingContext {
         // Remove the APs from the list that are ONLINE
         apsDown.removeAll(apsUp);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("(" + apsUp.size() + ") APs Online, (" + apsDown.size() + ") APs offline in package '" + getPackage().getName() + "'");
-        }
+        LOG.debug("(" + apsUp.size() + ") APs Online, (" + apsDown.size() + ") APs offline in package '" + getPackage().getName() + "'");
 
         if (!succesfullyPolledAController) {
             LOG.warn("Failed to poll at least one controller in the package '" + getPackage().getName() + "'");
