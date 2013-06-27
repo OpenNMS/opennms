@@ -54,7 +54,7 @@ import static org.junit.Assert.assertEquals;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class LinkdNms10205bLldpSnmpWalkTest extends LinkdNms10205bNetworkBuilder implements InitializingBean {
 
     @Override

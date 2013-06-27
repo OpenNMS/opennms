@@ -76,7 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/applicationContext-linkd-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
 
