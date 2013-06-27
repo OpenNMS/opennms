@@ -251,7 +251,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         try {
             session = agentConfig.createSnmpSession();
         } catch (IOException e) {
-            LOG.error("send: Could not create SNMP session for agent {} : {}", agentConfig, e, e);
+            LOG.error("send: Could not create SNMP session for agent {}", agentConfig, e);
             return new SnmpValue[] { null };
         }
 
@@ -260,7 +260,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 try {
                     session.listen();
                 } catch (IOException e) {
-                    LOG.error("send: error setting up listener for SNMP responses: {}", e, e);
+                    LOG.error("send: error setting up listener for SNMP responses", e);
                     return new SnmpValue[] { null };
                 }
             }
@@ -274,10 +274,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
                     return null;
                 }
             } catch (IOException e) {
-                LOG.error("send: error during SNMP operation: " + e, e);
+                LOG.error("send: error during SNMP operation", e);
                 return new SnmpValue[] { null };
             } catch (Throwable e) {
-                LOG.error("send: unexpected error during SNMP operation: " + e, e);
+                LOG.error("send: unexpected error during SNMP operation", e);
                 return new SnmpValue[] { null };
             }
         } finally {
@@ -607,7 +607,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         try {
             session.close();
         } catch (IOException e) {
-            LOG.error("error closing SNMP connection: " + e, e);
+            LOG.error("error closing SNMP connection", e);
         }
     }
 
