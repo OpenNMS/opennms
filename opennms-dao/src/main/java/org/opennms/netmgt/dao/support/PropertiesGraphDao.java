@@ -530,7 +530,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                                                     type.getNextOrdering());
                 result.add(graph);
             } catch (DataAccessResourceFailureException e) {
-                LOG.error("Failed to load report '" + name + "' because:", e);
+                LOG.error("Failed to load report '" + name + "'", e);
                 result.add(null); //Add a null, indicating a broken graph
             }
         }
@@ -676,7 +676,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             try {
                 return createPrefabGraphType(object.getName(), resource);
             } catch (Throwable e) {
-                LOG.error("Could not reload configuration '" + resource + "'; nested exception: " + e, e);
+                LOG.error("Could not reload configuration '" + resource + "';", e);
                 return null;
             }
         }
@@ -713,7 +713,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 }
                 return result;
             } catch (Throwable e) {
-                LOG.error("Could not reload configuration '" + resource + "'; nested exception: " + e, e);
+                LOG.error("Could not reload configuration '" + resource + "';", e);
                 return null;
             }
         }
@@ -857,7 +857,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 in = resource.getInputStream();
                 return createAdhocGraphType(object.getName(), in);
             } catch (Throwable e) {
-                LOG.error("Could not reload configuration from '" + resource + "'; nested exception: " + e, e);
+                LOG.error("Could not reload configuration from '" + resource + "';", e);
                 return null;
             } finally {
                 IOUtils.closeQuietly(in);

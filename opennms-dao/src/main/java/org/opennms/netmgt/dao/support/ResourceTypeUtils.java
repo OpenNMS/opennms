@@ -126,7 +126,7 @@ public abstract class ResourceTypeUtils {
         try {
             return s_cache.getProperties(propertiesFile);
         } catch(IOException e) {
-            LOG.error("ds.properties error: " + e, e);
+            LOG.error("ds.properties error", e);
             return new Properties();
         }
     }
@@ -144,7 +144,7 @@ public abstract class ResourceTypeUtils {
             try {
                 rrdBaseName = s_cache.getProperty(new File(directory, DS_PROPERTIES_FILE), ds);
             } catch (IOException e) {
-                LOG.error("ds.properties error: " + e, e);
+                LOG.error("ds.properties error", e);
                 rrdBaseName = ds;
             }
         }
@@ -229,7 +229,7 @@ public abstract class ResourceTypeUtils {
         try {
             s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
         } catch (IOException e) {
-            LOG.error("Unable to save DataSource Properties file" + e, e);
+            LOG.error("Unable to save DataSource Properties file", e);
         }
     }
 
