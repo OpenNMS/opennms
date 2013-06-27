@@ -182,7 +182,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      */
     @Override
     public boolean isDiscoveryEnabled() {
-        return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
+        return System.getProperty("org.opennms.provisiond.enableDiscovery", "true").equalsIgnoreCase("true");
     }
 
     @Override

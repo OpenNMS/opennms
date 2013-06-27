@@ -62,7 +62,7 @@ public class AlarmStatisticsServiceTest implements InitializingBean {
     DatabasePopulator m_dbPopulator;
 
     @Autowired
-    private DefaultAlarmStatisticsService m_statisticsService;
+    private AlarmStatisticsService m_statisticsService;
 
     private static boolean m_initialized = false;
     

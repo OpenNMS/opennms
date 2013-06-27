@@ -27,13 +27,13 @@
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
-            <version>1.13.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>1.13.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
     </dependencies>
