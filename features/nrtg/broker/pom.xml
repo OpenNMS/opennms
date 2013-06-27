@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.broker</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtcollector.broker</bundle.namespace>
   </properties>
-  <name>NRTG ActiveMQ Broker</name>
+  <name>OpenNMS Features NRTG ActiveMQ Broker</name>
   <description>
     This bundle creates an activemq broker for use by NRTG
   </description>

@@ -14,7 +14,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.nrtbroker.local</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtbroker.local</bundle.namespace>
   </properties>
-  <name>NRTG Broker Implementation - Local</name>
+  <name>OpenNMS Features NRTG Broker Implementation - Local</name>
   <description>
     An NRT Broker implementation using that uses queues.  This is local only to a single JVM.
   </description>

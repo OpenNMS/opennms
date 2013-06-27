@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reverse-dns-provisioning-adapter</artifactId>
-  <name>OpenNMS Reverse Zone DNS Provisioning Adaptor</name>
+  <name>OpenNMS Integrations Reverse Zone DNS Provisioning Adaptor</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

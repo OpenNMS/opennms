@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jrobin-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JRobin Dependencies</name>
+  <name>OpenNMS Dependencies JRobin</name>
   <dependencies>
     <dependency>
       <groupId>org.jrobin</groupId>

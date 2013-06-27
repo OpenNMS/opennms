@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.tasks</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Tasks</name>
+  <name>OpenNMS Core Tasks</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

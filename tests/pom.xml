@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.tests</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Test Code</name>
+  <name>OpenNMS Tests</name>
   <modules>
     <module>mock-elements</module>
     <module>mock-snmp-agent</module>

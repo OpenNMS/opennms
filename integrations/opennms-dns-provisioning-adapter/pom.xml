@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dns-provisioning-adapter</artifactId>
-  <name>OpenNMS DNS Provisioning Adaptor</name>
+  <name>OpenNMS Integrations DNS Provisioning Adaptor</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

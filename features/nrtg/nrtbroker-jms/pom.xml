@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.nrtbroker.jms</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtbroker.jms</bundle.namespace>
   </properties>
-  <name>NRTG Broker Implementation - JMS</name>
+  <name>OpenNMS Features NRTG Broker Implementation - JMS</name>
   <description>
     An NRT Broker implementation using JMS, Spring and ActiveMQ
   </description>

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jna-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JNA Dependencies</name>
+  <name>OpenNMS Dependencies JNA</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JNA

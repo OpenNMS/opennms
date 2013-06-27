@@ -16,7 +16,7 @@
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.commands</artifactId>
 
-  <name>OpenNMS SNMP Shell Commands</name>
+  <name>OpenNMS Core SNMP Shell Commands</name>
 
   <packaging>bundle</packaging>
 

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>activemq-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS ActiveMQ Dependencies</name>
+  <name>OpenNMS Dependencies ActiveMQ</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>

@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.joesnmp</artifactId>
-  <name>OpenNMS SNMP JoeSNMP Implementation</name>
+  <name>OpenNMS Core SNMP JoeSNMP Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

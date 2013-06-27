@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.notifications</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Notification Strategies</name>
+  <name>OpenNMS Features Notification Strategies</name>
   <modules>
     <module>ticket-strategy</module>
   </modules>

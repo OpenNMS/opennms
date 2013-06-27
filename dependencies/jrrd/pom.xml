@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jrrd-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JRRD Dependencies</name>
+  <name>OpenNMS Dependencies JRRD</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
