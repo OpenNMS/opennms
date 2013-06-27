@@ -176,9 +176,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         // open the server
         //
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
-            }
+            LOG.debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
             m_server = new ServerSocket(dFactory.getPort(), 0, InetAddressUtils.addr("127.0.0.1"));
         } catch (IOException ex) {
             if (ex instanceof java.net.BindException) {
@@ -192,17 +190,13 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
 
         // see if we have a valid relay address
         String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
-        }
+        LOG.debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
         if (myIpStr != null &&  !myIpStr.equals("") && !myIpStr.equalsIgnoreCase("broadcast")) {
             if(IpValidator.isIpValid(myIpStr)) {
                 relayMode = true;
             }
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Setting relay mode " + relayMode);
-        }
+        LOG.debug("Setting relay mode " + relayMode);
         
         // open the receiver socket(s)
         if(!relayMode || (dFactory.getExtendedMode() != null && dFactory.getExtendedMode().equalsIgnoreCase("true"))) {
