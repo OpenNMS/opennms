@@ -84,7 +84,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-            LOG.debug("getResourceDir: " + resourceDir);
+            LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
     }
 
