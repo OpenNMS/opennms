@@ -76,7 +76,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     /** {@inheritDoc} */
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        LOG.info("connecting to JDBC on " + address);
+        LOG.info("connecting to JDBC on {}", address);
         LOG.debug("Loading JDBC driver: '" + getDbDriver() + "'");
         Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
         LOG.debug("JDBC driver loaded: '" + getDbDriver() + "'");
