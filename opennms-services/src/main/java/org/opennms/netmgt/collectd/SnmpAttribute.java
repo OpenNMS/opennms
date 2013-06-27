@@ -206,7 +206,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
                 } catch(NumberFormatException e) {
                 }
             }
-            log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+            LOG.trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
             return null;
         }
     }
