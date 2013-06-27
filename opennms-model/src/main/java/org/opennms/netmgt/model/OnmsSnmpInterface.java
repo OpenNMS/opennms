@@ -620,14 +620,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             if (parsedPhysAddr.length() == 12) {
                 physAddrForRRD = parsedPhysAddr;
             } else {
-                    LOG.debug(
-                                "physAddrForRRD: physical address len is NOT 12, physAddr={}"
-                                        , parsedPhysAddr);
+                    LOG.debug("physAddrForRRD: physical address len is NOT 12, physAddr={}", parsedPhysAddr);
             }
         }
-        LOG.debug(
-                    "computed physAddr for {} to be {}"
-                            , this, physAddrForRRD);
+        LOG.debug("computed physAddr for {} to be {}", this, physAddrForRRD);
         return physAddrForRRD;
     }
 
@@ -652,8 +648,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         } else if (getIfDescr() != null) {
             label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
         } else {
-            LOG.info(
-                       "Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
+            LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }
         return label;

@@ -309,8 +309,7 @@ public final class DbIfServiceEntry {
                 if (noRollback) {
                     throw e;
                 } else {
-                    LOG.warn("ifServices DB insert got exception; will retry after deletion of any existing records for this ifService that are marked for deletion.",
-                            e);
+                    LOG.warn("ifServices DB insert got exception; will retry after deletion of any existing records for this ifService that are marked for deletion.", e);
 
                     /*
                      * Maybe there's already an entry for this (service, node, IP address)

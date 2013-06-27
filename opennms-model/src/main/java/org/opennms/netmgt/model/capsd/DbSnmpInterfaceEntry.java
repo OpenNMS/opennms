@@ -209,8 +209,7 @@ public final class DbSnmpInterfaceEntry {
         }
 
         names.append(") VALUES (").append(values).append(')');
-        LOG.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = {}"
-                  , names.toString());
+        LOG.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = {}", names.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
@@ -354,8 +353,7 @@ public final class DbSnmpInterfaceEntry {
 
         sqlText.append(" WHERE nodeID = ? AND snmpIfIndex = ? ");
 
-        LOG.debug("DbSnmpInterfaceEntry.update: SQL update statment = {}"
-                  , sqlText.toString());
+        LOG.debug("DbSnmpInterfaceEntry.update: SQL update statment = {}", sqlText.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
