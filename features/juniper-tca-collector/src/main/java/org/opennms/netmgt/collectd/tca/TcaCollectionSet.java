@@ -274,7 +274,7 @@ public class TcaCollectionSet implements CollectionSet {
 			if (ts != null)
 				timestamp = Long.parseLong(ts);
 		} catch (Exception e) {
-			LOG.info("getLastFilename: creating a new filename tracker on " + file);
+			LOG.info("getLastFilename: creating a new filename tracker on {}", file);
 		}
 		return timestamp;
 	}
