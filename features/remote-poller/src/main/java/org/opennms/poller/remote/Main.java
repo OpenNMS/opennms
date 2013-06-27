@@ -252,11 +252,7 @@ public class Main {
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
-				LOG.info(
-						"shouldExit: received property change event: {};oldvalue:{};newvalue:{}",
-						e.getPropertyName(),
-						e.getOldValue(),
-						e.getNewValue());
+				LOG.info("shouldExit: received property change event: {};oldvalue:{};newvalue:{}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
 
