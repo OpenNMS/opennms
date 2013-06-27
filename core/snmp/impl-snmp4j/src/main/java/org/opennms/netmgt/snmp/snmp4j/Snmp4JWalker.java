@@ -216,7 +216,7 @@ public class Snmp4JWalker extends SnmpWalker {
             m_session.listen();
         }
         
-        LOG.debug("Sending tracker pdu of size "+snmp4JPduBuilder.getPdu().size());
+        LOG.debug("Sending tracker pdu of size {}", snmp4JPduBuilder.getPdu().size());
         m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
     }
     

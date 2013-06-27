@@ -323,15 +323,15 @@ public class Snmp4JStrategy implements SnmpStrategy {
         SnmpValue[] retvalues = { null };
 
         if (responseEvent.getResponse() == null) {
-            LOG.warn("processResponse: Timeout.  Agent: "+agentConfig);
+            LOG.warn("processResponse: Timeout.  Agent: {}", agentConfig);
         } else if (responseEvent.getError() != null) {
             LOG.warn("processResponse: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
-            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: "+responseEvent.getResponse().getVariableBindings());
+            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}", responseEvent.getResponse().getVariableBindings());
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
             LOG.warn("processResponse: Received PDU with 0 varbinds.");
         } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-            LOG.info("processResponse: Null value returned in varbind: " + responseEvent.getResponse().get(0));
+            LOG.info("processResponse: Null value returned in varbind: {}", responseEvent.getResponse().get(0));
         } else {
             retvalues = convertResponseToValues(responseEvent);
 
