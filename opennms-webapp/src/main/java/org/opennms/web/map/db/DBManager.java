@@ -794,8 +794,7 @@ public class DBManager extends Manager {
             }
             return el;
         } catch (Throwable e) {
-            LOG.error("Exception while getting elements of map with mapid={}"
-                    , mapid);
+            LOG.error("Exception while getting elements of map with mapid={}", mapid);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -824,8 +823,7 @@ public class DBManager extends Manager {
             }
             return el;
         } catch (Throwable e) {
-            LOG.error("Exception while getting element node of map with mapid {}"
-                    , mapid);
+            LOG.error("Exception while getting element node of map with mapid {}", mapid);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -855,8 +853,7 @@ public class DBManager extends Manager {
             }
             return el;
         } catch (Throwable e) {
-            LOG.error("Exception while getting map element of map with mapid {}"
-                    , mapid);
+            LOG.error("Exception while getting map element of map with mapid {}", mapid);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -885,8 +882,7 @@ public class DBManager extends Manager {
             el = elements.toArray(el);
             return el;
         } catch (Throwable e) {
-            LOG.error("Exception while getting elements by label like {}"
-                    , elementLabel);
+            LOG.error("Exception while getting elements by label like {}", elementLabel);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1077,8 +1073,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting maps by label like {}"
-                    , mapLabel);
+            LOG.error("Exception while getting maps by label like {}", mapLabel);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1108,8 +1103,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting elements with label {}"
-                    , mapLabel);
+            LOG.error("Exception while getting elements with label {}", mapLabel);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1229,8 +1223,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting all map-menu for map named {}"
-                    , mapLabel);
+            LOG.error("Exception while getting all map-menu for map named {}", mapLabel);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1262,8 +1255,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting all map-menu for owner {}"
-                    , owner);
+            LOG.error("Exception while getting all map-menu for owner {}", owner);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1295,8 +1287,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting all map-menu for group {}"
-                    , group);
+            LOG.error("Exception while getting all map-menu for group {}", group);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -1333,7 +1324,7 @@ public class DBManager extends Manager {
             }
             return maps;
         } catch (Throwable e) {
-            LOG.error("Exception while getting other map for access ");
+            LOG.error("Exception while getting other map for access");
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -2028,9 +2019,7 @@ public class DBManager extends Manager {
                 nodes.add(link);
             }
         } catch (Throwable e) {
-            LOG.error(
-                      "Exception while getting links on elements {}", allnodes,
-                      e);
+            LOG.error("Exception while getting links on elements {}", allnodes, e);
             throw new MapsException(e);
         } finally {
             closeResultSet(rs);
@@ -2102,8 +2091,7 @@ public class DBManager extends Manager {
     @Override
     public boolean isElementDeleted(int elementId, String type)
             throws MapsException {
-        LOG.debug("isElementNotDeleted: elementId={} type= {}"
-                , elementId, type);
+        LOG.debug("isElementNotDeleted: elementId={} type= {}", elementId, type);
         if (type.equals(MapsConstants.MAP_TYPE)) {
             return isMapInRow(elementId);
         } else if (type.equals(MapsConstants.NODE_TYPE)) {

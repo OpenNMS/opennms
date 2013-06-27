@@ -242,9 +242,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
 
         for(RrdGraphAttribute rrdAttr : attrs) {
-            LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}"
-                        , rrdAttr.getResource().getResourceType().getLabel(), 
-                        rrdAttr.getResource().getParent().getResourceType().getLabel());
+            LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}", rrdAttr.getResource().getResourceType().getLabel(), rrdAttr.getResource().getParent().getResourceType().getLabel());
             if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
                 filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+"foreignSource"+File.separator+rrdAttr.getRrdRelativePath());
             } else {

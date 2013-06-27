@@ -837,13 +837,7 @@ public class InventoryService implements InitializingBean {
      * @return a boolean.
      */
     public boolean updateClogin(String deviceName, String groupName, String userID, String pass, String enPass, String loginM, String autoE){
-        LOG.debug("InventoryService updateClogin for following changes"+
-                    "userID [{}] "+
-                    "pass [{}] "+
-                    "enpass [{}] "+
-                    "loginM [{}] "+
-                    "autoE [{}] "+
-                    "groupName (ignored) [{}] deviceName [{}] ", userID, pass, enPass, loginM, autoE, groupName, deviceName); 
+        LOG.debug("InventoryService updateClogin for following changes userID [{}] pass [{}] enpass [{}] loginM [{}] autoE [{}] groupName (ignored) [{}] deviceName [{}]", userID, pass, enPass, loginM, autoE, groupName, deviceName);
         try {
           RancidNodeAuthentication rna = RWSClientApi.getRWSAuthNode(m_cp, deviceName);
           rna.setUser(userID);

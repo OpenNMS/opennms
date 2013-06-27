@@ -150,10 +150,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         try {
             m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
         } catch (SchedulerException e) {
-            LOG.error(
-                        "exception when attempting to remove trigger {}"
-                                , triggerName);
-            LOG.error(e.getMessage());
+            LOG.error("exception when attempting to remove trigger {}", triggerName, e);
         }
 
     }

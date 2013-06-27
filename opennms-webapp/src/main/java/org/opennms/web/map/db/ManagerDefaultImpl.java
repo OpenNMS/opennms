@@ -374,8 +374,7 @@ public class ManagerDefaultImpl implements Manager {
                 elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
                 elem.setAvail(mapsPropertiesFactory.getDisabledAvail().getMin());
                 // here we must add all the stuff required
-                LOG.debug("openMap: adding element to map with label: {}"
-                        , elem.getLabel());
+                LOG.debug("openMap: adding element to map with label: {}", elem.getLabel());
                 retVMap.addElement(elem);
             }
         }
@@ -548,8 +547,7 @@ public class ManagerDefaultImpl implements Manager {
             Group group = ite.next();
             LOG.debug("getDefaultMapsMenu: found group: {} for user:{}", group.getName(), user);
             if (group.getDefaultMap() != null) {
-                LOG.debug("getDefaultMapsMenu: found default map: {} for group: {}"
-                        , group.getDefaultMap(), group.getName());
+                LOG.debug("getDefaultMapsMenu: found default map: {} for group: {}", group.getDefaultMap(), group.getName());
                 VMapInfo[] vmapsinfo = dbManager.getMapsMenuByName(group.getDefaultMap());
                 if (vmapsinfo != null) {
                     LOG.debug("getDefaultMapsMenu: found {} maps. Verify access ", vmapsinfo.length);
@@ -559,8 +557,7 @@ public class ManagerDefaultImpl implements Manager {
                             return vmapsinfo[i];
                         } else {
                             DbMap map = dbManager.getMap(vmapsinfo[i].getId());
-                            LOG.debug("getDefaultMapsMenu: map: {} mapName: {} Access: {} Group: {}"
-                                   , map.getId(), map.getName(), map.getAccessMode(), map.getGroup());
+                            LOG.debug("getDefaultMapsMenu: map: {} mapName: {} Access: {} Group: {}", map.getId(), map.getName(), map.getAccessMode(), map.getGroup());
                             if (map.getAccessMode().trim().toUpperCase().equals(
                                                                                 MapsConstants.ACCESS_MODE_ADMIN.toUpperCase())
                                     || map.getAccessMode().trim().toUpperCase().equals(
@@ -568,8 +565,7 @@ public class ManagerDefaultImpl implements Manager {
                                     || (map.getAccessMode().trim().toUpperCase().equals(
                                                                                         MapsConstants.ACCESS_MODE_GROUP.toUpperCase()) && map.getGroup().equals(
                                                                                                                                                       group.getName()))) {
-                                LOG.info("getDefaultMapsMenu: found! user: {} has access to map: {} with id: {}"
-                                        , user, map.getName(), map.getId());
+                                LOG.info("getDefaultMapsMenu: found! user: {} has access to map: {} with id: {}", user, map.getName(), map.getId());
                                 return vmapsinfo[i];
                             } else {
                                 LOG.info("getDefaultMapsMenu: access is denied for default map: {} to group: {}", group.getDefaultMap(), group.getName());
@@ -577,8 +573,7 @@ public class ManagerDefaultImpl implements Manager {
                         }
                     }
                 } else {
-                    LOG.info("getDefaultMapsMenu: no maps found for default map: {} for group: {}"
-                            , group.getDefaultMap(), group.getName());
+                    LOG.info("getDefaultMapsMenu: no maps found for default map: {} for group: {}", group.getDefaultMap(), group.getName());
                 }
             }
         }
@@ -774,8 +769,7 @@ public class ManagerDefaultImpl implements Manager {
                 for (String key : iconsBySysoid.keySet()) {
                     LOG.debug("getIconBySysoid: key = {}", key);
                     if (key.equals(sysoid)) {
-                        LOG.debug("getIconBySysoid: iconBySysoid = {}"
-                                , iconsBySysoid.get(key));
+                        LOG.debug("getIconBySysoid: iconBySysoid = {}", iconsBySysoid.get(key));
                         return iconsBySysoid.get(key);
                     }
                 }
@@ -988,8 +982,7 @@ public class ManagerDefaultImpl implements Manager {
             }
         }
 
-        LOG.debug("List of sub-maps before preorder visit {}"
-                , childSet.toString());
+        LOG.debug("List of sub-maps before preorder visit {}", childSet.toString());
 
         maps.put(Integer.valueOf(parentMap.getId()), childSet);
 
@@ -1093,25 +1086,21 @@ public class ManagerDefaultImpl implements Manager {
 
         if (nodesBySource.contains(Integer.valueOf(ve.getId()))) {
             Object id = Integer.valueOf(ve.getId());
-            LOG.debug("refresh: getting status from alternative source {}",
-                             dataSource.getClass().getName());
+            LOG.debug("refresh: getting status from alternative source {}", dataSource.getClass().getName());
             int status = mapsPropertiesFactory.getStatus(dataSource.getStatus(id));
-            LOG.debug("refresh: got status from alternative source. Value is {}"
-                      , status);
+            LOG.debug("refresh: got status from alternative source. Value is {}", status);
            if (status >= 0) {
                 ve.setStatus(status);
             }
 
             int sev = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(id));
-            LOG.debug("refresh: got severity from alternative source. Value is {}"
-                      , sev);
+            LOG.debug("refresh: got severity from alternative source. Value is {}", sev);
             if (sev >= 0) {
                 ve.setSeverity(sev);
             }
             if (mapsPropertiesFactory.isAvailEnabled()) {
                 double avail = dataSource.getAvailability(id);
-                LOG.debug("refresh: got availability from alternative source. Value is {}"
-                          , avail);
+                LOG.debug("refresh: got availability from alternative source. Value is {}", avail);
                 if (avail >= 0) {
                     ve.setAvail(avail);
                 }
@@ -1148,8 +1137,7 @@ public class ManagerDefaultImpl implements Manager {
         //reset status
         ve.setStatus(-1);
         Set<Integer> nodesonve = getNodeidsOnElement(ve);
-        LOG.debug("refresh: found nodes on Map element :{}"
-                  , nodesonve.toString());
+        LOG.debug("refresh: found nodes on Map element :{}", nodesonve.toString());
         if (nodesonve.size() == 0) return ve;
             
         for (Integer nextNodeId : nodesonve) {
@@ -1165,19 +1153,16 @@ public class ManagerDefaultImpl implements Manager {
                 int srcstatus = mapsPropertiesFactory.getStatus(dataSource.getStatus(nextNodeId));
                 if (srcstatus >= 0)
                     status =srcstatus;
-                LOG.debug("refresh: got status from alternative source. Value is {}"
-                          , srcstatus);
+                LOG.debug("refresh: got status from alternative source. Value is {}", srcstatus);
                 int srcseverity = mapsPropertiesFactory.getSeverity(dataSource.getSeverity(nextNodeId));
                 if (srcseverity >= 0)
                     severity = srcseverity;
-                LOG.debug("refresh: got severity from alternative source. Value is {}"
-                          , srcseverity);
+                LOG.debug("refresh: got severity from alternative source. Value is {}", srcseverity);
                 if (mapsPropertiesFactory.isAvailEnabled()) {
                     double srcavail = dataSource.getAvailability(nextNodeId);
                     if (srcavail >= 0 )
                         avail = srcavail/nodesonve.size();
-                    LOG.debug("refresh: got availability from alternative source. Value is {}"
-                              , srcavail);
+                    LOG.debug("refresh: got availability from alternative source. Value is {}", srcavail);
                 }
             } else {
                 AlarmInfo oi = outagedNodes.get(nextNodeId);
@@ -1261,11 +1246,9 @@ public class ManagerDefaultImpl implements Manager {
             int alarmStatus = mapsPropertiesFactory.getStatus(veleminfo.getUei());
             int alarmSeverity = mapsPropertiesFactory.getSeverity(getSeverityLabel(veleminfo.getSeverity()));
 
-                LOG.info("parsing alarmed node with nodeid: {} severity: {} severity label: {}"
-                        , veleminfo.getId(), veleminfo.getSeverity(), getSeverityLabel(veleminfo.getSeverity()));
+                LOG.info("parsing alarmed node with nodeid: {} severity: {} severity label: {}", veleminfo.getId(), veleminfo.getSeverity(), getSeverityLabel(veleminfo.getSeverity()));
 
-                LOG.info("parsing alarmed node with nodeid: {} status: {} severity label: {}"
-                        , veleminfo.getId(), veleminfo.getUei(), getSeverityLabel(veleminfo.getSeverity()));
+                LOG.info("parsing alarmed node with nodeid: {} status: {} severity label: {}", veleminfo.getId(), veleminfo.getUei(), getSeverityLabel(veleminfo.getSeverity()));
 
                 LOG.debug("local alarmed node status/severity {}/{}", alarmStatus, alarmSeverity);
 
@@ -1331,8 +1314,7 @@ public class ManagerDefaultImpl implements Manager {
         }
 
         for (LinkInfo linfo : dbManager.getLinksOnElements(allNodes)) {
-            LOG.debug("Found link: node1:{} node2: {}"
-                    , linfo.nodeid, linfo.nodeparentid);
+            LOG.debug("Found link: node1:{} node2: {}", linfo.nodeid, linfo.nodeparentid);
             LOG.debug("Getting linkinfo for nodeid {}", linfo.nodeid);
             
             for (VElement first : node2Element.get(linfo.nodeid)) {
@@ -1391,11 +1373,9 @@ public class ManagerDefaultImpl implements Manager {
                              )
                             ) {
                             LOG.debug("Upgrading with Link info becouse multilink.status={}", multilinkStatus);
-                            LOG.debug("updating existing the link {} with status {}"
-                                  , alreadyIn.toString(), alreadyIn.getLinkStatusString());
+                            LOG.debug("updating existing the link {} with status {}", alreadyIn.toString(), alreadyIn.getLinkStatusString());
 
-                            LOG.debug("setting link properties: {} with new found status {}"
-                                  , vmultilink.toString(), vmultilink.getLinkStatusString());
+                            LOG.debug("setting link properties: {} with new found status {}", vmultilink.toString(), vmultilink.getLinkStatusString());
                             alreadyIn.setLinkStatusString(statusString);
                         }
                         nodeids=alreadyIn.getNodeids();
@@ -1554,8 +1534,7 @@ public class ManagerDefaultImpl implements Manager {
                 continue;
 
             String label = elem.getLabel();
-            LOG.debug("getNodeLabelToMaps: found element with label: {}"
-                    , label);
+            LOG.debug("getNodeLabelToMaps: found element with label: {}", label);
             Set<Integer> mapids = null;
             if (nodelabelMap.containsKey(label)) {
                 mapids = nodelabelMap.get(label);
@@ -1571,16 +1550,14 @@ public class ManagerDefaultImpl implements Manager {
                     continue;
                 else
                     label=mapName;
-                LOG.debug("getNodeLabelToMaps: found map with name: {}"
-                          , label);
+                LOG.debug("getNodeLabelToMaps: found map with name: {}", label);
             } else {
                 String nodename=elemInfoMap.get(elem.getId());
                 if (label.equals(nodename))
                     continue;
                 else
                     label=nodename;
-                LOG.debug("getNodeLabelToMaps: found node with name: {}"
-                          , label);
+                LOG.debug("getNodeLabelToMaps: found node with name: {}", label);
             }
             if (nodelabelMap.containsKey(label)) {
                 mapids = nodelabelMap.get(label);

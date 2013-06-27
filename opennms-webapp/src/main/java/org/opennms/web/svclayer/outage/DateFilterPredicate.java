@@ -219,8 +219,7 @@ public class DateFilterPredicate implements Predicate
             }
             catch (Throwable e)
             {
-                LOG.error(
-                    "The parse was incorrectly defined for date String [{}].", search);
+                LOG.error("The parse was incorrectly defined for date String [{}].", search);
 
                 // date comparions failed. Campare it as normal string.
                 return StringUtils.contains(valueStr, search);
