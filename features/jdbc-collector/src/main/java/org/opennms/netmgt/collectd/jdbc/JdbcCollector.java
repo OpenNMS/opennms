@@ -175,13 +175,13 @@ public class JdbcCollector implements ServiceCollector {
 
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {        
-        LOG.debug("initialize: Initializing JDBC collection for agent: " + agent);
+        LOG.debug("initialize: Initializing JDBC collection for agent: {}", agent);
         
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
         JdbcAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
-            LOG.info("initialize: Not scheduling interface for JDBC collection: " + nodeState.getAddress());
+            LOG.info("initialize: Not scheduling interface for JDBC collection: {}", nodeState.getAddress());
             final StringBuffer sb = new StringBuffer();
             sb.append("initialize service: ");
 
@@ -193,7 +193,7 @@ public class JdbcCollector implements ServiceCollector {
             throw new IllegalStateException(sb.toString());
         } else {
             nodeState = new JdbcAgentState(agent.getInetAddress(), parameters);
-            LOG.info("initialize: Scheduling interface for collection: " + nodeState.getAddress());
+            LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }
     }
@@ -332,7 +332,7 @@ public class JdbcCollector implements ServiceCollector {
     
     // Simply check the database the query is supposed to connect to to see if it is available.
     private boolean isGroupAvailable(JdbcAgentState agentState, JdbcQuery query) {
-        LOG.debug("Checking availability of group " + query.getQueryName());
+        LOG.debug("Checking availability of group {}", query.getQueryName());
         boolean status = false;
         ResultSet resultset = null;
         Connection con = null;
