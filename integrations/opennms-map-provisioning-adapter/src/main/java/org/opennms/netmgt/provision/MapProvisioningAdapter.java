@@ -793,7 +793,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
             });
         } catch (final Exception e) {
-            LOG.error("syncMaps: Caught exception synchronizing maps: "+e, e);
+            LOG.error("syncMaps: Caught exception synchronizing maps", e);
             throw new ProvisioningAdapterException("syncMaps exception",e);
         }
     }    
