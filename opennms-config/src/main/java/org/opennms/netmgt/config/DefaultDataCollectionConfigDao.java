@@ -135,10 +135,10 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public List<MibObject> getMibObjectList(final String cName, final String aSysoid, final String anAddress, final int ifType) {
-        if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
+        LOG.debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
 
         if (aSysoid == null) {
-            if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
+            LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
             return new ArrayList<MibObject>();
         }
 
@@ -205,14 +205,14 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     // SystemDef's sysoid is a mask, 'aSysoid' need only
                     // start with the sysoid mask in order to match
                     if (aSysoid.startsWith(currSysoid)) {
-                        if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        LOG.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 } else {
                     // System's sysoid is not a mask, 'aSysoid' must
                     // match the sysoid exactly.
                     if (aSysoid.equals(currSysoid)) {
-                        if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        LOG.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 }
@@ -238,7 +238,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     // First see if address is in list of specific addresses
                     if (addrList != null && addrList.size() > 0) {
                         if (addrList.contains(anAddress)) {
-                            if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
+                            LOG.debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
                             bMatchIPAddress = true;
                         }
                     }
@@ -249,7 +249,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                         if (maskList != null && maskList.size() > 0) {
                             for (final String currMask : maskList) {
                                 if (anAddress.indexOf(currMask) == 0) {
-                                    if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
+                                    LOG.debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
                                     bMatchIPAddress = true;
                                     break;
                                 }
@@ -260,7 +260,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
 
             if (bMatchSysoid && bMatchIPAddress) {
-                if (LOG.isDebugEnabled()) LOG.debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
+                LOG.debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
                 systemList.add(system);
             }
         }
@@ -386,9 +386,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("processGroupName:  processing group: " + groupName + " groupIfType: " + group.getIfType() + " ifType: " + ifType);
-        }
+        LOG.debug("processGroupName:  processing group: " + groupName + " groupIfType: " + group.getIfType() + " ifType: " + ifType);
 
         // Process any sub-groups contained within this group
         for (final String includeGroup : group.getIncludeGroupCollection()) {
@@ -482,12 +480,10 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         if (addGroupObjects) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
-            }
+            LOG.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
             processObjectList(groupName, groupIfType, group.getMibObjCollection(), mibObjectList);
         } else {
-            if (LOG.isDebugEnabled()) LOG.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
+            LOG.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
         }
     }
 

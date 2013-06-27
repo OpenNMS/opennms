@@ -204,9 +204,7 @@ public abstract class NotifdConfigManager {
             if (notification.getVarbind().getVbvalue() != null) {
                 notfValue = notification.getVarbind().getVbvalue();
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
-                }
+                LOG.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
                 parmmatch = true;
             }
 

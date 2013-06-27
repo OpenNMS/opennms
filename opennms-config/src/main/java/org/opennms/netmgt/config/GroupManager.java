@@ -341,9 +341,7 @@ public abstract class GroupManager {
             DutySchedule curSchedule = dutySchedules.get(i);
             long tempnext =  curSchedule.nextInSchedule(time);
             if( tempnext < next || next == -1 ) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("isGroupOnDuty: On duty in {} millisec from schedule {}", i, tempnext);
-                }
+                LOG.debug("isGroupOnDuty: On duty in {} millisec from schedule {}", i, tempnext);
                 next = tempnext;
             }
         }
