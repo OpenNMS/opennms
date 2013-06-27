@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.RollingFileAppender" name="ACKD">
+        <param value="${install.daemonlogs.dir}/ackd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="ACTIOND">
+        <param value="${install.daemonlogs.dir}/actiond.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="ALARMD">
+        <param value="${install.daemonlogs.dir}/alarmd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="APM">
+        <param value="${install.daemonlogs.dir}/accesspointmonitor.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="ASTERISK">
+        <param value="${install.daemonlogs.dir}/asterisk.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="CAPSD">
+        <param value="${install.daemonlogs.dir}/capsd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="COLLECTD">
+        <param value="${install.daemonlogs.dir}/collectd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="CORRELATION">
+        <param value="${install.daemonlogs.dir}/correlation.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="DHCPD">
+        <param value="${install.daemonlogs.dir}/dhcpd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="DISCOVERY">
+        <param value="${install.daemonlogs.dir}/discovery.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="EVENTD">
+        <param value="${install.daemonlogs.dir}/eventd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="HIBERNATE">
+        <param value="${install.daemonlogs.dir}/hibernate.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="INS">
+        <param value="${install.daemonlogs.dir}/insproxy.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="INSTRUMENT">
+        <param value="${install.daemonlogs.dir}/instrumentation.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="JETTY">
+        <param value="${install.webapplogs.dir}/jetty.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="JMX">
+        <param value="${install.daemonlogs.dir}/jmx.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="1MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="LINKS">
+        <param value="${install.daemonlogs.dir}/link.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="MANAGER">
+        <param value="${install.daemonlogs.dir}/manager.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="MAP">
+        <param value="${install.webapplogs.dir}/web-map.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="MISC">
+        <param value="${install.daemonlogs.dir}/misc.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="NOTIFD">
+        <param value="${install.daemonlogs.dir}/notifd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="OUTAGE">
+        <param value="${install.daemonlogs.dir}/outage.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="PASSIVE">
+        <param value="${install.daemonlogs.dir}/passive.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="PINGER">
+        <param value="${install.daemonlogs.dir}/pinger.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="POLLERS">
+        <param value="${install.daemonlogs.dir}/poller.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="PROVISIOND">
+        <param value="${install.daemonlogs.dir}/provisiond.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="QUEUED">
+        <param value="${install.daemonlogs.dir}/queued.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="RANCID">
+        <param value="${install.webapplogs.dir}/rancid.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="REPORT">
+        <param value="${install.daemonlogs.dir}/report.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="1MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="REPORTD">
+        <param value="${install.daemonlogs.dir}/reportd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="RTC">
+        <param value="${install.daemonlogs.dir}/rtc.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="RTCDATA">
+        <param value="${install.daemonlogs.dir}/rtcdata.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%m" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="SCRIPTD">
+        <param value="${install.daemonlogs.dir}/scriptd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="SIPOLLERS">
+        <param value="${install.daemonlogs.dir}/snmpinterfacepoller.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="SNMP4J-INTERNAL">
+        <param value="${install.daemonlogs.dir}/snmp4j-internal.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="SPRING">
+        <param value="${install.daemonlogs.dir}/spring.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="STATSD">
+        <param value="${install.daemonlogs.dir}/statsd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="STDS">
+        <param value="${install.daemonlogs.dir}/stds.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="SYSLOGD">
+        <param value="${install.daemonlogs.dir}/syslogd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="THRESHD">
+        <param value="${install.daemonlogs.dir}/threshd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="TICKETER">
+        <param value="${install.daemonlogs.dir}/ticketer.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="TL1D">
+        <param value="${install.daemonlogs.dir}/tl1d.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="TOMCAT-INTERNAL">
+        <param value="${install.webapplogs.dir}/tomcat-internal.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="TRANSLATOR">
+        <param value="${install.daemonlogs.dir}/translator.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="TRAPD">
+        <param value="${install.daemonlogs.dir}/trapd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="UNCATEGORIZED">
+        <param value="${install.daemonlogs.dir}/uncategorized.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="VACUUM">
+        <param value="${install.daemonlogs.dir}/vacuumd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="VMWARE">
+        <param value="${install.daemonlogs.dir}/vmware.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="1MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="VULNSCAND">
+        <param value="${install.daemonlogs.dir}/vulnscand.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="50MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="WEB">
+        <param value="${install.webapplogs.dir}/web.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="WEBAUTH">
+        <param value="${install.webapplogs.dir}/webauth.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="2MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="WEBRTC">
+        <param value="${install.webapplogs.dir}/web-rtc.log" name="File"/>
+        <param value="2" name="MaxBackupIndex"/>
+        <param value="2MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.RollingFileAppender" name="XMLRPCD">
+        <param value="${install.daemonlogs.dir}/xmlrpcd.log" name="File"/>
+        <param value="4" name="MaxBackupIndex"/>
+        <param value="100MB" name="MaxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger additivity="false" name="Ackd">
+        <level value="debug"/>
+        <appender-ref ref="ACKD"/>
+    </logger>
+    <logger additivity="false" name="Alarmd">
+        <level value="debug"/>
+        <appender-ref ref="ALARMD"/>
+    </logger>
+    <logger additivity="false" name="com.google.gwt.user.server">
+        <level value="debug"/>
+        <appender-ref ref="WEB"/>
+    </logger>
+    <logger additivity="false" name="com.mchange">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="httpclient">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="Instrumentation">
+        <level value="debug"/>
+        <appender-ref ref="INSTRUMENT"/>
+    </logger>
+    <logger additivity="false" name="jmx">
+        <level value="debug"/>
+        <appender-ref ref="JMX"/>
+    </logger>
+    <logger additivity="false" name="mx4j">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="net.sf.jasperreports">
+        <level value="debug"/>
+        <appender-ref ref="REPORT"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.AccessPointMonitor">
+        <level value="warn"/>
+        <appender-ref ref="APM"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Actiond">
+        <level value="debug"/>
+        <appender-ref ref="ACTIOND"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.AsteriskGateway">
+        <level value="debug"/>
+        <appender-ref ref="ASTERISK"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Capsd">
+        <level value="debug"/>
+        <appender-ref ref="CAPSD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Collectd">
+        <level value="debug"/>
+        <appender-ref ref="COLLECTD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Correlation">
+        <level value="warn"/>
+        <appender-ref ref="CORRELATION"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Dhcpd">
+        <level value="debug"/>
+        <appender-ref ref="DHCPD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Discovery">
+        <level value="debug"/>
+        <appender-ref ref="DISCOVERY"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Eventd">
+        <level value="debug"/>
+        <appender-ref ref="EVENTD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.EventTranslator">
+        <level value="debug"/>
+        <appender-ref ref="TRANSLATOR"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Hibernate">
+        <level value="debug"/>
+        <appender-ref ref="HIBERNATE"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.InsProxy">
+        <level value="debug"/>
+        <appender-ref ref="INS"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.JettyServer">
+        <level value="debug"/>
+        <appender-ref ref="JETTY"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Linkd">
+        <level value="debug"/>
+        <appender-ref ref="LINKS"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Manager">
+        <level value="debug"/>
+        <appender-ref ref="MANAGER"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Map">
+        <level value="debug"/>
+        <appender-ref ref="MAP"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Miscellaneous">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Notifd">
+        <level value="debug"/>
+        <appender-ref ref="NOTIFD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Outage">
+        <level value="debug"/>
+        <appender-ref ref="OUTAGE"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.PassiveStatusKeeper">
+        <level value="debug"/>
+        <appender-ref ref="PASSIVE"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Pinger">
+        <level value="debug"/>
+        <appender-ref ref="PINGER"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Poller">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Queued">
+        <level value="debug"/>
+        <appender-ref ref="QUEUED"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Report">
+        <level value="debug"/>
+        <appender-ref ref="REPORT"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.RTCManager">
+        <level value="warn"/>
+        <appender-ref ref="RTC"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Scriptd">
+        <level value="debug"/>
+        <appender-ref ref="SCRIPTD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.SnmpPoller">
+        <level value="debug"/>
+        <appender-ref ref="SIPOLLERS"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Spring">
+        <level value="debug"/>
+        <appender-ref ref="SPRING"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Statsd">
+        <level value="debug"/>
+        <appender-ref ref="STATSD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Stds">
+        <level value="debug"/>
+        <appender-ref ref="STDS"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Syslogd">
+        <level value="debug"/>
+        <appender-ref ref="SYSLOGD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Threshd">
+        <level value="debug"/>
+        <appender-ref ref="THRESHD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Tl1d">
+        <level value="debug"/>
+        <appender-ref ref="TL1D"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Trapd">
+        <level value="debug"/>
+        <appender-ref ref="TRAPD"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.TroubleTicketer">
+        <level value="debug"/>
+        <appender-ref ref="TICKETER"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Vacuumd">
+        <level value="debug"/>
+        <appender-ref ref="VACUUM"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.VMware">
+        <level value="debug"/>
+        <appender-ref ref="VMWARE"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Vulnscand">
+        <level value="debug"/>
+        <appender-ref ref="VULNSCAND"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.WEB">
+        <level value="debug"/>
+        <appender-ref ref="WEB"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.WEB.AUTH">
+        <level value="debug"/>
+        <appender-ref ref="WEBAUTH"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.WEB.RTC">
+        <level value="debug"/>
+        <appender-ref ref="WEBRTC"/>
+    </logger>
+    <logger additivity="false" name="OpenNMS.Xmlrpcd">
+        <level value="debug"/>
+        <appender-ref ref="XMLRPCD"/>
+    </logger>
+    <logger additivity="false" name="org.apache.bsf">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="org.apache.commons">
+        <level value="warn"/>
+        <appender-ref ref="TOMCAT-INTERNAL"/>
+    </logger>
+    <logger additivity="false" name="org.apache.coyote">
+        <level value="warn"/>
+        <appender-ref ref="TOMCAT-INTERNAL"/>
+    </logger>
+    <logger additivity="false" name="org.asteriskjava">
+        <level value="warn"/>
+        <appender-ref ref="ASTERISK"/>
+    </logger>
+    <logger additivity="false" name="org.eclipse.jetty">
+        <level value="info"/>
+        <appender-ref ref="JETTY"/>
+    </logger>
+    <logger additivity="false" name="org.exolab.castor">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="org.gwtwidgets">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="org.hibernate">
+        <level value="info"/>
+        <appender-ref ref="HIBERNATE"/>
+    </logger>
+    <logger additivity="false" name="org.hibernate.SQL">
+        <level value="debug"/>
+        <appender-ref ref="HIBERNATE"/>
+    </logger>
+    <logger additivity="false" name="org.mortbay">
+        <level value="info"/>
+        <appender-ref ref="JETTY"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.features.poller.remote">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger name="org.opennms.netmgt.asterisk">
+        <level value="debug"/>
+        <appender-ref ref="ASTERISK"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.correlation">
+        <level value="warn"/>
+        <appender-ref ref="CORRELATION"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.icmp">
+        <level value="debug"/>
+        <appender-ref ref="PINGER"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.jetty">
+        <level value="debug"/>
+        <appender-ref ref="JETTY"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.passive">
+        <level value="debug"/>
+        <appender-ref ref="PASSIVE"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.poller">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.poller.remote">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.netmgt.snmpinterfacepoller">
+        <level value="debug"/>
+        <appender-ref ref="SIPOLLERS"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.protocols.rt">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.sms.monitor">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="org.opennms.web">
+        <level value="debug"/>
+        <appender-ref ref="WEB"/>
+    </logger>
+    <logger additivity="false" name="org.quartz">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="org.snmp4j">
+        <level value="warn"/>
+        <appender-ref ref="SNMP4J-INTERNAL"/>
+    </logger>
+    <logger additivity="false" name="org.springframework">
+        <level value="info"/>
+        <appender-ref ref="SPRING"/>
+    </logger>
+    <logger additivity="false" name="org.springframework.security">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger additivity="false" name="PollerBackEnd">
+        <level value="debug"/>
+        <appender-ref ref="POLLERS"/>
+    </logger>
+    <logger additivity="false" name="POSTDATALOG">
+        <level value="debug"/>
+        <appender-ref ref="RTCDATA"/>
+    </logger>
+    <logger additivity="false" name="Provisiond">
+        <level value="debug"/>
+        <appender-ref ref="PROVISIOND"/>
+    </logger>
+    <logger additivity="false" name="Rancid">
+        <level value="debug"/>
+        <appender-ref ref="RANCID"/>
+    </logger>
+    <logger additivity="false" name="Reportd">
+        <level value="debug"/>
+        <appender-ref ref="REPORTD"/>
+    </logger>
+    <logger additivity="false" name="snaq.db">
+        <level value="info"/>
+        <appender-ref ref="MISC"/>
+    </logger>
+    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.DataCollectionConfigFactory">
+        <level value="info"/>
+    </logger>
+    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.NumericAttributeType">
+        <level value="info"/>
+    </logger>
+    <logger name="OpenNMS.Collectd.org.opennms.netmgt.collectd.OnmsSnmpCollection">
+        <level value="info"/>
+    </logger>
+    <root>
+        <level value="debug"/>
+        <appender-ref ref="STDS"/>
+        <appender-ref ref="UNCATEGORIZED"/>
+    </root>
+</log4j:configuration>
