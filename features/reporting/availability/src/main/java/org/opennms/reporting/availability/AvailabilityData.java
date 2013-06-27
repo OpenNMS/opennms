@@ -393,8 +393,8 @@ public class AvailabilityData {
         cal.add(Calendar.DATE, -1 * days);
         long rollingWindow = endTime - cal.getTime().getTime();
         long startTime = cal.getTime().getTime();
-        LOG.debug("getPercentNode: Start time " + new java.util.Date(startTime));
-        LOG.debug("getPercentNode: End time " + new java.util.Date(endTime));
+        LOG.debug("getPercentNode: Start time {}", new java.util.Date(startTime));
+        LOG.debug("getPercentNode: End time {}", new java.util.Date(endTime));
         TreeMap<Double, List<String>> percentNode = new TreeMap<Double, List<String>>();
         
         for(Node node : m_nodes) {

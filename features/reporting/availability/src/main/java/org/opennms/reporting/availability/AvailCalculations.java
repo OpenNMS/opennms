@@ -738,7 +738,7 @@ public class AvailCalculations extends Object {
         String periodFrom = "";
         while (numdays++ < days) {
 
-            LOG.debug("Computing for " + new Date(endTime));
+            LOG.debug("Computing for {}", new Date(endTime));
             int serviceCount = 0;
             long outage = 0;
             //
@@ -821,7 +821,7 @@ public class AvailCalculations extends Object {
         String periodFrom = "";
         while (numdays++ < days) {
 
-            LOG.debug("Computing for " + new Date(endTime));
+            LOG.debug("Computing for {}", new Date(endTime));
             int serviceCount = 0;
             long outage = 0;
             //
@@ -1221,7 +1221,7 @@ public class AvailCalculations extends Object {
                     treeMap.put(new java.util.Date(curTime), new Double(cal));
 
                     periodFrom = fmtmp.format(new java.util.Date(curTime));
-                    LOG.debug("Added to svc list " + new java.util.Date(curTime));
+                    LOG.debug("Added to svc list {}", new java.util.Date(curTime));
                     curTime -= ROLLING_WINDOW;
                 }
 
