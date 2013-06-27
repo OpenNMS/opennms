@@ -96,15 +96,11 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
     
     private static void debug(String format, Object... args) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format(format, args));
-        }
+        LOG.debug(String.format(format, args));
     }
     
     private static void info(String format, Object... args) {
-        if (LOG.isInfoEnabled()) {
-            LOG.info(String.format(format, args));
-        }
+        LOG.info(String.format(format, args));
     }
     
     private static void error(Throwable cause, String format, Object... args) {
