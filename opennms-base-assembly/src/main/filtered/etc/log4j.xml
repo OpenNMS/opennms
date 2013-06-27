@@ -5,6 +5,11 @@
         <param value="${install.daemonlogs.dir}/ackd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="Ackd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -13,6 +18,11 @@
         <param value="${install.daemonlogs.dir}/actiond.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Actiond"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -21,6 +31,11 @@
         <param value="${install.daemonlogs.dir}/alarmd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="Alarmd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -29,6 +44,11 @@
         <param value="${install.daemonlogs.dir}/accesspointmonitor.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.AccessPointMonitor"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -37,6 +57,11 @@
         <param value="${install.daemonlogs.dir}/asterisk.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.AsteriskGateway"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
         </layout>
@@ -45,6 +70,11 @@
         <param value="${install.daemonlogs.dir}/capsd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Capsd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -53,6 +83,11 @@
         <param value="${install.daemonlogs.dir}/collectd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Collectd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -61,6 +96,11 @@
         <param value="${install.daemonlogs.dir}/correlation.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Correlation"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -69,6 +109,11 @@
         <param value="${install.daemonlogs.dir}/dhcpd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Dhcpd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -77,6 +122,11 @@
         <param value="${install.daemonlogs.dir}/discovery.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Discovery"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -85,6 +135,11 @@
         <param value="${install.daemonlogs.dir}/eventd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Eventd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -93,6 +148,11 @@
         <param value="${install.daemonlogs.dir}/hibernate.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Hibernate"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -101,6 +161,11 @@
         <param value="${install.daemonlogs.dir}/insproxy.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.InsProxy"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -109,6 +174,12 @@
         <param value="${install.daemonlogs.dir}/instrumentation.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+	<!-- TODO: is this prefix based or something else -->
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="Instrumentation"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -117,14 +188,26 @@
         <param value="${install.webapplogs.dir}/jetty.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.JettyServer"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
-    <appender class="org.apache.log4j.RollingFileAppender" name="JMX">
+    <appender class="org.apache.log4j.RollingFileAppender" nameo="JMX">
         <param value="${install.daemonlogs.dir}/jmx.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="1MB" name="MaxFileSize"/>
+        <!--
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="jmx"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
+        -->
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -133,6 +216,11 @@
         <param value="${install.daemonlogs.dir}/link.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Linkd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -141,6 +229,11 @@
         <param value="${install.daemonlogs.dir}/manager.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -149,6 +242,11 @@
         <param value="${install.webapplogs.dir}/web-map.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Map"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -165,14 +263,11 @@
         <param value="${install.daemonlogs.dir}/notifd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
-        </layout>
-    </appender>
-    <appender class="org.apache.log4j.RollingFileAppender" name="OUTAGE">
-        <param value="${install.daemonlogs.dir}/outage.log" name="File"/>
-        <param value="4" name="MaxBackupIndex"/>
-        <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Notifd"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -181,6 +276,11 @@
         <param value="${install.daemonlogs.dir}/passive.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.PassiveStatusKeeper"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -188,8 +288,13 @@
     <appender class="org.apache.log4j.RollingFileAppender" name="PINGER">
         <param value="${install.daemonlogs.dir}/pinger.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
-        <param value="100MB" name="MaxFileSize"/>
-        <layout class="org.apache.log4j.PatternLayout">
+        <param value="100MB" name="MaxFileSize"/> 
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Pinger"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
+       <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
@@ -197,6 +302,11 @@
         <param value="${install.daemonlogs.dir}/poller.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Poller"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -205,6 +315,11 @@
         <param value="${install.daemonlogs.dir}/provisiond.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="Provisiond"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -213,6 +328,11 @@
         <param value="${install.daemonlogs.dir}/queued.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Queued"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -221,6 +341,11 @@
         <param value="${install.webapplogs.dir}/rancid.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="Rancid"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -229,14 +354,11 @@
         <param value="${install.daemonlogs.dir}/report.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="1MB" name="MaxFileSize"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
-        </layout>
-    </appender>
-    <appender class="org.apache.log4j.RollingFileAppender" name="REPORTD">
-        <param value="${install.daemonlogs.dir}/reportd.log" name="File"/>
-        <param value="4" name="MaxBackupIndex"/>
-        <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Report"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -245,6 +367,11 @@
         <param value="${install.daemonlogs.dir}/rtc.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.RTCManager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -253,6 +380,11 @@
         <param value="${install.daemonlogs.dir}/rtcdata.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%m" name="ConversionPattern"/>
         </layout>
@@ -261,6 +393,11 @@
         <param value="${install.daemonlogs.dir}/scriptd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -269,6 +406,11 @@
         <param value="${install.daemonlogs.dir}/snmpinterfacepoller.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -277,6 +419,11 @@
         <param value="${install.daemonlogs.dir}/snmp4j-internal.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
         </layout>
@@ -285,6 +432,11 @@
         <param value="${install.daemonlogs.dir}/spring.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -293,6 +445,11 @@
         <param value="${install.daemonlogs.dir}/statsd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -301,6 +458,11 @@
         <param value="${install.daemonlogs.dir}/stds.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
         </layout>
@@ -309,6 +471,11 @@
         <param value="${install.daemonlogs.dir}/syslogd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -317,6 +484,11 @@
         <param value="${install.daemonlogs.dir}/threshd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -325,6 +497,11 @@
         <param value="${install.daemonlogs.dir}/ticketer.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -333,6 +510,11 @@
         <param value="${install.daemonlogs.dir}/tl1d.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -341,6 +523,11 @@
         <param value="${install.webapplogs.dir}/tomcat-internal.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
         </layout>
@@ -349,6 +536,11 @@
         <param value="${install.daemonlogs.dir}/translator.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -357,6 +549,11 @@
         <param value="${install.daemonlogs.dir}/trapd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -365,6 +562,11 @@
         <param value="${install.daemonlogs.dir}/uncategorized.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c: %m%n" name="ConversionPattern"/>
         </layout>
@@ -373,6 +575,11 @@
         <param value="${install.daemonlogs.dir}/vacuumd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -381,6 +588,11 @@
         <param value="${install.daemonlogs.dir}/vmware.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="1MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -389,6 +601,11 @@
         <param value="${install.daemonlogs.dir}/vulnscand.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="50MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -397,6 +614,11 @@
         <param value="${install.webapplogs.dir}/web.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -405,6 +627,11 @@
         <param value="${install.webapplogs.dir}/webauth.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="2MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -413,6 +640,11 @@
         <param value="${install.webapplogs.dir}/web-rtc.log" name="File"/>
         <param value="2" name="MaxBackupIndex"/>
         <param value="2MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
@@ -421,14 +653,15 @@
         <param value="${install.daemonlogs.dir}/xmlrpcd.log" name="File"/>
         <param value="4" name="MaxBackupIndex"/>
         <param value="100MB" name="MaxFileSize"/>
+        <filter class="org.opennms.core.logging.log4j.MDCFilter">
+          <param name="KeyToMatch" value="prefix"/>
+          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="OnMatch" value="ACCEPT" />
+        </filter>
         <layout class="org.apache.log4j.PatternLayout">
             <param value="%d %-5p [%t] %c{1}: %m%n" name="ConversionPattern"/>
         </layout>
     </appender>
-    <logger additivity="false" name="Ackd">
-        <level value="debug"/>
-        <appender-ref ref="ACKD"/>
-    </logger>
     <logger additivity="false" name="Alarmd">
         <level value="debug"/>
         <appender-ref ref="ALARMD"/>
@@ -449,6 +682,7 @@
         <level value="debug"/>
         <appender-ref ref="INSTRUMENT"/>
     </logger>
+    <!-- TODO: is this a prefix -->
     <logger additivity="false" name="jmx">
         <level value="debug"/>
         <appender-ref ref="JMX"/>
@@ -461,61 +695,9 @@
         <level value="debug"/>
         <appender-ref ref="REPORT"/>
     </logger>
-    <logger additivity="false" name="OpenNMS.AccessPointMonitor">
-        <level value="warn"/>
-        <appender-ref ref="APM"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Actiond">
-        <level value="debug"/>
-        <appender-ref ref="ACTIOND"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.AsteriskGateway">
-        <level value="debug"/>
-        <appender-ref ref="ASTERISK"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Capsd">
-        <level value="debug"/>
-        <appender-ref ref="CAPSD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Collectd">
-        <level value="debug"/>
-        <appender-ref ref="COLLECTD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Correlation">
-        <level value="warn"/>
-        <appender-ref ref="CORRELATION"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Dhcpd">
-        <level value="debug"/>
-        <appender-ref ref="DHCPD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Discovery">
-        <level value="debug"/>
-        <appender-ref ref="DISCOVERY"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Eventd">
-        <level value="debug"/>
-        <appender-ref ref="EVENTD"/>
-    </logger>
     <logger additivity="false" name="OpenNMS.EventTranslator">
         <level value="debug"/>
         <appender-ref ref="TRANSLATOR"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Hibernate">
-        <level value="debug"/>
-        <appender-ref ref="HIBERNATE"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.InsProxy">
-        <level value="debug"/>
-        <appender-ref ref="INS"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.JettyServer">
-        <level value="debug"/>
-        <appender-ref ref="JETTY"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Linkd">
-        <level value="debug"/>
-        <appender-ref ref="LINKS"/>
     </logger>
     <logger additivity="false" name="OpenNMS.Manager">
         <level value="debug"/>
@@ -528,38 +710,6 @@
     <logger additivity="false" name="OpenNMS.Miscellaneous">
         <level value="info"/>
         <appender-ref ref="MISC"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Notifd">
-        <level value="debug"/>
-        <appender-ref ref="NOTIFD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Outage">
-        <level value="debug"/>
-        <appender-ref ref="OUTAGE"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.PassiveStatusKeeper">
-        <level value="debug"/>
-        <appender-ref ref="PASSIVE"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Pinger">
-        <level value="debug"/>
-        <appender-ref ref="PINGER"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Poller">
-        <level value="debug"/>
-        <appender-ref ref="POLLERS"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Queued">
-        <level value="debug"/>
-        <appender-ref ref="QUEUED"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Report">
-        <level value="debug"/>
-        <appender-ref ref="REPORT"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.RTCManager">
-        <level value="warn"/>
-        <appender-ref ref="RTC"/>
     </logger>
     <logger additivity="false" name="OpenNMS.Scriptd">
         <level value="debug"/>
@@ -740,18 +890,6 @@
     <logger additivity="false" name="POSTDATALOG">
         <level value="debug"/>
         <appender-ref ref="RTCDATA"/>
-    </logger>
-    <logger additivity="false" name="Provisiond">
-        <level value="debug"/>
-        <appender-ref ref="PROVISIOND"/>
-    </logger>
-    <logger additivity="false" name="Rancid">
-        <level value="debug"/>
-        <appender-ref ref="RANCID"/>
-    </logger>
-    <logger additivity="false" name="Reportd">
-        <level value="debug"/>
-        <appender-ref ref="REPORTD"/>
     </logger>
     <logger additivity="false" name="snaq.db">
         <level value="info"/>
