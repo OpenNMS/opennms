@@ -199,7 +199,7 @@ class MailAckProcessor implements AckProcessor {
 
         if (matcher.matches() && matcher.groupCount() > 0) {
             id = Integer.valueOf(matcher.group(1));
-            LOG.debug("detectId: found acknowledgable ID: "+id);
+            LOG.debug("detectId: found acknowledgable ID: {}", id);
         } else {
             LOG.debug("detectId: no acknowledgable ID found.");
         }
@@ -242,7 +242,7 @@ class MailAckProcessor implements AckProcessor {
         AckAction action = AckAction.UNSPECIFIED;
         if (messageText != null && messageText.size() > 0) {
             
-            LOG.debug("determineAction: message text: "+messageText);
+            LOG.debug("determineAction: message text: {}", messageText);
             
             if (m_ackdDao.acknowledgmentMatch(messageText)) {
                 action = AckAction.ACKNOWLEDGE;
@@ -303,7 +303,7 @@ class MailAckProcessor implements AckProcessor {
                 Matcher alarmMatcher = alarmPattern.matcher(subject);
                 Matcher notifMatcher = notifPattern.matcher(subject);
                 
-                LOG.debug("retrieveAckMessages: comparing the subject: "+subject);
+                LOG.debug("retrieveAckMessages: comparing the subject: {}", subject);
                 if (!(notifMatcher.matches() || alarmMatcher.matches())) {
                     
                     LOG.debug("retrieveAckMessages: Subject doesn't match either expression.");
@@ -318,7 +318,7 @@ class MailAckProcessor implements AckProcessor {
                     }
                 }
             } catch (Throwable t) {
-                LOG.error("retrieveAckMessages: Problem processing message: "+t);
+                LOG.error("retrieveAckMessages: Problem processing message: {}", t);
             }
         }
         return msgs;
@@ -352,9 +352,9 @@ class MailAckProcessor implements AckProcessor {
     @Override
     public void run() {
         try {
-            LOG.info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
+            LOG.info("run: Processing mail acknowledgments (opposed to femail acks ;)...");
             findAndProcessAcks();
-            LOG.info("run: Finished processing mail acknowledgments." );
+            LOG.info("run: Finished processing mail acknowledgments.");
         } catch (Throwable e) {
             LOG.debug("run: threw exception", e);
         } finally {
@@ -381,7 +381,7 @@ class MailAckProcessor implements AckProcessor {
             }
         }
         
-    	LOG.info("determinedMailReaderConfig: "+config);
+	LOG.info("determinedMailReaderConfig: {}", config);
         return config;
     }
     
