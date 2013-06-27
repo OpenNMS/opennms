@@ -1,10 +1,10 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import java.util.List;
-import java.util.Map;
-
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.communication.ServerRpc;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TopologyComponentServerRpc extends ServerRpc {
     
@@ -12,7 +12,7 @@ public interface TopologyComponentServerRpc extends ServerRpc {
     public void deselectAllItems();
     public void edgeClicked(String edgeId);
     public void backgroundClicked();
-    public void scrollWheel(Map<String, Object> props);
+    public void scrollWheel(double scrollVal, int x, int y);
     public void mapPhysicalBounds(int width, int height);
     public void marqueeSelection(String[] vertexIds, MouseEventDetails eventDetails);
     public void contextMenu(Map<String, Object> props);

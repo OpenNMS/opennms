@@ -963,7 +963,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         props.put("y", y);
         props.put("scrollVal", scrollVal);
 //        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
-        m_serverRpc.scrollWheel(props);
+        m_serverRpc.scrollWheel(scrollVal, x, y);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{

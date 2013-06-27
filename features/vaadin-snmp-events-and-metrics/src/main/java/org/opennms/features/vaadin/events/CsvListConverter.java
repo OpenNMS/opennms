@@ -27,12 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
+import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 
-import com.vaadin.data.util.converter.Converter;
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * The CSV List Converter.
@@ -48,12 +47,7 @@ public class CsvListConverter implements Converter<String, CsvListConverter.Stri
     public static class StringList extends ArrayList<String> {}
 
     @Override
-    public String convertToPresentation(StringList propertyValue, Locale locale) {
-        return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
-    }
-
-    @Override
-    public StringList convertToModel(String fieldValue, Locale locale) {
+    public StringList convertToModel(String fieldValue, Class<? extends StringList> targetType, Locale locale) throws ConversionException {
         StringList list = new StringList();
         if (fieldValue != null) {
             for (String s : fieldValue.split(",")) {
@@ -67,7 +61,12 @@ public class CsvListConverter implements Converter<String, CsvListConverter.Stri
         return list;
     }
 
-	@Override
+    @Override
+    public String convertToPresentation(StringList propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+        return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
+    }
+
+    @Override
 	public Class<StringList> getModelType() {
 		return StringList.class;
 	}

@@ -27,14 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
+import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.xml.eventconf.Decode;
 
-import com.vaadin.data.util.converter.Converter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * The Varbind's Decode List Converter.
@@ -50,16 +49,7 @@ public class DecodeListConverter implements Converter<String, DecodeListConverte
     public static class DecodeList extends ArrayList<Decode> {}
 
     @Override
-    public String convertToPresentation(DecodeList propertyValue, Locale locale) {
-        final List<String> values = new ArrayList<String>();
-        for (Decode d : propertyValue) {
-            values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
-        }
-        return StringUtils.join(values, ',');
-    }
-
-    @Override
-    public DecodeList convertToModel(String fieldValue, Locale locale) {
+    public DecodeList convertToModel(String fieldValue, Class<? extends DecodeList> targetType, Locale locale) throws ConversionException {
         DecodeList list = new DecodeList();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
@@ -68,10 +58,20 @@ public class DecodeListConverter implements Converter<String, DecodeListConverte
             d.setVarbinddecodedstring(parts[1].trim());
             list.add(d);
         }
+        
         return list;
     }
 
-	@Override
+    @Override
+    public String convertToPresentation(DecodeList propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+        final List<String> values = new ArrayList<String>();
+        for (Decode d : propertyValue) {
+            values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
+        }
+        return StringUtils.join(values, ',');
+    }
+
+    @Override
 	public Class<DecodeList> getModelType() {
 		return DecodeList.class;
 	}

@@ -75,15 +75,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
 
         @Override
-        public void scrollWheel(Map<String, Object> props) {
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            double scrollVal = (Double) props.get("scrollVal");
+        public void scrollWheel(double scrollVal, int x, int y) {
             getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
         }
 
         @Override
         public void mapPhysicalBounds(int width, int height) {
+            System.out.println("Received physical bounds "+width+"x"+height);
           getViewManager().setViewPort(width, height);
         }
 
