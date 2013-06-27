@@ -154,11 +154,7 @@ public class Invoker {
                     }
                 }
             } catch (Throwable t) {
-            	LOG.error("An error occurred loading the mbean {} of type {}: {}",
-                          service.getName(),
-                          service.getClassName(),
-                          t,
-                          t);
+		LOG.error("An error occurred loading the mbean {} of type {}", service.getName(), service.getClassName(), t);
                 invokerService.setBadThrowable(t);
             }
         }
@@ -177,10 +173,7 @@ public class Invoker {
                 ObjectName name = new ObjectName(service.getName());
                 invokerService.setMbean(getServer().getObjectInstance(name));
             } catch (Throwable t) {
-            	LOG.error("An error occurred loading the mbean {} of type {} it will be skipped",
-                          service.getName(),
-                          service.getClassName(),
-                          t);
+		LOG.error("An error occurred loading the mbean {} of type {} it will be skipped", service.getName(), service.getClassName(), t);
                 invokerService.setBadThrowable(t);
             }
         }
@@ -284,8 +277,7 @@ public class Invoker {
                 try {
                     parms[k] = getArgument(args[k]);
                 } catch (Throwable t) {
-                	LOG.error("An error occurred building argument {} for operation {} on MBean {}: {}",
-                            k, invoke.getMethod(), mbean.getObjectName(), t, t);
+			LOG.error("An error occurred building argument {} for operation {} on MBean {}", k, invoke.getMethod(), mbean.getObjectName(), t);
                   throw t;
                 }
                 sig[k] = parms[k].getClass().getName();
@@ -304,7 +296,7 @@ public class Invoker {
             	MDC.setContextMap(mdc);
             }
         } catch (Throwable t) {
-        	LOG.error("An error occurred invoking operation {} on MBean {}: {}", invoke.getMethod(), mbean.getObjectName(), t);
+		LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
             throw t;
         }
 

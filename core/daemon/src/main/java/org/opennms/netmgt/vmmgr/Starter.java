@@ -207,8 +207,7 @@ public class Starter {
         for (Entry<Object, Object> entry : props.entrySet()) {
             String systemValue = System.getProperty(entry.getKey().toString());
             if (systemValue != null) {
-                LOG.debug("Property '{}' from {} already exists as a system property (with value '{}').  Not overridding existing system property.",
-                		entry.getKey(), propertiesFile, systemValue);
+                LOG.debug("Property '{}' from {} already exists as a system property (with value '{}').  Not overridding existing system property.", entry.getKey(), propertiesFile, systemValue);
             } else {
                 LOG.debug("Setting system property '{}' to '{}' from {}.", entry.getKey(), entry.getValue(), propertiesFile);
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
