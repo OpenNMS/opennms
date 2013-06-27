@@ -164,10 +164,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         /* Log everything we know so far.
          * The tticketid and tticketstate are only informational.
          */
-        LOG.info("Got event-uei='"+ eventUEI +"' with event-id='" + eventID + 
-        			  "', notice-id='" + noticeID + "', alarm-type='" + alarmType +
-        			  "', alarm-id='" + alarmState.getAlarmID() + "', tticket-id='" + alarmState.getTticketID() +
-        			  "'and tticket-state='" + alarmState.getTticketState() + "'");
+        LOG.info("Got event-uei='"+ eventUEI +"' with event-id='" + eventID + "', notice-id='" + noticeID + "', alarm-type='" + alarmType + "', alarm-id='" + alarmState.getAlarmID() + "', tticket-id='" + alarmState.getTticketID() + "'and tticket-state='" + alarmState.getTticketState() + "'");
         
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI);
 
