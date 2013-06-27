@@ -614,10 +614,8 @@ public class AvailCalculations extends Object {
     private void lastMoTopNOffenders(TreeMap<Double, List<String>> offenders, CatSections catSections, String label, String descr) {
         // copy this method from the outage data code.
         //
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Offenders {}", offenders);
-            LOG.debug("Inside lastMoTopNOffenders");
-        }
+        LOG.debug("Offenders {}", offenders);
+        LOG.debug("Inside lastMoTopNOffenders");
         Set<Double> percentValues = offenders.keySet();
         Iterator<Double> iter = percentValues.iterator();
 

@@ -118,9 +118,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
             
             List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(m_commonRule);
     
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
-            }
+            LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
             
     
             List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());
