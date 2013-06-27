@@ -216,10 +216,8 @@ public class RequestTracker {
             }
         }
 
-        if (LOG.isTraceEnabled()) {
-            if (attributes.size() > 0) {
-                LOG.trace("unhandled RT ticket attributes: {}", attributes.keySet());
-            }
+        if (attributes.size() > 0) {
+            LOG.trace("unhandled RT ticket attributes: {}", attributes.keySet());
         }
 
         if (ticket.getText() == null || ticket.getText().equals("") && getTextAttachment) {
