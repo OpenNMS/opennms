@@ -168,8 +168,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
                 }
 
             } catch (NsclientException e) {
-                LOG.debug("Nsclient Poller received exception from client: {}"
-                        , e.getMessage());
+                LOG.debug("Nsclient Poller received exception from client", e);
                 reason = "NsclientException: " + e.getMessage();
             }
         } // end for(;;)
