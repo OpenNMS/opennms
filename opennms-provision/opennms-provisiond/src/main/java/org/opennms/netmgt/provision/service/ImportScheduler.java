@@ -93,7 +93,7 @@ public class ImportScheduler implements InitializingBean {
         try {
             getScheduler().setJobFactory(getImportJobFactory());
         } catch (SchedulerException e) {
-            LOG.error("afterPropertiesSet: couldn't set proper JobFactory for scheduler: "+e, e);
+            LOG.error("afterPropertiesSet: couldn't set proper JobFactory for scheduler", e);
         }
 
         GenericURLFactory.initialize();

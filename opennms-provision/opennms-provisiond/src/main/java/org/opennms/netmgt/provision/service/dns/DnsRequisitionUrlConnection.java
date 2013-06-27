@@ -213,7 +213,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
             Requisition r = buildRequisitionFromZoneTransfer();
             stream = new ByteArrayInputStream(jaxBMarshal(r).getBytes());
         } catch (IOException e) {
-            LOG.warn("getInputStream: Problem getting input stream: "+e, e);
+            LOG.warn("getInputStream: Problem getting input stream", e);
             throw e;
         } catch (Throwable e) {
             String message = "Problem getting input stream: "+e;
@@ -555,7 +555,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         try {
             query = URLDecoder.decode(url.getQuery(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            LOG.error("decodeQueryString: "+e, e);
+            LOG.error("decodeQueryString", e);
         }
         
         return query;
