@@ -104,7 +104,7 @@ public class V2TrapInformation extends TrapInformation {
     @Override
     protected long getTimeStamp() {
 
-        LOG.debug("V2 trap first varbind value: " + m_pdu.getVarBindAt(0).getValue().toString());
+        LOG.debug("V2 trap first varbind value: {}", m_pdu.getVarBindAt(0).getValue().toString());
 
         switch (m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
         case SnmpSMI.SMI_TIMETICKS:
@@ -150,7 +150,7 @@ public class V2TrapInformation extends TrapInformation {
             // if not V2 trap, do nothing
             throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
         }
-        LOG.debug("V2 trap numVars or pdu length: " + getPduLength());
+        LOG.debug("V2 trap numVars or pdu length: {}", getPduLength());
         if (getPduLength() < 2) // check number of varbinds
         {
             throw new IllegalArgumentException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed 2");
