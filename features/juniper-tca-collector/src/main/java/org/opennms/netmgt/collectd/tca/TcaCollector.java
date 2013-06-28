@@ -117,7 +117,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-		LOG.debug("initialize: initializing TCA collection handling using " + parameters + " for collection agent " + agent);
+		LOG.debug("initialize: initializing TCA collection handling using {} for collection agent {}", parameters,  agent);
 		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
 	}
 
