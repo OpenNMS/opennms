@@ -127,7 +127,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         
         // Pull the arguments we're interested in from the list.
         for (Argument arg : m_arguments) {
-        	LOG.debug("arguments: "+arg.getSwitch() +" = "+arg.getValue());
+		LOG.debug("arguments: {} = {}", arg.getSwitch(), arg.getValue());
         	
             if ("eventID".equalsIgnoreCase(arg.getSwitch())) {
             	eventID = arg.getValue();
@@ -215,7 +215,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      * @return
      */
 	public void sendCreateTicketEvent(int alarmID, String alarmUEI) {
-        LOG.debug("Sending create ticket for alarm '" + alarmUEI + "' with id=" + alarmID);
+        LOG.debug("Sending create ticket for alarm '{}' with id={}", alarmUEI,  alarmID);
         EventBuilder ebldr = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, getName());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarmID);
         // These fields are required by the trouble ticketer, but not used
