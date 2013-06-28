@@ -243,9 +243,7 @@ public class EventConfData extends Object {
         EventKey key = new EventKey(event);
         matchedEvent = m_eventMap.get(key);
         if (matchedEvent != null) {
-            if (log().isDebugEnabled()) {
-                LOG.debug("Match found using key: {}", key);
-            }
+            LOG.debug("Match found using key: {}", key);
 
             return matchedEvent;
         }
