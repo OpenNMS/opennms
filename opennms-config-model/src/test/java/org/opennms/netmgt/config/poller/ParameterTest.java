@@ -66,6 +66,7 @@ public class ParameterTest extends XmlTest<Parameter> {
     	Assert.assertNotNull(p);
     	Assert.assertEquals("person", p.getKey());
     	Assert.assertNull(p.getValue());
-    	Assert.assertEquals("<person xmlns=\"http://xmlns.opennms.org/xsd/config/poller\" name=\"alejandro\"/>", p.getAnyObject());
+    	Assert.assertEquals("<person xmlns=\"http://xmlns.opennms.org/xsd/config/poller\" name=\"alejandro\"/>", p.getAnyObject().toString());
     }
+
 }

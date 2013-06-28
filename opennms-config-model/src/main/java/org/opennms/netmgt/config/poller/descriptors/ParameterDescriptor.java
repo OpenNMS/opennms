@@ -12,6 +12,7 @@ package org.opennms.netmgt.config.poller.descriptors;
 //---------------------------------/
 
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.XmlContent;
 
 /**
  * Class ParameterDescriptor.
@@ -172,7 +173,7 @@ import org.opennms.netmgt.config.poller.Parameter;
             {
                 try {
                     Parameter target = (Parameter) object;
-                    target.setAnyObject(  value );
+                    target.setAnyObject( (XmlContent) value );
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }

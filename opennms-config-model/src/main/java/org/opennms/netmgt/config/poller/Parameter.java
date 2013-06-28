@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -67,9 +69,10 @@ import org.w3c.dom.Node;
     /**
      * Field _anyObject.
      */
-	@XmlAnyElement(lax=true)
-	@XmlJavaTypeAdapter(AnyObjectAdapter.class)
-    private java.lang.Object _anyObject;
+	@XmlAnyElement(AnyObjectHandler.class)
+//	@XmlAnyElement(lax=true)
+//	@XmlJavaTypeAdapter(AnyObjectAdapter.class)
+    private XmlContent _anyObject;
 
 
       //----------------/
@@ -131,7 +134,7 @@ import org.w3c.dom.Node;
      * 
      * @return the value of field 'AnyObject'.
      */
-    public java.lang.Object getAnyObject(
+    public XmlContent getAnyObject(
     ) {
     	return this._anyObject;
     }
@@ -235,7 +238,7 @@ import org.w3c.dom.Node;
      * @param anyObject the value of field 'anyObject'.
      */
     public void setAnyObject(
-            final java.lang.Object anyObject) {
+            final XmlContent anyObject) {
     	this._anyObject = anyObject;
     }
 

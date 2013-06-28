@@ -62,19 +62,33 @@ public class PackageTest extends XmlTest<Package> {
 		rrd.setStep(300);
 		rrd.addRra("RRA:AVERAGE:0.5:1:2016");
 		rrd.addRra("RRA:AVERAGE:0.5:12:1488");
+		final IncludeRange incRange = new IncludeRange();
+		incRange.setBegin("10.0.0.1");
+		incRange.setEnd("10.255.255.254");
+		final ExcludeRange excRange = new ExcludeRange();
+		excRange.setBegin("10.10.0.1");
+		excRange.setEnd("10.10.255.254");
 		final Package pkg = new Package();
 		pkg.setName("example");
 		pkg.setRemote(false);
 		pkg.addService(service);
 		pkg.addDowntime(downtime);
 		pkg.setFilter(filter);
+		pkg.addIncludeRange(incRange);
+		pkg.addExcludeRange(excRange);
 		pkg.setRrd(rrd);
+		pkg.addIncludeUrl("file:///home/monitoring/include.txt");
+		pkg.addSpecific("10.10.10.10");
 
         return Arrays.asList(new Object[][] {
             {
             	pkg,
             	"<package name='example' remote='false'>\n" +
                 "  <filter>IPADDR != '0.0.0.0'</filter>\n" +
+                "  <specific>10.10.10.10</specific>\n" +
+                "  <include-range begin='10.0.0.1' end='10.255.255.254'/>\n" +
+                "  <exclude-range begin='10.10.0.1' end='10.10.255.254'/>\n" +
+                "  <include-url>file:///home/monitoring/include.txt</include-url>\n" +
                 "  <rrd step='300'>\n" +
                 "    <rra>RRA:AVERAGE:0.5:1:2016</rra>\n" +
                 "    <rra>RRA:AVERAGE:0.5:12:1488</rra>\n" +

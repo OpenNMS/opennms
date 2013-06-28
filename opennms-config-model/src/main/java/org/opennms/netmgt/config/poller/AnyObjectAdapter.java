@@ -1,10 +1,10 @@
 package org.opennms.netmgt.config.poller;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -14,28 +14,33 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
-public class AnyObjectAdapter extends XmlAdapter<Element, Object> {
+public class AnyObjectAdapter extends XmlAdapter<Element, XmlContent> {
 
 	@Override
-	public Element marshal(Object v) throws Exception {
+	public Element marshal(XmlContent v) throws Exception {
 		if (v == null)
 			return null;
-		byte[] utf8Bytes = ((String) v).getBytes("UTF-8");
-		InputStream sbis = new ByteArrayInputStream(utf8Bytes);
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(sbis);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		factory.setIgnoringComments(true);
+		factory.setIgnoringElementContentWhitespace(true);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(v.getContent()));
+		Document doc = builder.parse(is);
 		return doc.getDocumentElement();
 	}
 
 	@Override
-	public Object unmarshal(Element v) throws Exception {
+	public XmlContent unmarshal(Element v) throws Exception {
 		StringBuilder builder = new StringBuilder();
 		StringWriter writer = new StringWriter();
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(new DOMSource(v), new StreamResult(writer));
 		builder.append(writer.toString());
-		return builder.toString();
+		return new XmlContent(builder.toString());
 	}
 
 }

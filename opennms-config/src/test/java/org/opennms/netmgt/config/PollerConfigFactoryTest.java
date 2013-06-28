@@ -158,7 +158,6 @@ public class PollerConfigFactoryTest extends TestCase {
     }
     
     public void testPollerConfigFactory() throws Exception {
-    	System.err.println(POLLER_CONFIG);
         TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
         assertNull(factory.getPackage("TestPkg"));
         Package pkg = new Package();
