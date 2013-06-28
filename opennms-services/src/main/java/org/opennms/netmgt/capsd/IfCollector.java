@@ -174,7 +174,7 @@ public final class IfCollector implements Runnable {
         // for the interface
         //
         for (int i = 0; i < plugins.length; i++) {
-            LOG.debug(logAddr + " testing plugin " + plugins[i].getProtocol());
+            LOG.debug("{} testing plugin {}", logAddr, plugins[i].getProtocol());
             if (plugins[i].isAutoEnabled()) {
                 LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " is auto enabled");
                 supports.add(new SupportedProtocol(plugins[i].getProtocol(), null));

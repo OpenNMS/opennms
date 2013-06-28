@@ -181,11 +181,11 @@ final public class GpMonitor extends AbstractServiceMonitor {
                         scriptoutput = er.getOutString();
                         scripterror = er.getErrString();
                         if (!scriptoutput.equals(""))
-                            LOG.debug(script + " output  = " + scriptoutput);
+                            LOG.debug("{} output  = {}", script, scriptoutput);
                         else
                             LOG.debug("{} returned no output", script);
                         if (!scripterror.equals(""))
-                            LOG.debug(script + " error = " + scripterror);
+                            LOG.debug("{} error = {}", script, scripterror);
                         if (strBannerMatch == null || strBannerMatch.equals("*")) {
                         	
                             serviceStatus = PollStatus.available(responseTime);

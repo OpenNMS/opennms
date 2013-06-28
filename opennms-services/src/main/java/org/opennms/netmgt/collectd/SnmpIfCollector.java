@@ -131,19 +131,19 @@ public class SnmpIfCollector extends AggregateTracker {
 	/** {@inheritDoc} */
     @Override
 	protected void reportGenErr(String msg) {
-        LOG.warn(m_primaryIf+": genErr collecting ifData. "+msg);
+        LOG.warn("{} : genErr collecting ifData. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info(m_primaryIf+": noSuchName collecting ifData. "+msg);
+        LOG.info("{} : noSuchName collecting ifData. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportTooBigErr(String msg) {
-        LOG.info(m_primaryIf+": request tooBig. "+msg);
+        LOG.info("{} : request tooBig. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */

@@ -119,7 +119,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
                 res = true;
             }
         } catch (Throwable e) {
-            LOG.debug(getProtocolName(map) + " - isProtocolSupported - failed! " + InetAddressUtils.str(address));
+            LOG.debug("{} - isProtocolSupported - failed! {}", getProtocolName(map), InetAddressUtils.str(address));
         } finally {
             if (connection != null) {
                 connection.close();

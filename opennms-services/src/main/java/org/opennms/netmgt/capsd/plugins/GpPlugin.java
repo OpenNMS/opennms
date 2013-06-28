@@ -121,7 +121,7 @@ public final class GpPlugin extends AbstractPlugin {
                 else
                     exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
-                    LOG.debug(script + " failed with exit code " + exitStatus);
+                    LOG.debug("{} failed with exit code {}", script, exitStatus);
                     isAServer = false;
                 }
                 if (er.isMaxRunTimeExceeded()) {
@@ -136,7 +136,7 @@ public final class GpPlugin extends AbstractPlugin {
                         if (response.equals(""))
                             LOG.debug("{} returned no output", script);
                         if (!error.equals(""))
-                            LOG.debug(script + " error = " + error);
+                            LOG.debug("{} error = {}", script, error);
                         if (regex == null || regex.match(response)) {
 
                             LOG.debug("isServer: matching response = {}", response);
