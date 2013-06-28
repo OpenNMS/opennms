@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration threshold="debug" xmlns:log4j="http://jakarta.apache.org/log4j/">
   <appender class="org.apache.log4j.RollingFileAppender" name="ACKD">
     <param value="${install.daemonlogs.dir}/ackd.log" name="File"/>
