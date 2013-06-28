@@ -92,7 +92,6 @@ public class Main {
     }
 
     private void initializeLogging() throws Exception {
-    	org.opennms.core.logging.Logging.remotePollerInitializeLogging(m_pollerHome);
     }
 
     private void getAuthenticationInfo() {
@@ -173,7 +172,6 @@ public class Main {
         }
 
         if (m_cl.hasOption("d")) {
-        	org.opennms.core.logging.Logging.remotePollerEnableDebugging();
         }
         
         if (m_cl.hasOption("l")) {

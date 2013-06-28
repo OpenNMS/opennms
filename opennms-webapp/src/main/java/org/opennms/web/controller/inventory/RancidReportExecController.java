@@ -57,7 +57,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @since 1.8.1
  */
 public class RancidReportExecController extends SimpleFormController {
-    private static final Logger LOG = LoggerFactory.getClass(RancidReportExecController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RancidReportExecController.class);
     
 //    InventoryService m_inventoryService;
     ConfigurationReportService m_configurationReportService;
