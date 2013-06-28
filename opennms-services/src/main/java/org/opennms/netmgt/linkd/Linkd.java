@@ -530,7 +530,7 @@ public class Linkd extends AbstractServiceDaemon {
     public boolean runSingleSnmpCollection(final int nodeId) {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
             if (node == null) {
-                LogUtils.warnf(this, "Node not found: %d", nodeId);
+                LOG.warn("Node not found: {}", nodeId);
                 return false;
             }
 

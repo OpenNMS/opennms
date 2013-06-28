@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -124,7 +124,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
     protected final PlatformTransactionManager m_transactionManager;
     protected final D m_dao;
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(UpsertTemplate.class);
 
     /**
      * Create an UpsertTemplate using the PlatformTransactionManager for creating
@@ -162,7 +163,7 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
 
         // lock the table since we are about to insert and don't want it inserted 
         if (!m_dao.lock()) {
-            LogUtils.warnf(this, "Unable to acquire lock for table: %s", m_dao.getLockName());
+            LOG.warn("Unable to acquire lock for table: {}", m_dao.getLockName());
         }
 
         // make sure it wasn't inserted while we waited for the lock

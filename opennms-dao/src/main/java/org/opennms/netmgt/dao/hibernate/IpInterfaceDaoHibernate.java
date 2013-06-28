@@ -33,10 +33,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 /**
  * <p>IpInterfaceDaoHibernate class.</p>
@@ -45,6 +46,8 @@ import org.springframework.util.Assert;
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
     
+    private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceDaoHibernate.class);
+
     String m_findByServiceTypeQuery = null;
 
     /**
@@ -184,7 +187,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         } else {
             OnmsIpInterface retval = primaryInterfaces.iterator().next();
             if (primaryInterfaces.size() > 1) {
-                LogUtils.warnf(this, "Multiple primary SNMP interfaces for node %d, returning most recently scanned interface: %s", nodeId, retval.getInterfaceId());
+                LOG.warn("Multiple primary SNMP interfaces for node {}, returning most recently scanned interface: {}", nodeId, retval.getInterfaceId());
             }
             return retval;
         }
