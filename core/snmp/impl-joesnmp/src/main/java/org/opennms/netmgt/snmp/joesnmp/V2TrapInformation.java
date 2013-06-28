@@ -164,7 +164,7 @@ public class V2TrapInformation extends TrapInformation {
         String varBindName0 = m_pdu.getVarBindAt(0).getName().toString();
         String varBindName1 = m_pdu.getVarBindAt(1).getName().toString();
         if (varBindName0.equals(V2TrapInformation.EXTREME_SNMP_SYSUPTIME_OID)) {
-            LOG.info("V2 trap from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+            LOG.info("V2 trap from {} has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : {} and {}", getTrapAddress(), varBindName0,  varBindName1);
             varBindName0 = V2TrapInformation.SNMP_SYSUPTIME_OID;
         }
         if ((!(varBindName0.equals(V2TrapInformation.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(V2TrapInformation.SNMP_TRAP_OID)))) {
