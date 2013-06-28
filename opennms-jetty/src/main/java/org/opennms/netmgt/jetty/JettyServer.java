@@ -160,7 +160,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * @param contextPath a {@link java.lang.String} object.
      */
     protected void addContext(HandlerCollection handlers, File name, String contextPath) {
-        LOG.warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
+        LOG.warn("adding context: {} -> {}", contextPath,  name.getAbsolutePath());
         WebAppContext wac = new WebAppContext();
 	/*
 	 * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
@@ -207,7 +207,7 @@ public class JettyServer extends AbstractServiceDaemon {
         contextFactory.setExcludeCipherSuites(exclSuites);
         
         for (String suite : exclSuites) {
-            LOG.info("Excluded SSL/TLS cipher suite " + suite + " for connector on port " + port);
+            LOG.info("Excluded SSL/TLS cipher suite {} for connector on port {}", suite,  port);
         }
     }
 
