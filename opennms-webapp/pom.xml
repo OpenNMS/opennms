@@ -123,12 +123,6 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
-          <systemProperties>
-            <systemProperty>
-              <name>log4j.configuration</name>
-              <value>file:${basedir}/runInPlace-log4j.properties</value>
-            </systemProperty>
-          </systemProperties>
         </configuration>
       </plugin>
 

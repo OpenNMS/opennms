@@ -843,7 +843,8 @@
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
-    <log4jVersion>1.2.16</log4jVersion>
+    <log4jVersion>99.99.99-use-log4j2</log4jVersion>
+    <log4j2Version>2.0-beta7</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -2587,6 +2588,21 @@
         <artifactId>jwebunit-htmlunit-plugin</artifactId>
         <version>2.5</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j2Version}</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>

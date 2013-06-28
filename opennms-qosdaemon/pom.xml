@@ -214,16 +214,6 @@
   </reporting>
   <dependencies>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.openoss</groupId>
       <artifactId>OSSbeans-xml</artifactId>
       <scope>compile</scope>

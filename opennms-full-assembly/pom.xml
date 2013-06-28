@@ -314,7 +314,7 @@
       <artifactId>opennms-base-assembly</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
-      <classifier>log4j</classifier>
+      <classifier>log4j2</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
