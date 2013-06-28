@@ -15,6 +15,10 @@
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
       <version>0.6</version>
+      <exclusion>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+      </exclusion>
     </dependency>
   </dependencies>
   <repositories>
