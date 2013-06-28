@@ -35,7 +35,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="downtime")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class Downtime implements java.io.Serializable {
 
 

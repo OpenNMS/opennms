@@ -71,13 +71,15 @@ public class ServiceTest extends XmlTest<Service> {
     public void testEmbededXml() throws Exception {
         String xml = "<service name='SNMP' interval='300000' user-defined='false' status='on'>\n" +
                      "  <parameter key='oid' value='.1.3.6.1.2.1.1.2.0'/>\n" +
-    	             "  <parameter key='person'><person name='alejandro'/></parameter>\n" +
+    	             "  <parameter key='person'><person firstName='alejandro' lastName='galue'/></parameter>\n" +
                      "</service>\n";
-    	Service s = JaxbUtils.unmarshal(Service.class, xml, false);
+    	Service s = JaxbUtils.unmarshal(Service.class, xml);
     	Assert.assertNotNull(s);
-    	Assert.assertEquals("person", s.getParameterCollection().get(1).getKey());
-    	Assert.assertNull(s.getParameterCollection().get(1).getValue());
-    	Assert.assertEquals("<person xmlns=\"http://xmlns.opennms.org/xsd/config/poller\" name=\"alejandro\"/>", s.getParameterCollection().get(1).getAnyObject().toString());
+    	Parameter p = s.getParameterCollection().get(1);
+    	Assert.assertEquals("person", p.getKey());
+    	Assert.assertNull(p.getValue());
+    	Assert.assertTrue(p.getAnyObject() instanceof Person);
+    	Assert.assertEquals("alejandro", ((Person)p.getAnyObject()).getFirstName());
     }
 
 }

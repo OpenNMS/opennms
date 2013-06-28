@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -71,10 +72,8 @@ public class PollerConfigFactoryTest extends TestCase {
             "       </rrd>\n" +
             "       <service name=\"ICMP\" interval=\"300000\">\n" +
             "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
-            "         <parameter key=\"any-parm\">" +
-            "            <config>" +
-            "              <data/>" +
-            "            </config>" +
+            "         <parameter key=\"owner\">" +
+            "            <person firstName='alejandro' lastName='galue'/>" +
             "         </parameter>" +
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
@@ -197,6 +196,10 @@ public class PollerConfigFactoryTest extends TestCase {
         assertTrue(newFactory.isInterfaceInPackage("192.169.1.5", p));
         assertFalse(newFactory.isInterfaceInPackage("192.168.1.5", p));
         
+        Parameter param = newFactory.getPackage("default").getService()[0].getParameter()[1];
+        assertEquals("owner", param.getKey());
+        assertNull(param.getValue());
+        assertNotNull(param.getAnyObject());
     }
     
     public void testInterfaceInPackage() throws Exception {

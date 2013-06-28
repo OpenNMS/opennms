@@ -31,7 +31,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="poller-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class PollerConfiguration implements java.io.Serializable {
 
 

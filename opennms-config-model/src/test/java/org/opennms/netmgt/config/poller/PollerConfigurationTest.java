@@ -138,15 +138,47 @@ public class PollerConfigurationTest extends XmlTest<PollerConfiguration> {
 				"    </rrd>\n" +
 				"    <service name='ICMP' interval='300000' user-defined='false' status='on'>\n" +
 				"      <parameter key='test-key' value='test-value'/>\n" +
- 				"      <parameter key='any-parm'><config><data/></config></parameter>\n" +
+ 				"      <parameter key='owner'><person firstName='alejandro' lastName='galue'/></parameter>\n" +
 				"    </service>\n" +
 				"    <downtime begin='0' end='30000' interval='30000'/>\n" +
 				"</package>\n" +
 				"<monitor service='ICMP' class-name='org.opennms.netmgt.mock.MockMonitor'/>\n" +
 				"</poller-configuration>";
-		PollerConfiguration cfg = JaxbUtils.unmarshal(PollerConfiguration.class, xml, false);
+		PollerConfiguration cfg = JaxbUtils.unmarshal(PollerConfiguration.class, xml);
 		Assert.assertNotNull(cfg);
 		Assert.assertEquals("default", cfg.getPackageCollection().get(0).getName());
 	}
+
+    @Test
+    public void testPollerConfigFactorySampleData() throws Exception {
+        final String pollerConfig = "\n" +
+                "<poller-configuration\n" +
+                "   threads=\"10\"\n" +
+                "   nextOutageId=\"SELECT nextval(\'outageNxtId\')\"\n" +
+                "   serviceUnresponsiveEnabled=\"false\">\n" +
+                "   <node-outage status=\"on\" pollAllIfNoCriticalServiceDefined=\"true\"></node-outage>\n" +
+                "   <package name=\"default\">\n" +
+                "       <filter>IPADDR IPLIKE *.*.*.*</filter>\n" +
+                "       <rrd step = \"300\">\n" + 
+                "           <rra>RRA:AVERAGE:0.5:1:2016</rra>\n" + 
+                "           <rra>RRA:AVERAGE:0.5:12:4464</rra>\n" + 
+                "           <rra>RRA:MIN:0.5:12:4464</rra>\n" + 
+                "           <rra>RRA:MAX:0.5:12:4464</rra>\n" + 
+                "       </rrd>\n" +
+                "       <service name=\"ICMP\" interval=\"300000\">\n" +
+                "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
+                "         <parameter key=\"owner\">" +
+                "            <person firstName='alejandro' lastName='galue'/>" +
+                "         </parameter>" +
+                "       </service>\n" +
+                "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
+                "   </package>\n" +
+                "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>\n"+
+                "</poller-configuration>\n";
+		PollerConfiguration cfg = JaxbUtils.unmarshal(PollerConfiguration.class, pollerConfig);
+		Assert.assertNotNull(cfg);
+		Assert.assertEquals("default", cfg.getPackageCollection().get(0).getName());
+    }
+
 
 }

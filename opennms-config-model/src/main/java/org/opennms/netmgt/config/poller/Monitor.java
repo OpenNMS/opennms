@@ -29,7 +29,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="monitor")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class Monitor implements java.io.Serializable {
 
 

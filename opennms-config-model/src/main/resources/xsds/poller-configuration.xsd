@@ -454,7 +454,7 @@
     <complexType>
 
       <sequence>
-        <any id="configuration" minOccurs="0" maxOccurs="1" />
+        <any processContents="lax" id="configuration" minOccurs="0" maxOccurs="1" />
       </sequence>
       
       <attribute name="key" type="string" use="required"/>

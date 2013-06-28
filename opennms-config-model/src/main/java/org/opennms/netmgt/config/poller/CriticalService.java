@@ -41,7 +41,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="critical-service")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class CriticalService implements java.io.Serializable {
 
 

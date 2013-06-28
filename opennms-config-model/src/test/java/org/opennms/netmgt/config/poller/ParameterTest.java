@@ -47,13 +47,13 @@ public class ParameterTest extends XmlTest<Parameter> {
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         final Parameter parameter = new Parameter();
-        parameter.setKey("name");
+        parameter.setKey("firstName");
         parameter.setValue("alejandro");
         
         return Arrays.asList(new Object[][] {
             {
                 parameter,
-                "<parameter key='name' value='alejandro'/>\n",
+                "<parameter key='firstName' value='alejandro'/>\n",
                 "target/classes/xsds/poller-configuration.xsd"
             }
         });
@@ -61,12 +61,18 @@ public class ParameterTest extends XmlTest<Parameter> {
 
     @Test
     public void testEmbededXml() throws Exception {
-    	String xml = "<parameter key='person'><person name='alejandro'/></parameter>";
+    	String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                     "<parameter key=\"person\" xmlns=\"http://xmlns.opennms.org/xsd/config/poller\">\n" +
+                     "    <person firstName=\"alejandro\" lastName=\"galue\"/>\n" + 
+                     "</parameter>\n";
     	Parameter p = JaxbUtils.unmarshal(Parameter.class, xml, false);
     	Assert.assertNotNull(p);
     	Assert.assertEquals("person", p.getKey());
     	Assert.assertNull(p.getValue());
-    	Assert.assertEquals("<person xmlns=\"http://xmlns.opennms.org/xsd/config/poller\" name=\"alejandro\"/>", p.getAnyObject().toString());
+    	Assert.assertTrue(p.getAnyObject() instanceof Person);
+    	Assert.assertEquals("alejandro", ((Person)p.getAnyObject()).getFirstName());
+    	String jaxbXml = JaxbUtils.marshal(p);
+    	Assert.assertEquals(xml, jaxbXml);
     }
 
 }

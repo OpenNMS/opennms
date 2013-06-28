@@ -99,19 +99,6 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         setUpInternalData();
     }
 
-    // FIXME: According to tests, the unmarshall must be called without validation, but still doesn't work.
-    @Override
-    protected PollerConfiguration loadConfig(final Resource resource) {
-        long startTime = System.currentTimeMillis();
-        if (log().isDebugEnabled()) {
-            log().debug("Loading poller configuration from " + resource);
-        }
-        PollerConfiguration config = translateConfig(JaxbUtils.unmarshal(PollerConfiguration.class, resource, false));
-        long endTime = System.currentTimeMillis();
-        log().info(createLoadedLogMessage(config, (endTime - startTime)));
-        return config;
-    }
-
     @Override
     public Lock getReadLock() {
         return m_readLock;

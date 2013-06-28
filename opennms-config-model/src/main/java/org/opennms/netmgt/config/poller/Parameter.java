@@ -14,11 +14,15 @@ package org.opennms.netmgt.config.poller;
 import java.io.StringWriter;
 import java.util.List;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
@@ -46,7 +50,6 @@ import org.w3c.dom.Node;
 
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class Parameter implements java.io.Serializable {
 
 
@@ -69,10 +72,8 @@ import org.w3c.dom.Node;
     /**
      * Field _anyObject.
      */
-	@XmlAnyElement(AnyObjectHandler.class)
-//	@XmlAnyElement(lax=true)
-//	@XmlJavaTypeAdapter(AnyObjectAdapter.class)
-    private XmlContent _anyObject;
+	@XmlAnyElement(lax=true) // lax=true is required to parse the object as a JAXBElement, otherwise it will be parsed as Element
+	private java.lang.Object _anyObject;
 
 
       //----------------/
@@ -134,9 +135,12 @@ import org.w3c.dom.Node;
      * 
      * @return the value of field 'AnyObject'.
      */
-    public XmlContent getAnyObject(
+    public Object getAnyObject(
     ) {
-    	return this._anyObject;
+    	if (_anyObject != null && _anyObject instanceof JAXBElement) {
+    		return ((JAXBElement)_anyObject).getValue();
+    	}
+    	return null;
     }
 
     /**
@@ -238,7 +242,7 @@ import org.w3c.dom.Node;
      * @param anyObject the value of field 'anyObject'.
      */
     public void setAnyObject(
-            final XmlContent anyObject) {
+            final Object anyObject) {
     	this._anyObject = anyObject;
     }
 

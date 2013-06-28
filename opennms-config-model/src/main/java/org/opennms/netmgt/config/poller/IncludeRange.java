@@ -29,7 +29,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="include-range")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class IncludeRange implements java.io.Serializable {
 
 

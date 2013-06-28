@@ -30,7 +30,6 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="filter")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class Filter implements java.io.Serializable {
 
 
