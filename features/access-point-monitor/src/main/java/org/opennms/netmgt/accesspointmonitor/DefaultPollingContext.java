@@ -241,7 +241,7 @@ public class DefaultPollingContext implements PollingContext {
         updateApStatus(apsUp, apsDown);
 
         // Reschedule the service
-        LOG.debug("Re-scheduling the package '" + getPackage().getName() + "' in " + m_interval);
+        LOG.debug("Re-scheduling the package '{}' in {}", getPackage().getName(),  m_interval);
         m_scheduler.schedule(m_interval, getReadyRunnable());
     }
 

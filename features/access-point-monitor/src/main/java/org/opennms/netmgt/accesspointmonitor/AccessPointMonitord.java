@@ -446,7 +446,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         p.init();
 
         // Schedule it
-        LOG.debug("schedulePackages: Scheduling " + pkg.getName() + " every " + svc.getInterval());
+        LOG.debug("schedulePackages: Scheduling {} every {}", pkg.getName(),  svc.getInterval());
         getScheduler().schedule(svc.getInterval(), p);
 
         // Store in the map
