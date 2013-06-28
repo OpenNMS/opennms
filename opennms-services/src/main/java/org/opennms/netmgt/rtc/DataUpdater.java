@@ -345,11 +345,11 @@ final class DataUpdater implements Runnable {
 
         // check that we got the required parameter
         if (url == null) {
-            LOG.warn(m_event.getUei() + " did not have required information.  Value of url:  " + url);
+            LOG.warn("{} did not have required information.  Value of url: {}", m_event.getUei(), url);
         } else {
             RTCManager.getInstance().getDataSender().unsubscribe(url);
 
-            LOG.debug(m_event.getUei() + " unsubscribed " + url);
+            LOG.debug("{} unsubscribed {}", m_event.getUei(), url);
         }
     }
 
@@ -363,7 +363,7 @@ final class DataUpdater implements Runnable {
         dataMgr.assetInfoChanged(nodeid);
 
 
-        LOG.debug(m_event.getUei() + " asset info changed for node " + nodeid);
+        LOG.debug("{} asset info changed for node {}", m_event.getUei(), nodeid);
 
     }
     
@@ -379,7 +379,7 @@ final class DataUpdater implements Runnable {
         dataMgr.nodeCategoryMembershipChanged(nodeid);
 
 
-        LOG.debug(m_event.getUei() + " surveillance category membership changed for node " + nodeid);
+        LOG.debug("{} surveillance category membership changed for node {}", m_event.getUei(), nodeid);
     }
 
     /**

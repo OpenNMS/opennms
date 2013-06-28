@@ -244,7 +244,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-                    LOG.debug(getPluginName() + ": Request returned code: " + rVal);
+                    LOG.debug("{} : Request returned code: {}", getPluginName(), rVal);
                     if (rVal >= 99 && rVal <= maxRetCode )
                         isAServer = true;
                 } else {

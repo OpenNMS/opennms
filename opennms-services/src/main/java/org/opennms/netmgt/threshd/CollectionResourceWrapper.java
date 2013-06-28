@@ -320,7 +320,7 @@ public class CollectionResourceWrapper {
         try {
             current = Double.parseDouble(numValue);
         } catch (NumberFormatException e) {
-            LOG.error(id + " does not have a numeric value: " + numValue);
+            LOG.error("{} does not have a numeric value: {}", id, numValue);
             return null;
         }
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {

@@ -2601,9 +2601,9 @@ public final class RescanProcessor implements Runnable {
                             if (k.hasNext()) {
                                 kstring = k.next().toString();
                                 if (jstring.equals(kstring)) {
-                                    LOG.debug(jstring + " = " + kstring);
+                                    LOG.debug("{} = {}", jstring, kstring);
                                 } else {
-                                    LOG.debug(jstring + " != " + kstring);
+                                    LOG.debug("{} != {}", jstring, kstring);
                                     listMatch = false;
                                 }
                             } else {

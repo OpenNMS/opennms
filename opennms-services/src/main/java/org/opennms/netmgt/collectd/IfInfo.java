@@ -198,7 +198,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     public boolean isScheduledForCollection() {
-        LOG.debug(this+".collectionEnabled = "+isCollectionEnabled());
+        LOG.debug("{} .collectionEnabled = {}", this, isCollectionEnabled());
         LOG.debug("selectCollectionOnly = {}", getCollection().isSelectCollectionOnly());
 
         boolean isScheduled = isCollectionEnabled() || !getCollection().isSelectCollectionOnly();
