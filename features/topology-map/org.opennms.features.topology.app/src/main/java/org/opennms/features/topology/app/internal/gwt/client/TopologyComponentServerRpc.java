@@ -19,6 +19,5 @@ public interface TopologyComponentServerRpc extends ServerRpc {
     public void clientCenterPoint(int x, int y);
     public void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform);
     public void updateVertices(List<String> vertices);
-    
-    
+    public void backgroundDoubleClick(double x, double y);
 }

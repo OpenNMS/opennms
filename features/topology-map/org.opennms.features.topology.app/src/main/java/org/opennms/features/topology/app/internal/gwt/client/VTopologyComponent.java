@@ -340,15 +340,15 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
                                 @Override
 				public String call(GWTEdge edge, int index) {
-					/*
-					TODO Figure out how to do this in the new GWT API
+                    /*
+                    TODO Figure out how to do this in the new GWT API
 				    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
 				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
 				    }
 					 */
-					String edgeId = edge.getId();
-					return edgeId;
-				}
+                    String edgeId = edge.getId();
+                    return edgeId;
+                }
 
 			};
 			return edgeGroup.selectAll(GWTEdge.SVG_EDGE_ELEMENT).data(graph.getEdges(), edgeIdentifierFunction);
@@ -377,7 +377,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	interface VTopologyComponentUiBinder extends UiBinder<Widget, VTopologyComponent> {}
 
 	private ApplicationConnection m_client;
-	private String m_paintableId;
 
 	private GWTGraph m_graph;
 	private DragObject m_dragObject;
@@ -517,8 +516,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		select.call(d3Pan);
 	}
 
-	private void deselectAllItems(boolean immediate) {
-	    //m_client.updateVariable(m_paintableId, "deselectAllItems", true, immediate);
+	private void deselectAllItems() {
 	    m_serverRpc.deselectAllItems();
     }
 
@@ -557,6 +555,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 					Event event = (Event) D3.getEvent();
 					// TODO: Figure out how to do this in the new GWT
 					//m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
+                    m_client.getVTooltip().show();
 					event.stopPropagation();
 					event.preventDefault();
 				}
@@ -586,7 +585,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             @Override
             public void call(GWTEdge edge, int index) {
-                //m_client.updateVariable(m_paintableId, "clickedEdge", edge.getId(), true);
                 m_serverRpc.edgeClicked(edge.getId());
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
@@ -603,13 +601,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				NativeEvent event = D3.getEvent();
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
 				vertexElement.getParentElement().appendChild(vertexElement);
-				
-//				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
-//				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
-//				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
-//				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
-//				m_client.updateVariable(m_paintableId, "platform", Navigator.getPlatform(), false);
-//				m_client.sendPendingVariableChanges();
 				
 				event.preventDefault();
 				event.stopPropagation();
@@ -872,10 +863,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		return m_client;
 	}
 
-	public String getPaintableId() {
-		return m_paintableId;
-	}
-
 	public void showContextMenu(Object target, int x, int y, String type) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("target", target);
@@ -958,11 +945,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     @Override
     public void onMouseWheel(double scrollVal, int x, int y) {
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put("x", x);
-        props.put("y", y);
-        props.put("scrollVal", scrollVal);
-//        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
         m_serverRpc.scrollWheel(scrollVal, x, y);
     }
     
@@ -980,10 +962,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     @Override
     public void onBackgroundDoubleClick(SVGPoint center) {
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put("x", (int)center.getX());
-        props.put("y", (int)center.getY());
-        getClient().updateVariable(getPaintableId(), "doubleClick", props, true);
+        m_serverRpc.backgroundDoubleClick(center.getX(), center.getY());
     }
 
     public void setComponentServerRpc(TopologyComponentServerRpc rpc) {

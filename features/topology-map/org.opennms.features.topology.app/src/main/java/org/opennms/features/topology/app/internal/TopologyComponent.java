@@ -133,7 +133,12 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                 updateGraph();
             }
         }
-        
+
+        @Override
+        public void backgroundDoubleClick(double x, double y) {
+            //TODO: set the center point and zoom in by 25%
+        }
+
     };
     
     public interface VertexUpdateListener{

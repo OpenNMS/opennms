@@ -52,7 +52,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setX(location.getX());
 		v.setY(location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
-		if(m_graphContainer.getStatusProvider() != null) {
+		if(m_graphContainer.getStatusProvider().getNamespace() != null) {
             //TODO: This assumes Alarm status need to provide a better api
             v.setStatus(getStatus(vertex));
             v.setStatusCount(getStatusCount(vertex));

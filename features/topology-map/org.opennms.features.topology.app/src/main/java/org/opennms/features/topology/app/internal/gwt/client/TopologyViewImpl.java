@@ -171,7 +171,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
+        if(m_presenter.getViewRenderer() != null){
             m_presenter.getViewRenderer().draw(graph, this, oldBBox);
+        }
     }
     
     @Override
