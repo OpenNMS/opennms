@@ -538,7 +538,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 		try{
 
-			LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+			LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(),  nasce.getAlarmAckState());
 			OnmsAlarm alarm=null;
 			try {
 				String ossPrimaryKey=nasce.getAlarmKey().getAlarmPrimaryKey();
@@ -559,7 +559,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(nasce.getAckTime());
 						alarm.setAlarmAckUser(nasce.getAckUserId());
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(),  nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
 						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
@@ -574,7 +574,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(null);  // may throw illegal as putting in null
 						alarm.setAlarmAckUser(null);
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(),  nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
 						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
