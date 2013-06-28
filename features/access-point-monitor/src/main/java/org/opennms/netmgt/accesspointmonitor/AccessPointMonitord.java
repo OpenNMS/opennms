@@ -308,7 +308,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      */
     public AccessPointMonitord() {
-        super("OpenNMS.AccessPointMonitor");
+        super("access-point-monitor");
     }
 
     /** {@inheritDoc} */

@@ -73,7 +73,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      * <p>Constructor for PassiveStatusKeeper.</p>
      */
     public PassiveStatusKeeper() {
-    	super("OpenNMS.PassiveStatusKeeper");
+    	super("passive");
     }
     
     /**

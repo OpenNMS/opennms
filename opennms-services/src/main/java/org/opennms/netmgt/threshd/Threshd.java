@@ -108,7 +108,7 @@ public final class Threshd extends AbstractServiceDaemon {
      * Constructor.
      */
     Threshd() {
-    	super("OpenNMS.Threshd");
+    	super("threshd");
         m_scheduler = null;
         m_thresholdableServices = Collections.synchronizedList(new LinkedList<ThresholdableService>());
     }

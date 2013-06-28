@@ -130,7 +130,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
-        super("OpenNMS.Trapd");
+        super("trapd");
     }
     
     /**

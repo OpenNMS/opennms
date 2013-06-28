@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
@@ -92,7 +93,7 @@ public class MapStartUpController extends SimpleFormController {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
 		
-		MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+		Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		try{
 	        String user = request.getRemoteUser();

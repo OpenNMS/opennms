@@ -62,8 +62,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         super(NAME);
     }
 
-    /** Constant <code>NAME="OpenNMS.EventTranslator"</code> */
-    public final static String NAME = "OpenNMS.EventTranslator";
+    public final static String NAME = "event-translator";
 
     /**
      * <p>onInit</p>

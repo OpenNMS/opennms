@@ -77,7 +77,7 @@ public class Linkd extends AbstractServiceDaemon {
     /**
      * The log4j category used to log messages.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Linkd";
+    private static final String LOG4J_CATEGORY = "linkd";
 
     /**
      * Rescan scheduler thread

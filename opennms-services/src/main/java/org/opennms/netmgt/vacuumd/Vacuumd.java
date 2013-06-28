@@ -100,7 +100,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      * <p>Constructor for Vacuumd.</p>
      */
     public Vacuumd() {
-        super("OpenNMS.Vacuumd");
+        super("vacuumd");
     }
 
     /*

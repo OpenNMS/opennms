@@ -75,7 +75,7 @@ public class Tl1d extends AbstractServiceDaemon {
      * <p>Constructor for Tl1d.</p>
      */
     public Tl1d() {
-        super("OpenNMS.Tl1d");
+        super("tl1d");
     }
 	
     /**

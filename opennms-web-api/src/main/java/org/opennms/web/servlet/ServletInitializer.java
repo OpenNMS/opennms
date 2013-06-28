@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 
 import org.slf4j.MDC;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public class ServletInitializer extends Object {
          * category prefix
          */
         
-        MDC.put("prefix", "OpenNMS.WEB");
+        Logging.putPrefix("web");
 
         Properties properties = new Properties(System.getProperties());
 

@@ -60,7 +60,7 @@ public class Reportd implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(Reportd.class);
 
     /** Constant <code>NAME="Reportd"</code> */
-    public static final String NAME = "Reportd";
+    public static final String NAME = "reportd";
     
     private volatile EventForwarder m_eventForwarder;
     private ReportScheduler m_reportScheduler;
@@ -138,7 +138,7 @@ public class Reportd implements SpringServiceDaemon {
         } catch (ReportDeliveryException e) {
             createAndSendReportingEvent(EventConstants.REPORT_DELIVERY_FAILED_UEI, report.getReportName(), e.getMessage());
         } finally {        
-        	MDC.setContextMap(mdc);
+        	Logging.setContextMap(mdc);
         }
     }
     

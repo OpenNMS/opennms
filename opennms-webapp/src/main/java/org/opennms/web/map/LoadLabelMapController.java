@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
@@ -91,7 +92,7 @@ public class LoadLabelMapController extends SimpleFormController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-        MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		
 		try{

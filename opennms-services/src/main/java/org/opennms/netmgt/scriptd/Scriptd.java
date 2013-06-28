@@ -59,8 +59,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Scriptd.class);
     
-    /** Constant <code>NAME="OpenNMS.Scriptd"</code> */
-    public static final String NAME = "OpenNMS.Scriptd";
+    public static final String NAME = "scriptd";
 
     /**
      * The singleton instance.

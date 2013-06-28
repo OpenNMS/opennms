@@ -61,7 +61,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * <p>Constructor for JettyServer.</p>
      */
     protected JettyServer() {
-        super("OpenNMS.JettyServer");
+        super("jetty-server");
     }
     
     /** {@inheritDoc} */

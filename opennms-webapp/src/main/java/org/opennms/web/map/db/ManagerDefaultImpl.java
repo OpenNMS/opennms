@@ -44,6 +44,7 @@ import java.util.UUID;
 import java.util.Vector;
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.categories.CatFactory;
@@ -234,7 +235,7 @@ public class ManagerDefaultImpl implements Manager {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public ManagerDefaultImpl() throws MapsException {
-    	MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
             LOG.debug("Instantiating ManagerDefaultImpl");
     }
 

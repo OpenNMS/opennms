@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 
 
@@ -95,7 +96,7 @@ public class SearchMapsController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 	    int mapWidth = WebSecurityUtils.safeParseInt(request
 	                                                   .getParameter("MapWidth"));
         int mapHeight = WebSecurityUtils.safeParseInt(request

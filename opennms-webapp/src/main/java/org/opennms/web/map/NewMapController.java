@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 
 import org.opennms.web.map.view.Manager;
@@ -91,7 +92,7 @@ public class NewMapController implements Controller {
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-        MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 
 		int mapWidth = WebSecurityUtils.safeParseInt(request

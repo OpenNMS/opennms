@@ -71,7 +71,7 @@ public class Logging {
             throws Exception {
         Map mdc = Logging.getCopyOfContextMap();
         try {
-            mdc.put(PREFIX_KEY, prefix);
+            Logging.putPrefix(prefix);
             return callable.call();
         } finally {
             Logging.setContextMap(mdc);

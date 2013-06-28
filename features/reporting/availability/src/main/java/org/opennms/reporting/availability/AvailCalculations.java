@@ -44,6 +44,7 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.reporting.datablock.IfService;
 import org.opennms.reporting.datablock.Interface;
 import org.opennms.reporting.datablock.Node;
@@ -67,7 +68,7 @@ public class AvailCalculations extends Object {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     /**
      * Castor object that holds all the information required for the generating
@@ -173,7 +174,7 @@ public class AvailCalculations extends Object {
         category.setServiceCount(serviceCount);
 
         org.opennms.reporting.availability.Categories categories = report.getCategories();
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
 
         LOG.debug("Inside AvailCalculations using endTime {}", endTime);
 

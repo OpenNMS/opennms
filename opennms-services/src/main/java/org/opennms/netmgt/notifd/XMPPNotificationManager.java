@@ -69,7 +69,7 @@ public class XMPPNotificationManager {
 
 	private final Properties props = new Properties();
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Notifd";
+	private static final String LOG4J_CATEGORY = "notifd";
 
 	private static final String XMPP_RESOURCE = "notifd";
 

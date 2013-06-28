@@ -115,7 +115,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Log4j category
      */
-    private final static String LOG4J_CATEGORY = "OpenNMS.Collectd";
+    private final static String LOG4J_CATEGORY = "collectd";
     
     /**
      * Instantiated service collectors specified in config file

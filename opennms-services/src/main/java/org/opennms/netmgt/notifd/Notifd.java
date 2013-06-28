@@ -110,7 +110,7 @@ public final class Notifd extends AbstractServiceDaemon {
      * Constructs a new Notifd service daemon.
      */
     protected Notifd() {
-    	super("OpenNMS.Notifd");
+    	super("notifd");
     }
 
     /**

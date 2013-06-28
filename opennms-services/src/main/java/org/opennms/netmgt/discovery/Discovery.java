@@ -156,7 +156,7 @@ public class Discovery extends AbstractServiceDaemon {
      * Constructs a new discovery instance.
      */
     public Discovery() {
-        super("OpenNMS.Discovery");
+        super("discovery");
     }
 
     /**

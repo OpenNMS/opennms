@@ -46,6 +46,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
@@ -69,7 +70,7 @@ import org.opennms.reporting.core.svclayer.ReportStoreService;
 public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     private static final Logger LOG = LoggerFactory.getLogger(AvailabilityCalculatorImpl.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     // String of Months
     public static String[] months = new String[] { "January", "February",
@@ -128,7 +129,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
      * <p>Constructor for AvailabilityCalculatorImpl.</p>
      */
     public AvailabilityCalculatorImpl() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
         
         m_report = new Report();
         m_report.setAuthor(m_author);

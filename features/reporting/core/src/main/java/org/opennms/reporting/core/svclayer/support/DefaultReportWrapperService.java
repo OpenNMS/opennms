@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.api.reporting.ReportException;
@@ -45,6 +44,7 @@ import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.javamail.JavaMailer;
@@ -70,13 +70,14 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private ReportStoreService m_reportStoreService;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     /**
      * <p>Constructor for DefaultReportWrapperService.</p>
      */
     public DefaultReportWrapperService() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        // TODO this should wrap the other methods
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /** {@inheritDoc} */

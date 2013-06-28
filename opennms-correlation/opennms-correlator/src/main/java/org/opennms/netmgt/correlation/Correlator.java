@@ -81,7 +81,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	 * <p>Constructor for Correlator.</p>
 	 */
 	protected Correlator() {
-		super("OpenNMS.Correlator");
+		super("correlator");
 	}
 
 	/** {@inheritDoc} */

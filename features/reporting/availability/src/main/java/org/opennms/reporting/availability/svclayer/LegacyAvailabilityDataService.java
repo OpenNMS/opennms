@@ -44,10 +44,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -76,13 +76,13 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
     
     private List<Node> m_nodes;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
     
     /**
      * <p>Constructor for LegacyAvailabilityDataService.</p>
      */
     public LegacyAvailabilityDataService() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
         LOG.debug("initialised DefaultAvailablityReportService");
     }
 

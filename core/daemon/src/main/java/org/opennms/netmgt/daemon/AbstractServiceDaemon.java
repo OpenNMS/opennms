@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.daemon;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ServiceDaemon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,7 @@ import org.slf4j.MDC;
  */
 public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceDaemon.class);
-	public static final String PREFIX = "prefix";
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceDaemon.class);
     /**
      * <p>afterPropertiesSet</p>
      *
@@ -217,17 +217,19 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>init</p>
      */
     final public void init() {
-    	final String prefix = getPrefix();
-        try {
-        	setPrefix(getName());
-            LOG.info("{} initializing.", getName());
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            onInit();
+            @Override
+            public void run() {
+                LOG.info("{} initializing.", getName());
 
-            LOG.info("{} initialization complete.", getName());
-        } finally {
-        	setPrefix(prefix);
-        }
+                onInit();
+
+                LOG.info("{} initialization complete.", getName());
+            }
+            
+        });
     }
 
 
@@ -237,23 +239,22 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public void pause() {
-    	final String prefix = getPrefix();
-        try {
-        	setPrefix(getName());
+        Logging.withPrefix(getName(), new Runnable() {
 
-            if (!isRunning()) return;
+            @Override
+            public void run() {
+                if (!isRunning()) return;
 
-            LOG.info("{} pausing.", getName());
+                LOG.info("{} pausing.", getName());
 
-            setStatus(PAUSE_PENDING);
-            onPause();
-            setStatus(PAUSED);
+                setStatus(PAUSE_PENDING);
+                onPause();
+                setStatus(PAUSED);
 
-            LOG.info("{} paused.", getName());
-
-        } finally {
-        	setPrefix(prefix);
-        }
+                LOG.info("{} paused.", getName());
+            }
+            
+        });
     }
 
     /**
@@ -261,55 +262,47 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public void resume() {
-        final String prefix = getPrefix();
-        try {
-            setPrefix(getName());
-            if (!isPaused()) return;
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            LOG.info("{} resuming.", getName());
+            @Override
+            public void run() {
+                if (!isPaused()) return;
 
-            setStatus(RESUME_PENDING);
-            onResume();
-            setStatus(RUNNING);
+                LOG.info("{} resuming.", getName());
 
-            LOG.info("{} resumed.", getName());
-        } finally {
-            setPrefix(prefix);
-        }
+                setStatus(RESUME_PENDING);
+                onResume();
+                setStatus(RUNNING);
+
+                LOG.info("{} resumed.", getName());
+            }
+            
+        });
     }
 
-	protected void setPrefix(final String prefix) {
-    	if (prefix == null) {
-    		MDC.remove(PREFIX);
-    	} else {
-    		MDC.put(PREFIX, prefix);
-    	}
-	
-	}
-
-	protected String getPrefix() {
-		return MDC.get(PREFIX);
-	}
 
     /**
      * <p>start</p>
      */
     @Override
     final public synchronized void start() {
-        final String prefix = getPrefix();
-        try {
-            setPrefix(getName());
-            LOG.info("{} starting.", getName());
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            setStatus(STARTING);
-            onStart();
-            setStatus(RUNNING);
+            @Override
+            public void run() {
+                LOG.info("{} starting.", getName());
 
-            LOG.info("{} started.", getName());
-        } finally {
-            setPrefix(prefix);
-        }
+                setStatus(STARTING);
+                onStart();
+                setStatus(RUNNING);
 
+                LOG.info("{} started.", getName());
+            }
+            
+        });
+        
     }
 
     /**
@@ -318,19 +311,22 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public synchronized void stop() {
-        final String prefix = getPrefix();
-        try {
-            setPrefix(getName());
-            LOG.info("{} stopping.", getName());
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            setStatus(STOP_PENDING);
-            onStop();
-            setStatus(STOPPED);
+            @Override
+            public void run() {
+                LOG.info("{} stopping.", getName());
 
-            LOG.info("{} stopped.", getName());
-        } finally {
-            setPrefix(prefix);
-        }
+                setStatus(STOP_PENDING);
+                onStop();
+                setStatus(STOPPED);
+
+                LOG.info("{} stopped.", getName());
+            }
+            
+        });
+        
     }
 
     /**

@@ -199,7 +199,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      * <p>Constructor for SnmpPoller.</p>
      */
     public SnmpPoller() {
-        super("OpenNMS.SnmpPoller");
+        super("snmp-poller");
     }
 
     /** {@inheritDoc} */

@@ -49,7 +49,6 @@ import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -153,44 +152,45 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(final Event event) {
         if (event.getUei() == null) {
             return;
         }
         
         
-        Method method = m_ueiToHandlerMap.get(event.getUei());
+        Method m = m_ueiToHandlerMap.get(event.getUei());
         
-        if (method == null) {
+        if (m == null) {
             // Try to get a catch-all event handler
-            method = m_ueiToHandlerMap.get(EventHandler.ALL_UEIS);
-            if (method == null) {
+            m = m_ueiToHandlerMap.get(EventHandler.ALL_UEIS);
+            if (m == null) {
                 throw new IllegalArgumentException("Received an event for which we have no handler!");
             }
         }
         
+        final Method method = m;
+        
          
-        Map mdc = Logging.getCopyOfContextMap();
-        try {
-            
-            if (m_logPrefix != null) {
-            	MDC.put("prefix", m_logPrefix);
+        Logging.withPrefix(m_logPrefix, new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    preprocessEvent(event);
+                    
+                    processEvent(event, method);
+                    
+                    postprocessEvent(event);
+                } catch (IllegalArgumentException e) {
+                    throw e;
+                } catch (IllegalAccessException e) {
+                    throw new UndeclaredThrowableException(e);
+                } catch (InvocationTargetException e) {
+                    handleException(event, e.getCause());
+                }
             }
             
-            preprocessEvent(event);
-            
-            processEvent(event, method);
-            
-            postprocessEvent(event);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (IllegalAccessException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (InvocationTargetException e) {
-            handleException(event, e.getCause());
-        } finally {
-        	Logging.setContextMap(mdc);
-        }
+        });
     }
 
     /**

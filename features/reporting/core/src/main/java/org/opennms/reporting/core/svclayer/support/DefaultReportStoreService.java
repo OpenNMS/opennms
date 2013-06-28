@@ -39,6 +39,7 @@ import org.hibernate.criterion.Order;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
+import org.opennms.core.logging.Logging;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.ReportCatalogDao;
@@ -61,13 +62,14 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private GlobalReportRepository m_globalReportRepository;
     
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
     
     /**
      * <p>Constructor for DefaultReportStoreService.</p>
      */
     public DefaultReportStoreService () {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        // TODO this needs to wrap method calls
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**

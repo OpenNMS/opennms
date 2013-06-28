@@ -39,6 +39,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
@@ -92,7 +93,7 @@ public class Controller {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
+    private static final String LOG4J_CATEGORY = "manager";
     
     /**
      * Default read timeout for HTTP requests in milliseconds.
@@ -120,7 +121,7 @@ public class Controller {
     public static void main(String[] argv) {
         configureLog4j();
         
-        MDC.put(AbstractServiceDaemon.PREFIX, LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
         
         Controller c = new Controller();
 

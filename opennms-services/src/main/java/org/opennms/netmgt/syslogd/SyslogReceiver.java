@@ -42,9 +42,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.MDC;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -62,7 +62,7 @@ class SyslogReceiver implements Runnable {
 
     private static final int SOCKET_TIMEOUT = 500;
     
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    private static final String LOG4J_CATEGORY = "syslogd";
 
     /**
      * The Fiber's status.
@@ -161,7 +161,7 @@ class SyslogReceiver implements Runnable {
         m_context = Thread.currentThread();
 
         // Get a log instance
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -229,7 +229,7 @@ class SyslogReceiver implements Runnable {
         } // end while status OK
 
         LOG.debug("Thread context exiting");
-        MDC.remove("prefix");
+
     }
 
     /**

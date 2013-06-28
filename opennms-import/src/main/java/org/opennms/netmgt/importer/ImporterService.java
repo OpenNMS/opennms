@@ -62,7 +62,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	private static final Logger LOG = LoggerFactory.getLogger(ImporterService.class);
 
 	/** Constant <code>NAME="ModelImporter"</code> */
-	public static final String NAME = "ModelImporter";
+	public static final String NAME = "model-importer";
 
 	private volatile Resource m_importResource;
 	private volatile EventIpcManager m_eventManager;
@@ -206,7 +206,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
         	
             Map mdc = Logging.getCopyOfContextMap();
             try {
-                MDC.put(Logging.PREFIX_KEY, NAME);
+                Logging.putPrefix(NAME);
 
                 if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
                     return;

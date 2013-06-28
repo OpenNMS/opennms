@@ -36,7 +36,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import org.apache.log4j.MDC;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +116,7 @@ class UdpReceiver implements Runnable {
         m_context = Thread.currentThread();
 
         // Get a log instance
-        MDC.put(Logging.PREFIX_KEY, m_logPrefix);
+        Logging.putPrefix(m_logPrefix);
         
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");

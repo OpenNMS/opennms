@@ -43,10 +43,10 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.MDC;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
@@ -74,7 +74,7 @@ public class AvailabilityReportService implements ReportService {
 
     private ParameterConversionService m_parameterConversionService;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private static final String CAL_TYPE = "calendar";
 
@@ -83,7 +83,7 @@ public class AvailabilityReportService implements ReportService {
      * <p>Constructor for AvailabilityReportService.</p>
      */
     public AvailabilityReportService() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /** {@inheritDoc} */

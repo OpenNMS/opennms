@@ -37,12 +37,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
-import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -61,7 +62,7 @@ public class AvailabilityData {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     /**
      * List of Node objects that satisfy the filter rule for the category.
@@ -161,74 +162,81 @@ public class AvailabilityData {
     }
     
 
-    private void generateData(String categoryName, Report report,
-            String format, String monthFormat,
-            Date periodEndDate)
+    private void generateData(final String categoryName, final Report report,
+            final String format, final String monthFormat,
+            final Date periodEndDate)
             throws IOException, MarshalException, ValidationException,
             Exception {
-        MDC.put("prefix", LOG4J_CATEGORY);
-        LOG.debug("Inside AvailabilityData");
-
-        m_nodes = new ArrayList<Node>();
         
-        initializeInterval(periodEndDate);
+        Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
 
-        Catinfo config = null;
-        try {
-            CategoryFactory.init();
-            m_catFactory = CategoryFactory.getInstance();
-            config = m_catFactory.getConfig();
-        } catch (IOException e) {
-            LOG.error("Initializing CategoryFactory", e);
-            throw e;
-        } catch (MarshalException e) {
-            LOG.error("Initializing CategoryFactory", e);
-            throw e;
-        } catch (ValidationException e) {
-            LOG.error("Initializing CategoryFactory", e);
-            throw e;
-        }
-        
-        // FIXME There's some magic in here regarding multiple categories in a report
-
-        LOG.debug("CATEGORY {}", categoryName);
-        
-        m_catFactory.getReadLock().lock();
-        try {
-            if (categoryName.equals("") || categoryName.equals("all")) {
-                int catCount = 0;
-                LOG.debug("catCount {}", catCount);
+            @Override
+            public Void call() throws Exception {
+                LOG.debug("Inside AvailabilityData");
                 
-                for(final Categorygroup cg : config.getCategorygroupCollection()) {
+                m_nodes = new ArrayList<Node>();
                 
-                    for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
-    
-                        LOG.debug("CATEGORY {}", cat.getLabel());
-                        catCount++;
-                        populateDataStructures(cat, report, format, monthFormat, catCount);
-                    }
+                initializeInterval(periodEndDate);
+                
+                Catinfo config = null;
+                try {
+                    CategoryFactory.init();
+                    m_catFactory = CategoryFactory.getInstance();
+                    config = m_catFactory.getConfig();
+                } catch (IOException e) {
+                    LOG.error("Initializing CategoryFactory", e);
+                    throw e;
+                } catch (MarshalException e) {
+                    LOG.error("Initializing CategoryFactory", e);
+                    throw e;
+                } catch (ValidationException e) {
+                    LOG.error("Initializing CategoryFactory", e);
+                    throw e;
                 }
-                LOG.debug("catCount {}", catCount);
-            } else {
-                org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
-                LOG.debug("CATEGORY - now populating data structures {}", cat.getLabel());
-                populateDataStructures(cat, report, format, monthFormat, 1);
+                
+                // FIXME There's some magic in here regarding multiple categories in a report
+                
+                LOG.debug("CATEGORY {}", categoryName);
+                
+                m_catFactory.getReadLock().lock();
+                try {
+                    if (categoryName.equals("") || categoryName.equals("all")) {
+                        int catCount = 0;
+                        LOG.debug("catCount {}", catCount);
+                        
+                        for(final Categorygroup cg : config.getCategorygroupCollection()) {
+                        
+                            for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
+                
+                                LOG.debug("CATEGORY {}", cat.getLabel());
+                                catCount++;
+                                populateDataStructures(cat, report, format, monthFormat, catCount);
+                            }
+                        }
+                        LOG.debug("catCount {}", catCount);
+                    } else {
+                        org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
+                        LOG.debug("CATEGORY - now populating data structures {}", cat.getLabel());
+                        populateDataStructures(cat, report, format, monthFormat, 1);
+                    }
+                
+                    final SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
+                    final String reportPeriod = simplePeriod.format(new java.util.Date(m_startTime)) + " - " + simplePeriod.format(new java.util.Date(m_endTime));
+                    Created created = report.getCreated();
+                    if (created == null) {
+                        created = new Created();
+                    }
+                    created.setPeriod(reportPeriod);
+                    report.setCreated(created);
+                } finally {
+                    m_catFactory.getReadLock().unlock();
+                }
+                
+                LOG.debug("After availCalculations");
+                return null;
             }
-    
-            final SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
-            final String reportPeriod = simplePeriod.format(new java.util.Date(m_startTime)) + " - " + simplePeriod.format(new java.util.Date(m_endTime));
-            Created created = report.getCreated();
-            if (created == null) {
-                created = new Created();
-            }
-            created.setPeriod(reportPeriod);
-            report.setCreated(created);
-        } finally {
-            m_catFactory.getReadLock().unlock();
-        }
+        });
 
-        LOG.debug("After availCalculations");
-        MDC.remove("prefix");
     }
 
     /**

@@ -50,7 +50,7 @@ import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.apache.log4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -64,7 +64,7 @@ import org.springframework.core.io.Resource;
 public class PDFReportRenderer implements ReportRenderer {
     private static final Logger LOG = LoggerFactory.getLogger(PDFReportRenderer.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private String m_outputFileName;
 
@@ -78,7 +78,7 @@ public class PDFReportRenderer implements ReportRenderer {
      * <p>Constructor for PDFReportRenderer.</p>
      */
     public PDFReportRenderer() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**

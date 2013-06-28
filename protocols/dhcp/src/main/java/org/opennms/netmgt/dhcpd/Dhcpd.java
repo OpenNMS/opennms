@@ -134,7 +134,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      * 
      */
     private Dhcpd() {
-    	super("OpenNMS.Dhcpd");
+    	super("dhcpd");
         m_clients = null;
         m_server = null;
         m_listener = null;

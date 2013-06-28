@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.MDC;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -246,7 +245,7 @@ final class TcpServer implements Runnable {
         }
 
         // get the log information
-        MDC.put(Logging.PREFIX_KEY, m_logPrefix);
+        Logging.putPrefix(m_logPrefix);
         
         // check to see if the thread has already been stopped.
         if (m_stop) {

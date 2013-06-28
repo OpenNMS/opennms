@@ -46,7 +46,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -60,7 +60,7 @@ import org.springframework.core.io.Resource;
 public class HTMLReportRenderer implements ReportRenderer {
     private static final Logger LOG = LoggerFactory.getLogger(HTMLReportRenderer.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private String m_outputFileName;
 
@@ -74,7 +74,8 @@ public class HTMLReportRenderer implements ReportRenderer {
      * <p>Constructor for HTMLReportRenderer.</p>
      */
     public HTMLReportRenderer() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        // TODO This shoud wrap the methods I think
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**

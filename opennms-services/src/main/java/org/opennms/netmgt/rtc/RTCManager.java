@@ -309,7 +309,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      * The constructor for the RTCManager
      */
     public RTCManager() {
-    	super("OpenNMS.RTCManager");
+    	super("rtc");
     }
 
     /**

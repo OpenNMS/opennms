@@ -99,7 +99,7 @@ public class Poller extends AbstractServiceDaemon {
      * <p>Constructor for Poller.</p>
      */
     public Poller() {
-    	super("OpenNMS.Poller");
+    	super("poller");
     }
 
     /* Getters/Setters used for dependency injection */

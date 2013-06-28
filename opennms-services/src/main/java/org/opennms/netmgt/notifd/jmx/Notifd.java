@@ -57,7 +57,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * Logging category for log4j
      */
-    private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
+    private static String LOG4J_CATEGORY = "notifd";
 
     /**
      * <p>Constructor for Notifd.</p>

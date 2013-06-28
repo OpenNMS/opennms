@@ -93,7 +93,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      * XMLRPC server via XMLRPC protocol.
      */
     public Xmlrpcd() {
-    	super("OpenNMS.Xmlrpcd");
+    	super("xmlrpcd");
     }
 
     /**

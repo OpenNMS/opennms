@@ -30,7 +30,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.util.List;
 
-import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
@@ -123,7 +122,7 @@ final class UdpProcessor implements Runnable {
         m_context = Thread.currentThread();
 
         // get a logger
-        MDC.put(Logging.PREFIX_KEY, m_logPrefix);
+        Logging.putPrefix(m_logPrefix);
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
             return;

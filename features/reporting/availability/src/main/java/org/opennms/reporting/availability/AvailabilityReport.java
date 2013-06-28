@@ -44,7 +44,6 @@ import java.util.GregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -65,7 +64,7 @@ public class AvailabilityReport extends Object {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     /*
      * classic month format
@@ -95,40 +94,45 @@ public class AvailabilityReport extends Object {
      * @param startDate a {@link java.lang.String} object.
      * @param startYear a {@link java.lang.String} object.
      */
-    public AvailabilityReport(String author, String startMonth,
-            String startDate, String startYear) {
-        MDC.put("prefix", LOG4J_CATEGORY);
-        LOG.debug("Inside AvailabilityReport");
+    public AvailabilityReport(final String author, final String startMonth,
+            final String startDate, final String startYear) {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
 
-        Calendar today = new GregorianCalendar();
-        int day = Integer.parseInt(startDate);
-        int year = Integer.parseInt(startYear);
-        // int month = Integer.parseInt(startMonth);
-        // int day = today.get(Calendar.DAY_OF_MONTH);
-        // int year = today.get(Calendar.YEAR);
-        // SimpleDateFormat smpMonth = new SimpleDateFormat("MMMMMMMMMMM");
-        // String month = smpMonth.format(new
-        // java.util.Date(today.getTime().getTime()));
-        // int month = today.get(Calendar.MONTH) + 1;
-        String month = months[Integer.parseInt(startMonth)];
-        int hour = today.get(Calendar.HOUR);
-        int minute = today.get(Calendar.MINUTE);
-        int second = today.get(Calendar.SECOND);
-        Created created = new Created();
-        created.setDay(day);
-        created.setHour(hour);
-        created.setMin(minute);
-        created.setMonth(month);
-        created.setSec(second);
-        created.setYear(year);
-        created.setContent(new BigDecimal(today.getTime().getTime()));
+            @Override
+            public void run() {
+                LOG.debug("Inside AvailabilityReport");
 
-        m_report = new Report();
-        m_report.setCreated(created);
-        m_report.setAuthor(author);
+                Calendar today = new GregorianCalendar();
+                int day = Integer.parseInt(startDate);
+                int year = Integer.parseInt(startYear);
+                // int month = Integer.parseInt(startMonth);
+                // int day = today.get(Calendar.DAY_OF_MONTH);
+                // int year = today.get(Calendar.YEAR);
+                // SimpleDateFormat smpMonth = new SimpleDateFormat("MMMMMMMMMMM");
+                // String month = smpMonth.format(new
+                // java.util.Date(today.getTime().getTime()));
+                // int month = today.get(Calendar.MONTH) + 1;
+                String month = months[Integer.parseInt(startMonth)];
+                int hour = today.get(Calendar.HOUR);
+                int minute = today.get(Calendar.MINUTE);
+                int second = today.get(Calendar.SECOND);
+                Created created = new Created();
+                created.setDay(day);
+                created.setHour(hour);
+                created.setMin(minute);
+                created.setMonth(month);
+                created.setSec(second);
+                created.setYear(year);
+                created.setContent(new BigDecimal(today.getTime().getTime()));
 
-        LOG.debug("Leaving AvailabilityReport");
-        MDC.remove("prefix");
+                m_report = new Report();
+                m_report.setCreated(created);
+                m_report.setAuthor(author);
+
+                LOG.debug("Leaving AvailabilityReport");
+            }
+
+        });
     }
 
     /**
@@ -233,25 +237,31 @@ public class AvailabilityReport extends Object {
      * @param format a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public void generatePDF(String xsltFileName, OutputStream out,
-            String format) throws Exception {
-        MDC.put("prefix", LOG4J_CATEGORY);
-        LOG.debug("inside generatePDF");
-        File file = new File(ConfigFileConstants.getHome()
-                + "/share/reports/AvailReport.xml");
-        try {
-            LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
-            Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-            if (!format.equals("HTML")) {
-                new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
-            } else {
-                new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+    public void generatePDF(final String xsltFileName, final OutputStream out,
+            final String format) throws Exception {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                LOG.debug("inside generatePDF");
+                File file = new File(ConfigFileConstants.getHome()
+                        + "/share/reports/AvailReport.xml");
+                try {
+                    LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
+                    Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+                    if (!format.equals("HTML")) {
+                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                    } else {
+                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                    }
+                } catch (Throwable e) {
+                    LOG.error("Exception", e);
+                }
+                LOG.info("leaving generatePDF");
             }
-        } catch (Throwable e) {
-            LOG.error("Exception", e);
-        }
-        LOG.info("leaving generatePDF");
-        MDC.remove("prefix");
+            
+        });
+
     }
 
     /**
@@ -264,7 +274,7 @@ public class AvailabilityReport extends Object {
 
         Logging.availabilityReportConfigureLogging(LOG4J_CATEGORY);
 
-        MDC.put("prefix", LOG4J_CATEGORY);
+       Logging.putPrefix(LOG4J_CATEGORY);
         LOG.debug("main() called with args: "+ StringUtils.arrayToDelimitedString(args, ", "));
 
         System.setProperty("java.awt.headless", "true");

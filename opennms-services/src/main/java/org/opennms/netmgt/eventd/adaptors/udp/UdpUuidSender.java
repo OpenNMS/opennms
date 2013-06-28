@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.MDC;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -135,9 +134,7 @@ final class UdpUuidSender implements Runnable {
         // get the context
         m_context = Thread.currentThread();
 
-        // get a logger
-        MDC.put(Logging.PREFIX_KEY, m_logPrefix);
-        boolean isTracing = LOG.isDebugEnabled();
+        Logging.putPrefix(m_logPrefix);
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -172,10 +169,8 @@ final class UdpUuidSender implements Runnable {
                 m_eventUuidsOut.clear();
             }
 
-            if (isTracing) {
-                LOG.debug("Received " + eventHold.size() + " event receipts to process");
-                LOG.debug("Processing receipts");
-            }
+            LOG.debug("Received {} event receipts to process", eventHold.size());
+            LOG.debug("Processing receipts");
 
             // build an event-receipt
             for (UdpReceivedEvent re : eventHold) {
@@ -211,9 +206,7 @@ final class UdpUuidSender implements Runnable {
                     byte[] xml_bytes = xml.getBytes("US-ASCII");
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
-                    if (isTracing) {
-                        LOG.debug("Transmitting receipt to destination " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
-                    }
+                    LOG.debug("Transmitting receipt to destination {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
 
                     m_dgSock.send(pkt);
                     
@@ -227,7 +220,7 @@ final class UdpUuidSender implements Runnable {
                         }
                     }
 
-                    if (isTracing) {
+                    if (LOG.isDebugEnabled()) {
                         LOG.debug("Receipt transmitted OK {");
                         LOG.debug(xml);
                         LOG.debug("}");

@@ -125,7 +125,7 @@ public class Capsd extends AbstractServiceDaemon {
      * Constructs the Capsd objec
      */
     public Capsd() {
-    	super("OpenNMS.Capsd");
+    	super("capsd");
         m_scheduler = null;
     }
 

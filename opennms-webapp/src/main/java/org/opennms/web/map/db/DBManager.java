@@ -52,6 +52,7 @@ import java.util.regex.Pattern;
 
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
@@ -99,7 +100,7 @@ public class DBManager extends Manager {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public DBManager() throws MapsException {
-    	MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
             LOG.debug("Instantiating DBManager (using Vault)");
     }
 
@@ -111,7 +112,7 @@ public class DBManager extends Manager {
      */
     public DBManager(java.util.Map<String, String> params)
             throws MapsException {
-    	MDC.put("prefix",  MapsConstants.LOG4J_CATEGORY);
+        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
             LOG.debug("Instantiating DBManager with params: {}", params);
         String url = params.get("url");
         String driver = params.get("driver");

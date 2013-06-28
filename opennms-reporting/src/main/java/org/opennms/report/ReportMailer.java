@@ -32,8 +32,8 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 
@@ -46,7 +46,7 @@ import org.opennms.javamail.JavaMailerException;
 public class ReportMailer {
     private static final Logger LOG = LoggerFactory.getLogger(ReportMailer.class);
     
-	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+	private static final String LOG4J_CATEGORY = "reports";
 	
 	private String m_filename;
 	
@@ -74,7 +74,8 @@ public class ReportMailer {
 		this.m_filename = filename;
 		this.m_subject = subject;
 		
-		MDC.put("prefix", LOG4J_CATEGORY);
+		// TODO wrap the methods is probably better
+		Logging.putPrefix(LOG4J_CATEGORY);
 	}
 	
 	/**

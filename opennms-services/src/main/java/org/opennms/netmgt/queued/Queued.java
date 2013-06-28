@@ -66,7 +66,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
      * <p>Constructor for Queued.</p>
      */
     public Queued() {
-        super("OpenNMS.Queued");
+        super("queued");
     }
     
     /**

@@ -139,8 +139,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	/*---------------VARIABLE DECLARATIONS----------------*/
 
 
-	/** Constant <code>NAME="OpenOSS.QoSDrx"</code> */
-	public static final String NAME = "OpenOSS.QoSDrx";
+	public static final String NAME = "oss-qosdrx";
 	private static String m_stats=null;  //not used but needed for initialisation	
 
 

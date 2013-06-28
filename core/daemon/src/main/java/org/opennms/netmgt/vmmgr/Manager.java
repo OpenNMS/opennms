@@ -85,7 +85,7 @@ public class Manager implements ManagerMBean {
     /**
      * The log4j category used to log debug messages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
+    private static final String LOG4J_CATEGORY = "manager";
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
 
     /**
@@ -285,7 +285,7 @@ public class Manager implements ManagerMBean {
     }
 
     private void setLogPrefix() {
-    	MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     private List<MBeanServer> getMBeanServers() {

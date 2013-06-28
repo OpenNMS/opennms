@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
-        super("OpenNMS.Syslogd");
+        super("syslogd");
     }
 
     /**

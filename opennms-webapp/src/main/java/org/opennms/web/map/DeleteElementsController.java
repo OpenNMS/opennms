@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VMap;
@@ -90,7 +91,7 @@ public class DeleteElementsController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		String action = request.getParameter("action");
 		String elems = request.getParameter("elems");

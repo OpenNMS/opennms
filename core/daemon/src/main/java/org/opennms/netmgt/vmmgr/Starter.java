@@ -42,7 +42,6 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.MDC;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
@@ -92,10 +91,10 @@ public class Starter {
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
+    private static final String LOG4J_CATEGORY = "manager";
 
     private void setLogPrefix() {
-    	MDC.put("prefix", LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**

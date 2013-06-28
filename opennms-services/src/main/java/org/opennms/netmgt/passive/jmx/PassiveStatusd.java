@@ -59,8 +59,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
         super(NAME);
     }
 
-    /** Constant <code>NAME="OpenNMS.PassiveStatus"</code> */
-    public final static String NAME = "OpenNMS.PassiveStatusKeeper";
+    public final static String NAME = "passive";
 
     /**
      * <p>onInit</p>

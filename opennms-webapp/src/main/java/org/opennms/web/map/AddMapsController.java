@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
-import org.apache.log4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
@@ -94,7 +94,7 @@ public class AddMapsController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+		Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		String elems = request.getParameter("elems");
 		LOG.debug("Adding Maps: elems={}", elems );

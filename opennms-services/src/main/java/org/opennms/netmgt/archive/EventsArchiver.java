@@ -187,7 +187,7 @@ public class EventsArchiver {
         try {
         
             // The general logs from the events archiver go to this category'
-            MDC.put(Logging.PREFIX_KEY, "OpenNMS.Archiver.Events");
+            Logging.putPrefix("archiver");
 
 
         EventsArchiverConfigFactory eaFactory;

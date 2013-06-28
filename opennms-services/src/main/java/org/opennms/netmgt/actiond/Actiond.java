@@ -72,7 +72,7 @@ public final class Actiond extends AbstractServiceDaemon {
      * Constructs a new Action execution daemon.
      */
     private Actiond() {
-    	super("OpenNMS.Actiond");
+    	super("actiond");
         m_executor = null;
         m_eventReader = null;
     }

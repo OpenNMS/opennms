@@ -43,7 +43,7 @@ package org.opennms.web.map;
 public final class MapsConstants {
 
     /** Constant <code>LOG4J_CATEGORY="OpenNMS.Map"</code> */
-    public static final String LOG4J_CATEGORY = "OpenNMS.Map";
+    public static final String LOG4J_CATEGORY = "map";
 	
     // map default ids
 	/** Constant <code>MAP_NOT_OPENED=-1</code> */

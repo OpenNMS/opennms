@@ -276,8 +276,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	private Hashtable<String,String> triggerUeiList;
 
 
-	/** Constant <code>NAME="OpenOSS.QoSD"</code> */
-	public static final String NAME = "OpenOSS.QoSD";
+	public static final String NAME = "oss-qosd";
 	private String m_stats=null;  //not used but needed for initialisation	
 
 	// TODO - need to make this a configuration option

@@ -34,12 +34,12 @@ import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 
-import org.apache.log4j.MDC;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.*;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
@@ -73,7 +73,8 @@ public class JasperReportService implements ReportService {
      * </p>
      */
     public JasperReportService() {
-        MDC.put("prefix", LOG4J_CATEGORY);
+        // TODO this should wrap calls to this class
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**

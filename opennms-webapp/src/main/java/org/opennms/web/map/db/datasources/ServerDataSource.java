@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.web.map.MapsConstants;
@@ -89,7 +90,7 @@ public class ServerDataSource implements DataSourceInterface {
 	 * @param params a {@link java.util.Map} object.
 	 */
 	public ServerDataSource(Map<?,?> params){
-		MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+	    Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		this.params = params;
 		init();
