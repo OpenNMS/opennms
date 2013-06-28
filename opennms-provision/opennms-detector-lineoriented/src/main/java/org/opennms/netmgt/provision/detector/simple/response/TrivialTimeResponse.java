@@ -48,7 +48,7 @@ public class TrivialTimeResponse {
 
     public TrivialTimeResponse(int remoteTime, int localTime, int allowedSkew) {
         available = false;
-        LOG.debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
+        LOG.debug("qualifyTime: checking remote time {} against local time {} with max skew of {}", remoteTime, localTime,  allowedSkew);
         if ((localTime - remoteTime > allowedSkew) || (remoteTime - localTime > allowedSkew)) {
             LOG.debug("Remote time is " + (localTime > remoteTime ? ""+(localTime-remoteTime)+" seconds slow" : ""+(remoteTime-localTime)+" seconds fast"));
         }
