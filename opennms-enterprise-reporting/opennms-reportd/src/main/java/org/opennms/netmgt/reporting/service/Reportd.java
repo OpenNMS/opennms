@@ -37,6 +37,7 @@ import org.slf4j.MDC;
 import org.springframework.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -120,9 +121,9 @@ public class Reportd implements SpringServiceDaemon {
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      */
     public void runReport(Report report) {
-    	Map mdc = MDC.getCopyOfContextMap();
+    	Map mdc = Logging.getCopyOfContextMap();
         try {
-        	MDC.put("prefix", NAME);
+            Logging.putPrefix(NAME);
             LOG.debug("reportd -- running job {}", report.getReportName());
             String fileName = m_reportService.runReport(report,reportDirectory);
             if (report.getRecipientCount() > 0) {

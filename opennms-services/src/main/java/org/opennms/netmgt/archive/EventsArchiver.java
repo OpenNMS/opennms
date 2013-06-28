@@ -182,7 +182,7 @@ public class EventsArchiver {
      * @throws ArchiverException Thrown if a required property is not specified or is incorrect
      */
     private void init() throws ArchiverException {
-        Map mdc = MDC.getCopyOfContextMap();
+        Map mdc = Logging.getCopyOfContextMap();
 
         try {
         
@@ -269,7 +269,7 @@ public class EventsArchiver {
         }
         // XXX should we be throwing ArchiverException instead?
         } finally {
-            MDC.setContextMap(mdc);
+            Logging.setContextMap(mdc);
         }
     }
 

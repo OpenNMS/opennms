@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
@@ -203,19 +204,18 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
         @Override
 	public void onEvent(Event e) {
         	
-        Map mdc = MDC.getCopyOfContextMap();
-		try {
-			MDC.put("prefix", NAME);
-			
-			if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
-				return;
-			}
-			doImport(e);
-		} finally {
-			
-			MDC.setContextMap(mdc);
-		}
-	}
+            Map mdc = Logging.getCopyOfContextMap();
+            try {
+                MDC.put(Logging.PREFIX_KEY, NAME);
+
+                if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
+                    return;
+                }
+                doImport(e);
+            } finally {
+                Logging.setContextMap(mdc);
+            }
+        }
 
 	public class ImporterStats implements ImportStatistics {
 

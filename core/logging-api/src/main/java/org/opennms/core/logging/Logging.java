@@ -69,29 +69,45 @@ public class Logging {
 
     public static <T> T withPrefix(String prefix, Callable<T> callable)
             throws Exception {
-        Map mdc = MDC.getCopyOfContextMap();
+        Map mdc = Logging.getCopyOfContextMap();
         try {
             mdc.put(PREFIX_KEY, prefix);
             return callable.call();
         } finally {
-            MDC.setContextMap(mdc);
+            Logging.setContextMap(mdc);
         }
 
+    }
+    
+    public static Map getCopyOfContextMap() {
+        return MDC.getCopyOfContextMap();
+    }
+    
+    public static void setContextMap(Map mdc) {
+        if (mdc == null) {
+            MDC.clear();
+        } else {
+            MDC.setContextMap(mdc);
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static void withPrefix(String prefix, Runnable runnable) {
-        Map mdc = MDC.getCopyOfContextMap();
+        Map mdc = Logging.getCopyOfContextMap();
         try {
-            mdc.put(PREFIX_KEY, prefix);
+            Logging.putPrefix(prefix);
             runnable.run();
         } finally {
-            MDC.setContextMap(mdc);
+            Logging.setContextMap(mdc);
         }
     }
 
     public static void configureInstallerLogging() {
         getStrategy().configureInstallerLogging();
+    }
+
+    public static void putPrefix(String name) {
+        MDC.put(PREFIX_KEY, name);
     }
 
 }

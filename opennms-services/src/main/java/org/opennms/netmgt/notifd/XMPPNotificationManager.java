@@ -130,7 +130,7 @@ public class XMPPNotificationManager {
 	 */
 	protected XMPPNotificationManager() {
 
-		Map mdc = MDC.getCopyOfContextMap();
+		Map mdc = Logging.getCopyOfContextMap();
                 try {
                     mdc.put(Logging.PREFIX_KEY, LOG4J_CATEGORY);
 
@@ -190,7 +190,7 @@ public class XMPPNotificationManager {
 			// Connect to xmpp server
 			connectToServer();
 		} finally {
-		    MDC.setContextMap(mdc);
+		    Logging.setContextMap(mdc);
 		}
 	}
 

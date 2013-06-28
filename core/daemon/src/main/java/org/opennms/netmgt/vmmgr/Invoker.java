@@ -41,6 +41,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
@@ -130,12 +131,12 @@ public class Invoker {
                 // Get a new instance of the class
                 LOG.debug("create new instance of {}", service.getClassName());
                 
-                Map<?,?> mdc = MDC.getCopyOfContextMap();
+                Map<?,?> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
                 } finally {
-                	MDC.setContextMap(mdc);
+                    Logging.setContextMap(mdc);
                 }
 
                 // Register the mbean
@@ -289,11 +290,11 @@ public class Invoker {
 
         Object object;
         try {
-        	Map<?,?> mdc = MDC.getCopyOfContextMap();
+        	Map<?,?> mdc = Logging.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
-            	MDC.setContextMap(mdc);
+            	Logging.setContextMap(mdc);
             }
         } catch (Throwable t) {
 		LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
@@ -310,11 +311,11 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        Map<?,?> mdc = MDC.getCopyOfContextMap();
+        Map<?,?> mdc = Logging.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
-        	MDC.setContextMap(mdc);
+            Logging.setContextMap(mdc);
         }
 
         return new Attribute(attrib.getName(), value);
@@ -324,11 +325,11 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        Map<?,?> mdc = MDC.getCopyOfContextMap();
+        Map mdc = Logging.getCopyOfContextMap();
         try {
             return construct.newInstance(new Object[] { arg.getContent() });
         } finally {
-        	MDC.setContextMap(mdc);
+            Logging.setContextMap(mdc);
         }
     }
 

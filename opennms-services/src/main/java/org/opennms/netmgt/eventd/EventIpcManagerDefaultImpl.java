@@ -174,11 +174,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                         LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
-                        Map mdc = MDC.getCopyOfContextMap();
+                        Map mdc = Logging.getCopyOfContextMap();
                         try {
                             m_listener.onEvent(event);
                         } finally {
-                            MDC.setContextMap(mdc);
+                            Logging.setContextMap(mdc);
                         }
                     } catch (Throwable t) {
                         LOG.warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);

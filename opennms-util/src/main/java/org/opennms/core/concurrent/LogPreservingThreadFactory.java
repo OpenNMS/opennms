@@ -62,18 +62,33 @@ public class LogPreservingThreadFactory implements ThreadFactory {
             return getSingleThread(r);
         }
     }
+    
+    private Map getCopyOfContextMap() {
+        return MDC.getCopyOfContextMap();
+    }
+    
+    private void setContextMap(Map map) {
+        if (map == null) {
+            MDC.clear();
+        } else {
+            MDC.setContextMap(map);
+        }
+    }
 
     private Thread getIncrementingThread(final Runnable r) {
         String name = String.format("%s-Thread-%d", m_name, ++m_counter);
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                // Set the logging prefix if it was stored during creation
-            	if (m_mdc != null) {
-            		MDC.setContextMap(m_mdc);
+                Map mdc = getCopyOfContextMap();
+                try {
+                    // Set the logging prefix if it was stored during creation
+                    setContextMap(m_mdc);
+                    // Run the delegate Runnable
+                    r.run();
+                } finally {
+                    setContextMap(mdc);
                 }
-                // Run the delegate Runnable
-                r.run();
             }
         }, name);
     }
@@ -83,12 +98,15 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                // Set the logging prefix if it was stored during creation
-            	if (m_mdc != null) {
-            		MDC.setContextMap(m_mdc);
+                Map mdc = getCopyOfContextMap();
+                try {
+                    // Set the logging prefix if it was stored during creation
+                    setContextMap(m_mdc);
+                    // Run the delegate Runnable
+                    r.run();
+                } finally {
+                    setContextMap(mdc);
                 }
-                // Run the delegate Runnable
-                r.run();
             }
         }, name);
     }
@@ -99,13 +117,14 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
+                Map mdc = getCopyOfContextMap();
                 try {
-                    // Set the logging prefix if it was stored during creation
-                	if (m_mdc != null) {
-                		MDC.setContextMap(m_mdc);
+                    try {
+                        setContextMap(m_mdc);
+                        r.run();
+                    } finally {
+                        setContextMap(mdc);
                     }
-                    // Run the delegate Runnable
-                    r.run();
                 } finally {
                     // And make sure the mark the thread as unused afterwards if
                     // the thread ever exits

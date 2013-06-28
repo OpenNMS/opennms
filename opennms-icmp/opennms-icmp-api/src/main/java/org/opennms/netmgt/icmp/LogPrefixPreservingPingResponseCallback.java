@@ -43,44 +43,55 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
 			.getLogger(LogPrefixPreservingPingResponseCallback.class);
 	
     private final PingResponseCallback m_cb;
-    private final Map m_mdc = MDC.getCopyOfContextMap();
+    private final Map m_mdc = getCopyOfContextMap();
     
     public LogPrefixPreservingPingResponseCallback(PingResponseCallback cb) {
         m_cb = cb;
+    }
+    
+    private static Map getCopyOfContextMap() {
+        return MDC.getCopyOfContextMap();
+    }
+    
+    private static void setContextMap(Map map) {
+        if (map == null) {
+            MDC.clear();
+        } else {
+            MDC.setContextMap(map);
+        }
     }
 
     @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
     	
-    	Map mdc = MDC.getCopyOfContextMap();
+    	Map mdc = getCopyOfContextMap();
         try {
-        	MDC.setContextMap(m_mdc);
+            setContextMap(m_mdc);
             m_cb.handleError(address, request, t);
         } finally {
-        	
-        	MDC.setContextMap(mdc);
+            setContextMap(mdc);
         }
     }
 
     @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
-    	Map mdc = MDC.getCopyOfContextMap();
+    	Map mdc = getCopyOfContextMap();
         try {
-        	MDC.setContextMap(m_mdc);
+            setContextMap(m_mdc);
             m_cb.handleResponse(address, response);
         } finally {
-        	MDC.setContextMap(mdc);
+            setContextMap(mdc);
         }
     }
 
     @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
-    	Map mdc = MDC.getCopyOfContextMap();
+    	Map mdc = getCopyOfContextMap();
         try {
-        	MDC.setContextMap(m_mdc);
+            setContextMap(m_mdc);
             m_cb.handleTimeout(address, request);
         } finally {
-        	MDC.setContextMap(mdc);
+            setContextMap(mdc);
         }
     }
 }

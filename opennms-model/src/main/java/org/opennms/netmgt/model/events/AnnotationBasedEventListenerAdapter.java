@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -169,7 +170,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
         
          
-        Map mdc = MDC.getCopyOfContextMap();
+        Map mdc = Logging.getCopyOfContextMap();
         try {
             
             if (m_logPrefix != null) {
@@ -188,7 +189,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         } catch (InvocationTargetException e) {
             handleException(event, e.getCause());
         } finally {
-        	MDC.setContextMap(mdc);
+        	Logging.setContextMap(mdc);
         }
     }
 
