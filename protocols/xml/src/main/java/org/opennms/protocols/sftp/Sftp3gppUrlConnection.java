@@ -47,6 +47,8 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpException;
@@ -57,6 +59,9 @@ import com.jcraft.jsch.SftpException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppUrlConnection extends SftpUrlConnection {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnection.class);
+
 
     private Map<String,String> m_urlProperties;
 
@@ -79,7 +84,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
     protected String getPath() throws SftpUrlException {
         File f = new File(url.getPath(), get3gppFileName());
         String path = f.getAbsolutePath();
-        log().debug("getPath: retrieving data 3GPP (NE Mode) using " + path);
+        LOG.debug("getPath: retrieving data 3GPP (NE Mode) using {}", path);
         return path;
     }
 
@@ -113,19 +118,19 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         }
         long step = Long.parseLong(properties.get("step")) * 1000;
         long timestamp = reference - reference  % step; // normalize timestamp
-        log().debug("getPath: the reference timestamp used will be " + new Date(timestamp));
+        LOG.debug("getPath: the reference timestamp used will be {}", new Date(timestamp));
 
         // Creating common time format objects
-        log().info("getPath: generating 3GPP file type A (NE Mode) using URL " + url);
+        LOG.info("getPath: generating 3GPP file type A (NE Mode) using URL {}", url);
         SimpleDateFormat datef = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat timef = new SimpleDateFormat("HHmmZ");
 
         // Timezone processing
         String tz = properties.get("timezone");
         if (tz == null) {
-            log().debug("getPath: time zone not provided, using current timezone " + TimeZone.getDefault().getID());
+            LOG.debug("getPath: time zone not provided, using current timezone {}", TimeZone.getDefault().getID());
         } else {
-            log().debug("getPath: using time zone " + TimeZone.getTimeZone(tz).getID());
+            LOG.debug("getPath: using time zone {}", TimeZone.getTimeZone(tz).getID());
             datef.setTimeZone(TimeZone.getTimeZone(tz));
             timef.setTimeZone(TimeZone.getTimeZone(tz));
         }
@@ -158,7 +163,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
                 DateTime dateTime = dtf.parseDateTime(value);
                 return dateTime.getMillis();
             } catch (Exception e) {
-                log().warn("getTimeStampFromFile: malformed 3GPP file " + fileName + ", because " + e.getMessage());
+                LOG.warn("getTimeStampFromFile: malformed 3GPP file {}, because {}", fileName, e.getMessage());
                 return 0;
             }
         }
@@ -214,7 +219,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         String deleteFlag = getQueryMap().get("deletefile");
         if (deleteFlag != null && Boolean.parseBoolean(deleteFlag)) {
             String file = url.getPath() + File.separatorChar + fileName;
-            log().debug("deleting file " + file + " from " + url.getHost());
+            LOG.debug("deleting file {} from {}", file, url.getHost());
             getChannel().rm(file);
         }
     }

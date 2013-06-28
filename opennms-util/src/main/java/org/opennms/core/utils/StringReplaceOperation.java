@@ -92,12 +92,4 @@ public abstract class StringReplaceOperation {
      */
     public abstract String replace(String input);
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
 }

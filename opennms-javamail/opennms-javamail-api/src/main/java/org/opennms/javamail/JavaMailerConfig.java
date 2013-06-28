@@ -35,12 +35,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to the default javamail configuration data.
  */
 public abstract class JavaMailerConfig {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JavaMailerConfig.class);
+
 
     
     /**
@@ -50,17 +54,13 @@ public abstract class JavaMailerConfig {
      * @throws java.io.IOException if any.
      */
     public static synchronized Properties getProperties() throws IOException {
-        log().debug("Loading javamail properties.");
+        LOG.debug("Loading javamail properties.");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
         in.close();
         return properties;
-    }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(JavaMailerConfig.class);
     }
 
 }

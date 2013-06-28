@@ -44,7 +44,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -78,6 +79,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class Nms5414Test {
+    private static final Logger LOG = LoggerFactory.getLogger(Nms5414Test.class);
     
     @Autowired
     private Provisioner m_provisioner;
@@ -129,7 +131,7 @@ public class Nms5414Test {
         runScan(scan);
         
         for (final OnmsIpInterface iface : getInterfaceDao().findAll()) {
-            LogUtils.debugf(this, "Interface: %s", iface);
+            LOG.debug("Interface: {}", iface);
         }
 
         //Verify ipinterface count

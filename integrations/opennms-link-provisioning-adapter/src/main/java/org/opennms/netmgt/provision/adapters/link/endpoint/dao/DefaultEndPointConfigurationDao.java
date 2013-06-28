@@ -42,7 +42,8 @@ import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
@@ -63,6 +64,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<EndPointTypeValidator, EndPointTypeValidator> implements EndPointConfigurationDao {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultEndPointConfigurationDao.class);
     private JAXBContext m_context;
     private Marshaller m_marshaller;
     private Unmarshaller m_unmarshaller;
@@ -116,7 +118,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         try {
             m_context.generateSchema(resolver);
         } catch (IOException e) {
-            LogUtils.debugf(this, e, "Unable to generate schema");
+            LOG.debug("Unable to generate schema", e);
             return null;
         }
         return resolver.getXml();
@@ -161,9 +163,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
     protected EndPointTypeValidator loadConfig(Resource resource) {
         long startTime = System.currentTimeMillis();
 
-        if (log().isDebugEnabled()) {
-            log().debug("Loading " + getDescription() + " configuration from " + resource);
-        }
+        LOG.debug("Loading {} configuration from {}", resource, getDescription());
 
         try {
             InputStream is = resource.getInputStream();
@@ -171,7 +171,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
             is.close();
             
             long endTime = System.currentTimeMillis();
-            log().info(createLoadedLogMessage(config, (endTime - startTime)));
+            LOG.info(createLoadedLogMessage(config, (endTime - startTime)));
 
             return config;
         } catch (Throwable e) {

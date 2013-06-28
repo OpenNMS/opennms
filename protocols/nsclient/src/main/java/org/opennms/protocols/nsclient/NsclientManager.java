@@ -40,7 +40,9 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <P>
@@ -66,6 +68,9 @@ import org.opennms.core.utils.LogUtils;
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  */
 public class NsclientManager {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NsclientManager.class);
+
     /**
      * The default socket timeout.
      */
@@ -409,7 +414,7 @@ public class NsclientManager {
             try {
                 m_Socket.close();
             } catch (final IOException ioe) {
-                LogUtils.debugf(this, ioe, "unable to close socket after a previous failure");
+                LOG.debug("unable to close socket after a previous failure", ioe);
             }
         }
         throw e;
@@ -422,7 +427,7 @@ public class NsclientManager {
         try {
             m_Socket.close();
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "unable to close socket");
+            LOG.debug("unable to close socket", e);
         }
     }
 
@@ -1038,7 +1043,7 @@ public class NsclientManager {
     		}
     		
     		// If we did not receive an ERROR report, then we are done here
-    		LogUtils.debugf(this, "checkInstances: received result '%s'", pack.getResponse());
+    		LOG.debug("checkInstances: received result '{}'", pack.getResponse());
     		return pack;
     	} catch (NsclientException e) {
     		throw e;
@@ -1051,7 +1056,7 @@ public class NsclientManager {
     
     private NsclientPacket handleNumberFormatException(NsclientPacket pack, NumberFormatException e) throws NsclientException {
         pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
-        LogUtils.infof(this, e, "Unable to parse numeric value returned (%s)", pack.getResponse());
+        LOG.info("Unable to parse numeric value returned ({})", pack.getResponse(), e);
         return pack;
     }
 

@@ -32,6 +32,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,8 @@ import org.springframework.stereotype.Component;
  */
 @Scope("prototype")
 public class OpenManageChassisDetector extends SnmpDetector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OpenManageChassisDetector.class);
 
     /**
      * Name of monitored service.
@@ -100,19 +104,17 @@ public class OpenManageChassisDetector extends SnmpDetector {
 
             // If no chassis status received, do not detect the protocol and quit
             if (chassisStatus == null) {
-                log().warn("isServiceDetected: Cannot receive chassis status");
+                LOG.warn("isServiceDetected: Cannot receive chassis status");
                 return false;
             } else {
-                log().debug("isServiceDetected: OpenManageChassis: " + chassisStatus);
+                LOG.debug("isServiceDetected: OpenManageChassis: {}", chassisStatus);
             }
 
             // Validate chassis status, check status is somewhere between OTHER and NON_RECOVERABLE
             if  (Integer.parseInt(chassisStatus.toString()) >= DELL_STATUS.OTHER.value() && 
                     Integer.parseInt(chassisStatus.toString()) <= DELL_STATUS.NON_RECOVERABLE.value()) {
                 // OpenManage chassis status detected
-                if (log().isDebugEnabled()) {
-                    log().debug("isServiceDetected: OpenManageChassis: is valid, protocol supported.");
-                }
+                LOG.debug("isServiceDetected: OpenManageChassis: is valid, protocol supported.");
                 return true;
             }
         } catch (Throwable t) {

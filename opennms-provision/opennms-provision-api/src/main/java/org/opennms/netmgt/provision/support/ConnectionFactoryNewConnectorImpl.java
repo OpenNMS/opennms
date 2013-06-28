@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,7 +46,8 @@ import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioProcessor;
 import org.apache.mina.transport.socket.nio.NioSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>This {@link ConnectionFactory} type will create a new {@link NioSocketConnector}
@@ -59,7 +60,9 @@ import org.opennms.core.utils.LogUtils;
  * @author Duncan Mackintosh
  */
 public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryNewConnectorImpl.class);
+    
     private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
     private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
@@ -148,12 +151,12 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
                     future.getSession().getCloseFuture().addListener(new IoFutureListener<CloseFuture>() {
                         @Override
                         public void operationComplete(CloseFuture future) {
-                            LogUtils.debugf(this, "Disposing of connector: %s", Thread.currentThread().getName());
+                            LOG.debug("Disposing of connector: {}", Thread.currentThread().getName());
                             connector.dispose();
                         }
                     });
                 } catch (RuntimeIoException e) {
-                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    LOG.debug("Exception of type {} caught, disposing of connector: {}", e.getClass().getName(), Thread.currentThread().getName(), e);
                     // This will be thrown in the event of a ConnectException for example
                     connector.dispose();
                 }
@@ -172,14 +175,14 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
                     if (e != null && e instanceof BindException) {
                         synchronized(m_portMutex) {
                             // ... then reset the port
-                            LogUtils.warnf(this, "Resetting outgoing TCP port, value was %d", m_port.get());
+                            LOG.warn("Resetting outgoing TCP port, value was {}", m_port.get());
                             m_port.set(null);
                         }
                         // and reattempt the connection
                         connect(remoteAddress, init, handler);
                     }
                 } catch (RuntimeIoException e) {
-                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    LOG.debug("Exception of type {} caught, disposing of connector: {}", e.getClass().getName(), Thread.currentThread().getName(), e);
                     // This will be thrown in the event of a ConnectException for example
                     connector.dispose();
                 }

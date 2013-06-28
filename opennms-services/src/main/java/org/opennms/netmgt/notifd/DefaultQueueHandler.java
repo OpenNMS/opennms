@@ -31,7 +31,8 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 import java.util.SortedMap;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeConverter;
 
 /**
@@ -46,6 +47,7 @@ import org.opennms.core.utils.TimeConverter;
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
  */
 public class DefaultQueueHandler implements NotifdQueueHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultQueueHandler.class);
     /**
      * The input queue of runnable commands.
      */
@@ -166,11 +168,11 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                     }
                     readyNotices.clear();
         
-                    if (LogUtils.isDebugEnabled(this) && m_noticeQueue != null && m_noticeQueue.size() > 0) {
-                    	LogUtils.debugf(this, "current state of tree: %s", m_noticeQueue);
+                    if (m_noticeQueue != null && m_noticeQueue.size() > 0) {
+			LOG.debug("current state of tree: {}", m_noticeQueue);
                     }
                 } catch (final Throwable e) {
-                    LogUtils.errorf(this, e, "failed to start notification task");
+                    LOG.error("failed to start notification task", e);
                     
                 }
             }

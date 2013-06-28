@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -61,6 +60,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -74,6 +75,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version $Id: $
  */
 public class BaseImporter implements ImportOperationFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(BaseImporter.class);
+
 
     protected TransactionTemplate m_transTemplate;
     protected DistPollerDao m_distPollerDao;
@@ -362,7 +366,7 @@ public class BaseImporter implements ImportOperationFactory {
 					
 					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
 					if (dbNode == null) {
-					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
+					    LOG.error("Error setting parent on node: {} node not in database", node.getForeignId());
 					    return;
 					}
 					OnmsNode parent = findParent(node);
@@ -372,9 +376,9 @@ public class BaseImporter implements ImportOperationFactory {
 						critIface = getCriticalInterface(parent);
 					}
 					
-					log().info("Setting parent of node: "+dbNode+" to: "+parent);
+					LOG.info("Setting parent of node: {} to: {}", dbNode, parent);
 					dbNode.setParent(parent);
-					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
+					LOG.info("Setting criticalInterface of node: {} to: {}", dbNode, critIface);
 					if (critIface == null) {
 						dbNode.setPathElement(null);
 					} else {
@@ -414,7 +418,7 @@ public class BaseImporter implements ImportOperationFactory {
                 return nodes.iterator().next();
             }
 			
-			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
+			LOG.error("Unable to locate a unique node using label {}{} nodes found.  Ignoring relationship.", label, nodes.size());
 			return null;
 		}
 
@@ -428,14 +432,6 @@ public class BaseImporter implements ImportOperationFactory {
 		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-    	return ThreadCategory.getInstance(getClass());
-	}
 
 	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {

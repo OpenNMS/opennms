@@ -47,8 +47,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,6 +60,9 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerTest implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrackerTest.class);
+	
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
@@ -105,7 +109,7 @@ public class SnmpTrackerTest implements InitializingBean {
         
         @Override
         protected void storeResult(final SnmpResult res) {
-        	LogUtils.debugf(this, "storing result: %s", res);
+        	LOG.debug("storing result: {}", res);
             m_count++;
         }
 
@@ -257,9 +261,9 @@ public class SnmpTrackerTest implements InitializingBean {
     	final List<SnmpRowResult> responses = rc.getResponses();
         for (int i = 0; i < responses.size(); i++) {
             final SnmpRowResult row = responses.get(i);
-            LogUtils.debugf(this, "%d: instance=%s", i, row.getInstance());
+            LOG.debug("{}: instance={}", i, row.getInstance());
             for (final SnmpResult res : row.getResults()) {
-            	LogUtils.debugf(this, "    %s=%s", res.getBase(), res.getValue());
+            	LOG.debug("    {}={}", res.getBase(), res.getValue());
             }
         }
     }

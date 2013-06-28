@@ -40,14 +40,16 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
 import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -62,6 +64,9 @@ import org.springframework.util.ClassUtils;
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AnnotationBasedEventListenerAdapter.class);
+
     private volatile String m_name = null;
     private volatile Object m_annotatedListener;
     private volatile String m_logPrefix = null;
@@ -164,11 +169,12 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             }
         }
         
-        String oldPrefix = ThreadCategory.getPrefix();
+         
+        Map mdc = Logging.getCopyOfContextMap();
         try {
             
             if (m_logPrefix != null) {
-                ThreadCategory.setPrefix(m_logPrefix);
+            	MDC.put("prefix", m_logPrefix);
             }
             
             preprocessEvent(event);
@@ -183,7 +189,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         } catch (InvocationTargetException e) {
             handleException(event, e.getCause());
         } finally {
-            ThreadCategory.setPrefix(oldPrefix);
+        	Logging.setContextMap(mdc);
         }
     }
 
@@ -251,7 +257,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             }
         }
         
-        LogUtils.debugf(this, cause, "Caught an unhandled exception while processing event %s, for listener %s. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener);
+        LOG.debug("Caught an unhandled exception while processing event {}, for listener {}. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener, cause);
     }
 
     /**

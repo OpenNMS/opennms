@@ -35,7 +35,8 @@ import java.io.InputStream;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -57,6 +58,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -281,7 +283,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         try {
             configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
         } catch (final Throwable t) {
-            LogUtils.warnf(this, "Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
+            LOG.warn("Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
             return;
         }
         for (final String fileName : m_config.getImportFileCollection()) {

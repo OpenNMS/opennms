@@ -39,12 +39,14 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * <p>
@@ -75,6 +77,9 @@ import org.opennms.netmgt.config.service.Service;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class Controller {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
+	
     private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
 
     /**
@@ -115,7 +120,7 @@ public class Controller {
     public static void main(String[] argv) {
         configureLog4j();
         
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        MDC.put(AbstractServiceDaemon.PREFIX, LOG4J_CATEGORY);
         
         Controller c = new Controller();
 
@@ -216,7 +221,7 @@ public class Controller {
         } catch (MalformedURLException e) {
             String message = "Error creating URL object for invoke URL: '" + url + "'";
             System.err.println(message);
-            LogUtils.errorf(this, e, message);
+            LOG.error(message, e);
         }
 
         try {
@@ -224,7 +229,7 @@ public class Controller {
         } catch (Throwable t) {
             String message =  "Error invoking status command";
             System.err.println(message);
-            LogUtils.errorf(this, t, message);
+            LOG.error(message, t);
             return 1;
         }
 
@@ -244,7 +249,7 @@ public class Controller {
             return 0; // everything should be good and running
 
         default:
-            LogUtils.errorf(this, "Unknown status returned from statusGetter.getStatus(): %s", statusGetter.getStatus());
+        	LOG.error("Unknown status returned from statusGetter.getStatus(): {}", statusGetter.getStatus());
             return 1;
         }
     }
@@ -258,7 +263,7 @@ public class Controller {
         try {
             new DatabaseChecker().check();
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "error invoking check command");
+        	LOG.error("error invoking check command", t);
             return 1;
         }
         return 0;
@@ -291,13 +296,13 @@ public class Controller {
             System.out.println("");
             System.out.flush();
         } catch (final ConnectException e) {
-            LogUtils.errorf(this, e, "error when attempting to fetch URL \"%s\"", urlString);
+        	LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
             if (isVerbose()) {
                 System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
             }
             return 1;
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "error invoking %s operation", operation);
+        	LOG.error("error invoking {} operation", operation, t);
             System.out.println("error invoking " + operation + " operation");
             return 1;
         }
@@ -313,7 +318,7 @@ public class Controller {
         Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
         if (service == null) {
             // Didn't find the service we were looking for
-            LogUtils.warnf(this, "Could not find configured service for '%s'", JMX_HTTP_ADAPTER_NAME);
+        	LOG.warn("Could not find configured service for '{}'", JMX_HTTP_ADAPTER_NAME);
             return null;
         }
 
@@ -328,7 +333,7 @@ public class Controller {
         for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
             if (attrib.getName().equals("AuthenticationMethod")) {
                 if (!attrib.getValue().getContent().equals("basic")) {
-                    LogUtils.errorf(this, "AuthenticationMethod is \"%s\", but only \"basic\" is supported", attrib.getValue());
+                	LOG.error("AuthenticationMethod is \"{}\", but only \"basic\" is supported", attrib.getValue());
                     return null;
                 }
                 usingBasic = true;

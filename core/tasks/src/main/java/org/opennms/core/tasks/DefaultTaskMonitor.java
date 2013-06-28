@@ -28,7 +28,8 @@
 
 package org.opennms.core.tasks;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultTaskMonitor
@@ -37,6 +38,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class DefaultTaskMonitor implements TaskMonitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskMonitor.class);
 
     /**
      * <p>Constructor for DefaultTaskMonitor.</p>
@@ -49,61 +52,49 @@ public class DefaultTaskMonitor implements TaskMonitor {
     /** {@inheritDoc} */
     @Override
     public void completed(final Task task) {
-        log("completed(%s)", task);
+    	LOG.trace("completed({})", task);
     }
 
     /** {@inheritDoc} */
     @Override
     public void prerequisiteAdded(final Task monitored, final Task prerequsite) {
-        log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
+        LOG.trace("prerequisiteAdded({}, {})", monitored, prerequsite);
     }
 
     /** {@inheritDoc} */
     @Override
     public void prerequisiteCompleted(final Task monitored, final Task prerequisite) {
-        log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
+    	LOG.trace("prerequisiteCompleted({}, {})", monitored, prerequisite);
     }
 
     /** {@inheritDoc} */
     @Override
     public void scheduled(final Task task) {
-        log("scheduled(%s)", task);
+        LOG.trace("scheduled({})", task);
     }
 
     /** {@inheritDoc} */
     @Override
     public void started(final Task task) {
-        log("started(%s)", task);
+        LOG.trace("started({})", task);
     }
 
     /** {@inheritDoc} */
     @Override
     public void submitted(final Task task) {
-        log("submitted(%s)", task);
+        LOG.trace("submitted({})", task);
     }
 
     /** {@inheritDoc} */
     @Override
     public void monitorException(final Throwable t) {
-        log(t, "monitorException(%s)", t);
+    	LOG.trace("monitorException({})", t);
     }
     
     /** {@inheritDoc} */
     @Override
     public TaskMonitor getChildTaskMonitor(final Task task, final Task child) {
         return this;
-    }
-
-    private void log(final String format, final Object... args) {
-        if (LogUtils.isTraceEnabled(this)) {
-            LogUtils.tracef(this, format, args);
-        }
-    }
-    
-    private void log(final Throwable t, final String format, final Object... args) {
-        if (LogUtils.isTraceEnabled(this)) {
-            LogUtils.tracef(this, t, format, args);
-        }
     }
 
 }

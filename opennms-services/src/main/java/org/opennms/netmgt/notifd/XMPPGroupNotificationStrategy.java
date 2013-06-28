@@ -31,7 +31,8 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
@@ -52,6 +53,7 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * @version $Id: $
  */
 public class XMPPGroupNotificationStrategy implements NotificationStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(XMPPGroupNotificationStrategy.class);
 
 	/**
 	 * String used to identify the user to whom the XMPP message will be sent.
@@ -113,7 +115,7 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 			xmppManager.sendGroupChat(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
 
 		} catch (Throwable e) {
-			ThreadCategory.getInstance(getClass()).error(e.getMessage());
+			LOG.error(e.getMessage());
 			return 1;
 		}
 

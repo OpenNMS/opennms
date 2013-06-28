@@ -37,7 +37,6 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -51,6 +50,8 @@ import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
@@ -64,6 +65,8 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements TrapProcessorFactory, CommandResponder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverTest.class);
 	
 	@Override
 	protected boolean usingMockStrategy() {
@@ -144,9 +147,9 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
 
             sendTraps();
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "Failed to grab UDP port.");
+        	LOG.debug("Failed to grab UDP port.", e);
         } catch (final InterruptedException e) {
-            LogUtils.debugf(this, e, "Interrupted while sending traps.");
+        	LOG.debug("Interrupted while sending traps.", e);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -156,14 +159,14 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
                 try {
                     snmp.close();
                 } catch (final IOException e) {
-                    LogUtils.debugf(this, e, "Failed to close Snmp object: " + snmp);
+                	LOG.debug("Failed to close Snmp object: {}", snmp, e);
                 }
             }
             if (transportMapping != null) {
                 try {
                     transportMapping.close();
                 } catch (final IOException e) {
-                    LogUtils.debugf(this, e, "Failed to close transport mapping: " + transportMapping);
+                	LOG.debug("Failed to close transport mapping: {}", transportMapping, e);
                 }
             }
         }
@@ -181,15 +184,15 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
             m_strategy.registerForTraps(trapListener, this, m_addr, 9162, Collections.singletonList(user));
             sendTraps();
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "Failed to register for traps.");
+        	LOG.debug("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Failed to send traps.");
+        	LOG.debug("Failed to send traps.", e);
         } finally {
             System.out.println("ONMS: Unregister for Traps");
             try {
                 m_strategy.unregisterForTraps(trapListener, 9162);
             } catch (final IOException e) {
-                LogUtils.debugf(this, e, "Failed to unregister for traps.");
+            	LOG.debug("Failed to unregister for traps.", e);
             }
         }
 

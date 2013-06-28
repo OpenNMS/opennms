@@ -36,10 +36,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A servlet that handles updating the status of the notifications
@@ -48,6 +49,9 @@ import org.opennms.netmgt.model.events.EventBuilder;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class UpdateNotifdStatusServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateNotifdStatusServlet.class);
+
     /**
      * 
      */
@@ -57,7 +61,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            log().info("Setting notifd status to " + request.getParameter("status") + " for user " + request.getRemoteUser());
+            LOG.info("Setting notifd status to {} for user {}", request.getParameter("status"), request.getRemoteUser());
             if (request.getParameter("status").equals("on")) {
                 NotifdConfigFactory.getInstance().turnNotifdOn();
                 sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
@@ -83,7 +87,5 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-   }
+   
 }

@@ -34,7 +34,8 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.MobileMsgTrackerTest;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -50,8 +51,8 @@ import org.smslib.OutboundMessage.MessageStatuses;
  * TestGateway - virtual gateway to simulate sending and receiving messages to
  * make testing easier.
  */
-public class FakeTestGateway extends AGateway
-{
+public class FakeTestGateway extends AGateway {
+    private static final Logger LOG = LoggerFactory.getLogger(FakeTestGateway.class);
 	private int refCounter = 0;
 
 	private int counter = 0;
@@ -145,7 +146,7 @@ public class FakeTestGateway extends AGateway
 						runner.run();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						LogUtils.warnf(this, e, "failed to run queue");
+						LOG.warn("failed to run queue", e);
 						break;
 					}
 				}

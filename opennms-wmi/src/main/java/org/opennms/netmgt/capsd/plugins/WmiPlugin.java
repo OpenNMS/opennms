@@ -32,7 +32,6 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.WmiPeerFactory;
@@ -41,6 +40,8 @@ import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
 import org.opennms.protocols.wmi.WmiResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -53,6 +54,9 @@ import org.opennms.protocols.wmi.WmiResult;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiPlugin extends AbstractPlugin {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(WmiPlugin.class);
+
 	/**
 	 * The protocol supported by the plugin
 	 */
@@ -214,21 +218,21 @@ public class WmiPlugin extends AbstractPlugin {
 				// Perform the operation specified in the parameters.
 				result = mgr.performOp(params);
                 if(params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
-                    LogUtils.debugf(this, "WmiPlugin: %s :  %s", params.getWql(), WmiResult.convertStateToString(result.getResultCode()));
+                    LOG.debug("WmiPlugin: {} :  {}", params.getWql(), WmiResult.convertStateToString(result.getResultCode()));
                 } else {
-                    LogUtils.debugf(this, "\\\\%s\\%s : %s", params.getWmiClass(), params.getWmiObject(), WmiResult.convertStateToString(result.getResultCode()));
+                    LOG.debug("\\\\{}\\{} : {}", params.getWmiClass(), params.getWmiObject(), WmiResult.convertStateToString(result.getResultCode()));
                 }
 
                 isAServer = true;
 			} catch (final WmiException e) {
-			    LogUtils.infof(this, e, "WmiPlugin: Check failed.");
+			    LOG.info("WmiPlugin: Check failed.", e);
 				isAServer = false;
 			} finally {
 			    if (mgr != null) {
 			        try {
 			            mgr.close();
 			        } catch (final WmiException e) {
-			            LogUtils.warnf(this, e, "An error occurred closing the WMI manager.");
+			            LOG.warn("An error occurred closing the WMI manager.", e);
 			        }
 			    }
 			}

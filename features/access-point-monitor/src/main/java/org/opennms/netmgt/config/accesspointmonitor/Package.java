@@ -12,9 +12,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.accesspointmonitor.poller.AccessPointPoller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -24,6 +25,8 @@ import org.opennms.netmgt.accesspointmonitor.poller.AccessPointPoller;
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
 public class Package implements Serializable, Comparable<Package> {
+    private static final Logger LOG = LoggerFactory.getLogger(Package.class);
+
     private static final long serialVersionUID = -988483514208208854L;
 
     private static final String[] OF_SPECIFICS = new String[0];
@@ -242,11 +245,11 @@ public class Package implements Serializable, Comparable<Package> {
                 final Class<? extends AccessPointPoller> psClass = findPollingStrategyClass(monitor);
                 return (AccessPointPoller) psClass.newInstance();
             } catch (final ClassNotFoundException e) {
-                LogUtils.warnf(this, e, "Unable to location monitor for service: %s class-name: %s", monitor.getService(), monitor.getClassName());
+                LOG.warn("Unable to location monitor for service: {} class-name: {}", monitor.getService(), monitor.getClassName(), e);
             } catch (IllegalAccessException e) {
-                LogUtils.warnf(this, e, e.getMessage());
+                LOG.warn(e.getMessage(), e);
             } catch (InstantiationException e) {
-                LogUtils.warnf(this, e, e.getMessage());
+                LOG.warn(e.getMessage(), e);
             }
         }
 

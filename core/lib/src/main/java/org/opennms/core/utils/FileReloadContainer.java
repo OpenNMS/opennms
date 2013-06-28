@@ -31,6 +31,8 @@ package org.opennms.core.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -92,6 +94,9 @@ import org.springframework.util.Assert;
  * @param <T> the class of the inner object that is stored in this container
  */
 public class FileReloadContainer<T> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FileReloadContainer.class);
+	
     private static final long DEFAULT_RELOAD_CHECK_INTERVAL = 1000;
     
     private T m_object;
@@ -135,7 +140,7 @@ public class FileReloadContainer<T> {
             m_lastFileSize = m_file.length();
         } catch (final IOException e) {
             // Do nothing... we'll fall back to using the InputStream
-            LogUtils.infof(this, e, "Resource '%s' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource);
+        	LOG.info("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource, e);
         }
         
         m_lastReloadCheck = System.currentTimeMillis();
@@ -210,12 +215,12 @@ public class FileReloadContainer<T> {
             object = m_callback.reload(m_object, m_resource);
         } catch (Throwable t) {
             final String message = String.format("Failed reloading data for object '%s' from file '%s'. Unexpected Throwable received while issuing reload.", m_object, m_file.getAbsolutePath());
-            LogUtils.errorf(this, t, message);
+            LOG.error(message, t);
             throw new DataAccessResourceFailureException(message, t);
         }
         
         if (object == null) {
-            LogUtils.infof(this, "Not updating object for file '%s' due to reload callback returning null.", m_file.getAbsolutePath());
+        	LOG.info("Not updating object for file '{}' due to reload callback returning null.", m_file.getAbsolutePath());
         } else {
             m_object = object;
         }

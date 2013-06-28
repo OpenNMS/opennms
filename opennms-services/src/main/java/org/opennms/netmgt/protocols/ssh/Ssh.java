@@ -38,10 +38,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.protocols.InsufficientParametersException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Ssh class.</p>
@@ -50,6 +51,8 @@ import org.opennms.netmgt.protocols.InsufficientParametersException;
  * @version $Id: $
  */
 public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
     
     private static final Pattern SSH_IOEXCEPTION_PATTERN = Pattern.compile("^.*java.io.IOException.*$");
     private static final Pattern SSH_AUTHENTICATION_PATTERN = Pattern.compile("^.*Authentication:.*$");
@@ -268,15 +271,15 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
 
             return true;
         } catch (final NumberFormatException e) {
-            log().debug("unable to parse server version", e);
+            LOG.debug("unable to parse server version", e);
             setError(e);
             disconnect();
         } catch (final ConnectException e) {
-            log().debug("connection failed: " + e.getMessage());
+            LOG.debug("connection failed: {}", e.getMessage());
             setError(e);
             disconnect();
         } catch (final Throwable e) {
-            log().debug("connection failed", e);
+            LOG.debug("connection failed", e);
             setError(e);
             disconnect();
         }
@@ -291,21 +294,21 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
             try {
                 m_writer.close();
             } catch (final IOException e) {
-                log().warn("error disconnecting output stream", e);
+                LOG.warn("error disconnecting output stream", e);
             }
         }
         if (m_reader != null) {
             try {
                 m_reader.close();
             } catch (final IOException e) {
-                log().warn("error disconnecting input stream", e);
+                LOG.warn("error disconnecting input stream", e);
             }
         }
         if (m_socket != null) {
             try {
                 m_socket.close();
             } catch (final IOException e) {
-                log().warn("error disconnecting socket", e);
+                LOG.warn("error disconnecting socket", e);
             }
         }
     }
@@ -344,9 +347,5 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
         }
         
         return ps;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

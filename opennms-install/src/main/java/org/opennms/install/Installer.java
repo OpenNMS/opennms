@@ -55,9 +55,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.opennms.core.logging.Logging;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.ConnectionFactoryUtil;
 import org.opennms.core.db.install.InstallerDb;
@@ -70,6 +68,8 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -89,6 +89,9 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class Installer {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
+
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
@@ -943,9 +946,7 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] argv) throws Exception {
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.WARN);
-        
+        Logging.configureInstallerLogging();
         new Installer().install(argv);
     }
 

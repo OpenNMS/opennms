@@ -112,7 +112,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             values = convertSnmpSyntaxs(results);
             
         } catch (SocketException e) {
-            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: {}", agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -147,7 +147,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.get(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: {}", agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -183,7 +183,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.getNext(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: {}", agentConfig);
         } finally {
             if (session != null) {
                 session.close();

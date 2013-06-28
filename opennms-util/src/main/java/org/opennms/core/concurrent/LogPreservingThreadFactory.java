@@ -29,25 +29,26 @@
 package org.opennms.core.concurrent;
 
 import java.util.BitSet;
+import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
 
 public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
     private final int m_poolSize;
-    private String m_logPrefix = null;
+    private Map m_mdc = null;
     private int m_counter = 0;
 
-    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveLogPrefix) {
+    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
          m_name = poolName;
          m_poolSize = poolSize;
          // Make the bitset of thread numbers one larger so that we can 1-index it.
          // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
          m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
-         if (preserveLogPrefix) {
-             m_logPrefix = ThreadCategory.getPrefix();
+         if (preserveMDC) {
+        	 m_mdc = MDC.getCopyOfContextMap();
          }
     }
 
@@ -61,18 +62,33 @@ public class LogPreservingThreadFactory implements ThreadFactory {
             return getSingleThread(r);
         }
     }
+    
+    private Map getCopyOfContextMap() {
+        return MDC.getCopyOfContextMap();
+    }
+    
+    private void setContextMap(Map map) {
+        if (map == null) {
+            MDC.clear();
+        } else {
+            MDC.setContextMap(map);
+        }
+    }
 
     private Thread getIncrementingThread(final Runnable r) {
         String name = String.format("%s-Thread-%d", m_name, ++m_counter);
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                // Set the logging prefix if it was stored during creation
-                if (m_logPrefix != null) {
-                    ThreadCategory.setPrefix(m_logPrefix);
+                Map mdc = getCopyOfContextMap();
+                try {
+                    // Set the logging prefix if it was stored during creation
+                    setContextMap(m_mdc);
+                    // Run the delegate Runnable
+                    r.run();
+                } finally {
+                    setContextMap(mdc);
                 }
-                // Run the delegate Runnable
-                r.run();
             }
         }, name);
     }
@@ -82,12 +98,15 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                // Set the logging prefix if it was stored during creation
-                if (m_logPrefix != null) {
-                    ThreadCategory.setPrefix(m_logPrefix);
+                Map mdc = getCopyOfContextMap();
+                try {
+                    // Set the logging prefix if it was stored during creation
+                    setContextMap(m_mdc);
+                    // Run the delegate Runnable
+                    r.run();
+                } finally {
+                    setContextMap(mdc);
                 }
-                // Run the delegate Runnable
-                r.run();
             }
         }, name);
     }
@@ -98,13 +117,14 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
+                Map mdc = getCopyOfContextMap();
                 try {
-                    // Set the logging prefix if it was stored during creation
-                    if (m_logPrefix != null) {
-                        ThreadCategory.setPrefix(m_logPrefix);
+                    try {
+                        setContextMap(m_mdc);
+                        r.run();
+                    } finally {
+                        setContextMap(mdc);
                     }
-                    // Run the delegate Runnable
-                    r.run();
                 } finally {
                     // And make sure the mark the thread as unused afterwards if
                     // the thread ever exits

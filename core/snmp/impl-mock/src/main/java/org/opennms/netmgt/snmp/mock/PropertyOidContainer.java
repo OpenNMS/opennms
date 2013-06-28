@@ -35,12 +35,16 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public class PropertyOidContainer {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PropertyOidContainer.class);
+	
     private final NavigableMap<SnmpObjId,SnmpValue> m_tree = new TreeMap<SnmpObjId,SnmpValue>();
 
     public PropertyOidContainer(final Resource resource) throws IOException {
@@ -64,7 +68,7 @@ public class PropertyOidContainer {
             try {
                 m_tree.put(SnmpObjId.get(key), factory.parseMibValue(value));
             } catch (final NumberFormatException nfe) {
-                LogUtils.debugf(this, "Unable to store '%s = %s', skipping. (%s)", key, value, nfe.getLocalizedMessage());
+            	LOG.debug("Unable to store '{} = {}', skipping. ({})", key, value, nfe.getLocalizedMessage());
             }
         }
     }

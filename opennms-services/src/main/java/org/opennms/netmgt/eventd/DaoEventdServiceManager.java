@@ -31,9 +31,10 @@ package org.opennms.netmgt.eventd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,9 @@ import org.springframework.util.Assert;
  */
 @Transactional(readOnly = true)
 public class DaoEventdServiceManager implements InitializingBean, EventdServiceManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DaoEventdServiceManager.class);
+    
     private ServiceTypeDao m_serviceTypeDao;
 
     /**
@@ -71,15 +75,15 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            log().debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
             
             OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
             if (serviceType == null) {
-                log().debug("Did not find entry for '" + serviceName + "' in database.");
+                LOG.debug("Did not find entry for '" + serviceName + "' in database.");
                 return -1;
             }
             
-            log().debug("Found entry for '" + serviceName + "' (ID " + serviceType.getId() + " in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '" + serviceName + "' (ID " + serviceType.getId() + " in database.  Adding to service name cache.");
 
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
             
@@ -100,10 +104,6 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         for (OnmsServiceType serviceType : m_serviceTypeDao.findAll()) {
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

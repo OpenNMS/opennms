@@ -32,12 +32,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.protocols.nsclient.NsclientException;
 import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
 import org.opennms.protocols.nsclient.detector.request.NsclientRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NsclientClient class.</p>
@@ -46,6 +47,9 @@ import org.opennms.protocols.nsclient.detector.request.NsclientRequest;
  * @version $Id: $
  */
 public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NsclientClient.class);
+
 
     private String password;
 
@@ -75,7 +79,7 @@ public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
         for (int attempts = 0; attempts <= request.getRetries() && !isAServer; attempts++) {
             try {
                 response = client.processCheckCommand(request.getFormattedCommand(), request.getCheckParams());
-                log().debug("sendRequest: " + request.getFormattedCommand() + ": " + response.getResponse());
+                LOG.debug("sendRequest: {}: {}", request.getFormattedCommand(), response.getResponse());
                 isAServer = true;
             } catch (NsclientException e) {
                 StringBuffer message = new StringBuffer();
@@ -83,7 +87,7 @@ public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "": e.getCause().getMessage()));
-                log().info(message.toString());
+                LOG.info(message.toString());
                 isAServer = false;
             }
         }
@@ -96,10 +100,6 @@ public class NsclientClient implements Client<NsclientRequest, NsclientPacket> {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

@@ -24,7 +24,8 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.xmlrpc.DefaultXmlRpcTransport;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TimeoutSecureXmlRpcTransport adds a read timeout to the url connection.
@@ -33,6 +34,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
+    private static final Logger LOG = LoggerFactory.getLogger(TimeoutSecureXmlRpcTransport.class);
     protected int m_timeout = 0;
 
     /**
@@ -74,7 +76,7 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
     @Override
     public InputStream sendXmlRpc(final byte [] request) throws IOException {
         con = url.openConnection();
-        LogUtils.debugf(this, "Setting read timeout to %d", m_timeout);
+        LOG.debug("Setting read timeout to {}", m_timeout);
         con.setReadTimeout(m_timeout);
         con.setDoInput(true);
         con.setDoOutput(true);

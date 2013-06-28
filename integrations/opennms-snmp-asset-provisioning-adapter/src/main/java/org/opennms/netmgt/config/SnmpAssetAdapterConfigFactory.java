@@ -40,12 +40,14 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SnmpAssetAdapterConfigFactory</p>
  */
 public class SnmpAssetAdapterConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpAssetAdapterConfigFactory.class);
 
 	/**
 	 * Singleton instance of configuration that this factory provides.
@@ -54,7 +56,7 @@ public class SnmpAssetAdapterConfigFactory {
 
 	public SnmpAssetAdapterConfigFactory() throws MarshalException, ValidationException, IOException {
 	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
-		LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+		LOG.debug("init: config file path: {}", cfgFile.getPath());
 		final InputStream reader = new FileInputStream(cfgFile);
 		m_config = new SnmpAssetAdapterConfigManager(cfgFile.lastModified(), reader);
 		IOUtils.closeQuietly(reader);
@@ -89,12 +91,12 @@ public class SnmpAssetAdapterConfigFactory {
     		if (xml != null) {
     		    final long timestamp = System.currentTimeMillis();
     			final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
-    			LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+    			LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
     			final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
     			fileWriter.write(xml);
     			fileWriter.flush();
     			fileWriter.close();
-    			LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+    			LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
     		}
 	    } finally {
 	        m_config.getWriteLock().unlock();

@@ -28,7 +28,8 @@
 
 package org.opennms.sms.reflector.smsservice;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.USSDSessionStatus;
 
 /**
@@ -38,6 +39,7 @@ import org.smslib.USSDSessionStatus;
  * @version $Id: $
  */
 public class MobileMsgResponseMatchers {
+    private static final Logger LOG = LoggerFactory.getLogger(MobileMsgResponseMatchers.class);
 
 	/**
 	 * <p>smsFrom</p>
@@ -50,7 +52,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("smsFrom.matches(%s, %s, %s)", originator, request, response);
+				LOG.trace("smsFrom.matches({}, {}, {})", originator, request, response);
 				if (response instanceof SmsResponse) {
 					SmsResponse resp = (SmsResponse)response;
 					return isAMatch(originator, resp.getOriginator());
@@ -75,7 +77,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("smsFromRecipient.matches(%s, %s)", request, response);
+				LOG.trace("smsFromRecipient.matches({}, {})", request, response);
 				if (request instanceof SmsRequest && response instanceof SmsResponse) {
 					SmsRequest req = (SmsRequest)request;
 					SmsResponse resp = (SmsResponse)response;
@@ -109,7 +111,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("and.matches(%s)", (Object)matchers);
+				LOG.trace("and.matches({})", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
 					if (!matcher.matches(request, response)) {
 						return false;
@@ -149,7 +151,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("or.matches(%s)", (Object)matchers);
+				LOG.trace("or.matches({})", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
 					if (matcher.matches(request, response)) {
 						return true;
@@ -188,7 +190,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("textMatches(%s, %s, %s)", regex, request, response);
+				LOG.trace("textMatches({}, {}, {})", regex, request, response);
 				String text = response.getText() == null ? "" : response.getText();
 				return text.matches(regex);
 			}
@@ -210,7 +212,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("sms(%s, %s)", request, response);
+				LOG.trace("sms({}, {})", request, response);
 				if (response instanceof SmsResponse) {
 					return true;
 				}
@@ -234,7 +236,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("ussd(%s, %s)", request, response);
+				LOG.trace("ussd({}, {})", request, response);
 				if (response instanceof UssdResponse) {
 					return true;
 				}
@@ -259,7 +261,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				tracef("ussdStatusIs(%s, %s)", status, request, response);
+				LOG.trace("ussdStatusIs({}, {})", status, request, response);
 				if (response instanceof UssdResponse) {
 					UssdResponse resp = (UssdResponse)response;
 					
@@ -276,20 +278,6 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
-	/**
-	 * <p>tracef</p>
-	 *
-	 * @param format a {@link java.lang.String} object.
-	 * @param args a {@link java.lang.Object} object.
-	 */
-	public static void tracef(String format, Object... args) {
-		ThreadCategory log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
-		
-		if (log.isTraceEnabled()) {
-			log.trace(String.format(format, args));
-		}
-	}
-	
 	/**
 	 * <p>isAMatch</p>
 	 *

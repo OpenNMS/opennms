@@ -65,7 +65,8 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -118,6 +119,7 @@ import org.springframework.core.io.FileSystemResource;
  *
  */
 public class ThresholdingVisitorTest {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorTest.class);
 
     Level m_defaultErrorLevelToCheck;
     FilterDao m_filterDao;
@@ -239,7 +241,7 @@ public class ThresholdingVisitorTest {
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
-        log().info("Initialize Threshold Factories");
+        LOG.info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
@@ -1462,14 +1464,14 @@ public class ThresholdingVisitorTest {
         // Test Trigger
         attributes.put("http", 200.0);
         for (int i = 1; i < 5; i++) {
-            log().debug("testLatencyThresholdingSet: run number " + i);
+            LOG.debug("testLatencyThresholdingSet: run number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
             }
         }
         if (thresholdingSet.hasThresholds(attributes)) {
-            log().debug("testLatencyThresholdingSet: run number 5");
+            LOG.debug("testLatencyThresholdingSet: run number 5");
             triggerEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(triggerEvents.size() == 1);
         }
@@ -1515,7 +1517,7 @@ public class ThresholdingVisitorTest {
         // Testing trigger the threshold 3 times
         attributes.put("http", 200.0);
         for (int i = 1; i <= 3; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
@@ -1525,13 +1527,13 @@ public class ThresholdingVisitorTest {
         
         // This should reset the counter
         attributes.put("http", 40.0);
-        log().debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
+        LOG.debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
         triggerEvents = thresholdingSet.applyThresholds("http", attributes);
 
         // Increase the counter again two times, no threshold should be generated
         attributes.put("http", 300.0);
         for (int i = 4; i <= 5; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
@@ -1540,7 +1542,7 @@ public class ThresholdingVisitorTest {
         
         // Increase 3 more times and now, the threshold event should be triggered.
         for (int i = 6; i <= 8; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 if (i < 8)
@@ -1850,7 +1852,7 @@ public class ThresholdingVisitorTest {
             
             Collections.sort(receivedList, EVENT_COMPARATOR);
             Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);
-            log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
+            LOG.info("verifyEvents: Anticipated={}, Received= {}", receivedList.size(), m_anticipatedEvents.size());
             if (m_anticipatedEvents.size() != receivedList.size()) {
                 for (Event e : m_anticipatedEvents) {
                     System.err.println("expected event " + e.getUei() + ": " + e.getDescr());
@@ -1859,7 +1861,7 @@ public class ThresholdingVisitorTest {
                 fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
-                log().info("verifyEvents: processing event " + (i+1));
+                LOG.info("verifyEvents: processing event {}", (i+1));
                 compareEvents(m_anticipatedEvents.get(i), receivedList.get(i));
             }
         }
@@ -1964,10 +1966,6 @@ public class ThresholdingVisitorTest {
 				return internalTimestamp;
 			}
 		};
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

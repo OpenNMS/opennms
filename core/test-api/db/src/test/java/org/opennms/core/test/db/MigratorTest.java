@@ -52,7 +52,8 @@ import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -65,6 +66,8 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitTemporaryDatabase
 public class MigratorTest {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MigratorTest.class);
 
     @Autowired
     DataSource m_dataSource;
@@ -108,7 +111,7 @@ public class MigratorTest {
         }
 
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            LogUtils.infof(this, "=== found resource: " + resource + " ===");
+        	LOG.info("=== found resource: {} ===", resource);
         }
 
         // Make sure that none of the tables that are added during the migration are present
@@ -129,7 +132,7 @@ public class MigratorTest {
                 tableNames.append(tableName);
                 first = false;
             }
-            LogUtils.infof(this, "Tables in database before migration:\n %s\n", tableNames);
+            LOG.info("Tables in database before migration:\n {}\n", tableNames);
             assertFalse("must not contain table 'alarms'", tables.contains("alarms"));
 
             Set<String> procs = new HashSet<String>();
@@ -137,7 +140,7 @@ public class MigratorTest {
             while (rs.next()) {
                 procs.add(rs.getString("PROCEDURE_NAME").toLowerCase());
             }
-            LogUtils.infof(this, "procs = %s", procs);
+            LOG.info("procs = {}", procs);
             assertFalse("must not have stored procedure 'setSnmpInterfaceKeysOnUpdate'", procs.contains("setsnmpinterfacekeysonupdate"));
         } finally {
             if (conn != null) {
@@ -145,7 +148,7 @@ public class MigratorTest {
             }
         }
 
-        LogUtils.infof(this, "Running migration on database: %s", m_migration.toString());
+        LOG.info("Running migration on database: {}", m_migration);
 
         Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -174,7 +177,7 @@ public class MigratorTest {
                 tableNames.append(tableName);
                 first = false;
             }
-            LogUtils.infof(this, "Tables in database after migration:\n %s\n", tableNames);
+            LOG.info("Tables in database after migration:\n {}\n", tableNames);
             assertTrue("must contain table 'alarms'", tables.contains("alarms"));
 
             Set<String> procs = new HashSet<String>();
@@ -182,7 +185,7 @@ public class MigratorTest {
             while (rs.next()) {
                 procs.add(rs.getString("PROCEDURE_NAME").toLowerCase());
             }
-            LogUtils.infof(this, "procs = %s ", procs);
+            LOG.info("procs = {}", procs);
             assertTrue("must have stored procedure 'setSnmpInterfaceKeysOnUpdate'", procs.contains("setsnmpinterfacekeysonupdate"));
         } finally {
             if (conn != null) {
@@ -215,7 +218,7 @@ public class MigratorTest {
         // Add a resource accessor to the migration so that it will load multiple changelog.xml files
         // from the classpath
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            LogUtils.infof(this, "=== found resource: " + resource + " ===");
+        	LOG.info("=== found resource: {} ===", resource);
             m_migration.setAccessor(new ExistingResourceAccessor(resource));
             m.migrate(m_migration);
         }

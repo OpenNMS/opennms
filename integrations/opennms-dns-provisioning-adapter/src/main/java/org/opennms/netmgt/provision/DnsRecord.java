@@ -31,11 +31,13 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 class DnsRecord {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsRecord.class);
     private InetAddress m_ip;
     private String m_hostname;
     private String m_zone;
@@ -46,21 +48,21 @@ class DnsRecord {
         
         
         if (primaryInterface == null) {
-            log().debug("Constructor: no primary interface found for nodeid: " + node.getNodeId());
+            LOG.debug("Constructor: no primary interface found for nodeid: {}", node.getNodeId());
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                 m_ip = onmsIpInterface.getIpAddress();
                 break;
             }
         } else {
-            log().debug("Constructor: primary interface found for nodeid: " + node.getNodeId());
+            LOG.debug("Constructor: primary interface found for nodeid: {}", node.getNodeId());
             m_ip = primaryInterface.getIpAddress();
         }
-        log().debug("Constructor: set ip address: " + m_ip);
+        LOG.debug("Constructor: set ip address: {}", m_ip);
         m_hostname = node.getLabel() + ".";
-        log().debug("Constructor: set hostname: " + m_hostname);
+        LOG.debug("Constructor: set hostname: {}", m_hostname);
         m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
-        log().debug("Constructor: set zone: " + m_zone);
+        LOG.debug("Constructor: set zone: {}", m_zone);
 
     }
 
@@ -90,9 +92,4 @@ class DnsRecord {
     public String getHostname() {
         return m_hostname;
     }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DnsRecord.class);
-    }
-
 }

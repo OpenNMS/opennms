@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.model.events.EventIpcManager;
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
 public class OpenNMSProvisioner implements Provisioner {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSProvisioner.class);
     
     private static final String JDBC_MONITOR = "org.opennms.netmgt.poller.monitors.JDBCMonitor";
     private static final String HTTPS_MONITOR = "org.opennms.netmgt.poller.monitors.HttpsMonitor";
@@ -212,10 +214,10 @@ public class OpenNMSProvisioner implements Provisioner {
         }
         
         if (m_pollerConfig.getServiceMonitor(serviceId) == null) {
-            LogUtils.debugf(this, "Adding a new monitor for %s", serviceId);
+            LOG.debug("Adding a new monitor for {}", serviceId);
             m_pollerConfig.addMonitor(serviceId, monitor);
         } else {
-            LogUtils.debugf(this, "No need to add a new monitor for %s", serviceId);
+            LOG.debug("No need to add a new monitor for {}", serviceId);
         }
         
         if (m_capsdConfig.getProtocolPlugin(serviceId) == null) {

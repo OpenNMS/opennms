@@ -34,11 +34,9 @@ import static org.junit.Assert.assertNull;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -47,12 +45,6 @@ import org.opennms.netmgt.model.OnmsOutage;
 
 public class ConcreteObjectTest {
 
-	@Before
-	public void setUp() {
-		LogUtils.logToConsole();
-		LogUtils.enableDebugging();
-	}
-	
 	@Test
 	public void testTypes() throws Exception {
 		final CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);

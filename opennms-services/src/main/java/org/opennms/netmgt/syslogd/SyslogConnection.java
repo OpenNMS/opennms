@@ -34,7 +34,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.core.concurrent.WaterfallCallable;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
@@ -46,6 +47,7 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
 public class SyslogConnection implements WaterfallCallable {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
     private final DatagramPacket _packet;
 
@@ -87,20 +89,19 @@ public class SyslogConnection implements WaterfallCallable {
      */
     @Override
     public SyslogProcessor call() {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
         try {
             re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
 
-            log.debug("Sending received packet to the SyslogProcessor queue");
+            LOG.debug("Sending received packet to the SyslogProcessor queue");
 
             return new SyslogProcessor(re);
 
         } catch (final UnsupportedEncodingException e1) {
-            log.debug("Failure to convert package", e1);
+            LOG.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
-            log.debug("Message discarded, returning without enqueueing event.", e);
+            LOG.debug("Message discarded, returning without enqueueing event.", e);
         }
         return null;
     }
@@ -120,7 +121,7 @@ public class SyslogConnection implements WaterfallCallable {
                                                       );
                                                       return retPacket;
         } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(SyslogConnection.class).warn("unable to clone InetAddress object for " + packet.getAddress());
+            LOG.warn("unable to clone InetAddress object for {}", packet.getAddress());
         }
         return null;
     }

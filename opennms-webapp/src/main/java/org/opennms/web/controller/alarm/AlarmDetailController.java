@@ -50,6 +50,8 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author Ronny Trommer <ronny@opennms.org>
  */
 public class AlarmDetailController extends MultiActionController {
+	
+
 
     /**
      * OpenNMS alarm repository

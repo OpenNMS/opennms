@@ -38,7 +38,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -48,9 +47,14 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 public class MockSnmpStrategyTest {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockSnmpStrategyTest.class);
+	
     private static MockSnmpStrategy m_strategy;
     private InetAddress m_agentAddress = InetAddressUtils.addr("127.0.0.1");
     private int m_agentPort = 1691;
@@ -264,7 +268,7 @@ public class MockSnmpStrategyTest {
         }
         @Override
         protected void storeResult(final SnmpResult res) {
-            LogUtils.debugf(this, "storing result %s", res);
+        	LOG.debug("storing result {}", res);
             m_count++;
         }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,10 +37,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SimpleServer class.</p>
@@ -49,6 +50,8 @@ import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
  * @version $Id: $
  */
 public class SimpleServer extends SimpleConversationEndPoint {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleServer.class);
     
     public static class ServerErrorExchange implements Exchange{
         protected RequestHandler m_errorRequest;
@@ -260,25 +263,23 @@ public class SimpleServer extends SimpleConversationEndPoint {
                     }
                 } catch (final InterruptedException e) {
                     if (m_stopped) {
-                        LogUtils.debugf(this, e, "interrupted, shutting down");
+                        LOG.debug("interrupted, shutting down", e);
                     } else {
-                        LogUtils.infof(this, e, "interrupted while listening");
+                        LOG.info("interrupted while listening", e);
                     }
                     Thread.currentThread().interrupt();
                 } catch (final Exception e){
                     if (m_stopped) {
-                        if (LogUtils.isTraceEnabled(this)) {
-                            LogUtils.tracef(this, e, "error during conversation");
-                        }
+                        LOG.trace("error during conversation", e);
                     } else {
-                        LogUtils.infof(this, e, "error during conversation");
+                        LOG.info("error during conversation", e);
                     }
                 } finally {
                     try {
                         // just in case we're stopping because of an exception
                         stopServer();
                     } catch (final IOException e) {
-                        LogUtils.infof(this, e, "error while stopping server");
+                        LOG.info("error while stopping server", e);
                     }
                 }
             }

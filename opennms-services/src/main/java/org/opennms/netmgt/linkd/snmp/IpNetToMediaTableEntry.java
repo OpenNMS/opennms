@@ -32,7 +32,8 @@ import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *<P>The IpNetToMediaTableEntry class is designed to hold all the MIB-II
@@ -50,8 +51,9 @@ import org.opennms.core.utils.LogUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class IpNetToMediaTableEntry extends SnmpStore
-{
+public final class IpNetToMediaTableEntry extends SnmpStore {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IpNetToMediaTableEntry.class);
 	// Lookup strings for specific table entries
 	//
 	/** Constant <code>INTM_INDEX="ipNetToMediaIfIndex"</code> */
@@ -164,7 +166,7 @@ public final class IpNetToMediaTableEntry extends SnmpStore
                 return normalizeMacAddress(getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR));
             }
 	    } catch (IllegalArgumentException e) {
-	        LogUtils.warnf(this, e, e.getMessage());
+	        LOG.warn("IllegalArgumentException", e);
 	        return getDisplayString(IpNetToMediaTableEntry.INTM_PHYSADDR);
 	    }
 	}

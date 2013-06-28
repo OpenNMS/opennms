@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -53,6 +54,9 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public class DefaultKscReportService implements KscReportService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultKscReportService.class);
+
     
     private ResourceService m_resourceService;
     private KSC_PerformanceReportFactory m_kscReportFactory;
@@ -166,7 +170,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             if (resourceId != null) {
                 String[] resourceParts = DefaultGraphResultsService.parseResourceId(resourceId);
                 if (resourceParts == null) {
-                    log().warn("getResourcesFromGraphs: unparsable resourceId, skipping: " + resourceId);
+                    LOG.warn("getResourcesFromGraphs: unparsable resourceId, skipping: {}", resourceId);
                     continue;
                 }
                 
@@ -179,14 +183,14 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                     try {
                         resourcesForParent = getResourceService().getResourceListById(resourceId);
                         if (resourcesForParent == null) {
-                            log().warn("getResourcesFromGraphs: no resources found for parent " + parent);
+                            LOG.warn("getResourcesFromGraphs: no resources found for parent {}", parent);
                             continue;
                         } else {
                             resourcesMap.put(parent, resourcesForParent);
-                            log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
+                            LOG.debug("getResourcesFromGraphs: add resourceList to map for {}", parent);
                         }
                     } catch (Throwable e) {
-                        log().warn("getResourcesFromGraphs: unexpected exception thrown while fetching resource list for \"" + parent + "\", skipping resource", e);
+                        LOG.warn("getResourcesFromGraphs: unexpected exception thrown while fetching resource list for \"{}\", skipping resource", parent, e);
                         continue;
                     }
                 }
@@ -194,7 +198,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                 for (OnmsResource r : resourcesForParent) {
                     if (childType.equals(r.getResourceType().getName()) && childName.equals(r.getName())) {
                         resources.add(r);
-                        log().debug("getResourcesFromGraphs: found resource in map" + r.toString());
+                        LOG.debug("getResourcesFromGraphs: found resource in map{}", r.toString());
                         break;
                     }
                 }
@@ -281,8 +285,6 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         
         initTimeSpans();
     }
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultKscReportService.class);
-    }
+    
 
 }

@@ -65,7 +65,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -138,6 +139,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @DirtiesContext
 public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerTest.class);
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -358,13 +360,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         final CountingVisitor visitor = new CountingVisitor() {
             @Override
             public void visitNode(final OnmsNodeRequisition req) {
-                LogUtils.debugf(this, "visitNode: %s/%s %s", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
+                LOG.debug("visitNode: {}/{} {}", req.getForeignSource(), req.getForeignId(), req.getNodeLabel());
                 m_nodes.add(req);
                 m_nodeCount++;
             }
             @Override
             public void visitInterface(final OnmsIpInterfaceRequisition req) {
-                LogUtils.debugf(this, "visitInterface: %s", req.getIpAddr());
+                LOG.debug("visitInterface: {}", req.getIpAddr());
                 m_ifaces.add(req);
                 m_ifaceCount++;
             }
@@ -403,7 +405,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             @Override
             public void visitElement(final MockElement e) {
             	final Event newEvent = e.createNewEvent();
-                LogUtils.debugf(this, "Anticipate Event: %s", newEvent.getUei());
+                LOG.debug("Anticipate Event: {}", newEvent.getUei());
                 m_eventAnticipator.anticipateEvent(newEvent);
             }
             
@@ -436,7 +438,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
         
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
-            LogUtils.debugf(this, "Building = %s", assetRecord.getBuilding());
+            LOG.debug("Building = {}", assetRecord.getBuilding());
         }
     }
     
@@ -448,7 +450,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             m_eventAnticipator.reset();
             m_eventAnticipator.setDiscardUnanticipated(true);
             final String path = file.toURI().toURL().toExternalForm();
-            LogUtils.debugf(this, "Importing: %s", path);
+            LOG.debug("Importing: {}", path);
             importFromResource(path, true);
         }
         
@@ -765,7 +767,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        LogUtils.debugf(this, "found: %s", getInterfaceDao().findAll());
+        LOG.debug("found: {}", getInterfaceDao().findAll());
         
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
@@ -1052,7 +1054,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(1, getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
         final OnmsNode onmsNode = getNodeDao().get(1);
-        LogUtils.debugf(this, "node = %s", onmsNode);
+        LOG.debug("node = {}", onmsNode);
         assertEquals("\u00f1ode2", onmsNode.getLabel());
         
     }
@@ -1094,7 +1096,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
         final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
         final int nodeCount = getNodeDao().countAll();
-        LogUtils.debugf(this, "NodeCount: %d", nodeCount);
+        LOG.debug("NodeCount: {}", nodeCount);
 
         assertEquals(nodeCount, schedulesForNode.size());
         assertEquals(nodeCount, m_provisioner.getScheduleLength());

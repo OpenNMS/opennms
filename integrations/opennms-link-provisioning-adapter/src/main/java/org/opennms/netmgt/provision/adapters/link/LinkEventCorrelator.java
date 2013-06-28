@@ -34,7 +34,8 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.debugf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.DataLinkInterface;
@@ -51,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @EventListener(name="LinkEventCorrelator")
 public class LinkEventCorrelator {
+    private static final Logger LOG = LoggerFactory.getLogger(LinkEventCorrelator.class);
     private EventForwarder m_forwarder;
     private NodeLinkService m_nodeLinkService;
     private EndPointConfigurationDao m_endPointConfigDao;
@@ -76,7 +78,7 @@ public class LinkEventCorrelator {
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void logEvent(Event e) {
-        debugf(this, "Correlating Event %s/%d/%s/%s", e.getUei(), e.getNodeid(), e.getInterface(), e.getService());
+        LOG.debug("Correlating Event {}/{}/{}/{}", e.getUei(), e.getNodeid(), e.getInterface(), e.getService());
     }
     
     /**
@@ -94,9 +96,9 @@ public class LinkEventCorrelator {
                 linkDown(nodeId);
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable handleNodeDown");
+            LOG.debug("Caught a throwable handleNodeDown", t);
         }finally {
-            debugf(this, "Bailing out of handleNodeDown");
+            LOG.debug("Bailing out of handleNodeDown");
         }
     }
     
@@ -115,9 +117,9 @@ public class LinkEventCorrelator {
                 linkUp(nodeId);
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleNodeUp");
+            LOG.debug("Caught a throwable in handleNodeUp", t);
         }finally {
-            debugf(this, "Bailing out of handleNodeUp");
+            LOG.debug("Bailing out of handleNodeUp");
         }
     }
     
@@ -136,12 +138,12 @@ public class LinkEventCorrelator {
                 linkDown(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleInterfaceDown");
+            LOG.debug("Caught a throwable in handleInterfaceDown", t);
         }finally {
-            debugf(this, "Bailing out of handleInterfaceDown");
+            LOG.debug("Bailing out of handleInterfaceDown");
         }
     }
     
@@ -160,12 +162,12 @@ public class LinkEventCorrelator {
                 linkUp(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is not the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleInterfaceUp");
+            LOG.debug("Caught a throwable in handleInterfaceUp", t);
         }finally {
-            debugf(this, "Bailing out of handleInterfaceUp");
+            LOG.debug("Bailing out of handleInterfaceUp");
         }
     }
     
@@ -180,7 +182,7 @@ public class LinkEventCorrelator {
         try {
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -188,12 +190,12 @@ public class LinkEventCorrelator {
                 linkDown(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable handleServiceUnresponsive");
+            LOG.debug("Caught a throwable handleServiceUnresponsive", t);
         }finally{
-            debugf(this, "Bailing out of handleServiceUnresponsive");
+            LOG.debug("Bailing out of handleServiceUnresponsive");
         }
     }
     
@@ -208,7 +210,7 @@ public class LinkEventCorrelator {
         try {
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -216,12 +218,12 @@ public class LinkEventCorrelator {
                 linkUp(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleServiceResponsive");
+            LOG.debug("Caught a throwable in handleServiceResponsive", t);
         }finally {
-            debugf(this, "Bailing out of handleServiceResponsive");
+            LOG.debug("Bailing out of handleServiceResponsive");
         }
     }
     
@@ -236,19 +238,19 @@ public class LinkEventCorrelator {
        try { 
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
             if(isSnmpPrimary(nodeId, e.getInterface())){
                 endPointFound(nodeId);
             } else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
        }catch(Throwable t) {
-           debugf(this, t, "Caught a throwable in handleNodeGained");
+           LOG.debug("Caught a throwable in handleNodeGained", t);
        }finally {
-           debugf(this, "Bailing out of handleNodeGainedService");
+           LOG.debug("Bailing out of handleNodeGainedService");
        }
     }
     
@@ -260,11 +262,11 @@ public class LinkEventCorrelator {
     @Transactional
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(Event e) {
-        debugf(this, "A special log msg for %s", e.getUei());
+        LOG.debug("A special log msg for {}", e.getUei());
         try {
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -272,16 +274,16 @@ public class LinkEventCorrelator {
                 linkDown(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         
             
         } 
         catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleNodeLostService!");
+            LOG.debug("Caught a throwable in handleNodeLostService!", t);
         }
         finally {
-            debugf(this, "Bailing out of handleNodeLostService");
+            LOG.debug("Bailing out of handleNodeLostService");
         }
     }
     
@@ -296,7 +298,7 @@ public class LinkEventCorrelator {
         try {
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -304,12 +306,12 @@ public class LinkEventCorrelator {
                 linkUp(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is node the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
         }catch(Throwable t) {
-            debugf(this, t, "Caught a throwable in handleNodeRegainedService!");
+            LOG.debug("Caught a throwable in handleNodeRegainedService!", t);
         }finally {
-            debugf(this, "Bailing out of handleNodeRegainedService");
+            LOG.debug("Bailing out of handleNodeRegainedService");
         }
     }
     
@@ -324,7 +326,7 @@ public class LinkEventCorrelator {
        try { 
             logEvent(e);
             if (e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -332,12 +334,12 @@ public class LinkEventCorrelator {
                 linkUp(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is not the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
        }catch(Throwable t) {
-           debugf(this, t, "Caught a throwable in handleServiceUnmanaged!");
+           LOG.debug("Caught a throwable in handleServiceUnmanaged!", t);
        }finally {
-           debugf(this, "Bailing out of handleServiceUnmanaged");
+           LOG.debug("Bailing out of handleServiceUnmanaged");
        }
     }
     
@@ -351,7 +353,7 @@ public class LinkEventCorrelator {
     public void handleServiceDeleted(Event e){
        try {
             if(e.getService() != null && !e.getService().equals(getEndPointTypeValidator().getServiceName())) {
-                debugf(this, "Discarding Event %s since service %s does not match EndPoint service %s", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
+                LOG.debug("Discarding Event {} since service {} does not match EndPoint service {}", e.getUei(), e.getService(), getEndPointTypeValidator().getServiceName());
                 return;
             }
             
@@ -360,18 +362,18 @@ public class LinkEventCorrelator {
                 endPointDeleted(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                LOG.debug("Discarding Event {} since ip {} is not the primary interface of node {}", e.getUei(), e.getInterface(), e.getNodeid());
             }
        }catch(Throwable t) {
-           debugf(this, t, "Caught a throwable in handleServiceDeleted");
+           LOG.debug("Caught a throwable in handleServiceDeleted", t);
        }finally {
-           debugf(this, "Bailing out of handleServiceDeleted");
+           LOG.debug("Bailing out of handleServiceDeleted");
        }
         
     }
 
     private void linkDown(int nodeId) {
-        debugf(this, "Processing a down for links with endpoint on node %d", nodeId);
+        LOG.debug("Processing a down for links with endpoint on node {}", nodeId);
         for (DataLinkInterface dli : m_nodeLinkService.getLinkContainingNodeId(nodeId)) {
             boolean isParent = false;
 

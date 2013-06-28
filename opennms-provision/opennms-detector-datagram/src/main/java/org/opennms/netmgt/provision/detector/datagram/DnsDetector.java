@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,13 @@ package org.opennms.netmgt.provision.detector.datagram;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.dns.DNSAddressRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     
+    private static final Logger LOG = LoggerFactory.getLogger(DnsDetector.class);
     private static final String DEFAULT_SERVICE_NAME = "DNS";
 
     private final static int DEFAULT_PORT = 53;
@@ -97,7 +99,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
                 try {
                     request.verifyResponse(response.getData(), response.getLength());
                 } catch (final IOException e) {
-                    LogUtils.infof(this, e, "failed to connect");
+                    LOG.info("failed to connect", e);
                     return false;
                 } 
                 

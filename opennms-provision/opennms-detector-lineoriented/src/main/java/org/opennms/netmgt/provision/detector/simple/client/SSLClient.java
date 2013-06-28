@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,11 +35,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.SocketUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SSLClient class.</p>
@@ -49,6 +50,7 @@ import org.opennms.netmgt.provision.support.Client;
  */
 public class SSLClient extends MultilineOrientedClient implements Client<LineOrientedRequest, MultilineOrientedResponse> {
     
+    private static final Logger LOG = LoggerFactory.getLogger(SSLClient.class);
     
 
     /** {@inheritDoc} */
@@ -75,7 +77,7 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
         try {
             return SocketUtils.wrapSocketInSslContext(socket);
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Unable to wrap socket in SSL.");
+            LOG.debug("Unable to wrap socket in SSL.", e);
             return null;
         }
     }

@@ -36,15 +36,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -52,6 +52,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * <p>C3P0ConnectionFactory class.</p>
  */
 public class C3P0ConnectionFactory extends BaseConnectionFactory {
+	
+	public static final Logger LOG = LoggerFactory.getLogger(C3P0ConnectionFactory.class);
 
     private ComboPooledDataSource m_pool;
 
@@ -141,14 +143,14 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
     }
 
     /** {@inheritDoc} */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     @Override
     public void close() throws SQLException {
     	super.close();
-    	LogUtils.infof(this, "Closing C3P0 pool.");
+    	LOG.info("Closing C3P0 pool.");
         m_pool.close();
     }
 
@@ -159,7 +161,7 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     @Override
 	public void setMinPool(final int minPool) {
-		LogUtils.debugf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
+    	LOG.debug("Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
 	}
 
     @Override
@@ -170,6 +172,6 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
     @Override
 	public void setMaxSize(final int maxSize) {
-		LogUtils.debugf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
+    	LOG.debug("C3P0 has no equivalent to setMaxSize.  Ignoring.");
 	}
 }

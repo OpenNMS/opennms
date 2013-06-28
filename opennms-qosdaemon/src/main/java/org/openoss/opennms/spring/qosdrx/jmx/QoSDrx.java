@@ -28,7 +28,8 @@
 
 package org.openoss.opennms.spring.qosdrx.jmx;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -44,6 +45,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDrx.class);
 
 	/**
 	 * <p>Constructor for QoSDrx.</p>
@@ -76,28 +78,28 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 //		TODO REMOVE EXAMPLE IMPORTER CODE
 //		ThreadCategory.setPrefix(ImporterService.NAME);
 //		m_status = Fiber.STARTING;
-//		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
+//		LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
 //		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
 //		BeanFactoryReference bf = bfl.useBeanFactory("daoContext");
 //		ApplicationContext daoContext = (ApplicationContext) bf.getFactory();
 
 //		m_context = new ClassPathXmlApplicationContext(new String[] { "/org/opennms/netmgt/importer/importer-context.xml" }, daoContext);
-//		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+//		LOG.debug("SPRING: context.classLoader={}", m_context.getClassLoader());
 //		m_status = Fiber.RUNNING;
 		
 		
 		
-		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
+		LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
 		// finds the already instantiated OpenNMS daoContext
 		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
 		BeanFactoryReference bf = bfl.useBeanFactory("daoContext");
 		ApplicationContext daoContext = (ApplicationContext) bf.getFactory();
 	
-		ThreadCategory.getInstance().debug("QoSDrx using /org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml");
+		LOG.debug("QoSDrx using /org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml");
 		m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml" }, daoContext);
-		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+		LOG.debug("SPRING: context.classLoader={}", m_context.getClassLoader());
 
 		getQoSDrx().init();
 		getQoSDrx().start();
@@ -105,11 +107,11 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 //TODO remove old code		
 //		ThreadCategory.setPrefix(QoSDrx.NAME);
 //		m_status = Fiber.STARTING;
-//		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
+//		LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 //
-//		ThreadCategory.getInstance().debug("QoSDrx using /org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml");
+//		LOG.debug("QoSDrx using /org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml");
 //		m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml" });
-//		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+//		LOG.debug("SPRING: context.classLoader={}", m_context.getClassLoader());
 //
 //		getQoSDrx().init();
 //		getQoSDrx().start();

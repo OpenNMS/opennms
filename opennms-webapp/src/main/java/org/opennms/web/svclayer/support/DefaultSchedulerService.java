@@ -35,8 +35,7 @@ import java.util.List;
 
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
@@ -47,6 +46,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.webflow.execution.RequestContext;
@@ -59,6 +60,9 @@ import org.springframework.webflow.execution.RequestContext;
  * @since 1.8.1
  */
 public class DefaultSchedulerService implements InitializingBean, SchedulerService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultSchedulerService.class);
+
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
@@ -80,7 +84,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        log().debug("Adding job " + m_jobDetail.getName() + " to scheduler");
+        LOG.debug("Adding job {} to scheduler", m_jobDetail.getName());
         m_scheduler.addJob(m_jobDetail, true);
 
     }
@@ -107,7 +111,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
             }
         } catch (SchedulerException e) {
-            log().error("exception lretrieving trigger descriptions", e);
+            LOG.error("exception lretrieving trigger descriptions", e);
         }
 
         return triggerDescriptions;
@@ -127,8 +131,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 found = true;
             }
         } catch (SchedulerException e) {
-            log().error("exception looking up trigger name: " + triggerName);
-            log().error(e.getMessage());
+            LOG.error("exception looking up trigger name: {}", triggerName);
+            LOG.error(e.getMessage());
         }
 
         return found;
@@ -146,10 +150,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         try {
             m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
         } catch (SchedulerException e) {
-            log().error(
-                        "exception when attempting to remove trigger "
-                                + triggerName);
-            log().error(e.getMessage());
+            LOG.error("exception when attempting to remove trigger {}", triggerName, e);
         }
 
     }
@@ -184,7 +185,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         
         try {            
             if (m_reportWrapperService.validate(criteria,id) == false ) {
-                log().error(PARAMETER_ERROR);
+                LOG.error(PARAMETER_ERROR);
                 context.getMessageContext().addMessage(
                                                        new MessageBuilder().error().defaultText(
                                                                                                 PARAMETER_ERROR).build());
@@ -199,7 +200,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                     // cronTrigger = new CronTrigger(triggerName, m_triggerGroup,
                     // cronExpression);
                 } catch (ParseException e) {
-                    log().error(TRIGGER_PARSE_ERROR, e);
+                    LOG.error(TRIGGER_PARSE_ERROR, e);
                     context.getMessageContext().addMessage(
                                                            new MessageBuilder().error().defaultText(
                                                                                                     TRIGGER_PARSE_ERROR).build());
@@ -215,7 +216,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 try {
                     m_scheduler.scheduleJob(cronTrigger);
                 } catch (SchedulerException e) {
-                    log().error(SCHEDULER_ERROR, e);
+                    LOG.error(SCHEDULER_ERROR, e);
                     context.getMessageContext().addMessage(
                                                            new MessageBuilder().error().defaultText(
                                                                                                     SCHEDULER_ERROR).build());
@@ -225,7 +226,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 return SUCCESS;
             }
         } catch (ReportServiceLocatorException e) {
-            log().error(REPORTID_ERROR);
+            LOG.error(REPORTID_ERROR);
             context.getMessageContext().addMessage(
                                                    new MessageBuilder().error().defaultText(
                                                                                             REPORTID_ERROR).build());
@@ -261,7 +262,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 try {
                     m_scheduler.scheduleJob(trigger);
                 } catch (SchedulerException e) {
-                    LogUtils.warnf(this, e, SCHEDULER_ERROR);
+                    LOG.warn(SCHEDULER_ERROR, e);
                     context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(SCHEDULER_ERROR).build());
                     return ERROR;
                 }
@@ -269,7 +270,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 return SUCCESS;
             }
         } catch (ReportServiceLocatorException e) {
-            LogUtils.errorf(this, e, REPORTID_ERROR);
+            LOG.error(REPORTID_ERROR, e);
             context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(REPORTID_ERROR).build());
             return ERROR;
         }
@@ -277,9 +278,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
+    
 
     /**
      * <p>setScheduler</p>

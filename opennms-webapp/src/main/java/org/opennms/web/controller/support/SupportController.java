@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.rt.CustomField;
 import org.opennms.netmgt.rt.RTQueue;
 import org.opennms.netmgt.rt.RTTicket;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.rt.RequestTrackerException;
 import org.opennms.systemreport.SystemReport;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.opennms.systemreport.formatters.FtpSystemReportFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,6 +61,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.6
  */
 public class SupportController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SupportController.class);
+
     private SystemReport m_systemReport = null;
     private SupportRtConfigDao m_configDao = null;
 
@@ -73,7 +77,7 @@ public class SupportController extends AbstractController implements Initializin
         results.setSuccess(false);
         results.setNeedsLogin(false);
 
-        LogUtils.debugf(this, "operation = %s", operation);
+        LOG.debug("operation = {}", operation);
         if ("login".equals(operation)) {
             results = login(request);
         } else if (session.getAttribute("requestTracker") == null) {
@@ -112,7 +116,7 @@ public class SupportController extends AbstractController implements Initializin
         String body = request.getParameter("text").trim();
         final String includeReport = request.getParameter("include-report");
         final boolean report  = Boolean.parseBoolean(includeReport);
-        LogUtils.debugf(this, "include report?: %s (parsed as %s)", includeReport, new Boolean(report));
+        LOG.debug("include report?: {} (parsed as {})", includeReport, new Boolean(report));
 
         final RTUser user = rt.getUserInfo(rt.getUsername());
 
@@ -126,7 +130,7 @@ public class SupportController extends AbstractController implements Initializin
         try {
             queue = rt.getQueue(queueId);
         } catch (final RequestTrackerException e) {
-            LogUtils.warnf(this, "Unable to determine queue for queue ID %s", queueId.toString());
+            LOG.warn("Unable to determine queue for queue ID {}", queueId.toString());
         }
 
         // create report if necessary
@@ -162,7 +166,7 @@ public class SupportController extends AbstractController implements Initializin
             results.setSuccess(true);
             results.setMessage("New ticket created: <a href=\"" + m_configDao.getBaseURL() + "/Ticket/Display.html?id=" + id + "\">" + id + "</a>");
         } catch (final RequestTrackerException e) {
-            LogUtils.warnf(this, e, "Unable to create ticket %s", ticket);
+            LOG.warn("Unable to create ticket {}", ticket, e);
             results.setSuccess(false);
             results.setMessage("Unable to create ticket: " + e.getLocalizedMessage());
         }
@@ -174,7 +178,7 @@ public class SupportController extends AbstractController implements Initializin
         final String password = request.getParameter("password").trim();
 
         final RequestTracker rt = new RequestTracker(m_configDao.getBaseURL(), username, password, m_configDao.getTimeout(), m_configDao.getRetry());
-        LogUtils.debugf(this, "tracker = %s", rt);
+        LOG.debug("tracker = {}", rt);
 
         final SupportResults results = new SupportResults();
         results.setUsername(username);
@@ -192,11 +196,11 @@ public class SupportController extends AbstractController implements Initializin
             // If not, try to find a default queue
             if (queue == null || !queue.isAccessible()) {
                 queue = rt.getFirstPublicQueueForUser(username);
-                LogUtils.warnf(this, "If more than one queue was found for user %s, the first was used.  (%s)", username, queue);
+                LOG.warn("If more than one queue was found for user {}, the first was used.  ({})", username, queue);
 
                 m_configDao.setQueueId(queue.getId());
             } else {
-                LogUtils.debugf(this, "Existing queue found in support.properties (%s), will not overwrite.", m_configDao.getQueueId().toString());
+                LOG.debug("Existing queue found in support.properties ({}), will not overwrite.", m_configDao.getQueueId().toString());
             }
 
             m_configDao.setUsername(username);
@@ -214,7 +218,7 @@ public class SupportController extends AbstractController implements Initializin
             results.setQueue(queue.getName());
             return results;
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to log in user " + username);
+            LOG.warn("Unable to log in user {}", username, e);
             results.setSuccess(false);
             results.setNeedsLogin(true);
             results.setMessage("Unable to log in: " + e.getLocalizedMessage());
@@ -236,7 +240,7 @@ public class SupportController extends AbstractController implements Initializin
             results.setSuccess(true);
             results.setNeedsLogin(true);
         } catch (final IOException e) {
-            LogUtils.warnf(this, e, "Unable to remove username/password from support.properties.");
+            LOG.warn("Unable to remove username/password from support.properties.", e);
             results.setSuccess(false);
             results.setUsername(rt.getUsername());
             results.setMessage("Unable to remove username/password from support.properties.");

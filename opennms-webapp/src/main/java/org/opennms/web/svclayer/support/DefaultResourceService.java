@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -57,6 +58,9 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DefaultResourceService implements ResourceService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultResourceService.class);
+
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
     private EventProxy m_eventProxy;
@@ -281,7 +285,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException e) {
-            log().warn("Unable to send file promotion event to opennms: " + e, e);
+            LOG.warn("Unable to send file promotion event to opennms: {}", e, e);
         }
     }
     
@@ -295,9 +299,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         promoteGraphAttributesForResource(getResourceById(resourceId));
     }
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultResourceService.class);
-    }
+    
 
     /**
      * <p>findPrefabGraphsForChildResources</p>

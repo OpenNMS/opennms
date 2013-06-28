@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,13 +31,17 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
 
 public class IndexStorageStrategy implements StorageStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IndexStorageStrategy.class);
+    
     private String m_resourceTypeName;
     protected StorageStrategyService m_storageStrategyService;
 
@@ -90,14 +94,5 @@ public class IndexStorageStrategy implements StorageStrategy {
     @Override
     public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
         // Empty method, this strategy takes no parameters
-    }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }
