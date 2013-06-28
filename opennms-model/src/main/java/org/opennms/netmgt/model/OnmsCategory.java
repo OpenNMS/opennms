@@ -32,13 +32,13 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -164,7 +164,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 	 * @return a {@link java.util.Set} object.
 	 */
 	@ElementCollection
-	@JoinTable(name="category_group", joinColumns=@JoinColumn(name="categoryId"))
+	@CollectionTable(name="category_group", joinColumns=@JoinColumn(name="categoryId"))
 	@Column(name="groupId", nullable=false, length=64)
 	public Set<String> getAuthorizedGroups() {
 	    return m_authorizedGroups;
