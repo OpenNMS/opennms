@@ -59,11 +59,7 @@
         <artifactId>vaadin-shared</artifactId>
         <version>${vaadinVersion}</version>
     </dependency>
-      <dependency>
-          <groupId>com.vaadin</groupId>
-          <artifactId>vaadin-push</artifactId>
-          <version>${vaadinVersion}</version>
-      </dependency>
+
     <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-shared-deps</artifactId>
