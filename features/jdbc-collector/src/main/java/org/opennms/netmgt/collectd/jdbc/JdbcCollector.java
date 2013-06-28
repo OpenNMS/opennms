@@ -308,7 +308,7 @@ public class JdbcCollector implements ServiceCollector {
                     }
                 } catch(SQLException e) {
                     // Close the statement but retain the connection, log the exception and continue to the next query.
-                    LOG.warn("There was a problem executing query '" + query.getQueryName() + "' Please review the query or configuration. Reason: " + e.getMessage());
+                    LOG.warn("There was a problem executing query '{}' Please review the query or configuration. Reason: {}", query.getQueryName(),  e.getMessage());
                     agentState.closeResultSet(results);
                     agentState.closeStmt(stmt);
                     agentState.closeConnection(con);
