@@ -160,7 +160,7 @@ public class LatencyInterface {
 		if (threshold == null)
 	        throw new IllegalArgumentException("threshold cannot be null.");
 	
-	    LOG.debug("createEvent: ds=" + threshold.getDsName() + " uei=" + uei);
+	    LOG.debug("createEvent: ds={} uei={}", threshold.getDsName(),  uei);
 	
 	    // create the event to be sent
 	    EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd:" + threshold.getDsName(), date);

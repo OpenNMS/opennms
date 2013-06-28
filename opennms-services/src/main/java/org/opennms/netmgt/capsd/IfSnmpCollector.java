@@ -294,7 +294,7 @@ public final class IfSnmpCollector implements Runnable {
 
         // Debug
         if (snmpIfName != null) {
-            LOG.debug("getIfName: ifIndex " + ifIndex + " has ifName '" + snmpIfName);
+            LOG.debug("getIfName: ifIndex {} has ifName '{}", ifIndex,  snmpIfName);
         } else {
             LOG.debug("getIfName: no ifName found for ifIndex {}", ifIndex);
         }
@@ -330,10 +330,10 @@ public final class IfSnmpCollector implements Runnable {
 
             if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null && getIfXTable().getIfHighSpeed(ifIndex) > 4294) {
                 ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
-                LOG.debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+                LOG.debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex {}: {}", ifIndex,  ifSpeed);
             } else if (hasIfTable()) {
                 ifSpeed = m_ifTable.getIfSpeed(ifIndex);
-                LOG.debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+                LOG.debug("getInterfaceSpeed:  Using ifSpeed for ifIndex {}: {}", ifIndex,  ifSpeed);
             }
             
         } catch(Throwable e) {
@@ -405,7 +405,7 @@ public final class IfSnmpCollector implements Runnable {
         
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
         
-        LOG.debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
+        LOG.debug("run: collecting for: {} with agentConfig: {}", m_address, agentConfig);
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();

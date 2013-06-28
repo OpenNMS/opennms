@@ -268,7 +268,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     }
                 }
             }
-            LOG.debug("poll: HostResourceSwRunMonitor the number of matches found for " + serviceName + " was " + matches);
+            LOG.debug("poll: HostResourceSwRunMonitor the number of matches found for {} was {}", serviceName,  matches);
 
         } catch (NumberFormatException e) {
             String reason = "Number operator used on a non-number " + e.getMessage();

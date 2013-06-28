@@ -96,7 +96,7 @@ public class Tl1ClientImpl implements Tl1Client {
      */
     @Override
     public void start() {
-        LOG.info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
+        LOG.info("start: TL1 client: {}:{}", m_host, String.valueOf(m_port));
         LOG.info("start:Connection delay = {}", m_reconnectionDelay);
         setStarted(true);
 
@@ -110,7 +110,7 @@ public class Tl1ClientImpl implements Tl1Client {
         };
 
         m_socketReader.start();
-        LOG.info("Started TL1 client: "+m_host+":"+String.valueOf(m_port));
+        LOG.info("Started TL1 client: {}:{}", m_host, String.valueOf(m_port));
     }
 
     /* (non-Javadoc)
@@ -121,7 +121,7 @@ public class Tl1ClientImpl implements Tl1Client {
      */
     @Override
     public void stop() {
-        LOG.info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
+        LOG.info("Stopping TL1 client: {}:{}", m_host, String.valueOf(m_port));
         setStarted(false);
         
         //waiting a second or so for the reader thread to clean up the socket and shut
@@ -152,7 +152,7 @@ public class Tl1ClientImpl implements Tl1Client {
                 return reader;
                 
             } catch (IOException e) {
-                LOG.error("TL1 Connection Failed to " + m_host + ":" + m_port);
+                LOG.error("TL1 Connection Failed to {}:{}", m_host,  m_port);
                 LOG.debug(e.getMessage());
                 
                 waitUntilNextConnectTime();
@@ -229,7 +229,7 @@ public class Tl1ClientImpl implements Tl1Client {
                     }
                     rawMessageBuilder = null;
                     
-                    LOG.warn("readMessages: resetting socket reader to client: "+m_host+":"+m_port);
+                    LOG.warn("readMessages: resetting socket reader to client: {}:{}", m_host, m_port);
                     resetReader(null);
                 }
                 
@@ -238,7 +238,7 @@ public class Tl1ClientImpl implements Tl1Client {
             }
         }
         
-        LOG.info("TL1 client stopped for: "+m_host+":"+String.valueOf(m_port));
+        LOG.info("TL1 client stopped for: {}:{}", m_host, String.valueOf(m_port));
     }
 
     private void createAndQueueTl1Message(StringBuilder rawMessageBuilder) {

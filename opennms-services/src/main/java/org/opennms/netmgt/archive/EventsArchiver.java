@@ -282,7 +282,7 @@ public class EventsArchiver {
             m_eventDeleteStmt.setString(1, eventID);
             m_eventDeleteStmt.executeUpdate();
         } catch (SQLException sqle) {
-            LOG.error("Unable to delete event \'" + eventID + "\': " + sqle.getMessage());
+            LOG.error("Unable to delete event \'{}\': {}", eventID,  sqle.getMessage());
             return false;
         }
 
@@ -335,7 +335,7 @@ public class EventsArchiver {
                 // eventAckUser for this event
                 eventAckUser = eventsRS.getString(EVENT_ACK_USER);
 
-                LOG.debug("Event id: " + eventID + " uei: " + eventUEI + " log: " + eventLog + " display: " + eventDisplay + " eventAck: " + eventAckUser);
+                LOG.debug("Event id: {} uei: {} log: {} display: {} eventAck: {}", eventID, eventUEI, eventLog, eventDisplay,  eventAckUser);
 
                 if (eventLog.equals(MSG_NO) && eventDisplay.equals(MSG_NO)) {
                     // log = N, display = N, delete event

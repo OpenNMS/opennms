@@ -379,7 +379,7 @@ public final class Threshd extends AbstractServiceDaemon {
 
             // Is the interface in the package?
             //
-            LOG.debug("scheduleService: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
+            LOG.debug("scheduleService: checking ipaddress {} for inclusion in pkg {}", ipAddress,  pkg.getName());
             boolean foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             if (!foundInPkg && existing == false) {
                 // The interface might be a newly added one, rebuild the package
@@ -393,7 +393,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 continue;
             }
 
-            LOG.debug("scheduleService: ipaddress " + ipAddress + " IS in pkg " + pkg.getName());
+            LOG.debug("scheduleService: ipaddress {} IS in pkg {}", ipAddress,  pkg.getName());
 
             if (existing == false) {
                 // It is possible that both a nodeGainedService and a

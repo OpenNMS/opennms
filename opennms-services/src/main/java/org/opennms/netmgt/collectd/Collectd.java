@@ -415,13 +415,13 @@ public class Collectd extends AbstractServiceDaemon implements
         
         OnmsIpInterface iface = getIpInterface(nodeId, ipAddress);
         if (iface == null) {
-            LOG.error("Unable to find interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find interface with address {} on node {}", ipAddress, nodeId);
             return;
         }
         
         OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
         if (svc == null) {
-            LOG.error("Unable to find service "+svcName+" on interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find service {} on interface with address {} on node {}", svcName, ipAddress, nodeId);
             return;
         }
         
@@ -1232,7 +1232,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
-                LOG.debug("Comparing CollectableService ip address = " + addrString + " and event ip interface = " + ipAddress);
+                LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString,  ipAddress);
                 if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {

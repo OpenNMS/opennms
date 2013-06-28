@@ -570,7 +570,7 @@ public class Poller extends AbstractServiceDaemon {
         InetAddress addr;
         addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
-            LOG.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
+            LOG.error("Could not convert {} as an InetAddress {}", ipAddr, ipAddr);
             return false;
         }
         

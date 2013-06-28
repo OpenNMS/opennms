@@ -91,7 +91,7 @@ public class IfLabel extends Object {
        final String desc2 = desc;
        final String mac2 = mac;
  
-        LOG.debug("getInterfaceInfoFromIfLabel: desc=" + desc + " mac=" + mac);
+        LOG.debug("getInterfaceInfoFromIfLabel: desc={} mac={}", desc,  mac);
 
         String queryDesc = desc.replace('_', '%');
 

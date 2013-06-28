@@ -276,7 +276,7 @@ final class IfSmbCollector implements Runnable {
         }
 
         if (m_addr != null) {
-            LOG.debug("IfSmbCollector: SMB name of " + InetAddressUtils.str(m_target) + " is: " + m_addr.getHostName());
+            LOG.debug("IfSmbCollector: SMB name of {} is: {}", InetAddressUtils.str(m_target),  m_addr.getHostName());
             try {
                 // Attempt to resolve the Media Access Control Address
                 //

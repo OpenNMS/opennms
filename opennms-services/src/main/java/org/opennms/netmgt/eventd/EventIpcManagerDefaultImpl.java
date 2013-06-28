@@ -171,7 +171,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+                        LOG.info("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(),  event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map mdc = MDC.getCopyOfContextMap();
@@ -261,7 +261,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        LOG.debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
+        LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(),  event.getUei());
 
         if (m_listeners.isEmpty()) {
             LOG.debug("No listeners interested in all events");
@@ -304,7 +304,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            LOG.debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
+            LOG.debug("No listener interested in event ID {}: {}", event.getDbid(),  event.getUei());
         }
     }
 
@@ -347,7 +347,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             return;
         }
 
-        LOG.debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
+        LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(),  StringUtils.collectionToCommaDelimitedString(ueis));
 
         createListenerThread(listener);
 

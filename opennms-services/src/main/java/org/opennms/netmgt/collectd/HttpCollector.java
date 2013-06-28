@@ -318,7 +318,7 @@ public class HttpCollector implements ServiceCollector {
 
             buildCredentials(collectionSet, client, method);
 
-            LOG.info("doCollection: collecting for client: "+client+" using method: "+method);
+            LOG.info("doCollection: collecting for client: {} using method: {}", client, method);
             HttpResponse response = client.execute(method);
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
             persistResponse(collectionSet, collectionResource, client, response);

@@ -485,7 +485,7 @@ public class NodeLabel {
         }
 
         if (!method.equals(SELECT_METHOD_MIN) && !method.equals(SELECT_METHOD_MAX)) {
-        	LOG.warn("Interface selection method is '" + method + "'.  Valid values are 'min' & 'max'.  Will use default value: " + DEFAULT_SELECT_METHOD);
+		LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method,  DEFAULT_SELECT_METHOD);
             method = DEFAULT_SELECT_METHOD;
         }
 

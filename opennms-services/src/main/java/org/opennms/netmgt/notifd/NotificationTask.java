@@ -263,7 +263,7 @@ public class NotificationTask extends Thread {
                             LOG.debug("Class created is: {}", command.getClass());
 
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
-                            LOG.debug("command " + command.getName() + " return code = " + returnCode);
+                            LOG.debug("command {} return code = {}", command.getName(),  returnCode);
                         } catch (Throwable e) {
                             LOG.warn("Notification command failed: " + command.getName(), e);
                         }
@@ -309,7 +309,7 @@ public class NotificationTask extends Thread {
         List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()),  Boolean.valueOf(curArg.getStreamed()).booleanValue());
 
             commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }

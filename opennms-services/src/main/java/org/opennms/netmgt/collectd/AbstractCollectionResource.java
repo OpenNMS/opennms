@@ -91,7 +91,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      */
     protected void addAttribute(CollectionAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        LOG.debug("Adding attribute " + attr.getClass().getName() + ": " + attr + " to group " + group);
+        LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr,  group);
         group.addAttribute(attr);
     }
 

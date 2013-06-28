@@ -196,7 +196,7 @@ public class XMPPNotificationManager {
 
 	private void connectToServer() {
 		try {
-			LOG.debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
+			LOG.debug("Attempting vanilla XMPP Connection to {}:{}", xmppServer,  xmppPort);
 			xmpp.connect();
 			if (xmpp.isConnected()) {
 				LOG.debug("XMPP Manager successfully connected");

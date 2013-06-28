@@ -215,7 +215,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 LOG.debug("Executing HttpPage: {}", page.toString());
                 page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
-                    LOG.debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
+                    LOG.debug("Recording response time {} for ds {}", page.getResponseTime(),  page.getDsName());
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }

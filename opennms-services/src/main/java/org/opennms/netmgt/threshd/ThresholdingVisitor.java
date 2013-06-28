@@ -170,7 +170,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 if (value == null) {
                     value = attribute.getStringValue();
                 }
-                LOG.debug("visitAttribute: storing value "+ value +" for attribute named " + name);
+                LOG.debug("visitAttribute: storing value {} for attribute named {}", value,  name);
             }
         }
     }

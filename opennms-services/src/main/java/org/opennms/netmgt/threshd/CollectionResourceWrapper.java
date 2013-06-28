@@ -153,7 +153,7 @@ public class CollectionResourceWrapper {
                 if (m_iflabel != null) { // See Bug 3488
                     m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
                 } else {
-                    LOG.info("Can't find ifLabel for latency resource " + resource.getInstance() + " on node " + getNodeId());                    
+                    LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(),  getNodeId());
                 }
             }
             if (m_ifInfo != null) {
@@ -306,12 +306,12 @@ public class CollectionResourceWrapper {
      */
     public Double getAttributeValue(String ds) {
         if (m_attributes == null || m_attributes.get(ds) == null) {
-            LOG.warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
+            LOG.warn("getAttributeValue: can't find attribute called {} on {}", ds,  m_resource);
             return null;
         }
         String numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
-            LOG.warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
+            LOG.warn("getAttributeValue: can't find numeric value for {} on {}", ds,  m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
@@ -396,7 +396,7 @@ public class CollectionResourceWrapper {
     public String getLabelValue(String ds) {
         if (ds == null || ds.equals(""))
             return null;
-        LOG.debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
+        LOG.debug("getLabelValue: Getting Value for {}::{}", m_resource.getResourceTypeName(),  ds);
         if ("nodeid".equals(ds))
             return Integer.toString(m_nodeId);
         if ("ipaddress".equals(ds))

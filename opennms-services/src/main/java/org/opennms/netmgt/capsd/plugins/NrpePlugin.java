@@ -128,7 +128,7 @@ public final class NrpePlugin extends AbstractPlugin {
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket = wrapSocket(socket, host.toString(), port);
                 socket.setSoTimeout(timeout);
-                LOG.debug("NrpePlugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("NrpePlugin: connected to host: {} on port: {}", host,  port);
 				
 				NrpePacket p = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0,
 						command);
@@ -192,7 +192,7 @@ public final class NrpePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug("NrpePlugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("NrpePlugin: Connection refused to {}:{}", InetAddressUtils.str(host),  port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
@@ -204,7 +204,7 @@ public final class NrpePlugin extends AbstractPlugin {
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
-                LOG.debug("NrpePlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("NrpePlugin: did not connect to host within timeout: {} attempt: {}", timeout,  attempts);
                 isAServer = false;
             } catch (IOException e) {
                 LOG.info("NrpePlugin: An expected I/O exception occured connecting to host " + InetAddressUtils.str(host) + " on port " + port, e);

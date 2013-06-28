@@ -154,7 +154,7 @@ public class DataManager extends Object {
 		private Set<Integer> catConstructNodeIds (RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
-				LOG.debug("Category: " + cat.getLabel() + "\t" + filterRule);
+				LOG.debug("Category: {}\t{}", cat.getLabel(),  filterRule);
 		
 				Set<Integer> nodeIds = FilterDaoFactory.getInstance().getNodeMap(filterRule).keySet();
 				
@@ -218,9 +218,9 @@ public class DataManager extends Object {
 		if (regainedTimeTS != null)
 			regainedTime = regainedTimeTS.getTime();
 
-		LOG.debug("lost time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + lostTimeTS + "/" + lostTime);
+		LOG.debug("lost time for nodeid/ip/svc: {}/{}/{}: {}/{}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), lostTimeTS,  lostTime);
 
-		LOG.debug("regained time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + regainedTimeTS + "/" + regainedTime);
+		LOG.debug("regained time for nodeid/ip/svc: {}/{}/{}: {}/{}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), regainedTimeTS,  regainedTime);
 
 		rtcN.addSvcTime(lostTime, regainedTime);
 	}
@@ -237,7 +237,7 @@ public class DataManager extends Object {
 		// Add node to category
 		cat.addNode(rtcN);
 
-		LOG.debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + " added to cat: " + cat.getLabel());
+		LOG.debug("rtcN : {}/{}/{} added to cat: {}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(),  cat.getLabel());
 	}
 
     /**
@@ -431,9 +431,9 @@ public class DataManager extends Object {
         // Include only service status 'A' and where service is not SNMP
         //
         if (svcStatus != 'A') {
-            LOG.info("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + " IGNORED because status is not active: " + svcStatus);
+            LOG.info("nodeGainedSvc: {}/{}/{} IGNORED because status is not active: {}", nodeid, ip, svcName,  svcStatus);
         } else {
-            LOG.debug("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + "/" + svcStatus);
+            LOG.debug("nodeGainedSvc: {}/{}/{}/{}", nodeid, ip, svcName,  svcStatus);
 
             // I ran into problems with adding new services, so I just ripped
             // all that out and added
@@ -598,7 +598,7 @@ public class DataManager extends Object {
         // lookup the node
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
-            LOG.warn("Received a " + EventConstants.SERVICE_DELETED_EVENT_UEI + " event for an unknown node: " + key.toString());
+            LOG.warn("Received a {} event for an unknown node: {}", EventConstants.SERVICE_DELETED_EVENT_UEI,  key.toString());
 
             return;
         }

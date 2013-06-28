@@ -152,7 +152,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 try {
                     httpClient.getTimeoutTracker().startAttempt();                    
                     httpClient.connect();
-                    LOG.debug("HttpMonitor: connected to host: " + (iface.getAddress()) + " on port: " + currentPort);
+                    LOG.debug("HttpMonitor: connected to host: {} on port: {}", (iface.getAddress()),  currentPort);
 
                     httpClient.sendHttpCommand();
                     

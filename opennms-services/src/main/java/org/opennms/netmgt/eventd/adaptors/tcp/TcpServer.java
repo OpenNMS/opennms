@@ -267,7 +267,7 @@ final class TcpServer implements Runnable {
             return;
         }
 
-        LOG.debug("Server connection processor started on " + m_ipAddress + ":" + m_tcpPort);
+        LOG.debug("Server connection processor started on {}:{}", m_ipAddress,  m_tcpPort);
 
         /*
          *

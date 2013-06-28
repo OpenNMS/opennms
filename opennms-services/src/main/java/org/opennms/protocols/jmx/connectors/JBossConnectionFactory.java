@@ -161,7 +161,7 @@ public class JBossConnectionFactory {
                 wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
      
             } catch (Throwable e) {
-                 LOG.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on " + hostAddress + ":" + port);
+                 LOG.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on {}:{}", hostAddress,  port);
             } finally {
                 try {
                     if (ctx != null) {

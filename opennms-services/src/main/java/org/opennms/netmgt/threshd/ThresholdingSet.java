@@ -228,7 +228,7 @@ public class ThresholdingSet {
         boolean outageFound = false;
         for (String outageName : m_scheduledOutages) {
             if (outageFactory.isCurTimeInOutage(outageName)) {
-                LOG.debug("isNodeInOutage[node=" + m_nodeId + "]: current time is on outage using '" + outageName + "'; checking the node with IP " + m_hostAddress);
+                LOG.debug("isNodeInOutage[node={}]: current time is on outage using '{}'; checking the node with IP {}", m_nodeId, outageName,  m_hostAddress);
                 if (outageFactory.isNodeIdInOutage(m_nodeId, outageName) || outageFactory.isInterfaceInOutage(m_hostAddress, outageName)) {
                     LOG.debug("isNodeInOutage[node=" + m_nodeId + "]: configured outage '" + outageName + "' applies, interface " + m_hostAddress + " will be ignored for threshold processing");
                     outageFound = true;
@@ -264,7 +264,7 @@ public class ThresholdingSet {
                 for(String key : entityMap.keySet()) {
                     for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                         if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
-                            LOG.info("applyThresholds: Processing threshold " + key + " : " + thresholdEntity);
+                            LOG.info("applyThresholds: Processing threshold {} : {}", key,  thresholdEntity);
                             Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                             Map<String, Double> values = new HashMap<String,Double>();
                             boolean valueMissing = false;
@@ -304,7 +304,7 @@ public class ThresholdingSet {
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
         if (filters.length == 0) return true;
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
-        LOG.debug("passedThresholdFilters: applying " + filters.length + " filters to resource " + resource);
+        LOG.debug("passedThresholdFilters: applying {} filters to resource {}", filters.length,  resource);
         int count = 1;
         String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
         boolean andResult = true;
@@ -318,7 +318,7 @@ public class ThresholdingSet {
                     final Pattern p = Pattern.compile(f.getContent());
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
-                    LOG.debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
+                    LOG.debug("passedThresholdFilters: the value of {} is {}. Pass filter? {}", f.getField(), attr,  pass);
                     if (operator.equals("or") && pass) {
                         return true;
                     }
@@ -332,7 +332,7 @@ public class ThresholdingSet {
                     return false;
                 }
             } else {
-                LOG.warn("passedThresholdFilters: can't find value of " + f.getField() + " for resource " + resource);
+                LOG.warn("passedThresholdFilters: can't find value of {} for resource {}", f.getField(),  resource);
             }
         }
         if (operator.equals("and") && andResult)
@@ -386,7 +386,7 @@ public class ThresholdingSet {
             }
 
             // Is the interface in the package?
-            LOG.debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
+            LOG.debug("getThresholdGroupNames: checking ipaddress {} for inclusion in pkg {}", hostAddress,  pkg.getName());
             if (!configManager.interfaceInPackage(hostAddress, pkg)) {
                 LOG.debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
@@ -399,7 +399,7 @@ public class ThresholdingSet {
                         if (parameter.getKey().equals("thresholding-group")) {
                             String groupName = parameter.getValue();
                             groupNameList.add(groupName);
-                            LOG.debug("getThresholdGroupNames:  address/service: " + hostAddress + "/" + serviceName + ". Adding Group " + groupName);
+                            LOG.debug("getThresholdGroupNames:  address/service: {}/{}. Adding Group {}", hostAddress, serviceName,  groupName);
                         }
                     }
                 }

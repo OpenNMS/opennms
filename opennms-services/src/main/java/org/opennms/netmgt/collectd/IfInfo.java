@@ -194,7 +194,7 @@ public final class IfInfo extends SnmpCollectionResource {
 
     void logForceRescan(String ifAlias) {
 
-        LOG.debug("Forcing rescan.  IfAlias " + ifAlias + " for index " + getIndex() + " does not match DB value: " + getCurrentIfAlias());
+        LOG.debug("Forcing rescan.  IfAlias {} for index {} does not match DB value: {}", ifAlias, getIndex(),  getCurrentIfAlias());
     }
 
     public boolean isScheduledForCollection() {

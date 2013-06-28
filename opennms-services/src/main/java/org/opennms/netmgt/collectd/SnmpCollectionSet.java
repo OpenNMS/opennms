@@ -453,14 +453,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private void logIfCounts() {
         if (LOG.isDebugEnabled()) {
             CollectionAgent agent = getCollectionAgent();
-            LOG.debug("collect: nodeId: " + agent.getNodeId() + " interface: " + agent.getHostAddress() + " ifCount: " + getIfNumber().getIntValue() + " savedIfCount: " + agent.getSavedIfCount());
+            LOG.debug("collect: nodeId: {} interface: {} ifCount: {} savedIfCount: {}", agent.getNodeId(), agent.getHostAddress(), getIfNumber().getIntValue(),  agent.getSavedIfCount());
         }
     }
 
     private void logSysUpTime() {
         if (LOG.isDebugEnabled()) {
             CollectionAgent agent = getCollectionAgent();
-            LOG.debug("collect: nodeId: " + agent.getNodeId() + " interface: " + agent.getHostAddress() + " sysUpTime: " + getSysUpTime().getLongValue() + " savedSysUpTime: " + agent.getSavedSysUpTime());
+            LOG.debug("collect: nodeId: {} interface: {} sysUpTime: {} savedSysUpTime: {}", agent.getNodeId(), agent.getHostAddress(), getSysUpTime().getLongValue(),  agent.getSavedSysUpTime());
         }
     }
 
@@ -525,7 +525,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
-        LOG.info("Unable to locate resource for agent "+getCollectionAgent()+" with instance id "+res.getInstance()+" while collecting attribute "+attrType);
+        LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);
     }
 
     /* Not used anymore - done in CollectableService

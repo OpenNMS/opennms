@@ -114,7 +114,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
             connection = getMBeanServerConnection(map, address);
             
             Integer result = connection.getMBeanServer().getMBeanCount();
-            LOG.debug("isProtocolSupported? " + getProtocolName() + " " + result + " " + connection);
+            LOG.debug("isProtocolSupported? {} {} {}", getProtocolName(), result,  connection);
             if (result != null) {
                 res = true;
             }

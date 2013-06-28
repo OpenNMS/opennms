@@ -162,7 +162,7 @@ final class UdpProcessor implements Runnable {
             // Convert the Event
             Event[] events = null;
             try {
-                LOG.debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
+                LOG.debug("Event from {}:{}", InetAddressUtils.str(re.getSender()),  re.getPort());
                 LOG.debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {

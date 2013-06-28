@@ -267,7 +267,7 @@ final class CollectableService implements ReadyRunnable {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(builder.getEvent());
 
-            LOG.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
+            LOG.debug("sendEvent: Sent event {} for {}/{}/{}", uei, m_nodeId, getHostAddress(),  getServiceName());
         } catch (Throwable e) {
             LOG.error("Failed to send the event " + uei + " for interface " + getHostAddress(), e);
         }
@@ -362,7 +362,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+		LOG.info("run: starting new collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(),  m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -393,13 +393,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(),  m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(),  m_spec.getPackageName());
                     throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
 		}
-		LOG.info("run: finished collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+		LOG.info("run: finished collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(),  m_spec.getPackageName());
 	}
 
 	/**
@@ -438,7 +438,7 @@ final class CollectableService implements ReadyRunnable {
 
                 try {
                     reinitialize(newIface);
-                    LOG.debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing {} collector for {}/{}", this.getServiceName(), getHostAddress(),  m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
                     LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
@@ -484,7 +484,7 @@ final class CollectableService implements ReadyRunnable {
 
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
-                        LOG.debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
+                        LOG.debug("Attempting to rename {} to {}", oldNodeDir,  newNodeDir);
                         oldNodeDir.renameTo(newNodeDir);
                         LOG.debug("Rename successful!!");
                     } catch (SecurityException se) {
@@ -508,7 +508,7 @@ final class CollectableService implements ReadyRunnable {
                             File srcFile = new File(oldNodeDir.toString() + File.separator + filesToMove[i]);
                             File destFile = new File(newNodeDir.toString() + File.separator + filesToMove[i]);
                             try {
-                                LOG.debug("Attempting to move " + srcFile + " to " + destFile);
+                                LOG.debug("Attempting to move {} to {}", srcFile,  destFile);
                                 srcFile.renameTo(destFile);
                             } catch (SecurityException se) {
                                 LOG.error("Insufficient authority to move RRD files.", se);
@@ -537,9 +537,9 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    LOG.debug("Reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for {}/{}", getHostAddress(),  m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    LOG.debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for {}/{}", getHostAddress(),  m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
                     LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {

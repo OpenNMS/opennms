@@ -249,7 +249,7 @@ final class DataSender implements Fiber {
         if (!urlList.add(postInfo)) {
             LOG.debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
         } else {
-            LOG.debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
+            LOG.debug("Subscribed to URL: {}\tcatlabel: {}\tuser:{}", url, catlabel,  user);
         }
 
         // send data
@@ -429,7 +429,7 @@ final class DataSender implements Fiber {
                         // unsubscribe the URL
                         urlIter.remove();
 
-                        LOG.warn("URL " + postInfo.getURLString() + " UNSUBSCRIBED due to reaching error limit " + postInfo.getErrors());
+                        LOG.warn("URL {} UNSUBSCRIBED due to reaching error limit {}", postInfo.getURLString(),  postInfo.getErrors());
                     }
                 }
             }

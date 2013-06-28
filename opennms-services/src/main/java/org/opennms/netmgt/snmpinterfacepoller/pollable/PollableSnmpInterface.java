@@ -169,7 +169,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 		LOG.debug("setting snmpinterface:", iface.toString());
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
         		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
-                        LOG.debug("setting snmpinterface (oldStatus=" + oldStatus + "):" + iface.toString());
+                        LOG.debug("setting snmpinterface (oldStatus={}):{}", oldStatus,  iface.toString());
                         // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
                         m_snmpinterfaces.put(iface.getIfIndex(), iface);
         		if (iface.getIfAdminStatus() != null &&
@@ -285,7 +285,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     @Override
     public void run() {        
         if (getParent().polling()) {
-            LOG.info("run: polling SNMP interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
+            LOG.info("run: polling SNMP interfaces on package/interface {}/{}on primary address: {}", getParent().getPackageName(), getName(),  getParent().getIpaddress());
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                 LOG.debug("No Interface found. Doing nothing");
             } else {
@@ -326,8 +326,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
                 if (miface.getStatus().isUp()) {
                     OnmsSnmpInterface iface = m_snmpinterfaces.get(Integer.valueOf(miface.getIfindex()));
 
-                    LOG.debug("Previuos status Admin/Oper: " + iface.getIfAdminStatus() + "/" + iface.getIfOperStatus());
-                    LOG.debug("Current status Admin/Oper: " + miface.getAdminstatus() + "/" + miface.getOperstatus());
+                    LOG.debug("Previuos status Admin/Oper: {}/{}", iface.getIfAdminStatus(),  iface.getIfOperStatus());
+                    LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(),  miface.getOperstatus());
                     
                     // If the interface is Admin Up, and the interface is Operational Down, we generate an alarm.
                     if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP
@@ -373,7 +373,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     try {
                         update(iface);
                     } catch (Throwable e) {
-                        LOG.warn("Failing updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
+                        LOG.warn("Failing updating Interface{} {}", iface.getIfName(),  e.getLocalizedMessage());
                         refresh = true;
                     }
                 } else {

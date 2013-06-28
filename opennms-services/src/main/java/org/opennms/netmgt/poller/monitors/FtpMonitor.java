@@ -126,7 +126,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("FtpMonitor: connected to host: {} on port: {}", ipv4Addr,  port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();

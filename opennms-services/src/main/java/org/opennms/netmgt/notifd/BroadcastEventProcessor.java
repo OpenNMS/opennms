@@ -281,7 +281,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
-                        LOG.debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
+                        LOG.debug("Acknowledging event {} {}:{}:{}", curAck.getAcknowledge(), event.getNodeid(), event.getInterface(),  event.getService());
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
@@ -349,7 +349,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (String userID : userNotifications.keySet()) {
                 List<String> cmdList = userNotifications.get(userID);
                 String[] cmds = cmdList.toArray(new String[cmdList.size()]);
-                LOG.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
+                LOG.debug("Sending {} notification to userID = {} for notice ID {}", resolutionPrefix, userID,  notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
 
@@ -424,7 +424,7 @@ public final class BroadcastEventProcessor implements EventListener {
             }
         } catch (Throwable e) {
             continueNotice = true;
-            LOG.error("Not able to get notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + ". Continuing notice... " + e.getMessage());
+            LOG.error("Not able to get notify status for service {} on interface/node {}/{}. Continuing notice... {}", service, ipAddr, nodeID,  e.getMessage());
         }
 
         // in case of a error we will return false
@@ -583,7 +583,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
                     }
                 } else {
-                    LOG.debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
+                    LOG.debug("Event doesn't match a notice: {} : {} : {} : {}", event.getUei(), nodeid, ipaddr,  event.getService());
                 }
             }
         } else {
@@ -731,7 +731,7 @@ public final class BroadcastEventProcessor implements EventListener {
             } else {
                 autoNotify = "C";
             }
-            LOG.debug("Processing target " + targetName + ":" + interval);
+            LOG.debug("Processing target {}:{}", targetName,  interval);
             
             NotificationTask[] tasks = null;
             

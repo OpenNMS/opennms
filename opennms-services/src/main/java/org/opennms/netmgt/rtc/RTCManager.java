@@ -251,12 +251,12 @@ public final class RTCManager extends AbstractServiceDaemon {
         if (tt.getID().equals(LOWT_TASK)) {
             // cancel user timer
             boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: " + USERTIMER + " cancelled: " + ret);
+            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER,  ret);
 
             // send out the info and reset both timers
             if (m_highTtask != null) {
                 ret = m_highTtask.cancel();
-                LOG.debug("timerTaskComplete: " + HIGHT_TASK + " cancelled: " + ret);
+                LOG.debug("timerTaskComplete: {} cancelled: {}", HIGHT_TASK,  ret);
 
                 m_highTtask = null;
             }
@@ -275,12 +275,12 @@ public final class RTCManager extends AbstractServiceDaemon {
         } else if (tt.getID().equals(HIGHT_TASK)) {
             // cancel user timer
             boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: " + USERTIMER + " cancelled: " + ret);
+            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER,  ret);
 
             // send the category information out reset all timers
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("timerTaskComplete: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("timerTaskComplete: {} cancelled: {}", LOWT_TASK,  ret);
 
                 m_lowTtask = null;
             }
@@ -323,7 +323,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
         // cancel user timer
         boolean ret = m_userTask.cancel();
-        LOG.debug("checkTimerTasksOnEventReceipt: " + USERTIMER + " cancelled: " + ret);
+        LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", USERTIMER,  ret);
 
         // Check the counter to see if timers need to be started afresh
         if (m_counter == -1) {
@@ -361,14 +361,14 @@ public final class RTCManager extends AbstractServiceDaemon {
             // send the category information out and reset all timers
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK,  ret);
 
                 m_lowTtask = null;
             }
 
             if (m_highTtask != null) {
                 ret = m_highTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + HIGHT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", HIGHT_TASK,  ret);
                 m_highTtask = null;
             }
 
@@ -385,7 +385,7 @@ public final class RTCManager extends AbstractServiceDaemon {
             // went off
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK,  ret);
                 m_lowTtask = null;
             }
 

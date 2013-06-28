@@ -453,7 +453,7 @@ public final class IfCollector implements Runnable {
                             probe(subtarget, probelist);
                             m_previouslyProbed.add(subtarget);
 
-                            LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                            LOG.debug("ifCollector.run: adding subtarget {} # supported protocols: {}", InetAddressUtils.str(subtarget),  probelist.size());
                             LOG.debug("----------------------------------------------------------------------------------------");
                             m_subTargets.put(subtarget, probelist);
                         } // end while(more ip addresses)
@@ -493,7 +493,7 @@ public final class IfCollector implements Runnable {
                         probe(subtarget, probelist);
                         m_previouslyProbed.add(subtarget);
                         
-                        LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                        LOG.debug("ifCollector.run: adding subtarget {} # supported protocols: {}", InetAddressUtils.str(subtarget),  probelist.size());
                         LOG.debug("----------------------------------------------------------------------------------------");
                         m_subTargets.put(subtarget, probelist);
                     } // end while(more ip addresses)

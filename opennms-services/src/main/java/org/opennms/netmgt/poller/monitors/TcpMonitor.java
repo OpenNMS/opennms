@@ -146,7 +146,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("TcpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("TcpMonitor: connected to host: {} on port: {}", ipv4Addr,  port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();

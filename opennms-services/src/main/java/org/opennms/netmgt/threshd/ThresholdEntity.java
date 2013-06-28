@@ -240,7 +240,7 @@ public final class ThresholdEntity implements Cloneable {
             return events; //No events to report
         }
         
-        LOG.debug("evaluate: value= " + dsValue + " against threshold: " + this);
+        LOG.debug("evaluate: value= {} against threshold: {}", dsValue,  this);
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
@@ -294,7 +294,7 @@ public final class ThresholdEntity implements Cloneable {
                 throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
             }
 
-            LOG.debug("Last value from dataSource '" + datasource + "' was "+dsValue);
+            LOG.debug("Last value from dataSource '{}' was {}", datasource, dsValue);
         } catch (NumberFormatException nfe) {
             LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
         } catch (RrdException e) {

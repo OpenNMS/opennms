@@ -212,7 +212,7 @@ final class UdpUuidSender implements Runnable {
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
                     if (isTracing) {
-                        LOG.debug("Transmitting receipt to destination " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
+                        LOG.debug("Transmitting receipt to destination {}:{}", InetAddressUtils.str(re.getSender()),  re.getPort());
                     }
 
                     m_dgSock.send(pkt);

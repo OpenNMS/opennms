@@ -166,7 +166,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *             Thrown if an error occurs adding the element to the queue.
      */
     public synchronized void schedule(ReadyRunnable runnable, long interval) {
-        LOG.debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
+        LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable,  interval);
 
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {

@@ -887,7 +887,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                         LOG.debug("getBridgePortOnEndBridge: no port found on bridge nodeid " + endBridge.getNodeId() + " for node bridge identifiers nodeid " + startBridge.getNodeId() + " . .....Skipping.");
                         continue;
                     }
-                    LOG.debug("getBridgePortOnEndBridge: using MAC address table found bridge port " + port + " on node " + endBridge.getNodeId());
+                    LOG.debug("getBridgePortOnEndBridge: using MAC address table found bridge port {} on node {}", port,  endBridge.getNodeId());
                     return port;
                 }
 

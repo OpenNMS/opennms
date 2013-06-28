@@ -226,7 +226,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        LOG.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
+        LOG.debug("createEvent: uei = {} nodeid = {}", uei,  nodeId);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
@@ -281,20 +281,20 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
-        LOG.debug("openOutage: Opening outage for: "+svc+" with event:"+svcLostEvent);
+        LOG.debug("openOutage: Opening outage for: {} with event:{}", svc, svcLostEvent);
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                LOG.debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+                LOG.debug("run: Opening outage with query manager: {} with event:{}", svc, svcLostEvent);
 
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
                     getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
                 } else {
-                    LOG.warn("run: Failed to determine an eventId for service outage for: " + svc + " with event: " + svcLostEvent);
+                    LOG.warn("run: Failed to determine an eventId for service outage for: {} with event: {}", svc,  svcLostEvent);
                 }
             }
 
@@ -324,7 +324,7 @@ public class DefaultPollContext implements PollContext, EventListener {
                 if (eventId > 0) {
                     getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
                 } else {
-                    LOG.warn("run: Failed to determine an eventId for service regained for: " + svc + " with event: " + svcRegainEvent);
+                    LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc,  svcRegainEvent);
                 }
             }
         };

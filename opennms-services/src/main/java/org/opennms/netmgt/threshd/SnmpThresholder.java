@@ -191,7 +191,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             for (String resourceType : config.getGenericResourceTypeMap().keySet()) {
                 for (Set<ThresholdEntity> entitySet : config.getGenericResourceTypeMap().get(resourceType).getThresholdMap().values()) {
                 	for (ThresholdEntity entity : entitySet) {
-                		LOG.debug("    " + resourceType + "." + entity);
+				LOG.debug("    {}.{}", resourceType,  entity);
                 	}
                 }
             }
@@ -567,7 +567,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 Pattern p = Pattern.compile(f.getContent());
                 Matcher m = p.matcher(attr);
                 boolean pass = m.find();
-                LOG.debug("checkFilters: the value of " + dataSource + " is " + attr + ". Pass filter? " + pass);
+                LOG.debug("checkFilters: the value of {} is {}. Pass filter? {}", dataSource, attr,  pass);
                 if (pass) return true;
             }
         }
@@ -710,7 +710,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * for selected Interface ID.
      */
     private String getAttributeValue(File resourceDirectory, String resourceType, String attribute) {
-        LOG.debug("Getting Value for " + resourceType + "::" + attribute + " from " + resourceDirectory);
+        LOG.debug("Getting Value for {}::{} from {}", resourceType, attribute,  resourceDirectory);
         String value = null;
         // Interface ID or Resource ID from data path
         if (attribute.equals("ID")) {

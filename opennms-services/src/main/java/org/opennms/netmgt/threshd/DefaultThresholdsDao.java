@@ -147,7 +147,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         }
         // Search for deleted configuration
         if (merge) {
-            LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group " + groupName + " using type " + typeName);
+            LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group {} using type {}", groupName,  typeName);
             for (String expression : thresholdMap.keySet()) {
                 for (Iterator<ThresholdEntity> i = thresholdMap.get(expression).iterator(); i.hasNext();) {
                     ThresholdEntity entity = i.next();

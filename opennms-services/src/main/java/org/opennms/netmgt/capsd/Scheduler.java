@@ -277,7 +277,7 @@ final class Scheduler implements Runnable, PausableFiber {
                 if (rset.next()) {
                     Timestamp lastPolled = rset.getTimestamp(1);
                     if (lastPolled != null && rset.wasNull() == false) {
-                        LOG.debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                        LOG.debug("loadKnownNodes: adding node {} with last poll time {}", nodeId,  lastPolled);
                         NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
                         m_knownNodes.add(nodeInfo);
                     }
@@ -317,7 +317,7 @@ final class Scheduler implements Runnable, PausableFiber {
             if (rset.next()) {
                 Timestamp lastPolled = rset.getTimestamp(1);
                 if (lastPolled != null && rset.wasNull() == false) {
-                    LOG.debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
+                    LOG.debug("scheduleNode: adding node {} with last poll time {}", nodeId,  lastPolled);
                     m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
                 }
             } else
