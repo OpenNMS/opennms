@@ -8,7 +8,7 @@ public class MDCFilter extends Filter {
 	private String m_key;
 	private String m_value;
 	private int m_onMatch = ACCEPT;
-	private int m_onMisMatch = NEUTRAL;
+	private int m_onMisMatch = DENY;
 
 
 	public String getKeyToMatch() {
