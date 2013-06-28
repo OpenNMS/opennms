@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * <p>

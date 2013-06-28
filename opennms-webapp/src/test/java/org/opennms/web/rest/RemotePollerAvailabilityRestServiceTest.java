@@ -65,7 +65,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
+import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;

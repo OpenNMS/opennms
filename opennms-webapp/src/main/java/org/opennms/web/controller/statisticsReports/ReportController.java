@@ -35,6 +35,7 @@ import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.StatisticsReportService;
 import org.opennms.web.svclayer.support.StatisticsReportModel;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,7 +60,7 @@ public class ReportController extends AbstractCommandController implements Initi
         try {
         	StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
             return new ModelAndView(getSuccessView(), "model", report);
-        } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
+        } catch (HibernateObjectRetrievalFailureException horfe) {
         	throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString());
         }
     }
