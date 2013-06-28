@@ -184,7 +184,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
 	 */
 	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
 		String className = ClassUtils.getShortName(getClass());
-	    LOG.debug(className+": "+logMsg);
+	    LOG.debug("{} : {}", className, logMsg);
 	    return PollStatus.available(responseTime);
 	}
 }
