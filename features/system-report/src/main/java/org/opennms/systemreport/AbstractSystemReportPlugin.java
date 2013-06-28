@@ -66,12 +66,14 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.system.PsParser;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSystemReportPlugin.class);
     protected static final long MAX_PROCESS_WAIT = 10000; // milliseconds
     private MBeanServerConnection m_connection = null;
 
@@ -107,7 +109,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
                 return Charset.defaultCharset().decode(bb).toString().replace("[\\r\\n]*$", "");
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Unable to read from file '%s'", lsb.getPath());
+                LOG.debug("Unable to read from file '{}'", lsb.getPath(), e);
             } finally {
                 IOUtils.closeQuietly(stream);
             }
@@ -134,7 +136,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 if (br.ready()) sb.append("\n");
             }
         } catch (final Throwable e) {
-            LogUtils.debugf(this, e, "Failure attempting to run command '%s'", Arrays.asList(command).toString());
+            LOG.debug("Failure attempting to run command '{}'", Arrays.asList(command), e);
         } finally {
             IOUtils.closeQuietly(br);
             IOUtils.closeQuietly(isr);
@@ -160,7 +162,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                     }
                 }
             } catch (final IOException e) {
-                LogUtils.debugf(this, e, "an error occurred parsing the text");
+                LOG.debug("an error occurred parsing the text", e);
             } finally {
                 IOUtils.closeQuietly(br);
                 IOUtils.closeQuietly(sr);
@@ -207,7 +209,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     }
 
     protected String slurpOutput(CommandLine command, boolean ignoreExitCode) {
-        LogUtils.debugf(this, "running: %s", command.toString());
+        LOG.debug("running: {}", command);
     
         final Map<String,String> environment = new HashMap<String,String>(System.getenv());
         environment.put("COLUMNS", "2000");
@@ -223,7 +225,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         executor.setStreamHandler(streamHandler);
     
         try {
-            LogUtils.tracef(this, "executing '%s'", command.toString());
+            LOG.trace("executing '{}'", command);
             pis = new PipedInputStream(output);
             input = new DataInputStream(pis);
             parser = new OutputSuckingParser(input);
@@ -232,13 +234,13 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             IOUtils.closeQuietly(output);
             parser.join(MAX_PROCESS_WAIT);
             if (!ignoreExitCode && exitValue != 0) {
-                LogUtils.debugf(this, "error running '%s': exit value was %d", command.toString(), exitValue);
+                LOG.debug("error running '{}': exit value was {}", command, exitValue);
             } else {
                 topOutput = parser.getOutput();
             }
-            LogUtils.tracef(this, "finished '%s'", command.toString());
+            LOG.trace("finished '{}'", command);
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Failed to run '%s'", command.toString());
+            LOG.debug("Failed to run '{}'", command, e);
         } finally {
             IOUtils.closeQuietly(output);
             IOUtils.closeQuietly(input);
@@ -258,7 +260,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             fw.write(text);
             fw.close();
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Unable to write to temporary file.");
+            LOG.debug("Unable to write to temporary file.", e);
         } finally {
             IOUtils.closeQuietly(fw);
         }
@@ -266,12 +268,12 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     }
 
     protected Set<Integer> getOpenNMSProcesses() {
-        LogUtils.debugf(this, "getOpenNMSProcesses()");
+        LOG.debug("getOpenNMSProcesses()");
         final Set<Integer> processes = new HashSet<Integer>();
     
         final String jps = findBinary("jps");
         
-        LogUtils.debugf(this, "jps = %s", jps);
+        LOG.debug("jps = {}", jps);
     
         DataInputStream input = null;
         PsParser parser = null;
@@ -285,7 +287,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             PumpStreamHandler streamHandler = new PumpStreamHandler(output, System.err);
     
             try {
-            LogUtils.tracef(this, "executing '%s'", command.toString());
+            LOG.trace("executing '{}'", command);
                 pis = new PipedInputStream(output);
                 input = new DataInputStream(pis);
                 parser = new PsParser(input, "opennms_bootstrap.jar", "status", 0);
@@ -295,13 +297,13 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 IOUtils.closeQuietly(output);
                 parser.join();
                 processes.addAll(parser.getProcesses());
-                LogUtils.tracef(this, "finished '%s'", command.toString());
+                LOG.trace("finished '{}'", command);
                 
                 if (exitValue != 0) {
-                    LogUtils.debugf(this, "error running '%s': exit value was %d", command.toString(), exitValue);
+                    LOG.debug("error running '{}': exit value was {}", command, exitValue);
                 }
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Failed to run '%s'", command.toString());
+                LOG.debug("Failed to run '{}'", command, e);
             } finally {
                 IOUtils.closeQuietly(input);
                 IOUtils.closeQuietly(pis);
@@ -309,7 +311,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             }
         }
     
-        LogUtils.tracef(this, "looking for ps");
+        LOG.trace("looking for ps");
         final String ps = findBinary("ps");
         if (ps != null) {
             
@@ -319,7 +321,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             PumpStreamHandler streamHandler = new PumpStreamHandler(output, System.err);
     
             try {
-                LogUtils.debugf(this, "executing '%s'", command.toString());
+                LOG.debug("executing '{}'", command);
                 pis = new PipedInputStream(output);
                 input = new DataInputStream(pis);
                 parser = new PsParser(input, "opennms_bootstrap.jar", "status", 0);
@@ -329,13 +331,13 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 IOUtils.closeQuietly(output);
                 parser.join(MAX_PROCESS_WAIT);
                 processes.addAll(parser.getProcesses());
-                LogUtils.tracef(this, "finished '%s'", command.toString());
+                LOG.trace("finished '{}'", command);
                 
                 if (exitValue != 0) {
-                    LogUtils.debugf(this, "error running '%s': exit value was %d", command.toString(), exitValue);
+                    LOG.debug("error running '{}': exit value was {}", command, exitValue);
                 }
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "error running '%s'", command.toString());
+                LOG.debug("error running '{}'", command, e);
             } finally {
                 IOUtils.closeQuietly(input);
                 IOUtils.closeQuietly(pis);
@@ -349,7 +351,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 streamHandler = new PumpStreamHandler(output, System.err);
     
                 try {
-                    LogUtils.debugf(this, "executing '%s'", command.toString());
+                    LOG.debug("executing '{}'", command);
                     pis = new PipedInputStream(output);
                     input = new DataInputStream(pis);
                     parser = new PsParser(input, "opennms_bootstrap.jar", "status", 0);
@@ -359,13 +361,13 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                     IOUtils.closeQuietly(output);
                     parser.join(MAX_PROCESS_WAIT);
                     processes.addAll(parser.getProcesses());
-                    LogUtils.tracef(this, "finished '%s'", command.toString());
+                    LOG.trace("finished '{}'", command);
                     
                     if (exitValue != 0) {
-                        LogUtils.debugf(this, "error running '%s': exit value was %d", command.toString(), exitValue);
+                        LOG.debug("error running '{}': exit value was {}", command, exitValue);
                     }
                 } catch (final Exception e) {
-                    LogUtils.debugf(this, e, "error running '%s'", command.toString());
+                    LOG.debug("error running '{}'", command, e);
                 } finally {
                     IOUtils.closeQuietly(input);
                     IOUtils.closeQuietly(pis);
@@ -375,7 +377,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         }
     
         if (processes.size() == 0) {
-            LogUtils.warnf(this, "Unable to find any OpenNMS processes.");
+            LOG.warn("Unable to find any OpenNMS processes.");
         }
     
         return processes;
@@ -388,13 +390,13 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         ports.add(18980);
         ports.add(1099);
         for (final Integer port : ports) {
-            LogUtils.tracef(this, "Trying JMX at localhost:%d/jmxrmi", port);
+            LOG.trace("Trying JMX at localhost:{}/jmxrmi", port);
             try {
                 JMXServiceURL url = new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
                 JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
                 return jmxc.getMBeanServerConnection();
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Unable to get JMX connection to OpenNMS on port %d.", port);
+                LOG.debug("Unable to get JMX connection to OpenNMS on port {}.", port, e);
             }
         }
         return null;
@@ -428,7 +430,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 beans.add(getBean(name.getCanonicalName(), clazz));
             }
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to get beans of type '%s'", mxBeanName);
+            LOG.warn("Unable to get beans of type '{}'", mxBeanName, e);
         }
         return beans;
     }
@@ -451,7 +453,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 bean = ManagementFactory.newPlatformMXBeanProxy(m_connection, mxBeanName, c);
                 break;
             } catch (final Exception e) {
-                LogUtils.infof(this, e, "Unable to get management bean %s for class %s", mxBeanName, c.getName());
+                LOG.info("Unable to get management bean {} for class {}", mxBeanName, c.getName(), e);
             }
         }
         return bean;

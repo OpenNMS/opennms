@@ -34,10 +34,14 @@ import java.io.IOException;
 
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.rt.ReadOnlyRtConfigDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SupportRtConfigDao.class);
+
 
     @Override
     protected String getPrefix() {
@@ -46,7 +50,7 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
 
     @Override
     public void save() throws IOException {
-        LogUtils.debugf(this, "saving configuration changes to " + getFile());
+        LOG.debug("saving configuration changes to {}", getFile());
 
         FileWriter fw = null;
 
@@ -81,7 +85,7 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
 
             clearCache();
 
-            LogUtils.debugf(this, "finished saving configuration changes to " + getFile());
+            LOG.debug("finished saving configuration changes to {}", getFile());
         } finally {
             IOUtils.closeQuietly(fw);
         }

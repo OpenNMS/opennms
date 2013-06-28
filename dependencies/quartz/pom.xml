@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>quartz-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Quartz Dependencies</name>
+  <name>OpenNMS Dependencies Quartz</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use Quartz

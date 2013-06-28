@@ -33,7 +33,8 @@ import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DroolsTicketerConfigDao class.</p>
@@ -42,6 +43,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class DroolsTicketerConfigDao {
+    private static final Logger LOG = LoggerFactory.getLogger(DroolsTicketerConfigDao.class);
 
 	/**
 	 * Retrieves the properties defined in the drools-ticketer.properties file.
@@ -49,13 +51,13 @@ public class DroolsTicketerConfigDao {
 	 */
 	private Configuration getProperties() {
 		String propsFile = new String(System.getProperty("opennms.home") + "/etc/drools-ticketer.properties");
-		LogUtils.debugf(this, "loading properties from: %s", propsFile);
+		LOG.debug("loading properties from: {}", propsFile);
 		Configuration config = null;
 		
 		try {
 			config = new PropertiesConfiguration(propsFile);
 		} catch (final ConfigurationException e) {
-		    LogUtils.debugf(this, e, "Unable to load properties from %s", propsFile);
+		    LOG.debug("Unable to load properties from {}", propsFile, e);
 		}
 	
 		return config;

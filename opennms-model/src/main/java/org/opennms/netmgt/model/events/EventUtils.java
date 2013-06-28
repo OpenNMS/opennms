@@ -47,7 +47,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
@@ -56,6 +55,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract EventUtils class.</p>
@@ -64,6 +65,9 @@ import org.opennms.netmgt.xml.event.Value;
  * @version $Id: $
  */
 public abstract class EventUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EventUtils.class);
+
     
     /**
      * <p>createNodeAddedEvent</p>
@@ -321,10 +325,7 @@ public abstract class EventUtils {
     }
     
     private static void debug(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args));
-        }
+            LOG.debug(String.format(format, args));
     }
 
 

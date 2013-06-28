@@ -349,17 +349,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                     }
                 } else if (command.hasMaclike()) {
                 	String macLikeStripped = command.getMaclike().toLowerCase().replaceAll("[:-]", "");
-                	for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                		if (intf.getSnmpInterface() != null &&intf.getSnmpInterface().getPhysAddr() != null && intf.getSnmpInterface().getPhysAddr().toLowerCase().contains(macLikeStripped)) {
-                			displayInterfaces.add(intf);
-                		}
-                	}
                 	for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
                 	    if (snmpIntf.getPhysAddr() != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
-                	        OnmsIpInterface intf = snmpIntf.getPrimaryIpInterface();
-                	        if (intf == null) {
-                	            displaySnmpInterfaces.add(snmpIntf);
-                	        }
+                	        displaySnmpInterfaces.add(snmpIntf);
                 	    }
                 	}
                 	for (OnmsArpInterface aint : node.getArpInterfaces()) {

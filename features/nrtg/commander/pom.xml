@@ -14,7 +14,7 @@
     <!-- refactor code so namespace matches symbolic name -->
     <bundle.namespace>org.opennms.nrtg.commander</bundle.namespace>
   </properties>
-  <name>NRTG Commander</name>
+  <name>OpenNMS Features NRTG Commander</name>
   <description>
      The Commander is a dummy implementation to generate CollectionJobs
      and publish them via JMS-Queues. It's able to run in parallel and 

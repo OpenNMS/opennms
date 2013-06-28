@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +44,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -58,6 +59,7 @@ import org.springframework.dao.DataAccessException;
 public abstract class AbstractDaoHibernate<T, K extends Serializable> implements OnmsDao<T, K>, InitializingBean {
     
     protected SessionFactory sessionFactory;
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoHibernate.class);
     private final Class<T> m_entityClass;
     private String m_lockName;
     private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
@@ -369,7 +371,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
-        LogUtils.debugf(this, "criteria = %s", criteria);
+        LOG.debug("criteria = {}", criteria);
         final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, sessionFactory.getCurrentSession());
         return (List<T>)(hibernateCriteria.list());
     }
@@ -499,10 +501,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
             //if (cause.getCause().getClass().getName().equals(PSQLException.class.getName())) {
             if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
             	final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
-                LogUtils.warnf(this, "Duplicate key constraint violation, class: %s, key value: %s", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName()));
+                LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName()));
                 break;
             } else if (cause.getMessage().contains("given object has a null identifier")) {
-                LogUtils.warnf(this, "Null identifier on object, class: %s: %s", m_entityClass.getName(), entity.toString());
+                LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());
                 break;
             }
             //}

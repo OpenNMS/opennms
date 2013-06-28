@@ -41,12 +41,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 public class ZipSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(ZipSystemReportFormatter.class);
     private File m_tempFile;
     private ZipOutputStream m_zipOutputStream;
     private Set<String> m_directories = new HashSet<String>();
@@ -57,7 +59,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             m_tempFile = File.createTempFile(getName(), null);
             m_tempFile.deleteOnExit();
         } catch (final IOException e) {
-            LogUtils.errorf(this, e, "Unable to create temporary file!");
+            LOG.error("Unable to create temporary file!", e);
         }
     }
 
@@ -93,7 +95,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             m_zipOutputStream = new ZipOutputStream(new FileOutputStream(m_tempFile));
             m_zipOutputStream.setLevel(9);
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "Unable to create zip file '%s'", m_tempFile);
+            LOG.error("Unable to create zip file '{}'", m_tempFile, e);
             return;
         }
     }
@@ -104,7 +106,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         try {
             createDirectory("");
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "Unable to create entry '%s'", name);
+            LOG.error("Unable to create entry '{}'", name, e);
             return;
         }
         
@@ -112,7 +114,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             try {
                 createEntry(name);
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unable to create entry '%s'", name);
+                LOG.error("Unable to create entry '{}'", name, e);
                 return;
             }
             final AbstractSystemReportFormatter formatter = new TextSystemReportFormatter();
@@ -130,14 +132,14 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
                 try {
                     createDirectory(plugin.getName());
                 } catch (final Exception e) {
-                    LogUtils.errorf(this, e, "Unable to create directory '%s'", plugin.getName());
+                    LOG.error("Unable to create directory '{}'", plugin.getName(), e);
                     return;
                 }
                 final String entryName = String.format("%s/%s", plugin.getName(), entry.getKey());
                 try {
                     createEntry(entryName);
                 } catch (final Exception e) {
-                    LogUtils.errorf(this, e, "Unable to create entry '%s'", entryName);
+                    LOG.error("Unable to create entry '{}'", entryName, e);
                     return;
                 }
 
@@ -149,7 +151,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
                         m_zipOutputStream.write(buf, 0, len);
                     }
                 } catch (Throwable e) {
-                    LogUtils.warnf(this, e, "Unable to read resource '%s'", resource);
+                    LOG.warn("Unable to read resource '{}'", resource, e);
                     return;
                 } finally {
                     IOUtils.closeQuietly(is);
@@ -163,7 +165,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         try {
             m_zipOutputStream.closeEntry();
         } catch (IOException e) {
-            LogUtils.warnf(this, e, "Unable to close last entry.");
+            LOG.warn("Unable to close last entry.", e);
         }
         IOUtils.closeQuietly(m_zipOutputStream);
         
@@ -177,14 +179,14 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
                 os.write(buf, 0, len);
             }
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to read temporary zip file '%s'", m_tempFile);
+            LOG.warn("Unable to read temporary zip file '{}'", m_tempFile, e);
         } finally {
             IOUtils.closeQuietly(is);
         }
     }
 
     private void createEntry(final String name) throws IOException {
-        LogUtils.infof(this, "adding to zip: opennms-system-report/%s", name);
+        LOG.info("adding to zip: opennms-system-report/{}", name);
         m_zipOutputStream.putNextEntry(new ZipEntry("opennms-system-report/" + name));
     }
 

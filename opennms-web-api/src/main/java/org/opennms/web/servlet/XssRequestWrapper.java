@@ -38,8 +38,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>XssRequestWrapper class.</p>
@@ -50,6 +51,9 @@ import org.opennms.core.utils.WebSecurityUtils;
  */
 public class XssRequestWrapper extends HttpServletRequestWrapper
 {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(XssRequestWrapper.class);
+
     private Map<String, String[]> sanitized_parameters;
     private Map<String, String[]> original_parameters;
     
@@ -64,7 +68,6 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         super(req);
         original_parameters = req.getParameterMap();   
         sanitized_parameters = getParameterMap();
-        if (log().isDebugEnabled())
             snzLogger();
     }       
 
@@ -157,16 +160,13 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
                 for (int i=0; i < rawVals.length; i++) 
                 {
                     if (rawVals[i].equals(snzVals[i]))                                                          
-                        log().debug("Sanitization. Param seems safe: " + key + "[" + i + "]=" + snzVals[i]);               
+                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);               
                     else
-                        log().debug("Sanitization. Param modified: " + key + "[" + i + "]=" + snzVals[i]);
+                        LOG.debug("Sanitization. Param modified: {}[{}]={}", key, i, snzVals[i]);
                 }       
             }
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

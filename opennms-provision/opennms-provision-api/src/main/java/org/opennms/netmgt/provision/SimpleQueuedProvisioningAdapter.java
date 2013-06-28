@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class takes the work out of scheduling and queuing calls from the provisioner.  Each provisioning
@@ -68,6 +69,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAdapter {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleQueuedProvisioningAdapter.class);
     
     private final AdapterOperationQueue m_operationQueue = new AdapterOperationQueue();
     
@@ -414,7 +417,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                         try {
                             processPendingOperationForNode(this);
                         } catch (ProvisioningAdapterException e) {
-                            log().warn("Exception thrown during adapter queuing, rescheduling: " + e.getMessage(), e);
+                            LOG.warn("Exception thrown during adapter queuing, rescheduling: " + e.getMessage(), e);
                             //reschedule if the adapter throws a provisioning adapter exception
                             schedule(getExecutorService(), true);
                         } finally {
@@ -425,16 +428,12 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                     schedule(getExecutorService(), false);
                 }
             } catch (Throwable e) {
-                log().error("Unexpected exception during node operation: " + e.getMessage(), e);
+                LOG.error("Unexpected exception during node operation: " + e.getMessage(), e);
             }
         }
     }
 
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(SimpleQueuedProvisioningAdapter.class);
-    }
-
     /**
      * Simple class for handling the scheduling bits for an AdapterOperation
      * 

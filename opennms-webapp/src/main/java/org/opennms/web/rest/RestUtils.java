@@ -5,17 +5,21 @@ import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 public class RestUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
+
 
 	public static void setBeanProperties(final Object bean, final MultivaluedMapImpl properties) {
 		final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
@@ -36,7 +40,7 @@ public class RestUtils {
 
 	@SuppressWarnings("unchecked")
 	private static Object convertIfNecessary(final BeanWrapper wrapper,	final String propertyName, final String stringValue) {
-		LogUtils.debugf(RestUtils.class, "convertIfNecessary(%s, %s)", propertyName, stringValue);
+		LOG.debug("convertIfNecessary({}, {})", propertyName, stringValue);
 		return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(propertyName));
 	}
 

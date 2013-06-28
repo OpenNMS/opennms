@@ -9,7 +9,7 @@
   <groupId>org.opennms.core.build</groupId>
   <artifactId>org.opennms.core.build.keystore</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Build Keystore</name>
+  <name>OpenNMS Core Build Keystore</name>
   <build>
     <resources>
       <resource>

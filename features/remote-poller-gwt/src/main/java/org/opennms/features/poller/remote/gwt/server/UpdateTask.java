@@ -34,11 +34,13 @@ package org.opennms.features.poller.remote.gwt.server;
 import java.util.Date;
 import java.util.TimerTask;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.novanic.eventservice.service.EventExecutorService;
 
 final class UpdateTask extends TimerTask {
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateTask.class);
     private final EventExecutorService m_service;
     private final LocationDataManager m_locationDataManager;
     private Date m_lastUpdated;
@@ -64,7 +66,7 @@ final class UpdateTask extends TimerTask {
             m_locationDataManager.doUpdate(m_lastUpdated, endDate, m_service);
     		m_lastUpdated = endDate;
     	} catch (final Exception e) {
-    		LogUtils.warnf(m_locationDataManager, e, "An error occurred while pushing monitor and application status updates.");
+    		LOG.warn("An error occurred while pushing monitor and application status updates.", e);
     	}
     }
 }

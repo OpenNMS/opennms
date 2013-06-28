@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-base</artifactId>
-  <name>NRTG Karaf NRTG Base Feature</name>
+  <name>OpenNMS Features NRTG Features NRTG Base Feature</name>
   <description>OSGI Runtime for the NRTCollector.</description>
   <packaging>pom</packaging>
   <build>

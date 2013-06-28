@@ -37,7 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * BaseTask
@@ -46,6 +47,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public abstract class Task {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Task.class);
     
     private static enum State {
         NEW,
@@ -184,11 +187,9 @@ public abstract class Task {
     
     private final void setState(final State oldState, final State newState) {
         if (!m_state.compareAndSet(oldState, newState)) {
-            LogUtils.debugf(this, "Attempted to move to state %s with state not %s (actual value %s)", newState, oldState, m_state.get());
+        	LOG.debug("Attempted to move to state {} with state not {} (actual value {})", newState, oldState, m_state.get());
         } else {
-            if (LogUtils.isTraceEnabled(this)) {
-                LogUtils.tracef(this, "Set state to %s\n", newState);
-            }
+        	LOG.trace("Set state to {}", newState);
         }
     }
     
@@ -368,23 +369,4 @@ public abstract class Task {
         return String.format("Task[%s]", super.toString());
     }
 
-    /**
-     * <p>info</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void info(final String format, final Object... args) {
-        LogUtils.infof(this, format, args);
-    }
-
-    /**
-     * <p>debug</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void debug(String format, Object... args) {
-        LogUtils.debugf(this, format, args);
-    }
 }

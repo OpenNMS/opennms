@@ -33,6 +33,8 @@ import java.util.Collection;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -69,10 +71,13 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class Eventd extends AbstractServiceDaemon {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Eventd.class);
+    
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
+    public static final String LOG4J_CATEGORY = "eventd";
 
     /**
      * Reference to the event processor
@@ -94,7 +99,7 @@ public final class Eventd extends AbstractServiceDaemon {
      * eventd originates events during correlation) and the broadcast queue
      */
     public Eventd() {
-        super("OpenNMS.Eventd");
+        super("eventd");
     }
 
     /**
@@ -118,9 +123,9 @@ public final class Eventd extends AbstractServiceDaemon {
             eventReceiver.start();
         }
         
-        log().debug("Listener threads started");
+        LOG.debug("Listener threads started");
 
-        log().debug("Eventd running");
+        LOG.debug("Eventd running");
     }
 
     /**
@@ -128,7 +133,7 @@ public final class Eventd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStop() {
-        log().debug("calling shutdown on tcp/udp listener threads");
+        LOG.debug("calling shutdown on tcp/udp listener threads");
 
         // Stop listener threads
         for (EventReceiver eventReceiver : m_eventReceivers) {
@@ -139,7 +144,7 @@ public final class Eventd extends AbstractServiceDaemon {
             m_receiver.close();
         }
 
-        log().debug("shutdown on tcp/udp listener threads returned");
+        LOG.debug("shutdown on tcp/udp listener threads returned");
     }
 
     /**

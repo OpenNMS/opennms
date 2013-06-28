@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-mock-simpleserver</artifactId>
-  <name>OpenNMS Mock SimpleServer</name>
+  <name>OpenNMS Provision Mock SimpleServer</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

@@ -43,7 +43,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
@@ -58,6 +57,8 @@ import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -71,6 +72,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AccessPointMonitordTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordTest.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -127,7 +129,7 @@ public class AccessPointMonitordTest implements InitializingBean {
     public void tearDown() throws Exception {
         if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
             m_apm.stop();
-            LogUtils.debugf(this, "AccessPointMonitord stopped");
+            LOG.debug("AccessPointMonitord stopped");
         }
     }
 

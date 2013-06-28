@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.debugf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -52,6 +53,7 @@ import org.springframework.util.Assert;
  */
 @EventListener(name="LinkProvisioningAdapter")
 public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(LinkProvisioningAdapter.class);
 
     private static final String ADAPTER_NAME = "LinkAdapter";
     
@@ -93,10 +95,10 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
         final Integer nodeId = m_nodeLinkService.getNodeId(nodeLabel);
         final Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
         
-        LogUtils.infof(this, "running doAddNode on node %s nodeId: %d", nodeLabel, nodeId);
+        LOG.info("running doAddNode on node {} nodeId: {}", nodeLabel, nodeId);
         
         if(nodeId != null && parentNodeId != null){
-            LogUtils.infof(this, "Found link between parentNode %s and node %s", parentNodeLabel, nodeLabel);
+            LOG.info("Found link between parentNode {} and node {}", parentNodeLabel, nodeLabel);
             m_nodeLinkService.createLink(parentNodeId, nodeId);
         }
         
@@ -133,14 +135,14 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
         try{
             updateLinkStatus("dataLinkFailed", event, "B");
         }catch(final Throwable t){
-            debugf(this, t, "Caught an exception in dataLinkFailed");
+            LOG.debug("Caught an exception in dataLinkFailed", t);
         }finally{
-            debugf(this, "Bailing out of dataLinkFailed handler");
+            LOG.debug("Bailing out of dataLinkFailed handler");
         }
     }
 
     private void updateLinkStatus(final String method, final Event event, final String newStatus) {
-        LogUtils.infof(this, "%s: received event %s", method, event.getUei());
+        LOG.info("{}: received event {}", method, event.getUei());
         final String endPoint1 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT1);
         final String endPoint2 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT2);
         
@@ -153,10 +155,10 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
         final Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
         
         if(nodeId != null && parentNodeId != null) {
-            LogUtils.infof(this, "%s: updated link nodeLabel: %s, nodeId: %d, parentLabel: %s, parentId: %d ", method, nodeLabel, nodeId, parentNodeLabel, parentNodeId);
+            LOG.info("{}: updated link nodeLabel: {}, nodeId: {}, parentLabel: {}, parentId: {} ", method, nodeLabel, nodeId, parentNodeLabel, parentNodeId);
             m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, newStatus);
         }else {
-            LogUtils.infof(this, "%s: found no link with parent: %s and node %s", method, parentNodeLabel, nodeLabel);
+            LOG.info("{}: found no link with parent: {} and node {}", method, parentNodeLabel, nodeLabel);
         }
     }
     
@@ -170,9 +172,9 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
         try{
             updateLinkStatus("dataLinkRestored", event, "G");
         }catch(final Throwable t){
-            debugf(this, t, "Caught a throwable in dataLinkRestored");
+            LOG.debug("Caught a throwable in dataLinkRestored", t);
         }finally{
-            debugf(this, "Bailing out of dataLinkRestored handler");
+            LOG.debug("Bailing out of dataLinkRestored handler");
         }
     }
     
@@ -186,9 +188,9 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
         try{
             updateLinkStatus("dataLinkUnmanaged", e, "U");
         }catch(final Throwable t){
-            debugf(this, t, "Caught a throwable in dataLinkUnmanaged");
+            LOG.debug("Caught a throwable in dataLinkUnmanaged", t);
         }finally{
-            debugf(this, "Bailing out of dataLinkUnmanaged handler");
+            LOG.debug("Bailing out of dataLinkUnmanaged handler");
         }
     }
     

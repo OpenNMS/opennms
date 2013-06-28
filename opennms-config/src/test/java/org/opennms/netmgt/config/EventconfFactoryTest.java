@@ -61,7 +61,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -84,6 +85,7 @@ import org.springframework.util.StringUtils;
  * 
  */
 public class EventconfFactoryTest {
+    private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryTest.class);
 
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
     private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
@@ -215,20 +217,13 @@ public class EventconfFactoryTest {
             setSpecific(trapIdentity.getSpecific());
             setEnterpriseId(trapIdentity.getEnterpriseId().toString());
         
-            if (log().isDebugEnabled()) {
-                log().debug("setTrapIdentity: SNMP trap "+trapIdentity);
-            }
-        
+            LOG.debug("setTrapIdentity: SNMP trap {}", trapIdentity);
         }
 
         public org.opennms.netmgt.xml.event.Event getEvent() {
             return getEventBuilder().getEvent();
         }
         
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-
 		private EventBuilder getEventBuilder() {
 			return m_eventBuilder;
 		}

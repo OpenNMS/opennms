@@ -29,12 +29,13 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
+import java.util.logging.Level;
 
-import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -50,6 +51,9 @@ import org.springframework.util.ClassUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 abstract public class AbstractServiceMonitor implements ServiceMonitor {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceMonitor.class);
+	
     /**
      * {@inheritDoc}
      *
@@ -146,15 +150,6 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
 	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
-	/**
 	 * <p>logDown</p>
 	 *
 	 * @param level a {@link org.apache.log4j.Level} object.
@@ -175,7 +170,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
 	 */
 	protected PollStatus logDown(Level level, String reason, Throwable e) {
 		String className = ClassUtils.getShortName(getClass());
-	    log().debug(className+": "+reason, e);
+	    LOG.debug(className+": "+reason, e);
 	    return PollStatus.unavailable(reason);
 	}
 	
@@ -189,7 +184,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
 	 */
 	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
 		String className = ClassUtils.getShortName(getClass());
-	    log().debug(className+": "+logMsg);
+	    LOG.debug("{} : {}", className, logMsg);
 	    return PollStatus.available(responseTime);
 	}
 }

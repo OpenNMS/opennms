@@ -39,10 +39,11 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.NodeFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates all querying functionality for notices
@@ -50,6 +51,9 @@ import org.opennms.web.notification.filter.NodeFilter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public class NoticeFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NoticeFactory.class);
+
 
     /** Private constructor so this class cannot be instantiated. */
     private NoticeFactory() {
@@ -164,7 +168,7 @@ public class NoticeFactory {
             statement.close();
             results.close();
         } catch (SQLException e) {
-            ThreadCategory.getInstance(NoticeFactory.class.getName()).error("Error getting event display status: " + e.getMessage(), e);
+            LOG.error("Error getting event display status: {}", e.getMessage(), e);
         } finally {
             if (connection != null) {
                 try {

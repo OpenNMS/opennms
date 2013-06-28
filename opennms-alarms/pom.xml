@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarms</artifactId>
-  <name>OpenNMS Alarm Subsystem</name>
+  <name>OpenNMS Alarms</name>
   <packaging>pom</packaging>
   <modules>
     <module>api</module>

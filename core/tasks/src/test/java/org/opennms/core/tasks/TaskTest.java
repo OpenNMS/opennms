@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -57,6 +58,8 @@ import org.opennms.core.utils.LogUtils;
  * @author brozow
  */
 public class TaskTest {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TaskTest.class);
     
     ExecutorService m_executor;
     DefaultTaskCoordinator m_coordinator;
@@ -528,7 +531,7 @@ public class TaskTest {
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
-                    LogUtils.debugf(this, e, "interrupted waiting for task");
+                	LOG.debug("interrupted waiting for task", e);
                 }
             }
             @Override

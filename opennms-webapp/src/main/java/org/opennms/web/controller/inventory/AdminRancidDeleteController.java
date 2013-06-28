@@ -34,9 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,6 +53,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class AdminRancidDeleteController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidDeleteController.class);
+
 
     InventoryService m_inventoryService;
         
@@ -78,17 +82,17 @@ public class AdminRancidDeleteController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidDeleteController ModelAndView onSubmit");
+        LOG.debug("AdminRancidDeleteController ModelAndView onSubmit");
 
         AdminRancidRouterDbCommClass bean = (AdminRancidRouterDbCommClass) command;
                        
-        log().debug("AdminRancidDeleteController ModelAndView onSubmit delete device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
+        LOG.debug("AdminRancidDeleteController ModelAndView onSubmit delete device[{}] group[{}] status[{}]", bean.getDeviceName(), bean.getGroupName(), bean.getStatusName());
 
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
 
         boolean done = m_inventoryService.deleteNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName());
         if (!done){
-            log().debug("AdminRancidDeleteController ModelAndView onSubmit error while deleting status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
+            LOG.debug("AdminRancidDeleteController ModelAndView onSubmit error while deleting status for{}/{}", bean.getGroupName(),  bean.getDeviceName());
         }
         }
         String redirectURL = request.getHeader("Referer");
@@ -100,10 +104,7 @@ public class AdminRancidDeleteController extends SimpleFormController {
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
-        log().debug("AdminRancidStatusController initBinder");
+        LOG.debug("AdminRancidStatusController initBinder");
     }
     
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 }

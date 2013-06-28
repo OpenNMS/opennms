@@ -40,6 +40,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -55,6 +57,8 @@ import org.apache.commons.io.IOUtils;
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
  */
 public class StreamGobbler extends Thread {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(StreamGobbler.class);
 
     /** The {@link InputStream} we're gobbling */
     private InputStream in = null;
@@ -180,7 +184,7 @@ public class StreamGobbler extends Thread {
             }
 
         } catch (final Throwable e) {
-            LogUtils.debugf(this, e, "Unable to read lines.");
+        	LOG.debug("Unable to read lines.", e);
         } finally {
             IOUtils.closeQuietly(br);
             IOUtils.closeQuietly(isr);

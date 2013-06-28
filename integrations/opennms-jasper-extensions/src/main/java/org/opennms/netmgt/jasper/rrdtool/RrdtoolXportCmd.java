@@ -39,10 +39,12 @@ import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.FileCopyUtils;
 
 public class RrdtoolXportCmd {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdtoolXportCmd.class);
 
 	public JRDataSource executeCommand(String queryString) throws JRException {
 		Xport data = getXportData(queryString);
@@ -56,7 +58,7 @@ public class RrdtoolXportCmd {
         }
 
 		String command = rrdBinary + " xport " + queryString.replaceAll("[\r\n]+", " ").replaceAll("\\s+", " ");
-		log().debug("getXportData: executing command: " + command);
+		LOG.debug("getXportData: executing command: {}", command);
 		String[] commandArray = StringUtils.createCommandArray(command, '@');
 		Xport data = null;
 		try {
@@ -66,7 +68,7 @@ public class RrdtoolXportCmd {
 			// this close the stream when its finished
 			String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
 			if (errors.length() > 0) {
-				log().error("getXportData: RRDtool command fail: " + errors);
+				LOG.error("getXportData: RRDtool command fail: {}", errors);
 				return null;
 			}
 			BufferedReader reader = null;
@@ -78,7 +80,7 @@ public class RrdtoolXportCmd {
 				reader.close();
 			}
 		} catch (Exception e) {
-			log().error("getXportData: can't execute command '" + command + ": ", e);
+			LOG.error("getXportData: can't execute command '{}'", command, e);
 			throw new JRException("getXportData: can't execute command '" + command + ": ", e);
 		}
 		return data;
@@ -94,9 +96,4 @@ public class RrdtoolXportCmd {
         }
 
     }
-
-    private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
 }

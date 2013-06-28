@@ -46,10 +46,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 
 public class SyslogMessageTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogMessageTest.class);
     public SyslogMessageTest() throws Exception {
         InputStream stream = null;
         try {
@@ -111,7 +113,7 @@ public class SyslogMessageTest {
         calendar.set(Calendar.MILLISECOND, 0);
         final Date date = calendar.getTime();
 
-        LogUtils.debugf(this, "got message: %s", message);
+        LOG.debug("got message: {}", message);
 
         assertEquals(SyslogFacility.LOCAL5, message.getFacility());
         assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
@@ -155,7 +157,7 @@ public class SyslogMessageTest {
             final SyslogParser parser = CustomSyslogParser.getParser("<0>Mar 14 17:10:25 petrus sudo:  cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases");
             assertTrue(parser.find());
             final SyslogMessage message = parser.parse();
-            LogUtils.debugf(this, "message = %s", message);
+            LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
             cal.set(Calendar.MONTH, Calendar.MARCH);

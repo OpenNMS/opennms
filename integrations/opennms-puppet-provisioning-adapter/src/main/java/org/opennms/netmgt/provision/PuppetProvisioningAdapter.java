@@ -29,7 +29,8 @@
 package org.opennms.netmgt.provision;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,6 +44,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
+    private static final Logger LOG = LoggerFactory.getLogger(PuppetProvisioningAdapter.class);
 
     private static final String ADAPTER_NAME = "PuppetAdapter";
 
@@ -62,7 +64,7 @@ public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
     /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
-        log().info("processPendingOperationForNode: Handling Operation: "+op);
+        LOG.info("processPendingOperationForNode: Handling Operation: {}", op);
         
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
             throw new ProvisioningAdapterException(new UnsupportedOperationException("This operation: "+op+", is currently not supported."));
@@ -71,12 +73,7 @@ public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             throw new ProvisioningAdapterException(new UnsupportedOperationException("This operation: "+op+", is currently not supported."));
         } else {
-            log().warn("unknown operation: " + op.getType());
+            LOG.warn("unknown operation: {}", op.getType());
         }
     }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(PuppetProvisioningAdapter.class);
-    }
-
 }

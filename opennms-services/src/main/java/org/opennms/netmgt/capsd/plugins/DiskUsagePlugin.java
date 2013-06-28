@@ -44,7 +44,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -60,6 +61,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public final class DiskUsagePlugin extends AbstractPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DiskUsagePlugin.class);
+    
     /**
      * The protocol supported by this plugin
      */
@@ -200,10 +204,10 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                 }
 
                 for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                    log().debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                    LOG.debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                   
                     if (isMatch(e.getValue().toString(), disk, matchType)) {
-                    	log().debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");
+                    	LOG.debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");
                     	return true;
                     		
                     }
@@ -220,25 +224,21 @@ public final class DiskUsagePlugin extends AbstractPlugin {
     
     private boolean isMatch(String candidate, String target, int matchType) {
         boolean matches = false;
-        log().debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        LOG.debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
         if (matchType == MATCH_TYPE_EXACT) {
-            log().debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
             matches = candidate.equals(target);
         } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            log().debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
             matches = candidate.startsWith(target);
         } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
             matches = candidate.endsWith(target);
         } else if (matchType == MATCH_TYPE_REGEX) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
             matches = Pattern.compile(target).matcher(candidate).find();
         }
-        log().debug("isMatch: Match is positive");
+        LOG.debug("isMatch: Match is positive");
         return matches;
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

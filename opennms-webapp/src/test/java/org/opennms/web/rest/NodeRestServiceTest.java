@@ -30,7 +30,7 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.xml.XmlTest.*;
+import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
 import java.io.StringReader;
 import java.util.Comparator;
@@ -46,10 +46,11 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /*
@@ -57,6 +58,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
  */
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
 
     private static int m_nodeCounter = 0;
 
@@ -102,14 +104,14 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // This filter should match
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25Test%25"), 200);
-        LogUtils.infof(this, xml);
+        LOG.info(xml);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(5, list.getCount());
         assertEquals(5, list.getTotalCount());
 
         // This filter should fail (return 0 results)
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25DOES_NOT_MATCH%25"), 200);
-        LogUtils.infof(this, xml);
+        LOG.info(xml);
         list = JaxbUtils.unmarshal(OnmsNodeList.class, xml);
         assertEquals(0, list.getCount());
         assertEquals(0, list.getTotalCount());

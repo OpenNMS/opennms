@@ -32,10 +32,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JniIcmpMessenger
@@ -44,6 +45,10 @@ import org.opennms.protocols.rt.Messenger;
  * @version $Id: $
  */
 public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingResponse> {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(JniIcmpMessenger.class);
     
     private int m_pingerId;
     private IcmpSocket m_socket;
@@ -73,13 +78,13 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
                     pendingReplies.offer(reply);
                 }
             } catch (IOException e) {
-                LogUtils.errorf(this, e, "I/O Error occurred reading from ICMP Socket");
+                LOG.error("I/O Error occurred reading from ICMP Socket", e);
             } catch (IllegalArgumentException e) {
                 // this is not an EchoReply so ignore it
             } catch (IndexOutOfBoundsException e) {
                 // this packet is not a valid EchoReply ignore it
             } catch (Throwable e) {
-                LogUtils.errorf(this, e, "Unexpected Exception processing reply packet!");
+                LOG.error("Unexpected Exception processing reply packet!", e);
             }
             
         }
@@ -105,7 +110,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
                 try {
                     processPackets(responseQueue);
                 } catch (Throwable t) {
-                    LogUtils.errorf(this, t, "Unexpected exception on Thread %s!", this);
+                    LOG.error("Unexpected exception on Thread {}!", this, t);
                 }
             }
         };

@@ -31,10 +31,12 @@ package org.opennms.web.svclayer.outage;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.extremecomponents.table.bean.Column;
 import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.util.ExtremeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,6 +54,9 @@ import java.util.Locale;
  */
 public class DateFilterPredicate implements Predicate
 {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DateFilterPredicate.class);
+
     /** less than or equal. usage: <= 18-12-1997 */
     public static final String LESS_THAN_OR_EQUAL = "<=";
 
@@ -67,7 +72,6 @@ public class DateFilterPredicate implements Predicate
     /** delimiters */
     public static final String DELIM = "\\s";
     
-    private static final Logger logger = Logger.getLogger(DateFilterPredicate.class);
     private static final String asterisk = "*";
     private static final String emptyString = "";
     private TableModel model;
@@ -143,7 +147,7 @@ public class DateFilterPredicate implements Predicate
         }
         catch (Throwable e)
         {
-            logger.error("FilterPredicate.evaluate() had problems", e);
+            LOG.error("FilterPredicate.evaluate() had problems", e);
         }
 
         return match;
@@ -215,9 +219,7 @@ public class DateFilterPredicate implements Predicate
             }
             catch (Throwable e)
             {
-                logger.error(
-                    "The parse was incorrectly defined for date String [" +
-                    search + "].");
+                LOG.error("The parse was incorrectly defined for date String [{}].", search);
 
                 // date comparions failed. Campare it as normal string.
                 return StringUtils.contains(valueStr, search);

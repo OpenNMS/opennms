@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,7 +49,6 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IntSet;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.StorageStrategy;
@@ -62,6 +61,8 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -74,6 +75,8 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DefaultResourceDao implements ResourceDao, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultResourceDao.class);
     /**
      * File name to look for in a resource directory for string attributes.
      */
@@ -349,7 +352,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                     resource = getChildResource(resource, resourceTypeName, resourceName);
                 }
             } catch (Throwable e) {
-                log().warn("Could not get resource for resource ID \"" + id + "\"", e);
+                LOG.warn("Could not get resource for resource ID \"" + id + "\"", e);
                 return null;
             }
 
@@ -359,9 +362,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         m.appendTail(sb);
 
         if (sb.length() > 0) {
-            log().warn("resource ID '" + id + "' does not match pattern '"
-                                               + p.toString() + "' at '"
-                                               + sb + "'");
+            LOG.warn("resource ID '" + id + "' does not match pattern '" + p.toString() + "' at '" + sb + "'");
             return null;
         } else {
             return resource;
@@ -441,7 +442,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         for (OnmsResource r : parentResource.getChildResources()) {
             if (resourceType.equals(r.getResourceType().getName())
                     && resource.equals(r.getName())) {
-                log().debug("getChildResource: returning resource " + r);
+                LOG.debug("getChildResource: returning resource {}", r);
                 return r;
             }
         }
@@ -457,9 +458,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return a {@link java.util.List} object.
      */
     protected List<OnmsResource> getChildResourceList(OnmsResource parentResource) {
-        if (log().isDebugEnabled()) {
-            log().debug("DefaultResourceDao: getChildResourceList for " + parentResource.toString());
-        }
+        LOG.debug("DefaultResourceDao: getChildResourceList for {}", parentResource.toString());
         return parentResource.getChildResources();
     }
     
@@ -552,7 +551,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             if (found) {
                 resources.add(m_nodeSourceResourceType.createChildResource(node.getForeignSource() + ":" + node.getForeignId()));
                 nodesFound.add(node.getId());
-                log().debug("findNodeSourceResources: adding resource for " + node.getForeignSource() + ":" + node.getForeignId());
+                LOG.debug("findNodeSourceResources: adding resource for " + node.getForeignSource() + ":" + node.getForeignId());
             }
         }
 
@@ -619,7 +618,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         if (idDir.isDirectory() && RrdFileConstants.NODESOURCE_DIRECTORY_FILTER.accept(idDir)) {
             return m_nodeSourceResourceType.createChildResource(resource);
         } else {
-           log().debug("resource " + resource + " not found by foreign source/foreignId. Trying as a node resource instead...");
+           LOG.debug("resource " + resource + " not found by foreign source/foreignId. Trying as a node resource instead...");
            String[] ident = resource.split(":");
            OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
            if (node == null) {
@@ -829,8 +828,5 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findNodeSourceResources());
         resources.addAll(findDomainResources());
         return resources;
-    }
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultResourceDao.class);
     }
 }

@@ -48,7 +48,8 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -87,6 +88,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class SnmpCollectorMinMaxValTest implements TestContextAware, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValTest.class);
     private static final String TEST_HOST_ADDRESS = "172.20.1.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
 
@@ -155,7 +157,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware, Initializin
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
         
-        LogUtils.debugf(this, "iface = %s", iface);
+        LOG.debug("iface = {}", iface);
 
         final SnmpCollector collector = new SnmpCollector();
         collector.initialize(null);

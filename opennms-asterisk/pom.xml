@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-asterisk</artifactId>
-  <name>OpenNMS Support for Asterisk PBX</name>
+  <name>OpenNMS Asterisk PBX Support</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

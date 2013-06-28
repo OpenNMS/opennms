@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.mock</artifactId>
-  <name>OpenNMS SNMP Mock Implementation</name>
+  <name>OpenNMS Core SNMP Mock Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

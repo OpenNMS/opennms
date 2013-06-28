@@ -41,10 +41,13 @@ import java.util.Properties;
 
 import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.jdbc.JdbcQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcAgentState {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcAgentState.class);
+
     private static final String JAS_NO_DATASOURCE_FOUND = "NO_DATASOURCE_FOUND";
     
     private boolean m_useDataSourceName;
@@ -60,10 +63,6 @@ public class JdbcAgentState {
     
     private String m_address;
     private HashMap<String, JdbcGroupState> m_groupStates = new HashMap<String, JdbcGroupState>();
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
     
     public JdbcAgentState(InetAddress address, Map<String, Object> parameters) {
         // Save the target's address or hostname.
@@ -101,11 +100,11 @@ public class JdbcAgentState {
             throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
         }
         
-        log().info("Loaded JDBC driver");
+        LOG.info("Loaded JDBC driver");
 
         // Get the JDBC url host part
         m_dbUrl = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), m_address);
-        log().debug("JDBC url: " + m_dbUrl);
+        LOG.debug("JDBC url: {}", m_dbUrl);
 
         m_dbUser = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
         m_dbPass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
@@ -131,7 +130,7 @@ public class JdbcAgentState {
         try {
             return con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         } catch(SQLException e) {
-            log().warn("Unable to create SQL statement: " + e.getMessage());
+            LOG.warn("Unable to create SQL statement: {}", e.getMessage());
             throw new JdbcCollectorException("Unable to create SQL statement: " + e.getMessage(), e);
         }
     }
@@ -217,7 +216,7 @@ public class JdbcAgentState {
         JdbcGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
             // Probably an error - log it as a warning, and give up
-            log().warn("didCheckGroupAvailability called on a group without state - this is odd");
+            LOG.warn("didCheckGroupAvailability called on a group without state - this is odd");
             return;
         }
         groupState.setLastChecked(new Date());

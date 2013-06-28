@@ -39,7 +39,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,13 +63,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 	JUnitHttpServerExecutionListener.class
 })
 public class NCSNorthbounderTest {
-	
-	@BeforeClass
-	public static void setUpLogging()
-	{
-		BasicConfigurator.configure();
-	}
-	
+
 	String url = "https://localhost/fmpm/restful/NotificationMessageRelay";
 	
 	String xml = "" +

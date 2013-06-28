@@ -46,7 +46,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.responder.Sleeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
@@ -67,6 +66,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -89,6 +90,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitTemporaryDatabase(reuseDatabase = false)
 @DirtiesContext
 public class InstanceStrategyIntegrationTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -158,7 +160,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
         Sleeper.getInstance().setSleepTime(0);
         if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
             m_apm.stop();
-            LogUtils.debugf(this, "AccessPointMonitor stopped");
+            LOG.debug("AccessPointMonitor stopped");
         }
     }
 
@@ -399,7 +401,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
         // Verify the state of the APs in the database
         OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
-        LogUtils.debugf(this, ap1.getStatus().getLabel());
+        LOG.debug(ap1.getStatus().getLabel());
         assertTrue(ap1.getStatus() == AccessPointStatus.UNKNOWN);
 
         OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
@@ -600,8 +602,8 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
     private void verifyAnticipated(long millis) {
         // Verify the AP UP/DOWN events
-        LogUtils.debugf(this, "Events we're still waiting for: " + m_anticipator.waitForAnticipated(millis));
-        LogUtils.debugf(this, "Unanticipated: ", m_anticipator.unanticipatedEvents());
+        LOG.debug("Events we're still waiting for: {}", m_anticipator.waitForAnticipated(millis));
+        LOG.debug("Unanticipated: {}", m_anticipator.unanticipatedEvents());
 
         assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
         sleep(200);

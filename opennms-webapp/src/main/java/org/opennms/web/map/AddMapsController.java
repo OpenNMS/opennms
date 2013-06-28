@@ -43,12 +43,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.opennms.core.utils.ThreadCategory;
 
 
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -64,7 +66,9 @@ import org.springframework.web.servlet.mvc.Controller;
  * @since 1.8.1
  */
 public class AddMapsController implements Controller {
-	ThreadCategory log;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AddMapsController.class);
+
 
 	private Manager manager;
 	
@@ -90,11 +94,10 @@ public class AddMapsController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
 		String elems = request.getParameter("elems");
-		log.debug("Adding Maps: elems="+elems );
+		LOG.debug("Adding Maps: elems={}", elems );
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
@@ -102,15 +105,15 @@ public class AddMapsController implements Controller {
             List<VElement> velems = new ArrayList<VElement>();
             // response for addElement
             List<Integer> mapsWithLoop = new ArrayList<Integer>();
-			log.debug("Got map from manager "+map);
+			LOG.debug("Got map from manager {}", map);
 			
-			log.debug("Adding maps by id: "+ elems);
+			LOG.debug("Adding maps by id: {}", elems);
 			String[] smapids = elems.split(",");
 
 			for (int i = 0; i<smapids.length;i++) {
 			    Integer id = new Integer(smapids[i]);
 				if (map.containsElement(id, MapsConstants.MAP_TYPE)) {
-					log.debug(" Map Contains Element: " + id+MapsConstants.MAP_TYPE);
+					LOG.debug(" Map Contains Element: {}", id+MapsConstants.MAP_TYPE);
 					continue;
 					
 				}
@@ -127,7 +130,7 @@ public class AddMapsController implements Controller {
 			map = manager.addElements(map, velems);
 			bw.write(ResponseAssembler.getAddElementResponse(mapsWithLoop,velems,map.getLinks()));
 		} catch (Throwable e) {
-			log.error("Error while adding Maps: ",e);
+			LOG.error("Error while adding Maps: ", e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));
 		} finally {
 			bw.close();

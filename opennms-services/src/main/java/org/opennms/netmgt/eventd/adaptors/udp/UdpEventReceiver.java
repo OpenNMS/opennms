@@ -40,10 +40,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -56,6 +57,9 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
 public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(UdpEventReceiver.class);
+    
     /**
      * The default User Datagram Port for the receipt and transmission of
      * events.
@@ -214,7 +218,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
             m_processor.stop();
             m_output.stop();
         } catch (InterruptedException e) {
-            log().warn("The thread was interrupted while attempting to join sub-threads: " + e, e);
+            LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
 
         m_dgSock.close();
@@ -381,9 +385,5 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     
     private void assertNotRunning() {
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

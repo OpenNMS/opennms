@@ -31,16 +31,17 @@ package org.opennms.netmgt.scriptd.helper;
 import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
-public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder implements
-		EventForwarder {
+public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder implements EventForwarder {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapForwarderHelper.class);
 
-	String source_ip;
+        String source_ip;
 	
 	String ip;
 	String community;
@@ -472,11 +473,11 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.22.0", "OctetString", "text", "null");
              
 		} catch (final IllegalArgumentException e) {
-		    LogUtils.warnf(this, e, "Failed to look up host.");
+		    LOG.warn("Failed to look up host.", e);
 		} catch (final SnmpTrapHelperException e) {
-		    LogUtils.warnf(this, e, "An SNMP trap helpre error occurred while parsing traps.");
+		    LOG.warn("An SNMP trap helpre error occurred while parsing traps.", e);
 		} catch (final Throwable t) {
-		    LogUtils.warnf(this, t, "An unknown error occurred while parsing traps.");
+		    LOG.warn("An unknown error occurred while parsing traps.", t);
 		}		
         return trap;
 	}

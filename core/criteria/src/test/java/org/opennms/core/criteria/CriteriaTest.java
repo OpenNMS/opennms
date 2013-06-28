@@ -39,25 +39,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class CriteriaTest {
 
 	private static final Order[] EMPTY_ORDER_ARRAY = new Order[0];
-
-	@Before
-	public void setUp() {
-		LogUtils.logToConsole();
-		LogUtils.enableDebugging();
-	}
 
 	@Test
 	public void testBuilder() {

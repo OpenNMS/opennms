@@ -45,7 +45,8 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 
 /**
@@ -58,6 +59,7 @@ import org.opennms.netmgt.EventConstants;
  * 
  */
 final class KnownIPMgr {
+    private static final Logger LOG = LoggerFactory.getLogger(KnownIPMgr.class);
     /**
      * The SQL statement used to extract the list of currently known IP
      * addresses from the IP Interface table.
@@ -234,7 +236,6 @@ final class KnownIPMgr {
      * 
      */
     static synchronized void dataSourceSync() throws SQLException {
-        ThreadCategory log = ThreadCategory.getInstance(KnownIPMgr.class);
 
         // Get the database connection
         //
@@ -260,7 +261,7 @@ final class KnownIPMgr {
                     InetAddress addr = null;
                     addr = InetAddressUtils.addr(ipstr);
                     if (addr == null) {
-                        log.warn("KnownIPMgr: failed to convert address " + ipstr);
+                        LOG.warn("KnownIPMgr: failed to convert address {}", ipstr);
                         continue;
                     }
 

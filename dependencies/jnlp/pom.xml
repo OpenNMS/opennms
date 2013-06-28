@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jnlp-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JNLP Dependencies</name>
+  <name>OpenNMS Dependencies JNLP</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JNLP.

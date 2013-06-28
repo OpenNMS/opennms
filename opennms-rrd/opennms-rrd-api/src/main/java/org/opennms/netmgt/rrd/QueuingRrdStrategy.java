@@ -42,7 +42,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides queuing implementation of RrdStrategy.
@@ -109,6 +110,8 @@ import org.apache.log4j.Logger;
  * @version $Id: $
  */
 public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.CreateOperation,String>, Runnable {
+
+    private Logger m_log = LoggerFactory.getLogger(QueuingRrdStrategy.class);
 
     private Properties m_configurationProperties;
 
@@ -298,6 +301,8 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      */
     public void setCategory(String category) {
         m_category = category;
+
+        m_log = LoggerFactory.getLogger(m_category);
     }
 
     /**
@@ -474,7 +479,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
             if (rrd != null) {
-                log().debug("WHAT! rrd open but not created?");
+                m_log.debug("WHAT! rrd open but not created?");
                 m_delegate.closeFile(rrd);
                 rrd = null;
             }
@@ -517,9 +522,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
                 m_delegate.updateFile(rrd, "", update);
             } catch (final Throwable e) {
                 final String error = String.format("Error processing update for file %s: %s", getFileName(), update);
-                if (log().isDebugEnabled()) {
-                    log().debug(error, e);
-                }
+                m_log.debug(error, e);
                 throw new Exception(error, e);
             }
 
@@ -634,7 +637,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
                 try {
                     zeroOp.mergeUpdates(this);
                 } catch (IllegalArgumentException e) {
-                    log().debug(e.getMessage());
+                    m_log.debug("Unable to mergeUpdates {}", e.getMessage());
                     super.addToPendingList(pendingOperations);
                 }
             } else {
@@ -668,7 +671,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             if ((colon >= 0) && (Double.parseDouble(update.substring(colon + 1)) == 0.0)) {
                 long initialTimeStamp = Long.parseLong(update.substring(0, colon));
                 if (initialTimeStamp == 0)
-                    log().debug("ZERO ERROR: created a zero update with ts=0 for file: " + fileName + " data: " + update);
+                    m_log.debug("ZERO ERROR: created a zero update with ts=0 for file: {}, data: {}", fileName, update);
 
                 return new ZeroUpdateOperation(fileName, initialTimeStamp);
             }
@@ -692,17 +695,17 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     public void addOperation(Operation op) {
         synchronized (this) {
             if (queueIsFull()) {
-                log().error("RRD Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Data Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
             if (op.isSignificant() && sigQueueIsFull()) {
-                log().error("RRD Data Significant Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Data Significant Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
             if (!op.isSignificant() && inSigQueueIsFull()) {
-                log().error("RRD Insignificant Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Insignificant Data Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
@@ -718,10 +721,6 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     
-    private Logger log() {
-        return Logger.getLogger(m_category);
-    }
-
     private boolean queueIsFull() {
         if (m_queueHighWaterMark <= 0)
             return false;
@@ -1153,7 +1152,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
         } catch (Throwable e) {
             setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            log().debug("Error updating file " + fileName + ": " + e.getMessage(), e);
+            m_log.debug("Error updating file {}: {}", fileName, e.getMessage(), e);
         } finally {
             processClose(rrd);
         }
@@ -1255,11 +1254,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     void logLapTime(String message) {
-        log().debug(message + " " + getLapTime());
+        m_log.debug("{} {}", message, getLapTime());
     }
     
     void logLapTime(String message, Throwable t) {
-        log().debug(message + " " + getLapTime(), t);
+        m_log.debug("{} {}", message, getLapTime(), t);
     }
 
     /**

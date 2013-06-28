@@ -35,7 +35,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -43,6 +44,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 
 @JUnitConfigurationEnvironment
 public class RequisitionFrom18Test {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionFrom18Test.class);
     private FilesystemForeignSourceRepository m_foreignSourceRepository;
 
     @Before
@@ -60,7 +62,7 @@ public class RequisitionFrom18Test {
         int nodeCount = 0;
         int interfaceCount = 0;
         for (final Requisition r : requisitions) {
-            LogUtils.debugf(this, "got requisition: %s", r);
+            LOG.debug("got requisition: {}", r);
             nodeCount += r.getNodeCount();
             for (RequisitionNode node : r.getNode()) {
                 interfaceCount += node.getInterfaceCount();

@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-commander</artifactId>
-  <name>NRTG Karaf Commander Feature</name>
+  <name>OpenNMS Features NRTG Features Commander Feature</name>
   <description>
     The Commander is a dummy implementation to generate CollectionJobs and
     publish them via JMS-Queues. It's able to run in parallel and in

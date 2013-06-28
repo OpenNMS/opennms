@@ -209,7 +209,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
         if (m_session == null) m_session = new SnmpSession(m_peer);
-        LOG.debug("Sending tracker pdu of size "+joePduBuilder.getPdu().getLength());
+        LOG.debug("Sending tracker pdu of size {}", joePduBuilder.getPdu().getLength());
         m_session.send(joePduBuilder.getPdu(), m_handler);
     }
     

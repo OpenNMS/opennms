@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,6 @@ package org.opennms.netmgt.provision.persist;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -41,6 +39,8 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OnmsNodeRequistion
@@ -49,6 +49,8 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
  * @version $Id: $
  */
 public class OnmsNodeRequisition {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsNodeRequisition.class);
     
     private String m_foreignSource;
     private RequisitionNode m_node;
@@ -150,8 +152,7 @@ public class OnmsNodeRequisition {
         	final String ipAddr = ifaceReq.getIpAddr();
             if (ipAddr == null || "".equals(ipAddr)) {
                 bldr.clearInterface();
-                final String msg = String.format("Found interface on node %s with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
-                LogUtils.errorf(this, msg);
+                LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
                 return;
             }
 
@@ -191,18 +192,6 @@ public class OnmsNodeRequisition {
     	final OnmsNodeBuilder visitor = new OnmsNodeBuilder();
         visit(visitor);
         return visitor.getNode();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.persist.NodeRequisition#log()
-     */
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /* (non-Javadoc)

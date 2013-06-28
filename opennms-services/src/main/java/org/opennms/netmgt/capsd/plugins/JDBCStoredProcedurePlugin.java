@@ -33,8 +33,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This OpenNMS capsd plugin checks if a given server is running a server that
@@ -56,6 +57,8 @@ import org.opennms.core.utils.ParameterMap;
  * @since 0.1
  */
 public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(JDBCStoredProcedurePlugin.class);
 	/**
 	 * The stored procedure checked by the plugin
 	 */
@@ -66,7 +69,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 	 */
 	public JDBCStoredProcedurePlugin() {
 		super();
-		LogUtils.infof(this, "JDBCStoredProcedurePlugin class loaded");
+		LOG.info("JDBCStoredProcedurePlugin class loaded");
 	}
 
 	/** {@inheritDoc} */
@@ -78,13 +81,13 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 			String storedProcedure = ParameterMap.getKeyedString(qualifiers, "stored-procedure", DEFAULT_STORED_PROCEDURE);
 			String procedureCall = "{ ? = call test." + storedProcedure + "()}";
 			cs = con.prepareCall(procedureCall);
-			LogUtils.debugf(this, "Calling stored procedure: %s", procedureCall);
+			LOG.debug("Calling stored procedure: {}", procedureCall);
 			cs.registerOutParameter(1, java.sql.Types.BIT);
 			cs.executeUpdate();
 			status = cs.getBoolean(1);
-			LogUtils.debugf(this, "Stored procedure returned: " + status);
+			LOG.debug("Stored procedure returned: {}", status);
 		} catch (final SQLException sqlEx) {
-		    LogUtils.debugf(this, sqlEx, "JDBC stored procedure call not functional: %s", sqlEx.getSQLState());
+		    LOG.debug("JDBC stored procedure call not functional: {}", sqlEx.getSQLState(), sqlEx);
 		} finally {
 			closeStmt(cs);
 		}

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>asterisk-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Asterisk Dependencies</name>
+  <name>OpenNMS Dependencies Asterisk</name>
   <dependencies>
     <dependency>
       <groupId>org.asteriskjava</groupId>

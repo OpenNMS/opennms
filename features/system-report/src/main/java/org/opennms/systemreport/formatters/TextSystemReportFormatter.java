@@ -30,12 +30,14 @@ package org.opennms.systemreport.formatters;
 
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 public class TextSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(TextSystemReportFormatter.class);
 
     @Override
     public String getName() {
@@ -65,7 +67,7 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
     @Override
     public void write(final SystemReportPlugin plugin) {
         if (!hasDisplayable(plugin)) return;
-        LogUtils.debugf(this, "write(%s)", plugin.getName());
+        LOG.debug("write({})", plugin.getName());
         try {
             final String title = plugin.getName() + " (" + plugin.getDescription() + "):" + "\n";
             getOutputStream().write(title.getBytes());
@@ -82,7 +84,7 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
                 getOutputStream().write(text.getBytes());
             }
         } catch (Throwable e) {
-            LogUtils.errorf(this, e, "Error writing plugin data.");
+            LOG.error("Error writing plugin data.", e);
         }
     }
 }

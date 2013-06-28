@@ -31,8 +31,6 @@ package org.opennms.netmgt.threshd;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * <p>ThresholdResourceType class.</p>
  *
@@ -40,7 +38,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class ThresholdResourceType {
-
+    
     private final String m_dsType;
 
     private Map<String, Set<ThresholdEntity>> m_thresholdMap;
@@ -81,15 +79,5 @@ public class ThresholdResourceType {
     	m_thresholdMap = thresholdMap;
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
-    
 
 }

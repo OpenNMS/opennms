@@ -33,7 +33,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
@@ -52,6 +53,7 @@ import org.springframework.remoting.RemoteAccessException;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class ServerUnreachableAdaptor implements PollerBackEnd {
+    private static final Logger LOG = LoggerFactory.getLogger(ServerUnreachableAdaptor.class);
     
     private String m_monitorName;
     private PollerBackEnd m_remoteBackEnd;
@@ -106,7 +108,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             return config;
         } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
             return new EmptyPollerConfiguration();
         }
     }
@@ -122,7 +124,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         } catch (final RemoteAccessException e) {
             // we have failed to check in properly with the server
             m_serverUnresponsive = true;
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
             return MonitorStatus.DISCONNECTED;
         }
     }
@@ -141,7 +143,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             
         } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
             return true;
         }
     }
@@ -167,7 +169,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
                 m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
             } catch (RemoteAccessException e) {
                 m_serverUnresponsive = true;
-                LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+                LOG.warn("Server is unable to respond due to the following exception.", e);
             }
         }
     }
@@ -180,7 +182,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
         } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
             return Collections.emptyList();
         }
     }
@@ -192,7 +194,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);
         } catch (RemoteAccessException e) {
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
             return (m_monitorName == null ? ""+locationMonitorId : m_monitorName);
         }
     }
@@ -204,7 +206,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_remoteBackEnd.saveResponseTimeData(locationMonitor, monSvc, responseTime, pkg);
         } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
-            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
+            LOG.warn("Server is unable to respond due to the following exception.", e);
         }
     }
 

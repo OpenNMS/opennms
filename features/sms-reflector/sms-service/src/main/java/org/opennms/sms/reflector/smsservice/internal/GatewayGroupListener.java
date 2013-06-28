@@ -33,7 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class GatewayGroupListener implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(GatewayGroupListener.class);
 
     private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
 
@@ -93,7 +95,7 @@ public class GatewayGroupListener implements InitializingBean {
                 smsService.addGateway(gateways[i]);
 
             } catch (final GatewayException e) {
-                LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
+                LOG.warn("Unable to add gateway ({}) to SMS service", gateways[i], e);
             }
         }
 

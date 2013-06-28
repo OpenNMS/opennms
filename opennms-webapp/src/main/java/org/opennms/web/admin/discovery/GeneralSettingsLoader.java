@@ -30,15 +30,17 @@ package org.opennms.web.admin.discovery;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 class GeneralSettingsLoader {
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralSettingsLoader.class);
+
 	/** Constant <code>log</code> */
-	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 	
 	/**
 	 * <p>load</p>
@@ -54,11 +56,11 @@ class GeneralSettingsLoader {
 		String retriesStr = request.getParameter("retries");
 		String timeoutStr = request.getParameter("timeout");
 		
-		log.debug("initialsleeptime: "+initSTStr);
-		log.debug("restartsleeptime: "+restartSTStr);
-		log.debug("threads: "+threadsStr);
-		log.debug("retries: "+retriesStr);
-		log.debug("timeout: "+timeoutStr);
+		LOG.debug("initialsleeptime: {}", initSTStr);
+		LOG.debug("restartsleeptime: {}", restartSTStr);
+		LOG.debug("threads: {}", threadsStr);
+		LOG.debug("retries: {}", retriesStr);
+		LOG.debug("timeout: {}", timeoutStr);
 		
 		
 		long initSt = WebSecurityUtils.safeParseLong(initSTStr);
@@ -85,7 +87,7 @@ class GeneralSettingsLoader {
 		}
 	
 		
-		log.debug("General settings uploaded.");
+		LOG.debug("General settings uploaded.");
 		
 		return config;
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,8 @@ import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DominoIIOPClient class.</p>
@@ -48,6 +49,7 @@ import org.opennms.core.utils.LogUtils;
  */
 public class DominoIIOPClient extends LineOrientedClient {
     
+    private static final Logger LOG = LoggerFactory.getLogger(DominoIIOPClient.class);
     private int m_iorPort = 1000;
     
     /** {@inheritDoc} */
@@ -106,7 +108,7 @@ public class DominoIIOPClient extends LineOrientedClient {
 			    IOUtils.closeQuietly(isr);
 			}
 		} catch (final SocketException e) {
-			LogUtils.warnf(this, e, "Unable to connect to " + u);
+			LOG.warn("Unable to connect to {}", u, e);
 		}
         if (!IOR.startsWith("IOR:")) return false;
         

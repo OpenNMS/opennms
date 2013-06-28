@@ -31,7 +31,8 @@ package org.opennms.netmgt.rtc.utils;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.rtc.DataManager;
 import org.opennms.netmgt.rtc.RTCManager;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.xml.rtc.Node;
  * @version $Id: $
  */
 public class EuiLevelMapper extends Object {
+    private static final Logger LOG = LoggerFactory.getLogger(EuiLevelMapper.class);
     /**
      * The header to be sent out for the availability xml(rtceui.xsd)
      */
@@ -84,10 +86,7 @@ public class EuiLevelMapper extends Object {
         // get the rolling window
         long rWindow = RTCManager.getRollingWindow();
 
-        ThreadCategory log = ThreadCategory.getInstance(EuiLevelMapper.class);
-        if (log.isDebugEnabled()) {
-            log.debug("curdate: " + curDate);
-        }
+        LOG.debug("curdate: {}", curDate);
 
         // create the data
         EuiLevel level = new EuiLevel();

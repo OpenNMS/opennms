@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>rrd4j-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS RRD4J Dependencies</name>
+  <name>OpenNMS Dependencies RRD4J</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use RRD4J.
