@@ -161,7 +161,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         Collection<LinkableNode> linkableNodes = m_linkd.getLinkableNodesOnPackage(getPackageName());
 
         LOG.debug("run: LinkableNodes/package found: {}/{}", linkableNodes.size(), getPackageName());
-        LOG.debug("run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/discoveryUsingLldp/discoveryUsingOspf: %b/%b/%b/%b/%b", discoveryUsingBridge, discoveryUsingCdp, discoveryUsingRoutes, discoveryUsingLldp, discoveryUsingOspf);
+        LOG.debug("run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/discoveryUsingLldp/discoveryUsingOspf: {}/{}/{}/{}/{}", discoveryUsingBridge, discoveryUsingCdp, discoveryUsingRoutes, discoveryUsingLldp, discoveryUsingOspf);
 
         for (final LinkableNode linkableNode : linkableNodes) {
             LOG.debug("run: Iterating on LinkableNode's found node with nodeid/sysoid/ipaddress {}/{}/{}", linkableNode.getNodeId(),linkableNode.getSysoid(),str(linkableNode.getSnmpPrimaryIpAddr()));

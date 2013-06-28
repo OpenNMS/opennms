@@ -578,7 +578,7 @@ public class Linkd extends AbstractServiceDaemon {
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
-            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over %d objects to wake them up", collections.size());
+            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up", collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
 

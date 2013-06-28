@@ -185,7 +185,7 @@ final class TcpStreamHandler implements Runnable {
 
         // Log the startup of this stream handler
         final InetAddress sender = m_connection.getInetAddress();
-        LOG.debug("Event Log Stream Handler Started for %s", sender);
+        LOG.debug("Event Log Stream Handler Started for {}", sender);
 
         /*
          * This linked list is used to exchange
@@ -357,7 +357,7 @@ final class TcpStreamHandler implements Runnable {
                              *  but don't die on these errors
                              */
                             try {
-                            	LOG.debug("handling event: %s", event);
+                            	LOG.debug("handling event: {}", event);
 
                                 // shortcut and BOTH parts MUST execute!
                                 if (hdl.processEvent(event)) {

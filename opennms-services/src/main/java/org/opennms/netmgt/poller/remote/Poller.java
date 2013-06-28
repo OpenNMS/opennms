@@ -135,7 +135,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
             // remove any currently scheduled job
             if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
-                LOG.debug(String.format("Job for %s already scheduled.  Rescheduling", polledService));
+                LOG.debug(String.format("Job for {} already scheduled.  Rescheduling", polledService));
             } else {
                 LOG.debug("Scheduling job for {}", polledService);
             }

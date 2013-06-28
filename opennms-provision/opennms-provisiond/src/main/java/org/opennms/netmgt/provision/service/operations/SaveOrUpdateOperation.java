@@ -112,7 +112,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr.trim())) {
-		    LOG.error(String.format("Found interface on node %s with an empty ipaddr! Ignoring!", m_node.getLabel()));
+		    LOG.error(String.format("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel()));
 			return;
 		}
 

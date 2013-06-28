@@ -61,10 +61,10 @@ public abstract class SocketUtils {
             sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, tm, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
-        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception: %s", e.getMessage(), e);
+        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);
             throw new IllegalStateException("No such algorithm in SSLSocketFactory: " + e);
         } catch (KeyManagementException e) {
-        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception: %s", e.getMessage(), e);
+        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);
             throw new IllegalStateException("Key management exception in SSLSocketFactory: " + e);
         }
         SSLSocketFactory socketFactory = sslContext.getSocketFactory();

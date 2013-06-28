@@ -214,7 +214,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
                         break;
                     }
                 }
-                LOG.debug("readTestMessage: reading mail attempt: {}, elapsed time: %.2fms.", (tracker.getAttempt()+1), tracker.elapsedTimeInMillis());
+                LOG.debug("readTestMessage: reading mail attempt: {}, elapsed time: {}ms.", (tracker.getAttempt()+1), String.format("%.2f", tracker.elapsedTimeInMillis()));
                 try {
                     mailStore = readMailer.getSession().getStore();
                     mailFolder = retrieveMailFolder(mailParms, mailStore);
@@ -414,7 +414,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
         final TimeoutTracker tracker = new TimeoutTracker(mailParms.getParameterMap(), mailParms.getRetries(), mailParms.getTimeout());
         for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
             tracker.startAttempt();
-            LOG.debug("sendTestMessage: sending mail attempt: {}, elapsed time: %.2fms", (tracker.getAttempt() + 1), tracker.elapsedTimeInMillis());
+            LOG.debug("sendTestMessage: sending mail attempt: {}, elapsed time: {}ms", (tracker.getAttempt() + 1), String.format("%.2f", tracker.elapsedTimeInMillis()));
             try {
                 final JavaMailer sendMailer = createMailer(mailParms);
                 overRideDefaultProperties(mailParms, sendMailer);

@@ -229,7 +229,7 @@ public class RequisitionAccessService {
         }
 
         void deleteNode(String foreignId) {
-            LOG.debug("deleteNode: Deleting node %s from foreign source {}", foreignId, getForeignSource());
+            LOG.debug("deleteNode: Deleting node {} from foreign source {}", foreignId, getForeignSource());
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 req.deleteNode(foreignId);
@@ -250,7 +250,7 @@ public class RequisitionAccessService {
         }
 
         void deleteInterfaceService(String foreignId, String ipAddress, String service) {
-            LOG.debug("deleteInterfaceService: Deleting service %s from interface {} on node {}/{}", service, ipAddress, getForeignSource(), foreignId);
+            LOG.debug("deleteInterfaceService: Deleting service {} from interface {} on node {}/{}", service, ipAddress, getForeignSource(), foreignId);
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);

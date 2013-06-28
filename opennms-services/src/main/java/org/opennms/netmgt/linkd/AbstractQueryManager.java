@@ -647,7 +647,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         			
 				LOG.debug("processRouteTable: getting network for nexthop {} with netmask {}.", str(nexthop),str(netmask));
         			InetAddress net2 = Linkd.getNetwork(nexthop, netmask);
-				LOG.debug("processRouteTable: found network %s.", str(net2));
+				LOG.debug("processRouteTable: found network {}.", str(net2));
         			
             		if (str(net1).equals(str(net2))) {
             			ifindex = (ip.getIfIndex());

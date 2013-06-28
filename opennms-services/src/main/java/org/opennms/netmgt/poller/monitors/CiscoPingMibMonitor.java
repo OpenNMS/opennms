@@ -516,7 +516,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         	cleanupCurrentEntry(pingEntry, proxyIpAddr, agentConfig);
         	return PollStatus.unavailable("All remote pings (" + sentPings + " of " + sentPings + ") failed");
         } else if (successPct < minSuccessPercent) {
-		LOG.info("Proxy-ping entry indicates %f%% success, which misses the success-percent target of {}%% for target {} -- {}", successPct, minSuccessPercent, targetIpAddr, pingEntry);
+		LOG.info("Proxy-ping entry indicates {}% success, which misses the success-percent target of {}% for target {} -- {}", successPct, minSuccessPercent, targetIpAddr, pingEntry);
         	cleanupCurrentEntry(pingEntry, proxyIpAddr, agentConfig);
         	return PollStatus.unavailable(successPct + " percent (" + receivedPings + "/" + sentPings+ ") pings succeeded, less than target " + minSuccessPercent + " percent");
         }
@@ -526,7 +526,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         double minRtt = statusValues[2].toInt();
         double avgRtt = statusValues[3].toInt();
         double maxRtt = statusValues[4].toInt();
-        LOG.debug("Logging successful poll: sent=%f, received=%f, minRtt=%f, avgRtt=%f, maxRtt=%f for proxy-ping of target {} -- {}", sentPings, receivedPings, minRtt, avgRtt, maxRtt, targetIpAddr, pingEntry);
+        LOG.debug("Logging successful poll: sent={}, received={}, minRtt={}, avgRtt={}, maxRtt={} for proxy-ping of target {} -- {}", sentPings, receivedPings, minRtt, avgRtt, maxRtt, targetIpAddr, pingEntry);
         pingProps.put("sent", sentPings);
         pingProps.put("received", receivedPings);
         pingProps.put("minRtt", minRtt);

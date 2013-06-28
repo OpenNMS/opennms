@@ -152,7 +152,7 @@ public class OnmsNodeRequisition {
         	final String ipAddr = ifaceReq.getIpAddr();
             if (ipAddr == null || "".equals(ipAddr)) {
                 bldr.clearInterface();
-                LOG.error("Found interface on node %s with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
+                LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", bldr.getCurrentNode().getLabel());
                 return;
             }
 

@@ -188,7 +188,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     LOG.info("checkStatus: HTTP socket connection timed out with {}", httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    LOG.info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    LOG.info(String.format("checkStatus: HTTP connection interrupted after {} bytes transferred with {}", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
                     LOG.warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);

@@ -220,32 +220,32 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             return null;
         }
         
-		LOG.debug("storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
+		LOG.debug("storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: {}/{}", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
 		if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
 		    processOspf(node,snmpColl,scanTime);
 		}
 	        
-		LOG.debug("storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
+		LOG.debug("storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: {}/{}/{}", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
 	        if (snmpColl.hasLldpLocalGroup()) {
 		        processLldp(node,snmpColl,scanTime);
 		}
         
-        LOG.debug("storeSnmpCollection: hasIpNetToMediaTable: %b", snmpColl.hasIpNetToMediaTable());
+        LOG.debug("storeSnmpCollection: hasIpNetToMediaTable: {}", snmpColl.hasIpNetToMediaTable());
         if (snmpColl.hasIpNetToMediaTable()) {
             processIpNetToMediaTable(node, snmpColl,scanTime);
         }
 
-        LOG.debug("storeSnmpCollection: hasCdpCacheTable: %b", snmpColl.hasCdpCacheTable());
+        LOG.debug("storeSnmpCollection: hasCdpCacheTable: {}", snmpColl.hasCdpCacheTable());
         if (snmpColl.hasCdpGlobalGroup() && snmpColl.hasCdpCacheTable()) {
             processCdp(node, snmpColl, scanTime);
         }
 
-        LOG.debug("storeSnmpCollection: hasRouteTable: %b", snmpColl.hasRouteTable());
+        LOG.debug("storeSnmpCollection: hasRouteTable: {}", snmpColl.hasRouteTable());
         if (snmpColl.hasRouteTable()) {
             processRouteTable(onmsNode,node, snmpColl,scanTime);
         }
 
-        LOG.debug("storeSnmpCollection: hasVlanTable: %b", snmpColl.hasVlanTable());
+        LOG.debug("storeSnmpCollection: hasVlanTable: {}", snmpColl.hasVlanTable());
         if (snmpColl.hasVlanTable()) {
             processVlanTable(onmsNode,node, snmpColl,scanTime);
         }

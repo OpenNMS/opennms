@@ -200,7 +200,7 @@ public abstract class WebSecurityUtils {
 	    	        if (allowHtmlFields != null && allowHtmlFields.contains(description.getName().toLowerCase())) {
 	    	            allowHTML = true;
 	    	        }
-    				LOG.debug("Try to sanitize string {} in %s with html {}", description.getName(), bean.getClass(), allowHTML);
+    				LOG.debug("Try to sanitize string {} in {} with html {}", description.getName(), bean.getClass(), allowHTML);
     				description.getWriteMethod().invoke(bean, WebSecurityUtils.sanitizeString((String)description.getReadMethod().invoke(bean), allowHTML));
     			}catch (IllegalArgumentException e) {
     				LOG.error("Illegal argument by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
