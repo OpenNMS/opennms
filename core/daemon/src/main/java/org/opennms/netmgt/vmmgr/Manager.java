@@ -209,7 +209,6 @@ public class Manager implements ManagerMBean {
     }
 
     private void shutdownLogging() {
-        Logging.shutdownLogging();
     }
     
     /**
