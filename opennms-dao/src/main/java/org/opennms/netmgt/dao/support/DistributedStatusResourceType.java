@@ -301,7 +301,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
 
         @Override
         public Set<OnmsAttribute> load() {
-            LOG.debug("lazy-loading attributes for distributed status resource " + (m_definitionName + "-" + m_locationMonitorId + "/" + m_intf));
+            LOG.debug("lazy-loading attributes for distributed status resource {}-{}/{}", (m_definitionName, m_locationMonitorId,  m_intf));
             
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_locationMonitorId, m_intf));
         }

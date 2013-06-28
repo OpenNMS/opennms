@@ -551,7 +551,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             if (found) {
                 resources.add(m_nodeSourceResourceType.createChildResource(node.getForeignSource() + ":" + node.getForeignId()));
                 nodesFound.add(node.getId());
-                LOG.debug("findNodeSourceResources: adding resource for " + node.getForeignSource() + ":" + node.getForeignId());
+                LOG.debug("findNodeSourceResources: adding resource for {}:{}", node.getForeignSource(),  node.getForeignId());
             }
         }
 
