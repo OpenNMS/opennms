@@ -146,9 +146,9 @@ public class WmiDetector extends SyncAbstractDetector {
                 // Perform the operation specified in the parameters.
                 result = mgr.performOp(params);
                 if(params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
-                    LOG.debug("WmiPlugin: " + params.getWql() + " : " + WmiResult.convertStateToString(result.getResultCode()));
+                    LOG.debug("WmiPlugin: {} : {}", params.getWql(),  WmiResult.convertStateToString(result.getResultCode()));
                 } else {
-                    LOG.debug("WmiPlugin: \\\\" + params.getWmiClass() + "\\" + params.getWmiObject() + " : " + WmiResult.convertStateToString(result.getResultCode()));
+                    LOG.debug("WmiPlugin: \\\\{}\\{} : {}", params.getWmiClass(), params.getWmiObject(),  WmiResult.convertStateToString(result.getResultCode()));
                 }
 
                 isAServer = true;
