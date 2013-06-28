@@ -32,7 +32,6 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -46,7 +45,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
@@ -64,20 +62,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
      */
     public static CollectionAgentService create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
-        CollectionAgentService agent = new DefaultCollectionAgentService(ifaceId, ifaceDao);
-        
-        TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
-        bean.setTransactionManager(transMgr);
-        bean.setTarget(agent);
-        
-        Properties props = new Properties();
-        props.put("*", "PROPAGATION_REQUIRED,readOnly");
-        
-        bean.setTransactionAttributes(props);
-        
-        bean.afterPropertiesSet();
-        
-        return (CollectionAgentService) bean.getObject();
+        return new DefaultCollectionAgentService(ifaceId, ifaceDao);
     }
 
     // the interface of the Agent
