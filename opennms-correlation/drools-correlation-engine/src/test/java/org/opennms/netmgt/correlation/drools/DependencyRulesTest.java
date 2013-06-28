@@ -35,8 +35,9 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.transaction.annotation.Transactional;
 
-
+@Transactional
 public class DependencyRulesTest extends CorrelationRulesTestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     

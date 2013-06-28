@@ -137,6 +137,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @DirtiesContext
+@Transactional
 public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
     
     @Autowired
