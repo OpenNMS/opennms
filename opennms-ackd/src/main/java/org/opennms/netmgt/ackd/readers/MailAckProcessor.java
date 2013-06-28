@@ -183,7 +183,7 @@ class MailAckProcessor implements AckProcessor {
      * @return a {@link java.lang.Integer} object.
      */
     protected static Integer detectId(final String subject, final String expression) {
-        LOG.debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
+        LOG.debug("detectId: Detecting aknowledgable ID from subject: {} using expression: {}", subject, expression);
         Integer id = null;
 
         //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
@@ -293,7 +293,7 @@ class MailAckProcessor implements AckProcessor {
         Pattern alarmPattern = Pattern.compile(alarmRe);
         
         List<Message> msgs = readMailer.retrieveMessages();
-        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+ " and alarm expression: "+alarmRe);
+        LOG.info("retrieveAckMessages: Iterating {} messages with notif expression: {} and alarm expression: {}", msgs.size(), notifRe, alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();
