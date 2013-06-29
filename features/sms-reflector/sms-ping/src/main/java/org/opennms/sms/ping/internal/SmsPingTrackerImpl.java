@@ -36,6 +36,8 @@ import org.opennms.sms.ping.PingRequestId;
 import org.opennms.sms.ping.PingResponseCallback;
 import org.opennms.sms.ping.SmsPingTracker;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * SmsPingTrackerImpl
