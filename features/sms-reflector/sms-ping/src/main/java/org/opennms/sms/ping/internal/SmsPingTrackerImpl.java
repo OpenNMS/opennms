@@ -30,12 +30,12 @@ package org.opennms.sms.ping.internal;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 import org.opennms.sms.ping.PingRequestId;
 import org.opennms.sms.ping.PingResponseCallback;
 import org.opennms.sms.ping.SmsPingTracker;
+import org.slf4j.Logger;
 
 /**
  * SmsPingTrackerImpl
@@ -45,7 +45,7 @@ import org.opennms.sms.ping.SmsPingTracker;
  */
 public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> implements SmsPingTracker {
     
-    private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SmsPingTrackerImpl.class);
 
     /**
      * <p>Constructor for SmsPingTrackerImpl.</p>
@@ -55,7 +55,7 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
      */
     public SmsPingTrackerImpl(SmsPingMessenger smsMessenger) throws IOException {
         super("SMS", smsMessenger, new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
-        log.debug("Created SmsPingTrackerImpl");
+        LOG.debug("Created SmsPingTrackerImpl");
     }
 
     /** {@inheritDoc} */
@@ -70,9 +70,9 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
     /** {@inheritDoc} */
     @Override
     public synchronized void start() {
-        log.debug("Calling start()");
+        LOG.debug("Calling start()");
         super.start();
-        log.debug("Called start()");
+        LOG.debug("Called start()");
     }
     
 
@@ -80,9 +80,9 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
      * <p>stop</p>
      */
     public void stop() {
-        log.debug("Calling stop()");
+        LOG.debug("Calling stop()");
 
-        log.debug("Called stop()");
+        LOG.debug("Called stop()");
     }
     
     

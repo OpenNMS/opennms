@@ -54,8 +54,6 @@ import java.util.Properties;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -121,7 +119,6 @@ import org.springframework.core.io.FileSystemResource;
 public class ThresholdingVisitorTest {
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorTest.class);
 
-    Level m_defaultErrorLevelToCheck;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
@@ -201,9 +198,6 @@ public class ThresholdingVisitorTest {
         // Resets Counters Cache Data
         CollectionResourceWrapper.s_cache.clear();
 
-        // This is set at ERROR because JEXL prints some harmless, expected warning messages
-        m_defaultErrorLevelToCheck = Level.ERROR;
-        System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
@@ -248,7 +242,6 @@ public class ThresholdingVisitorTest {
     
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(m_defaultErrorLevelToCheck);
         EasyMock.verify(m_filterDao);
     }
 
@@ -857,14 +850,6 @@ public class ThresholdingVisitorTest {
          * Original code expects WARNs, but this message is now an INFO.
          */
         resource.visit(visitor);
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.TRACE);
-        int count = 0;
-        String expectedMsg = "getEntityMap: No thresholds configured for resource type 'frCircuitIfIndex' in threshold group generic-snmp. Skipping this group.";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().equals(expectedMsg))
-                count++;
-        }
-        assertEquals("expecting 2 events", 2, count);
     }
 
     /*
@@ -981,16 +966,6 @@ public class ThresholdingVisitorTest {
     public void testBug3554_withDBFilterDao() throws Exception {
         runTestForBug3554();
 
-        // Validate FilterDao Calls
-        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
-        int count = 0;
-        String expectedMsgHeader = "createPackageIpMap: package ";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
     }
 
     /*
@@ -1009,15 +984,8 @@ public class ThresholdingVisitorTest {
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
             filters.add(pkg.getFilter().getContent());
         }
-        int expectedCalls = filters.size(); // The number of different filter rules defined across all threshold packages.
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
-        int count = 0;
-        String expectedMsgHeader = "createPackageIpMap: package ";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
+
+
     }
 
     /*
@@ -1149,10 +1117,6 @@ public class ThresholdingVisitorTest {
     public void testBug3487() throws Exception {
         initFactories("/threshd-configuration-bug3487.xml","/test-thresholds.xml");
         assertNotNull(createVisitor());
-        m_defaultErrorLevelToCheck = Level.FATAL;
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        assertEquals("expecting 1 event", 1, events.length);
-        assertEquals("initialize: Can't process threshold group SMS_Dieta", events[0].getMessage());
     }
 
     /*
@@ -1168,14 +1132,9 @@ public class ThresholdingVisitorTest {
         attributes.put("http", 200.0);
         assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
 
-        m_defaultErrorLevelToCheck = Level.ERROR;
         List<Event> triggerEvents = new ArrayList<Event>();
         for (int i=0; i<5; i++)
             triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("expecting 5 events", 5, events.length);
-        for (LoggingEvent e : events)
-            assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
         assertTrue(triggerEvents.size() == 1);
 
         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);

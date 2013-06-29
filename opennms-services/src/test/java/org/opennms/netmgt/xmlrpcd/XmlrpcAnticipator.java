@@ -47,9 +47,10 @@ import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.log4j.Logger;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -170,7 +171,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     private static final int DEFAULT_PORT_NUMBER = 9000;
 
     /** logger */
-    private Logger m_logger = Logger.getLogger(getClass().getName());
+    private Logger m_logger = LoggerFactory.getLogger(getClass());
 
     private static final String CHECK_METHOD_NAME = "XmlrpcAnticipatorCheck";
 

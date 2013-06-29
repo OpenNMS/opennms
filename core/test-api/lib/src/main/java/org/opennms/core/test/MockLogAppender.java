@@ -74,7 +74,6 @@ public class MockLogAppender {
     /**
      * <p>getEvents</p>
      *
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEvents() {
 //        return (LoggingEvent[]) s_events.toArray(new LoggingEvent[0]);
@@ -84,8 +83,6 @@ public class MockLogAppender {
     /**
      * <p>getEventsGreaterOrEqual</p>
      *
-     * @param level a {@link org.apache.log4j.Level} object.
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
 //        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
@@ -107,8 +104,6 @@ public class MockLogAppender {
      *
      * Returns events that were logged at the specified level
      * 
-     * @param level a {@link org.apache.log4j.Level} object.
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEventsAtLevel(final Level level) {
 //        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
@@ -249,7 +244,6 @@ public class MockLogAppender {
     /**
      * <p>assertNotGreaterOrEqual</p>
      *
-     * @param level a {@link org.apache.log4j.Level} object.
      * @throws junit.framework.AssertionFailedError if any.
      */
     public static void assertNotGreaterOrEqual(final Level level) throws AssertionFailedError {
@@ -287,6 +281,18 @@ public class MockLogAppender {
 //        assertNotGreaterOrEqual(Level.WARN);
     }
     
+    public static void assertNoLogging() {
+        
+    }
+    
+    public static void assertNoErrorsOrGreater() {
+        
+    }
+    
+    public static void assertNoFatalOrGreater() {
+        
+    }
+    
     /**
      * <p>assertLogAtLevel</p>
      * Asserts that a message was logged at the requested level.
@@ -294,7 +300,6 @@ public class MockLogAppender {
      * Useful for testing code that *should* have logged an error message 
      * (or a notice or some other special case)
      *
-     * @param level a {@link org.apache.log4j.Level} object.
      * @throws junit.framework.AssertionFailedError if any.
      */
     public static void assertLogAtLevel(final Level level) throws AssertionFailedError {

@@ -1,0 +1,1643 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] OpenNMS Core
+[INFO] OpenNMS Core API
+[INFO] OpenNMS Core Build Tools
+[INFO] OpenNMS Core Build Keystore
+[INFO] OpenNMS Core Criteria Tools
+[INFO] OpenNMS Logging :: API
+[INFO] OpenNMS Core Daemon
+[INFO] OpenNMS Core Library
+[INFO] OpenNMS Core Library (XML)
+[INFO] OpenNMS Core Test APIs
+[INFO] OpenNMS Core Test API (Libraries)
+[INFO] OpenNMS Core Database Access API
+[INFO] OpenNMS Core Database Installer
+[INFO] OpenNMS Core Documentation
+[INFO] OpenNMS Core ICMP JNA
+[INFO] OpenNMS Core Runtime
+[INFO] OpenNMS Core Schema
+[INFO] OpenNMS Core SNMP
+[INFO] OpenNMS Core SNMP JoeSNMP library
+[INFO] OpenNMS Core SNMP API
+[INFO] OpenNMS Core SNMP JoeSNMP Implementation
+[INFO] OpenNMS Core SNMP SNMP4J Implementation
+[INFO] OpenNMS Core SNMP Mock Implementation
+[INFO] OpenNMS Core Test API (HTTP)
+[INFO] OpenNMS Core Test API (SNMP)
+[INFO] OpenNMS Core SNMP Integration Tests
+[INFO] OpenNMS Core SNMP Shell Commands
+[INFO] OpenNMS Core Service Registry
+[INFO] OpenNMS Core Tasks
+[INFO] OpenNMS Core Test API (Schema)
+[INFO] OpenNMS Core Test API (Test Schema A)
+[INFO] OpenNMS Core Test API (Test Schema B)
+[INFO] OpenNMS Core Test API (Database)
+[INFO] OpenNMS Core Test API (DNS)
+[INFO] OpenNMS Core Test API (Services)
+[INFO] OpenNMS Core Test API (XML)
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core ---
+[INFO] org.opennms:org.opennms.core:pom:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core API 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.api ---
+[INFO] org.opennms.core:org.opennms.core.api:bundle:1.13.0-SNAPSHOT
+[INFO] \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Build Tools 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.build ---
+[INFO] org.opennms.core:org.opennms.core.build:pom:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Build Keystore 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.build.keystore ---
+[INFO] org.opennms.core.build:org.opennms.core.build.keystore:jar:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Criteria Tools 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.criteria ---
+[INFO] org.opennms.core:org.opennms.core.criteria:bundle:1.13.0-SNAPSHOT
+[INFO] +- junit:junit:jar:4.10:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] \- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.codehaus.castor:castor:jar:1.1.2.1:test
+[INFO]    |  |  \- commons-logging:commons-logging:jar:1.1.1:test (version managed from 1.1)
+[INFO]    |  +- xerces:xercesImpl:jar:2.9.1:test
+[INFO]    |  \- xml-apis:xml-apis:jar:1.4.01:test
+[INFO]    +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:test
+[INFO]    |  |  +- antlr:antlr:jar:2.7.6:test
+[INFO]    |  |  +- commons-collections:commons-collections:jar:3.2.1:test (version managed from 3.1)
+[INFO]    |  |  +- dom4j:dom4j:jar:1.6.1:test
+[INFO]    |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:test
+[INFO]    |  |  \- javax.transaction:jta:jar:1.1:test
+[INFO]    |  \- org.slf4j:slf4j-log4j12:jar:1.7.2:test
+[INFO]    +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:test
+[INFO]    |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:test
+[INFO]    |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:test
+[INFO]    |  |  +- javax.xml.stream:stax-api:jar:1.0-2:test
+[INFO]    |  |  \- javax.activation:activation:jar:1.1.1:test (version managed from 1.1)
+[INFO]    |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:test
+[INFO]    +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:test
+[INFO]    |     \- org.snmp4j:snmp4j:jar:1.11.1:test
+[INFO]    +- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:test
+[INFO]    |  |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:test
+[INFO]    |  |     \- commons-lang:commons-lang:jar:2.6:test (version managed from 2.5)
+[INFO]    |  +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:test
+[INFO]    |  |  \- aopalliance:aopalliance:jar:1.0:test
+[INFO]    |  +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:test
+[INFO]    |  |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:test
+[INFO]    |  +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:test
+[INFO]    |  +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:test
+[INFO]    |  +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:test
+[INFO]    |  |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:test
+[INFO]    |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:test
+[INFO]    |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:test
+[INFO]    |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:test
+[INFO]    |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:test
+[INFO]    |  |  +- org.aspectj:aspectjrt:jar:1.6.8:test
+[INFO]    |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:test
+[INFO]    |  |  +- javax.annotation:jsr250-api:jar:1.0:test
+[INFO]    |  |  +- c3p0:c3p0:jar:0.9.1.2:test
+[INFO]    |  |  +- cglib:cglib-nodep:jar:2.2.2:test
+[INFO]    |  |  \- javassist:javassist:jar:3.12.1.GA:test
+[INFO]    |  \- commons-codec:commons-codec:jar:1.7:test
+[INFO]    +- oro:oro:jar:2.0.8:test
+[INFO]    +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  |  \- dnsjava:dnsjava:jar:2.1.1:test
+[INFO]    |  +- commons-io:commons-io:jar:2.0.1:test
+[INFO]    |  \- xalan:serializer:jar:2.7.1:test
+[INFO]    +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:test
+[INFO]    +- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- commons-dbcp:commons-dbcp:jar:1.4:test
+[INFO]    |     \- commons-pool:commons-pool:jar:1.6:test (version managed from 1.5.4)
+[INFO]    +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- log4j:log4j:jar:1.2.16:test
+[INFO]    \- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Logging :: API 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.logging ---
+[INFO] org.opennms.core:org.opennms.core.logging:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] \- junit:junit:jar:4.10:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Daemon 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.daemon ---
+[INFO] org.opennms.core:org.opennms.core.daemon:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] +- org.opennms:opennms-icmp-api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |  \- org.opennms.dependencies:tracker-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     \- org.opennms.lib:org.opennms.lib.tracker:jar:0.6:compile
+[INFO] +- org.opennms:opennms-config:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:dbpool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- net.snaq:dbpool:jar:5.0:compile
+[INFO] |  +- org.opennms.dependencies:jdbc-pool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.apache.tomcat:jdbc-pool:jar:1.1.0.1:compile
+[INFO] |  |     \- org.apache.tomcat:juli:jar:6.0.29:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  +- org.opennms.dependencies:jasypt-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.jasypt:jasypt:jar:1.9.0:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] |  |     \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO] |  +- org.opennms:opennms-config-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- org.opennms.features.poller:org.opennms.features.poller.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] +- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  \- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |     \- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] |  +- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:compile
+[INFO] |  |  +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:compile
+[INFO] |  |  +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:compile
+[INFO] |  |  +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:compile
+[INFO] |  |  +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:compile
+[INFO] |  |  +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:compile
+[INFO] |  |  \- commons-codec:commons-codec:jar:1.7:compile
+[INFO] |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile (version managed from 1.2.17)
+[INFO] |  \- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- org.opennms:opennms-test:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- junit:junit:jar:4.10:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  \- org.easymock:easymock:jar:3.1:test
+[INFO] |     \- org.objenesis:objenesis:jar:1.2:test
+[INFO] \- mx4j:mx4j-tools:jar:3.0.1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Library 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.lib ---
+[INFO] org.opennms.core:org.opennms.core.lib:bundle:1.13.0-SNAPSHOT
+[INFO] +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] +- log4j:log4j:jar:1.2.16:compile
+[INFO] \- junit:junit:jar:4.10:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Library (XML) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.xml ---
+[INFO] org.opennms.core:org.opennms.core.xml:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] \- commons-io:commons-io:jar:2.0.1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test APIs 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api ---
+[INFO] org.opennms.core:org.opennms.core.test-api:pom:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Libraries) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.lib ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.lib:bundle:1.13.0-SNAPSHOT
+[INFO] +- junit:junit:jar:4.10:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:compile
+[INFO] +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Database Access API 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.db ---
+[INFO] org.opennms.core:org.opennms.core.db:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  \- commons-io:commons-io:jar:2.0.1:compile
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] +- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] |  \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- junit:junit:jar:4.10:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] \- postgresql:postgresql:jar:9.1-901.jdbc4:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Database Installer 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.db.install ---
+[INFO] org.opennms.core:org.opennms.core.db.install:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] \- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:compile
+[INFO]    +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO]    |  +- oro:oro:jar:2.0.8:runtime
+[INFO]    |  \- xerces:xercesImpl:jar:2.9.1:compile
+[INFO]    +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO]    |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO]    |  |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO]    |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO]    |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO]    |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO]    |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO]    |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO]    |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO]    |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO]    |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO]    |  \- commons-io:commons-io:jar:2.0.1:compile
+[INFO]    +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO]    |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO]    |  |     \- junit:junit:jar:4.10:test (version managed from 3.8.2; scope managed from compile)
+[INFO]    |  |        \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO]    |  \- xalan:serializer:jar:2.7.1:compile
+[INFO]    \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO]       \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Documentation 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.doc ---
+[INFO] org.opennms.core:org.opennms.core.doc:jar:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core ICMP JNA 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[WARNING] The POM for net.java.dev.jna:platform:jar:3.2.7 is missing, no dependency information available
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.icmp-jna ---
+[WARNING] Missing POM for net.java.dev.jna:platform:jar:3.2.7
+[INFO] org.opennms.core:org.opennms.core.icmp-jna:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.dependencies:jna-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- net.java.dev.jna:jna:jar:3.2.7:compile
+[INFO] |  \- net.java.dev.jna:platform:jar:3.2.7:compile
+[INFO] \- junit:junit:jar:4.10:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Runtime 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.runtime ---
+[INFO] org.opennms.core:org.opennms.core.runtime:jar:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Schema 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.schema ---
+[INFO] org.opennms.core:org.opennms.core.schema:jar:1.13.0-SNAPSHOT
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |     \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.opennms.dependencies:liquibase-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.liquibase:liquibase-core:jar:2.0.1:compile
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- junit:junit:jar:4.10:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] \- org.liquibase:liquibase-core:jar:tests:2.0.1:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp ---
+[INFO] org.opennms.core:org.opennms.core.snmp:pom:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP JoeSNMP library 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.joesnmp ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:bundle:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP API 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.api ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.api:bundle:1.13.0-SNAPSHOT
+[INFO] \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP JoeSNMP Implementation 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.implementations.joesnmp ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP SNMP4J Implementation 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.implementations.snmp4j ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] +- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] +- org.snmp4j:snmp4j-agent:jar:1.4.1:test
+[INFO] \- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-aop:jar:3.0.7.RELEASE:test
+[INFO]    |  +- aopalliance:aopalliance:jar:1.0:test
+[INFO]    |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:test
+[INFO]    |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-beans:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-context:jar:3.0.7.RELEASE:test
+[INFO]    |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-core:jar:3.0.7.RELEASE:test
+[INFO]    |  \- commons-logging:commons-logging:jar:1.1.1:test
+[INFO]    +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-jms:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-orm:jar:3.0.7.RELEASE:test
+[INFO]    +- org.springframework:spring-tx:jar:3.0.7.RELEASE:test
+[INFO]    +- org.aspectj:aspectjrt:jar:1.6.8:test
+[INFO]    +- org.aspectj:aspectjweaver:jar:1.6.8:test
+[INFO]    +- javax.annotation:jsr250-api:jar:1.0:test
+[INFO]    +- c3p0:c3p0:jar:0.9.1.2:test
+[INFO]    +- cglib:cglib-nodep:jar:2.2.2:test
+[INFO]    +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:test
+[INFO]    |  |  +- antlr:antlr:jar:2.7.6:test
+[INFO]    |  |  +- commons-collections:commons-collections:jar:3.2.1:test (version managed from 3.1)
+[INFO]    |  |  +- dom4j:dom4j:jar:1.6.1:test
+[INFO]    |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:test
+[INFO]    |  |  \- javax.transaction:jta:jar:1.1:test
+[INFO]    |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:test
+[INFO]    |  |  \- log4j:log4j:jar:1.2.16:test (version managed from 1.2.17)
+[INFO]    |  \- xml-apis:xml-apis:jar:1.4.01:test
+[INFO]    \- javassist:javassist:jar:3.12.1.GA:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP Mock Implementation 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.implementations.mock ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.implementations.mock:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] +- org.opennms.tests:org.opennms.tests.mock-snmp-agent:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.dependencies:snmp4j-agent-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     +- org.opennms.dependencies:snmp4j-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     |  \- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] |     \- org.snmp4j:snmp4j-agent:jar:1.4.1:compile
+[INFO] +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  |     \- junit:junit:jar:4.10:test (version managed from 3.8.2; scope managed from compile)
+[INFO] |  |        \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |     \- xml-apis:xml-apis:jar:1.4.01:compile (version managed from 1.3.04)
+[INFO] \- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO]    |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO]    |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO]    |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO]    |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO]    +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO]    +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO]    +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO]    +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO]    +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO]    +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO]    +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO]    |     +- antlr:antlr:jar:2.7.6:compile
+[INFO]    |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO]    |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO]    |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO]    |     \- javax.transaction:jta:jar:1.1:compile
+[INFO]    \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (HTTP) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.http ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.http:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- junit:junit:jar:4.10:test (scope managed from compile)
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] +- org.apache.httpcomponents:httpclient:jar:4.2.5:test
+[INFO] |  +- org.apache.httpcomponents:httpcore:jar:4.2.4:test
+[INFO] |  \- commons-codec:commons-codec:jar:1.7:test (version managed from 1.6)
+[INFO] +- org.eclipse.jetty:jetty-server:jar:7.6.10.v20130312:compile
+[INFO] |  +- org.eclipse.jetty.orbit:javax.servlet:jar:2.5.0.v201103041518:compile
+[INFO] |  +- org.eclipse.jetty:jetty-continuation:jar:7.6.10.v20130312:compile
+[INFO] |  \- org.eclipse.jetty:jetty-http:jar:7.6.10.v20130312:compile
+[INFO] |     \- org.eclipse.jetty:jetty-io:jar:7.6.10.v20130312:compile
+[INFO] \- org.eclipse.jetty:jetty-webapp:jar:7.6.10.v20130312:compile
+[INFO]    +- org.eclipse.jetty:jetty-xml:jar:7.6.10.v20130312:compile
+[INFO]    |  \- org.eclipse.jetty:jetty-util:jar:7.6.10.v20130312:compile
+[INFO]    \- org.eclipse.jetty:jetty-servlet:jar:7.6.10.v20130312:compile
+[INFO]       \- org.eclipse.jetty:jetty-security:jar:7.6.10.v20130312:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (SNMP) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.snmp ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.snmp:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms:opennms-config:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:dbpool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- net.snaq:dbpool:jar:5.0:compile
+[INFO] |  |     \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.opennms.dependencies:jdbc-pool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.apache.tomcat:jdbc-pool:jar:1.1.0.1:compile
+[INFO] |  |     \- org.apache.tomcat:juli:jar:6.0.29:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  +- org.opennms.dependencies:jasypt-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.jasypt:jasypt:jar:1.9.0:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  |  \- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  |  +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] |  |     \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO] |  +- org.opennms:opennms-config-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  |  +- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- commons-codec:commons-codec:jar:1.7:compile
+[INFO] |  |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.features.poller:org.opennms.features.poller.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |  \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] +- org.opennms:opennms-test:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] |  \- org.easymock:easymock:jar:3.1:test (scope managed from compile)
+[INFO] |     \- org.objenesis:objenesis:jar:1.2:test
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |     +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |     \- log4j:log4j:jar:1.2.16:compile (version managed from 1.2.17)
+[INFO] +- org.opennms.tests:org.opennms.tests.mock-snmp-agent:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.dependencies:snmp4j-agent-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     +- org.opennms.dependencies:snmp4j-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     \- org.snmp4j:snmp4j-agent:jar:1.4.1:compile
+[INFO] +- junit:junit:jar:4.10:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:compile
+[INFO] +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:compile
+[INFO] |     \- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] \- org.opennms.dependencies:snmp-test-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO]    |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO]    |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO]    |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO]    |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO]    |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO]    |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO]    |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO]    |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO]    |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO]    |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO]    \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.mock:jar:1.13.0-SNAPSHOT:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP Integration Tests 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.integration-tests ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.integration-tests:jar:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:test
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.2:test
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:test
+[INFO] |  \- org.snmp4j:snmp4j:jar:1.11.1:test
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:test
+[INFO] |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:test
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.mock:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms.tests:org.opennms.tests.mock-snmp-agent:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  \- org.opennms.dependencies:snmp4j-agent-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |     +- org.opennms.dependencies:snmp4j-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |     \- org.snmp4j:snmp4j-agent:jar:1.4.1:test
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:test
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:test
+[INFO] |  +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:test
+[INFO] |  |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:test
+[INFO] |  |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:test
+[INFO] |  |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:test
+[INFO] |  |  |  |  \- javax.activation:activation:jar:1.1.1:test (version managed from 1.1)
+[INFO] |  |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:test
+[INFO] |  |  \- xalan:serializer:jar:2.7.1:test
+[INFO] |  \- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |     +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-aop:jar:3.0.7.RELEASE:test
+[INFO] |     |  +- aopalliance:aopalliance:jar:1.0:test
+[INFO] |     |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-beans:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-context:jar:3.0.7.RELEASE:test
+[INFO] |     |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-core:jar:3.0.7.RELEASE:test
+[INFO] |     |  \- commons-logging:commons-logging:jar:1.1.1:test
+[INFO] |     +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-jms:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-orm:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.springframework:spring-tx:jar:3.0.7.RELEASE:test
+[INFO] |     +- org.aspectj:aspectjrt:jar:1.6.8:test
+[INFO] |     +- org.aspectj:aspectjweaver:jar:1.6.8:test
+[INFO] |     +- javax.annotation:jsr250-api:jar:1.0:test
+[INFO] |     +- cglib:cglib-nodep:jar:2.2.2:test
+[INFO] |     \- javassist:javassist:jar:3.12.1.GA:test
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.http:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.eclipse.jetty:jetty-server:jar:7.6.10.v20130312:test
+[INFO] |  |  +- org.eclipse.jetty.orbit:javax.servlet:jar:2.5.0.v201103041518:test
+[INFO] |  |  +- org.eclipse.jetty:jetty-continuation:jar:7.6.10.v20130312:test
+[INFO] |  |  \- org.eclipse.jetty:jetty-http:jar:7.6.10.v20130312:test
+[INFO] |  |     \- org.eclipse.jetty:jetty-io:jar:7.6.10.v20130312:test
+[INFO] |  \- org.eclipse.jetty:jetty-webapp:jar:7.6.10.v20130312:test
+[INFO] |     +- org.eclipse.jetty:jetty-xml:jar:7.6.10.v20130312:test
+[INFO] |     |  \- org.eclipse.jetty:jetty-util:jar:7.6.10.v20130312:test
+[INFO] |     \- org.eclipse.jetty:jetty-servlet:jar:7.6.10.v20130312:test
+[INFO] |        \- org.eclipse.jetty:jetty-security:jar:7.6.10.v20130312:test
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.snmp:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms:opennms-config:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  +- org.opennms.dependencies:jdbc-pool-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |  |  \- org.apache.tomcat:jdbc-pool:jar:1.1.0.1:test
+[INFO] |  |  |     \- org.apache.tomcat:juli:jar:6.0.29:test
+[INFO] |  |  +- org.opennms.dependencies:jasypt-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |  |  \- org.jasypt:jasypt:jar:1.9.0:test
+[INFO] |  |  +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  +- org.opennms:opennms-config-model:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  +- org.opennms.features.poller:org.opennms.features.poller.api:jar:1.13.0-SNAPSHOT:test
+[INFO] |  |  \- jakarta-regexp:jakarta-regexp:jar:1.4:test
+[INFO] |  +- junit:junit:jar:4.10:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  \- org.opennms.dependencies:snmp-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] +- org.opennms:opennms-test:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:test
+[INFO] |  \- org.easymock:easymock:jar:3.1:test
+[INFO] |     \- org.objenesis:objenesis:jar:1.2:test
+[INFO] \- org.opennms:opennms-dao:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  +- org.codehaus.castor:castor:jar:1.1.2.1:test
+[INFO]    |  +- xerces:xercesImpl:jar:2.9.1:test
+[INFO]    |  \- xml-apis:xml-apis:jar:1.4.01:test
+[INFO]    +- org.opennms.dependencies:dbpool-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  \- net.snaq:dbpool:jar:5.0:test
+[INFO]    +- org.opennms.core:org.opennms.core.soa:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:test
+[INFO]    |     +- antlr:antlr:jar:2.7.6:test
+[INFO]    |     +- commons-collections:commons-collections:jar:3.2.1:test (version managed from 3.1)
+[INFO]    |     +- dom4j:dom4j:jar:1.6.1:test
+[INFO]    |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:test
+[INFO]    |     \- javax.transaction:jta:jar:1.1:test
+[INFO]    +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:test
+[INFO]    |  \- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    |     +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:test
+[INFO]    |     |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:test
+[INFO]    |     +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:test
+[INFO]    |     +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:test
+[INFO]    |     |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:test
+[INFO]    |     +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:test
+[INFO]    |     +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:test
+[INFO]    |     +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:test
+[INFO]    |     |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:test
+[INFO]    |     \- commons-codec:commons-codec:jar:1.7:test
+[INFO]    +- org.opennms.core:org.opennms.core.criteria:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- org.opennms:opennms-rrd-api:jar:1.13.0-SNAPSHOT:test
+[INFO]    +- commons-dbcp:commons-dbcp:jar:1.4:test
+[INFO]    |  \- commons-pool:commons-pool:jar:1.6:test (version managed from 1.5.4)
+[INFO]    +- commons-io:commons-io:jar:2.0.1:test
+[INFO]    +- commons-lang:commons-lang:jar:2.6:test
+[INFO]    +- c3p0:c3p0:jar:0.9.1.2:test
+[INFO]    +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:test
+[INFO]    +- oro:oro:jar:2.0.8:test
+[INFO]    +- postgresql:postgresql:jar:9.1-901.jdbc4:test
+[INFO]    \- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]       \- dnsjava:dnsjava:jar:2.1.1:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core SNMP Shell Commands 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.snmp.commands ---
+[INFO] org.opennms.core.snmp:org.opennms.core.snmp.commands:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:provided
+[INFO] +- org.apache.karaf.shell:org.apache.karaf.shell.console:jar:2.3.1:compile
+[INFO] |  +- jline:jline:jar:2.9:compile
+[INFO] |  +- org.fusesource.jansi:jansi:jar:1.9:compile
+[INFO] |  +- org.osgi:org.osgi.core:jar:4.3.1:compile
+[INFO] |  +- org.osgi:org.osgi.compendium:jar:4.3.1:compile
+[INFO] |  +- org.apache.karaf.jaas:org.apache.karaf.jaas.boot:jar:2.3.1:compile
+[INFO] |  +- org.apache.karaf.jaas:org.apache.karaf.jaas.modules:jar:2.3.1:compile
+[INFO] |  |  +- org.apache.karaf.jaas:org.apache.karaf.jaas.config:jar:2.3.1:compile
+[INFO] |  |  \- org.apache.felix:org.apache.felix.utils:jar:1.2.0:compile
+[INFO] |  +- org.apache.karaf:org.apache.karaf.util:jar:2.3.1:compile
+[INFO] |  +- org.apache.aries.blueprint:org.apache.aries.blueprint.core:jar:1.1.0:compile
+[INFO] |  |  +- org.apache.aries.blueprint:org.apache.aries.blueprint.api:jar:1.0.0:compile
+[INFO] |  |  +- org.apache.aries:org.apache.aries.util:jar:1.0.0:compile
+[INFO] |  |  +- org.apache.aries.quiesce:org.apache.aries.quiesce.api:jar:1.0.0:compile
+[INFO] |  |  \- org.apache.aries.proxy:org.apache.aries.proxy.api:jar:1.0.0:compile
+[INFO] |  +- org.apache.felix:org.apache.felix.gogo.runtime:jar:0.10.0:compile
+[INFO] |  \- org.apache.sshd:sshd-core:jar:0.8.0:compile
+[INFO] |     \- org.apache.mina:mina-core:jar:2.0.7:compile (version managed from 2.0.5)
+[INFO] |        \- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] \- org.osgi:org.osgi.enterprise:jar:4.2.0:provided
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Service Registry 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.soa ---
+[INFO] org.opennms.core:org.opennms.core.soa:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:provided
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:provided
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:provided
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:provided
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:provided
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:provided
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:provided
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:provided
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:provided
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:provided
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:provided
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:provided
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:provided (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:provided
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:provided
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:provided
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:provided
+[INFO] |  |  |  \- log4j:log4j:jar:1.2.16:provided (version managed from 1.2.17)
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:provided
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:provided
+[INFO] +- junit:junit:jar:4.10:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    \- org.springframework:spring-test:jar:3.0.7.RELEASE:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Tasks 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.tasks ---
+[INFO] org.opennms.core:org.opennms.core.tasks:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:provided
+[INFO] |  |  +- aopalliance:aopalliance:jar:1.0:provided
+[INFO] |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:provided
+[INFO] |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:provided
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:provided
+[INFO] |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:provided
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.8:provided
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.8:provided
+[INFO] |  +- javax.annotation:jsr250-api:jar:1.0:provided
+[INFO] |  +- c3p0:c3p0:jar:0.9.1.2:provided
+[INFO] |  +- cglib:cglib-nodep:jar:2.2.2:provided
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:provided
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:provided
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:provided (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:provided
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:provided
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:provided
+[INFO] |  \- javassist:javassist:jar:3.12.1.GA:provided
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:provided
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:provided
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:provided
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:provided
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:provided
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:provided (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:provided
+[INFO] |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:provided
+[INFO] |  |  \- dnsjava:dnsjava:jar:2.1.1:provided
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:provided
+[INFO] |  \- xalan:serializer:jar:2.7.1:provided
+[INFO] +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:provided
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:provided
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.2:provided
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:provided
+[INFO] |  \- log4j:log4j:jar:1.2.16:provided
+[INFO] +- junit:junit:jar:4.10:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO]    \- org.springframework:spring-test:jar:3.0.7.RELEASE:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Schema) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.schema ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.schema:pom:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Test Schema A) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.schema.a ---
+[INFO] org.opennms.core.test-api.schema:org.opennms.core.test-api.schema.a:jar:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Test Schema B) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.schema.b ---
+[INFO] org.opennms.core.test-api.schema:org.opennms.core.test-api.schema.b:jar:1.13.0-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Database) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.db ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.db:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  |  \- commons-logging:commons-logging:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] |     \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO] +- org.opennms.core:org.opennms.core.db.install:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |     |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |     |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |     |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |     |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |     +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |     +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |     +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |     +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |     +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |     +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |     |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |     |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |     |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |     |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |     |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |     \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] +- org.opennms.core:org.opennms.core.schema:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.dependencies:liquibase-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |     \- org.liquibase:liquibase-core:jar:2.0.1:compile
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile (version managed from 1.6.1)
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] +- org.opennms:opennms-test:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.easymock:easymock:jar:3.1:test (scope managed from compile)
+[INFO] |     \- org.objenesis:objenesis:jar:1.2:test
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] +- org.opennms.tests:org.opennms.tests.mock-elements:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.features.poller:org.opennms.features.poller.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |     \- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] |  |  +- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- commons-codec:commons-codec:jar:1.7:compile
+[INFO] |  |  \- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms:opennms-config-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- junit:junit:jar:4.10:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:compile
+[INFO] +- org.liquibase:liquibase-core:jar:tests:2.0.1:test
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.http:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.eclipse.jetty:jetty-server:jar:7.6.10.v20130312:test
+[INFO] |  |  +- org.eclipse.jetty.orbit:javax.servlet:jar:2.5.0.v201103041518:test
+[INFO] |  |  +- org.eclipse.jetty:jetty-continuation:jar:7.6.10.v20130312:test
+[INFO] |  |  \- org.eclipse.jetty:jetty-http:jar:7.6.10.v20130312:test
+[INFO] |  |     \- org.eclipse.jetty:jetty-io:jar:7.6.10.v20130312:test
+[INFO] |  \- org.eclipse.jetty:jetty-webapp:jar:7.6.10.v20130312:test
+[INFO] |     +- org.eclipse.jetty:jetty-xml:jar:7.6.10.v20130312:test
+[INFO] |     |  \- org.eclipse.jetty:jetty-util:jar:7.6.10.v20130312:test
+[INFO] |     \- org.eclipse.jetty:jetty-servlet:jar:7.6.10.v20130312:test
+[INFO] |        \- org.eclipse.jetty:jetty-security:jar:7.6.10.v20130312:test
+[INFO] +- org.opennms.core:org.opennms.core.schema:jar:liquibase:1.13.0-SNAPSHOT:test
+[INFO] +- org.opennms.core.test-api.schema:org.opennms.core.test-api.schema.a:jar:1.13.0-SNAPSHOT:test
+[INFO] +- org.opennms.core.test-api.schema:org.opennms.core.test-api.schema.b:jar:1.13.0-SNAPSHOT:test
+[INFO] +- org.opennms:opennms-rrd-jrobin:jar:1.13.0-SNAPSHOT:test
+[INFO] |  +- org.opennms:opennms-rrd-api:jar:1.13.0-SNAPSHOT:test
+[INFO] |  \- org.opennms.dependencies:jrobin-dependencies:pom:1.13.0-SNAPSHOT:test
+[INFO] |     \- org.jrobin:jrobin:jar:1.5.15-SNAPSHOT:test
+[INFO] \- postgresql:postgresql:jar:9.1-901.jdbc4:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (DNS) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.dns ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.dns:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |     \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- junit:junit:jar:4.10:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.1:test
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] \- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO]    \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (Services) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.services ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.services:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms:opennms-config:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:dbpool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- net.snaq:dbpool:jar:5.0:compile
+[INFO] |  |     \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- org.opennms.dependencies:jdbc-pool-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.apache.tomcat:jdbc-pool:jar:1.1.0.1:compile
+[INFO] |  |     \- org.apache.tomcat:juli:jar:6.0.29:compile
+[INFO] |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |  +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |  +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |  +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |  \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] |  +- org.opennms.dependencies:jasypt-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.jasypt:jasypt:jar:1.9.0:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.db:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  |  \- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  |  +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-dbcp:commons-dbcp:jar:1.4:compile
+[INFO] |  |     \- commons-pool:commons-pool:jar:1.6:compile (version managed from 1.5.4)
+[INFO] |  +- org.opennms:opennms-config-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- org.opennms:opennms-model:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  |  |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] |  |  +- org.opennms.dependencies:snmp-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.opennms.core.snmp:org.opennms.core.snmp.implementations.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.joesnmp:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.opennms.core.snmp:org.opennms.core.snmp.implementations.snmp4j:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |     \- org.snmp4j:snmp4j:jar:1.11.1:compile
+[INFO] |  |  +- org.opennms.dependencies:spring-security-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-ldap:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.ldap:spring-ldap-core:jar:1.3.1.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-config:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-core:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-crypto:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-remoting:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-acl:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  +- org.springframework.security:spring-security-taglibs:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  |  \- org.springframework.security:spring-security-web:jar:3.1.0.RELEASE:compile
+[INFO] |  |  |  \- commons-codec:commons-codec:jar:1.7:compile
+[INFO] |  |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  |  +- org.opennms.core:org.opennms.core.logging:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |     \- log4j:log4j:jar:1.2.16:compile (version managed from 1.2.17)
+[INFO] |  +- org.opennms.features.poller:org.opennms.features.poller.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |     +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |     |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |     |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |     |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |     +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |     +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |     +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |     +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |     +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |     \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  +- org.opennms:opennms-util:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.opennms.dependencies:dnsjava-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- dnsjava:dnsjava:jar:2.1.1:compile
+[INFO] |  |  +- commons-io:commons-io:jar:2.0.1:compile
+[INFO] |  |  \- xalan:serializer:jar:2.7.1:compile
+[INFO] |  \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] +- org.opennms:opennms-test:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] |  \- org.easymock:easymock:jar:3.1:test (scope managed from compile)
+[INFO] |     \- org.objenesis:objenesis:jar:1.2:test
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:test (scope not updated to compile)
+[INFO] +- org.opennms.tests:org.opennms.tests.mock-elements:jar:1.13.0-SNAPSHOT:compile
+[INFO] \- junit:junit:jar:4.10:compile
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenNMS Core Test API (XML) 1.13.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.4:tree (default-cli) @ org.opennms.core.test-api.xml ---
+[INFO] org.opennms.core.test-api:org.opennms.core.test-api.xml:bundle:1.13.0-SNAPSHOT
+[INFO] +- org.opennms.core:org.opennms.core.xml:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.api:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  \- org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+[INFO] |  +- org.opennms.core:org.opennms.core.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.2:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.2:runtime
+[INFO] |  |  \- log4j:log4j:jar:1.2.16:compile
+[INFO] |  +- org.opennms.dependencies:spring-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  +- org.springframework:spring-instrument:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  +- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  |  \- org.springframework:spring-asm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aspects:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-test:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context:jar:3.0.7.RELEASE:compile
+[INFO] |  |  |  \- org.springframework:spring-expression:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-context-support:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-core:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-oxm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jdbc:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-jms:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-orm:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-tx:jar:3.0.7.RELEASE:compile
+[INFO] |  |  +- org.aspectj:aspectjrt:jar:1.6.8:compile
+[INFO] |  |  +- org.aspectj:aspectjweaver:jar:1.6.8:compile
+[INFO] |  |  +- javax.annotation:jsr250-api:jar:1.0:compile
+[INFO] |  |  +- c3p0:c3p0:jar:0.9.1.2:compile
+[INFO] |  |  +- cglib:cglib-nodep:jar:2.2.2:compile
+[INFO] |  |  +- org.opennms.dependencies:hibernate-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  |  |  \- org.hibernate:hibernate-core:jar:3.6.10.Final:compile
+[INFO] |  |  |     +- antlr:antlr:jar:2.7.6:compile
+[INFO] |  |  |     +- commons-collections:commons-collections:jar:3.2.1:compile (version managed from 3.1)
+[INFO] |  |  |     +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  |  |     +- org.hibernate:hibernate-commons-annotations:jar:3.2.0.Final:compile
+[INFO] |  |  |     \- javax.transaction:jta:jar:1.1:compile
+[INFO] |  |  \- javassist:javassist:jar:3.12.1.GA:compile
+[INFO] |  \- commons-io:commons-io:jar:2.0.1:compile
+[INFO] +- org.opennms.core.test-api:org.opennms.core.test-api.lib:jar:1.13.0-SNAPSHOT:compile
+[INFO] |  \- org.opennms.dependencies:spring-test-dependencies:pom:1.13.0-SNAPSHOT:test (scope managed from compile)
+[INFO] +- org.opennms.dependencies:castor-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.codehaus.castor:castor:jar:1.1.2.1:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- oro:oro:jar:2.0.8:runtime
+[INFO] |  +- xerces:xercesImpl:jar:2.9.1:compile
+[INFO] |  \- xml-apis:xml-apis:jar:1.4.01:compile
+[INFO] +- org.opennms.dependencies:jaxb-dependencies:pom:1.13.0-SNAPSHOT:compile
+[INFO] |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2:jar:2.2.0:compile
+[INFO] |  |  +- org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:jar:2.2.0:compile
+[INFO] |  |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  |  \- javax.activation:activation:jar:1.1.1:compile (version managed from 1.1)
+[INFO] |  \- org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl:jar:2.2.6_1:compile
+[INFO] +- junit:junit:jar:4.10:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.1:compile
+[INFO] \- xmlunit:xmlunit:jar:1.3:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] OpenNMS Core ...................................... SUCCESS [0.390s]
+[INFO] OpenNMS Core API .................................. SUCCESS [0.198s]
+[INFO] OpenNMS Core Build Tools .......................... SUCCESS [0.022s]
+[INFO] OpenNMS Core Build Keystore ....................... SUCCESS [0.029s]
+[INFO] OpenNMS Core Criteria Tools ....................... SUCCESS [1.086s]
+[INFO] OpenNMS Logging :: API ............................ SUCCESS [0.014s]
+[INFO] OpenNMS Core Daemon ............................... SUCCESS [0.551s]
+[INFO] OpenNMS Core Library .............................. SUCCESS [0.038s]
+[INFO] OpenNMS Core Library (XML) ........................ SUCCESS [0.067s]
+[INFO] OpenNMS Core Test APIs ............................ SUCCESS [0.007s]
+[INFO] OpenNMS Core Test API (Libraries) ................. SUCCESS [0.046s]
+[INFO] OpenNMS Core Database Access API .................. SUCCESS [0.061s]
+[INFO] OpenNMS Core Database Installer ................... SUCCESS [0.052s]
+[INFO] OpenNMS Core Documentation ........................ SUCCESS [0.011s]
+[INFO] OpenNMS Core ICMP JNA ............................. SUCCESS [0.037s]
+[INFO] OpenNMS Core Runtime .............................. SUCCESS [0.017s]
+[INFO] OpenNMS Core Schema ............................... SUCCESS [0.210s]
+[INFO] OpenNMS Core SNMP ................................. SUCCESS [0.010s]
+[INFO] OpenNMS Core SNMP JoeSNMP library ................. SUCCESS [0.010s]
+[INFO] OpenNMS Core SNMP API ............................. SUCCESS [0.011s]
+[INFO] OpenNMS Core SNMP JoeSNMP Implementation .......... SUCCESS [0.012s]
+[INFO] OpenNMS Core SNMP SNMP4J Implementation ........... SUCCESS [0.055s]
+[INFO] OpenNMS Core SNMP Mock Implementation ............. SUCCESS [0.098s]
+[INFO] OpenNMS Core Test API (HTTP) ...................... SUCCESS [0.140s]
+[INFO] OpenNMS Core Test API (SNMP) ...................... SUCCESS [0.142s]
+[INFO] OpenNMS Core SNMP Integration Tests ............... SUCCESS [0.358s]
+[INFO] OpenNMS Core SNMP Shell Commands .................. SUCCESS [0.132s]
+[INFO] OpenNMS Core Service Registry ..................... SUCCESS [0.290s]
+[INFO] OpenNMS Core Tasks ................................ SUCCESS [0.107s]
+[INFO] OpenNMS Core Test API (Schema) .................... SUCCESS [0.007s]
+[INFO] OpenNMS Core Test API (Test Schema A) ............. SUCCESS [0.007s]
+[INFO] OpenNMS Core Test API (Test Schema B) ............. SUCCESS [0.006s]
+[INFO] OpenNMS Core Test API (Database) .................. SUCCESS [0.261s]
+[INFO] OpenNMS Core Test API (DNS) ....................... SUCCESS [0.047s]
+[INFO] OpenNMS Core Test API (Services) .................. SUCCESS [0.089s]
+[INFO] OpenNMS Core Test API (XML) ....................... SUCCESS [0.049s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 6.555s
+[INFO] Finished at: Fri Jun 28 15:29:39 CDT 2013
+[INFO] Final Memory: 54M/341M
+[INFO] ------------------------------------------------------------------------
