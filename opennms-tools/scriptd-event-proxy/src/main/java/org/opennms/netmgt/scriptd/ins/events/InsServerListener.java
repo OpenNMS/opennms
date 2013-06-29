@@ -37,12 +37,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.event.Event;
-
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The InsServerListener will accept input from a socket, create a InsSession in
@@ -52,6 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 
 public class InsServerListener extends InsServerAbstractListener {
+	private static final Logger LOG = LoggerFactory.getLogger(InsServerListener.class);
 	private ServerSocket m_listener;
 	private final Set<InsSession> m_activeSessions = new HashSet<InsSession>();
 
@@ -62,7 +61,7 @@ public class InsServerListener extends InsServerAbstractListener {
 		if(criteriaRestriction == null) {
 			throw new IllegalStateException("The property criteriaRestriction cannot be null!");
 		}
-		LogUtils.infof(this, "InsServerListener started: listening on port %d", listeningPort);
+		LOG.info("InsServerListener started: listening on port {}", listeningPort);
 		try {
 			m_listener = new ServerSocket(listeningPort);
 			Socket server;
@@ -82,7 +81,7 @@ public class InsServerListener extends InsServerAbstractListener {
 				m_activeSessions.add(session);
 			}
 		} catch (final IOException ioe) {
-			LogUtils.infof(this, "Socket closed." );
+			LOG.info("Socket closed.");
 		}
 	}
 
@@ -94,10 +93,10 @@ public class InsServerListener extends InsServerAbstractListener {
 		try {
 			m_listener.close();
 		} catch (final IOException e) {
-		    LogUtils.errorf(this, e, "Error while closing listener.");
+		    LOG.error("Error while closing listener.", e);
 		}
 		super.interrupt();
-		LogUtils.infof(this, "InsServerListener Interrupted!");
+		LOG.info("InsServerListener Interrupted!");
 	}
 	
 	private synchronized void cleanActiveSessions() {
@@ -106,12 +105,12 @@ public class InsServerListener extends InsServerAbstractListener {
 			while(it.hasNext()) {
 				final InsSession insSession = it.next();
 				if (insSession == null || !insSession.isAlive()) {
-					LogUtils.debugf(this, "removing session %s", insSession);
+					LOG.debug("removing session {}", insSession);
 					it.remove();
 				}
 			}
 		}
-		LogUtils.debugf(this, "active sessions are: %s", m_activeSessions);
+		LOG.debug("active sessions are: {}", m_activeSessions);
 	}
 
 	/**
@@ -119,9 +118,9 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * @param event
 	 */
 	public void flushEvent(final Event event) {
-		LogUtils.debugf(this, "Flushing uei: %s", event.getUei());
-		LogUtils.debugf(this, "Flushing ifindex: %s", event.getIfIndex());
-		LogUtils.debugf(this, "Flushing ifAlias: %s", event.getIfAlias());
+		LOG.debug("Flushing uei: {}", event.getUei());
+		LOG.debug("Flushing ifindex: {}", event.getIfIndex());
+		LOG.debug("Flushing ifAlias: {}", event.getIfAlias());
 	      
 		synchronized (m_activeSessions) {
 			cleanActiveSessions();
@@ -134,7 +133,7 @@ public class InsServerListener extends InsServerAbstractListener {
 						try {
 							JaxbUtils.marshal(event, new PrintWriter(ps));
 						} catch (final Throwable e) {
-							LogUtils.errorf(this, e, "Error while sending current event to client");
+							LOG.error("Error while sending current event to client", e);
 						}
 					}
 				}
