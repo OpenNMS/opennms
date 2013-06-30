@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.soa</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Service Registry</name>
+  <name>OpenNMS Core Service Registry</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

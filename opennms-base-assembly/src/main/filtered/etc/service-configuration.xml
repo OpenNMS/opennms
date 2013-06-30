@@ -110,6 +110,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+  <!--
   <service>
     <name>OpenNMS:Name=Capsd</name>
     <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
@@ -118,6 +119,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+  -->
   <service>
     <name>OpenNMS:Name=Notifd</name>
     <class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
@@ -237,7 +239,7 @@ maintained
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
       <name>LoggingPrefix</name>
-      <value type="java.lang.String">Provisiond</value>
+      <value type="java.lang.String">provisiond</value>
     </attribute>
     <attribute>
       <name>SpringContext</name>
@@ -253,7 +255,7 @@ maintained
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
       <name>LoggingPrefix</name>
-      <value type="java.lang.String">Reportd</value>
+      <value type="java.lang.String">reportd</value>
     </attribute>
     <attribute>
       <name>SpringContext</name>
@@ -270,7 +272,7 @@ maintained
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
       <name>LoggingPrefix</name>
-      <value type="java.lang.String">Alarmd</value>
+      <value type="java.lang.String">alarmd</value>
     </attribute>
     <attribute>
       <name>SpringContext</name>
@@ -286,7 +288,7 @@ maintained
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
       <name>LoggingPrefix</name>
-      <value type="java.lang.String">Ackd</value>
+      <value type="java.lang.String">ackd</value>
     </attribute>
     <attribute>
       <name>SpringContext</name>

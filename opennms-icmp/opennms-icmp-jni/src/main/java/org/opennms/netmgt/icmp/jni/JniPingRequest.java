@@ -36,13 +36,14 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.HostIsDownException;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of
@@ -53,6 +54,7 @@ import org.opennms.protocols.rt.Request;
  */
 public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingResponse>, EchoPacket {
 
+	private static final Logger LOG = LoggerFactory.getLogger(JniPingRequest.class);
 
     private static long s_nextTid = 1;
 
@@ -99,28 +101,23 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     /**
      * The thread logger associated with this request.
      */
-    private final ThreadCategory m_log;
     
     
     private final AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    public JniPingRequest(JniPingRequestId id, long timeout, int retries, int packetsize, ThreadCategory log, PingResponseCallback callback) {
+    public JniPingRequest(JniPingRequestId id, long timeout, int retries, int packetsize, PingResponseCallback callback) {
         m_id = id;
         m_timeout = timeout;
         m_retries = retries;
         m_packetsize = packetsize;
-        m_log = log;
         m_callback = callback;
     }
     
-    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, ThreadCategory logger, PingResponseCallback cb) {
-        this(new JniPingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, packetsize, logger, cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
+        this(new JniPingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, packetsize, cb);
     }
     
-    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, int packetsize, PingResponseCallback cb) {
-        this(addr, identifier, sequenceNumber, threadId, timeout, retries, packetsize, ThreadCategory.getInstance(JniPingRequest.class), cb);
-    }
 
     public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long timeout, int retries, int packetsize, PingResponseCallback cb) {
         this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, packetsize, cb);
@@ -136,7 +133,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     @Override
     public boolean processResponse(JniPingResponse reply) {
         try {
-            m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
+            LOG.debug("{}: Ping Response Received {}", System.currentTimeMillis(), this);
             m_callback.handleResponse(m_id.getAddress(), reply);
         } finally {
             setProcessed(true);
@@ -154,10 +151,10 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
             JniPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JniPingRequest(m_id, m_timeout, (m_retries - 1), m_packetsize, m_log, m_callback);
-                    m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
+                    returnval = new JniPingRequest(m_id, m_timeout, (m_retries - 1), m_packetsize, m_callback);
+                    LOG.debug("{}: Retrying Ping Request {}", System.currentTimeMillis(), returnval);
                 } else {
-                    m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
+                    LOG.debug("{}: Ping Request Timed out {}", System.currentTimeMillis(), this);
                     m_callback.handleTimeout(m_id.getAddress(), this);
                 }
             }
@@ -258,7 +255,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         try {
             m_requestPacket = createRequestPacket();
     
-            m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
+            LOG.debug("{}: Sending Ping Request: {}", System.currentTimeMillis(), this);
             byte[] data = m_requestPacket.toBytes();
             m_expiration = System.currentTimeMillis() + m_timeout;
             send(icmpSocket, new DatagramPacket(data, data.length, m_id.getAddress(), 0));

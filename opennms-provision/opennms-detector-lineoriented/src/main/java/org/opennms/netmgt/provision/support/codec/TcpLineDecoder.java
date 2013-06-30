@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,8 +35,9 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>TcpLineDecoder class.</p>
@@ -45,6 +46,8 @@ import org.opennms.netmgt.provision.detector.simple.response.LineOrientedRespons
  * @version $Id: $
  */
 public class TcpLineDecoder extends CumulativeProtocolDecoder {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TcpLineDecoder.class);
     public final static String NO_MESSAGES_RECEIVED = "___OPENNMS_NO_TCP_BANNER_RECEIVED___";
 
     private Charset m_charset;
@@ -83,7 +86,7 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
                     in.limit(position);
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
-                    LogUtils.debugf(this, "slice: %s", in.slice());
+                    LOG.debug("slice: {}", in.slice());
                     out.write(parseCommand(in.slice()));
                 } finally {
                     // Set the position to point right after the

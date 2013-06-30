@@ -9,7 +9,7 @@
   <groupId>org.opennms.osgi</groupId>
   <artifactId>all</artifactId>
   <packaging>pom</packaging>
-  <name>All OpenNMS OSGi Features</name>
+  <name>OpenNMS OSGi Container - All Features</name>
   <build>
     <plugins>
       <plugin>

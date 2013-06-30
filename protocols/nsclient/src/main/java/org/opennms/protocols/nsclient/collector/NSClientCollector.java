@@ -43,7 +43,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -69,6 +68,8 @@ import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
 import org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory;
 import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NSClientCollector class.</p>
@@ -77,14 +78,14 @@ import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
  * @version $Id: $
  */
 public class NSClientCollector implements ServiceCollector {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NSClientCollector.class);
+
 
     // Don't make this static because each service will have its own
     // copy and the key won't require the service name as part of the key.
     private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
     class NSClientCollectionAttributeType implements CollectionAttributeType {
         Attrib m_attribute;
@@ -284,7 +285,7 @@ public class NSClientCollector implements ServiceCollector {
             AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(),"all");
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
-                log().debug("Checking availability of group " + wpm.getName());
+                LOG.debug("Checking availability of group {}", wpm.getName());
                 NsclientManager manager = null;
                 try {
                     manager = agentState.getManager();
@@ -294,9 +295,9 @@ public class NSClientCollector implements ServiceCollector {
                     manager.close();
                     boolean isAvailable = (result.getResultCode() == NsclientPacket.RES_STATE_OK);
                     agentState.setGroupIsAvailable(wpm.getName(), isAvailable);
-                    log().debug("Group "+wpm.getName()+" is "+(isAvailable?"":"not")+"available ");
+                    LOG.debug("Group {} is {}available ", wpm.getName(), (isAvailable?"":"not"));
                 } catch (NsclientException e) {
-                    log().error("Error checking group (" + wpm.getName() + ") availability", e);
+                    LOG.error("Error checking group ({}) availability", wpm.getName(), e);
                     agentState.setGroupIsAvailable(wpm.getName(), false);
                 } finally {
                     if (manager != null) {
@@ -319,12 +320,12 @@ public class NSClientCollector implements ServiceCollector {
                             NsclientCheckParams params = new NsclientCheckParams(attrib.getName());
                             result = manager.processCheckCommand(NsclientManager.CHECK_COUNTER, params);
                         } catch (NsclientException e) {
-                            log().info("unable to collect params for attribute '" + attrib.getName() + "'", e);
+                            LOG.info("unable to collect params for attribute '{}'", attrib.getName(), e);
                         }
 
                         if (result != null) {
                             if (result.getResultCode() != NsclientPacket.RES_STATE_OK) {
-                                log().info("not writing parameters for attribute '" + attrib.getName() + "', state is not 'OK'");
+                                LOG.info("not writing parameters for attribute '{}', state is not 'OK'", attrib.getName());
                             } else {
                                 NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
                                 collectionResource.setAttributeValue(attribType, result.getResponse());
@@ -336,7 +337,7 @@ public class NSClientCollector implements ServiceCollector {
                                         // been done (optimizing as much as
                                         // possible with NSClient)
                 } catch (NsclientException e) {
-                    log().error("Error collecting data", e);
+                    LOG.error("Error collecting data", e);
                 }
             }
         }
@@ -347,7 +348,7 @@ public class NSClientCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public void initialize(Map<String, String> parameters) {
-        log().debug("initialize: Initializing NSClientCollector.");
+        LOG.debug("initialize: Initializing NSClientCollector.");
         m_scheduledNodes.clear();
         initNSClientPeerFactory();
         initNSClientCollectionConfig();
@@ -356,42 +357,42 @@ public class NSClientCollector implements ServiceCollector {
     }
 
     private void initNSClientPeerFactory() {
-        log().debug("initialize: Initializing NSClientPeerFactory");
+        LOG.debug("initialize: Initializing NSClientPeerFactory");
         try {
             NSClientPeerFactory.init();
         } catch (MarshalException e) {
-            log().fatal("initialize: Error marshalling configuration.", e);
+            LOG.error("initialize: Error marshalling configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initialize: Error validating configuration.", e);
+            LOG.error("initialize: Error validating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log().fatal("initialize: Error reading configuration", e);
+            LOG.error("initialize: Error reading configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
     private void initNSClientCollectionConfig() {
-        log().debug("initialize: Initializing collector: " + getClass());
+        LOG.debug("initialize: Initializing collector: {}", getClass());
         try {
             NSClientDataCollectionConfigFactory.init();
         } catch (MarshalException e) {
-            log().fatal("initialize: Error marshalling configuration.", e);
+            LOG.error("initialize: Error marshalling configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initialize: Error validating configuration.", e);
+            LOG.error("initialize: Error validating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
-            log().fatal("initialize: Error locating configuration.", e);
+            LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log().fatal("initialize: Error reading configuration", e);
+            LOG.error("initialize: Error reading configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
     private void initializeRrdRepository() {
-        log().debug("initializeRrdRepository: Initializing RRD repo from NSClientCollector...");
+        LOG.debug("initializeRrdRepository: Initializing RRD repo from NSClientCollector...");
         initializeRrdDirs();
     }
 
@@ -412,22 +413,22 @@ public class NSClientCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
         } catch (IOException e) {
-            log().fatal("initDatabaseConnectionFactory: IOException getting database connection", e);
+            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
-            log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
+            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
+            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed loading database driver.", e);
+            LOG.error("initDatabaseConnectionFactory: Failed loading database driver.", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -435,12 +436,12 @@ public class NSClientCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
-        log().debug("initialize: Initializing NSClient collection for agent: " + agent);
+        LOG.debug("initialize: Initializing NSClient collection for agent: {}", agent);
         Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
-            log().info("initialize: Not scheduling interface for NSClient collection: " + nodeState.getAddress());
+            LOG.info("initialize: Not scheduling interface for NSClient collection: {}", nodeState.getAddress());
             final StringBuffer sb = new StringBuffer();
             sb.append("initialize service: ");
 
@@ -448,11 +449,11 @@ public class NSClientCollector implements ServiceCollector {
             sb.append(nodeState.getAddress());
             sb.append(" already scheduled for collection on node: ");
             sb.append(agent);
-            log().debug(sb.toString());
+            LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
             nodeState = new NSClientAgentState(agent.getInetAddress(), parameters);
-            log().info("initialize: Scheduling interface for collection: " + nodeState.getAddress());
+            LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }
     }
@@ -534,7 +535,7 @@ public class NSClientCollector implements ServiceCollector {
             NSClientGroupState groupState = m_groupStates.get(groupName);
             if (groupState == null) {
                 // Probably an error - log it as a warning, and give up
-                log().warn("didCheckGroupAvailability called on a group without state - this is odd");
+                LOG.warn("didCheckGroupAvailability called on a group without state - this is odd");
                 return;
             }
             groupState.setLastChecked(new Date());

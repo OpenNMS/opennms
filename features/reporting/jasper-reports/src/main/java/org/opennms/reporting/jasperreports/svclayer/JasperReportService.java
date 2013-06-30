@@ -33,12 +33,15 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
+
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.*;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 
 import java.io.OutputStream;
@@ -56,6 +59,7 @@ import java.util.*;
  * @version $Id: $
  */
 public class JasperReportService implements ReportService {
+    private static final Logger LOG = LoggerFactory.getLogger(JasperReportService.class);
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -63,18 +67,14 @@ public class JasperReportService implements ReportService {
 
     private GlobalReportRepository m_globalReportRepository;
 
-    private final ThreadCategory log;
-
     /**
      * <p>
      * Constructor for JasperReportService.
      * </p>
      */
     public JasperReportService() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(JasperReportService.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        // TODO this should wrap calls to this class
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -114,7 +114,7 @@ public class JasperReportService implements ReportService {
             defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport,
                     null);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -136,18 +136,15 @@ public class JasperReportService implements ReportService {
             if (reportParm.isSystemDefined() == false) {
 
                 if (reportParm.isForPrompting() == false) {
-                    log.debug("report parm  " + reportParm.getName()
-                            + " is not for prompting - continuing");
+                    LOG.debug("report parm {} is not for prompting - continuing", reportParm.getName());
                     continue;
                 } else {
-                    log.debug("found promptable report parm  "
-                            + reportParm.getName());
+                    LOG.debug("found promptable report parm {}", reportParm.getName());
 
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.String")) {
-                    log.debug("adding a string parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a string parm name {}", reportParm.getName());
                     ReportStringParm stringParm = new ReportStringParm();
                     if (reportParm.getDescription() != null) {
                         stringParm.setDisplayName(reportParm.getDescription());
@@ -169,8 +166,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Integer")) {
-                    log.debug("adding a Integer parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Integer parm name {}", reportParm.getName());
                     ReportIntParm intParm = new ReportIntParm();
                     if (reportParm.getDescription() != null) {
                         intParm.setDisplayName(reportParm.getDescription());
@@ -189,8 +185,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Float")) {
-                    log.debug("adding a Float parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Float parm name {}", reportParm.getName());
                     ReportFloatParm floatParm = new ReportFloatParm();
                     if (reportParm.getDescription() != null) {
                         floatParm.setDisplayName(reportParm.getDescription());
@@ -209,8 +204,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Double")) {
-                    log.debug("adding a Double parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Double parm name {}", reportParm.getName());
                     ReportDoubleParm doubleParm = new ReportDoubleParm();
                     if (reportParm.getDescription() != null) {
                         doubleParm.setDisplayName(reportParm.getDescription());
@@ -229,8 +223,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.util.Date")) {
-                    log.debug("adding a java.util.Date parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a java.util.Date parm name {}", reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
                     if (reportParm.getDescription() != null) {
@@ -264,8 +257,7 @@ public class JasperReportService implements ReportService {
 
                 if (reportParm.getValueClassName().equals("java.sql.Date")
                         || reportParm.getValueClassName().equals("java.sql.Timestamp")) {
-                    log.debug("adding a java.sql.Date or Timestamp parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a java.sql.Date or Timestamp parm name {}", reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
                     if (reportParm.getDescription() != null) {
@@ -319,21 +311,21 @@ public class JasperReportService implements ReportService {
 
             switch (format) {
                 case PDF:
-                    log.debug("rendering as PDF");
+                    LOG.debug("rendering as PDF");
                     exportReportToPdf(jasperPrint, outputStream);
                     break;
 
                 case CSV:
-                    log.debug("rendering as CSV");
+                    LOG.debug("rendering as CSV");
                     exportReportToCsv(jasperPrint, outputStream);
                     break;
 
                 default:
-                    log.debug("rendering as PDF as no valid format found");
+                    LOG.debug("rendering as PDF as no valid format found");
                     exportReportToPdf(jasperPrint, outputStream);
             }
         } catch (JRException e) {
-            log.error("unable to render report", e);
+            LOG.error("unable to render report", e);
             throw new ReportException("unable to render report", e);
         }
     }
@@ -362,7 +354,7 @@ public class JasperReportService implements ReportService {
         try {
             jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -375,7 +367,7 @@ public class JasperReportService implements ReportService {
         outputFileName = new String(baseDir + "/" + jasperReport.getName()
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
                 + ".jrprint");
-        log.debug("jrprint output file: " + outputFileName);
+        LOG.debug("jrprint output file: {}", outputFileName);
 
         if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
             Connection connection;
@@ -387,12 +379,12 @@ public class JasperReportService implements ReportService {
 
                 connection.close();
             } catch (SQLException e) {
-                log.error("sql exception getting or closing datasource ", e);
+                LOG.error("sql exception getting or closing datasource ", e);
                 throw new ReportException(
                         "sql exception getting or closing datasource",
                         e);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run emptyDataSource jasperReport",
                         e);
@@ -406,7 +398,7 @@ public class JasperReportService implements ReportService {
                         reportParms,
                         new JREmptyDataSource());
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run emptyDataSource jasperReport",
                         e);
@@ -471,7 +463,7 @@ public class JasperReportService implements ReportService {
         try {
             jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -489,12 +481,12 @@ public class JasperReportService implements ReportService {
                 exportReport(format, jasperPrint, outputStream);
                 connection.close();
             } catch (SQLException e) {
-                log.error("sql exception getting or closing datasource ", e);
+                LOG.error("sql exception getting or closing datasource ", e);
                 throw new ReportException(
                         "sql exception getting or closing datasource",
                         e);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run or render jdbc jasperReport",
                         e);
@@ -506,7 +498,7 @@ public class JasperReportService implements ReportService {
                         new JREmptyDataSource());
                 exportReport(format, jasperPrint, outputStream);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run or render emptyDataSource jasperReport",
                         e);
@@ -554,15 +546,13 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms = new HashMap<String, Object>();
 
         for (JRParameter reportParm : reportParms) {
-            log.debug("found report parm " + reportParm.getName()
-                    + " of class " + reportParm.getValueClassName());
+            LOG.debug("found report parm {} of class {}", reportParm.getValueClassName(), reportParm.getName());
             if (reportParm.isSystemDefined() == false) {
 
                 String parmName = reportParm.getName();
 
                 if (reportParm.isForPrompting() == false) {
-                    log.debug("Required parameter  " + parmName
-                            + " is not for prompting - continuing");
+                    LOG.debug("Required parameter {} is not for prompting - continuing", parmName);
                     continue;
                 }
 

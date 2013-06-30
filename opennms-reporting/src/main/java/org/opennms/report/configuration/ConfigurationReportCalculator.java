@@ -40,7 +40,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -50,6 +49,8 @@ import org.opennms.rancid.InventoryNode;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -59,6 +60,9 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Id: $
  */
 public class ConfigurationReportCalculator implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationReportCalculator.class);
+
 
     String m_baseDir;
     // output file name
@@ -182,9 +186,6 @@ public class ConfigurationReportCalculator implements InitializingBean {
         m_baseDir = baseDir;
     }
 
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 
     /**
      * <p>afterPropertiesSet</p>
@@ -202,7 +203,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceGroupsList(m_cp).getResource();
         } catch (RancidApiException e) {
-            log().error("getGroups: has given exception "+ e.getMessage() + ". Skipped");
+            LOG.error("getGroups: has given exception {}. Skipped", e.getMessage());
         }
         return new ArrayList<String>();
     }
@@ -211,7 +212,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceDeviceList(m_cp, groupName).getResource();
         } catch (RancidApiException e) {
-            log().error("getDeviceListOnGroup: group [" + groupName + "]. Skipped"); 
+            LOG.error("getDeviceListOnGroup: group [{}]. Skipped", groupName); 
         }
         return new ArrayList<String>();
     }
@@ -220,7 +221,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceConfigList(m_cp, groupName, deviceName).getResource();
         } catch (RancidApiException e) {
-            log().error("getVersionListOnDevice:  device has no inventory ["+deviceName+ "]. " + e.getLocalizedMessage()); 
+            LOG.error("getVersionListOnDevice:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
 
         return new ArrayList<String>();
@@ -230,7 +231,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupName, deviceName);
         } catch (RancidApiException e) {
-            log().error("getFullNode:  device has no inventory ["+deviceName+ "]. " + e.getLocalizedMessage()); 
+            LOG.error("getFullNode:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
         return null;
     }
@@ -253,7 +254,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         catch (ParseException pe){
             tmp_date = Calendar.getInstance().getTime();
         }
-        log().debug("calculate:report date[" + tmp_date.toString() + "]"); 
+        LOG.debug("calculate:report date[{}]", tmp_date.toString()); 
         rlist.setReportDate(tmp_date.toString());
 
         int totalGroups = 0;
@@ -264,7 +265,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
 
 
         for (String groupName : getGroups()) {
-            log().debug("calculate:report group [" + groupName + "]"); 
+            LOG.debug("calculate:report group [{}]", groupName); 
             totalGroups++;
             GroupXSet gs = new GroupXSet();
             gs.setGroupXSetName(groupName);
@@ -280,7 +281,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
                 NodeSet ns = new NodeSet();
                 ns.setDevicename(deviceName);
                 ns.setGroupname(groupName);
-                log().debug("calculate:report device [" + deviceName + "]");
+                LOG.debug("calculate:report device [{}]", deviceName);
                 
                 RancidNode rancidNode = getFullNode(groupName, deviceName);
                 if ( rancidNode == null ) {
@@ -299,17 +300,17 @@ public class ConfigurationReportCalculator implements InitializingBean {
 
                     invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
 
-                    log().debug("calculate:report parsing InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"]"); 
+                    LOG.debug("calculate:report parsing InventoryNode version[{}] date [{}]", invNode.getVersionId(), invNode.getCreationDate()); 
                     
                     if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
                         found = true;
-                        log().debug("calculate:report Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]");
+                        LOG.debug("calculate:report Date found is [{}] version is [{}]", invNode.getCreationDate(), versionMatch);
                         break;
                     }
                 }  //end for on version
                 if (found == false) {
                     // skip device
-                    log().debug("calculate:report device has no inventory at this date["+deviceName+ "]"); 
+                    LOG.debug("calculate:report device has no inventory at this date[{}]", deviceName); 
                     groupHasNodesWithoutconfigurationAtrequestDate = true;
                     nodesWithoutConfigurationAtReportDate++;
                     ns.setVersion("No configuration found at Report Date");
@@ -352,19 +353,19 @@ public class ConfigurationReportCalculator implements InitializingBean {
      */
     public void writeXML() throws ConfigurationCalculationException {
         try {
-            log().debug("Writing the XML");
+            LOG.debug("Writing the XML");
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
             String datestamp = fmt.format(reportRequestDate);
             m_outputFileName = "/RANCIDLISTREPORT" + datestamp + ".xml";
 
 
             // Create a file name of type Category-monthFormat-startDate.xml
-            log().debug("Report Store XML file: " + m_outputFileName);
+            LOG.debug("Report Store XML file: {}", m_outputFileName);
             File reportFile = new File(m_baseDir, m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
         } catch (ConfigurationCalculationException e) {
-            log().fatal("Unable to marshal report as XML");
+            LOG.error("Unable to marshal report as XML");
             throw new ConfigurationCalculationException(e);
         }
     }
@@ -383,17 +384,16 @@ public class ConfigurationReportCalculator implements InitializingBean {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rlist);
-            log().debug("The xml marshalled from the castor classes is saved in "
-                    + outputFile.getAbsoluteFile());
+            LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
             fileWriter.close();
         } catch (MarshalException me) {
-            log().fatal("MarshalException ", me);
+            LOG.error("MarshalException ", me);
             throw new ConfigurationCalculationException(me);
         } catch (ValidationException ve) {
-            log().fatal("Validation Exception ", ve);
+            LOG.error("Validation Exception ", ve);
             throw new ConfigurationCalculationException(ve);
         } catch (IOException ioe) {
-            log().fatal("IO Exception ", ioe);
+            LOG.error("IO Exception ", ioe);
             throw new ConfigurationCalculationException(ioe);
         }
     }

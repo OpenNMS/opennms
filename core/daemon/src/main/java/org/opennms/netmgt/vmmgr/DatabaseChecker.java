@@ -39,10 +39,11 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -61,6 +62,9 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
 public class DatabaseChecker {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DatabaseChecker.class);
+	
     private static List<String> m_required = new ArrayList<String>();
     private static List<String> m_optional = new ArrayList<String>();
     private Map<String,JdbcDataSource> m_dataSources = new HashMap<String,JdbcDataSource>();
@@ -124,7 +128,7 @@ public class DatabaseChecker {
         boolean dataSourcesFound = true;
         for (final String dataSource : m_required) {
             if (!m_dataSources.containsKey(dataSource)) {
-                LogUtils.errorf(this, "Required data source '%s' is missing from opennms-datasources.xml", dataSource);
+            	LOG.error("Required data source '{}' is missing from opennms-datasources.xml", dataSource);
                 dataSourcesFound = false;
             }
         }
@@ -135,7 +139,7 @@ public class DatabaseChecker {
         // Then, check for the optional ones so we can warn about them going missing.
         for (final String dataSource : m_optional) {
             if (!m_dataSources.containsKey(dataSource)) {
-                LogUtils.infof(this, "Data source '%s' is missing from opennms-datasources.xml", dataSource);
+            	LOG.info("Data source '{}' is missing from opennms-datasources.xml", dataSource);
             }
         }
         
@@ -143,19 +147,17 @@ public class DatabaseChecker {
         for (final JdbcDataSource dataSource : m_dataSources.values()) {
             final String name = dataSource.getName();
             if (!m_required.contains(name) && !m_optional.contains(name)) {
-                LogUtils.warnf(this, "Unknown datasource '%s' was found.", name);
+            	LOG.warn("Unknown datasource '{}' was found.", name);
             }
             try {
                 Class.forName(dataSource.getClassName());
                 final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
                 connection.close();
             } catch (final Throwable t) {
-                final String errorMessage = "Unable to connect to data source '%s' at URL '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
+                final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
+            	LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                 if (m_required.contains(name)) {
-                    LogUtils.errorf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                     throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
-                } else {
-                    LogUtils.warnf(this, errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
                 }
             }
         }

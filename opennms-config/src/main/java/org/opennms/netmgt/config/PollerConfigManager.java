@@ -56,7 +56,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
@@ -81,6 +82,7 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 abstract public class PollerConfigManager implements PollerConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(PollerConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -447,14 +449,14 @@ abstract public class PollerConfigManager implements PollerConfig {
                 //
                 try {
                     List<InetAddress> ipList = getIpList(pkg);
-                    LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+                    LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
                         pkgIpMap.put(pkg, ipList);
                     }
                     
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
+                    LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
                 }
                 
             }
@@ -479,7 +481,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 filterRules.append('\"');
                 filterRules.append(")");
             }
-            LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), filterRules.toString());
+            LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
@@ -520,7 +522,7 @@ abstract public class PollerConfigManager implements PollerConfig {
 			filterPassed = ipList.contains(ifaceAddr);
         }
 
-        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", iface, pkg.getName(), Boolean.valueOf(filterPassed));
     
         if (!filterPassed) return false;
     
@@ -597,10 +599,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         getReadLock().lock();
         try {
             if (pkg == null) {
-                LogUtils.warnf(this, "serviceInPackageAndEnabled:  pkg argument is NULL!!");
+                LOG.warn("serviceInPackageAndEnabled:  pkg argument is NULL!!");
                 return false;
             } else {
-                LogUtils.debugf(this, "serviceInPackageAndEnabled: svcName=%s pkg=%s", svcName, pkg.getName());
+                LOG.debug("serviceInPackageAndEnabled: svcName={} pkg={}", svcName, pkg.getName());
             }
         
             for(final Service svc : services(pkg)) {
@@ -972,7 +974,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         // so that the event processor will have them for
         // new incoming events to create pollable service objects.
         //
-        LogUtils.debugf(this, "start: Loading monitors");
+        LOG.debug("start: Loading monitors");
 
         final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
         
@@ -980,7 +982,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             try {
                 m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
             } catch (Throwable t) {
-                LogUtils.warnf(this, t, "start: Failed to create monitor %s for service %s", locator.getServiceLocatorKey(), locator.getServiceName());
+                LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
             }
         }
     }
@@ -1026,9 +1028,9 @@ abstract public class PollerConfigManager implements PollerConfig {
                         locators.add(locator);
                     }
                 } catch (final ClassNotFoundException e) {
-                    LogUtils.warnf(this, e, "Unable to location monitor for service: %s class-name: %s", monitor.getService(), monitor.getClassName());
+                    LOG.warn("Unable to location monitor for service: {} class-name: {}", monitor.getService(), monitor.getClassName(), e);
                 } catch (ConfigObjectRetrievalFailureException e) {
-                    LogUtils.warnf(this, e, e.getMessage(), e.getRootCause());
+                    LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
             }
         } finally {

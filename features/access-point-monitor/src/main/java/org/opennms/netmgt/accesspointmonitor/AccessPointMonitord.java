@@ -9,24 +9,26 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
+import org.opennms.netmgt.config.accesspointmonitor.Package;
+import org.opennms.netmgt.config.accesspointmonitor.Service;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
-import org.opennms.netmgt.config.accesspointmonitor.Package;
-import org.opennms.netmgt.config.accesspointmonitor.Service;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Set the polling context class type using Spring.
 
@@ -39,6 +41,8 @@ import org.opennms.netmgt.config.accesspointmonitor.Service;
  */
 @EventListener(name = "AccessPointMonitor")
 public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyRunnable {
+    private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitord.class);
+
     private static final String DAEMON_NAME = "AccessPointMonitor";
 
     private static AccessPointMonitord m_singleton = new AccessPointMonitord();
@@ -214,12 +218,12 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     @Override
     protected void onStart() {
         try {
-            log().debug("onStart: Starting Access Point Monitor scheduler");
+            LOG.debug("onStart: Starting Access Point Monitor scheduler");
 
             // Start the scheduler
             getScheduler().start();
         } catch (RuntimeException e) {
-            log().fatal("onStart: Failed to start scheduler", e);
+            LOG.error("onStart: Failed to start scheduler", e);
             throw e;
         }
 
@@ -234,13 +238,13 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     protected void onStop() {
 
         if (getScheduler() != null) {
-            log().debug("onStop: stopping scheduler");
+            LOG.debug("onStop: stopping scheduler");
             getScheduler().stop();
         }
 
         setScheduler(null);
 
-        log().debug("onStop: releasing pollers");
+        LOG.debug("onStop: releasing pollers");
         synchronized (m_activePollers) {
             if (m_activePollers != null) {
                 for (PollingContext p : m_activePollers.values()) {
@@ -304,7 +308,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      */
     public AccessPointMonitord() {
-        super("OpenNMS.AccessPointMonitor");
+        super("access-point-monitor");
     }
 
     /** {@inheritDoc} */
@@ -317,7 +321,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         }
 
         // Schedule the packages that are defined in the configuration file
-        log().debug("onInit: Scheduling packages for polling");
+        LOG.debug("onInit: Scheduling packages for polling");
         scheduleStaticPackages();
         scheduleDynamicPackages();
 
@@ -335,11 +339,11 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     private void createScheduler() {
         // Create a scheduler
         try {
-            log().debug("init: Creating Access Point Monitor scheduler");
+            LOG.debug("init: Creating Access Point Monitor scheduler");
 
             setScheduler(new LegacyScheduler(DAEMON_NAME, getPollerConfig().getThreads()));
         } catch (RuntimeException e) {
-            log().fatal("init: Failed to create Access Point Monitor scheduler", e);
+            LOG.error("init: Failed to create Access Point Monitor scheduler", e);
             throw e;
         }
     }
@@ -352,7 +356,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * scheduled packages that are no longer present in the database.
      */
     private void scheduleDynamicPackages() {
-        log().debug("scheduleDynamicPackages() was triggered");
+        LOG.debug("scheduleDynamicPackages() was triggered");
 
         // Build the current list of dynamic packages
         Map<String, Package> dynamicPackages = new HashMap<String, Package>();
@@ -375,9 +379,9 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 PollingContext p = m_activePollers.get(pkg.getName());
                 if (p != null) {
                     if (p.getPackage().getIsDynamic()) {
-                        log().debug("Package '" + pkg.getName() + "' is already active.");
+                        LOG.debug("Package '" + pkg.getName() + "' is already active.");
                     } else {
-                        log().error("Package '" + pkg.getName() + "' is statically defined and matches a dynamic definitions.");
+                        LOG.error("Package '" + pkg.getName() + "' is statically defined and matches a dynamic definitions.");
                     }
                 } else {
                     schedulePackage(pkg);
@@ -395,7 +399,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 // Un-schedule the package if its dynamic and not in the list
                 // of packages we just discovered
                 if (pkg.getIsDynamic() && !dynamicPackages.containsKey(entry.getKey())) {
-                    log().debug("unscheduling " + pkg.getName());
+                    LOG.debug("unscheduling {}", pkg.getName());
                     p.release();
                     entries.remove();
                 }
@@ -442,7 +446,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         p.init();
 
         // Schedule it
-        log().debug("schedulePackages: Scheduling " + pkg.getName() + " every " + svc.getInterval());
+        LOG.debug("schedulePackages: Scheduling " + pkg.getName() + " every " + svc.getInterval());
         getScheduler().schedule(svc.getInterval(), p);
 
         // Store in the map
@@ -475,12 +479,12 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
             this.init();
             this.start();
         } catch (JAXBException e) {
-            fatalf(e, "Unable to initialize the Access Point Monitor configuration factory");
+            LOG.error("Unable to initialize the Access Point Monitor configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
-            fatalf(e, "Unable to initialize the Access Point Monitor configuration factory");
+            LOG.error("Unable to initialize the Access Point Monitor configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
@@ -498,11 +502,11 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void reloadDaemonConfig(Event e) {
-        log().info("reloadDaemonConfig: processing reload daemon event...");
+        LOG.info("reloadDaemonConfig: processing reload daemon event...");
         if (isReloadConfigEventTarget(e)) {
             reloadAndReStart();
         }
-        log().info("reloadDaemonConfig: reload daemon event processed.");
+        LOG.info("reloadDaemonConfig: reload daemon event processed.");
     }
 
     /**
@@ -526,7 +530,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
             }
         }
 
-        log().debug("isReloadConfigEventTarget: AccessPointMonitor was target of reload event: " + isTarget);
+        LOG.debug("isReloadConfigEventTarget: AccessPointMonitor was target of reload event: {}", isTarget);
         return isTarget;
     }
 

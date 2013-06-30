@@ -36,7 +36,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
@@ -51,6 +52,7 @@ import org.opennms.rancid.ConnectionProperties;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 abstract public class RWSConfigManager implements RWSConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(RWSConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -96,8 +98,8 @@ abstract public class RWSConfigManager implements RWSConfig {
     public ConnectionProperties getBase() {
         getReadLock().lock();
         try {
-            LogUtils.debugf(this, "Connections used: %s%s", getBaseUrl().getServer_url(), getBaseUrl().getDirectory());
-            LogUtils.debugf(this, "RWS timeout(sec): %d", getBaseUrl().getTimeout());
+            LOG.debug("Connections used: {}{}", getBaseUrl().getServer_url(), getBaseUrl().getDirectory());
+            LOG.debug("RWS timeout(sec): {}", getBaseUrl().getTimeout());
             if (getBaseUrl().getUsername() == null) {
                 return new ConnectionProperties(getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
             }
@@ -122,8 +124,8 @@ abstract public class RWSConfigManager implements RWSConfig {
         getReadLock().lock();
         try {
             final StandbyUrl standByUrl = getNextStandbyUrl();
-            LogUtils.debugf(this, "Connections used: %s%s", standByUrl.getServer_url(), standByUrl.getDirectory());
-            LogUtils.debugf(this, "RWS timeout(sec): %d", standByUrl.getTimeout());
+            LOG.debug("Connections used: {}{}", standByUrl.getServer_url(), standByUrl.getDirectory());
+            LOG.debug("RWS timeout(sec): {}", standByUrl.getTimeout());
             if (standByUrl.getUsername() == null) {
                 return new ConnectionProperties(standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
             }

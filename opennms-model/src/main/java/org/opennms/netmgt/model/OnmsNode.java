@@ -70,12 +70,13 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -92,6 +93,9 @@ import org.springframework.core.style.ToStringCreator;
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 public class OnmsNode extends OnmsEntity implements Serializable,
         Comparable<OnmsNode> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
+
 
     private static final long serialVersionUID = -5736397583719151493L;
 
@@ -994,7 +998,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
                     }
                 });
                 OnmsIpInterface retval = primaryInterfaces.iterator().next();
-                LogUtils.warnf(this, "Multiple primary SNMP interfaces for node %d, returning most recently scanned interface: %s", m_id, retval.getInterfaceId());
+                LOG.warn("Multiple primary SNMP interfaces for node {}, returning most recently scanned interface: {}", m_id, retval.getInterfaceId());
                 return retval;
             } else {
                 return primaryInterfaces.iterator().next();

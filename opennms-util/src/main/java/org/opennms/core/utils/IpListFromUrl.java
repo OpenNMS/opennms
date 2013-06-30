@@ -38,12 +38,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
  * Convenience class for generating a list of IP addresses from a file URL.
  */
 public class IpListFromUrl extends Object {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
+	
     /**
      * The string indicating the start of the comments in a line containing the
      * IP address in a file URL
@@ -115,20 +121,17 @@ public class IpListFromUrl extends Object {
                 buffer.close();
             } else {
                 // log something
-                log().warn("URL does not exist: " + url);
+                LOG.warn("URL does not exist: {}", url);
             }
         } catch (MalformedURLException e) {
-            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
         } catch (FileNotFoundException e) {
-            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
         } catch (IOException e) {
-            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+        	LOG.error("Error reading URL: {}: {}", url, e.getLocalizedMessage());
         }
 
         return iplist;
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(IpListFromUrl.class);
-    }
 }

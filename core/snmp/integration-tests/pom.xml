@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.integration-tests</artifactId>
-  <name>OpenNMS SNMP Integration Tests</name>
+  <name>OpenNMS Core SNMP Integration Tests</name>
   <build>
     <plugins>
       <plugin>

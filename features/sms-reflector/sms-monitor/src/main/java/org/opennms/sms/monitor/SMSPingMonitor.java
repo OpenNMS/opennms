@@ -31,7 +31,8 @@ package org.opennms.sms.monitor;
 import java.util.Map;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
@@ -53,6 +54,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class SMSPingMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(SMSPingMonitor.class);
 	Phonebook phonebook = new PropertyPhonebook();
 
 	/** {@inheritDoc} */
@@ -73,14 +75,14 @@ final public class SMSPingMonitor extends AbstractServiceMonitor {
 		try {
 			phoneNumber = phonebook.getTargetForAddress(svc.getIpAddr());
 		} catch (final PhonebookException e) {
-		    LogUtils.warnf(this, e, "Unable to get phonebook target for %s", svc.getIpAddr());
+		    LOG.warn("Unable to get phonebook target for {}", svc.getIpAddr(), e);
 		}
 
 		if (phoneNumber != null) {
 			try {
 				rtt = SmsPinger.ping(phoneNumber, timeout, retries);
 			} catch (final Exception e) {
-			    LogUtils.warnf(this, e, "Unable to ping phone number: %s", phoneNumber);
+			    LOG.warn("Unable to ping phone number: {}", phoneNumber, e);
 			}
 		}
 

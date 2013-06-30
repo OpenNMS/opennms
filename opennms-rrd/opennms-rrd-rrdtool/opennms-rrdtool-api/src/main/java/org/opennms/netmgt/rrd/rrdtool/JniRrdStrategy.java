@@ -41,12 +41,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -64,6 +65,7 @@ import org.springframework.util.FileCopyUtils;
  * @version $Id: $
  */
 public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand ,StringBuffer> {
+    private static final Logger LOG = LoggerFactory.getLogger(JniRrdStrategy.class);
 	
 	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
 	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
@@ -130,9 +132,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
         if (new File(fileName).exists()) {
-			log().debug(
-					"createDefinition: filename [" + fileName
-							+ "] already exists returning null as definition");
+            LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
             return null;
         }
 
@@ -171,10 +171,10 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         @Override
     public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
         if (createCommand == null) {
-        	log().debug("createRRD: skipping RRD file");
-        	return;
+            LOG.debug("createRRD: skipping RRD file");
+            return;
         }
-        log().debug("Executing: rrdtool "+createCommand.toString());
+        LOG.debug("Executing: rrdtool {}", createCommand.toString());
         Interface.launch(createCommand.toString());
         
         String filenameWithoutExtension = createCommand.filename.replace(RrdUtils.getExtension(), "");
@@ -264,27 +264,25 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         // TODO: Combine fetchLastValueInRange and fetchLastValue
         String fetchCmd = "fetch " + rrdFile + " "+consolidationFunction+" -s now-" + interval / 1000 + " -e now-" + interval / 1000;
 
-        if (log().isDebugEnabled()) {
-            log().debug("fetch: Issuing RRD command: " + fetchCmd);
-        }
+        LOG.debug("fetch: Issuing RRD command: {}", fetchCmd);
 
         String[] fetchStrings = Interface.launch(fetchCmd);
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            log().error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
+            LOG.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            log().error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
+            LOG.error("fetch: RRD database 'fetch' failed, reason: {}", fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            log().error("fetch: RRD database 'fetch' failed, no data retrieved.");
+            LOG.error("fetch: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
 
@@ -308,14 +306,12 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
             try {
                 dsValue = new Double(dsValues[dsIndex].trim());
             } catch (NumberFormatException nfe) {
-                log().warn("fetch: Unable to convert fetched value (" + dsValues[dsIndex].trim() + ") to Double for data source " + dsName);
+                LOG.warn("fetch: Unable to convert fetched value ({}) to Double for data source {}", dsValues[dsIndex].trim(), dsName);
                 throw nfe;
             }
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("fetch: fetch successful: " + dsName + "= " + dsValue);
-        }
+        LOG.debug("fetch: fetch successful: {}={}", dsName, dsValue);
 
         return dsValue;
     }
@@ -352,9 +348,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         long latestUpdateTime = (now - (now % interval)) / 1000L;
         long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
         
-        if (log().isDebugEnabled()) {
-        	log().debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
-        }
+        LOG.debug("fetchInRange: fetching data from {} to {}", earliestUpdateTime, latestUpdateTime);
         
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s " + earliestUpdateTime + " -e " + latestUpdateTime;
 
@@ -362,27 +356,25 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
 
         // Sanity check the returned string array
         if (fetchStrings == null) {
-            log().error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
+            LOG.error("fetchInRange: Unexpected error issuing RRD 'fetch' command, no error text available.");
             return null;
         }
 
         // Check error string at index 0, will be null if 'fetch' was successful
         if (fetchStrings[0] != null) {
-            log().error("fetchInRange: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
+            LOG.error("fetchInRange: RRD database 'fetch' failed, reason: {}", fetchStrings[0]);
             return null;
         }
 
         // Sanity check
         if (fetchStrings[1] == null || fetchStrings[2] == null) {
-            log().error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
+            LOG.error("fetchInRange: RRD database 'fetch' failed, no data retrieved.");
             return null;
         }
         
         int numFetched = fetchStrings.length;
         
-        if (log().isDebugEnabled()) {
-        	log().debug("fetchInRange: got " + numFetched + " strings from RRD");
-        }
+        LOG.debug("fetchInRange: got {} strings from RRD", numFetched);
 
         // String at index 1 contains the RRDs datasource names
         //
@@ -400,16 +392,14 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         for(int i = fetchStrings.length - 2; i > 1; i--) {
             String[] dsValues = fetchStrings[i].split("\\s");
         	if ( dsValues[dsIndex].trim().equalsIgnoreCase("nan") ) {
-        	    log().debug("fetchInRange: Got a NaN value - continuing back in time");
+        	    LOG.debug("fetchInRange: Got a NaN value - continuing back in time");
         	} else {
         		try {
                     dsValue = new Double(dsValues[dsIndex].trim());
-                    if (log().isDebugEnabled()) {
-                        log().debug("fetchInRange: fetch successful: " + dsName + "= " + dsValue);
-                    }
+                    LOG.debug("fetchInRange: fetch successful: {}= {}", dsName, dsValue);
                     return dsValue;
                 } catch (NumberFormatException nfe) {
-                    log().warn("fetchInRange: Unable to convert fetched value (" + dsValues[dsIndex].trim() + ") to Double for data source " + dsName);
+                    LOG.warn("fetchInRange: Unable to convert fetched value ({}) to Double for data source {}", dsValues[dsIndex].trim(), dsName);
                     throw nfe;
                 }
           	}
@@ -450,7 +440,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         
         // one particular warning message that originates in libart should be ignored
         if (errors.length() > 0 && errors.contains(IGNORABLE_LIBART_WARNING_STRING)) {
-        	log().debug("Ignoring libart warning message in rrdtool stderr stream: " + IGNORABLE_LIBART_WARNING_STRING);
+        	LOG.debug("Ignoring libart warning message in rrdtool stderr stream: {}", IGNORABLE_LIBART_WARNING_STRING);
         	errors = errors.replaceAll(IGNORABLE_LIBART_WARNING_REGEX, "");
         }
         if (errors.length() > 0) {
@@ -469,15 +459,6 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         return "";
     }
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     // These offsets work perfectly for ranger@ with rrdtool 1.2.23 and Firefox
     /**
      * <p>getGraphLeftOffset</p>

@@ -53,7 +53,8 @@ import org.jsmiparser.smi.SmiRow;
 import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.namecutter.NameCutter;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -80,6 +81,7 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
  */
 @SuppressWarnings("serial")
 public class JsmiMibParser implements MibParser, Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(JsmiMibParser.class);
 
     /** The Constant MIB_SUFFIXES. */
     private static final String[] MIB_SUFFIXES = new String[] { "", ".txt", ".mib", ".my" };
@@ -143,7 +145,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         }
 
         // Parse MIB
-        LogUtils.debugf(this, "Parsing %s", mibFile.getAbsolutePath());
+        LOG.debug("Parsing {}", mibFile.getAbsolutePath());
         SmiMib mib = null;
         addFileToQueue(queue, mibFile);
         while (true) {
@@ -151,7 +153,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             try {
                 mib = parser.parse();
             } catch (Exception e) {
-                LogUtils.errorf(this, e, "Can't compile %s", mibFile);
+                LOG.error("Can't compile {}", mibFile, e);
                 errorHandler.addError(e.getMessage());
                 return false;
             }
@@ -170,7 +172,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             return false;
 
         // Extracting the module from compiled MIB.
-        LogUtils.infof(this, "The MIB %s has been parsed successfully.", mibFile.getAbsolutePath());
+        LOG.info("The MIB {} has been parsed successfully.", mibFile.getAbsolutePath());
         module = getModule(mib, mibFile);
         return module != null;
     }
@@ -207,14 +209,14 @@ public class JsmiMibParser implements MibParser, Serializable {
         if (module == null) {
             return null;
         }
-        LogUtils.infof(this, "Generating events for %s using the following UEI Base: %s", module.getId(), ueibase);
+        LOG.info("Generating events for {} using the following UEI Base: {}", module.getId(), ueibase);
         try {
             return convertMibToEvents(module, ueibase);
         } catch (Throwable e) {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating events objects from the MIB " + module.getId();
-            LogUtils.errorf(this, e, "Event parsing error: %s", errors);
+            LOG.error("Event parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -228,7 +230,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         if (module == null) {
             return null;
         }
-        LogUtils.infof(this, "Generating data collection configuration for %s", module.getId());
+        LOG.info("Generating data collection configuration for {}", module.getId());
         DatacollectionGroup dcGroup = new DatacollectionGroup();
         dcGroup.setName(module.getId());
         NameCutter cutter = new NameCutter();
@@ -259,7 +261,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating data collection objects from the MIB " + module.getId();
-            LogUtils.errorf(this, e, "Data Collection parsing error: %s", errors);
+            LOG.error("Data Collection parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -276,7 +278,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
-        LogUtils.infof(this, "Generating graph templates for %s", module.getId());
+        LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
         try {
             for (SmiVariable v : module.getVariables()) {
@@ -309,7 +311,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
                 errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
-            LogUtils.errorf(this, e, "Graph templates parsing error: %s", errors);
+            LOG.error("Graph templates parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
         }
@@ -352,11 +354,11 @@ public class JsmiMibParser implements MibParser, Serializable {
         try {
             URL url = mibFile.toURI().toURL();
             if (!queue.contains(url)) {
-                LogUtils.debugf(this, "Adding %s to queue ", url);
+                LOG.debug("Adding {} to queue ", url);
                 queue.add(url);
             }
         } catch (Exception e) {
-            LogUtils.warnf(this, "Can't generate URL from %s", mibFile.getAbsolutePath());
+            LOG.warn("Can't generate URL from {}", mibFile.getAbsolutePath());
         }
     }
 
@@ -376,19 +378,19 @@ public class JsmiMibParser implements MibParser, Serializable {
                 final String fileName = (dependency+suffix).toLowerCase();
                 if (mibDirectoryFiles.containsKey(fileName)) {
                     File f = mibDirectoryFiles.get(fileName);
-                    LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
+                    LOG.debug("Checking dependency file {}", f.getAbsolutePath());
                     if (f.exists()) {
-                        LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
+                        LOG.info("Adding dependency file {}", f.getAbsolutePath());
                         addFileToQueue(queue, f);
                         missingDependencies.remove(dependency);
                         found = true;
                         break;
                     }
                 }
-                LogUtils.debugf(this, "Dependency file %s doesn't exist", fileName);
+                LOG.debug("Dependency file {} doesn't exist", fileName);
             }
             if (!found) {
-                LogUtils.warnf(this, "Couldn't find dependency %s on %s", dependency, mibDirectory);
+                LOG.warn("Couldn't find dependency {} on {}", dependency, mibDirectory);
                 ok = false;
             }
         }

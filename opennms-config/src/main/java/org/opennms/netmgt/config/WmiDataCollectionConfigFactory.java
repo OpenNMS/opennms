@@ -39,7 +39,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiDataCollectionConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(WmiDataCollectionConfigFactory.class);
 
      /** The singleton instance. */
      private static WmiDataCollectionConfigFactory m_instance;
@@ -102,7 +104,7 @@ public class WmiDataCollectionConfigFactory {
      }
 
      private void initialize(InputStream stream) throws MarshalException, ValidationException {
-         log().debug("initialize: initializing WMI collection config factory.");
+         LOG.debug("initialize: initializing WMI collection config factory.");
          m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, stream);
      }
      
@@ -196,10 +198,6 @@ public class WmiDataCollectionConfigFactory {
       */
      public synchronized static void setConfig(WmiDatacollectionConfig m_config) {
          WmiDataCollectionConfigFactory.m_config = m_config;
-     }
-
-     private ThreadCategory log() {
-         return ThreadCategory.getInstance();
      }
 
      /**

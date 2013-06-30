@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,15 +38,18 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class QueueingForeignSourceRepository implements ForeignSourceRepository, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(QueueingForeignSourceRepository.class);
+    
     private final ConcurrentMap<String,Requisition> m_pendingRequisitions     = new ConcurrentHashMap<String,Requisition>();
     private final ConcurrentMap<String,ForeignSource> m_pendingForeignSources = new ConcurrentHashMap<String,ForeignSource>();
     ForeignSourceRepository m_repository = null;
@@ -58,7 +61,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void flush() throws ForeignSourceRepositoryException {
-        LogUtils.debugf(this, "flushing queue");
+        LOG.debug("flushing queue");
         // wait for everything currently in the queue to complete
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -71,10 +74,10 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
         try {
             latch.await();
         } catch (final InterruptedException e) {
-            LogUtils.debugf(this, e, "Interrupted while waiting for ForeignSourceRepository flush.  Returning.");
+            LOG.debug("Interrupted while waiting for ForeignSourceRepository flush.  Returning.", e);
             return;
         }
-        LogUtils.debugf(this, "finished flushing queue");
+        LOG.debug("finished flushing queue");
     }
 
     @Override
@@ -112,14 +115,14 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        LogUtils.debugf(this, "Queueing save of foreign source %s", foreignSource.getName());
+        LOG.debug("Queueing save of foreign source {}", foreignSource.getName());
         m_pendingForeignSources.put(foreignSource.getName(), foreignSource);
         m_executor.execute(new QueuePersistRunnable());
     }
 
     @Override
     public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        LogUtils.debugf(this, "Queueing delete of foreign source %s", foreignSource.getName());
+        LOG.debug("Queueing delete of foreign source {}", foreignSource.getName());
         m_pendingForeignSources.put(foreignSource.getName(), new DeletedForeignSource(foreignSource));
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -154,14 +157,14 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
-        LogUtils.debugf(this, "Queueing save of requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
+        LOG.debug("Queueing save of requisition {} (containing {} nodes)", requisition.getForeignSource(), requisition.getNodeCount());
         m_pendingRequisitions.put(requisition.getForeignSource(), requisition);
         m_executor.execute(new QueuePersistRunnable());
     }
 
     @Override
     public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
-        LogUtils.debugf(this, "Queueing delete of requistion %s", requisition.getForeignSource());
+        LOG.debug("Queueing delete of requistion {}", requisition.getForeignSource());
         m_pendingRequisitions.put(requisition.getForeignSource(), new DeletedRequisition(requisition));
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -202,23 +205,15 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     }
 
     private final class QueuePersistRunnable implements Runnable {
-        private final String m_prefix;
-
-        public QueuePersistRunnable() {
-            m_prefix = ThreadCategory.getPrefix();
-        }
-
         @Override
         public void run() {
-            final String prefix = ThreadCategory.getPrefix();
             try {
-                ThreadCategory.setPrefix(m_prefix);
-                LogUtils.debugf(this, "persisting repository changes");
+                LOG.debug("persisting repository changes");
                 final Set<Entry<String,ForeignSource>> foreignSources = m_pendingForeignSources.entrySet();
                 final Set<Entry<String,Requisition>>   requisitions   = m_pendingRequisitions.entrySet();
 
-                LogUtils.debugf(this, "* %d pending foreign sources", m_pendingForeignSources.size());
-                LogUtils.debugf(this, "* %d pending requisitions",    m_pendingRequisitions.size());
+                LOG.debug("* {} pending foreign sources", m_pendingForeignSources.size());
+                LOG.debug("* {} pending requisitions",    m_pendingRequisitions.size());
 
                 for (final Entry<String,ForeignSource> entry : foreignSources) {
                     final String foreignSourceName = entry.getKey();
@@ -246,9 +241,9 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
                     m_pendingRequisitions.remove(foreignSourceName, requisition);
                 }
 
-                LogUtils.debugf(this, "finished persisting repository changes");
+                LOG.debug("finished persisting repository changes");
             } finally {
-                ThreadCategory.setPrefix(prefix);
+                //
             }
         }
     }

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>hibernate-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Hibernate Dependencies</name>
+  <name>OpenNMS Dependencies Hibernate</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the hibernate library.

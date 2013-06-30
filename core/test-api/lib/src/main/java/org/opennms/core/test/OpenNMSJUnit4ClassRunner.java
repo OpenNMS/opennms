@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.junit.runners.model.InitializationError;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -45,6 +46,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author seth
  */
 public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OpenNMSJUnit4ClassRunner.class);
+	
     private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
         "org.opennms.test.OpenNMSConfigurationExecutionListener",
         "org.opennms.core.test.db.TemporaryDatabaseExecutionListener",
@@ -83,7 +87,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
                 final TestExecutionListener listener = (TestExecutionListener)Class.forName(className).newInstance();
                 getTestContextManager().registerTestExecutionListeners(listener);
             } catch (final Throwable t) {
-                LogUtils.infof(this, "Failed while attempting to load default unit test listener class %s: %s", className, t.getLocalizedMessage());
+            	LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, t.getLocalizedMessage());
             }
         }
 

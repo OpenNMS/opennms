@@ -47,10 +47,11 @@ import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 import net.jradius.packet.attribute.RadiusAttribute;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.web.springframework.security.Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,8 +70,10 @@ import org.springframework.util.StringUtils;
  * @author Paul Donohue
  */
 public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthenticationProvider.class);
 
-    private static final Log logger = LogFactory.getLog(RadiusAuthenticationProvider.class);
+
     private String server, secret;
     private int port = 1812, timeout = 5, retries = 3;
 
@@ -205,13 +208,13 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             UsernamePasswordAuthenticationToken token)
             throws AuthenticationException {
         if (!StringUtils.hasLength(username)) {
-            logger.info("Authentication attempted with empty username");
+            LOG.info("Authentication attempted with empty username");
             throw new BadCredentialsException(messages.getMessage("RadiusAuthenticationProvider.emptyUsername",
                 "Username cannot be empty"));
         }
         String password = (String) token.getCredentials();
         if (!StringUtils.hasLength(password)) {
-            logger.info("Authentication attempted with empty password");
+            LOG.info("Authentication attempted with empty password");
             throw new BadCredentialsException(messages.getMessage(
                 "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
@@ -219,7 +222,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         InetAddress serverIP = null;
         serverIP = InetAddressUtils.addr(server);
         if (serverIP == null) {
-            logger.error("Could not resolve radius server address "+server);
+            LOG.error("Could not resolve radius server address {}", server);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.unknownServer",
                 "Could not resolve radius server address"));
         }
@@ -232,34 +235,34 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
             AccessRequest request = new AccessRequest(radiusClient, attributeList);
 
-            logger.debug("Sending AccessRequest message to "+InetAddressUtils.str(serverIP)+":"+port+" using "+(authTypeClass == null ? "PAP" : authTypeClass.getAuthName())+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
+            LOG.debug("Sending AccessRequest message to {}:{} using {} protocol with timeout = {}, retries = {}, attributes:\n{}", InetAddressUtils.str(serverIP), port, (authTypeClass == null ? "PAP" : authTypeClass.getAuthName()), timeout, retries, attributeList.toString());
             reply = radiusClient.authenticate(request, authTypeClass, retries);
         } catch (RadiusException e) {
-            logger.error("Error connecting to radius server "+server+" : "+e);
+            LOG.error("Error connecting to radius server {} : {}", server, e);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
                 "Error connecting to radius server: "+e));
         } catch (IOException e) {
-            logger.error("Error connecting to radius server "+server+" : "+e);
+            LOG.error("Error connecting to radius server {} : {}", server, e);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
                 "Error connecting to radius server: "+e));
         }
         if (reply == null) {
-            logger.error("Timed out connecting to radius server "+server);
+            LOG.error("Timed out connecting to radius server {}", server);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusTimeout",
                 "Timed out connecting to radius server"));
         }
         if (!(reply instanceof AccessAccept)) {
-            logger.info("Received a reply other than AccessAccept from radius server "+server+" for user "+username+" :\n"+reply.toString());
+            LOG.info("Received a reply other than AccessAccept from radius server {} for user {} :\n{}", server, username, reply.toString());
             throw new BadCredentialsException(messages.getMessage(
                 "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
-        logger.debug("Received AccessAccept message from "+InetAddressUtils.str(serverIP)+":"+port+" for user "+username+" with attributes:\n"+reply.getAttributes().toString());
+        LOG.debug("Received AccessAccept message from {}:{} for user {} with attributes:\n{}", InetAddressUtils.str(serverIP), port, username, reply.getAttributes().toString());
 
         String roles = null;
         if (!StringUtils.hasLength(rolesAttribute)) {
-            logger.debug("rolesAttribute not set, using default roles ("+defaultRoles+") for user "+username);
+            LOG.debug("rolesAttribute not set, using default roles ({}) for user {}", defaultRoles, username);
             roles = new String(defaultRoles);
         } else {
             Iterator<RadiusAttribute> attributes = reply.getAttributes().getAttributeList().iterator();
@@ -271,7 +274,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
                 }
             }
             if (roles == null) {
-                logger.info("Radius attribute "+rolesAttribute+" not found, using default roles ("+defaultRoles+") for user "+username);
+                LOG.info("Radius attribute {} not found, using default roles ({}) for user {}", rolesAttribute, defaultRoles, username);
                 roles = new String(defaultRoles);
             }
         }
@@ -281,7 +284,6 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         for (String role : rolesArray) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
-        if(logger.isDebugEnabled()) {
             StringBuffer readRoles = new StringBuffer();
             for (GrantedAuthority authority : authorities) {
                 readRoles.append(authority.toString()+", ");
@@ -289,8 +291,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             if (readRoles.length() > 0) {
                 readRoles.delete(readRoles.length()-2, readRoles.length());
             }
-            logger.debug("Parsed roles "+readRoles+" for user "+username);
-        }
+            LOG.debug("Parsed roles {} for user {}", readRoles, username);
 
         return new User(username, password, true, true, true, true, authorities);
     }

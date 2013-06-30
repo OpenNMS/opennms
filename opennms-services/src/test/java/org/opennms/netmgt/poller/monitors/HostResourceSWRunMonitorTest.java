@@ -43,7 +43,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -65,6 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(port=HostResourceSWRunMonitorTest.TEST_SNMP_PORT,host=HostResourceSWRunMonitorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
 public class HostResourceSWRunMonitorTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(HostResourceSWRunMonitorTest.class);
     static final int TEST_SNMP_PORT = 9161;
     static final String TEST_IP_ADDRESS = "127.0.0.1";
 
@@ -212,7 +214,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
     }
 
     private void log(String message) {
-        LogUtils.debugf(this, message);
+        LOG.debug(message);
     }
 
 }

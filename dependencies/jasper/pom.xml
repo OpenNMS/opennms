@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jasper-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Jasper Report Dependencies</name>
+  <name>OpenNMS Dependencies Jasper Report</name>
   <dependencies>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>

@@ -34,7 +34,8 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.junit.Test;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This JUnit test simply checks for public constructors on the list of classes
@@ -44,6 +45,9 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public abstract class PublicConstructorTest {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PublicConstructorTest.class);
+
 	/**
 	 * <p>testPublicConstructors</p>
 	 *
@@ -58,7 +62,7 @@ public abstract class PublicConstructorTest {
 				assertNotNull(constructor);
 				System.out.println("Found public constructor on class: " + clazz.getName());
 			} catch (final Exception e) {
-			    LogUtils.warnf(this, e, "unable to locate constructor on class: %s", clazz.getName());
+			    LOG.warn("unable to locate constructor on class: {}", clazz.getName(), e);
 				throw e;
 			}
 		}

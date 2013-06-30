@@ -35,9 +35,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.web.svclayer.TroubleTicketProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -50,6 +51,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  * @since 1.8.1
  */
 public class AlarmTicketController extends MultiActionController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmTicketController.class);
+
     private TroubleTicketProxy m_troubleTicketProxy;
     
     /**
@@ -57,13 +61,13 @@ public class AlarmTicketController extends MultiActionController {
      */
     public AlarmTicketController() {
         super();
-        log().debug("AlarmTicketController created");
+        LOG.debug("AlarmTicketController created");
     }
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        log().debug("AlarmTicketController handleRequestInternal called");
+        LOG.debug("AlarmTicketController handleRequestInternal called");
         return super.handleRequestInternal(request, response);
     }
     
@@ -145,7 +149,4 @@ public class AlarmTicketController extends MultiActionController {
     /**
      * @return logger for this class
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }

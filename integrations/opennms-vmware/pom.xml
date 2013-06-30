@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-vmware</artifactId>
-    <name>OpenNMS VMware Integration</name>
+    <name>OpenNMS Integrations VMware Integration</name>
     <packaging>jar</packaging>
     <build>
       <plugins>

@@ -34,11 +34,15 @@ import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Ping {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
+
 
     public static class Stuff implements Runnable {
         private IcmpSocket m_socket;
@@ -75,7 +79,7 @@ public class Ping {
                     }
                 }
             } catch (final Throwable t) {
-                LogUtils.errorf(this, t, "An exception occured processing the datagram, thread exiting.");
+                LOG.error("An exception occured processing the datagram, thread exiting.", t);
                 System.exit(1);
             }
         }

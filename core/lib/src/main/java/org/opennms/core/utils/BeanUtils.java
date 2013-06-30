@@ -34,6 +34,8 @@ import java.lang.reflect.Field;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,8 @@ import org.springframework.context.access.DefaultLocatorFactory;
  * @version $Id: $
  */
 public abstract class BeanUtils {
+	
+	public static final Logger LOG = LoggerFactory.getLogger(BeanUtils.class);
 
     /**
      * Get a Spring BeanFactory by context ID.
@@ -111,7 +115,7 @@ public abstract class BeanUtils {
                 try {
                     field.setAccessible(true);
                     notNull(field.get(instance), "@Autowired/@Resource field " + field.getName() + " cannot be null");
-                    LogUtils.debugf(instance, "%s is not null", field.getName());
+                    LOG.debug("{} is not null", field.getName());
                 } catch (IllegalAccessException e) {
                     throw new IllegalArgumentException("Illegal access to @Autowired/@Resource field " + field.getName());
                 }

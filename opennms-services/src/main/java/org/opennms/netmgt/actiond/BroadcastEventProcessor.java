@@ -32,7 +32,8 @@ import java.util.Enumeration;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Autoaction;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
     /**
      * The location where executable events are enqueued to be executed.
      */
@@ -83,7 +85,6 @@ final class BroadcastEventProcessor implements EventListener {
      */
     @Override
     public void onEvent(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
         if (event == null) {
             return;
@@ -99,14 +100,12 @@ final class BroadcastEventProcessor implements EventListener {
                     m_execQ.add(aact.getContent()); // java.lang.String
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Added event \'" + event.getUei() + "\' to execute autoaction \'" + aact.getContent() + "\'");
-                }
+                LOG.debug("Added event \'{}\' to execute autoaction \'{}\'", event.getUei(), aact.getContent());
             } catch (FifoQueueException ex) {
-                log.error("Failed to add event to execution queue", ex);
+                LOG.error("Failed to add event to execution queue", ex);
                 break;
             } catch (InterruptedException ex) {
-                log.error("Failed to add event to execution queue", ex);
+                LOG.error("Failed to add event to execution queue", ex);
                 break;
             }
         }
@@ -117,12 +116,12 @@ final class BroadcastEventProcessor implements EventListener {
             try {
                 m_execQ.add(event.getTticket().getContent()); // java.lang.String
 
-                if (log.isDebugEnabled())
-                    log.debug("Added event \'" + event.getUei() + "\' to execute tticket \'" + event.getTticket().getContent() + "\'");
+
+                LOG.debug("Added event \'{}\' to execute tticket \'{}\'", event.getUei(), event.getTticket().getContent());
             } catch (FifoQueueException ex) {
-                log.error("Failed to add event to execution queue", ex);
+                LOG.error("Failed to add event to execution queue", ex);
             } catch (InterruptedException ex) {
-                log.error("Failed to add event to execution queue", ex);
+                LOG.error("Failed to add event to execution queue", ex);
             }
         }
 

@@ -45,10 +45,14 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.*;
 
 public class DNSServer {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DNSServer.class);
+	
     private static final int DEFAULT_SOCKET_TIMEOUT = 100;
 
     private final class TCPListener implements Stoppable {
@@ -86,12 +90,12 @@ public class DNSServer {
                                         byte[] response = null;
                                         try {
                                             query = new Message(in);
-                                            LogUtils.debugf(this, "received query: %s", query);
+                                            LOG.debug("received query: {}", query);
                                             response = generateReply(query, in, in.length, s);
                                         } catch (final IOException e) {
                                             response = formerrMessage(in);
                                         }
-                                        LogUtils.debugf(this, "returned response: %s", response == null? null : new Message(response));
+                                        LOG.debug("returned response: {}", response == null? null : new Message(response));
                                         if (response != null) {
                                             final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
                                             dataOut.writeShort(response.length);
@@ -100,35 +104,31 @@ public class DNSServer {
                                     } catch (final SocketTimeoutException e) {
                                         throw e;
                                     } catch (final IOException e) {
-                                        LogUtils.warnf(this, e, "error while processing socket");
+                                        LOG.warn("error while processing socket", e);
                                     } finally {
                                         try {
                                             s.close();
                                         } catch (final IOException e) {
-                                            LogUtils.warnf(this, e, "unable to close TCP socket");
+                                            LOG.warn("unable to close TCP socket", e);
                                         }
                                     }
                                 } catch (final SocketTimeoutException e) {
-                                    if (LogUtils.isTraceEnabled(this)) {
-                                        LogUtils.tracef(this, e, "timed out waiting for request");
-                                    }
+                                	LOG.trace("timed out waiting for request", e);
                                 }
                             }
                         });
                         t.start();
                     } catch (final SocketTimeoutException e) {
-                        if (LogUtils.isTraceEnabled(this)) {
-                            LogUtils.tracef(this, e, "timed out waiting for request");
-                        }
+                    	LOG.trace("timed out waiting for request", e);
                     }
                 }
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "unable to serve socket on %s", addrport(m_addr, m_port));
+                LOG.warn("unable to serve socket on {}", addrport(m_addr, m_port), e);
             } finally {
                 try {
                     m_socket.close();
                 } catch (final IOException e) {
-                    LogUtils.debugf(this, e, "error while closing socket");
+                    LOG.debug("error while closing socket", e);
                 }
                 m_latch.countDown();
             }
@@ -140,7 +140,7 @@ public class DNSServer {
             try {
                 m_latch.await();
             } catch (final InterruptedException e) {
-                LogUtils.warnf(this, e, "interrupted while stopping TCP listener");
+                LOG.warn("interrupted while stopping TCP listener", e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -195,13 +195,13 @@ public class DNSServer {
                     sock.send(outdp);
                 }
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "error in the UDP listener: %s", addrport(m_addr, m_port));
+                LOG.warn("error in the UDP listener: {}", addrport(m_addr, m_port), e);
             } finally {
                 if (sock != null) {
                     try {
                         sock.close();
                     } catch (final Exception e) {
-                        LogUtils.debugf(this, e, "error while closing socket");
+                        LOG.debug("error while closing socket", e);
                     }
                 }
                 m_latch.countDown();
@@ -214,7 +214,7 @@ public class DNSServer {
             try {
                 m_latch.await();
             } catch (final InterruptedException e) {
-                LogUtils.warnf(this, e, "interrupted while waiting for server to stop");
+                LOG.warn("interrupted while waiting for server to stop", e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -257,17 +257,17 @@ public class DNSServer {
                 tcpThread.start();
                 m_activeListeners.add(tcpListener);
 
-                LogUtils.infof(this, "listening on %s", addrport(addr, port));
+                LOG.info("listening on {}", addrport(addr, port));
             }
         }
-        LogUtils.debugf(this, "finished starting up");
+        LOG.debug("finished starting up");
     }
 
     public void stop() {
         for (final Stoppable listener : m_activeListeners) {
-            LogUtils.debugf(this, "stopping %s", listener);
+            LOG.debug("stopping {}", listener);
             listener.stop();
-            LogUtils.debugf(this, "stopped %s", listener);
+            LOG.debug("stopped {}", listener);
         }
     }
     
@@ -281,7 +281,7 @@ public class DNSServer {
             isr = new InputStreamReader(fs);
             br = new BufferedReader(isr);
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "Cannot open %s", conffile);
+            LOG.error("Cannot open {}", conffile, e);
             throw new ConfigurationException("unable to read from " + conffile, e);
         }
 
@@ -294,7 +294,7 @@ public class DNSServer {
                 }
                 final String keyword = st.nextToken();
                 if (!st.hasMoreTokens()) {
-                    LogUtils.warnf(this, "unable to parse line: %s", line);
+                    LOG.warn("unable to parse line: {}", line);
                     continue;
                 }
                 if (keyword.charAt(0) == '#') {
@@ -321,7 +321,7 @@ public class DNSServer {
                     final String addr = st.nextToken();
                     m_addresses.add(Address.getByAddress(addr));
                 } else {
-                    LogUtils.warnf(this, "unknown keyword: %s", keyword);
+                    LOG.warn("unknown keyword: {}", keyword);
                 }
 
             }
@@ -597,12 +597,12 @@ public class DNSServer {
                 dataOut.write(out);
             }
         } catch (final IOException ex) {
-            LogUtils.warnf(this, ex, "AXFR failed");
+            LOG.warn("AXFR failed", ex);
         }
         try {
             s.close();
         } catch (final IOException ex) {
-            LogUtils.warnf(this, ex, "error closing socket");
+            LOG.warn("error closing socket", ex);
         }
         return null;
     }
@@ -692,7 +692,7 @@ public class DNSServer {
         try {
             return buildErrorMessage(new Header(in), Rcode.FORMERR, null);
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "unable to build error message");
+            LOG.debug("unable to build error message", e);
             return null;
         }
     }

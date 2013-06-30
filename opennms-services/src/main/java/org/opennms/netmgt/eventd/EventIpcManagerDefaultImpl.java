@@ -44,7 +44,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.events.EventIpcBroadcaster;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventIpcManagerProxy;
@@ -53,6 +53,9 @@ import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -65,6 +68,9 @@ import org.springframework.util.StringUtils;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EventIpcManagerDefaultImpl.class);
 
     public static class DiscardTrapsAndSyslogEvents implements RejectedExecutionHandler {
         /**
@@ -154,7 +160,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     new RejectedExecutionHandler() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                            log().warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
+                            LOG.warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
                         }
                     }
             );
@@ -165,19 +171,17 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        if (log().isInfoEnabled()) {
-                            log().info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
-                        }
+                        LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
-                        String log4jPrefix = ThreadCategory.getPrefix(); 
+                        Map mdc = Logging.getCopyOfContextMap();
                         try {
                             m_listener.onEvent(event);
                         } finally {
-                            ThreadCategory.setPrefix(log4jPrefix);
+                            Logging.setContextMap(mdc);
                         }
                     } catch (Throwable t) {
-                        log().warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);
+                        LOG.warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);
                     }
                 }
             });
@@ -246,7 +250,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         try {
             m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
         } catch (RejectedExecutionException e) {
-            log().warn("Unable to queue event log to the event handler pool queue: " + e, e);
+            LOG.warn("Unable to queue event log to the event handler pool queue", e);
             throw new UndeclaredEventException(e);
         }
     }
@@ -257,12 +261,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        if (log().isDebugEnabled()) {
-            log().debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
-        }
+        LOG.debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
 
         if (m_listeners.isEmpty()) {
-            log().debug("No listeners interested in all events");
+            LOG.debug("No listeners interested in all events");
         }
 
         // Send to listeners interested in receiving all events
@@ -271,9 +273,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         if (event.getUei() == null) {
-            if (log().isDebugEnabled()) {
-                log().debug("Event ID " + event.getDbid() + " does not have a UEI, so skipping UEI matching");
-            }
+            LOG.debug("Event ID " + event.getDbid() + " does not have a UEI, so skipping UEI matching");
             return;
         }
 
@@ -304,9 +304,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            if (log().isDebugEnabled()) {
-                log().debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
-            }
+            LOG.debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
         }
     }
 
@@ -345,13 +343,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.notNull(ueis, "ueilist argument cannot be null");
 
         if (ueis.isEmpty()) {
-            log().warn("Not adding event listener " + listener.getName() + " because the ueilist argument contains no entries");
+            LOG.warn("Not adding event listener " + listener.getName() + " because the ueilist argument contains no entries");
             return;
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
-        }
+        LOG.debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
 
         createListenerThread(listener);
 
@@ -493,10 +489,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return m_listeners.remove(listener);
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(EventIpcManagerDefaultImpl.class);
-    }
-
     /**
      * <p>afterPropertiesSet</p>
      */
@@ -506,28 +498,27 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         Assert.state(m_eventHandler != null, "eventHandler not set");
         Assert.state(m_handlerPoolSize != null, "handlerPoolSize not set");
+        
+        Logging.withPrefix(Eventd.LOG4J_CATEGORY, new Runnable() {
 
-        final String prefix = ThreadCategory.getPrefix();
-        try {
+            @Override
+            public void run() {
+                /**
+                 * Create a fixed-size thread pool. The number of threads can be configured by using
+                 * the "receivers" attribute in the config. The queue length for the pool can be configured
+                 * with the "queueLength" attribute in the config.
+                 */
+                m_eventHandlerPool = new ThreadPoolExecutor(
+                    m_handlerPoolSize,
+                    m_handlerPoolSize,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
+                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize, true)
+                );
+            }
             
-            ThreadCategory.setPrefix(Eventd.LOG4J_CATEGORY);
-
-            /**
-             * Create a fixed-size thread pool. The number of threads can be configured by using
-             * the "receivers" attribute in the config. The queue length for the pool can be configured
-             * with the "queueLength" attribute in the config.
-             */
-            m_eventHandlerPool = new ThreadPoolExecutor(
-                m_handlerPoolSize,
-                m_handlerPoolSize,
-                0L,
-                TimeUnit.MILLISECONDS,
-                m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
-                new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize, true)
-            );
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+        });
 
         // If the proxy is set, make this class its delegate.
         if (m_eventIpcManagerProxy != null) {

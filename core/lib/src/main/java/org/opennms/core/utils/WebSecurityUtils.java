@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -44,6 +46,8 @@ import org.springframework.beans.BeanWrapperImpl;
  * @version $Id: $
  */
 public abstract class WebSecurityUtils {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(WebSecurityUtils.class);
 	
 	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	
@@ -196,14 +200,14 @@ public abstract class WebSecurityUtils {
 	    	        if (allowHtmlFields != null && allowHtmlFields.contains(description.getName().toLowerCase())) {
 	    	            allowHTML = true;
 	    	        }
-    				LogUtils.debugf(WebSecurityUtils.class, "Try to sanitize string %s in %s with html %b", description.getName(), bean.getClass(), allowHTML);
+    				LOG.debug("Try to sanitize string {} in {} with html {}", description.getName(), bean.getClass(), allowHTML);
     				description.getWriteMethod().invoke(bean, WebSecurityUtils.sanitizeString((String)description.getReadMethod().invoke(bean), allowHTML));
     			}catch (IllegalArgumentException e) {
-					LogUtils.errorf(WebSecurityUtils.class, "Illegal argument by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+    				LOG.error("Illegal argument by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
 				} catch (IllegalAccessException e) {
-					LogUtils.errorf(WebSecurityUtils.class, "Illegal access by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+					LOG.error("Illegal access by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
 				} catch (InvocationTargetException e) {
-					LogUtils.errorf(WebSecurityUtils.class, "Invocation target exception by sanitize object %s on property %s. Error %s", description.getName(), bean.getClass(), e.getMessage());
+					LOG.error("Invocation target exception by sanitize object {} on property {}. Error {}", description.getName(), bean.getClass(), e.getMessage());
 				}
     		}
     	}

@@ -54,11 +54,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.svclayer.KscReportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -71,6 +72,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("ksc")
 public class KscRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(KscRestService.class);
+
     @Autowired
     private KscReportService m_kscReportService;
 
@@ -158,7 +162,7 @@ public class KscRestService extends OnmsRestService {
             }
 
             if (!found) {
-                LogUtils.debugf(this, "invalid timespan ('%s'), setting to '7_day' instead.", timespan);
+                LOG.debug("invalid timespan ('{}'), setting to '7_day' instead.", timespan);
                 timespan = "7_day";
             }
 

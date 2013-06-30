@@ -37,10 +37,10 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -62,6 +62,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 @Distributable
 final public class DominoIIOPMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(DominoIIOPMonitor.class);
 
     /**
      * Default port.
@@ -103,7 +104,6 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         //
         // Process parameters
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         //
         // Get interface address from NetworkInterface
@@ -124,8 +124,8 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log.isDebugEnabled())
-            log.debug("poll: address = " + hostAddress + ", port = " + port + ", "+tracker);
+
+		LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
 
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -135,7 +135,9 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         try {
             retrieveIORText(hostAddress, IORport);
         } catch (Throwable e) {
-            return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
+            String reason = "failed to get the corba IOR from " + ipv4Addr;
+            LOG.debug(reason, e);
+            return PollStatus.unavailable(reason);
         }
 
         PollStatus status = null;
@@ -153,20 +155,28 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                log.debug("DominoIIOPMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", port, ipv4Addr);
 
                 // got here so its up...
                 
                 return PollStatus.up(tracker.elapsedTimeInMillis());
                 
             } catch (NoRouteToHostException e) {
-                status = logDown(Level.WARN, " No route to host exception for address " + hostAddress, e);
+                String reason = " No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                status = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-                status = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+                String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-                status = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr+" : "+e.getMessage());
+                String reason = "Connection exception for address: " + ipv4Addr+" : "+e.getMessage();
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                status = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr+" : "+e.getMessage());
+                String reason = "IOException while polling address: " + ipv4Addr+" : "+e.getMessage();
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -174,8 +184,8 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log.isDebugEnabled())
-                        log.debug("DominoIIOPMonitor: Error closing socket.", e);
+
+                    LOG.debug("DominoIIOPMonitor: Error closing socket.", e);
                 }
             }
         }

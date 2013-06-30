@@ -44,12 +44,13 @@ import net.jradius.packet.AccessReject;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.RequestBuilder;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.radius.detector.client.RadiusDetectorClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +63,9 @@ import org.springframework.stereotype.Component;
  */
 @Scope("prototype")
 public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacket>{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthDetector.class);
+
     
     private static final String DEFAULT_SERVICE_NAME = "RadiusAuth";
 
@@ -148,7 +152,7 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     }
 
     private static RequestBuilder<AttributeList> request(final String nasID, final String user, final String password) {
-    	LogUtils.debugf(RadiusAuthDetector.class, "request: nasID = %s, user = %s, password = %s", nasID, user, password);
+    	LOG.debug("request: nasID = {}, user = {}, password = {}", nasID, user, password);
     	
         return new RequestBuilder<AttributeList>() {
 

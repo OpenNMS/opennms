@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,8 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +45,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
@@ -68,6 +69,9 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DataLinkInterfaceDaoHibernateTest.class);
+    
     @Autowired
     private NodeDao m_nodeDao;
     
@@ -128,7 +132,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         
         final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
         for (final DataLinkInterface iface : dlis) {
-            LogUtils.debugf(this, "dli = %s", iface);
+            LOG.debug("dli = {}", iface);
         }
         assertEquals(3, dlis.size());
     }
@@ -140,7 +144,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         
         final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
         for (final DataLinkInterface iface : dlis) {
-            LogUtils.debugf(this, "dli = %s", iface);
+            LOG.debug("dli = {}", iface);
         }
         assertEquals(3, dlis.size());
     }

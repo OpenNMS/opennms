@@ -41,11 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.opennms.core.utils.ThreadCategory;
 
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -59,7 +62,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class MapStartUpController extends SimpleFormController {
-	ThreadCategory log; 
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MapStartUpController.class);
+
 
 	private Manager manager;
 		
@@ -87,19 +92,18 @@ public class MapStartUpController extends SimpleFormController {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+		
+		Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		try{
 	        String user = request.getRemoteUser();
 
-	        if (log.isDebugEnabled()) 
-	            log.debug("MapStartUp for user:" + user);
+	            LOG.debug("MapStartUp for user:{}", user);
 
 			bw.write(ResponseAssembler.getStartupResponse(manager.getProperties(
 			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))));
 		} catch (Throwable e) {
-			log.error("Error in map's startup",e);
+			LOG.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));
 		} finally {
 			bw.close();

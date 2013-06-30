@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.jfree.util.Log;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenNMS TL1 Daemon!
@@ -56,8 +57,10 @@ import org.opennms.netmgt.xml.event.Parm;
  */
 @EventListener(name="OpenNMS:Tl1d")
 public class Tl1d extends AbstractServiceDaemon {
-
-    /*
+	
+	public static final Logger LOG = LoggerFactory.getLogger(Tl1d.class);
+	
+	/*
      * The last status sent to the service control manager.
      */
     private volatile int m_status = START_PENDING;
@@ -72,7 +75,7 @@ public class Tl1d extends AbstractServiceDaemon {
      * <p>Constructor for Tl1d.</p>
      */
     public Tl1d() {
-        super("OpenNMS.Tl1d");
+        super("tl1d");
     }
 	
     /**
@@ -103,14 +106,14 @@ public class Tl1d extends AbstractServiceDaemon {
 
                 startClients();
 
-                log().debug("handleReloadConfigurationEvent: "+m_tl1Clients.size()+" defined.");
-                log().info("handleReloadConfigurationEvent: completed.");
+                LOG.debug("handleReloadConfigurationEvent: "+m_tl1Clients.size()+" defined.");
+                LOG.info("handleReloadConfigurationEvent: completed.");
                 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");
 
             } catch (Throwable exception) {
-                log().error("handleReloadConfigurationEvent: failed.", exception);
+                LOG.error("handleReloadConfigurationEvent: failed.", exception);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");
                 ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -135,7 +138,7 @@ public class Tl1d extends AbstractServiceDaemon {
             }
         }
         
-        log().debug("isReloadConfigEventTarget: Tl1d was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Tl1d was target of reload event: {}", isTarget);
         return isTarget;
     }
 
@@ -152,7 +155,7 @@ public class Tl1d extends AbstractServiceDaemon {
      */
     @Override
     public synchronized void onStart() {
-        log().info("onStart: Initializing Tl1d message processing." );
+        LOG.info("onStart: Initializing Tl1d message processing.");
         
         m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
             @Override
@@ -161,25 +164,25 @@ public class Tl1d extends AbstractServiceDaemon {
             }
         };
 
-        log().info("onStart: starting message processing thread...");
+        LOG.info("onStart: starting message processing thread...");
         m_tl1MesssageProcessor.start();
-        log().info("onStart: message processing thread started.");
+        LOG.info("onStart: message processing thread started.");
 
         startClients();
         
-        log().info("onStart: Finished Initializing Tl1d connections.");
+        LOG.info("onStart: Finished Initializing Tl1d connections.");
     }
 
     private void startClients() {
-        log().info("startClients: starting clients...");
+        LOG.info("startClients: starting clients...");
         
         for (Tl1Client client : m_tl1Clients) {
-            log().debug("startClients: starting client: "+client);
+            LOG.debug("startClients: starting client: {}", client);
             client.start();
-            log().debug("startClients: started client.");
+            LOG.debug("startClients: started client.");
         }
         
-        log().info("startClients: clients started.");
+        LOG.info("startClients: clients started.");
     }
 
 	/**
@@ -194,34 +197,34 @@ public class Tl1d extends AbstractServiceDaemon {
 	
 	private void removeClients() {
 	    
-	    log().info("removeClients: removing current set of defined TL1 clients...");
+	    LOG.info("removeClients: removing current set of defined TL1 clients...");
 	    
 	    Iterator<Tl1Client> it = m_tl1Clients.iterator();
 	    while (it.hasNext()) {
             Tl1Client client = it.next();
             
-            log().debug("removeClients: removing client: "+client);
+            LOG.debug("removeClients: removing client: {}", client);
             
             client = null;
             it.remove();
         }
 	    
-	    log().info("removeClients: all clients removed.");
+	    LOG.info("removeClients: all clients removed.");
 	}
 
     private void stopListeners() {
-        log().info("stopListeners: calling stop on all clients...");
+        LOG.info("stopListeners: calling stop on all clients...");
         
         for (Tl1Client client : m_tl1Clients) {
-            log().debug("stopListeners: calling stop on client: "+client);
+            LOG.debug("stopListeners: calling stop on client: {}", client);
 			client.stop();
 		}
         
-        log().info("stopListeners: clients stopped.");
+        LOG.info("stopListeners: clients stopped.");
     }
 
     private void initializeTl1Connections() {
-        log().info("onInit: Initializing Tl1d connections..." );
+        LOG.info("onInit: Initializing Tl1d connections...");
     
         List<Tl1Element> configElements = m_configurationDao.getElements();
     
@@ -229,32 +232,31 @@ public class Tl1d extends AbstractServiceDaemon {
             try {
                 Tl1Client client = (Tl1Client) Class.forName(element.getTl1ClientApi()).newInstance();
                 
-                log().debug("initializeTl1Connections: initializing client: "+client);
+                LOG.debug("initializeTl1Connections: initializing client: {}", client);
                 
                 client.setHost(element.getHost());
                 client.setPort(element.getPort());
                 client.setTl1Queue(m_tl1Queue);
                 client.setMessageProcessor((Tl1AutonomousMessageProcessor) Class.forName(element.getTl1MessageParser()).newInstance());
-                client.setLog(log());
                 client.setReconnectionDelay(element.getReconnectDelay());
                 m_tl1Clients.add(client);
                 
-                log().debug("initializeTl1Connections: client initialized.");
+                LOG.debug("initializeTl1Connections: client initialized.");
             } catch (InstantiationException e) {
-                log().error("onInit: could not instantiate specified class.", e);
+                LOG.error("onInit: could not instantiate specified class.", e);
             } catch (IllegalAccessException e) {
-                log().error("onInit: could not access specified class.", e);
+                LOG.error("onInit: could not access specified class.", e);
             } catch (ClassNotFoundException e) {
-                log().error("onInit: could not find specified class.", e);
+                LOG.error("onInit: could not find specified class.", e);
             }
         }
 
-        log().info("onInit: Finished Initializing Tl1d connections.");
+        LOG.info("onInit: Finished Initializing Tl1d connections.");
     }
 
     private void processMessage(Tl1AutonomousMessage message) {
         
-        log().debug("processMessage: Processing message: "+message);
+        LOG.debug("processMessage: Processing message: {}", message);
 
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
         bldr.setHost(message.getHost());
@@ -273,7 +275,7 @@ public class Tl1d extends AbstractServiceDaemon {
         
         m_eventForwarder.sendNow(bldr.getEvent());
         
-        log().debug("processMessage: Message processed: "+ message);
+        LOG.debug("processMessage: Message processed: {}", message);
     }
 
 
@@ -288,23 +290,23 @@ public class Tl1d extends AbstractServiceDaemon {
     }
 
     private void doMessageProcessing() {
-        log().debug("doMessageProcessing: Processing messages.");
+        LOG.debug("doMessageProcessing: Processing messages.");
         boolean cont = true;
         while (cont ) {
             try {
-                log().debug("doMessageProcessing: taking message from queue..");
+                LOG.debug("doMessageProcessing: taking message from queue..");
                 
                 Tl1AutonomousMessage message = m_tl1Queue.take();
                 
-                log().debug("doMessageProcessing: message taken: "+message);
+                LOG.debug("doMessageProcessing: message taken: {}", message);
                 
                 processMessage(message);
             } catch (InterruptedException e) {
-                Log.warn("doMessageProcessing: received interrupt: "+e, e);
+                LOG.warn("doMessageProcessing: received interrupt", e);
             }
         }
         
-        log().debug("doMessageProcessing: Exiting processing messages.");
+        LOG.debug("doMessageProcessing: Exiting processing messages.");
     }
     
     /**

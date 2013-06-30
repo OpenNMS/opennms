@@ -30,8 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -47,6 +45,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  */
 public class IpCidrRouteTable extends SnmpTable<IpCidrRouteTableEntry>
 {
+    
    /**
     * <P>Constructs an InetCidrRouteTable object that is used to collect
     * the address elements from the remote agent. Once all
@@ -69,8 +68,6 @@ public class IpCidrRouteTable extends SnmpTable<IpCidrRouteTableEntry>
         return new IpCidrRouteTableEntry();
     }
 
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IpCidrRouteTable.class);
-    }
+    
 
 }

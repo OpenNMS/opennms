@@ -42,12 +42,11 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -86,66 +85,79 @@ import org.opennms.netmgt.config.service.types.InvokeAtType;
  * @version $Id: $
  */
 public class Starter {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Starter.class);
+	
     /**
      * The log4j category used to log debug messsages and statements.
      */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
+    private static final String LOG4J_CATEGORY = "manager";
 
     private void setLogPrefix() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     /**
      * <p>startDaemon</p>
      */
     public void startDaemon() {
-        configureLog4j();
-        
-        setLogPrefix();
-        
-        setupMx4jLogger();
-        
-        loadGlobalProperties();
-        
-        setDefaultProperties();
+    	try {
+    		configureLog4j();
 
-        start();
+    		setLogPrefix();
+
+    		setupMx4jLogger();
+
+    		loadGlobalProperties();
+
+    		setDefaultProperties();
+
+    		start();
+    	} catch(Exception e) {
+    		die("Exception during startup: " + e.getMessage(), e);
+    	}
+    }
+    
+    
+    private static class Mx4jSlf4JLogger extends mx4j.log.Logger {
+    	
+    	Logger m_slf4jLogger;
+
+		@Override
+		protected void log(int priority, Object msg, Throwable t) {
+			switch(priority) {
+			case mx4j.log.Logger.DEBUG:
+				m_slf4jLogger.debug(msg == null ? "" : msg.toString(), t);
+			case mx4j.log.Logger.ERROR:
+				m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
+			case mx4j.log.Logger.FATAL:
+				m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
+			case mx4j.log.Logger.INFO:
+				m_slf4jLogger.info(msg == null ? "" : msg.toString(), t);
+			case mx4j.log.Logger.TRACE:
+				m_slf4jLogger.trace(msg == null ? "" : msg.toString(), t);
+			case mx4j.log.Logger.WARN:
+				m_slf4jLogger.warn(msg == null ? "" : msg.toString(), t);
+			}
+		}
+
+		@Override
+		protected void setCategory(String category) {
+			super.setCategory(category);
+			m_slf4jLogger = LoggerFactory.getLogger(category);
+		}
+    	
     }
 
     private void setupMx4jLogger() {
-        mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
+        mx4j.log.Log.redirectTo(new Mx4jSlf4JLogger());
     }
     
     private void configureLog4j() {
-        File homeDir = new File(System.getProperty("opennms.home"));
-        File etcDir = new File(homeDir, "etc");
-        
-        File xmlFile = new File(etcDir, "log4j.xml");
-        if (xmlFile.exists()) {
-            DOMConfigurator.configureAndWatch(xmlFile.getAbsolutePath());
-        } else {
-            File propertiesFile = new File(etcDir, "log4j.properties");
-            if (propertiesFile.exists()) {
-                PropertyConfigurator.configureAndWatch(propertiesFile.getAbsolutePath());
-            } else {
-                die("Could not find a Log4j configuration file at "
-                        + xmlFile.getAbsolutePath() + " or "
-                        + propertiesFile.getAbsolutePath() + ".  Exiting.");
-            }
-        }
 
-	/*
-	 * This is causing infinite recursion on exit
-	 * CaptchaStds.captchaStdOut();
-	 */
     }
-    
-    
-    private void setDefaultProperties() {
+
+	private void setDefaultProperties() {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
         setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
         setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
@@ -153,16 +165,16 @@ public class Starter {
 
     private void setupFileResourceProperty(String propertyName, String file, String notFoundWarning) {
         if (System.getProperty(propertyName) == null) {
-            log().debug("System property '" + propertyName + "' not set.  Searching for file '" + file + "' in the class path.");
+            LOG.debug("System property '{}' not set.  Searching for file '{}' in the class path.", propertyName, file);
             URL url = getClass().getClassLoader().getResource(file);
             if (url != null) {
-                log().info("Found file '" + file + "' at '" + url.getPath() + "'.  Setting '" + propertyName + "' to this path.");
+                LOG.info("Found file '{}' at '{}'.  Setting '{}' to this path.", file, url.getPath(), propertyName);
                 System.setProperty(propertyName, url.getPath());
             } else {
-                log().warn("Did not find file '" + file + "' in the class path.  " + notFoundWarning + "  Set the property '" + propertyName + "' to the location of the file.");
+                LOG.warn("Did not find file '{}' in the class path. {} Set the property '{}' to the location of the file.", file, notFoundWarning, propertyName);
             }
         } else {
-            log().debug("System property '" + propertyName + "' already set to '" + System.getProperty(propertyName) + "'.");
+            LOG.debug("System property '{}' already set to '{}'.", propertyName, System.getProperty(propertyName));
         }
     }
 
@@ -170,7 +182,7 @@ public class Starter {
         // Log system properties, sorted by property name
         TreeMap<Object, Object> sortedProps = new TreeMap<Object, Object>(System.getProperties());
         for (Entry<Object, Object> entry : sortedProps.entrySet()) {
-            log().debug("System property '" + entry.getKey() + "' already set to value '" + entry.getValue() + "'.");
+            LOG.debug("System property '{}' already set to value '{}'.", entry.getKey(), entry.getValue());
         }
         
         File propertiesFile = getPropertiesFile();
@@ -193,9 +205,9 @@ public class Starter {
         for (Entry<Object, Object> entry : props.entrySet()) {
             String systemValue = System.getProperty(entry.getKey().toString());
             if (systemValue != null) {
-                log().debug("Property '" + entry.getKey() + "' from " + propertiesFile + " already exists as a system property (with value '" + systemValue + "').  Not overridding existing system property.");
+                LOG.debug("Property '{}' from {} already exists as a system property (with value '{}').  Not overridding existing system property.", entry.getKey(), propertiesFile, systemValue);
             } else {
-                log().debug("Setting system property '" + entry.getKey() + "' to '" + entry.getValue() + "' from " + propertiesFile + ".");
+                LOG.debug("Setting system property '{}' to '{}' from {}.", entry.getKey(), entry.getValue(), propertiesFile);
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
         }
@@ -215,11 +227,11 @@ public class Starter {
      * @param t Throwable for which to print a stack trace
      */
     private void die(String message, Throwable  t) {
-        LogUtils.errorf(this, t, message);
+    	LOG.error(message, t);
         System.exit(1);
     }
 
-    private void die(String message) {
+    public void die(String message) {
         die(message, null);
     }
 
@@ -231,7 +243,7 @@ public class Starter {
     }
 
     private void start() {
-        log().debug("Beginning startup");
+        LOG.debug("Beginning startup");
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         
@@ -254,7 +266,7 @@ public class Starter {
                     "An error occurred while attempting to start the \"" +
                     name + "\" service (class " + className + ").  "
                     + "Shutting down and exiting.";
-                log().fatal(message, result.getThrowable());
+                LOG.error(message, result.getThrowable());
                 System.err.println(message);
                 result.getThrowable().printStackTrace();
 
@@ -267,6 +279,6 @@ public class Starter {
             }
         }
         
-        log().debug("Startup complete");
+        LOG.debug("Startup complete");
     }
 }

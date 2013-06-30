@@ -32,7 +32,8 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -63,6 +64,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 // TODO When deleting a group, all the SNMP collections UI components must be updated.
 @SuppressWarnings("serial")
 public class DataCollectionGroupAdminPanel extends VerticalLayout {
+    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionGroupAdminPanel.class);
 
     private String m_selectedGroup;
 
@@ -95,12 +97,12 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 if (file == null)
                     return;
                 try {
-                    LogUtils.infof(this, "Loading data collection data from %s", file);
+                    LOG.info("Loading data collection data from {}", file);
                     DatacollectionGroup dcGroup = JaxbUtils.unmarshal(DatacollectionGroup.class, file);
                     m_selectedGroup = dcGroup.getName();
                     addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
                 } catch (Exception e) {
-                    LogUtils.errorf(this, e, "an error ocurred while parsing the data collection configuration %s: %s", file, e.getMessage());
+                    LOG.error("an error ocurred while parsing the data collection configuration {}: {}", file, e.getMessage(), e);
                     getApplication().getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
                 }
             }
@@ -115,7 +117,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     @Override
                     public void textFieldChanged(String fieldValue) {
                         File file = new File(datacollectionDir, fieldValue.replaceAll(" ", "_") + ".xml");
-                        LogUtils.infof(this, "Adding new data collection file %s", file);
+                        LOG.info("Adding new data collection file {}", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
                         dcGroup.setName(fieldValue);
                         addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
@@ -146,7 +148,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     @Override
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            LogUtils.infof(this, "deleting file %s", file);
+                            LOG.info("deleting file {}", file);
                             if (file.delete()) {
                                 try {
                                     // Updating datacollection-config.xml
@@ -163,14 +165,14 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                         }
                                     }
                                     if (modified) {
-                                        LogUtils.infof(this, "updating data colleciton configuration on %s.", configFile);
+                                        LOG.info("updating data colleciton configuration on {}.", configFile);
                                         JaxbUtils.marshal(config, new FileWriter(configFile));
                                     }
                                     // Updating UI Components
                                     dcGroupSource.select(null);
                                     removeDataCollectionGroupPanel();
                                 } catch (Exception e) {
-                                    LogUtils.errorf(this, e, "an error ocurred while saving the data collection configuration: %s", e.getMessage());
+                                    LOG.error("an error ocurred while saving the data collection configuration: {}", e.getMessage(), e);
                                     getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                                 }
                             } else {

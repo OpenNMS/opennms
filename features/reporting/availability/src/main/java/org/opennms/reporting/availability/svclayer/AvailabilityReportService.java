@@ -46,7 +46,9 @@ import java.util.List;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculationException;
 import org.opennms.reporting.availability.AvailabilityCalculator;
@@ -62,6 +64,7 @@ import org.springframework.core.io.UrlResource;
  * <p>AvailabilityReportService class.</p>
  */
 public class AvailabilityReportService implements ReportService {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityReportService.class);
 
     private AvailabilityCalculator m_classicCalculator;
 
@@ -69,11 +72,9 @@ public class AvailabilityReportService implements ReportService {
 
     private OnmsReportConfigDao m_configDao;
 
-    private final ThreadCategory log;
-
     private ParameterConversionService m_parameterConversionService;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private static final String CAL_TYPE = "calendar";
 
@@ -82,10 +83,7 @@ public class AvailabilityReportService implements ReportService {
      * <p>Constructor for AvailabilityReportService.</p>
      */
     public AvailabilityReportService() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(AvailabilityReportService.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /** {@inheritDoc} */
@@ -94,22 +92,22 @@ public class AvailabilityReportService implements ReportService {
             String reportID) {
 
         if (!reportParms.containsKey("endDate")) {
-            log.fatal("report parameters should contain parameter endDate");
+            LOG.error("report parameters should contain parameter endDate");
             return false;
         }
 
         if (!(reportParms.get("endDate") instanceof Date)) {
-            log.fatal("report parameters 'endDate' should be a Date");
+            LOG.error("report parameters 'endDate' should be a Date");
             return false;
         }
 
         if (!reportParms.containsKey("reportCategory")) {
-            log.fatal("report parameters should contain parameter reportCategory");
+            LOG.error("report parameters should contain parameter reportCategory");
             return false;
         }
 
         if (!(reportParms.get("reportCategory") instanceof String)) {
-            log.fatal("report parameter 'reportCategory' should be a String");
+            LOG.error("report parameter 'reportCategory' should be a String");
             return false;
         }
 
@@ -129,7 +127,7 @@ public class AvailabilityReportService implements ReportService {
                 inputStream = new FileInputStream(location);
                 render(id, inputStream, format, outputStream);
             } catch (FileNotFoundException e) {
-                log.error("could not open input file", e);
+                LOG.error("could not open input file", e);
             }
     }
     
@@ -144,25 +142,25 @@ public class AvailabilityReportService implements ReportService {
             switch (format) {
 
             case HTML:
-                log.debug("rendering as HTML");
+                LOG.debug("rendering as HTML");
                 renderer = new HTMLReportRenderer();
                 xsltResource = new UrlResource(
                                                m_configDao.getHtmlStylesheetLocation(id));
                 break;
             case PDF:
-                log.debug("rendering as PDF");
+                LOG.debug("rendering as PDF");
                 renderer = new PDFReportRenderer();
                 xsltResource = new UrlResource(
                                                m_configDao.getPdfStylesheetLocation(id));
                 break;
             case SVG:
-                log.debug("rendering as PDF with embedded SVG");
+                LOG.debug("rendering as PDF with embedded SVG");
                 renderer = new PDFReportRenderer();
                 xsltResource = new UrlResource(
                                                m_configDao.getSvgStylesheetLocation(id));
                 break;
             default:
-                log.debug("rendering as HTML as no valid format found");
+                LOG.debug("rendering as HTML as no valid format found");
                 renderer = new HTMLReportRenderer();
                 xsltResource = new UrlResource(
                                                m_configDao.getHtmlStylesheetLocation(id));
@@ -174,11 +172,11 @@ public class AvailabilityReportService implements ReportService {
             outputStream.flush();
 
         } catch (MalformedURLException e) {
-            log.fatal("Malformed URL for xslt template");
+            LOG.error("Malformed URL for xslt template");
         } catch (ReportRenderException e) {
-            log.fatal("unable to render report");
+            LOG.error("unable to render report");
         } catch (IOException e) {
-            log.fatal("IO exception flushing output stream ", e);
+            LOG.error("IO exception flushing output stream ", e);
         }
 
     }
@@ -209,24 +207,24 @@ public class AvailabilityReportService implements ReportService {
         AvailabilityCalculator calculator;
         String reportFileName = null;
 
-        log.debug("running OpenNMS database report " + reportId);
+        LOG.debug("running OpenNMS database report {}", reportId);
 
         if (m_configDao.getType(reportId).equalsIgnoreCase(CAL_TYPE)) {
             calculator = m_calendarCalculator;
-            log.debug("Calendar report format selected");
+            LOG.debug("Calendar report format selected");
         } else {
             calculator = m_classicCalculator;
-            log.debug("Classic report format selected");
+            LOG.debug("Classic report format selected");
         }
 
         calculator.setCategoryName((String) reportParms.get("reportCategory"));
         
-        log.debug("set availability calculator report category to: " + calculator.getCategoryName());
+        LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
 
         calculator.setCalendar(new GregorianCalendar());
         calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
         
-        log.debug("set availability calculator end date to: " + calculator.getPeriodEndDate().toString());
+        LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());
 
         calculator.setLogoURL(m_configDao.getLogo(reportId));
 
@@ -237,12 +235,12 @@ public class AvailabilityReportService implements ReportService {
 
         calculator.setReportFormat("all");
 
-        log.debug("Starting Availability Report Calculations");
+        LOG.debug("Starting Availability Report Calculations");
         try {
             calculator.calculate();
             reportFileName = calculator.writeXML();
         } catch (AvailabilityCalculationException ce) {
-            log.fatal("Unable to calculate report data ", ce);
+            LOG.error("Unable to calculate report data ", ce);
         }
 
         return reportFileName;
@@ -259,25 +257,25 @@ public class AvailabilityReportService implements ReportService {
         
         AvailabilityCalculator calculator;
 
-        log.debug("running OpenNMS database report " + reportId);
+        LOG.debug("running OpenNMS database report {}", reportId);
 
         if (m_configDao.getType(reportId).equalsIgnoreCase(CAL_TYPE)) {
             calculator = m_calendarCalculator;
-            log.debug("Calendar report format selected");
+            LOG.debug("Calendar report format selected");
         } else {
             calculator = m_classicCalculator;
-            log.debug("Classic report format selected");
+            LOG.debug("Classic report format selected");
         }
 
         calculator.setCategoryName((String) reportParms.get("reportCategory"));
         
-        log.debug("set availability calculator report category to: " + calculator.getCategoryName());
+        LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
 
 
         calculator.setCalendar(new GregorianCalendar());
         calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
         
-        log.debug("set availability calculator end date to: " + calculator.getPeriodEndDate().toString());
+        LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());
 
         calculator.setLogoURL(m_configDao.getLogo(reportId));
 
@@ -288,7 +286,7 @@ public class AvailabilityReportService implements ReportService {
 
         calculator.setReportFormat("all");
 
-        log.debug("Starting Availability Report Calculations");
+        LOG.debug("Starting Availability Report Calculations");
         try {
             calculator.calculate();
             calculator.writeXML(bout);
@@ -298,9 +296,9 @@ public class AvailabilityReportService implements ReportService {
                    outputStream);
             outputStream.flush();
         } catch (AvailabilityCalculationException ce) {
-            log.fatal("Unable to calculate report data ", ce);
+            LOG.error("Unable to calculate report data ", ce);
         } catch (IOException e) {
-            log.fatal("IO exception flushing output stream ", e);
+            LOG.error("IO exception flushing output stream ", e);
         } 
         
     }

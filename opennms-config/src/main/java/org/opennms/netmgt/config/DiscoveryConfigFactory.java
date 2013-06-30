@@ -57,7 +57,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -79,6 +80,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
 public class DiscoveryConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigFactory.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -154,7 +156,7 @@ public class DiscoveryConfigFactory {
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
 
-        LogUtils.debugf(DiscoveryConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         m_singleton = new DiscoveryConfigFactory(cfgFile.getPath());
 
@@ -257,7 +259,7 @@ public class DiscoveryConfigFactory {
             final StringWriter stringWriter = new StringWriter();
             Marshaller.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();
-            LogUtils.debugf(this, "saving configuration...");
+            LOG.debug("saving configuration...");
             saveXml(xml);
         } finally {
             getWriteLock().unlock();
@@ -297,13 +299,13 @@ public class DiscoveryConfigFactory {
             // check to see if the file exists
             if (is == null) {
                 // log something
-                LogUtils.warnf(DiscoveryConfigFactory.class, "URL does not exist: %s", url);
+                LOG.warn("URL does not exist: {}", url);
                 return true;
             } else {
                 return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
             }
         } catch (final IOException e) {
-            LogUtils.errorf(DiscoveryConfigFactory.class, "Error reading URL: %s", url);
+            LOG.error("Error reading URL: {}", url);
             return false;
         } finally {
             IOUtils.closeQuietly(is);
@@ -349,13 +351,13 @@ public class DiscoveryConfigFactory {
                 try {
                     specifics.add(new IPPollAddress(InetAddressUtils.addr(specIP), timeout, retries));
                 } catch (final IllegalArgumentException e) {
-                    LogUtils.warnf(DiscoveryConfigFactory.class, "Unknown host \'%s\' inside discovery include file: address ignored", specIP);
+                    LOG.warn("Unknown host \'{}\' inside discovery include file: address ignored", specIP);
                 }
 
                 specIP = null;
             }
         } catch (final UnsupportedEncodingException e) {
-            LogUtils.errorf(DiscoveryConfigFactory.class, "Your JVM doesn't support UTF-8");
+            LOG.error("Your JVM doesn't support UTF-8");
             return false;
         }
         return bRet;
@@ -424,14 +426,14 @@ public class DiscoveryConfigFactory {
                 try {
                     InetAddressUtils.toIpAddrBytes(ir.getBegin());
                 } catch (Throwable e) {
-                    LogUtils.warnf(this, "Begin address of discovery range is invalid, discarding: %s", ir.getBegin());
+                    LOG.warn("Begin address of discovery range is invalid, discarding: {}", ir.getBegin());
                     continue;
                 } 
                 
                 try {
                     InetAddressUtils.toIpAddrBytes(ir.getEnd());
                 } catch (Throwable e) {
-                    LogUtils.warnf(this, "End address of discovery range is invalid, discarding: %s", ir.getEnd());
+                    LOG.warn("End address of discovery range is invalid, discarding: {}", ir.getEnd());
                     continue;
                 }
 
@@ -452,7 +454,7 @@ public class DiscoveryConfigFactory {
                 try {
                     includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
                 } catch (final UnknownHostException uhE) {
-                    LogUtils.warnf(this, uhE, "Failed to convert address range (%s, %s)", ir.getBegin(), ir.getEnd());
+                    LOG.warn("Failed to convert address range ({}, {})", ir.getBegin(), ir.getEnd(), uhE);
                 }
             }
         
@@ -498,7 +500,7 @@ public class DiscoveryConfigFactory {
                 try {
                     specifics.add(new IPPollAddress(InetAddressUtils.addr(address), timeout, retries));
                 } catch (final IllegalArgumentException e) {
-                    LogUtils.warnf(this, e, "Failed to convert address %s", address);
+                    LOG.warn("Failed to convert address {}", address, e);
                 }
             }
             return specifics;

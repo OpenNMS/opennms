@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -64,6 +65,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * </pre>
  */
 public abstract class RrdUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdUtils.class);
 
     private static RrdStrategy<?, ?> m_rrdStrategy = null;
 
@@ -94,18 +96,19 @@ public abstract class RrdUtils {
                 sb.append(mappingEntry.getValue());
                 sb.append("\n");
             }
+            String rrdMetaFileName = directory + File.separator + rrdName + ".meta";
             try {
-                fileWriter = new FileWriter(directory + File.separator + rrdName + ".meta");
+                fileWriter = new FileWriter(rrdMetaFileName);
                 fileWriter.write(sb.toString());
-                log().info("createRRD: creating META file " + directory + File.separator + rrdName + ".meta");
+                LOG.info("createRRD: creating META file {}", rrdMetaFileName);
             } catch (IOException e) {
-                log().error("createMetaDataFile: An error occured creating metadatafile: " + directory + File.separator + rrdName + ".meta" + "exception: " + e.getMessage());
+                LOG.error("createMetaDataFile: An error occured creating metadatafile: {}", rrdMetaFileName, e);
             } finally {
                 if (fileWriter != null) {
                     try {
                         fileWriter.close();
                     } catch (IOException e) {
-                        log().error("createMetaDataFile: An error occured closing fileWriter: " + e.getMessage());
+                        LOG.error("createMetaDataFile: An error occured closing fileWriter", e);
                     }
                 }
             }
@@ -264,13 +267,9 @@ public abstract class RrdUtils {
             return true;
         } catch (Throwable e) {
             String path = directory + File.separator + rrdName + getStrategy().getDefaultFileExtension();
-			log().error("createRRD: An error occured creating rrdfile " + path + ": " + e, e);
+            LOG.error("createRRD: An error occured creating rrdfile {}", path, e);
             throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + path + ": " + e, e);
         }
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(RrdUtils.class);
     }
 
     /**
@@ -307,14 +306,14 @@ public abstract class RrdUtils {
 
         String updateVal = Long.toString(time) + ":" + val;
 
-        log().info("updateRRD: updating RRD file " + rrdFile + " with values '" + updateVal + "'");
+        LOG.info("updateRRD: updating RRD file {} with values '{}'", rrdFile, updateVal);
 
         Object rrd = null;
         try {
             rrd = getStrategy().openFile(rrdFile);
             getStrategy().updateFile(rrd, owner, updateVal);
         } catch (Throwable e) {
-            log().error("updateRRD: Error updating RRD file " + rrdFile + " with values '" + updateVal + "': " + e, e);
+            LOG.error("updateRRD: Error updating RRD file {} with values '{}'", rrdFile, updateVal, e);
             throw new org.opennms.netmgt.rrd.RrdException("Error updating RRD file " + rrdFile + " with values '" + updateVal + "': " + e, e);
         } finally {
             try {
@@ -322,14 +321,12 @@ public abstract class RrdUtils {
                     getStrategy().closeFile(rrd);
                 }
             } catch (Throwable e) {
-                log().error("updateRRD: Exception closing RRD file " + rrdFile + ": " + e, e);
+                LOG.error("updateRRD: Exception closing RRD file {}", rrdFile, e);
                 throw new org.opennms.netmgt.rrd.RrdException("Exception closing RRD file " + rrdFile + ": " + e, e);
             }
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("updateRRD: RRD update command completed.");
-        }
+        LOG.debug("updateRRD: RRD update command completed.");
     }
 
     /**

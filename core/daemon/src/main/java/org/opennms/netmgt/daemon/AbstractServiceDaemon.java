@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.daemon;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * <p>Abstract AbstractServiceDaemon class.</p>
@@ -38,6 +41,8 @@ import org.opennms.netmgt.model.ServiceDaemon;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceDaemon.class);
     /**
      * <p>afterPropertiesSet</p>
      *
@@ -207,145 +212,24 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     protected synchronized boolean isStarting() {
         return getStatus() == STARTING;
     }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
     
-    /**
-     * <p>fatalf</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void fatalf(final String format, final Object... args) {
-        log().fatal(String.format(format, args));
-    }
-
-    /**
-     * <p>fatalf</p>
-     *
-     * @param t a {@link java.lang.Throwable} object.
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void fatalf(final Throwable t, final String format, final Object... args) {
-        log().fatal(String.format(format, args), t);
-    }
-
-    /**
-     * <p>errorf</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void errorf(final String format, final Object... args) {
-        log().error(String.format(format, args));
-    }
-
-    /**
-     * <p>errorf</p>
-     *
-     * @param t a {@link java.lang.Throwable} object.
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void errorf(final Throwable t, final String format, final Object... args) {
-        log().error(String.format(format, args), t);
-    }
-
-    /**
-     * <p>warnf</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void warnf(final String format, final Object... args) {
-        log().warn(String.format(format, args));
-    }
-
-    /**
-     * <p>warnf</p>
-     *
-     * @param t a {@link java.lang.Throwable} object.
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void warnf(final Throwable t, final String format, final Object... args) {
-        log().warn(String.format(format, args), t);
-    }
-
-    /**
-     * <p>infof</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void infof(final String format, final Object... args) {
-        if (log().isInfoEnabled()) {
-            log().info(String.format(format, args));
-        }
-    }
-
-    /**
-     * <p>infof</p>
-     *
-     * @param t a {@link java.lang.Throwable} object.
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void infof(final Throwable t, final String format, final Object... args) {
-        if (log().isInfoEnabled()) {
-            log().info(String.format(format, args), t);
-        }
-    }
-
-    /**
-     * <p>debugf</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void debugf(final String format, final Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
-        }
-    }
-
-    /**
-     * <p>debugf</p>
-     *
-     * @param t a {@link java.lang.Throwable} object.
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void debugf(final Throwable t, final String format, final Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args), t);
-        }
-    }
-
     /**
      * <p>init</p>
      */
     final public void init() {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
+        
+        Logging.withPrefix(getName(), new Runnable() {
+
+            @Override
+            public void run() {
+                LOG.info("{} initializing.", getName());
+
+                onInit();
+
+                LOG.info("{} initialization complete.", getName());
+            }
             
-            ThreadCategory.setPrefix(getName());
-            log().info(getName()+" initializing.");
-
-            onInit();
-
-            log().info(getName()+" initialization complete.");
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+        });
     }
 
 
@@ -355,23 +239,22 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public void pause() {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
+        Logging.withPrefix(getName(), new Runnable() {
 
-            if (!isRunning()) return;
+            @Override
+            public void run() {
+                if (!isRunning()) return;
 
-            log().info(getName()+" pausing.");
+                LOG.info("{} pausing.", getName());
 
-            setStatus(PAUSE_PENDING);
-            onPause();
-            setStatus(PAUSED);
+                setStatus(PAUSE_PENDING);
+                onPause();
+                setStatus(PAUSED);
 
-            log().info(getName()+" paused.");
-
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+                LOG.info("{} paused.", getName());
+            }
+            
+        });
     }
 
     /**
@@ -379,42 +262,47 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public void resume() {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
-            if (!isPaused()) return;
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            log().info(getName()+" resuming.");
+            @Override
+            public void run() {
+                if (!isPaused()) return;
 
-            setStatus(RESUME_PENDING);
-            onResume();
-            setStatus(RUNNING);
+                LOG.info("{} resuming.", getName());
 
-            log().info(getName()+" resumed.");
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+                setStatus(RESUME_PENDING);
+                onResume();
+                setStatus(RUNNING);
+
+                LOG.info("{} resumed.", getName());
+            }
+            
+        });
     }
+
 
     /**
      * <p>start</p>
      */
     @Override
     final public synchronized void start() {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
-            log().info(getName()+" starting.");
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            setStatus(STARTING);
-            onStart();
-            setStatus(RUNNING);
+            @Override
+            public void run() {
+                LOG.info("{} starting.", getName());
 
-            log().info(getName()+" started.");
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+                setStatus(STARTING);
+                onStart();
+                setStatus(RUNNING);
 
+                LOG.info("{} started.", getName());
+            }
+            
+        });
+        
     }
 
     /**
@@ -423,19 +311,22 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      */
     @Override
     final public synchronized void stop() {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
-            log().info(getName()+" stopping.");
+        
+        Logging.withPrefix(getName(), new Runnable() {
 
-            setStatus(STOP_PENDING);
-            onStop();
-            setStatus(STOPPED);
+            @Override
+            public void run() {
+                LOG.info("{} stopping.", getName());
 
-            log().info(getName()+" stopped.");
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+                setStatus(STOP_PENDING);
+                onStop();
+                setStatus(STOPPED);
+
+                LOG.info("{} stopped.", getName());
+            }
+            
+        });
+        
     }
 
     /**

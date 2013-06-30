@@ -29,12 +29,13 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ForceRescanState class.</p>
@@ -43,6 +44,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class ForceRescanState {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ForceRescanState.class);
     
     private CollectionAgent m_agent;
     private EventProxy m_eventProxy;
@@ -67,15 +70,6 @@ public class ForceRescanState {
      */
     public EventProxy getEventProxy() {
         return m_eventProxy;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -118,16 +112,13 @@ public class ForceRescanState {
      */
     void sendForceRescanEvent() {
         // Log4j category
-    	if (log().isDebugEnabled()) {
-    		log().debug("generateForceRescanEvent: interface = " + getAgent().getHostAddress());
-    	}
+	LOG.debug("generateForceRescanEvent: interface = {}", getAgent().getHostAddress());
     
     	// Send event via EventProxy
     	try {
             getEventProxy().send(createForceResanEvent());
     	} catch (EventProxyException e) {
-    		log().error("generateForceRescanEvent: Unable to send "
-    				+ "forceRescan event.", e);
+		LOG.error("generateForceRescanEvent: Unable to send forceRescan event.", e);
     	}
     }
     

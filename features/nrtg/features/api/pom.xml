@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-api</artifactId>
-  <name>NRTG Karaf API Feature</name>
+  <name>OpenNMS Features NRTG Features API Feature</name>
   <description>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</description>
   <packaging>pom</packaging>
   <build>

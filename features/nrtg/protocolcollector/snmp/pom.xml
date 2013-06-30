@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-snmp</artifactId>
   <packaging>bundle</packaging>
-  <name>NRTG ProtocolCollector SNMP</name>
+  <name>OpenNMS Features NRTG ProtocolCollector SNMP</name>
   <properties>
     <bundle.symbolicName>org.opennms.nrtg.protocolcollector.snmp</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.protocolcollector.snmp</bundle.namespace>

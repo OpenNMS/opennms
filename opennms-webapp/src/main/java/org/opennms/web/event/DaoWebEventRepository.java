@@ -37,7 +37,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -46,6 +45,8 @@ import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventDisplayFilter;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.8.1
  */
 public class DaoWebEventRepository implements WebEventRepository, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DaoWebEventRepository.class);
+
     
     @Autowired
     EventDao m_eventDao;
@@ -156,7 +160,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     }
     
     private Event mapOnmsEventToEvent(OnmsEvent onmsEvent){
-        log().debug("Mapping OnmsEvent to WebEvent for event with database id " + onmsEvent.getId());
+        LOG.debug("Mapping OnmsEvent to WebEvent for event with database id {}", onmsEvent.getId());
         Event event = new Event();
         event.acknowledgeTime = onmsEvent.getEventAckTime();
         event.acknowledgeUser = onmsEvent.getEventAckUser();
@@ -174,9 +178,9 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.logMessage = onmsEvent.getEventLogMsg();
         event.mouseOverText = onmsEvent.getEventMouseOverText();
         event.nodeLabel = getNodeLabelFromNode(onmsEvent);
-        log().debug("Found NodeLabel for mapped event:" + event.getNodeLabel());
+        LOG.debug("Found NodeLabel for mapped event:{}", event.getNodeLabel());
         event.nodeID = getNodeIdFromNode(onmsEvent);
-        log().debug("Found NodeId for mapped event:" + event.getNodeId());
+        LOG.debug("Found NodeId for mapped event:{}", event.getNodeId());
         event.notification = onmsEvent.getEventNotification();
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
@@ -198,7 +202,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         try {
             return onmsEvent.getNode() != null ? onmsEvent.getNode().getId() : 0;            
         } catch (org.hibernate.ObjectNotFoundException e) {
-            log().debug("No node found in database for event with id: " + onmsEvent.getId());
+            LOG.debug("No node found in database for event with id: {}", onmsEvent.getId());
             return 0;
         }
     }
@@ -207,7 +211,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         try {
             return onmsEvent.getNode() != null ? onmsEvent.getNode().getLabel() : "";                    
         } catch (org.hibernate.ObjectNotFoundException e) {
-            log().debug("No node found in database for event with id: " + onmsEvent.getId());
+            LOG.debug("No node found in database for event with id: {}", onmsEvent.getId());
             return "";
         } 
     }
@@ -275,10 +279,10 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     @Override
     public Event[] getMatchingEvents(EventCriteria criteria) {
         List<Event> events = new ArrayList<Event>();
-        log().debug("getMatchingEvents: try to get events for Criteria: " + criteria.toString());
+        LOG.debug("getMatchingEvents: try to get events for Criteria: {}", criteria.toString());
         List<OnmsEvent> onmsEvents = m_eventDao.findMatching(getOnmsCriteria(criteria));
 
-        log().debug("getMatchingEvents: found " + onmsEvents.size() + " events");
+        LOG.debug("getMatchingEvents: found {} events", onmsEvents.size());
 
         if(onmsEvents.size() > 0){
             Iterator<OnmsEvent> eventIt = onmsEvents.iterator();
@@ -313,9 +317,6 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         }
     }
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DaoWebEventRepository.class);
-    }
 
 
 }

@@ -63,9 +63,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -73,6 +74,9 @@ import org.xml.sax.XMLFilter;
 
 @RunWith(Parameterized.class)
 abstract public class XmlTest<T> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
+	
     private T m_sampleObject;
     private String m_sampleXml;
     private String m_schemaFile;
@@ -133,7 +137,8 @@ abstract public class XmlTest<T> {
         final String xml = marshalToXmlWithCastor();
 
         final T config = JaxbUtils.unmarshal(getSampleClass(), xml);
-        LogUtils.debugf(this, "Generated Object: %s", config);
+        
+        LOG.debug("Generated Object: {}", config);
 
         assertTrue("objects should match", config.equals(getSampleObject()));
     }
@@ -143,7 +148,7 @@ abstract public class XmlTest<T> {
         final String xml = marshalToXmlWithJaxb();
 
         final T config = CastorUtils.unmarshal(getSampleClass(), new ByteArrayInputStream(xml.getBytes()));
-        LogUtils.debugf(this, "Generated Object: %s", config);
+        LOG.debug("Generated Object: {}", config);
 
         assertTrue("objects should match", config.equals(getSampleObject()));
     }
@@ -159,7 +164,7 @@ abstract public class XmlTest<T> {
 
     @Test
     public void validateJaxbXmlAgainstSchema() throws Exception {
-        LogUtils.debugf(this, "Validating against XSD: %s", m_schemaFile);
+    	LOG.debug("Validating against XSD: {}", m_schemaFile);
         javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(m_schemaFile));
@@ -167,7 +172,7 @@ abstract public class XmlTest<T> {
         unmarshaller.setEventHandler(new ValidationEventHandler() {
             @Override
             public boolean handleEvent(final ValidationEvent event) {
-                LogUtils.debugf(this, event.getLinkedException(), "Received validation event: %s", event);
+            	LOG.debug("Received validation event: {}", event, event.getLinkedException());
                 return false;
             }
         });
@@ -185,13 +190,13 @@ abstract public class XmlTest<T> {
 
     protected void validateXmlString(final String xml) throws Exception {
         if (m_schemaFile == null) {
-            LogUtils.warnf(this, "skipping validation, schema file not set");
+        	LOG.warn("skipping validation, schema file not set");
             return;
         }
 
         final SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final File schemaFile = new File(m_schemaFile);
-        LogUtils.debugf(this, "Validating using schema file: %s", schemaFile);
+        LOG.debug("Validating using schema file: {}", schemaFile);
         final Schema schema = schemaFactory.newSchema(schemaFile);
 
         final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
@@ -209,29 +214,29 @@ abstract public class XmlTest<T> {
     }
 
     protected String marshalToXmlWithCastor() {
-        LogUtils.debugf(this, "Reference Object: %s", getSampleObject());
+    	LOG.debug("Reference Object: {}", getSampleObject());
 
         final StringWriter writer = new StringWriter();
         CastorUtils.marshalWithTranslatedExceptions(getSampleObject(), writer);
         final String xml = writer.toString();
-        LogUtils.debugf(this, "Castor XML: %s", xml);
+        LOG.debug("Castor XML: {}", xml);
         return xml;
     }
 
     protected String marshalToXmlWithJaxb() {
-        LogUtils.debugf(this, "Reference Object: %s", getSampleObject());
+    	LOG.debug("Reference Object: {}", getSampleObject());
 
         final StringWriter writer = new StringWriter();
         JaxbUtils.marshal(getSampleObject(), writer);
         final String xml = writer.toString();
-        LogUtils.debugf(this, "JAXB XML: %s", xml);
+        LOG.debug("JAXB XML: {}", xml);
         return xml;
     }
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) throws Exception {
         final List<Difference> differences = getDifferences(expectedXml, actualXml);
         if (differences.size() > 0) {
-            LogUtils.debugf(XmlTest.class, "XML:\n\n%s\n\n...does not match XML:\n\n%s", expectedXml, actualXml);
+        	LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }
@@ -244,9 +249,9 @@ abstract public class XmlTest<T> {
         if (allDifferences.size() > 0) {
             for (final Difference d : allDifferences) {
                 if (d.getDescription().equals("namespace URI")) {
-                    LogUtils.infof(XmlTest.class, "Ignoring namspace difference: %s", d);
+                	LOG.info("Ignoring namspace difference: {}", d);
                 } else {
-                    LogUtils.warnf(XmlTest.class, "Found difference: %s", d);
+                	LOG.warn("Found difference: {}", d);
                     retDifferences.add(d);
                 }
             }

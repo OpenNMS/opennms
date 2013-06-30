@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg.protocolcollector</groupId>
   <artifactId>osgi-nrtg-protocolcollector-tca</artifactId>
-  <name>NRTG Karaf ProtocolCollector TCA Feature</name>
+  <name>OpenNMS Features NRTG Features ProtocolCollector TCA Feature</name>
   <description>
     Plugin for the NRTCollector OSGI Satellit to collect data from tca agents
   </description>

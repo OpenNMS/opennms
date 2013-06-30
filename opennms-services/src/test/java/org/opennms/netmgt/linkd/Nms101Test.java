@@ -47,7 +47,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
@@ -74,9 +75,10 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-linkdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(Nms101Test.class);
 
     @Autowired
     private Linkd m_linkd;
@@ -277,8 +279,8 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
         final OnmsNode cisco1700b = m_nodeDao.findByForeignId("linkd", CISCO1700B_NAME);
 
-        LogUtils.debugf(this, "cisco1700  = %s", cisco1700);
-        LogUtils.debugf(this, "cisco1700b = %s", cisco1700b);
+        LOG.debug("cisco1700  = {}", cisco1700);
+        LOG.debug("cisco1700b = {}", cisco1700b);
 
         assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco1700b.getId()));

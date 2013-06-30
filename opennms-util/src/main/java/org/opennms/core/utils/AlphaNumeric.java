@@ -28,7 +28,9 @@
 
 package org.opennms.core.utils;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Convenience classes for parsing and manipulating Strings.
@@ -36,6 +38,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
 public class AlphaNumeric extends Object {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AlphaNumeric.class);
 
     /**
      * Any character in the passed string which does not match one of the
@@ -75,37 +79,35 @@ public class AlphaNumeric extends Object {
      * @return Converted value which can be used in a file name.
      */
     public static String parseAndReplaceExcept(String str, char replacement, String except) {
-        if (str == null) {
-            return "";
-        } else {
-            boolean replacedChar = false;
-            byte[] bytes = str.getBytes();
-            byte[] exBytes = except.getBytes();
+    	if (str == null) {
+    		return "";
+    	} else {
+    		boolean replacedChar = false;
+    		byte[] bytes = str.getBytes();
+    		byte[] exBytes = except.getBytes();
 
-            blat: for (int x = 0; x < bytes.length; x++) {
-                if (!((bytes[x] >= 48 && bytes[x] <= 57) || (bytes[x] >= 65 && bytes[x] <= 90) || (bytes[x] >= 97 && bytes[x] <= 122))) {
-		    for (int y = 0; y < exBytes.length; y++) {
-			if (bytes[x] == exBytes[y]) {
-			    continue blat;
-			}
-		    }
-                    bytes[x] = (byte) replacement;
-                    replacedChar = true;
-                }
-            }
+    		blat: for (int x = 0; x < bytes.length; x++) {
+    			if (!((bytes[x] >= 48 && bytes[x] <= 57) || (bytes[x] >= 65 && bytes[x] <= 90) || (bytes[x] >= 97 && bytes[x] <= 122))) {
+    				for (int y = 0; y < exBytes.length; y++) {
+    					if (bytes[x] == exBytes[y]) {
+    						continue blat;
+    					}
+    				}
+    				bytes[x] = (byte) replacement;
+    				replacedChar = true;
+    			}
+    		}
 
-            String temp = new String(bytes);
+    		String temp = new String(bytes);
 
-            // Log4j category
-            //
-            ThreadCategory log = ThreadCategory.getInstance(AlphaNumeric.class);
-            if (log.isDebugEnabled()) {
-                if (replacedChar)
-                    log.debug("parseAndReplace: original='" + str + "'" + " new='" + temp + "'");
-            }
+    		// Log4j category
+    		//
+    		if (replacedChar) {
+			LOG.debug("parseAndReplace: original='{}' new='{}'", str, temp);
+    		}
 
-            return temp;
-        }
+    		return temp;
+    	}
     }
 
     /**

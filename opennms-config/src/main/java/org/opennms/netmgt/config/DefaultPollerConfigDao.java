@@ -33,7 +33,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -45,6 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultPollerConfigDao implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerConfigDao.class);
     private Resource m_configResource;
     private String m_localServer;
     private Boolean m_verifyServer;
@@ -79,7 +81,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
         try {
             file = getConfigResource().getFile();
         } catch (IOException e) {
-            log().info("Resource '" + getConfigResource() + "' does not seem to have an underlying File object; using ");
+            LOG.info("Resource '{}' does not seem to have an underlying File object; using ", getConfigResource());
         }
         
         if (file != null) {
@@ -93,10 +95,6 @@ public class DefaultPollerConfigDao implements InitializingBean {
         setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>getPollerConfig</p>
      *

@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.provision.persist.policies;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
@@ -48,6 +49,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 @Policy("Match IP Interface")
 public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> implements IpInterfacePolicy {
+    private static final Logger LOG = LoggerFactory.getLogger(MatchingIpInterfacePolicy.class);
     
     
 
@@ -94,33 +96,33 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
         OnmsSnmpInterface snmpiface = iface.getSnmpInterface();
         switch (m_action) {
         case DO_NOT_PERSIST: 
-            LogUtils.debugf(this, "NOT Persisting %s according to policy", iface);
+            LOG.debug("NOT Persisting {} according to policy", iface);
             return null;
         case MANAGE:
-            LogUtils.debugf(this, "Managing %s according to policy", iface);
+            LOG.debug("Managing {} according to policy", iface);
             iface.setIsManaged("M");
             return iface;
         case UNMANAGE:
-            LogUtils.debugf(this, "Unmanaging %s according to policy", iface);
+            LOG.debug("Unmanaging {} according to policy", iface);
             iface.setIsManaged("U");
             return iface;
         case ENABLE_SNMP_POLL:
-            LogUtils.debugf(this, "SNMP polling %s according to policy", iface);
+            LOG.debug("SNMP polling {} according to policy", iface);
             snmpiface.setPoll("P");
             iface.setSnmpInterface(snmpiface);
             return iface;
         case DISABLE_SNMP_POLL:
-            LogUtils.debugf(this, "Disable SNMP polling %s according to policy", iface);
+            LOG.debug("Disable SNMP polling {} according to policy", iface);
             snmpiface.setPoll("N");
             iface.setSnmpInterface(snmpiface);
             return iface;
         case DISABLE_COLLECTION:
-            LogUtils.debugf(this, "Disabled collection for %s according to policy", iface);
+            LOG.debug("Disabled collection for {} according to policy", iface);
             snmpiface.setCollectionEnabled(false);
             iface.setSnmpInterface(snmpiface);
             return iface;
         case ENABLE_COLLECTION:
-            LogUtils.debugf(this, "Enabled collection for %s according to policy", iface);
+            LOG.debug("Enabled collection for {} according to policy", iface);
             snmpiface.setCollectionEnabled(true);
             iface.setSnmpInterface(snmpiface);
             return iface;

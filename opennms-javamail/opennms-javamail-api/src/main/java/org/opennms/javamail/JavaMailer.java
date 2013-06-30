@@ -64,7 +64,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -74,6 +75,9 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class JavaMailer {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JavaMailer.class);
+
     private static final String DEFAULT_FROM_ADDRESS = "root@[127.0.0.1]";
 //  private static final String DEFAULT_TO_ADDRESS = "root@[127.0.0.1]";
     private static final String DEFAULT_MAIL_HOST = "127.0.0.1";
@@ -242,7 +246,7 @@ public class JavaMailer {
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public void mailSend() throws JavaMailerException {
-        log().debug(createSendLogMsg());        
+        LOG.debug(createSendLogMsg());        
         sendMessage(buildMessage());
     }
 
@@ -307,10 +311,10 @@ public class JavaMailer {
 
             return message;
         } catch (AddressException e) {
-            log().error("Java Mailer Addressing exception: ", e);
+            LOG.error("Java Mailer Addressing exception: ", e);
             throw new JavaMailerException("Java Mailer Addressing exception: ", e);
         } catch (MessagingException e) {
-            log().error("Java Mailer messaging exception: ", e);
+            LOG.error("Java Mailer messaging exception: ", e);
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
 //        } catch (UnsupportedEncodingException e) {
 //            log().error("Java Mailer messaging exception: ", e);
@@ -369,11 +373,11 @@ public class JavaMailer {
      */
     public MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
         if (!file.exists()) {
-            log().error("File attachment '" + file.getAbsolutePath() + "' does not exist.");
+            LOG.error("File attachment '{}' does not exist.", file.getAbsolutePath());
             throw new JavaMailerException("File attachment '" + file.getAbsolutePath() + "' does not exist.");
         }
         if (!file.canRead()) {
-            log().error("File attachment '" + file.getAbsolutePath() + "' is not readable.");
+            LOG.error("File attachment '{}' is not readable.", file.getAbsolutePath());
             throw new JavaMailerException("File attachment '" + file.getAbsolutePath() + "' is not readable.");
         }
 
@@ -428,29 +432,29 @@ public class JavaMailer {
         Transport t = null;
         try {
             t = getSession().getTransport(getTransport());
-            log().debug("for transport name '" + getTransport() + "' got: " + t.getClass().getName() + "@" + Integer.toHexString(t.hashCode()));
+            LOG.debug("for transport name '{}' got: {}@{}", getTransport(), t.getClass().getName(), Integer.toHexString(t.hashCode()));
 
-            LoggingTransportListener listener = new LoggingTransportListener(log());
+            LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
             if (t.getURLName().getProtocol().equals("mta")) {
                 // JMTA throws an AuthenticationFailedException if we call connect()
-                log().debug("transport is 'mta', not trying to connect()");
+                LOG.debug("transport is 'mta', not trying to connect()");
             } else if (isAuthenticate()) {
-                log().debug("authenticating to " + getMailHost());
+                LOG.debug("authenticating to {}", getMailHost());
                 t.connect(getMailHost(), getSmtpPort(), getUser(), getPassword());
             } else {
-                log().debug("not authenticating to " + getMailHost());
+                LOG.debug("not authenticating to {}", getMailHost());
                 t.connect(getMailHost(), getSmtpPort(), null, null);
             }
 
             t.sendMessage(message, message.getAllRecipients());
             listener.assertAllMessagesDelivered();
         } catch (NoSuchProviderException e) {
-            log().error("Couldn't get a transport: " + e, e);
+            LOG.error("Couldn't get a transport: {}", e, e);
             throw new JavaMailerException("Couldn't get a transport: " + e, e);
         } catch (MessagingException e) {
-            log().error("Java Mailer messaging exception: " + e, e);
+            LOG.error("Java Mailer messaging exception: {}", e, e);
             throw new JavaMailerException("Java Mailer messaging exception: " + e, e);
         } finally {
             try {
@@ -463,7 +467,9 @@ public class JavaMailer {
         }
     }
     
-    private class InputStreamDataSource implements DataSource {  
+    private class InputStreamDataSource implements DataSource { 
+    	
+
         
         private String name;  
         private String contentType;  
@@ -473,7 +479,7 @@ public class JavaMailer {
             this.name = name;  
             this.contentType = contentType;
             
-            log().debug("setting contentType " + this.contentType);
+            LOG.debug("setting contentType {}", this.contentType);
               
             baos = new ByteArrayOutputStream();  
               
@@ -484,14 +490,14 @@ public class JavaMailer {
                     baos.write(buff, 0, read);  
                 }
             } catch (IOException e) {
-                log().error("Could not read attachment from input stream: " + e, e);
+                LOG.error("Could not read attachment from input stream: {}", e, e);
                 throw new JavaMailerException("Could not read attachment from input stream: " + e, e);
             }  
         }  
           
         @Override
         public String getContentType() {
-            log().debug("getContentType: " + contentType);
+            LOG.debug("getContentType: {}", contentType);
             return contentType;  
         }  
    
@@ -813,7 +819,7 @@ public class JavaMailer {
     public void setDebug(boolean debug) {
         m_debug = debug;
         if (isDebug()) {
-            m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
+            m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream()));
         }
         m_session.setDebug(isDebug());
     }
@@ -821,16 +827,13 @@ public class JavaMailer {
     /**
      * @return log4j Category
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     public static class LoggingByteArrayOutputStream extends ByteArrayOutputStream {
-        private ThreadCategory m_category;
 
-        public LoggingByteArrayOutputStream(ThreadCategory threadCategory) {
-            m_category = threadCategory;
-        }
+    	private static final Logger LOG = LoggerFactory.getLogger(LoggingByteArrayOutputStream.class);
+
+       
 
         @Override
         public void flush() throws IOException {
@@ -838,7 +841,7 @@ public class JavaMailer {
 
             String buffer = toString().replaceAll("\n", "");
             if (buffer.length() > 0) {
-                m_category.debug(buffer);   
+                LOG.debug(buffer);   
             }
 
             reset();
@@ -846,14 +849,14 @@ public class JavaMailer {
     }
 
     public static class LoggingTransportListener implements TransportListener {
-        private ThreadCategory m_category;
+    	
+    	private static final Logger LOG = LoggerFactory.getLogger(LoggingTransportListener.class);
+
         private List<Address> m_invalidAddresses = new ArrayList<Address>();
         private List<Address> m_validSentAddresses = new ArrayList<Address>();
         private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
 
-        public LoggingTransportListener(ThreadCategory threadCategory) {
-            m_category = threadCategory;
-        }
+        
 
         @Override
         public void messageDelivered(TransportEvent event) {
@@ -873,15 +876,15 @@ public class JavaMailer {
         private void logEvent(String message, TransportEvent event) {
             if (event.getInvalidAddresses() != null && event.getInvalidAddresses().length > 0) {
                 m_invalidAddresses.addAll(Arrays.asList(event.getInvalidAddresses()));
-                m_category.error(message + ": invalid addresses: " + StringUtils.arrayToDelimitedString(event.getInvalidAddresses(), ", "));
+                LOG.error("{}: invalid addresses: {}", message, StringUtils.arrayToDelimitedString(event.getInvalidAddresses(), ", "));
             }
             if (event.getValidSentAddresses() != null && event.getValidSentAddresses().length > 0) {
                 m_validSentAddresses.addAll(Arrays.asList(event.getValidSentAddresses()));
-                m_category.debug(message + ": valid sent addresses: " + StringUtils.arrayToDelimitedString(event.getValidSentAddresses(), ", "));
+                LOG.debug("{}: valid sent addresses: {}", message, StringUtils.arrayToDelimitedString(event.getValidSentAddresses(), ", "));
             }
             if (event.getValidUnsentAddresses() != null && event.getValidUnsentAddresses().length > 0) {
                 m_validUnsentAddresses.addAll(Arrays.asList(event.getValidUnsentAddresses()));
-                m_category.error(message + ": valid unsent addresses: " + StringUtils.arrayToDelimitedString(event.getValidUnsentAddresses(), ", "));
+                LOG.error("{}: valid unsent addresses: {}", message, StringUtils.arrayToDelimitedString(event.getValidUnsentAddresses(), ", "));
             }
         }
 

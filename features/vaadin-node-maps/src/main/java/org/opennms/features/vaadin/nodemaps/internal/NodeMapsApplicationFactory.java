@@ -31,7 +31,8 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -48,6 +49,7 @@ import com.vaadin.Application;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplicationFactory.class);
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
@@ -77,7 +79,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
             try {
                 app.setHeaderHtml(m_headerProvider.getHeaderHtml(request));
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "failed to get header HTML for request " + request.getPathInfo());
+                LOG.warn("failed to get header HTML for request {}", request.getPathInfo(), e);
             }
         }
         return app;

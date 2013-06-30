@@ -83,12 +83,12 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     public void debug(Vertex vmwareVertex) {
-        LOG.debug("-+- id: " + vmwareVertex.getId());
-        LOG.debug(" |- hashCode: " + vmwareVertex.hashCode());
-        LOG.debug(" |- label: " + vmwareVertex.getLabel());
-        LOG.debug(" |- ip: " + vmwareVertex.getIpAddress());
-        LOG.debug(" |- iconKey: " + vmwareVertex.getIconKey());
-        LOG.debug(" |- nodeId: " + vmwareVertex.getNodeID());
+        LOG.debug("-+- id: {}", vmwareVertex.getId());
+        LOG.debug(" |- hashCode: {}", vmwareVertex.hashCode());
+        LOG.debug(" |- label: {}", vmwareVertex.getLabel());
+        LOG.debug(" |- ip: {}", vmwareVertex.getIpAddress());
+        LOG.debug(" |- iconKey: {}", vmwareVertex.getIconKey());
+        LOG.debug(" |- nodeId: {}", vmwareVertex.getNodeID());
 
         for (EdgeRef edge : getEdgeIdsForVertex(vmwareVertex)) {
             Edge vmwareEdge = getEdge(edge);
@@ -96,9 +96,9 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             if (vmwareVertex.equals(edgeTo)) {
                 edgeTo = vmwareEdge.getSource().getVertex();
             }
-            LOG.debug(" |- edgeTo: " + edgeTo);
+            LOG.debug(" |- edgeTo: {}", edgeTo);
         }
-        LOG.debug(" '- parent: " + (vmwareVertex.getParent() == null ? null : vmwareVertex.getParent().getId()));
+        LOG.debug(" '- parent: {}", (vmwareVertex.getParent() == null ? null : vmwareVertex.getParent().getId()));
     }
 
     public void debugAll() {

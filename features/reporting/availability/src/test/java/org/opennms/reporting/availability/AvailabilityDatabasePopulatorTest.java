@@ -40,7 +40,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
@@ -66,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AvailabilityDatabasePopulatorTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityDatabasePopulatorTest.class);
 
 	@Autowired
 	AvailabilityDatabasePopulator m_dbPopulator;
@@ -138,7 +140,7 @@ public class AvailabilityDatabasePopulatorTest implements InitializingBean {
 			Assert.assertTrue("interface results for 192.168.100.2", stmt.size() > 0);
 			Assert.assertEquals(new Integer(1) ,stmt.get(0).getServiceId());
 		} catch (Exception e) {
-			LogUtils.errorf(this, e, "unable to execute SQL");
+			LOG.error("unable to execute SQL", e);
 			throw e;
 		}
 

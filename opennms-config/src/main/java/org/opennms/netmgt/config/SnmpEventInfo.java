@@ -38,7 +38,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
@@ -54,7 +55,8 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class SnmpEventInfo {	
+public class SnmpEventInfo {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpEventInfo.class);
     private String m_firstIPAddress = null;
     private String m_lastIPAddress = null;
     private String m_readCommunityString = null;
@@ -83,7 +85,7 @@ public class SnmpEventInfo {
         try {
             val = Integer.parseInt(parmContent);
         } catch (NumberFormatException e) {
-            LogUtils.errorf(SnmpEventInfo.class, "computeIntValue: parm value passed in the event isn't a valid number." ,e);
+            LOG.error("computeIntValue: parm value passed in the event isn't a valid number." ,e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
         return val;
@@ -163,10 +165,10 @@ public class SnmpEventInfo {
                 	setProxyHost(parmContent);
                 }
             } catch (UnknownHostException e) {
-                LogUtils.errorf(this, "SnmpEventInfo constructor", e);
+                LOG.error("SnmpEventInfo constructor", e);
                 throw new IllegalArgumentException("SnmpEventInfo constructor. "+e.getLocalizedMessage());
             } catch (IllegalArgumentException e) {
-            	LogUtils.errorf(this, "SnmpEventInfo constructor", e);
+            	LOG.error("SnmpEventInfo constructor", e);
                 throw e;
             }
         }
@@ -559,7 +561,7 @@ public class SnmpEventInfo {
             
         	// first ip address of range must be < than last ip address of range
             if (BigInteger.ZERO.compareTo(InetAddressUtils.difference(getFirstIPAddress(), getLastIPAddress())) < 0) {
-                LogUtils.errorf(this, "createDef: Can not create Definition when specified last is < first IP address: "+ this);
+                LOG.error("createDef: Can not create Definition when specified last is < first IP address: {}", this);
                 throw new IllegalArgumentException("First: "+getFirstIPAddress()+" is greater than: "+getLastIPAddress());
             }
             
@@ -568,7 +570,7 @@ public class SnmpEventInfo {
             range.setEnd(getLastIPAddress());
             definition.addRange(range);
         }
-        LogUtils.debugf(this, "createDef: created new Definition from: " + this);
+        LOG.debug("createDef: created new Definition from: {}", this);
         return definition;
     }
     

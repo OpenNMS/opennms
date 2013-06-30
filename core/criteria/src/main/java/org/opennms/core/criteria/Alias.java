@@ -31,6 +31,8 @@ package org.opennms.core.criteria;
 import org.opennms.core.criteria.restrictions.Restriction;
 
 public class Alias {
+	
+	
     public static interface AliasVisitor {
         public void visitAlias(final String alias);
 

@@ -33,7 +33,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 public class TestDaemon extends AbstractServiceDaemon {
 
 	public TestDaemon() {
-		super("TestDaemon");
+		super("test-daemon");
 		System.err.println("Creating: "+getName());
 	}
 

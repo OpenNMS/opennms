@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -44,7 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvaluator {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorRearmingAbsoluteChange.class);
     private static final String TYPE = "rearmingAbsoluteChange";
 
     /** {@inheritDoc} */
@@ -105,13 +107,13 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
         			if(!wasTriggered(dsValue) && (m_triggerCount >= getThresholdConfig().getTrigger())) {
         				setPreviousTriggeringSample(Double.NaN);
         				m_triggerCount = 0;
-        				log().debug(TYPE + " threshold rearmed, sample value="+dsValue);
+					LOG.debug("{} threshold rearmed, sample value={}", TYPE, dsValue);
         				return Status.RE_ARMED;
         			} 
         		} else if (wasTriggered(dsValue)) {
         			setPreviousTriggeringSample(getLastSample());
         			m_triggerCount = 0;
-        			log().debug(TYPE + " threshold triggered, sample value="+dsValue);
+				LOG.debug("{} threshold triggered, sample value={}", TYPE, dsValue);
         			return Status.TRIGGERED;
         		} 
         	} finally {

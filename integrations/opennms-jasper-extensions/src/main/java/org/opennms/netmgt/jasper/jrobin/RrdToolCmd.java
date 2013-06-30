@@ -38,9 +38,11 @@ import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDbPool;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class RrdToolCmd {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdToolCmd.class);
 
     public class EmptyJRDataSource implements JRDataSource {
 
@@ -67,7 +69,7 @@ abstract class RrdToolCmd {
         try {
         	return execute();
         }catch(IOException e) {
-        	LogUtils.debugf(this, "Error creating JRobinDatasource: The Following Exception Occured: %s", e.getMessage());
+        	LOG.debug("Error creating JRobinDatasource: The Following Exception Occured: {}", e.getMessage());
         	return new EmptyJRDataSource();
         }
         

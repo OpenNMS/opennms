@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,10 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.opennms.core.utils.LogUtils;
 //import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DetectorHandlerNettyImpl class.</p>
@@ -46,7 +47,9 @@ import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetecti
  * @author Seth
  */
 public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHandler {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DetectorHandlerNettyImpl.class);
+    
     //private DetectFuture m_future;
     private AsyncClientConversation<Request, Response> m_conversation;
 
@@ -75,7 +78,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHa
     /** {@inheritDoc} */
     @Override
     public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
-        LogUtils.debugf(this, "channelOpen()");
+        LOG.debug("channelOpen()");
         if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
             Object request = getConversation().getRequest();
             ctx.getChannel().write(request);
@@ -85,7 +88,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHa
     /** {@inheritDoc} */
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
-        LogUtils.debugf(this, "channelClosed()");
+        LOG.debug("channelClosed()");
         /*
         if(!getFuture().isDone()) {
             getFuture().setServiceDetected(false);
@@ -108,7 +111,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHa
     /** {@inheritDoc} */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent event) throws Exception {
-        LogUtils.debugf(this, event.getCause(), "Caught a Throwable in %s", this.getClass().getName());
+        LOG.debug("Caught a Throwable in {}", this.getClass().getName(), event.getCause());
         //getFuture().setException(event.getCause());
         // Make sure that the channel is closed
         ctx.getChannel().close();
@@ -122,34 +125,34 @@ public class DetectorHandlerNettyImpl<Request, Response> extends SimpleChannelHa
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent message) {
         try {
             final AsyncClientConversation<Request, Response> conversation = getConversation();
-            LogUtils.debugf(this, "Client Receiving: %s", message.getMessage().toString().trim());
-            LogUtils.debugf(this, "Conversation: %s", conversation);
+            LOG.debug("Client Receiving: {}", message.getMessage().toString().trim());
+            LOG.debug("Conversation: {}", conversation);
 
             if(conversation.hasExchanges() && conversation.validate((Response)message.getMessage())) {
 
                 Object request = conversation.getRequest();
 
                 if (request != null) {
-                    LogUtils.debugf(this, "Writing request: %s", request);
+                    LOG.debug("Writing request: {}", request);
                     ctx.getChannel().write(request);
                 } else if (request == null && conversation.isComplete()) {
-                    LogUtils.debugf(this, "Closing channel: %s", conversation);
+                    LOG.debug("Closing channel: {}", conversation);
                     //getFuture().setServiceDetected(true);
                     ctx.getChannel().close();
                 } else {
                     //getFuture().setServiceDetected(false);
-                    LogUtils.debugf(this, "Closing channel, detection failed: %s", conversation);
+                    LOG.debug("Closing channel, detection failed: {}", conversation);
                     ctx.getChannel().close();
                     Channels.fireExceptionCaught(ctx, new ServiceDetectionFailedException());
                 }
             } else {
-                LogUtils.debugf(this, "Invalid response: %s", message.getMessage().toString().trim());
+                LOG.debug("Invalid response: {}", message.getMessage().toString().trim());
                 //getFuture().setServiceDetected(false);
                 ctx.getChannel().close();
                 Channels.fireExceptionCaught(ctx, new ServiceDetectionFailedException());
             }
         } catch(Throwable e) {
-            LogUtils.debugf(this, e, "Exception caught!");
+            LOG.debug("Exception caught!", e);
             ctx.getChannel().close();
             Channels.fireExceptionCaught(ctx, e);
         }

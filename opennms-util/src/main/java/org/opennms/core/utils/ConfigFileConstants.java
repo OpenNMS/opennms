@@ -32,12 +32,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * This class holds all OpenNMS related config filenames
  */
 public final class ConfigFileConstants {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
     private static final String[] FILE_ID_TO_NAME;
 
@@ -756,7 +760,7 @@ public final class ConfigFileConstants {
         // Check to make sure that the home directory exists
         File fhome = new File(home);
         if (!fhome.exists()) {
-            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
+        	LOG.debug("The specified home directory does not exist.");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
         }
 
@@ -810,7 +814,7 @@ public final class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
+        	LOG.debug("The specified home directory does not exist.");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
         }
 
@@ -833,7 +837,7 @@ public final class ConfigFileConstants {
     public static final String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-            LogUtils.debugf(ConfigFileConstants.class, "The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
+        	LOG.debug("The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
             home = File.separator + "opt" + File.separator + "opennms";
         }
         // Remove the trailing slash if necessary

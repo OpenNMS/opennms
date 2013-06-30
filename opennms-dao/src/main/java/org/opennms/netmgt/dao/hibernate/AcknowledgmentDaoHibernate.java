@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.ObjectNotFoundException;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
@@ -51,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AcknowledgmentDaoHibernate.class);
     /**
      * <p>Constructor for AcknowledgmentDaoHibernate.</p>
      */
@@ -88,13 +90,13 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                                     ackables.add(notif);
                                 }
                             } catch (final ObjectNotFoundException e) {
-                                LogUtils.warnf(this, e, "found ackables for alarm #%d but ackable was invalid", ack.getRefId());
+                                LOG.warn("found ackables for alarm #{} but ackable was invalid", ack.getRefId(), e);
                             }
                         }
                     }
                 }
             } catch (final ObjectNotFoundException e) {
-                LogUtils.warnf(this, e, "unable to find alarm with ID %d", ack.getRefId());
+                LOG.warn("unable to find alarm with ID {}", ack.getRefId(), e);
             }
         }
 
@@ -112,11 +114,11 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                             }
                         }
                     } catch (final ObjectNotFoundException e) {
-                        LogUtils.warnf(this, e, "unable to find alarm for notification #%d", notif.getNotifyId());
+                        LOG.warn("unable to find alarm for notification #{}", notif.getNotifyId(), e);
                     }
                 }
             } catch (final ObjectNotFoundException e) {
-                LogUtils.warnf(this, e, "unable to find notification with ID %d", ack.getRefId());
+                LOG.warn("unable to find notification with ID {}", ack.getRefId(), e);
             }
         }
         
@@ -136,7 +138,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 return (OnmsAlarm) getHibernateTemplate().load(OnmsAlarm.class, ack.getRefId());
             }
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "unable to find alarm with ID %d", ack.getRefId());
+            LOG.warn("unable to find alarm with ID {}", ack.getRefId(), e);
         }
         return null;
     }
@@ -149,7 +151,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 return (OnmsNotification) getHibernateTemplate().load(OnmsNotification.class, ack.getRefId());
             }
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "unable to find notification with ID %d", ack.getRefId());
+            LOG.warn("unable to find notification with ID {}", ack.getRefId(), e);
         }
         return null;
     }
@@ -158,7 +160,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     @Transactional(readOnly=false)
     @Override
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
-        LogUtils.infof(this, "processAcks: Processing "+acks.size()+" acknowledgements...");
+        LOG.info("processAcks: Processing {} acknowledgements...", acks.size());
         for (OnmsAcknowledgment ack : acks) {
             processAck(ack);
         }
@@ -168,15 +170,15 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     @Transactional(readOnly=false)
     @Override
     public void processAck(OnmsAcknowledgment ack) {
-        LogUtils.infof(this,"processAck: Searching DB for acknowledgables for ack: "+ack);
+        LOG.info("processAck: Searching DB for acknowledgables for ack: {}", ack);
         List<Acknowledgeable> ackables = findAcknowledgables(ack);
         
         if (ackables == null || ackables.size() < 1) {
-            LogUtils.debugf(this,"processAck: No acknowledgables found.");
+            LOG.debug("processAck: No acknowledgables found.");
             throw new IllegalStateException("No acknowlegables in the database for ack: "+ack);
         }
 
-        LogUtils.debugf(this,"processAck: Found "+ackables.size()+". Acknowledging...");
+        LOG.debug("processAck: Found {}. Acknowledging...", ackables.size());
         
         Iterator<Acknowledgeable> it = ackables.iterator();
         while (it.hasNext()) {
@@ -185,24 +187,24 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
 
                 switch (ack.getAckAction()) {
                 case ACKNOWLEDGE:
-                    LogUtils.debugf(this,"processAck: Acknowledging ackable: "+ackable+"...");
+                    LOG.debug("processAck: Acknowledging ackable: {}...", ackable);
                     ackable.acknowledge(ack.getAckUser());
-                    LogUtils.debugf(this,"processAck: Acknowledged ackable: "+ackable);
+                    LOG.debug("processAck: Acknowledged ackable: {}", ackable);
                     break;
                 case UNACKNOWLEDGE:
-                    LogUtils.debugf(this,"processAck: Unacknowledging ackable: "+ackable+"...");
+                    LOG.debug("processAck: Unacknowledging ackable: {}...", ackable);
                     ackable.unacknowledge(ack.getAckUser());
-                    LogUtils.debugf(this,"processAck: Unacknowledged ackable: "+ackable);
+                    LOG.debug("processAck: Unacknowledged ackable: {}", ackable);
                     break;
                 case CLEAR:
-                    LogUtils.debugf(this,"processAck: Clearing ackable: "+ackable+"...");
+                    LOG.debug("processAck: Clearing ackable: {}...", ackable);
                     ackable.clear(ack.getAckUser());
-                    LogUtils.debugf(this,"processAck: Cleared ackable: "+ackable);
+                    LOG.debug("processAck: Cleared ackable: {}", ackable);
                     break;
                 case ESCALATE:
-                    LogUtils.debugf(this,"processAck: Escalating ackable: "+ackable+"...");
+                    LOG.debug("processAck: Escalating ackable: {}...", ackable);
                     ackable.escalate(ack.getAckUser());
-                    LogUtils.debugf(this,"processAck: Escalated ackable: "+ackable);
+                    LOG.debug("processAck: Escalated ackable: {}", ackable);
                     break;
                 default:
                     break;
@@ -212,10 +214,10 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 save(ack);
                 flush();
             } catch (Throwable t) {
-                LogUtils.errorf(this, "processAck: exception while processing: "+ack+"; "+t, t);
+                LOG.error("processAck: exception while processing: {}; {}", ack, t);
             }
             
         }
-        LogUtils.infof(this,"processAck: Found and processed acknowledgables for the acknowledgement: "+ack);
+        LOG.info("processAck: Found and processed acknowledgables for the acknowledgement: {}", ack);
     }
 }

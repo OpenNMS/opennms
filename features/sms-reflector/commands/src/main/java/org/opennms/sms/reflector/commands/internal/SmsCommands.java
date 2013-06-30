@@ -36,8 +36,9 @@ import java.util.List;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.sms.ping.SmsPinger;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.osgi.framework.BundleContext;
@@ -68,8 +69,8 @@ import org.springframework.osgi.context.BundleContextAware;
  * @author ranger
  * @version $Id: $
  */
-public class SmsCommands implements CommandProvider, BundleContextAware
-{
+public class SmsCommands implements CommandProvider, BundleContextAware {
+    private static final Logger LOG = LoggerFactory.getLogger(SmsCommands.class);
     private Service m_service;
     private ConfigurationAdmin m_configAdmin;
     private BundleContext m_context;
@@ -91,7 +92,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             try {
                 m_service.stopService();
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Exception Stopping Service Occurred");
+                LOG.debug("Exception Stopping Service Occurred", e);
             }
         }
     }
@@ -105,7 +106,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         try{
             m_service.sendMessage(msg);
         }catch(final Exception e){
-            LogUtils.debugf(this, e, "error sending message (%s)", msg);
+            LOG.debug("error sending message ({})", msg, e);
         }
     }
 
@@ -120,7 +121,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             m_service.readMessages(msgList, MessageClasses.UNREAD);
 
         }catch(final Exception e){
-            LogUtils.warnf(this, e, "unable to check messages");
+            LOG.warn("unable to check messages", e);
         }
 
         return msgList;
@@ -174,9 +175,9 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         try {
             OutboundMessage msg;
 
-            debugf("Example: Send message from a serial gsm modem.");
-            debugf(Library.getLibraryDescription());
-            debugf("Version: %s",Library.getLibraryVersion());
+            LOG.debug("Example: Send message from a serial gsm modem.");
+            LOG.debug(Library.getLibraryDescription());
+            LOG.debug("Version: {}",Library.getLibraryVersion());
 
             // Send a message synchronously.
             msg = new OutboundMessage(phoneno, msgText);
@@ -264,7 +265,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
         while(commPorts.hasMoreElements()) {
             CommPortIdentifier commPort = commPorts.nextElement();
-            debugf(commPort.getName());
+            LOG.debug(commPort.getName());
         }
 
         return null; 
@@ -484,8 +485,8 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     public class OutboundNotification implements IOutboundMessageNotification {
         @Override
         public void process(String gatewayId, OutboundMessage msg) {
-            debugf("Outbound handler called from Gateway: %s", gatewayId);
-            debugf(msg.toString());
+            LOG.debug("Outbound handler called from Gateway: {}", gatewayId);
+            LOG.debug(msg.toString());
         }
 
     }
@@ -495,12 +496,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         @Override
         public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
             if(msgType == MessageTypes.INBOUND){
-                debugf(">>> New Inbound message detected from Gateway: %s", gatewayId);
+                LOG.debug(">>> New Inbound message detected from Gateway: {}", gatewayId);
             }else if(msgType == MessageTypes.STATUSREPORT){
-                debugf(">>> New Inbound Status Report message detected from Gateway: %s", gatewayId);
+                LOG.debug(">>> New Inbound Status Report message detected from Gateway: {}", gatewayId);
             }
 
-            debugf("msg text: %s", msg.getText());
+            LOG.debug("msg text: {}", msg.getText());
 
         }
 
@@ -510,7 +511,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
         @Override
         public void process(String gatewayId, String callerId) {
-            debugf(">>> New called detected from Gateway: %s : %s", gatewayId, callerId);
+            LOG.debug(">>> New called detected from Gateway: {} : {}", gatewayId, callerId);
         }
 
     }
@@ -519,7 +520,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
         @Override
         public void process(String gatewayId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
-            debugf(">>> Gateway Status change from: %s, OLD:  %s -> NEW: %s", gatewayId, oldStatus, newStatus );
+            LOG.debug(">>> Gateway Status change from: {}, OLD:  {} -> NEW: {}", gatewayId, oldStatus, newStatus );
         }
 
     }
@@ -556,13 +557,4 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     public BundleContext getBundleContext() {
         return m_context;
     }
-    
-    private void debugf(String format, Object ...args){
-        ThreadCategory log = ThreadCategory.getInstance(SmsCommands.class);
-        
-        if(log.isDebugEnabled()){
-            log.debug(String.format(format, args));
-        }
-    }
-
 }

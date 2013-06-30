@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jfreechart-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JFreeChart Dependencies</name>
+  <name>OpenNMS Dependencies JFreeChart</name>
   <dependencies>
     <dependency>
       <groupId>jfree</groupId>

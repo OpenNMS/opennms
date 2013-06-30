@@ -28,8 +28,6 @@
 
 package org.opennms.reporting.datablock;
 
-//import org.apache.log4j.Category;
-//import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class holds the service information and list of outages for the service.
@@ -242,11 +240,6 @@ public class Service extends StandardNamedObject {
         double outage = 1.0 * m_downTime;
         double denom = 1.0 * rollingWindow;
         double percent = 100.0 * (1.0 - outage / denom);
-        /*
-         * ThreadCategory.setPrefix(LOG4J_CATEGORY); Category log =
-         * ThreadCategory.getInstance(this.getClass()); if(log.isInfoEnabled())
-         * log.info("Outage -->> " + outage + " DENOM -->> " + denom);
-         */
         m_percentAvail = percent;
         m_monitoredTime = rollingWindow;
         return percent;

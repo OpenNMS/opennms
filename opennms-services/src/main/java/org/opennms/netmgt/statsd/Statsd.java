@@ -31,7 +31,6 @@ package org.opennms.netmgt.statsd;
 import java.text.ParseException;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.NodeDao;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.CronTriggerBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.transaction.TransactionStatus;
@@ -62,6 +63,9 @@ import org.springframework.util.Assert;
  */
 @EventListener(name="OpenNMS:Statsd")
 public class Statsd implements SpringServiceDaemon {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);
+    
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
@@ -81,23 +85,23 @@ public class Statsd implements SpringServiceDaemon {
     public void handleReloadConfigEvent(Event e) {
         
         if (isReloadConfigEventTarget(e)) {
-            log().info("handleReloadConfigEvent: reloading configuration...");
+            LOG.info("handleReloadConfigEvent: reloading configuration...");
             EventBuilder ebldr = null;
 
-            log().debug("handleReloadConfigEvent: acquiring lock...");
+            LOG.debug("handleReloadConfigEvent: acquiring lock...");
             synchronized (m_scheduler) {
                 try {
-                    log().debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                    LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
                     unscheduleReports();
                     m_reportDefinitionBuilder.reload();
-                    log().debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
-                    log().debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
+                    LOG.debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
+                    LOG.debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
                     start();
-                    log().debug("handleRelodConfigEvent: reports rescheduled.");
+                    LOG.debug("handleRelodConfigEvent: reports rescheduled.");
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                 } catch (Throwable exception) {
-                    log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                     ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -106,7 +110,7 @@ public class Statsd implements SpringServiceDaemon {
                     getEventForwarder().sendNow(ebldr.getEvent());
                 }
             }
-            log().debug("handleReloadConfigEvent: lock released.");
+            LOG.debug("handleReloadConfigEvent: lock released.");
         }
         
     }
@@ -123,7 +127,7 @@ public class Statsd implements SpringServiceDaemon {
             }
         }
         
-        log().debug("isReloadConfigEventTarget: Statsd was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: {}", isTarget);
         return isTarget;
     }
 
@@ -140,25 +144,25 @@ public class Statsd implements SpringServiceDaemon {
      */
     @Override
     public void start() throws Exception {
-        log().debug("start: acquiring lock...");
+        LOG.debug("start: acquiring lock...");
         synchronized (m_scheduler) {
-            log().info("start: lock acquired (may have reentered), scheduling Reports...");
+            LOG.info("start: lock acquired (may have reentered), scheduling Reports...");
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                log().debug("start: scheduling Report: "+reportDef+"...");
+                LOG.debug("start: scheduling Report: "+reportDef+"...");
                 scheduleReport(reportDef);
             }
-            log().info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+            LOG.info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
         }
-        log().debug("start: lock released (unless reentrant).");
+        LOG.debug("start: lock released (unless reentrant).");
     }
 
     @Override
     public void destroy() throws Exception {
-        log().debug("start: acquiring lock...");
+        LOG.debug("start: acquiring lock...");
         synchronized (m_scheduler) {
             m_scheduler.shutdown();
         }
-        log().debug("start: lock released (unless reentrant).");
+        LOG.debug("start: lock released (unless reentrant).");
     }
 
     /**
@@ -196,7 +200,7 @@ public class Statsd implements SpringServiceDaemon {
             cronReportTrigger.afterPropertiesSet();
             
             m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
-            log().debug("Schedule report " + cronReportTrigger);
+            LOG.debug("Schedule report {}", cronReportTrigger);
             
         }
     }
@@ -212,28 +216,24 @@ public class Statsd implements SpringServiceDaemon {
         try {
             report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
         } catch (Throwable t) {
-            log().error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
+            LOG.error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
             throw t;
         }
         
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                log().debug("Starting report " + report);
+                LOG.debug("Starting report {}", report);
                 report.walk();
-                log().debug("Completed report " + report);
+                LOG.debug("Completed report {}", report);
                 
                 m_reportPersister.persist(report);
-                log().debug("Report " + report + " persisted");
+                LOG.debug("Report " + report + " persisted");
             }
         });
     }
 
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>afterPropertiesSet</p>
      *

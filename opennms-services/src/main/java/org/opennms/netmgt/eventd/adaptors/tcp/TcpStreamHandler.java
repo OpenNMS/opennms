@@ -50,12 +50,13 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
@@ -71,6 +72,9 @@ import org.xml.sax.InputSource;
  * 
  */
 final class TcpStreamHandler implements Runnable {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TcpStreamHandler.class);
+    
     /**
      * The registered list of event handlers. Each incoming event will be
      * passed to all event handlers. The event handlers <em>MUST NOT</em>
@@ -143,12 +147,12 @@ final class TcpStreamHandler implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-        	LogUtils.debugf(this, "Interrupting and joining the thread context %s", m_context.getName());
+            LOG.debug("Interrupting and joining the thread context {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            LogUtils.debugf(this, "Context stopped and joined");
+            LOG.debug("Context stopped and joined");
         }
     }
 
@@ -167,21 +171,21 @@ final class TcpStreamHandler implements Runnable {
 
         // check the stop flag
         if (m_stop) {
-            LogUtils.debugf(this, "The stop flag was set prior to thread entry, closing connection");
+            LOG.debug("The stop flag was set prior to thread entry, closing connection");
             try {
                 m_connection.close();
             } catch (final IOException e) {
-            	LogUtils.errorf(this, e, "An error occured while closing the connection.");
+            	LOG.error("An error occured while closing the connection.", e);
             }
 
-            LogUtils.debugf(this, "Thread context exiting");
+            LOG.debug("Thread context exiting");
 
             return;
         }
 
         // Log the startup of this stream handler
         final InetAddress sender = m_connection.getInetAddress();
-        LogUtils.debugf(this, "Event Log Stream Handler Started for %s", sender);
+        LOG.debug("Event Log Stream Handler Started for {}", sender);
 
         /*
          * This linked list is used to exchange
@@ -200,7 +204,7 @@ final class TcpStreamHandler implements Runnable {
             try {
                 tchunker.wait();
             } catch (final InterruptedException e) {
-            	LogUtils.errorf(this, e, "The thread was interrupted.");
+            	LOG.error("The thread was interrupted.", e);
             }
         }
 
@@ -213,7 +217,7 @@ final class TcpStreamHandler implements Runnable {
                         try {
                             pipeXchange.wait(500);
                         } catch (final InterruptedException e) {
-                            LogUtils.errorf(this, e, "The thread was interrupted.");
+                            LOG.error("The thread was interrupted.", e);
                             break MAINLOOP;
                         }
                     } else {
@@ -231,7 +235,7 @@ final class TcpStreamHandler implements Runnable {
                 try {
                     pipeIn = new PipedInputStream((PipedOutputStream) o);
                 } catch (final IOException e) {
-                    LogUtils.errorf(this, e, "An I/O exception occured construction a record reader.");
+                    LOG.error("An I/O exception occured construction a record reader.", e);
                     break MAINLOOP;
                 }
 
@@ -252,9 +256,9 @@ final class TcpStreamHandler implements Runnable {
             boolean doCleanup = false;
             try {
             	eLog = JaxbUtils.unmarshal(Log.class, new InputSource(stream));
-                LogUtils.debugf(this, "Event record converted");
+                LOG.debug("Event record converted");
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Could not unmarshall the XML record.");
+                LOG.error("Could not unmarshall the XML record.", e);
                 doCleanup = true;
             } finally {
                 if (stream != null) {
@@ -353,7 +357,7 @@ final class TcpStreamHandler implements Runnable {
                              *  but don't die on these errors
                              */
                             try {
-                            	LogUtils.debugf(this, "handling event: %s", event);
+                            	LOG.debug("handling event: {}", event);
 
                                 // shortcut and BOTH parts MUST execute!
                                 if (hdl.processEvent(event)) {
@@ -362,7 +366,7 @@ final class TcpStreamHandler implements Runnable {
                                     }
                                 }
                             } catch (final Throwable t) {
-                                LogUtils.warnf(this, t, "An exception occured while processing an event.");
+                                LOG.warn("An exception occured while processing an event.", t);
                             }
                         }
                     }
@@ -396,54 +400,54 @@ final class TcpStreamHandler implements Runnable {
                                 try {
                                     hdl.receiptSent(receipt);
                                 } catch (final Throwable t) {
-                                    LogUtils.warnf(this, t, "An exception occured while processing an event receipt.");
+                                    LOG.warn("An exception occured while processing an event receipt.", t);
                                 }
                             }
                         }
 
-                        if (LogUtils.isDebugEnabled(this)) {
+                        if (LOG.isDebugEnabled()) {
                             try {
                             	final StringWriter swriter = new StringWriter();
                             	JaxbUtils.marshal(receipt, swriter);
 
-                                LogUtils.debugf(this, "Sent Event Receipt {");
-                                LogUtils.debugf(this, swriter.getBuffer().toString());
-                                LogUtils.debugf(this, "}");
+                                LOG.debug("Sent Event Receipt {");
+                                LOG.debug(swriter.getBuffer().toString());
+                                LOG.debug("}");
                             } catch (final Throwable e) {
-                                LogUtils.errorf(this, e, "An error occured during marshalling of event receipt for the log.");
+                                LOG.error("An error occured during marshalling of event receipt for the log.", e);
                             }
                         }
                     } catch (final IOException e) {
-                        LogUtils.warnf(this, e, "Failed to send event-receipt XML document.");
+                        LOG.warn("Failed to send event-receipt XML document.", e);
                         break MAINLOOP;
                     }
                 }
             } else {
-                LogUtils.debugf(this, "The agent sent an empty event stream");
+                LOG.debug("The agent sent an empty event stream");
             }
         }
 
         try {
-            LogUtils.debugf(this, "stopping record handler");
+            LOG.debug("stopping record handler");
 
             chunker.stop();
 
-            LogUtils.debugf(this, "record handler stopped");
+            LOG.debug("record handler stopped");
         } catch (final InterruptedException e) {
-            LogUtils.warnf(this, e, "The thread was interrupted while trying to close the record handler.");
+            LOG.warn("The thread was interrupted while trying to close the record handler.", e);
         }
 
         // regardless of any errors, be sure to release the socket.
         try {
-            LogUtils.debugf(this, "closing connnection");
+            LOG.debug("closing connnection");
 
             m_connection.close();
 
-            LogUtils.debugf(this, "connnection closed ");
+            LOG.debug("connnection closed ");
         } catch (final IOException e) {
-            LogUtils.warnf(this, e, "An I/O exception occured while closing the TCP/IP connection.");
+            LOG.warn("An I/O exception occured while closing the TCP/IP connection.", e);
         }
 
-        LogUtils.debugf(this, "Thread exiting");
+        LOG.debug("Thread exiting");
     }
 }

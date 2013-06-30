@@ -39,11 +39,16 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author <a href="mailto:seth@opennms.org">Seth</a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public abstract class SocketUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SocketUtils.class);
 
     public static Socket wrapSocketInSslContext(Socket socket) throws IOException {
         return wrapSocketInSslContext(socket, null);
@@ -56,10 +61,10 @@ public abstract class SocketUtils {
             sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, tm, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
-            LogUtils.errorf(SocketUtils.class, e, "wrapSocket: Error wrapping socket, throwing runtime exception: %s", e.getMessage());
+        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);
             throw new IllegalStateException("No such algorithm in SSLSocketFactory: " + e);
         } catch (KeyManagementException e) {
-            LogUtils.errorf(SocketUtils.class, e, "wrapSocket: Error wrapping socket, throwing runtime exception: %s", e.getMessage());
+        	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);
             throw new IllegalStateException("Key management exception in SSLSocketFactory: " + e);
         }
         SSLSocketFactory socketFactory = sslContext.getSocketFactory();

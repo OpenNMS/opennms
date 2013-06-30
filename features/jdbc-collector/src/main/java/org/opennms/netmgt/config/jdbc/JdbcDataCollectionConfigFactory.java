@@ -37,15 +37,18 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcDataCollectionConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcDataCollectionConfigFactory.class);
+
     private JdbcDataCollectionConfig m_jdbcDataCollectionConfig = null;
     
     public JdbcDataCollectionConfigFactory() {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.JDBC_COLLECTION_CONFIG_FILE_NAME);
-            log().debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream reader = new FileInputStream(cfgFile);
             unmarshall(reader);
             reader.close();
@@ -68,10 +71,6 @@ public class JdbcDataCollectionConfigFactory {
             //throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
         }
         return m_jdbcDataCollectionConfig;
-    }
-    
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(JdbcDataCollectionConfig.class);
     }
 
 }

@@ -35,7 +35,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class ScanManager {
+    private static final Logger LOG = LoggerFactory.getLogger(ScanManager.class);
     
     private final InetAddress m_address;
     private SystemGroup m_systemGroup;
@@ -181,7 +183,7 @@ public class ScanManager {
             	m_ipAddressTable.updateIpInterfaceData(node, InetAddressUtils.str(addr));
             }
         } catch (final InterruptedException e) {
-            LogUtils.infof(this, e, "thread interrupted while updating SNMP data");
+            LOG.info("thread interrupted while updating SNMP data", e);
             Thread.currentThread().interrupt();
 
         }

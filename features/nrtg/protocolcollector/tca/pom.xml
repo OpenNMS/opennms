@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-tca</artifactId>
   <packaging>bundle</packaging>
-  <name>NRTG ProtocolCollector TCA</name>
+  <name>OpenNMS Features NRTG ProtocolCollector TCA</name>
   <properties>
     <bundle.symbolicName>org.opennms.nrtg.protocolcollector.tca</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.protocolcollector.tca</bundle.namespace>

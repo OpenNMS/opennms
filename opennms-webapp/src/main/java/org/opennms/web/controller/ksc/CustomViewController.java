@@ -48,7 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -60,6 +59,8 @@ import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -74,6 +75,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomViewController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CustomViewController.class);
+
 
     public enum Parameters {
         report,
@@ -123,16 +127,16 @@ public class CustomViewController extends AbstractController implements Initiali
         // Load report to view 
         Report report = null;
         if ("node".equals(reportType)) {
-            log().debug("handleRequestInternal: buildNodeReport(reportId) " + reportId);
+            LOG.debug("handleRequestInternal: buildNodeReport(reportId) {}", reportId);
             report = getKscReportService().buildNodeReport(reportId);
         } else if ("nodeSource".equals(reportType)) {
-            log().debug("handleRequestInternal: buildNodeSourceReport(nodeSource) " + reportIdString);
+            LOG.debug("handleRequestInternal: buildNodeSourceReport(nodeSource) {}", reportIdString);
             report = getKscReportService().buildNodeSourceReport(reportIdString);
         } else if ("domain".equals(reportType)) {
-            log().debug("handleRequestInternal: buildDomainReport(reportIdString) " + reportIdString);
+            LOG.debug("handleRequestInternal: buildDomainReport(reportIdString) {}", reportIdString);
             report = getKscReportService().buildDomainReport(reportIdString);
         } else if ("custom".equals(reportType)) {
-            log().debug("handleRequestInternal: getReportByIndex(reportId) " + reportId);
+            LOG.debug("handleRequestInternal: getReportByIndex(reportId) {}", reportId);
             report = m_kscReportFactory.getReportByIndex(reportId);
             if (report == null) {
                 throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
@@ -154,12 +158,12 @@ public class CustomViewController extends AbstractController implements Initiali
                 try {
                     resource = resources.get(i);
                 }catch(IndexOutOfBoundsException e) {
-                    log().debug("Resource List Index Out Of Bounds Caught ", e);
+                    LOG.debug("Resource List Index Out Of Bounds Caught ", e);
                 }
                 
                 resourceMap.put(graph.toString(), resource);
                 if (resource == null) {
-                    log().debug("Could not get resource for graph " + graph + " in report " + report.getTitle());
+                    LOG.debug("Could not get resource for graph {} in report {}", graph, report.getTitle());
                 } else {
                     prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
                 }
@@ -174,9 +178,7 @@ public class CustomViewController extends AbstractController implements Initiali
                     && !prefabGraphs.isEmpty()) {
                 // Get the name of the first item.  prefabGraphs is sorted.
                 overrideGraphType = prefabGraphs.iterator().next().getName();
-                if (log().isDebugEnabled()) {
-                    log().debug("custom_view: setting default graph type to " + overrideGraphType);
-                }
+                    LOG.debug("custom_view: setting default graph type to {}", overrideGraphType);
             }
         }
         
@@ -198,9 +200,7 @@ public class CustomViewController extends AbstractController implements Initiali
             try {
                 displayGraph = getResourceService().getPrefabGraph(displayGraphType);
             } catch (ObjectRetrievalFailureException e) {
-                if (log().isDebugEnabled()) {
-                    log().debug("The prefabricated graph '" + displayGraphType + "' does not exist: " + e, e);
-                }
+                    LOG.debug("The prefabricated graph '{}' does not exist: {}", displayGraphType, e, e);
                 displayGraph = null;
             }
             
@@ -291,10 +291,10 @@ public class CustomViewController extends AbstractController implements Initiali
             try {
                 getKscReportService().getResourceFromGraph(graph);
             } catch (ObjectRetrievalFailureException orfe) {
-                log().error("Removing graph '" + graph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ graph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
+                LOG.error("Removing graph '{}' in KSC report '{}' because the resource it refers to could not be found. Perhaps resource '{}' (or its ancestor) referenced by this graph no longer exists?", graph.getTitle(), report.getTitle(), graph.getResourceId());
                 itr.remove();
             } catch (Throwable e) {
-                log().error("Unexpected error while scanning through graphs in report: " + e.getMessage(), e);
+                LOG.error("Unexpected error while scanning through graphs in report: {}", e.getMessage(), e);
                 itr.remove();
             }
         }
@@ -319,9 +319,6 @@ public class CustomViewController extends AbstractController implements Initiali
         
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(CustomViewController.class);
-    }
 
     /**
      * <p>getKscReportFactory</p>

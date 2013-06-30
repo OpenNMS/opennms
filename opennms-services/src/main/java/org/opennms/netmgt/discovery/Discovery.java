@@ -59,6 +59,8 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -72,7 +74,9 @@ import org.springframework.util.Assert;
  */
 @EventListener(name="OpenNMS.Discovery")
 public class Discovery extends AbstractServiceDaemon {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
+    
     /**
      * The callback that sends newSuspect events upon successful ping response.
      */
@@ -152,7 +156,7 @@ public class Discovery extends AbstractServiceDaemon {
      * Constructs a new discovery instance.
      */
     public Discovery() {
-        super("OpenNMS.Discovery");
+        super("discovery");
     }
 
     /**
@@ -169,7 +173,7 @@ public class Discovery extends AbstractServiceDaemon {
             initializeConfiguration();
             EventIpcManagerFactory.init();
         } catch (Throwable e) {
-            log().debug("onInit: initialization failed: "+e, e);
+            LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
     }
@@ -178,14 +182,14 @@ public class Discovery extends AbstractServiceDaemon {
         DiscoveryConfigFactory.reload();
         setDiscoveryFactory(DiscoveryConfigFactory.getInstance());
     }
-
+    
     private void doPings() {
-        infof("starting ping sweep");
+        LOG.info("starting ping sweep");
         
         try {
             initializeConfiguration();
         } catch (Throwable e) {
-            log().error("doPings: could not re-init configuration, continuing with in memory configuration."+e, e);
+            LOG.error("doPings: could not re-init configuration, continuing with in memory configuration.", e);
         }
 
 
@@ -202,7 +206,7 @@ public class Discovery extends AbstractServiceDaemon {
                 try {
                     Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
                 } catch (InterruptedException e) {
-                    infof("interrupting discovery sweep");
+                    LOG.info("interrupting discovery sweep");
                     break;
                 }
             }
@@ -210,7 +214,7 @@ public class Discovery extends AbstractServiceDaemon {
             getDiscoveryFactory().getReadLock().unlock();
         }
 
-        infof("finished discovery sweep");
+        LOG.info("finished discovery sweep");
         m_xstatus = PING_IDLE;
     }
 
@@ -221,7 +225,7 @@ public class Discovery extends AbstractServiceDaemon {
                 try {
                     m_pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
                 } catch (Throwable e) {
-                    debugf(e, "error pinging %s", address.getAddress());
+                    LOG.debug("error pinging {}", address.getAddress(), e);
                 }
             }
         }
@@ -236,12 +240,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     private void startTimer() {
         if (m_timer != null) {
-            debugf("startTimer() called, but a previous timer exists; making sure it's cleaned up");
+            LOG.debug("startTimer() called, but a previous timer exists; making sure it's cleaned up");
             m_xstatus = PING_FINISHING;
             m_timer.cancel();
         }
         
-        debugf("scheduling new discovery timer");
+        LOG.debug("scheduling new discovery timer");
         m_timer = new Timer("Discovery.Pinger", true);
 
         TimerTask task = new TimerTask() {
@@ -263,12 +267,12 @@ public class Discovery extends AbstractServiceDaemon {
 
     private void stopTimer() {
         if (m_timer != null) {
-            debugf("stopping existing timer");
+            LOG.debug("stopping existing timer");
             m_xstatus = PING_FINISHING;
             m_timer.cancel();
             m_timer = null;
         } else {
-            debugf("stopTimer() called, but there is no existing timer");
+            LOG.debug("stopTimer() called, but there is no existing timer");
         }
     }
 
@@ -330,15 +334,15 @@ public class Discovery extends AbstractServiceDaemon {
     				newAlreadyDiscovered.add(rs.getString(1));
     			}
     		} else {
-    			log().warn("Got null ResultSet from query for all IP addresses");
+    			LOG.warn("Got null ResultSet from query for all IP addresses");
     		}
     		m_alreadyDiscovered = newAlreadyDiscovered;
     	} catch (SQLException sqle) {
-    		log().warn("Caught SQLException while trying to query for all IP addresses: " + sqle.getMessage());
+		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
     	} finally {
     	    d.cleanUp();
     	}
-    	log().info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
+    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
     }
 
     /**
@@ -348,7 +352,7 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
     public void handleDiscoveryConfigurationChanged(Event event) {
-        log().info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
+        LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
     }
 
@@ -361,17 +365,17 @@ public class Discovery extends AbstractServiceDaemon {
             this.stop();
             this.start();
         } catch (MarshalException e) {
-            fatalf(e, "Unable to initialize the discovery configuration factory");
+            LOG.error("Unable to initialize the discovery configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (ValidationException e) {
-            fatalf(e, "Unable to initialize the discovery configuration factory");
+            LOG.error("Unable to initialize the discovery configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
-            fatalf(e, "Unable to initialize the discovery configuration factory");
+            LOG.error("Unable to initialize the discovery configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
@@ -386,11 +390,11 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void reloadDaemonConfig(Event e) {
-        log().info("reloadDaemonConfig: processing reload daemon event...");
+        LOG.info("reloadDaemonConfig: processing reload daemon event...");
         if (isReloadConfigEventTarget(e)) {
             reloadAndReStart();
         }
-        log().info("reloadDaemonConfig: reload daemon event processed.");
+        LOG.info("reloadDaemonConfig: reload daemon event processed.");
     }
     
     private boolean isReloadConfigEventTarget(Event event) {
@@ -405,7 +409,7 @@ public class Discovery extends AbstractServiceDaemon {
             }
         }
         
-        log().debug("isReloadConfigEventTarget: discovery was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: discovery was target of reload event: {}", isTarget);
         return isTarget;
     }
 
@@ -421,7 +425,7 @@ public class Discovery extends AbstractServiceDaemon {
             final String iface = event.getInterface();
 			m_alreadyDiscovered.remove(iface);
 
-            debugf("Removed %s from known node list", iface);
+            LOG.debug("Removed {} from known node list", iface);
         }
     }
 
@@ -462,7 +466,7 @@ public class Discovery extends AbstractServiceDaemon {
         final String iface = event.getInterface();
 		m_alreadyDiscovered.add(iface);
 
-        debugf("Added %s as discovered", iface);
+        LOG.debug("Added {} as discovered", iface);
     }
 
 }

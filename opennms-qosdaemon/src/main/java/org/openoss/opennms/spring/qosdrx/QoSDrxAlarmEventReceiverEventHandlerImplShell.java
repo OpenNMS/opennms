@@ -35,7 +35,8 @@ import javax.oss.fm.monitor.NotifyChangedAlarmEvent;
 import javax.oss.fm.monitor.NotifyClearedAlarmEvent;
 import javax.oss.fm.monitor.NotifyNewAlarmEvent;
 import javax.oss.util.IRPEvent;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -51,16 +52,10 @@ import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
  * @version $Id: $
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEventReceiverEventHandler{
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDrxAlarmEventReceiverEventHandlerImplShell.class);
 
 	private static boolean initialised=false; // true if init() has initialised class
 
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(QoSDrx.class);	
-	}
-	
 	// ************************
 	// Spring DAO setters
 	// ************************
@@ -133,12 +128,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -148,12 +142,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -164,12 +157,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAckStateChangedEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -179,12 +171,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -194,12 +185,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmListRebuiltEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -209,12 +199,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -225,12 +214,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -240,12 +228,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
         @Override
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
