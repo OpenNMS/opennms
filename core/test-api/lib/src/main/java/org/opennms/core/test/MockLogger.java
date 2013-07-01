@@ -110,7 +110,7 @@ public class MockLogger extends MarkerIgnoringBase {
     private static boolean INITIALIZED = false;
 
     private static int DEFAULT_LOG_LEVEL = LOG_LEVEL_INFO;
-    private static boolean SHOW_DATE_TIME = false;
+    private static boolean SHOW_DATE_TIME = true;
     private static String DATE_TIME_FORMAT_STR = null;
     private static DateFormat DATE_FORMATTER = null;
     private static boolean SHOW_THREAD_NAME = true;
@@ -315,13 +315,6 @@ public class MockLogger extends MarkerIgnoringBase {
             }
         }
 
-        // Append current thread name if so configured
-        if (SHOW_THREAD_NAME) {
-            buf.append('[');
-            buf.append(Thread.currentThread().getName());
-            buf.append("] ");
-        }
-
         if (LEVEL_IN_BRACKETS) buf.append('[');
 
         // Append a readable representation of the log level
@@ -344,6 +337,13 @@ public class MockLogger extends MarkerIgnoringBase {
         }
         if (LEVEL_IN_BRACKETS) buf.append(']');
         buf.append(' ');
+
+        // Append current thread name if so configured
+        if (SHOW_THREAD_NAME) {
+            buf.append('[');
+            buf.append(Thread.currentThread().getName());
+            buf.append("] ");
+        }
 
         // Append the name of the log instance if so configured
         if (SHOW_SHORT_LOG_NAME) {

@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockLogger;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -64,7 +65,7 @@ public class DataCollectionConfigParserTest {
 
     @After
     public void tearDown() {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNotGreaterOrEqual(MockLogger.LOG_LEVEL_ERROR);
     }
 
     @Test

@@ -182,6 +182,7 @@ public class MockLogAppender {
     public static void setupLogging(final boolean toConsole, String level, final Properties config) {
         s_defaultLevel = level;
         resetLogLevel();
+        resetEvents();
 
         if (s_instance == null) {
             s_instance = new MockLogAppender();
@@ -225,8 +226,8 @@ public class MockLogAppender {
      * @param level a {@link org.apache.log4j.Level} object.
      */
     public static void receivedLogLevel(final int level) {
-        if (level >= s_highestLoggedLevel) {
-            System.err.println("current level: " + s_highestLoggedLevel + ", new level: " + level);
+        if (level > s_highestLoggedLevel) {
+            //System.err.println("MockLogAppender: current level: " + s_highestLoggedLevel + ", new level: " + level);
             s_highestLoggedLevel = level;
         }
     }
@@ -320,7 +321,6 @@ public class MockLogAppender {
     }
 
     public static void addEvent(final LoggingEvent loggingEvent) {
-        System.err.println("addEvent called: " + loggingEvent);
         s_events.add(loggingEvent);
         receivedLogLevel(loggingEvent.getLevel());
     }
