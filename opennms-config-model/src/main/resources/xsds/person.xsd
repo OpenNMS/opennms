@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/poller/person" xmlns:this="http://xmlns.opennms.org/xsd/config/poller/person" elementFormDefault="qualified">
+    <element name="person">
+		<complexType>
+			<attribute name="firstName" type="string" use="required"/>
+			<attribute name="lastName" type="string" use="required"/>
+		</complexType>
+	</element>
+</schema>

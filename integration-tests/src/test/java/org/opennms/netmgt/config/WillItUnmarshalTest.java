@@ -92,7 +92,7 @@ import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
-import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;

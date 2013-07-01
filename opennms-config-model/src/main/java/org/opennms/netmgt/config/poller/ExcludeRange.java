@@ -29,6 +29,7 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="exclude-range")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("poller-configuration.xsd")
 @SuppressWarnings("all") public class ExcludeRange implements java.io.Serializable {
 
 

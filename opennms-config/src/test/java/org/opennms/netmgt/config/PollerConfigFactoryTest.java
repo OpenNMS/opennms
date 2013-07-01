@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.Person;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -200,6 +201,7 @@ public class PollerConfigFactoryTest extends TestCase {
         assertEquals("owner", param.getKey());
         assertNull(param.getValue());
         assertNotNull(param.getAnyObject());
+        assertTrue(param.getAnyObject() instanceof Person);
     }
     
     public void testInterfaceInPackage() throws Exception {

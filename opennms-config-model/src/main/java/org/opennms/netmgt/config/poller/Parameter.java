@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -50,6 +52,10 @@ import org.w3c.dom.Node;
 
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("poller-configuration.xsd")
+//WARNING: Person.class is just for testing purposes and *must* be removed soon.
+//FIXME Must contain MailTransportTest and PageSequence
+@XmlSeeAlso({Person.class})
 @SuppressWarnings("all") public class Parameter implements java.io.Serializable {
 
 
@@ -60,20 +66,22 @@ import org.w3c.dom.Node;
     /**
      * Field _key.
      */
-	@XmlAttribute(name="key", required=true)
+    @XmlAttribute(name="key", required=true)
     private java.lang.String _key;
 
     /**
      * Field _value.
      */
-	@XmlAttribute(name="value", required=true)
+    @XmlAttribute(name="value", required=true)
     private java.lang.String _value;
 
     /**
      * Field _anyObject.
+     * <p>The final object must be listed on @XmlSeeAlso, and the XSD must be defined like the following:</p>
+     * <p>&lt;any processContents="skip" id="configuration" minOccurs="0" maxOccurs="1" /&gt;</p>
      */
-	@XmlAnyElement(lax=true) // lax=true is required to parse the object as a JAXBElement, otherwise it will be parsed as Element
-	private java.lang.Object _anyObject;
+    @XmlAnyElement(lax=true)
+    private java.lang.Object _anyObject;
 
 
       //----------------/
@@ -137,10 +145,7 @@ import org.w3c.dom.Node;
      */
     public Object getAnyObject(
     ) {
-    	if (_anyObject != null && _anyObject instanceof JAXBElement) {
-    		return ((JAXBElement)_anyObject).getValue();
-    	}
-    	return null;
+        return _anyObject;
     }
 
     /**
@@ -243,7 +248,7 @@ import org.w3c.dom.Node;
      */
     public void setAnyObject(
             final Object anyObject) {
-    	this._anyObject = anyObject;
+        this._anyObject = anyObject;
     }
 
     /**
