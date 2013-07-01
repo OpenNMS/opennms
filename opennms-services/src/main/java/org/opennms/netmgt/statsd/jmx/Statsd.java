@@ -40,7 +40,7 @@ public class Statsd extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Statsd";
+        return org.opennms.netmgt.statsd.Statsd.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

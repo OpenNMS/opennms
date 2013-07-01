@@ -65,7 +65,9 @@ import org.springframework.util.Assert;
 public class Statsd implements SpringServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);
-    
+
+    private static final String LOG4J_CATEGORY = "statsd";
+
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private RrdDao m_rrdDao;
@@ -408,5 +410,9 @@ public class Statsd implements SpringServiceDaemon {
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
+    }
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
     }
 }
