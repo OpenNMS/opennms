@@ -1,6 +1,5 @@
 package org.slf4j.impl;
 
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
@@ -37,7 +36,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     private final ILoggerFactory loggerFactory;
 
     private StaticLoggerBinder() {
-        loggerFactory = new MockLoggerFactory(MockLogAppender.getInstance());
+        loggerFactory = new MockLoggerFactory();
     }
 
     public ILoggerFactory getLoggerFactory() {

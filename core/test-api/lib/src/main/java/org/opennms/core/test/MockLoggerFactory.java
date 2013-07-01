@@ -7,14 +7,13 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 public class MockLoggerFactory implements ILoggerFactory {
-    final static MockLoggerFactory INSTANCE = new MockLoggerFactory(MockLogAppender.getInstance());
-    static MockLogAppender s_appender = null;
+    final static MockLoggerFactory INSTANCE = new MockLoggerFactory();
+    static MockLogAppender s_appender = MockLogAppender.getInstance();
 
     final Map<String,Logger> m_loggerMap;
 
-    public MockLoggerFactory(final MockLogAppender mockLogAppender) {
+    public MockLoggerFactory() {
         m_loggerMap = new HashMap<String,Logger>();
-        s_appender = mockLogAppender;
     }
 
     public static void setAppender(final MockLogAppender appender) {
@@ -33,7 +32,7 @@ public class MockLoggerFactory implements ILoggerFactory {
         synchronized (this) {
             slogger = (Logger) m_loggerMap.get(name);
             if (slogger == null) {
-                slogger = new MockLogger(name, s_appender);
+                slogger = new MockLogger(name);
                 m_loggerMap.put(name, slogger);
             }
         }

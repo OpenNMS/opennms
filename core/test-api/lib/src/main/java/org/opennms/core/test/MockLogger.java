@@ -238,16 +238,14 @@ public class MockLogger extends MarkerIgnoringBase {
     protected int currentLogLevel = LOG_LEVEL_INFO;
     /** The short name of this simple log instance */
     private transient String shortLogName = null;
-    private MockLogAppender m_appender;
 
     /**
      * Package access allows only {@link SimpleLoggerFactory} to instantiate
      * MockLogger instances.
      * @param appender 
      */
-    MockLogger(String name, MockLogAppender appender) {
+    MockLogger(String name) {
         if (!INITIALIZED) {
-            m_appender = appender;
             init();
         }
         this.name = name;

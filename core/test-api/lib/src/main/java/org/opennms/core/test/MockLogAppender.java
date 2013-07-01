@@ -197,6 +197,11 @@ public class MockLogAppender {
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2.c3p0.impl", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR" + consoleAppender + ", MOCK");
+
+        for (final Object oKey : config.keySet()) {
+            final String key = ((String)oKey).replaceAll("^log4j.logger.", MockLogger.LOG_KEY_PREFIX);
+            setProperty(logger, key, config.getProperty((String)oKey));
+        }
     }
 
     private static void setProperty(final Logger logger, final String key, final String value) {
