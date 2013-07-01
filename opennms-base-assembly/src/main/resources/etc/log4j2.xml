@@ -6,6 +6,7 @@
     <property name="logdir">${sys:opennms.daemonlogs.dir}</property>
   </properties>
 
+  <!-- Each category/log can be set to one of TRACE, DEBUG, INFO, WARN, ERROR -->
   <DynamicThresholdFilter key="prefix" defaultThreshold="INFO" onMatch="ACCEPT" onMismatch="DENY">
     <KeyValuePair key="access-point-monitor" value="INFO" />
     <KeyValuePair key="ackd"                 value="INFO" />
@@ -56,7 +57,11 @@
             <PatternLayout>
               <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
             </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
             <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
             <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>

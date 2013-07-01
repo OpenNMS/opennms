@@ -89,10 +89,7 @@ import org.slf4j.MDC;
  *  this archiver are all doneexclusively in the 'events.archiver.properties'
  *  property file
  *
- *  A {@link org.apache.log4j.RollingFileAppender RollingFileAppender} is used
- *  for the archive file with the defaults for this being to roll when the
- *  size is 100KB with the number of backups set to 4.
- *
+
  *  @author &lt;A HREF=&quot;mailto:sowmya@opennms.org&quot;&gt;Sowmya Nataraj&lt;/A&gt;
  *  @author &lt;A HREF=&quot;http://www.opennms.org&quot;&gt;OpenNMS&lt;/A&gt;
  *  @author &lt;A HREF=&quot;mailto:sowmya@opennms.org&quot;&gt;Sowmya Nataraj&lt;/A&gt;

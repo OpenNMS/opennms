@@ -41,8 +41,6 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -510,32 +508,14 @@ public class PropertiesGraphDaoTest extends TestCase {
         m_outputStream.close();
         
         type = dao.findPrefabGraphTypeDaoByName("performance");
-        LoggingEvent[] events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
 
         assertNotNull("could not get performance prefab graph type after rewriting config file", type);
         assertNotNull("could not get mib2.bits report after rewriting config file", type.getQuery("mib2.bits"));
         
-        //Expecting the same events again, as the individual graph reload attempts to re-read the config file
-        events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
+
         
         assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
-        //And again, same events
-        events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
+
     }
 
     public void testAdhocPropertiesReload() throws Exception {
@@ -1038,8 +1018,6 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertNotNull("could not get mib2.bits report after rewriting config file", graph);
         assertEquals("ifSpeed", graph.getExternalValues()[0]);
         
-        //There should have been an error log about the reload failure 
-        MockLogAppender.assertLogAtLevel(Level.ERROR); 
     }
     
     /**
@@ -1071,8 +1049,6 @@ public class PropertiesGraphDaoTest extends TestCase {
         PrefabGraph mib2Discards = dao.getPrefabGraph("mib2.discards");
         assertNotNull(mib2Discards);
         
-        //There should have been an error log about the  failure 
-        MockLogAppender.assertLogAtLevel(Level.ERROR); 
 
     }
     
@@ -1203,8 +1179,6 @@ public class PropertiesGraphDaoTest extends TestCase {
             //Expected; no such graph
         }
 
-        //There should have been an error log about the reload failure (but no exception) 
-        MockLogAppender.assertLogAtLevel(Level.ERROR);
     }
 
     /**

@@ -36,8 +36,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Date;
 import java.util.Hashtable;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.EventConstants;
@@ -256,37 +254,6 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_xmlrpcd.stop();
         Thread.sleep(2000);
         
-        LoggingEvent[] errors = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        /*
-         * XXX Hack Reset the events now, otherwise any failures below are
-         * masked when MockLogAppender.assertNoWarningsOrGreater() is called in
-         * OpenNMSTestCase.
-         */
-        MockLogAppender.resetEvents();
-
-        if (errors.length == 0) {
-            fail("No errors received by log4j, however some errors "
-                    + "should have been received while the XML-RPC"
-                    + "anticipator was down");
-        }
-        
-        for (int i = 0; i < errors.length; i++) {
-            String message = errors[i].getMessage().toString();
-            if (("Failed to send message to XMLRPC server: http://localhost:" + m_port1).equals(message)) {
-                continue;
-            }
-            if (("Could not successfully communicate with XMLRPC server 'http://localhost:" + m_port1 + "' after 1 tries").equals(message)) {
-                continue;
-            }
-            if ("Can not set up communication with any XMLRPC server".equals(message)) {
-                continue;
-            }
-            fail("Unexpected error logged: [" + errors[i].getLevel().toString() + "] "
-                    + errors[i].getLoggerName() +": " + errors[i].getMessage());
-        }
-
-        MockLogAppender.resetEvents();
-
         finishUp();
     }
 
@@ -328,40 +295,6 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_xmlrpcd.stop();
         Thread.sleep(2000);
         
-        LoggingEvent[] errors = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        /*
-         * XXX Hack Reset the events now, otherwise any failures below are
-         * masked when MockLogAppender.assertNoWarningsOrGreater() is called in
-         * OpenNMSTestCase.
-         */
-        MockLogAppender.resetEvents();
-
-        if (errors.length == 0) {
-            fail("No errors received by log4j, however some errors "
-                    + "should have been received while the XML-RPC"
-                    + "anticipator was down");
-        }
-        
-        for (int i = 0; i < errors.length; i++) {
-            String message = errors[i].getMessage().toString();
-            if (("Failed to send message to XMLRPC server: http://localhost:" + m_port1).equals(message)) {
-                continue;
-            }
-            if (("Could not successfully communicate with XMLRPC server 'http://localhost:" + m_port1 + "' after 1 tries").equals(message)) {
-                continue;
-            }
-            if (("Failed to send message to XMLRPC server http://localhost:" + m_port1).equals(message)) {
-                continue;
-            }
-            if ("Can not set up communication with any XMLRPC server".equals(message)) {
-                continue;
-            }
-            fail("Unexpected error logged: [" + errors[i].getLevel().toString() + "] "
-                    + errors[i].getLoggerName() +": " + errors[i].getMessage());
-        }
-
-        MockLogAppender.resetEvents();
-
         finishUp();
     }
 
@@ -409,46 +342,6 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_xmlrpcd.stop();
         Thread.sleep(2000);
         
-        LoggingEvent[] errors = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        /*
-         * XXX Hack Reset the events now, otherwise any failures below are
-         * masked when MockLogAppender.assertNoWarningsOrGreater() is called in
-         * OpenNMSTestCase.
-         */
-        MockLogAppender.resetEvents();
-
-        if (errors.length == 0) {
-            fail("No errors received by log4j, however some errors "
-                    + "should have been received while the XML-RPC"
-                    + "anticipator was down");
-        }
-        
-        for (int i = 0; i < errors.length; i++) {
-            String message = errors[i].getMessage().toString();
-            if (("Failed to send message to XMLRPC server: http://localhost:" + m_port1).equals(message)) {
-                continue;
-            }
-            if (("Failed to send message to XMLRPC server: http://localhost:" + m_port2).equals(message)) {
-                continue;
-            }
-            if (("Could not successfully communicate with XMLRPC server 'http://localhost:" + m_port1 + "' after 1 tries").equals(message)) {
-                continue;
-            }
-            if (("Could not successfully communicate with XMLRPC server 'http://localhost:" + m_port2 + "' after 1 tries").equals(message)) {
-                continue;
-            }
-            if (("Failed to send message to XMLRPC server http://localhost:" + m_port1).equals(message)) {
-                continue;
-            }
-            if ("Can not set up communication with any XMLRPC server".equals(message)) {
-                continue;
-            }
-            fail("Unexpected error logged: [" + errors[i].getLevel().toString() + "] "
-                    + errors[i].getLoggerName() +": " + errors[i].getMessage());
-        }
-
-        MockLogAppender.resetEvents();
-
         finishUp();
     }
 
@@ -717,34 +610,6 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         }
         
         ta.verifyAnticipated();
-
-        LoggingEvent[] errors = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        /*
-         * XXX Hack Reset the events now, otherwise any failures below are
-         * masked when MockLogAppender.assertNoWarningsOrGreater() is called in
-         * OpenNMSTestCase.
-         */
-        MockLogAppender.resetEvents();
-
-        if (errors.length == 0) {
-            fail("No errors received by log4j, however some errors "
-                    + "should have been received while the XML-RPC"
-                    + "anticipator was down");
-        }
-        
-        for (int i = 0; i < errors.length; i++) {
-            String message = errors[i].getMessage().toString();
-            if ("serverSubscription element baseEventsBlah references a subscription that does not exist".equals(message)) {
-                continue;
-            }
-            if ("Failed to load configuration".equals(message)) {
-                continue;
-            }
-            fail("Unexpected error logged: [" + errors[i].getLevel().toString() + "] "
-                    + errors[i].getLoggerName() +": " + errors[i].getMessage());
-        }
-
-        MockLogAppender.resetEvents();
 
         finishUp();
     }

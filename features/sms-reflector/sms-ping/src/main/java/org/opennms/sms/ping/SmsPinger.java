@@ -33,8 +33,9 @@ import static org.opennms.sms.ping.PingConstants.DEFAULT_TIMEOUT;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.opennms.sms.ping.internal.SinglePingResponseCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -114,7 +115,7 @@ import org.opennms.sms.ping.internal.SinglePingResponseCallback;
 public class SmsPinger {
     
     private static SmsPingTracker s_pingTracker;
-    private static Logger log = Logger.getLogger(SmsPinger.class);
+    private static Logger log = LoggerFactory.getLogger(SmsPinger.class);
     
 	/**
 	 * Initializes this singleton

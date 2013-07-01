@@ -30,8 +30,6 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import static org.junit.Assert.*;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -279,10 +277,6 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
         assertNull("PDU should be null", pdu);
         
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("number of logged events", 1, events.length);
-        assertEquals("first logged event severity (should be ERROR)", Level.ERROR, events[0].getLevel());
-        
         MockLogAppender.resetEvents();
         MockLogAppender.resetLogLevel();
     }
@@ -302,10 +296,6 @@ public class Snmp4JStrategyTest extends MockSnmpAgentTestCase {
         
         PDU pdu = m_strategy.buildPdu(new Snmp4JAgentConfig(getAgentConfig()), PDU.SET, oids, values);
         assertNull("PDU should be null", pdu);
-        
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("number of logged events", 1, events.length);
-        assertEquals("first logged event severity (should be ERROR)", Level.ERROR, events[0].getLevel());
         
         MockLogAppender.resetEvents();
         MockLogAppender.resetLogLevel();

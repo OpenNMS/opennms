@@ -36,7 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -441,7 +440,7 @@ final class Executor implements Runnable, PausableFiber {
      */
     @Override
     public synchronized void stop() {
-        Category log = (Category) m_mgr.lookupBean("log");
+        Logger log = (Logger) m_mgr.lookupBean("log");
 
         if (m_worker == null) {
             throw new IllegalStateException("The fiber has never been run");
