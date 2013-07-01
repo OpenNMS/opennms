@@ -11,7 +11,7 @@
     <script src="http://maps.google.com/maps/api/js?sensor=false" />
     <script src="openlayers/OpenLayers.js" />
     <script src="Google.js" />
-    <script src="markercluster/leaflet.markercluster.js" />
+    <script src="markercluster/leaflet.markercluster-src.js" />
     <!-- <script src="leaflet-search/leaflet-search.js" /> -->
 
     <stylesheet src="markercluster/MarkerCluster.css" />
