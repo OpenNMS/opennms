@@ -82,6 +82,8 @@ public class Discovery extends AbstractServiceDaemon {
      */
     private static final DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
 
+    private static final String LOG4J_CATEGORY = "discover";
+
 
     private static final int PING_IDLE = 0;
     private static final int PING_RUNNING = 1;
@@ -156,7 +158,7 @@ public class Discovery extends AbstractServiceDaemon {
      * Constructs a new discovery instance.
      */
     public Discovery() {
-        super("discovery");
+        super(LOG4J_CATEGORY);
     }
 
     /**
@@ -469,4 +471,7 @@ public class Discovery extends AbstractServiceDaemon {
         LOG.debug("Added {} as discovered", iface);
     }
 
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+    }
 }
