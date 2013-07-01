@@ -61,8 +61,6 @@ class SyslogReceiver implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiver.class);
 
     private static final int SOCKET_TIMEOUT = 500;
-    
-    private static final String LOG4J_CATEGORY = "syslogd";
 
     /**
      * The Fiber's status.
@@ -161,7 +159,7 @@ class SyslogReceiver implements Runnable {
         m_context = Thread.currentThread();
 
         // Get a log instance
-        Logging.putPrefix(LOG4J_CATEGORY);
+        Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
