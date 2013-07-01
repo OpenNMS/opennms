@@ -91,23 +91,18 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
 
         @Override
-        public void contextMenu(Map<String, Object> props) {
-          
-          int x = (Integer) props.get("x");
-          int y = (Integer) props.get("y");
-          
-          String type = (String) props.get("type");
+        public void contextMenu(String target, String type, int x, int y) {
 
-          Object target = null;
+          Object menuTarget = null;
           if (type.toLowerCase().equals("vertex")) {
-            String targetKey = (String)props.get("target");
-            target = getGraph().getVertexByKey(targetKey);
+            String targetKey = target;
+              menuTarget = getGraph().getVertexByKey(targetKey);
           } else if (type.toLowerCase().equals("edge")) {
-            String targetKey = (String)props.get("target");
-            target = getGraph().getEdgeByKey(targetKey);
+            String targetKey = (String)target;
+              menuTarget = getGraph().getEdgeByKey(targetKey);
           }
 
-          m_contextMenuHandler.show(target, x, y);
+          m_contextMenuHandler.show(menuTarget, x, y);
             
         }
 

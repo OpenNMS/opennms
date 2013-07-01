@@ -31,12 +31,11 @@ package org.opennms.features.topology.app.internal;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
+import com.vaadin.server.ErrorEvent;
 import com.vaadin.data.Property;
-import com.vaadin.server.Page;
+import com.vaadin.server.*;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -53,6 +52,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
@@ -123,7 +123,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         loadUserSettings(request);
         setupListeners();
         createLayouts();
-
+        setupErrorHandler();
         //addExtension(new Refresher());
     }
 
@@ -144,6 +144,18 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         addHeader();
 
         addContentLayout();
+    }
+
+    private void setupErrorHandler() {
+        UI.getCurrent().setErrorHandler(new DefaultErrorHandler(){
+
+            @Override
+            public void error(com.vaadin.server.ErrorEvent event) {
+                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.ERROR_MESSAGE);
+                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyWidgetTestApplication", event.getThrowable());
+                super.error(event);
+            }
+        });
     }
 
     private void addHeader() {

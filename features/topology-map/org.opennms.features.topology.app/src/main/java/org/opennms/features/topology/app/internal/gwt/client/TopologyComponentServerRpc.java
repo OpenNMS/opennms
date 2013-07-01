@@ -15,7 +15,7 @@ public interface TopologyComponentServerRpc extends ServerRpc {
     public void scrollWheel(double scrollVal, int x, int y);
     public void mapPhysicalBounds(int width, int height);
     public void marqueeSelection(String[] vertexIds, MouseEventDetails eventDetails);
-    public void contextMenu(Map<String, Object> props);
+    public void contextMenu(String target, String type, int x, int y);
     public void clientCenterPoint(int x, int y);
     public void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform);
     public void updateVertices(List<String> vertices);

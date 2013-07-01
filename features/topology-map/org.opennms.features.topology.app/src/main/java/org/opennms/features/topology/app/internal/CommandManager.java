@@ -97,9 +97,11 @@ public class CommandManager {
 	private class ContextMenuListener implements ContextMenu.ContextMenuItemClickListener {
 
 		private final OperationContext m_opContext;
+        private final TopoContextMenu m_topoContextMenu;
 
-		public ContextMenuListener(OperationContext opContext) {
+        public ContextMenuListener(OperationContext opContext, TopoContextMenu topoContextMenu) {
 			m_opContext = opContext;
+            m_topoContextMenu = topoContextMenu;
 		}
 
 		@Override
@@ -107,8 +109,8 @@ public class CommandManager {
 			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
 			//TODO: Do some implementation here for execute
 			if (operation != null) {
-				TopoContextMenu source = (TopoContextMenu)event.getSource();
-				operation.execute(asVertexList(source.getTarget()), m_opContext);
+
+				operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
 			}
 		}
 
@@ -186,7 +188,7 @@ public class CommandManager {
 			}
 		}
 		TopoContextMenu contextMenu = contextMenuBuilder.get();
-		contextMenu.addItemClickListener(new ContextMenuListener(opContext));
+		contextMenu.addItemClickListener(new ContextMenuListener(opContext, contextMenu));
 
 		updateContextCommandToOperationMap(contextMenu.getItems());
 		return contextMenu;

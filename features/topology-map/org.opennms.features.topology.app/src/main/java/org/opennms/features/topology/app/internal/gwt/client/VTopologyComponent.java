@@ -863,15 +863,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		return m_client;
 	}
 
-	public void showContextMenu(Object target, int x, int y, String type) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("target", target);
-		map.put("x", x);
-		map.put("y", y);
-		map.put("type", type);
-
-//		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
-		m_serverRpc.contextMenu(map);
+	public void showContextMenu(String target, int x, int y, String type) {
+		m_serverRpc.contextMenu(target, type, x, y);
 	}
 	
     @Override
@@ -929,7 +922,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     @Override
     public void onContextMenu(Object target, int x, int y, String type) {
-        showContextMenu(target, x, y, type);
+        showContextMenu((String)target, x, y, type);
     }
 
     @Override
