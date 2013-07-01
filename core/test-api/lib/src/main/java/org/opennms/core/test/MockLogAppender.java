@@ -58,9 +58,11 @@ import org.slf4j.LoggerFactory;
  */
 public class MockLogAppender {
     private static final LoggingEvent[] EMPTY_LOGGING_EVENT = new LoggingEvent[0];
+
     private static List<LoggingEvent> s_events;
     private static int s_highestLoggedLevel = 0;
-    private static MockLogAppender m_instance = null;
+    private static String s_defaultLevel = "DEBUG";
+    private static MockLogAppender s_instance = null;
 
     /**
      * <p>Constructor for MockLogAppender.</p>
@@ -157,7 +159,7 @@ public class MockLogAppender {
      * @param props a {@link java.util.Properties} object.
      */
     public static void setupLogging(final boolean toConsole, final Properties props) {
-        final String level = System.getProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        final String level = System.getProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, s_defaultLevel);
         setupLogging(toConsole, level, props);
     }
 
@@ -179,10 +181,11 @@ public class MockLogAppender {
      * @param config a {@link java.util.Properties} object.
      */
     public static void setupLogging(final boolean toConsole, String level, final Properties config) {
+        s_defaultLevel = level;
         resetLogLevel();
 
-        if (m_instance == null) {
-            m_instance = new MockLogAppender();
+        if (s_instance == null) {
+            s_instance = new MockLogAppender();
         }
 
         final String consoleAppender = (toConsole ? ", CONSOLE" : "");
@@ -234,7 +237,7 @@ public class MockLogAppender {
      */
     public static void resetLogLevel() {
         s_highestLoggedLevel = MockLogger.LOG_LEVEL_TRACE;
-        System.setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+        System.setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, s_defaultLevel);
     }
 
     /**
@@ -325,7 +328,7 @@ public class MockLogAppender {
 
     public static MockLogAppender getInstance() {
         setupLogging();
-        return m_instance;
+        return s_instance;
     }
 
     public static void assertNoLogging() throws AssertionFailedError {
