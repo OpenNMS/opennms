@@ -154,7 +154,6 @@ public class Starter {
     }
     
     private void configureLog4j() {
-        Logging.configureLogging();
 
     }
 
