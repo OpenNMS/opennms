@@ -31,8 +31,9 @@ package org.opennms.sms.ping.internal;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.opennms.sms.ping.PingResponseCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.Message;
 
 /**
@@ -45,6 +46,9 @@ import org.smslib.Message;
  * @version $Id: $
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SinglePingResponseCallback.class);
+    
     private CountDownLatch bs = new CountDownLatch(1);
     @SuppressWarnings("unused")
     private Throwable error = null;
@@ -63,26 +67,23 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     @Override
     public void handleResponse(PingRequest request, Message packet) {
-        info("got response for request " + request + ", message = " + packet);
+        LOG.info("got response for request {}, message = {}", request, packet);
         responseTime = request.getRoundTripTime();
         bs.countDown();
     }
 
-    private Logger log() {
-        return Logger.getLogger(this.getClass());
-    }
 
     /** {@inheritDoc} */
     @Override
     public void handleTimeout(PingRequest request, Message packet) {
-        info("timed out pinging request " + request + ", message = " + packet);
+        LOG.info("timed out pinging request {}, message = {}", request, packet);
         bs.countDown();
     }
 
     /** {@inheritDoc} */
     @Override
     public void handleError(PingRequest request, Message pr, Throwable t) {
-        info("an error occurred pinging " + request, t);
+        LOG.info("an error occurred pinging {}", request, t);
         error = t;
         bs.countDown();
     }
@@ -103,9 +104,9 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      * @throws java.lang.InterruptedException if any.
      */
     public void waitFor() throws InterruptedException {
-        info("waiting for ping to "+m_phoneNumber+" to finish");
+        LOG.info("waiting for ping to {} to finish", m_phoneNumber);
         bs.await();
-        info("finished waiting for ping to "+m_phoneNumber+" to finish");
+        LOG.info("finished waiting for ping to {} to finish", m_phoneNumber);
     }
 
     /**
@@ -117,22 +118,5 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         return responseTime;
     }
 
-    /**
-     * <p>info</p>
-     *
-     * @param msg a {@link java.lang.String} object.
-     */
-    public void info(String msg) {
-        log().info(msg);
-    }
-    /**
-     * <p>info</p>
-     *
-     * @param msg a {@link java.lang.String} object.
-     * @param t a {@link java.lang.Throwable} object.
-     */
-    public void info(String msg, Throwable t) {
-        log().info(msg, t);
-    }
 
 }

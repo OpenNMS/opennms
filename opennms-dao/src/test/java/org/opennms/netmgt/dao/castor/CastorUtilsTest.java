@@ -35,7 +35,6 @@ import java.io.IOException;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -107,7 +106,7 @@ public class CastorUtilsTest extends TestCase {
          * In particular, we want to make sure that we don't see this message:
          * 2008-07-28 16:04:53,260 DEBUG [main] org.exolab.castor.xml.Unmarshaller: *static* unmarshal method called, this will ignore any mapping files or changes made to an Unmarshaller instance.
          */
-        MockLogAppender.assertNotGreaterOrEqual(Level.DEBUG);
+        MockLogAppender.assertNoLogging();
     }
     
     public void testUnmarshalReaderQuietly() throws MarshalException, ValidationException, FileNotFoundException, IOException {
@@ -118,7 +117,7 @@ public class CastorUtilsTest extends TestCase {
          * In particular, we want to make sure that we don't see this message:
          * 2008-07-28 16:04:53,260 DEBUG [main] org.exolab.castor.xml.Unmarshaller: *static* unmarshal method called, this will ignore any mapping files or changes made to an Unmarshaller instance.
          */
-        MockLogAppender.assertNotGreaterOrEqual(Level.DEBUG);
+        MockLogAppender.assertNoLogging();
     }
     
     public void testUnmarshallInputStreamWithUtf8() throws MarshalException, ValidationException, IOException {

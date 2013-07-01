@@ -44,7 +44,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -163,7 +162,7 @@ public class Nms4335Test implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
+        MockLogAppender.assertNoFatalOrGreater();
     }
 
     @Test

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.apache.log4j.Level;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -79,7 +78,6 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
 

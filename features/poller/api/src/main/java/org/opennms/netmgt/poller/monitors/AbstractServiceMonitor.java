@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -148,43 +147,4 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
     /** {@inheritDoc} */
     @Override
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-
-	/**
-	 * <p>logDown</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param reason a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logDown(Level level, String reason) {
-		return logDown(level, reason, null);
-	}
-
-	/**
-	 * <p>logDown</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param reason a {@link java.lang.String} object.
-	 * @param e a {@link java.lang.Throwable} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logDown(Level level, String reason, Throwable e) {
-		String className = ClassUtils.getShortName(getClass());
-	    LOG.debug(className+": "+reason, e);
-	    return PollStatus.unavailable(reason);
-	}
-	
-	/**
-	 * <p>logUp</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param responseTime a double.
-	 * @param logMsg a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
-		String className = ClassUtils.getShortName(getClass());
-	    LOG.debug("{} : {}", className, logMsg);
-	    return PollStatus.available(responseTime);
-	}
 }

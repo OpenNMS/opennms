@@ -73,7 +73,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/daemon.xml</descriptor>
-            <descriptor>src/assembly/log4j.xml</descriptor>
+            <descriptor>src/assembly/log4j2.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -368,15 +368,23 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.logging.log4j</artifactId>
-    </dependency>
     <!-- webapp dependencies -->
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>                      
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>

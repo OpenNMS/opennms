@@ -47,7 +47,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
@@ -161,7 +160,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
-        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
+        MockLogAppender.assertNoFatalOrGreater();
     }
 
     private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
