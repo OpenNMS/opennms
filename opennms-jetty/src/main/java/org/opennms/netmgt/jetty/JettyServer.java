@@ -51,7 +51,9 @@ import org.slf4j.LoggerFactory;
  */
 public class JettyServer extends AbstractServiceDaemon {
     
-    public static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
+
+    private static final String LOG4J_CATEGORY = "jetty-server";
     
     int m_port = 8080;
 
@@ -61,7 +63,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * <p>Constructor for JettyServer.</p>
      */
     protected JettyServer() {
-        super("jetty-server");
+        super(LOG4J_CATEGORY);
     }
     
     /** {@inheritDoc} */
@@ -230,5 +232,8 @@ public class JettyServer extends AbstractServiceDaemon {
             LOG.error("Error stopping Jetty Server", e);
         }
     }
-    
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+    }
 }
