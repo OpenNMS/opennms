@@ -60,7 +60,7 @@ public class MockLogAppender {
     private static final LoggingEvent[] EMPTY_LOGGING_EVENT = new LoggingEvent[0];
 
     private static List<LoggingEvent> s_events;
-    private static int s_highestLoggedLevel = 0;
+    private static int s_highestLoggedLevel = MockLogger.LOG_LEVEL_TRACE;
     private static String s_defaultLevel = "DEBUG";
     private static MockLogAppender s_instance = null;
 
@@ -86,7 +86,6 @@ public class MockLogAppender {
      */
     public static LoggingEvent[] getEvents() {
         return (LoggingEvent[]) s_events.toArray(EMPTY_LOGGING_EVENT);
-        // return new LoggingEvent[0];
     }
 
     /**
