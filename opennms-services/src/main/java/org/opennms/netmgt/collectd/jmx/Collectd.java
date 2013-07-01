@@ -42,7 +42,7 @@ public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Collectd";
+        return org.opennms.netmgt.collectd.Collectd.getLoggingCategory();
     }
 
     /** {@inheritDoc} */
