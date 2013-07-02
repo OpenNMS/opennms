@@ -116,7 +116,7 @@ public class MockLogger extends MarkerIgnoringBase {
     private static boolean SHOW_THREAD_NAME = true;
     private static boolean SHOW_LOG_NAME = true;
     private static boolean SHOW_SHORT_LOG_NAME = false;
-    private static String LOG_FILE = "System.err";
+    private static String LOG_FILE = "System.out";
     private static PrintStream TARGET_STREAM = null;
     private static boolean LEVEL_IN_BRACKETS = false;
     private static String WARN_LEVEL_STRING = "WARN";
@@ -265,6 +265,7 @@ public class MockLogger extends MarkerIgnoringBase {
         while ((levelString == null) && (indexOfLastDot > -1)) {
             tempName = tempName.substring(0, indexOfLastDot);
             levelString = getStringProperty(LOG_KEY_PREFIX + tempName, null);
+            //System.err.println("tempName = " + tempName + ", levelString = " + levelString);
             indexOfLastDot = String.valueOf(tempName).lastIndexOf(".");
         }
         return levelString;

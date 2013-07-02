@@ -188,18 +188,27 @@ public class MockLogAppender {
             s_instance = new MockLogAppender();
         }
 
-        final String consoleAppender = (toConsole ? ", CONSOLE" : "");
-
         LoggerFactory.getILoggerFactory();
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
         setProperty(logger, MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2.c3p0.impl", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "mx4j", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.SQL", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2.c3p0.impl", "WARN");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR" + consoleAppender + ", MOCK");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.security", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "snaq.db", "INFO");
 
         for (final Object oKey : config.keySet()) {
             final String key = ((String)oKey).replaceAll("^log4j.logger.", MockLogger.LOG_KEY_PREFIX);
