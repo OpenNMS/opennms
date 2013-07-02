@@ -160,7 +160,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
-        MockLogAppender.assertNoFatalOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {

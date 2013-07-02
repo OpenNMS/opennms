@@ -140,7 +140,7 @@ public class SyslogdTest implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoFatalOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     /**

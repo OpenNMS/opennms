@@ -88,11 +88,11 @@ public class MockLogAppenderTest {
 
         assertTrue("Messages were logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
 
-        final LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(0);
+        final LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.TRACE);
 
         assertEquals("Number of logged events", 1, events.length);
 
-        assertEquals("Logged event level", MockLogger.LOG_LEVEL_INFO, events[0].getLevel());
+        assertEquals("Logged event level", Level.INFO, events[0].getLevel());
         assertEquals("Logged message", "An Info message", events[0].getMessage());
     }
 
@@ -103,11 +103,11 @@ public class MockLogAppenderTest {
 
         assertFalse("Messages were not logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
 
-        final LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(MockLogger.LOG_LEVEL_WARN);
+        final LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
 
         assertEquals("Number of logged events", 1, events.length);
 
-        assertEquals("Logged event level", MockLogger.LOG_LEVEL_WARN, events[0].getLevel());
+        assertEquals("Logged event level", Level.WARN, events[0].getLevel());
         assertEquals("Logged message", "A warn message", events[0].getMessage());
     }
 
@@ -117,7 +117,7 @@ public class MockLogAppenderTest {
         LOG.warn("A warn message");
 
         try {
-            MockLogAppender.assertNotGreaterOrEqual(MockLogger.LOG_LEVEL_WARN);
+            MockLogAppender.assertNoWarningsOrGreater();
         } catch (final AssertionFailedError e) {
             return;
         }
@@ -130,7 +130,7 @@ public class MockLogAppenderTest {
         LOG.warn("A warn message");
 
         try {
-            MockLogAppender.assertNotGreaterOrEqual(MockLogger.LOG_LEVEL_ERROR);
+            MockLogAppender.assertNoErrorOrGreater();
         } catch (final AssertionFailedError e) {
             fail("Received unexpected AssertionFailedError: " + e);
         }
@@ -142,7 +142,7 @@ public class MockLogAppenderTest {
         log.warn("A warn message");
 
         try {
-            MockLogAppender.assertNotGreaterOrEqual(MockLogger.LOG_LEVEL_WARN);
+            MockLogAppender.assertNoWarningsOrGreater();
         } catch (final AssertionFailedError e) {
             fail("Received unexpected AssertionFailedError: " + e);
         }
