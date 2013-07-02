@@ -34,6 +34,7 @@
 	java.util.*,
 	org.opennms.netmgt.config.*,
 	org.opennms.netmgt.config.poller.*,
+	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
 	org.opennms.netmgt.EventConstants,
