@@ -142,4 +142,25 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         String query = "select COUNT(*) from OnmsMonitoredService as svc where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress != ? and svc.status != 'D'";
         return queryInt(query, nodeId, ipAddr);
     }
+    
+    public int markServiceDeleted(long nodeId, String ipAddr, String service) {
+        //        "UPDATE ifservices SET status='D' "
+        //                + "FROM service "
+        //                + "WHERE ifservices.serviceID = service.serviceID "
+        //                + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
+        String query = "update svc set svc.status = 'D' " +
+        		"from OnmsMonitoredService as svc, OnmsServiceType as svcType " +
+        		"where svcType.id = svc.serviceType and  svc.ipInterface.node.id = ? and svc.ipInterface.ipAddres = ? and svcType.name = ?";
+        return queryInt(query, nodeId, ipAddr, service);
+    }
+    
+    public List<OnmsMonitoredService> getServiceStatus(String ipAddr, String service) {
+        // SELECT nodeid FROM ifservices, service 
+        // WHERE ifservices.serviceid = service.serviceid 
+        // AND ipaddr = ? AND servicename = ? AND status !='D'
+        String query = "select svc.ipInterface.node.id " +
+                "from OnmsMonitoredService as svc, OnmsServiceType as svcType " +
+                "where svcType.id = svc.serviceType and svc.ipInterface.ipAddres = ? and svcType.name = ? and svc.status != 'D'";
+        return find(query, ipAddr, service);
+    }
 }

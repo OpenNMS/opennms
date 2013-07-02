@@ -46,13 +46,15 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -105,45 +107,10 @@ public class BroadcastEventProcessor implements InitializingBean {
     private static String SQL_DELETE_SERVICE_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
 
     /**
-     * SQL statement used to verify if an ipinterface with the specified ip
-     * address exists in the database and retrieve the nodeid if exists.
-     */
-    private static String SQL_QUERY_IPADDRESS_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? AND isManaged !='D'";
-
-    /**
-     * SQL statement used to query the 'node' and 'ipinterface' tables to verify
-     * if a specified ipaddr and node label have already exist in the database.
-     */
-    private static String SQL_QUERY_IPINTERFACE_EXIST = "SELECT nodelabel, ipaddr FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'";
-
-    /**
-     * SQL statement used to query if a node with the specified nodelabel exist
-     * in the database, and the nodeid from the database if exists.
-     */
-    private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'";
-
-    /**
-     * SQL statement used to verify if an ifservice with the specified ip
-     * address and service name exists in the database.
-     */
-    private static String SQL_QUERY_SERVICE_EXIST = "SELECT nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid AND ipaddr = ? AND servicename = ? AND status !='D'";
-
-    /**
      * SQL statement used to query if an interface/service mapping already
      * exists in the database.
      */
     private static String SQL_QUERY_SERVICE_MAPPING_EXIST = "SELECT * FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
-
-    /**
-     * SQL query to retrieve nodeid of a particulary interface address
-     */
-    private static String SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
-
-    /**
-     * SQL statement used to retrieve the serviced id from the database with a
-     * specified service name.
-     */
-    private static String SQL_RETRIEVE_SERVICE_ID = "SELECT serviceid FROM service WHERE servicename = ?";
 
     /**
      * Determines if deletePropagation is enabled in the Outage Manager.
@@ -187,6 +154,8 @@ public class BroadcastEventProcessor implements InitializingBean {
     private NodeDaoHibernate m_nodeDao;
     
     private ServiceTypeDaoHibernate m_serviceTypeDao;
+    
+    private AlarmDaoHibernate m_alarmDao;
 
     /**
      * Helper method used to create add an interface to a node.
@@ -404,43 +373,41 @@ public class BroadcastEventProcessor implements InitializingBean {
      */
     private List<Event> doAddServiceToInterface(Connection dbConn, String ipaddr, String serviceName, int serviceId, long txNo) throws SQLException, FailedOperationException {
 
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement(SQL_QUERY_IPADDRESS_EXIST);
-            d.watch(stmt);
-            stmt.setString(1, ipaddr);
-            rs = stmt.executeQuery();
-            d.watch(rs);
-
-            List<Event> eventsToSend = new LinkedList<Event>();
-            while (rs.next()) {
-                LOG.debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
-
-                InetAddress inetAddr;
-                try {
-                    inetAddr = InetAddressUtils.addr(ipaddr);
-                } catch (final IllegalArgumentException e) {
-                    throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
-                }
-                final int nodeId = rs.getInt(1);
-                // insert service
-                DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, inetAddr, serviceId);
-                service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-                service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-                service.setNotify(DbIfServiceEntry.NOTIFY_ON);
-                service.store(dbConn, true);
-
-                // Create a nodeGainedService event to eventd.
-                DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, inetAddr, serviceName, txNo);
-                eventsToSend.add(newEvent);
+        new DBUtils(getClass());
+        
+        List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByIpAddress(ipaddr);
+        
+        for (OnmsIpInterface ipInterface : ipInterfaceList) {
+            if (ipInterface.getIsManaged() == "D") {
+                ipInterfaceList.remove(ipInterface);
             }
-            return eventsToSend;
-        } finally {
-            d.cleanUp();
-        }        
+        }
+        
+
+        List<Event> eventsToSend = new LinkedList<Event>();
+        for(OnmsIpInterface ipInterface : ipInterfaceList) {
+            LOG.debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
+
+            InetAddress inetAddr;
+            try {
+                inetAddr = InetAddressUtils.addr(ipaddr);
+            } catch (final IllegalArgumentException e) {
+                throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+            }
+            final int nodeId = ipInterface.getNode().getId();
+            // insert service
+            DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, inetAddr, serviceId);
+            service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
+            service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
+            service.setNotify(DbIfServiceEntry.NOTIFY_ON);
+            service.store(dbConn, true);
+
+            // Create a nodeGainedService event to eventd.
+            DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
+            Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, inetAddr, serviceName, txNo);
+            eventsToSend.add(newEvent);
+        }
+        return eventsToSend;
     }
 
     /**
@@ -656,35 +623,19 @@ public class BroadcastEventProcessor implements InitializingBean {
     }
 
     private void deleteAlarmsForNode(Connection dbConn, long nodeId) throws SQLException {
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ?");
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            int count = stmt.executeUpdate();
-
-            LOG.debug("deleteAlarmsForNode: deleted: "+count+" alarms for node: "+nodeId);
-
-        } finally {
-            d.cleanUp();
+        List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
+        
+        for(OnmsAlarm alarm : alarmList) {
+           m_alarmDao.delete(alarm.getId()); 
         }
     }
 
     private void deleteAlarmsForInterface(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ? AND ipaddr = ?");
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            stmt.setString(2, ipAddr);
-            int count = stmt.executeUpdate();
-
-            LOG.debug("deleteAlarmsForInterace: deleted: "+count+" alarms for interface: "+ipAddr);
-
-        } finally {
-            d.cleanUp();
+        List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
+        
+        for(OnmsAlarm alarm : alarmList) {
+            if(alarm.getIpAddr().getHostAddress() == ipAddr) 
+                m_alarmDao.delete(alarm.getId()); 
         }
     }
 
@@ -701,44 +652,23 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if any exception occurs communicating with the database
      */
     private void deleteAlarmsForSnmpInterface(Connection dbConn, long nodeId, int ifIndex) throws SQLException {
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms WHERE nodeid = ? AND ifindex = ?");
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            stmt.setInt(2, ifIndex);
-            int count = stmt.executeUpdate();
-
-            LOG.debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId + "ifIndex: "+ifIndex);
-
-        } finally {
-            d.cleanUp();
+        
+        List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
+        
+        for(OnmsAlarm alarm : alarmList) {
+            if(alarm.getIfIndex() == ifIndex)
+                m_alarmDao.delete(alarm.getId()); 
         }
     }
 
     private void deleteAlarmsForService(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
-
-        try {
-            stmt = dbConn.prepareStatement("DELETE FROM alarms " +
-                    "WHERE nodeid = ? " +
-                    " AND ipaddr = ? " +
-                    " AND serviceid " +
-                    "  IN (SELECT serviceid " +
-                    "FROM service " +
-                    "WHERE servicename = ?)");
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setString(3, service);
-            int count = stmt.executeUpdate();
-
-            LOG.debug("deleteAlarmsForService: deleted: "+count+" alarms for service: "+service);
-
-        } finally {
-            d.cleanUp();
+        Integer serviceTypeId = m_serviceTypeDao.findByName(service).getId();
+        
+        List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
+        
+        for(OnmsAlarm alarm : alarmList) {
+            if(alarm.getIpAddr().getHostName() == ipAddr && alarm.getServiceType().getId() == serviceTypeId)
+                m_alarmDao.delete(alarm.getId()); 
         }
     }
 
@@ -933,36 +863,20 @@ public class BroadcastEventProcessor implements InitializingBean {
      * @throws SQLException
      */
     private int[] findNodeIdForServiceAndInterface(Connection dbConn, String ipaddr, String serviceName) throws SQLException {
+        List<OnmsMonitoredService> serviceList = m_monitoredServiceDao.getServiceStatus(ipaddr, serviceName);
         int[] nodeIds;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-
-        try {
-            // Verify if the specified service already exist.
-            stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
-            d.watch(stmt);
-
-            stmt.setString(1, ipaddr);
-            stmt.setString(2, serviceName);
-
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            List<Integer> nodeIdList = new LinkedList<Integer>();
-            while (rs.next()) {
-                LOG.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
-                int nodeId = rs.getInt(1);
-                nodeIdList.add(nodeId);
-            }
-            nodeIds = new int[nodeIdList.size()];
-            int i = 0;
-            for(Integer n : nodeIdList) {
-                nodeIds[i++] = n.intValue();
-            }
-            return nodeIds;
-        } finally {
-            d.cleanUp();
-        }        
+        List<Integer> nodeIdList = new LinkedList<Integer>();
+        for(OnmsMonitoredService service : serviceList) {
+            LOG.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
+            int nodeId = service.getNodeId();
+            nodeIdList.add(nodeId);
+        }
+        nodeIds = new int[nodeIdList.size()];
+        int i = 0;
+        for(Integer n : nodeIdList) {
+            nodeIds[i++] = n.intValue();
+        }
+        return nodeIds;
     }
 
     /**
@@ -1433,31 +1347,15 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             // ensure the ipaddr is set
             EventUtils.checkInterface(event);
-
-            // Get database connection and retrieve nodeid
-            Connection dbc = null;
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            final DBUtils d = new DBUtils(getClass());
-            try {
-                dbc = getConnection();
-                d.watch(dbc);
-
-                // Retrieve node id
-                stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
-                d.watch(stmt);
-                stmt.setString(1, event.getInterface());
-                rs = stmt.executeQuery();
-                d.watch(rs);
-                if (rs.next()) {
-                    nodeid = rs.getLong(1);
-                }
-            } catch (SQLException sqlE) {
-                LOG.error("handleForceRescan: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
-            } finally {
-                d.cleanUp();
+            
+            List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByIpAddress(event.getInterface());
+            
+            for (OnmsIpInterface ipInterface : ipInterfaceList) {
+                if(ipInterface.getIsManaged() == "D") 
+                    ipInterfaceList.remove(ipInterface);
             }
-
+            
+            nodeid = Long.valueOf(ipInterfaceList.get(0).getNode().getId());
         }
 
         if (nodeid == null || nodeid == -1) {
@@ -1686,22 +1584,8 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if a database error occurs
      */
     private boolean interfaceExists(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement(SQL_QUERY_IPINTERFACE_EXIST);
-            d.watch(stmt);
-
-            stmt.setString(1, nodeLabel);
-            stmt.setString(2, ipaddr);
-
-            rs = stmt.executeQuery();
-            d.watch(rs);
-            return rs.next();
-        } finally {
-            d.cleanUp();
-        }
+        int count = m_ipInterfaceDao.getIpInterfaceStatus(nodeLabel, ipaddr);
+        return count == 0 ? false : true; 
     }
 
     /**
@@ -1946,22 +1830,7 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if an error occurs communicating with the database
      */
     private List<Event> markServiceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, String service, long txNo) throws SQLException {
-        PreparedStatement stmt = null;
-
-        final String DB_MARK_SERVICE_DELETED =
-                "UPDATE ifservices SET status='D' "
-                        + "FROM service "
-                        + "WHERE ifservices.serviceID = service.serviceID "
-                        + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
-
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setString(3, service);
-            int count = stmt.executeUpdate();
+            int count = m_monitoredServiceDao.markServiceDeleted(nodeId, ipAddr, service);
 
             LOG.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
 
@@ -1969,9 +1838,6 @@ public class BroadcastEventProcessor implements InitializingBean {
                 return Collections.singletonList(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
             else
                 return Collections.emptyList();
-        } finally {
-            d.cleanUp();
-        }        
     }
 
     /**
@@ -2136,5 +2002,10 @@ public class BroadcastEventProcessor implements InitializingBean {
     @Autowired
     public void setServiceTypeDao(ServiceTypeDaoHibernate serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
+    }
+    
+    @Autowired
+    public void setAlarmDao(AlarmDaoHibernate alarmDao) {
+        m_alarmDao = alarmDao;
     }
 }

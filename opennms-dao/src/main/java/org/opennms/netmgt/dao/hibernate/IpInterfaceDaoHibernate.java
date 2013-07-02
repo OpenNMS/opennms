@@ -34,10 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 /**
  * <p>IpInterfaceDaoHibernate class.</p>
@@ -45,6 +46,8 @@ import org.springframework.util.Assert;
  * @author david
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceDaoHibernate.class);
     
     String m_findByServiceTypeQuery = null;
 
@@ -208,12 +211,19 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         //  SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'
         String query = "select COUNT(*) from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D'";
         int count = queryInt(query, nodeId, ipAddr);
-        if (log().isDebugEnabled())
-            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+        LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
         return count;
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    public int getIpInterfaceStatus(String nodeLabel, String ipaddr) {
+        // SELECT nodelabel, ipaddr 
+        // FROM node, ipinterface 
+        // WHERE node.nodeid = ipinterface.nodeid 
+        // AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'
+        String query = "select COUNT(*) from OnmsNode as node, OnmsIpInterface as ipInterface " +
+        		"where node.id = ipInterface.node.id " +
+        		"and node.label = ? and ipInterface.ipAddress = ? and node.type != 'D'";
+        
+        return queryInt(query, nodeLabel, ipaddr);
     }
 }

@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsServiceType, Integer, String> implements ServiceTypeDao {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceTypeDaoHibernate.class);
     /**
      * <p>Constructor for ServiceTypeDaoHibernate.</p>
      */
@@ -62,13 +64,7 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
         		"where svcType.id = svc.serviceType and svc.status != 'D'" +
         		"and svc.ipInterface.node.id = ? and svc.ipInterface.ipAddres = ? and svcType.name = ?";
         int count = queryInt(query, nodeId, ipAddr, service);
-        if (log().isDebugEnabled())
-            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+        LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
         return count;
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }
