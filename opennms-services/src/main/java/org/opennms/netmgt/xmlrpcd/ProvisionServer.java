@@ -30,7 +30,6 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.util.Properties;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -57,13 +56,6 @@ public class ProvisionServer {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
-        Properties logConfig = new Properties();
-        logConfig.put("log4j.rootCategory", "DEBUG, CONSOLE");
-        logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
-        logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-        logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-        PropertyConfigurator.configure(logConfig);
-
         ProvisionServer svr = new ProvisionServer();
         svr.run();
     }

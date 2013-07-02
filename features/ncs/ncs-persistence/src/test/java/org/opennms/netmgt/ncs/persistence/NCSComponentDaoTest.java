@@ -32,7 +32,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -73,13 +72,6 @@ public class NCSComponentDaoTest {
 	int m_pe1NodeId;
 	
 	int m_pe2NodeId;
-	
-	@BeforeClass
-	public static void setupLogging()
-	{
-		BasicConfigurator.configure();		
-	}
-	
 	
 	@Before
 	public void setUp() {

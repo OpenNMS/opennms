@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
      /**
      * The name of the logging category for Syslogd.
      */
-    static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    static final String LOG4J_CATEGORY = "syslogd";
 
     /**
      * The singleton instance.
@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
-        super("syslogd");
+        super(LOG4J_CATEGORY);
     }
 
     /**
@@ -199,5 +199,4 @@ import org.slf4j.LoggerFactory;
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;
     }
-
 }

@@ -99,7 +99,7 @@ public final class Eventd extends AbstractServiceDaemon {
      * eventd originates events during correlation) and the broadcast queue
      */
     public Eventd() {
-        super("eventd");
+        super(LOG4J_CATEGORY);
     }
 
     /**

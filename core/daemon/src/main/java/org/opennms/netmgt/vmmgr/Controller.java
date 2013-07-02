@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
@@ -38,16 +37,13 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * <p>
@@ -119,7 +115,6 @@ public class Controller {
      * @param argv an array of {@link java.lang.String} objects.
      */
     public static void main(String[] argv) {
-        configureLog4j();
         
         Logging.putPrefix(LOG4J_CATEGORY);
         
@@ -179,13 +174,6 @@ public class Controller {
             System.err.println("Use \"-h\" option for help.");
             System.exit(1);
         }
-    }
-
-    private static void configureLog4j() {
-        File homeDir = new File(System.getProperty("opennms.home"));
-        File etcDir = new File(homeDir, "etc");
-        File controllerProperties = new File(etcDir, "log4j-controller.properties");
-        PropertyConfigurator.configure(controllerProperties.getAbsolutePath());
     }
 
     /**

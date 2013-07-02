@@ -32,7 +32,6 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -70,7 +69,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
     static final int TEST_SNMP_PORT = 9161;
     static final String TEST_IP_ADDRESS = "127.0.0.1";
 
-    private Level m_defaultLogLevel = Level.WARN;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -88,7 +86,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(m_defaultLogLevel);
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     @Test
@@ -168,7 +166,6 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidRange() throws Exception {
-        m_defaultLogLevel = Level.ERROR;
         HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "8");

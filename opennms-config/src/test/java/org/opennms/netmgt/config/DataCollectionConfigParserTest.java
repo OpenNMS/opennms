@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.config;
 
-import org.apache.log4j.Level;
+import java.io.File;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,12 +38,13 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.datacollection.*;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-
-import java.io.File;
-import java.util.Map;
 
 /**
  * DataCollectionConfigParserTest
@@ -53,17 +56,15 @@ public class DataCollectionConfigParserTest {
     private static final int resourceTypesCount = 141;
     private static final int systemDefCount = 149;
     private static final int groupsCount = 228;
-    private Level errorLevel;
 
     @Before
     public void setUp() {
-        errorLevel = Level.WARN;
         MockLogAppender.setupLogging();
     }
 
     @After
     public void tearDown() {
-        MockLogAppender.assertNotGreaterOrEqual(errorLevel);
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test
@@ -202,10 +203,9 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testPrecedence() throws Exception {
         // Create DatacollectionConfig
-        errorLevel = Level.ERROR;
         Resource resource = new InputStreamResource(this.getClass().getResourceAsStream("datacollection-config-hybrid-precedence.xml"));
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource, false);
-
+        
         // Validate default datacollection content
         SnmpCollection collection = config.getSnmpCollection(0);
         Assert.assertEquals(1, collection.getIncludeCollectionCount());

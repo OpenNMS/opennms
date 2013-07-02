@@ -31,7 +31,6 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -46,6 +45,8 @@ import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,7 +63,7 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
     /** Constant <code>CONTEXT_KEY="mobileMessageContextName"</code> */
     public static final String CONTEXT_KEY = "mobileMessageContextName";
 
-    private static Logger log = Logger.getLogger(MobileMsgSequenceMonitor.class);
+    private static Logger log = LoggerFactory.getLogger(MobileMsgSequenceMonitor.class);
 
     private Phonebook m_phonebook;
 	private MobileMsgTracker m_tracker;

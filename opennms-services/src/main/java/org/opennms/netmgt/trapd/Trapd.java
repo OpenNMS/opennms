@@ -79,6 +79,8 @@ import org.springframework.util.Assert;
 public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory, TrapNotificationListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
+
+    private static final String LOG4J_CATEGORY = "trapd";
     
     /**
      * The last status sent to the service control manager.
@@ -130,7 +132,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
-        super("trapd");
+        super(LOG4J_CATEGORY);
     }
     
     /**
@@ -345,5 +347,9 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public void setBacklogQ(ExecutorService backlogQ) {
         m_backlogQ = backlogQ;
+    }
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
     }
 }

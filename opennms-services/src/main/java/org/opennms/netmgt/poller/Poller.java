@@ -72,8 +72,8 @@ import org.slf4j.LoggerFactory;
 public class Poller extends AbstractServiceDaemon {
     
     private final static Logger LOG = LoggerFactory.getLogger(Poller.class);
-    
-    private Logger log() { return LOG; }
+
+    private final static String LOG4J_CATEGORY = "poller";
 
     private final static Poller m_singleton = new Poller();
 
@@ -99,7 +99,7 @@ public class Poller extends AbstractServiceDaemon {
      * <p>Constructor for Poller.</p>
      */
     public Poller() {
-    	super("poller");
+        super(LOG4J_CATEGORY);
     }
 
     /* Getters/Setters used for dependency injection */
@@ -245,27 +245,27 @@ public class Poller extends AbstractServiceDaemon {
     protected void onInit() {
         
         // serviceUnresponsive behavior enabled/disabled?
-        log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
+        LOG.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
         
         try {
-            log().debug("init: Closing outages for unmanaged services");
+            LOG.debug("init: Closing outages for unmanaged services");
             
             closeOutagesForUnmanagedServices();
         } catch (Throwable e) {
-            log().error("init: Failed to close ouates for unmanage services", e);
+            LOG.error("init: Failed to close ouates for unmanage services", e);
         }
         
 
         // Schedule the interfaces currently in the database
         //
         try {
-            log().debug("start: Scheduling existing interfaces");
+            LOG.debug("start: Scheduling existing interfaces");
 
             scheduleExistingServices();
         } catch (Throwable sqlE) {
-            log().error("start: Failed to schedule existing interfaces", sqlE);
+            LOG.error("start: Failed to schedule existing interfaces", sqlE);
         }
 
         // Create an event receiver. The receiver will
@@ -273,11 +273,11 @@ public class Poller extends AbstractServiceDaemon {
         // interfaces, and schedulers them.
         //
         try {
-            log().debug("start: Creating event broadcast event processor");
+            LOG.debug("start: Creating event broadcast event processor");
 
             setEventProcessor(new PollerEventProcessor(this));
         } catch (Throwable t) {
-            log().error("start: Failed to initialized the broadcast event receiver", t);
+            LOG.error("start: Failed to initialized the broadcast event receiver", t);
 
             throw new UndeclaredThrowableException(t);
         }
@@ -372,12 +372,12 @@ public class Poller extends AbstractServiceDaemon {
         // start the scheduler
         //
         try {
-            if (log().isDebugEnabled())
-                log().debug("start: Starting poller scheduler");
+            if (LOG.isDebugEnabled())
+                LOG.debug("start: Starting poller scheduler");
 
             getScheduler().start();
         } catch (RuntimeException e) {
-            log().error("start: Failed to start scheduler", e);
+            LOG.error("start: Failed to start scheduler", e);
             throw e;
         }
 	}
@@ -629,7 +629,7 @@ public class Poller extends AbstractServiceDaemon {
     protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
         
         if (pkg.getRemote()) {
-            log().debug("pollableServiceInPackage: this package: "+pkg.getName()+", is a remote monitor package.");
+            LOG.debug("pollableServiceInPackage: this package: "+pkg.getName()+", is a remote monitor package.");
             return false;
         }
         
@@ -705,4 +705,7 @@ public class Poller extends AbstractServiceDaemon {
         getNetwork().visit(visitor);
     }
 
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+	}
 }    

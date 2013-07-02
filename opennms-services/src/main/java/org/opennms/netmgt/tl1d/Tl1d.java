@@ -55,11 +55,13 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@EventListener(name="OpenNMS:Tl1d")
+@EventListener(name="OpenNMS:Tl1d", logPrefix="tl1d")
 public class Tl1d extends AbstractServiceDaemon {
-	
-	public static final Logger LOG = LoggerFactory.getLogger(Tl1d.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(Tl1d.class);
+
+    private static final String LOG4J_CATEGORY = "tl1d";
+
 	/*
      * The last status sent to the service control manager.
      */
@@ -75,7 +77,7 @@ public class Tl1d extends AbstractServiceDaemon {
      * <p>Constructor for Tl1d.</p>
      */
     public Tl1d() {
-        super("tl1d");
+        super(LOG4J_CATEGORY);
     }
 	
     /**

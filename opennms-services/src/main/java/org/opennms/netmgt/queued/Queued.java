@@ -51,6 +51,8 @@ import org.springframework.util.StringUtils;
 public class Queued extends AbstractServiceDaemon implements EventListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(Queued.class);
+
+    private static final String LOG4J_CATEGORY = "queued";
     
     private volatile EventIpcManager m_eventMgr; 
 
@@ -66,7 +68,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
      * <p>Constructor for Queued.</p>
      */
     public Queued() {
-        super("queued");
+        super(LOG4J_CATEGORY);
     }
     
     /**
@@ -132,4 +134,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         }
     }
 
+    public static String getLoggingCateogy() {
+        return LOG4J_CATEGORY;
+    }
 }

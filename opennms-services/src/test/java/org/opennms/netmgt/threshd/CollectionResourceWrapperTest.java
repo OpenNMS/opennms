@@ -38,7 +38,6 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Level;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -76,18 +75,16 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 public class CollectionResourceWrapperTest {
 
-    Level m_logLevelToCheck;
     
     @Before
     public void setUp() throws Exception {
         CollectionResourceWrapper.s_cache.clear();
-        m_logLevelToCheck = Level.WARN;
         MockLogAppender.setupLogging();
     }
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(m_logLevelToCheck);
+        MockLogAppender.assertNoWarningsOrGreater();
     }
     
     @Test
@@ -202,8 +199,6 @@ public class CollectionResourceWrapperTest {
 	@Test
 	public void testGetCounterValueWithGap() throws Exception {
 
-		m_logLevelToCheck = Level.ERROR; // We're expecting a WARN; an ERROR or
-											// worse would be unexpected
 
 		CollectionAgent agent = createCollectionAgent();
 		SnmpCollectionResource resource = createNodeResource(agent);
