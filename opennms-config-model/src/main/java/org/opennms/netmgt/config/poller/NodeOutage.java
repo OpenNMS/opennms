@@ -31,7 +31,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="node-outage")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class NodeOutage implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class NodeOutage implements java.io.Serializable {
 
 
       //--------------------------/
@@ -198,7 +199,6 @@ import org.opennms.core.xml.ValidateUsing;
     ) {
         int result = 17;
         
-        long tmp;
         if (_status != null) {
            result = 37 * result + _status.hashCode();
         }

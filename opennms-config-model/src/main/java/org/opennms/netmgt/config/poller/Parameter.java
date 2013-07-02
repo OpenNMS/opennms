@@ -11,35 +11,15 @@ package org.opennms.netmgt.config.poller;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.StringWriter;
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
-import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.xml.ValidateUsing;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Parameters to be used for polling this service. E.g.: for
@@ -53,7 +33,8 @@ import org.w3c.dom.Node;
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class Parameter implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class Parameter implements java.io.Serializable {
 
 
       //--------------------------/
@@ -74,7 +55,9 @@ import org.w3c.dom.Node;
 
     /**
      * Field _anyObject.
-     * <p>The final object must be listed on @XmlSeeAlso, and the XSD must be defined like the following:</p>
+     * <p>The final object must be listed on @XmlSeeAlso or explicitly added to the JAXBContext when
+     * parsing this object, otherwise an instance of org.w3c.dom.Element will be returned.</p>
+     * <p>The XSD must be defined like the following:</p>
      * <p>&lt;any processContents="skip" id="configuration" minOccurs="0" maxOccurs="1" /&gt;</p>
      */
     @XmlAnyElement(lax=true)
@@ -177,7 +160,6 @@ import org.w3c.dom.Node;
     ) {
         int result = 17;
         
-        long tmp;
         if (_key != null) {
            result = 37 * result + _key.hashCode();
         }

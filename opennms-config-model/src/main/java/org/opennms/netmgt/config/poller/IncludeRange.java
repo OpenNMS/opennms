@@ -30,7 +30,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="include-range")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class IncludeRange implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class IncludeRange implements java.io.Serializable {
 
 
       //--------------------------/
@@ -131,7 +132,6 @@ import org.opennms.core.xml.ValidateUsing;
     ) {
         int result = 17;
         
-        long tmp;
         if (_begin != null) {
            result = 37 * result + _begin.hashCode();
         }

@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -32,7 +31,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="poller-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class PollerConfiguration implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class PollerConfiguration implements java.io.Serializable {
 
 
       //--------------------------/
@@ -463,7 +463,6 @@ import org.opennms.core.xml.ValidateUsing;
     ) {
         int result = 17;
         
-        long tmp;
         result = 37 * result + _threads;
         if (_nextOutageId != null) {
            result = 37 * result + _nextOutageId.hashCode();

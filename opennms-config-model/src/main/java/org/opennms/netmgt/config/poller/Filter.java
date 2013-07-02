@@ -31,7 +31,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="filter")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class Filter implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class Filter implements java.io.Serializable {
 
 
       //--------------------------/
@@ -109,7 +110,6 @@ import org.opennms.core.xml.ValidateUsing;
     ) {
         int result = 17;
         
-        long tmp;
         if (_content != null) {
            result = 37 * result + _content.hashCode();
         }

@@ -30,7 +30,8 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="monitor")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-@SuppressWarnings("all") public class Monitor implements java.io.Serializable {
+@SuppressWarnings("serial")
+public class Monitor implements java.io.Serializable {
 
 
       //--------------------------/
@@ -251,7 +252,6 @@ import org.opennms.core.xml.ValidateUsing;
     ) {
         int result = 17;
         
-        long tmp;
         if (_service != null) {
            result = 37 * result + _service.hashCode();
         }
