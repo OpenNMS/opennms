@@ -53,8 +53,6 @@ import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
@@ -76,6 +74,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Tests Vacuumd's execution of statements and automations
@@ -95,8 +94,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
+@JUnitTemporaryDatabase
+@Transactional
+public class VacuumdTest implements InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
     private Vacuumd m_vacuumd;
@@ -115,13 +115,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
 
     private MockNetwork m_network = new MockNetwork();
 
-    private MockDatabase m_database;
-
-    @Override
-    public void setTemporaryDatabase(MockDatabase database) {
-        m_database = database;
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -137,8 +130,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         } finally {
             IOUtils.closeQuietly(is);
         }
-
-        m_eventdIpcMgr.setEventWriter(m_database);
 
         m_vacuumd = Vacuumd.getSingleton();
         m_vacuumd.setEventManager(m_eventdIpcMgr);
@@ -327,7 +318,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * Simple test running a trigger.
      */
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+    @JUnitTemporaryDatabase
     public final void testRunTrigger() throws InterruptedException {
         Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
         String triggerSql = trigger.getStatement().getContent();
@@ -346,7 +337,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @throws InterruptedException 
      */
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on records created in @Before so we need a fresh database
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public final void testRunAutomation() throws SQLException, InterruptedException {
         final int major = OnmsSeverity.MAJOR.getId();
         
@@ -435,7 +426,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @throws InterruptedException 
      */
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on records created in @Before so we need a fresh database
+    @JUnitTemporaryDatabase
     public final void testSendEventWithParms() throws InterruptedException {
         // create node down events with severity 6
         bringNodeDownCreatingEventWithReason(1, "Testing node1");
@@ -466,7 +457,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test
     public final void testGetName() {
-        assertEquals("OpenNMS.Vacuumd", m_vacuumd.getName());
+        assertEquals("vacuumd", m_vacuumd.getName());
     }
 
     /**

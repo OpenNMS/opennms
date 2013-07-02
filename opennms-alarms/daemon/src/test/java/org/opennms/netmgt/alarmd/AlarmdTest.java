@@ -45,8 +45,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -73,6 +71,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 
@@ -87,8 +86,9 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
+@JUnitTemporaryDatabase
+@Transactional
+public class AlarmdTest implements InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
 
@@ -140,14 +140,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     @Autowired
     private ServiceRegistry m_registry;
 
-    private MockDatabase m_database;
-
     private MockNorthbounder m_northbounder;
-
-    @Override
-    public void setTemporaryDatabase(final MockDatabase database) {
-        m_database = database;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -157,8 +150,6 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     @Before
     public void setUp() throws Exception {
         m_mockNetwork.createStandardNetwork();
-
-        m_eventdIpcMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         final OnmsNode node = new OnmsNode();
@@ -176,7 +167,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     }
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
         final MockNode node = m_mockNetwork.getNode(1);
 
@@ -213,7 +204,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+    @JUnitTemporaryDatabase
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         int numberOfAlarmsToReduce = 10;
 
@@ -313,7 +304,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     }
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
         assertTrue(m_northbounder.getAlarms().isEmpty());
@@ -329,7 +320,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         sendNodeDownEvent("%nodeid%", node);
 
         final List<NorthboundAlarm> alarms = m_northbounder.getAlarms();
-        assertTrue(alarms.size() > 0);
+        assertTrue("No alarms found in northbounder", alarms.size() > 0);
     }
     
 
@@ -373,7 +364,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
     }
     
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+    @JUnitTemporaryDatabase
     public void changeFields() throws InterruptedException, SQLException {
         assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from alarms"));
         
