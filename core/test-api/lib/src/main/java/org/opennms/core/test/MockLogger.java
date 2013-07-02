@@ -18,7 +18,6 @@ import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.helpers.Util;
 import org.slf4j.impl.SimpleLoggerFactory;
-import org.slf4j.spi.LocationAwareLogger;
 
 /**
  * <p>Simple implementation of {@link Logger} that sends all enabled log messages,
@@ -101,17 +100,11 @@ public class MockLogger extends MarkerIgnoringBase {
     private static long START_TIME = System.currentTimeMillis();
     private static final Properties SIMPLE_LOGGER_PROPS = new Properties();
 
-    public static final int LOG_LEVEL_TRACE = LocationAwareLogger.TRACE_INT;
-    public static final int LOG_LEVEL_DEBUG = LocationAwareLogger.DEBUG_INT;
-    public static final int LOG_LEVEL_INFO = LocationAwareLogger.INFO_INT;
-    public static final int LOG_LEVEL_WARN = LocationAwareLogger.WARN_INT;
-    public static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
-
     private static boolean INITIALIZED = false;
 
-    private static int DEFAULT_LOG_LEVEL = LOG_LEVEL_INFO;
+    private static Level DEFAULT_LOG_LEVEL = Level.INFO;
     private static boolean SHOW_DATE_TIME = true;
-    private static String DATE_TIME_FORMAT_STR = null;
+    private static String DATE_TIME_FORMAT_STR = "yyyy-MM-dd HH:mm:ss,SSS";
     private static DateFormat DATE_FORMATTER = null;
     private static boolean SHOW_THREAD_NAME = true;
     private static boolean SHOW_LOG_NAME = true;
@@ -235,7 +228,7 @@ public class MockLogger extends MarkerIgnoringBase {
     }
 
     /** The current log level */
-    protected int currentLogLevel = LOG_LEVEL_INFO;
+    protected Level currentLogLevel = Level.INFO;
     /** The short name of this simple log instance */
     private transient String shortLogName = null;
 
@@ -271,20 +264,13 @@ public class MockLogger extends MarkerIgnoringBase {
         return levelString;
     }
 
-    private static int stringToLevel(String levelStr) {
-        if ("trace".equalsIgnoreCase(levelStr)) {
-            return LOG_LEVEL_TRACE;
-        } else if ("debug".equalsIgnoreCase(levelStr)) {
-            return LOG_LEVEL_DEBUG;
-        } else if ("info".equalsIgnoreCase(levelStr)) {
-            return LOG_LEVEL_INFO;
-        } else if ("warn".equalsIgnoreCase(levelStr)) {
-            return LOG_LEVEL_WARN;
-        } else if ("error".equalsIgnoreCase(levelStr)) {
-            return LOG_LEVEL_ERROR;
+    private static Level stringToLevel(final String levelStr) {
+        Level level = Level.valueOf(levelStr.toUpperCase());
+        if (level == null) {
+            System.err.println("ERROR: Failed to convert '" + levelStr + "' to a log level!");
+            level = Level.INFO;
         }
-        // assume INFO by default
-        return LOG_LEVEL_INFO;
+        return level;
     }
 
 
@@ -292,11 +278,11 @@ public class MockLogger extends MarkerIgnoringBase {
      * This is our internal implementation for logging regular (non-parameterized)
      * log messages.
      *
-     * @param level   One of the LOG_LEVEL_XXX constants defining the log level
+     * @param level   One of the Level.XXX constants defining the log level
      * @param message The message itself
      * @param t       The exception whose stack trace should be logged
      */
-    private void log(int level, String message, Throwable t) {
+    private void log(Level level, String message, Throwable t) {
         if (!isLevelEnabled(level)) {
             return;
         }
@@ -317,25 +303,7 @@ public class MockLogger extends MarkerIgnoringBase {
         }
 
         if (LEVEL_IN_BRACKETS) buf.append('[');
-
-        // Append a readable representation of the log level
-        switch (level) {
-        case LOG_LEVEL_TRACE:
-            buf.append("TRACE");
-            break;
-        case LOG_LEVEL_DEBUG:
-            buf.append("DEBUG");
-            break;
-        case LOG_LEVEL_INFO:
-            buf.append("INFO");
-            break;
-        case LOG_LEVEL_WARN:
-            buf.append(WARN_LEVEL_STRING);
-            break;
-        case LOG_LEVEL_ERROR:
-            buf.append("ERROR");
-            break;
-        }
+        buf.append(level.toString());
         if (LEVEL_IN_BRACKETS) buf.append(']');
         buf.append(' ');
 
@@ -390,7 +358,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * @param arg1
      * @param arg2
      */
-    private void formatAndLog(int level, String format, Object arg1,
+    private void formatAndLog(Level level, String format, Object arg1,
             Object arg2) {
         if (!isLevelEnabled(level)) {
             return;
@@ -406,7 +374,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * @param format
      * @param arguments a list of 3 ore more arguments
      */
-    private void formatAndLog(int level, String format, Object... arguments) {
+    private void formatAndLog(Level level, String format, Object... arguments) {
         if (!isLevelEnabled(level)) {
             return;
         }
@@ -419,39 +387,39 @@ public class MockLogger extends MarkerIgnoringBase {
      *
      * @param logLevel is this level enabled?
      */
-    protected boolean isLevelEnabled(int logLevel) {
+    protected boolean isLevelEnabled(Level logLevel) {
         // log level are numerically ordered so can use simple numeric
         // comparison
-        return (logLevel >= currentLogLevel);
+        return (logLevel.getCode() >= currentLogLevel.getCode());
     }
 
     /** Are {@code trace} messages currently enabled? */
     public boolean isTraceEnabled() {
-        return isLevelEnabled(LOG_LEVEL_TRACE);
+        return isLevelEnabled(Level.TRACE);
     }
 
     /**
      * A simple implementation which logs messages of level TRACE according
      * to the format outlined above.
      */
-    public void trace(String msg) {
-        log(LOG_LEVEL_TRACE, msg, null);
+    public void trace(final String msg) {
+        log(Level.TRACE, msg, null);
     }
 
     /**
      * Perform single parameter substitution before logging the message of level
      * TRACE according to the format outlined above.
      */
-    public void trace(String format, Object param1) {
-        formatAndLog(LOG_LEVEL_TRACE, format, param1, null);
+    public void trace(final String format, final Object param1) {
+        formatAndLog(Level.TRACE, format, param1, null);
     }
 
     /**
      * Perform double parameter substitution before logging the message of level
      * TRACE according to the format outlined above.
      */
-    public void trace(String format, Object param1, Object param2) {
-        formatAndLog(LOG_LEVEL_TRACE, format, param1, param2);
+    public void trace(final String format, final Object param1, final Object param2) {
+        formatAndLog(Level.TRACE, format, param1, param2);
     }
 
     /**
@@ -459,17 +427,17 @@ public class MockLogger extends MarkerIgnoringBase {
      * TRACE according to the format outlined above.
      */
     public void trace(String format, Object... argArray) {
-        formatAndLog(LOG_LEVEL_TRACE, format, argArray);
+        formatAndLog(Level.TRACE, format, argArray);
     }
 
     /** Log a message of level TRACE, including an exception. */
     public void trace(String msg, Throwable t) {
-        log(LOG_LEVEL_TRACE, msg, t);
+        log(Level.TRACE, msg, t);
     }
 
     /** Are {@code debug} messages currently enabled? */
     public boolean isDebugEnabled() {
-        return isLevelEnabled(LOG_LEVEL_DEBUG);
+        return isLevelEnabled(Level.DEBUG);
     }
 
     /**
@@ -477,7 +445,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void debug(String msg) {
-        log(LOG_LEVEL_DEBUG, msg, null);
+        log(Level.DEBUG, msg, null);
     }
 
     /**
@@ -485,7 +453,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * DEBUG according to the format outlined above.
      */
     public void debug(String format, Object param1) {
-        formatAndLog(LOG_LEVEL_DEBUG, format, param1, null);
+        formatAndLog(Level.DEBUG, format, param1, null);
     }
 
     /**
@@ -493,7 +461,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * DEBUG according to the format outlined above.
      */
     public void debug(String format, Object param1, Object param2) {
-        formatAndLog(LOG_LEVEL_DEBUG, format, param1, param2);
+        formatAndLog(Level.DEBUG, format, param1, param2);
     }
 
     /**
@@ -501,17 +469,17 @@ public class MockLogger extends MarkerIgnoringBase {
      * DEBUG according to the format outlined above.
      */
     public void debug(String format, Object... argArray) {
-        formatAndLog(LOG_LEVEL_DEBUG, format, argArray);
+        formatAndLog(Level.DEBUG, format, argArray);
     }
 
     /** Log a message of level DEBUG, including an exception. */
     public void debug(String msg, Throwable t) {
-        log(LOG_LEVEL_DEBUG, msg, t);
+        log(Level.DEBUG, msg, t);
     }
 
     /** Are {@code info} messages currently enabled? */
     public boolean isInfoEnabled() {
-        return isLevelEnabled(LOG_LEVEL_INFO);
+        return isLevelEnabled(Level.INFO);
     }
 
     /**
@@ -519,7 +487,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void info(String msg) {
-        log(LOG_LEVEL_INFO, msg, null);
+        log(Level.INFO, msg, null);
     }
 
     /**
@@ -527,7 +495,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * INFO according to the format outlined above.
      */
     public void info(String format, Object arg) {
-        formatAndLog(LOG_LEVEL_INFO, format, arg, null);
+        formatAndLog(Level.INFO, format, arg, null);
     }
 
     /**
@@ -535,7 +503,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * INFO according to the format outlined above.
      */
     public void info(String format, Object arg1, Object arg2) {
-        formatAndLog(LOG_LEVEL_INFO, format, arg1, arg2);
+        formatAndLog(Level.INFO, format, arg1, arg2);
     }
 
     /**
@@ -543,17 +511,17 @@ public class MockLogger extends MarkerIgnoringBase {
      * INFO according to the format outlined above.
      */
     public void info(String format, Object... argArray) {
-        formatAndLog(LOG_LEVEL_INFO, format, argArray);
+        formatAndLog(Level.INFO, format, argArray);
     }
 
     /** Log a message of level INFO, including an exception. */
     public void info(String msg, Throwable t) {
-        log(LOG_LEVEL_INFO, msg, t);
+        log(Level.INFO, msg, t);
     }
 
     /** Are {@code warn} messages currently enabled? */
     public boolean isWarnEnabled() {
-        return isLevelEnabled(LOG_LEVEL_WARN);
+        return isLevelEnabled(Level.WARN);
     }
 
     /**
@@ -561,7 +529,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void warn(String msg) {
-        log(LOG_LEVEL_WARN, msg, null);
+        log(Level.WARN, msg, null);
     }
 
     /**
@@ -569,7 +537,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * WARN according to the format outlined above.
      */
     public void warn(String format, Object arg) {
-        formatAndLog(LOG_LEVEL_WARN, format, arg, null);
+        formatAndLog(Level.WARN, format, arg, null);
     }
 
     /**
@@ -577,7 +545,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * WARN according to the format outlined above.
      */
     public void warn(String format, Object arg1, Object arg2) {
-        formatAndLog(LOG_LEVEL_WARN, format, arg1, arg2);
+        formatAndLog(Level.WARN, format, arg1, arg2);
     }
 
     /**
@@ -585,17 +553,17 @@ public class MockLogger extends MarkerIgnoringBase {
      * WARN according to the format outlined above.
      */
     public void warn(String format, Object... argArray) {
-        formatAndLog(LOG_LEVEL_WARN, format, argArray);
+        formatAndLog(Level.WARN, format, argArray);
     }
 
     /** Log a message of level WARN, including an exception. */
     public void warn(String msg, Throwable t) {
-        log(LOG_LEVEL_WARN, msg, t);
+        log(Level.WARN, msg, t);
     }
 
     /** Are {@code error} messages currently enabled? */
     public boolean isErrorEnabled() {
-        return isLevelEnabled(LOG_LEVEL_ERROR);
+        return isLevelEnabled(Level.ERROR);
     }
 
     /**
@@ -603,7 +571,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void error(String msg) {
-        log(LOG_LEVEL_ERROR, msg, null);
+        log(Level.ERROR, msg, null);
     }
 
     /**
@@ -611,7 +579,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * ERROR according to the format outlined above.
      */
     public void error(String format, Object arg) {
-        formatAndLog(LOG_LEVEL_ERROR, format, arg, null);
+        formatAndLog(Level.ERROR, format, arg, null);
     }
 
     /**
@@ -619,7 +587,7 @@ public class MockLogger extends MarkerIgnoringBase {
      * ERROR according to the format outlined above.
      */
     public void error(String format, Object arg1, Object arg2) {
-        formatAndLog(LOG_LEVEL_ERROR, format, arg1, arg2);
+        formatAndLog(Level.ERROR, format, arg1, arg2);
     }
 
     /**
@@ -627,11 +595,11 @@ public class MockLogger extends MarkerIgnoringBase {
      * ERROR according to the format outlined above.
      */
     public void error(String format, Object... argArray) {
-        formatAndLog(LOG_LEVEL_ERROR, format, argArray);
+        formatAndLog(Level.ERROR, format, argArray);
     }
 
     /** Log a message of level ERROR, including an exception. */
     public void error(String msg, Throwable t) {
-        log(LOG_LEVEL_ERROR, msg, t);
+        log(Level.ERROR, msg, t);
     }
 }
