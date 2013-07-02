@@ -43,8 +43,8 @@ import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,11 +55,11 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.opennms.core.logging.Logging;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.ConnectionFactoryUtil;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
@@ -68,8 +68,6 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -89,8 +87,6 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class Installer {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
 
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
