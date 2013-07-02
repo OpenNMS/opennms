@@ -55,7 +55,7 @@ import org.springframework.beans.factory.DisposableBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@EventListener(name=Alarmd.NAME)
+@EventListener(name=Alarmd.NAME, logPrefix="alarmd")
 public class Alarmd implements SpringServiceDaemon, DisposableBean {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 

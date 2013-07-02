@@ -58,7 +58,7 @@ import org.springframework.beans.factory.DisposableBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
-@EventListener(name=Ackd.NAME)
+@EventListener(name=Ackd.NAME, logPrefix="ackd")
 public class Ackd implements SpringServiceDaemon, DisposableBean {
     private static final Logger LOG = LoggerFactory.getLogger(Ackd.class);
     

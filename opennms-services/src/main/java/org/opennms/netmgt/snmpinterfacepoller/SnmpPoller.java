@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 
-@EventListener(name="snmpPoller")
+@EventListener(name="snmpPoller", logPrefix="snmp-poller")
 public class SnmpPoller extends AbstractServiceDaemon {
     
     private final static Logger LOG = LoggerFactory.getLogger(SnmpPoller.class);

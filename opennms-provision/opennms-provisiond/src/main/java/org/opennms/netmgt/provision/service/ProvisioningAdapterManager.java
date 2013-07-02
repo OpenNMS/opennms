@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@EventListener(name="ProvisioningAdapterManager:EventListener")
+@EventListener(name="ProvisioningAdapterManager:EventListener", logPrefix="provisiond")
 public class ProvisioningAdapterManager implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ProvisioningAdapterManager.class);
 

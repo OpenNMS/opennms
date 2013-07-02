@@ -55,7 +55,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author ranger
  * @version $Id: $
  */
-@EventListener(name="Reportd:EventListener")
+@EventListener(name="Reportd:EventListener", logPrefix="reportd")
 public class Reportd implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(Reportd.class);
 

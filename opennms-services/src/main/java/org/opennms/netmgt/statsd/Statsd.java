@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-@EventListener(name="OpenNMS:Statsd")
+@EventListener(name="OpenNMS:Statsd", logPrefix="statsd")
 public class Statsd implements SpringServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);

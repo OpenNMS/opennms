@@ -72,7 +72,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name="OpenNMS.Discovery")
+@EventListener(name="OpenNMS.Discovery", logPrefix="discover")
 public class Discovery extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);

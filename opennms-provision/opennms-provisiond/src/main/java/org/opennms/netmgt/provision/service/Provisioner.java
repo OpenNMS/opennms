@@ -71,7 +71,7 @@ import org.springframework.core.io.UrlResource;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-@EventListener(name="Provisiond:EventListener")
+@EventListener(name="Provisiond:EventListener", logPrefix="provisiond")
 public class Provisioner implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
     
