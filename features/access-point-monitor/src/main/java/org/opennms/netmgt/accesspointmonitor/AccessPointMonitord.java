@@ -39,9 +39,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
-@EventListener(name = "AccessPointMonitor")
+@EventListener(name = "AccessPointMonitor", logPrefix="access-point-monitor")
 public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyRunnable {
     private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitord.class);
+
+    private static final String LOG4J_CATEGORY = "access-point-monitor";
 
     private static final String DAEMON_NAME = "AccessPointMonitor";
 
@@ -308,7 +310,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      */
     public AccessPointMonitord() {
-        super("access-point-monitor");
+        super(LOG4J_CATEGORY);
     }
 
     /** {@inheritDoc} */

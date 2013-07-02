@@ -42,7 +42,7 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Queued";
+        return org.opennms.netmgt.queued.Queued.getLoggingCateogy();
     }
 
     /** {@inheritDoc} */

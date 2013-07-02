@@ -41,7 +41,7 @@ public class Discovery extends AbstractSpringContextJmxServiceDaemon<org.opennms
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Discovery";
+        return org.opennms.netmgt.discovery.Discovery.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

@@ -55,6 +55,8 @@ import org.springframework.util.Assert;
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TroubleTicketer.class);
+
+	private static final String LOG4J_CATEGORY = "trouble-ticketer";
 	
     private volatile boolean m_initialized = false;
     
@@ -252,5 +254,9 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     
     private void handleTicketerReload(Event e) {
         m_ticketerServiceLayer.reloadTicketer();
+    }
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
     }
 }

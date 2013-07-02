@@ -64,7 +64,7 @@ public class DataCollectionConfigParserTest {
 
     @After
     public void tearDown() {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test

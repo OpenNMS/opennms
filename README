@@ -1,2 +1,0 @@
-Jersey depends on commons-httpclient (i.e. HttpClient 3.1), and the rest of the code depends on HttpClient 4.x
-

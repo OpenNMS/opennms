@@ -72,7 +72,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name="OpenNMS.Discovery")
+@EventListener(name="OpenNMS.Discovery", logPrefix="discover")
 public class Discovery extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
@@ -81,6 +81,8 @@ public class Discovery extends AbstractServiceDaemon {
      * The callback that sends newSuspect events upon successful ping response.
      */
     private static final DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
+
+    private static final String LOG4J_CATEGORY = "discover";
 
 
     private static final int PING_IDLE = 0;
@@ -156,7 +158,7 @@ public class Discovery extends AbstractServiceDaemon {
      * Constructs a new discovery instance.
      */
     public Discovery() {
-        super("discovery");
+        super(LOG4J_CATEGORY);
     }
 
     /**
@@ -469,4 +471,7 @@ public class Discovery extends AbstractServiceDaemon {
         LOG.debug("Added {} as discovered", iface);
     }
 
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+    }
 }

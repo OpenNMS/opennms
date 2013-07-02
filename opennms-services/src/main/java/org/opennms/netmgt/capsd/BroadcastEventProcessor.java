@@ -73,7 +73,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-@EventListener(name="Capsd:BroadcastEventProcessor")
+@EventListener(name="Capsd:BroadcastEventProcessor", logPrefix="capsd")
 public class BroadcastEventProcessor implements InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
@@ -373,8 +373,6 @@ public class BroadcastEventProcessor implements InitializingBean {
      */
     private List<Event> doAddServiceToInterface(Connection dbConn, String ipaddr, String serviceName, int serviceId, long txNo) throws SQLException, FailedOperationException {
 
-        new DBUtils(getClass());
-        
         List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByIpAddress(ipaddr);
         
         for (OnmsIpInterface ipInterface : ipInterfaceList) {
