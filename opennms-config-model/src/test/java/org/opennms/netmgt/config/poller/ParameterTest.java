@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.poller.tests.Person;
+import org.w3c.dom.Node;
 
 public class ParameterTest extends XmlTest<Parameter> {
 
@@ -65,13 +67,15 @@ public class ParameterTest extends XmlTest<Parameter> {
                      "<parameter key=\"person\" xmlns=\"http://xmlns.opennms.org/xsd/config/poller\">\n" +
                      "    <person firstName=\"alejandro\" lastName=\"galue\"/>\n" + 
                      "</parameter>\n";
-    	Parameter p = JaxbUtils.unmarshal(Parameter.class, xml, false);
+    	Parameter p = JaxbUtils.unmarshal(Parameter.class, xml, true);
     	Assert.assertNotNull(p);
     	Assert.assertEquals("person", p.getKey());
     	Assert.assertNull(p.getValue());
     	Assert.assertNotNull(p.getAnyObject());
-    	Assert.assertTrue(p.getAnyObject() instanceof Person);
-    	Assert.assertEquals("alejandro", ((Person)p.getAnyObject()).getFirstName());
+        Assert.assertTrue(p.getAnyObject() instanceof Node);
+        Node node = (Node) p.getAnyObject();
+        Person person = JaxbUtils.unmarshal(Person.class, node, false);
+        Assert.assertEquals("alejandro", person.getFirstName());
     	String jaxbXml = JaxbUtils.marshal(p);
     	Assert.assertEquals(xml, jaxbXml);
     }

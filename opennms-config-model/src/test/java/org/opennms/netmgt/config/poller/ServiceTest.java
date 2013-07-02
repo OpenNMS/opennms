@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.poller.tests.Person;
+import org.w3c.dom.Node;
 
 public class ServiceTest extends XmlTest<Service> {
 
@@ -78,8 +80,9 @@ public class ServiceTest extends XmlTest<Service> {
     	Parameter p = s.getParameterCollection().get(1);
     	Assert.assertEquals("person", p.getKey());
     	Assert.assertNull(p.getValue());
-    	Assert.assertTrue(p.getAnyObject() instanceof Person);
-    	Assert.assertEquals("alejandro", ((Person)p.getAnyObject()).getFirstName());
+    	Assert.assertTrue(p.getAnyObject() instanceof Node);
+    	Person person = JaxbUtils.unmarshal(Person.class, (Node)p.getAnyObject(), false);
+    	Assert.assertEquals("alejandro", person.getFirstName());
     }
 
 }

@@ -1,4 +1,4 @@
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.tests;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

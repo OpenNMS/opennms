@@ -43,13 +43,13 @@ import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.config.poller.Person;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Node;
 
 public class PollerConfigFactoryTest extends TestCase {
 
@@ -73,8 +73,10 @@ public class PollerConfigFactoryTest extends TestCase {
             "       </rrd>\n" +
             "       <service name=\"ICMP\" interval=\"300000\">\n" +
             "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
-            "         <parameter key=\"owner\">" +
-            "            <person firstName='alejandro' lastName='galue'/>" +
+            "         <parameter key=\"any-parm\">" +
+            "            <config>" +
+            "              <data/>" +
+            "            </config>" +
             "         </parameter>" +
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
@@ -198,10 +200,10 @@ public class PollerConfigFactoryTest extends TestCase {
         assertFalse(newFactory.isInterfaceInPackage("192.168.1.5", p));
         
         Parameter param = newFactory.getPackage("default").getService()[0].getParameter()[1];
-        assertEquals("owner", param.getKey());
+        assertEquals("any-parm", param.getKey());
         assertNull(param.getValue());
         assertNotNull(param.getAnyObject());
-        assertTrue(param.getAnyObject() instanceof Person);
+        assertTrue(param.getAnyObject() instanceof Node);
     }
     
     public void testInterfaceInPackage() throws Exception {

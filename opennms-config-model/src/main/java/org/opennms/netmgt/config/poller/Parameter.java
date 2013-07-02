@@ -53,9 +53,6 @@ import org.w3c.dom.Node;
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poller-configuration.xsd")
-//WARNING: Person.class is just for testing purposes and *must* be removed soon.
-//FIXME Must contain MailTransportTest and PageSequence
-@XmlSeeAlso({Person.class})
 @SuppressWarnings("all") public class Parameter implements java.io.Serializable {
 
 

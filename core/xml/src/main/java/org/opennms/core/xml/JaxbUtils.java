@@ -59,6 +59,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
@@ -181,6 +182,23 @@ public abstract class JaxbUtils {
 			return element.getValue();
 		} catch (final SAXException e) {
 			throw EXCEPTION_TRANSLATOR.translate("creating an XML reader object", e);
+		} catch (final JAXBException e) {
+			throw EXCEPTION_TRANSLATOR.translate("unmarshalling an object (" + clazz.getSimpleName() + ")", e);
+		}
+	}
+
+    public static <T> T unmarshal(final Class<T> clazz, final Node node, final boolean validate) {
+        return unmarshal(clazz, node, null, validate);
+	}
+
+    public static <T> T unmarshal(final Class<T> clazz, final Node node, final JAXBContext jaxbContext, final boolean validate) {
+		final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
+		
+		LogUtils.tracef(clazz, "unmarshalling class %s from DOM node %s with unmarshaller %s", clazz.getSimpleName(), node, um);
+		try {
+			um.setEventHandler(new LoggingValidationEventHandler(clazz));
+			final JAXBElement<T> element = um.unmarshal(node, clazz);
+			return element.getValue();
 		} catch (final JAXBException e) {
 			throw EXCEPTION_TRANSLATOR.translate("unmarshalling an object (" + clazz.getSimpleName() + ")", e);
 		}
