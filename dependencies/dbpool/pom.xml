@@ -19,6 +19,12 @@
       <groupId>net.snaq</groupId>
       <artifactId>dbpool</artifactId>
       <version>5.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <repositories>

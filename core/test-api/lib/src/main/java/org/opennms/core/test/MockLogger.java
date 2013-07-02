@@ -17,71 +17,9 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.helpers.Util;
-import org.slf4j.impl.SimpleLoggerFactory;
 
 /**
- * <p>Simple implementation of {@link Logger} that sends all enabled log messages,
- * for all defined loggers, to the console ({@code System.err}).
- * The following system properties are supported to configure the behavior of this logger:</p>
- *
- * <ul>
- * <li><code>org.slf4j.simpleLogger.logFile</code> - The output target which can be the <em>path</em> to a file, or
- * the special values "System.out" and "System.err". Default is "System.err".
- *
- * <li><code>org.slf4j.simpleLogger.defaultLogLevel</code> - Default log level for all instances of MockLogger.
- * Must be one of ("trace", "debug", "info", "warn", or "error"). If not specified, defaults to "info". </li>
- *
- * <li><code>org.slf4j.simpleLogger.log.<em>a.b.c</em></code> - Logging detail level for a MockLogger instance
- * named "a.b.c". Right-side value must be one of "trace", "debug", "info", "warn", or "error". When a MockLogger
- * named "a.b.c" is initialized, its level is assigned from this property. If unspecified, the level of nearest parent
- * logger will be used, and if none is set, then the value specified by
- * <code>org.slf4j.simpleLogger.defaultLogLevel</code> will be used.</li>
- *
- * <li><code>org.slf4j.simpleLogger.showDateTime</code> - Set to <code>true</code> if you want the current date and
- * time to be included in output messages. Default is <code>true</code></li>
- *
- * <li><code>org.slf4j.simpleLogger.dateTimeFormat</code> - The date and time format to be used in the output messages.
- * The pattern describing the date and time format is defined by
- * <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/text/SimpleDateFormat.html"><code>SimpleDateFormat</code></a>.
- * If the format is not specified or is invalid, the number of milliseconds since start up will be output. </li>
- *
- * <li><code>org.slf4j.simpleLogger.showThreadName</code> -Set to <code>true</code> if you want to output the current
- * thread name. Defaults to <code>true</code>.</li>
- *
- * <li><code>org.slf4j.simpleLogger.showLogName</code> - Set to <code>true</code> if you want the Logger instance name
- * to be included in output messages. Defaults to <code>true</code>.</li>
- *
- * <li><code>org.slf4j.simpleLogger.showShortLogName</code> - Set to <code>true</code> if you want the last component
- * of the name to be included in output messages. Defaults to <code>false</code>.</li>
- *
- * <li><code>org.slf4j.simpleLogger.levelInBrackets</code> - Should the level string be output in brackets? Defaults
- * to <code>false</code>.</li>
- *
- * <li><code>org.slf4j.simpleLogger.warnLevelString</code> - The string value output for the warn level. Defaults
- * to <code>WARN</code>.</li>
-
- * </ul>
- *
- * <p>In addition to looking for system properties with the names specified above, this implementation also checks for
- * a class loader resource named <code>"simplelogger.properties"</code>, and includes any matching definitions
- * from this resource (if it exists).</p>
- *
- * <p>With no configuration, the default output includes the relative time in milliseconds, thread name, the level,
- * logger name, and the message followed by the line separator for the host.  In log4j terms it amounts to the "%r [%t]
- * %level %logger - %m%n" pattern. </p>
- * <p>Sample output follows.</p>
- * <pre>
- * 176 [main] INFO examples.Sort - Populating an array of 2 elements in reverse order.
- * 225 [main] INFO examples.SortAlgo - Entered the sort method.
- * 304 [main] INFO examples.SortAlgo - Dump of integer array:
- * 317 [main] INFO examples.SortAlgo - Element [0] = 0
- * 331 [main] INFO examples.SortAlgo - Element [1] = 1
- * 343 [main] INFO examples.Sort - The next log statement should be an error message.
- * 346 [main] ERROR examples.SortAlgo - Tried to dump an uninitialized array.
- *   at org.log4j.examples.SortAlgo.dump(SortAlgo.java:58)
- *   at org.log4j.examples.Sort.main(Sort.java:64)
- * 467 [main] INFO  examples.Sort - Exiting main method.
- * </pre>
+ * <p>Simple implementation of {@link Logger} based on SimpleLogger from SLF4J</p>
  *
  * <p>This implementation is heavily inspired by
  * <a href="http://commons.apache.org/logging/">Apache Commons Logging</a>'s SimpleLog.</p>
@@ -93,8 +31,8 @@ import org.slf4j.impl.SimpleLoggerFactory;
  * @author C&eacute;drik LIME
  */
 public class MockLogger extends MarkerIgnoringBase {
+    private static final long serialVersionUID = 8598934420192647453L;
 
-    private static final long serialVersionUID = -632788891211436180L;
     private static final String CONFIGURATION_FILE = "mocklogger.properties";
 
     private static long START_TIME = System.currentTimeMillis();
@@ -205,7 +143,7 @@ public class MockLogger extends MarkerIgnoringBase {
     }
 
     private static void loadProperties() {
-        // Add props from the resource simplelogger.properties
+        // Add props from the resource mocklogger.properties
         InputStream in = AccessController.doPrivileged(
                                                        new PrivilegedAction<InputStream>() {
                                                            public InputStream run() {
@@ -233,7 +171,7 @@ public class MockLogger extends MarkerIgnoringBase {
     private transient String shortLogName = null;
 
     /**
-     * Package access allows only {@link SimpleLoggerFactory} to instantiate
+     * Package access allows only {@link MockLoggerFactory} to instantiate
      * MockLogger instances.
      * @param appender 
      */
