@@ -172,7 +172,7 @@ import org.opennms.netmgt.config.poller.Parameter;
             {
                 try {
                     Parameter target = (Parameter) object;
-                    target.setAnyObject( value );
+                    target.setAnyObject( (org.w3c.dom.Node) value );
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }

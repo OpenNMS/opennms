@@ -272,7 +272,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
             String value = serviceParm.getValue();
             if (value == null) {
-                value = (serviceParm.getAnyObject() == null ? "" : serviceParm.getAnyObject().toString());
+                value = (serviceParm.getAnyObject() == null ? "" : serviceParm.getAnyObjectAsString());
             }
 
             paramMap.put(serviceParm.getKey(), value);
@@ -558,7 +558,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
                 if (parm.getValue() != null) {
                     return parm.getValue();
                 } else if (parm.getAnyObject() != null) {
-                    return parm.getAnyObject().toString();
+                    return parm.getAnyObjectAsString();
                 }
             }
         }

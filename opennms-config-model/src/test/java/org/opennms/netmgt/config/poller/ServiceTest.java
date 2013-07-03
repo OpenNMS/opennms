@@ -81,7 +81,7 @@ public class ServiceTest extends XmlTest<Service> {
     	Assert.assertEquals("person", p.getKey());
     	Assert.assertNull(p.getValue());
     	Assert.assertTrue(p.getAnyObject() instanceof Node);
-    	Person person = JaxbUtils.unmarshal(Person.class, (Node)p.getAnyObject(), false);
+    	Person person = JaxbUtils.unmarshal(Person.class, p.getAnyObject(), false);
     	Assert.assertEquals("alejandro", person.getFirstName());
     }
 

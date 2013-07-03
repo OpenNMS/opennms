@@ -73,8 +73,7 @@ public class ParameterTest extends XmlTest<Parameter> {
     	Assert.assertNull(p.getValue());
     	Assert.assertNotNull(p.getAnyObject());
         Assert.assertTrue(p.getAnyObject() instanceof Node);
-        Node node = (Node) p.getAnyObject();
-        Person person = JaxbUtils.unmarshal(Person.class, node, false);
+        Person person = JaxbUtils.unmarshal(Person.class, p.getAnyObject(), false);
         Assert.assertEquals("alejandro", person.getFirstName());
     	String jaxbXml = JaxbUtils.marshal(p);
     	Assert.assertEquals(xml, jaxbXml);

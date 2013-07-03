@@ -166,7 +166,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         for (Parameter p : svc.getParameterCollection()) {
             String val = p.getValue();
             if (val == null) {
-            	val = (p.getAnyObject() == null ? "" : p.getAnyObject().toString());
+            	val = (p.getAnyObject() == null ? "" : p.getAnyObjectAsString());
             }
 
            m.put(p.getKey(), val);

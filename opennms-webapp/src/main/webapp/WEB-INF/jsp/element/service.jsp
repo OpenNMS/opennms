@@ -86,7 +86,7 @@
                         continue; // Hide passwords for security reasons
                     }
                     if (p.getValue() == null) {
-                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
+                        xmlParams.put(p.getKey(), p.getAnyObjectAsString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
                     } else {
                         parameters.put(p.getKey(), p.getValue());
                     }

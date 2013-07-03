@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -26,7 +27,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.xml.ValidateUsing;
-import org.w3c.dom.Node;
 
 /**
  * Parameters to be used for polling this service. E.g.: for
@@ -62,13 +62,14 @@ public class Parameter implements java.io.Serializable {
 
     /**
      * Field _anyObject.
-     * <p>The final object must be listed on @XmlSeeAlso or explicitly added to the JAXBContext when
-     * parsing this object, otherwise an instance of org.w3c.dom.Element will be returned.</p>
+     * <p>In order to return the final object representation, the class must be explicitly
+     * declared in @XmlSeeAlso, or explicitly added to the JAXBContext, besides adding lax=true
+     * to the @XmlAnyElement. Otherwise, a instance of org.w3c.dom.Element will be returned.</p>
      * <p>The XSD must be defined like the following:</p>
      * <p>&lt;any processContents="skip" id="configuration" minOccurs="0" maxOccurs="1" /&gt;</p>
      */
-    @XmlAnyElement(lax=true)
-    private java.lang.Object _anyObject;
+    @XmlAnyElement
+    private org.w3c.dom.Node _anyObject;
 
 
       //----------------/
@@ -130,7 +131,7 @@ public class Parameter implements java.io.Serializable {
      * 
      * @return the value of field 'AnyObject'.
      */
-    public Object getAnyObject(
+    public org.w3c.dom.Node getAnyObject(
     ) {
         return _anyObject;
     }
@@ -142,13 +143,18 @@ public class Parameter implements java.io.Serializable {
      */
     public String getAnyObjectAsString(
     ) {
-        if (_anyObject != null && _anyObject instanceof Node)  {
+        if (_anyObject != null)  {
             try {
                 StringWriter w = new StringWriter();
                 TransformerFactory tf = TransformerFactory.newInstance();
                 Transformer t = tf.newTransformer();
-                t.transform(new DOMSource((Node) _anyObject), new StreamResult(w));
-                return w.toString().replaceFirst("\\<\\?xml[^>]+\\>", "").replaceAll(" xmlns=\"[^\"]+\"","");
+                t.setOutputProperty(OutputKeys.INDENT, "yes");
+                t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                t.transform(new DOMSource(_anyObject), new StreamResult(w));
+                // Removing <?xml> header
+                // Removing Namename for all tags
+                // Removing trailing \r\n if exist
+                return w.toString().replaceFirst("\\<\\?xml[^>]+\\>[\r\n]*", "").replaceAll(" xmlns=\"[^\"]+\"","").replaceFirst("[\r\n]*$", "");
             } catch (Exception e) {
                 return null;
             }
@@ -254,7 +260,7 @@ public class Parameter implements java.io.Serializable {
      * @param anyObject the value of field 'anyObject'.
      */
     public void setAnyObject(
-            final Object anyObject) {
+            final org.w3c.dom.Node anyObject) {
         this._anyObject = anyObject;
     }
 
