@@ -37,6 +37,7 @@
             <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
             <filtered>false</filtered>
         </fileSet>
     </fileSets>
@@ -47,6 +48,7 @@
             <outputDirectory>system/org/opennms/container/${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.groupId}.${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
         </file>
     </files>
