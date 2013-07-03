@@ -36,14 +36,15 @@ package org.opennms.sms.reflector.commands.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smslib.AGateway;
 import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;
 public class USSDNotification implements IUSSDNotification {
     private static final Logger LOG = LoggerFactory.getLogger(USSDNotification.class);
     /** {@inheritDoc} */
     @Override
-    public void process(String gatewayId, USSDResponse ussdResponse) {
-        LOG.debug(">>> Inbound USSD detected from gateway {} : {}",  gatewayId, ussdResponse.getContent());
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
+        LOG.debug(">>> Inbound USSD detected from gateway {} : {}",  gateway.getGatewayId(), ussdResponse.getContent());
         LOG.debug(">>> USSD session status: {}", ussdResponse.getSessionStatus());
     }
 }

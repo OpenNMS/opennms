@@ -44,16 +44,7 @@ import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.smslib.AGateway;
-import org.smslib.ICallNotification;
-import org.smslib.IGatewayStatusNotification;
-import org.smslib.IInboundMessageNotification;
-import org.smslib.IOutboundMessageNotification;
-import org.smslib.InboundMessage;
-import org.smslib.Library;
-import org.smslib.OutboundMessage;
-import org.smslib.Service;
-import org.smslib.USSDRequest;
+import org.smslib.*;
 import org.smslib.AGateway.GatewayStatuses;
 import org.smslib.AGateway.Protocols;
 import org.smslib.InboundMessage.MessageClasses;
@@ -300,15 +291,15 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
             CallNotification m_callNotification = new CallNotification();
             GatewayStatusNotification m_gatewayStatusNotification = new GatewayStatusNotification();
 
-            m_service = new Service();
+            m_service = Service.getInstance();
             SerialModemGateway gateway = new SerialModemGateway("modem."+ port, port, 57600, "SonyEricsson", "W760");
             gateway.setProtocol(Protocols.PDU);
             gateway.setInbound(true);
             gateway.setOutbound(true);
             gateway.setSimPin("0000");
 
-            m_service.setOutboundNotification(m_outboundNotification);
-            m_service.setInboundNotification(m_inboundNotification);
+            m_service.setOutboundMessageNotification(m_outboundNotification);
+            m_service.setInboundMessageNotification(m_inboundNotification);
             m_service.setCallNotification(m_callNotification);
             m_service.setGatewayStatusNotification(m_gatewayStatusNotification);
             m_service.addGateway(gateway);
@@ -484,34 +475,31 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
 
     public class OutboundNotification implements IOutboundMessageNotification {
         @Override
-        public void process(String gatewayId, OutboundMessage msg) {
-            LOG.debug("Outbound handler called from Gateway: {}", gatewayId);
+        public void process(AGateway gateway, OutboundMessage msg) {
+            LOG.debug("Outbound handler called from Gateway: {}", gateway.getGatewayId());
             LOG.debug(msg.toString());
         }
-
     }
 
     public class InboundNotification implements IInboundMessageNotification{
 
         @Override
-        public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
+        public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
             if(msgType == MessageTypes.INBOUND){
-                LOG.debug(">>> New Inbound message detected from Gateway: {}", gatewayId);
+                LOG.debug(">>> New Inbound message detected from Gateway: {}", gateway.getGatewayId());
             }else if(msgType == MessageTypes.STATUSREPORT){
-                LOG.debug(">>> New Inbound Status Report message detected from Gateway: {}", gatewayId);
+                LOG.debug(">>> New Inbound Status Report message detected from Gateway: {}", gateway.getGatewayId());
             }
 
             LOG.debug("msg text: {}", msg.getText());
-
         }
-
     }
 
     public class CallNotification implements ICallNotification{
 
         @Override
-        public void process(String gatewayId, String callerId) {
-            LOG.debug(">>> New called detected from Gateway: {} : {}", gatewayId, callerId);
+        public void process(AGateway gateway, String callerId) {
+            LOG.debug(">>> New called detected from Gateway: {} : {}", gateway.getGatewayId(), callerId);
         }
 
     }
@@ -519,8 +507,8 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
     public class GatewayStatusNotification implements IGatewayStatusNotification{
 
         @Override
-        public void process(String gatewayId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
-            LOG.debug(">>> Gateway Status change from: {}, OLD:  {} -> NEW: {}", gatewayId, oldStatus, newStatus );
+        public void process(AGateway gateway, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
+            LOG.debug(">>> Gateway Status change from: {}, OLD:  {} -> NEW: {}", gateway.getGatewayId(), oldStatus, newStatus );
         }
 
     }

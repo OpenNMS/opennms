@@ -50,7 +50,7 @@ import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
-import org.smslib.queues.QueueManager;
+import org.smslib.queues.AbstractQueueManager;
 import org.smslib.routing.Router;
 
 /**
@@ -94,7 +94,7 @@ public interface SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
-	void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException;
+	void stopService() throws SMSLibException, IOException, InterruptedException;
 	/**
 	 * <p>readMessages</p>
 	 *
@@ -528,7 +528,7 @@ public interface SmsService {
 	 *
 	 * @return a {@link org.smslib.queues.QueueManager} object.
 	 */
-	QueueManager getQueueManager();
+	AbstractQueueManager getQueueManager();
 	/**
 	 * <p>getKeyManager</p>
 	 *
