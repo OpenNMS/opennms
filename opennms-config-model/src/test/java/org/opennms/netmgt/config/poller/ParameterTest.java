@@ -78,6 +78,8 @@ public class ParameterTest extends XmlTest<Parameter> {
         Assert.assertEquals("alejandro", person.getFirstName());
     	String jaxbXml = JaxbUtils.marshal(p);
     	Assert.assertEquals(xml, jaxbXml);
+    	String xmlString = p.getAnyObjectAsString();
+    	Assert.assertEquals("<person firstName=\"alejandro\" lastName=\"galue\"/>", xmlString);
     }
 
 }

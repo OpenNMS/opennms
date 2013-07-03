@@ -11,15 +11,22 @@ package org.opennms.netmgt.config.poller;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.StringWriter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.core.xml.ValidateUsing;
+import org.w3c.dom.Node;
 
 /**
  * Parameters to be used for polling this service. E.g.: for
@@ -126,6 +133,27 @@ public class Parameter implements java.io.Serializable {
     public Object getAnyObject(
     ) {
         return _anyObject;
+    }
+
+    /**
+     * Returns the value of field 'anyObject' as String.
+     * 
+     * @return the String XML representation of field 'AnyObject'.
+     */
+    public String getAnyObjectAsString(
+    ) {
+        if (_anyObject != null && _anyObject instanceof Node)  {
+            try {
+                StringWriter w = new StringWriter();
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer t = tf.newTransformer();
+                t.transform(new DOMSource((Node) _anyObject), new StreamResult(w));
+                return w.toString().replaceFirst("\\<\\?xml[^>]+\\>", "").replaceAll(" xmlns=\"[^\"]+\"","");
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
