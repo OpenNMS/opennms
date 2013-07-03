@@ -23,7 +23,7 @@
     <KeyValuePair key="event-translator"     value="INFO" />
     <KeyValuePair key="jetty-server"         value="INFO" />
     <KeyValuePair key="linkd"                value="INFO" />
-    <KeyValuePair key="manager"              value="INFO" />
+    <KeyValuePair key="manager"              value="DEBUG" />
     <KeyValuePair key="map"                  value="INFO" />
     <KeyValuePair key="model-importer"       value="INFO" />
     <KeyValuePair key="notifd"               value="INFO" />
