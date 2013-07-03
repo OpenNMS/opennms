@@ -40,7 +40,6 @@ import org.opennms.sms.reflector.smsservice.MobileMsgTrackerTest;
 import org.smslib.*;
 import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage.MessageStatuses;
-import org.smslib.helper.Logger;
 
 /**
  * TestGateway - virtual gateway to simulate sending and receiving messages to
@@ -171,7 +170,7 @@ public class FakeTestGateway extends AGateway {
 	public boolean sendMessage(OutboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException
 	{
 		// simulate delay
-        Logger.getInstance().logInfo("Sending to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
+      LOG.info("Sending to: {} via: {}", msg.getRecipient(), msg.getGatewayId());
 		Thread.sleep(500);
 		this.counter++;
 
@@ -179,7 +178,7 @@ public class FakeTestGateway extends AGateway {
 		msg.setMessageStatus(MessageStatuses.SENT);
 		msg.setRefNo(Integer.toString(++this.refCounter));
 		msg.setGatewayId(getGatewayId());
-        Logger.getInstance().logInfo("Sent to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
+      LOG.info("Sent to: {} via: {}", msg.getGatewayId());
 		
 		String msgText = msg.getText();
 		if (msgText != null) {
@@ -199,7 +198,7 @@ public class FakeTestGateway extends AGateway {
 	@Override
 	public boolean sendUSSDRequest(USSDRequest request) throws GatewayException, TimeoutException, IOException, InterruptedException
 	{
-        Logger.getInstance().logInfo("Sending to: " + request.getContent() + " via: " + request.getGatewayId(), null, getGatewayId());
+      LOG.info("Sending to: {} via: {}", request.getContent(), request.getGatewayId());
 		Thread.sleep(500);
 		this.counter++;
 

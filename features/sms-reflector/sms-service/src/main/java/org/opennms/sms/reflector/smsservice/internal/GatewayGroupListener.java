@@ -54,8 +54,6 @@ import org.springframework.util.Assert;
 public class GatewayGroupListener implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(GatewayGroupListener.class);
 
-    private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
-
     private SmsServiceRegistrar m_smsServiceRegistrar;
     private Map<GatewayGroup, SmsServiceImpl> m_services = new HashMap<GatewayGroup, SmsServiceImpl>();
     private List<IOutboundMessageNotification> m_outboundListeners;
@@ -73,7 +71,7 @@ public class GatewayGroupListener implements InitializingBean {
         AGateway[] gateways = gatewayGroup.getGateways();
 
         if (gateways.length == 0) {
-            log.error("A Gateway group was registered with ZERO gateways!");
+            LOG.error("A Gateway group was registered with ZERO gateways!");
             return;
         }
 
@@ -91,7 +89,7 @@ public class GatewayGroupListener implements InitializingBean {
                 }
                 smsService.addGateway(gateways[i]);
 
-            } catch (final GatewayException e) {
+            } catch (final Exception e) {
                 LOG.warn("Unable to add gateway ({}) to SMS service", gateways[i], e);
             }
         }
@@ -120,7 +118,7 @@ public class GatewayGroupListener implements InitializingBean {
         try {
             service.stop();
         } catch (Exception e) {
-            LogUtils.warnf(this, e, "Unable to stop SMS service", gatewayGroup);
+            LOG.warn("Unable to stop SMS service: {}", gatewayGroup, e);
         }
 
     }
