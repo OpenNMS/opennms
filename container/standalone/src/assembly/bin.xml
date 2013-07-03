@@ -72,7 +72,6 @@
             <outputDirectory>/bin/</outputDirectory>
             <destName>opennms</destName>
             <fileMode>0755</fileMode>
-            <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
@@ -80,7 +79,6 @@
             <outputDirectory>/system/org/opennms/container/${project.groupId}.${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
-            <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
@@ -88,7 +86,6 @@
             <outputDirectory>/lib</outputDirectory>
             <destName>opennms-branding.jar</destName>
             <fileMode>0644</fileMode>
-            <directoryMode>0755</directoryMode>
         </file>
     </files>
 
