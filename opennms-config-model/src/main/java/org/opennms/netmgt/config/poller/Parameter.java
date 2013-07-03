@@ -154,7 +154,7 @@ public class Parameter implements java.io.Serializable {
                 // Removing <?xml> header
                 // Removing Namename for all tags
                 // Removing trailing \r\n if exist
-                return w.toString().replaceFirst("\\<\\?xml[^>]+\\>[\r\n]*", "").replaceAll(" xmlns=\"[^\"]+\"","").replaceFirst("[\r\n]*$", "");
+                return w.toString().replaceFirst("\\<\\?xml[^>]+\\>[\\r\\n]*", "").replaceAll(" xmlns=\"[^\"]+\"","").replaceFirst("[\\r\\n]*$", "");
             } catch (Exception e) {
                 return null;
             }
