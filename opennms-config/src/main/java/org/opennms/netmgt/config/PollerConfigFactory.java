@@ -68,7 +68,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-    
+
     /**
      * <p>Constructor for PollerConfigFactory.</p>
      *
@@ -117,7 +117,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
                         if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
                             throw new ValidationException(
                                 String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
-                                parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
+                                    parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
                             );
                         }
                     }
@@ -142,7 +142,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
 
         return m_singleton;
     }
-    
+
     /**
      * <p>setInstance</p>
      *
@@ -172,17 +172,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
         }
     }
 
-	@Override
-	public void update() throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected PollerConfiguration translateConfig(
-			PollerConfiguration castorConfig) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void update() throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub        
+    }
 
 }

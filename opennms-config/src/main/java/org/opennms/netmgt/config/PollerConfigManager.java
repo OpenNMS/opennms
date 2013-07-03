@@ -82,7 +82,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
+
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
@@ -91,9 +91,10 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
      * @param verifyServer a boolean.
      */
     public PollerConfigManager(final Resource configResource, final String localServer, final boolean verifyServer) {
-    	super(PollerConfiguration.class, "poller configuration");
-    	setConfigResource(configResource);
-    	afterPropertiesSet();
+        super(PollerConfiguration.class, "poller configuration");
+        setConfigResource(configResource);
+        setReloadCheckInterval(-1l);
+        afterPropertiesSet();
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         setUpInternalData();
@@ -103,7 +104,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     public Lock getReadLock() {
         return m_readLock;
     }
-    
+
     @Override
     public Lock getWriteLock() {
         return m_writeLock;
@@ -121,11 +122,11 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     /**
      * <p>translateConfig</p>
      */
-	@Override
-	protected PollerConfiguration translateConfig(PollerConfiguration castorConfig) {
-		// FIXME Add the split feature
-		return castorConfig;
-	}
+    @Override
+    protected PollerConfiguration translateConfig(PollerConfiguration castorConfig) {
+        // FIXME Add the split feature
+        return castorConfig;
+    }
 
     /**
      * Reload the config from the default config file
@@ -141,7 +142,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException {
-    	getContainer().reload();
+        getContainer().reload();
     }
 
     /**
@@ -184,7 +185,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
      */
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
-    
+
         for(final Package pkg : packages()) {
             for(final String url : includeURLs(pkg)) {
                 final List<String> iplist = IpListFromUrl.parse(url);
@@ -247,7 +248,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         }
         return null;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
@@ -257,7 +258,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             for(Service svc : services(pkg)) {
                 svcNames.add(svc.getName());
             }
-            
+
             final String filter = pkg.getFilter().getContent();
             return new ServiceSelector(filter, svcNames);
         } finally {
@@ -270,12 +271,12 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     public void addPackage(final Package pkg) {
         getWriteLock().lock();
         try {
-        	getContainer().getObject().addPackage(pkg);
+            getContainer().getObject().addPackage(pkg);
         } finally {
             getWriteLock().unlock();
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public void addMonitor(final String svcName, final String className) {
@@ -320,13 +321,13 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
      */
     private boolean interfaceInUrl(final String addr, final String url) {
         boolean bRet = false;
-    
+
         // get list of IPs in this URL
         final List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
-    
+
         return bRet;
     }
 
@@ -444,31 +445,31 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
      */
     private void createPackageIpListMap() {
         getReadLock().lock();
-        
+
         try {
             Map<Package, List<InetAddress>> pkgIpMap = new HashMap<Package, List<InetAddress>>();
-            
+
             for(final Package pkg : packages()) {
-        
+
                 // Get a list of ipaddress per package against the filter rules from
                 // database and populate the package, IP list map.
                 //
                 try {
                     List<InetAddress> ipList = getIpList(pkg);
                     LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
-        
+
                     if (ipList.size() > 0) {
                         pkgIpMap.put(pkg, ipList);
                     }
-                    
+
                 } catch (final Throwable t) {
                     LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
                 }
-                
+
             }
-            
+
             m_pkgIpMap.set(pkgIpMap);
-            
+
         } finally {
             getReadLock().unlock();
         }
@@ -521,17 +522,17 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     public boolean isInterfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
         final InetAddress ifaceAddr = addr(iface);
-    
+
         // get list of IPs in this package
         final List<InetAddress> ipList = m_pkgIpMap.get().get(pkg);
         if (ipList != null && ipList.size() > 0) {
-			filterPassed = ipList.contains(ifaceAddr);
+            filterPassed = ipList.contains(ifaceAddr);
         }
 
         LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
-    
+
         if (!filterPassed) return false;
-    
+
         //
         // Ensure that the interface is in the specific list or
         // that it is in the include range and is not excluded
@@ -539,11 +540,11 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         boolean has_specific = false;
         boolean has_range_include = false;
         boolean has_range_exclude = false;
- 
+
         // if there are NO include ranges then treat act as if the user include
         // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
-        
+
         final byte[] addr = toIpAddrBytes(iface);
 
         for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
@@ -566,7 +567,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
                 break;
             }
         }
-    
+
         for (final String includeUrl : pkg.getIncludeUrlCollection()) {
             if (interfaceInUrl(iface, includeUrl)) {
                 has_specific = true;
@@ -610,7 +611,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             } else {
                 LogUtils.debugf(this, "serviceInPackageAndEnabled: svcName=%s pkg=%s", svcName, pkg.getName());
             }
-        
+
             for(final Service svc : services(pkg)) {
                 if (svc.getName().equalsIgnoreCase(svcName)) {
                     // Ok its in the package. Now check the
@@ -722,7 +723,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
                 if (isInterfaceInPackage(ipaddr, pkg)) {
                     matchingPkgs.add(pkg.getName());
                 }
-    
+
             }
         } finally {
             getReadLock().unlock();
@@ -801,7 +802,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     @Override
     public boolean isPolled(final String ipaddr, final String svcName) {
         getReadLock().lock();
-        
+
         try {
             // First make sure there is a service monitor for this service!
             if (!isServiceMonitored(svcName)) {
@@ -881,7 +882,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             getReadLock().unlock();
         }
     }
-    
+
     /**
      * <p>services</p>
      *
@@ -896,7 +897,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             getReadLock().unlock();
         }
     }
-    
+
     /**
      * <p>includeURLs</p>
      *
@@ -911,7 +912,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             getReadLock().unlock();
         }
     }
-    
+
     /**
      * <p>parameters</p>
      *
@@ -983,7 +984,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         LogUtils.debugf(this, "start: Loading monitors");
 
         final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
-        
+
         for (final ServiceMonitorLocator locator : locators) {
             try {
                 m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
@@ -1018,7 +1019,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
             getReadLock().unlock();
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
@@ -1044,7 +1045,7 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         }
 
         return locators;
-        
+
     }
 
     private boolean isDistributableToContext(final Class<? extends ServiceMonitor> mc, final DistributionContext context) {
@@ -1058,10 +1059,10 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
     private List<DistributionContext> getSupportedDistributionContexts(final Class<? extends ServiceMonitor> mc) {
         final Distributable distributable = mc.getAnnotation(Distributable.class);
         final List<DistributionContext> declaredContexts = 
-            distributable == null 
+                distributable == null 
                 ? Collections.singletonList(DistributionContext.DAEMON) 
-                : Arrays.asList(distributable.value());
-       return declaredContexts;
+                    : Arrays.asList(distributable.value());
+                return declaredContexts;
     }
 
     private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
@@ -1089,20 +1090,20 @@ abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerCo
         }
     }
 
-	/**
-	 * <p>releaseAllServiceMonitors</p>
-	 */
+    /**
+     * <p>releaseAllServiceMonitors</p>
+     */
     @Override
-	public void releaseAllServiceMonitors() {
-	    getWriteLock().lock();
-	    try {
-    		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
-    	    while (iter.hasNext()) {
-    	        ServiceMonitor sm = iter.next();
-    	        sm.release();
-    	    }
-	    } finally {
-	        getWriteLock().unlock();
-	    }
-	}
+    public void releaseAllServiceMonitors() {
+        getWriteLock().lock();
+        try {
+            Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
+            while (iter.hasNext()) {
+                ServiceMonitor sm = iter.next();
+                sm.release();
+            }
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
 }
