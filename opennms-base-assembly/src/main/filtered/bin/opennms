@@ -43,7 +43,7 @@ OPENNMS_HOME="${install.dir}"
 OPENNMS_PIDFILE="${install.pid.file}"
 
 # Log directory for OpenNMS
-LOG_DIRECTORY="${install.daemonlogs.dir}"
+LOG_DIRECTORY="${install.logs.dir}"
 
 # Directory where init functions are likely stored (we also check a few other
 # directories, just in case)
@@ -236,19 +236,12 @@ END
 	return 0
 }
 
-checkLogDirs(){
+checkLogDir(){
 	local LOGDIR=$OPENNMS_HOME/logs
 
-	for dir in controller daemon webapp; do
-		if [ -f "$LOGDIR/$dir" ]; then
-			printf -- "ERROR: not sure what to do... $LOGDIR/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
-			return 152
-		else
-			if [ ! -e "$LOGDIR/$dir" ]; then
-				mkdir -p "$LOGDIR/$dir"
-			fi
-		fi
-	done
+	if [ ! -e "$LOGDIR" ]; then
+		mkdir -p "$LOGDIR"
+	fi
 
 	return 0
 }
@@ -256,7 +249,7 @@ checkLogDirs(){
 doStart(){
 	checkXmlFiles || return $?
 	checkRpmFiles || return $?
-	checkLogDirs  || return $?
+	checkLogDir   || return $?
 
 	doStatus
 	status=$?

@@ -47,6 +47,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +59,7 @@ import org.springframework.util.StringUtils;
  * @author David Hustace
  */
 public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> implements NodeDao {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeDaoHibernate.class);
 
     /**
      * <p>Constructor for NodeDaoHibernate.</p>
@@ -283,17 +286,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
                             @Override
                             public Object transformTuple(Object[] tuple, String[] aliases) {
-                                logger.debug("tuple length = " + tuple.length);
+                                LOG.debug("tuple length = {}", tuple.length);
                                 for (int i = 0; i < tuple.length; i++) {
-                                    logger.debug(i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
+                                    LOG.debug("{}: {} ({})", i, tuple[i], tuple[i].getClass());
                                 }
                                 return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
                             }
 
                             // Implements Hibernate API
-                            @SuppressWarnings("unchecked")
+                            @SuppressWarnings("rawtypes")
                             @Override
-							public List transformList(List collection) {
+                            public List transformList(List collection) {
                                 return collection;
                             }
                 		    

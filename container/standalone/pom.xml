@@ -17,6 +17,13 @@
       <artifactId>apache-karaf</artifactId>
       <version>${karafVersion}</version>
       <type>tar.gz</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.assemblies.features</groupId>

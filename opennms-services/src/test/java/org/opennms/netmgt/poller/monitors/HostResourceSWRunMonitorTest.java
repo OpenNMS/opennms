@@ -72,6 +72,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    private boolean m_ignoreWarnings = false;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -80,13 +81,16 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
+        m_ignoreWarnings = false;
         MockLogAppender.setupLogging();
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
     }
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+        if (!m_ignoreWarnings ) {
+            MockLogAppender.assertNoWarningsOrGreater();
+        }
     }
 
     @Test
@@ -166,6 +170,7 @@ public class HostResourceSWRunMonitorTest implements InitializingBean {
 
     @Test
     public void testInvalidRange() throws Exception {
+        m_ignoreWarnings = true; // warning is expected here, skip the assert in tearDown()
         HostResourceSwRunMonitor monitor = new HostResourceSwRunMonitor();
         Map<String, Object> parameters = createBasicParams();
         parameters.put("min-services", "8");

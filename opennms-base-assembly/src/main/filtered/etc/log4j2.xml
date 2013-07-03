@@ -3,7 +3,7 @@
 
   <properties>
     <property name="prefix">uncategorized</property>
-    <property name="logdir">${sys:opennms.daemonlogs.dir}</property>
+    <property name="logdir">${install.logs.dir}</property>
   </properties>
 
   <!-- Each category/log can be set to one of TRACE, DEBUG, INFO, WARN, ERROR -->
@@ -23,7 +23,7 @@
     <KeyValuePair key="event-translator"     value="INFO" />
     <KeyValuePair key="jetty-server"         value="INFO" />
     <KeyValuePair key="linkd"                value="INFO" />
-    <KeyValuePair key="manager"              value="INFO" />
+    <KeyValuePair key="manager"              value="DEBUG" />
     <KeyValuePair key="map"                  value="INFO" />
     <KeyValuePair key="model-importer"       value="INFO" />
     <KeyValuePair key="notifd"               value="INFO" />
@@ -52,8 +52,8 @@
     <Routing name="RoutingAppender">
       <Routes pattern="$${ctx:prefix}">
         <Route>
-          <RollingFile name="Rolling-${ctx:prefix}" fileName="${logdir}/${ctx:prefix}.log"
-                       filePattern="${logdir}/${ctx:prefix}.%i.log.gz">
+          <RollingFile name="Rolling-\${ctx:prefix}" fileName="\${logdir}/\${ctx:prefix}.log"
+                       filePattern="\${logdir}/\${ctx:prefix}.%i.log.gz">
             <PatternLayout>
               <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
             </PatternLayout>

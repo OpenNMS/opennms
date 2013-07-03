@@ -37,6 +37,7 @@
             <outputDirectory>etc</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
             <filtered>false</filtered>
         </fileSet>
     </fileSets>

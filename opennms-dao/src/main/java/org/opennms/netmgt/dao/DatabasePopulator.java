@@ -50,6 +50,8 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -82,6 +84,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
+    private static final Logger LOG = LoggerFactory.getLogger(DatabasePopulator.class);
+
     private DistPollerDao m_distPollerDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
@@ -126,6 +130,8 @@ public class DatabasePopulator {
     }
 
     private void doPopulateDatabase() {
+        LOG.debug("Populating Database");
+
         final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
         
         final OnmsCategory ac = getCategory("DEV_AC");

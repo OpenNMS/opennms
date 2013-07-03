@@ -7,7 +7,7 @@
          class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/applicationContext-reportingJasperReports.xml</value>
+         <value>META-INF/opennms/component-reporting.xml</value>
        </list>
      </constructor-arg>
    </bean>

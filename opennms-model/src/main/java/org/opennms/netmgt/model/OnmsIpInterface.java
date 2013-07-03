@@ -396,6 +396,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
+        .append("id", m_id)
         .append("ipAddr", InetAddressUtils.str(m_ipAddress))
         .append("ipHostName", m_ipHostName)
         .append("isManaged", m_isManaged)
