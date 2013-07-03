@@ -41,6 +41,7 @@
                 <include>bin/stop</include>
             </includes>
             <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
         </fileSet>
 
         <!-- Copy over jar files -->
@@ -48,12 +49,14 @@
             <directory>src/main/distribution</directory>
             <outputDirectory>/</outputDirectory>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
         </fileSet>
         <fileSet>
             <directory>target/classes/etc</directory>
             <outputDirectory>/etc/</outputDirectory>
             <lineEnding>unix</lineEnding>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
         </fileSet>
 
         <fileSet>
@@ -69,6 +72,7 @@
             <outputDirectory>/bin/</outputDirectory>
             <destName>opennms</destName>
             <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
@@ -76,6 +80,7 @@
             <outputDirectory>/system/org/opennms/container/${project.groupId}.${project.artifactId}/${project.version}</outputDirectory>
             <destName>${project.artifactId}-${project.version}-features.xml</destName>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
@@ -83,6 +88,7 @@
             <outputDirectory>/lib</outputDirectory>
             <destName>opennms-branding.jar</destName>
             <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
         </file>
     </files>
 
