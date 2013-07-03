@@ -178,11 +178,8 @@ public class XmlrpcdTest extends OpenNMSTestCase {
          * XXX This is a workaround until OpenNMSTestCase.tearDown() no longer
          * calls MockLogAppender.assertNoWarningsOrGreater().
          */
-        try {
-            MockLogAppender.assertNoWarningsOrGreater();
-        } finally {
-            MockLogAppender.resetEvents();
-        }
+        MockLogAppender.resetLogLevel();
+        MockLogAppender.resetEvents();
     }
 
     @Override
