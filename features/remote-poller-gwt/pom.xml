@@ -129,6 +129,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>net.simon04.jelementtree</groupId>
       <artifactId>jelementtree</artifactId>
       <version>20100506</version>
