@@ -302,6 +302,9 @@ public class MockLogAppender {
         assertNotGreaterOrEqual(Level.ERROR);
     }
 
+    public static void assertNoFatalOrGreater() throws AssertionFailedError {
+        assertNoErrorOrGreater();
+    }
 
     /**
      * <p>assertLogAtLevel</p>

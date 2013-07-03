@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
  * @author david
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceDaoHibernate.class);
 
     String m_findByServiceTypeQuery = null;

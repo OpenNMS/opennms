@@ -77,6 +77,12 @@
 		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
+			<exclusions>
+			  <exclusion>
+			    <groupId>commons-logging</groupId>
+			    <artifactId>commons-logging</artifactId>
+			  </exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>

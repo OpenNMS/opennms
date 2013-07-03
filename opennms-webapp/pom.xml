@@ -525,11 +525,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -544,6 +539,12 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
@@ -589,6 +590,12 @@
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!--
 
@@ -601,6 +608,16 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
