@@ -262,9 +262,9 @@ public class EventsArchiver {
      * Remove event with eventID from events table. NOTE: Postgres does not have
      * the ResultSet.deleteRow() implemented! - so use the eventID to delete!
      */
-    private boolean removeEvent(String eventID) {
+    private boolean removeEvent(Integer eventID) {
         try {
-            m_eventDeleteStmt.setString(1, eventID);
+            m_eventDeleteStmt.setInt(1, eventID);
             m_eventDeleteStmt.executeUpdate();
         } catch (SQLException sqle) {
             LOG.error("Unable to delete event \'" + eventID + "\': " + sqle.getMessage());
@@ -296,7 +296,7 @@ public class EventsArchiver {
             m_eventsGetStmt.setTimestamp(1, new Timestamp(m_archAge));
             eventsRS = m_eventsGetStmt.executeQuery();
             int colCount = eventsRS.getMetaData().getColumnCount();
-            String eventID;
+            Integer eventID;
             String eventUEI;
             String eventLog;
             String eventDisplay;
@@ -306,7 +306,7 @@ public class EventsArchiver {
 
             while (eventsRS.next()) {
                 // get the eventID for the event
-                eventID = eventsRS.getString(EVENT_ID);
+                eventID = eventsRS.getInt(EVENT_ID);
 
                 // get uei for event
                 eventUEI = eventsRS.getString("eventUei");
