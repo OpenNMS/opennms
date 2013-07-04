@@ -36,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,7 +45,6 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * <pre>
@@ -179,13 +177,6 @@ public class EventsArchiver {
      * @throws ArchiverException Thrown if a required property is not specified or is incorrect
      */
     private void init() throws ArchiverException {
-        Map mdc = Logging.getCopyOfContextMap();
-
-        try {
-        
-            // The general logs from the events archiver go to this category'
-            Logging.putPrefix("archiver");
-
 
         EventsArchiverConfigFactory eaFactory;
         
@@ -265,9 +256,6 @@ public class EventsArchiver {
             throw new UndeclaredThrowableException(e);
         }
         // XXX should we be throwing ArchiverException instead?
-        } finally {
-            Logging.setContextMap(mdc);
-        }
     }
 
     /**
@@ -405,21 +393,33 @@ public class EventsArchiver {
      *                thrown if there is an error getting column values from the
      *                result set
      */
-    private void sendToArchive(ResultSet eventsRS, int colCount)
-            throws SQLException {
-        StringBuffer outBuf = new StringBuffer();
+    private void sendToArchive(final ResultSet eventsRS, final int colCount) {
+        Logging.withPrefix("events", new Runnable() {
 
-        for (int index = 1; index <= colCount; index++) {
-            String colValue = eventsRS.getString(index);
-            if (index == 1) {
-                outBuf.append(colValue);
-            } else {
-                outBuf.append(m_archSeparator + colValue);
+            @Override
+            public void run() {
+                StringBuffer outBuf = new StringBuffer();
+
+                for (int index = 1; index <= colCount; index++) {
+                    String colValue;
+                    try {
+                        colValue = eventsRS.getString(index);
+                    }
+                    catch (SQLException sqlerr) {
+                        throw new RuntimeException(sqlerr);
+                    }
+
+                    if (index == 1) {
+                        outBuf.append(colValue);
+                    } else {
+                        outBuf.append(m_archSeparator + colValue);
+                    }
+                }
+
+                String outBufStr = outBuf.toString();
+                LOG.error(outBufStr);
             }
-        }
-
-        String outBufStr = outBuf.toString();
-        LOG.error(outBufStr);
+        });
     }
 
     /**
@@ -476,20 +476,26 @@ public class EventsArchiver {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
-        try {
-            // create the archiver
-            EventsArchiver ea = new EventsArchiver();
+    	Logging.withPrefix("archiver", new Runnable() {
 
-            /*
-             * Remove events.  This method sends removed events
-             * to archive file if configured for archival.
-             */
-            ea.archiveEvents();
+            @Override
+            public void run() {
+                try {
+                    // create the archiver
+                    EventsArchiver ea = new EventsArchiver();
 
-            // close the archiver
-            ea.close();
-        } catch (ArchiverException ae) {
-            System.err.println(ae.getMessage());
-        }
+                    /*
+                     * Remove events.  This method sends removed events
+                     * to archive file if configured for archival.
+                     */
+                    ea.archiveEvents();
+
+                    // close the archiver
+                    ea.close();
+                } catch (ArchiverException ae) {
+                    System.err.println(ae.getMessage());
+                }
+            }
+        });
     }
 }
