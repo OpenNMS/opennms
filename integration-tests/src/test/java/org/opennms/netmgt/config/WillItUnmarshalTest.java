@@ -621,6 +621,7 @@ public class WillItUnmarshalTest {
         Set<String> allXml = new HashSet<String>(Arrays.asList(configFiles));
         
         allXml.removeAll(m_filesTested);
+        allXml.remove("log4j2.xml");
         
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
