@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN">
+
+  <properties>
+    <property name="loggingdir">${install.logs.dir}</property>
+    <property name="archivedir">${install.share.dir}/events/</property>
+  </properties>
+
+  <appenders>
+    <RollingFile name="archiver" fileName="\${loggingdir}/events-archiver.log"
+                 filePattern="\${loggingdir}/events-archiver.%i.log.gz">
+      <PatternLayout>
+        <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
+      </PatternLayout>
+
+      <!-- Rotate logs at 100MB-->
+      <SizeBasedTriggeringPolicy size="100MB" />
+
+      <!-- Rotate through 4 logs -->
+      <DefaultRolloverStrategy max="4" fileIndex="min" />
+    </RollingFile>
+
+    <RollingFile name="events" fileName="\${archivedir}/events.archive"
+                 filePattern="\${archivedir}/events.archive.%i.gz">
+      <PatternLayout><pattern></pattern></PatternLayout>
+
+      <!-- Rotate logs at 100MB-->
+      <SizeBasedTriggeringPolicy size="100MB" />
+
+      <!-- Rotate through 4 logs -->
+      <DefaultRolloverStrategy max="4" fileIndex="min" />
+    </RollingFile>
+  </appenders>
+
+  <loggers>
+    <root level="info">
+
+      <appender-ref ref="archiver">
+        <ThreadContextMapFilter>
+          <KeyValuePair key="prefix" value="archiver" />
+        </ThreadContextMapFilter>
+      </appender-ref>
+
+      <appender-ref ref="events">
+        <ThreadContextMapFilter>
+          <KeyValuePair key="prefix" value="events" />
+        </ThreadContextMapFilter>        
+      </appender-ref>
+
+    </root>
+  </loggers>
+</configuration>
