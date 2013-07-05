@@ -8,7 +8,7 @@ public enum Level {
     INFO(LocationAwareLogger.INFO_INT),
     WARN(LocationAwareLogger.WARN_INT),
     ERROR(LocationAwareLogger.ERROR_INT),
-    FATAL(LocationAwareLogger.ERROR_INT);
+    FATAL(LocationAwareLogger.ERROR_INT + 10);
     
     private int m_code;
     private Level(final int code) {
