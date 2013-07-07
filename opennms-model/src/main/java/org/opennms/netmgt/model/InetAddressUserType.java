@@ -97,7 +97,7 @@ public class InetAddressUserType implements UserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session, final Object owner) throws HibernateException, SQLException {
-        return InetAddressUtils.getInetAddress((String)StringType.INSTANCE.get(rs, names[0], session));
+        return InetAddressUtils.addr((String)StringType.INSTANCE.get(rs, names[0], session));
     }
 
     @Override
@@ -106,11 +106,11 @@ public class InetAddressUserType implements UserType {
             StringType.INSTANCE.set(st, null, index, session);
         } else if (value instanceof InetAddress){
             // Format the IP address into a uniform format
-            StringType.INSTANCE.set(st, InetAddressUtils.toIpAddrString((InetAddress)value), index, session);
+            StringType.INSTANCE.set(st, InetAddressUtils.str((InetAddress)value), index, session);
         } else if (value instanceof String){
             try {
                 // Format the IP address into a uniform format
-                StringType.INSTANCE.set(st, InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress((String)value)), index, session);
+                StringType.INSTANCE.set(st, InetAddressUtils.normalize((String)value), index, session);
             } catch (final IllegalArgumentException e) {
                 // If the argument is not a valid IP address, then just pass it as-is. This
                 // can occur of the query is performing a LIKE query (ie. '192.168.%').

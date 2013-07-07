@@ -17,7 +17,7 @@ function warInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../compile.pl $OFFLINE_ARGS $DEFINES -DonmsLibScope=compile '-P!jspc' compile war:inplace
+    ../compile.pl $OFFLINE_ARGS $DEFINES '-P!jspc,runInPlace' compile war:inplace
     mkdir -p src/main/webapp/{WEB-INF,META-INF}
     sed -e "s,\${install.dir},$OPENNMS_ROOT,g" src/web-inf/configuration.properties > src/main/webapp/WEB-INF/configuration.properties
     sed -e "s,\${install.servlet.dir},`pwd`/src/main/webapp,g" src/meta-inf/context.xml > src/main/webapp/META-INF/context.xml
@@ -34,7 +34,7 @@ function runInPlace() {
 			export MAVEN_OPTS;
 	fi
 	echo $MAVEN_OPTS;
-  ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT -DonmsLibScope=compile '-P!jspc' jetty:run-exploded
+  ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT '-P!jspc,runInPlace' jetty:run-exploded
 }
 
 function removeGwtModuleFiles() {
