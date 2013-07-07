@@ -73,6 +73,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -89,6 +90,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 @DirtiesContext
+@Transactional
 public class InstanceStrategyIntegrationTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
 

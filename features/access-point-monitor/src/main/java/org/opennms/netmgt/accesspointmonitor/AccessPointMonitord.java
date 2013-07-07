@@ -29,6 +29,9 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 // TODO: Set the polling context class type using Spring.
 
@@ -55,6 +58,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     private AccessPointDao m_accessPointDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
+    private TransactionTemplate transactionTemplate;
     private volatile Map<String, PollingContext> m_activePollers = new HashMap<String, PollingContext>();
 
     /**
@@ -66,6 +70,20 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      */
     public boolean isInitialized() {
         return m_initialized;
+    }
+
+    /**
+     * @return the transactionTemplate
+     */
+    public TransactionTemplate getTransactionTemplate() {
+        return transactionTemplate;
+    }
+
+    /**
+     * @param transactionTemplate the transactionTemplate to set
+     */
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
     }
 
     /**
@@ -361,19 +379,25 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         LOG.debug("scheduleDynamicPackages() was triggered");
 
         // Build the current list of dynamic packages
-        Map<String, Package> dynamicPackages = new HashMap<String, Package>();
+        final Map<String, Package> dynamicPackages = new HashMap<String, Package>();
 
-        for (Package pkg : m_pollerConfig.getPackages()) {
+        for (final Package pkg : m_pollerConfig.getPackages()) {
             if (!pkg.nameHasWildcard()) {
                 continue;
             }
 
-            for (String pkgName : m_accessPointDao.findDistinctPackagesLike(pkg.getName())) {
-                Package newPkg = new Package(pkg);
-                newPkg.setName(pkgName);
-                newPkg.setIsDynamic(true);
-                dynamicPackages.put(pkgName, newPkg);
-            }
+            transactionTemplate.execute(new TransactionCallback<Object>() {
+                @Override
+                public Object doInTransaction(TransactionStatus status) {
+                    for (String pkgName : m_accessPointDao.findDistinctPackagesLike(pkg.getName())) {
+                        Package newPkg = new Package(pkg);
+                        newPkg.setName(pkgName);
+                        newPkg.setIsDynamic(true);
+                        dynamicPackages.put(pkgName, newPkg);
+                    }
+                    return null;
+                }
+            });
         }
 
         for (Package pkg : dynamicPackages.values()) {

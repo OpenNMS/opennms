@@ -19,6 +19,7 @@
       <property name="accessPointDao" ref="accessPointDao" />
       <property name="nodeDao" ref="nodeDao" />
       <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+      <property name="transactionTemplate" ref="transactionTemplate" />
     </bean>
     
     <bean id="init-accesspointmonitorConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
