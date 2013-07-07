@@ -146,6 +146,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     }
     
     @Test
+    @Transactional
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testGetEvent(){
 
@@ -158,6 +159,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     }
     
     @Test
+    @Transactional
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_daoEventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));

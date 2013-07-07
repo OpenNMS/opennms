@@ -132,6 +132,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     
     // bug introduced in revision 2932
     @Test
+    @Transactional
     @JUnitTemporaryDatabase
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
         // setUp() creates nodes by default, start with a clean slate

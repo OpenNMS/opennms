@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class DaoWebOutageRepositoryTest implements InitializingBean {
     
     @Autowired
@@ -105,7 +106,6 @@ public class DaoWebOutageRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     public void testCountMatchingOutages(){
         long count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
         assertEquals(3, count);
