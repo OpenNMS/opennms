@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao">
+  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
   

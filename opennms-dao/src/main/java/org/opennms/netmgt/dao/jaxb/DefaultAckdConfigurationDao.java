@@ -26,13 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
@@ -47,7 +48,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdConfiguration, AckdConfiguration> implements AckdConfigurationDao {
+public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfiguration, AckdConfiguration> implements AckdConfigurationDao {
 
     /**
      * <p>Constructor for DefaultAckdConfigurationDao.</p>

@@ -189,6 +189,10 @@ public class WillItUnmarshalTest {
         unmarshal("access-point-monitor-configuration.xml", AccessPointMonitorConfig.class);
     }
     @Test
+    public void testAckdConfiguration() throws Exception {
+        unmarshalJaxb("ackd-configuration.xml", AckdConfiguration.class);
+    }
+    @Test
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
     }
@@ -503,10 +507,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testJavaMailConfiguration() throws Exception {
         unmarshal("javamail-configuration.xml", JavamailConfiguration.class);
-    }
-    @Test
-    public void testAckdConfiguration() throws Exception {
-        unmarshal("ackd-configuration.xml", AckdConfiguration.class);
     }
     @Test
     public void provisiondConfiguration() throws Exception {
