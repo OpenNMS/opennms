@@ -100,7 +100,7 @@
     </property>
   </bean>
   
-  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao">
+  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
   </bean>
   
