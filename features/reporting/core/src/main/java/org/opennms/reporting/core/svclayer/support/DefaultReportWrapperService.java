@@ -226,6 +226,10 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".pdf");
                 jm.setInputStreamContentType("application/pdf");
                 break;
+            case CSV:
+                jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".csv");
+                jm.setInputStreamContentType("text/csv");
+                break;
             default:
                 jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");
                 jm.setInputStreamContentType("text/html");
