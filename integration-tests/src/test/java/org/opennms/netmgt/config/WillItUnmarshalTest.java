@@ -622,7 +622,9 @@ public class WillItUnmarshalTest {
         
         allXml.removeAll(m_filesTested);
         allXml.remove("log4j2.xml");
-        
+        allXml.remove("log4j2-tools.xml");
+        allXml.remove("log4j2-archive-events.xml");
+
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<String>(allXml);
             Collections.sort(files);
