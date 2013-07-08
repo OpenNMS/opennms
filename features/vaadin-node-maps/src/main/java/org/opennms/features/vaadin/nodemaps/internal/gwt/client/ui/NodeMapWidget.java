@@ -60,6 +60,8 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     private MarkerContainer m_markers;
 
     private MarkerClusterGroup m_markerClusterGroup;
+    
+    private MarkerClusterGroup[] m_stateClusterGroups;
 
     private boolean m_firstUpdate = true;
 

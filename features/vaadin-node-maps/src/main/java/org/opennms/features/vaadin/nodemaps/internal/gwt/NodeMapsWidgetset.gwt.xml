@@ -19,7 +19,9 @@
           gwt.xml file, or add this property to the gwt.xml file:
         -->
     <set-configuration-property name="xsiframe.failIfScriptTag" value="false"/>
-
+    
+	<set-property name="user.agent" value="safari"/>
+	
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
