@@ -249,6 +249,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testLog4j2ArchiveEventsConfig() {
+        ignoreConfigFile("log4j2-archive-events.xml");
+    }
+
+    @Test
     public void testMagicUsers() {
         testConfigFile("magic-users.properties");
     }
