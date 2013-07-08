@@ -991,7 +991,7 @@ public class AvailCalculations extends Object {
         while (numMonths++ < nMonths) {
             int serviceCount = 0;
             long outage = 0;
-            LOG.debug("Number of days {} in month of " + new Date(endTime), numDays);
+            LOG.debug("Number of days {} in month of {}", numDays, new Date(endTime));
             long rollingWindow = numDays * ROLLING_WINDOW * 1l;
             //
             // get the outage and service count.
@@ -1190,7 +1190,7 @@ public class AvailCalculations extends Object {
             } else {
                 int daysCnt = 0;
                 while (daysCnt++ < days) {
-                    LOG.debug("DAy : {} end time {} " + " ROLLING_WINDOW {}", ROLLING_WINDOW, daysCnt, new Date(curTime));
+                    LOG.debug("DAy : {} end time {} ROLLING_WINDOW {}", daysCnt, new Date(curTime), ROLLING_WINDOW);
                     int serviceCnt = 0;
                     long outageTime = 0;
                     // For each node in the service table.

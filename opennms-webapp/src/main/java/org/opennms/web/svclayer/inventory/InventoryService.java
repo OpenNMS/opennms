@@ -891,7 +891,7 @@ public class InventoryService implements InitializingBean {
      * @return a boolean.
      */
     public boolean deleteBucketItem(String bucket, String filename ){
-        LOG.debug("InventoryService deleteBucketItem for bucket/filename [{}]/ " + "[{}]", bucket, filename); 
+        LOG.debug("InventoryService deleteBucketItem for bucket/filename [{}]/[{}]", bucket, filename);
         try {
           RWSClientApi.deleteBucketItem(m_cp, bucket, filename);
           LOG.debug("InventoryService ModelAndView deleteBucketItem changes submitted");

@@ -309,7 +309,7 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            LOG.error("UEI-specific event handler script execution failed: " + event.getUei(), ex);
+                            LOG.error("UEI-specific event handler script execution failed: {}", event.getUei(), ex);
                         }
                     }
                 }
@@ -324,7 +324,7 @@ final class Executor implements Runnable, PausableFiber {
                     }
 
                     catch (BSFException ex) {
-                        LOG.error("Non-UEI-specific event handler script [{}] execution failed", ex, i);
+                        LOG.error("Non-UEI-specific event handler script [{}] execution failed", i, ex);
                     }
                 }
 

@@ -75,11 +75,11 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
         } catch (IOException e) {
             LOG.error("IOException: ", e);
         } catch (ClassNotFoundException e) {
-            LOG.error("Unable to initialize database: "+e.getMessage(), e);
+            LOG.error("Unable to initialize database: {}", e.getMessage(), e);
         } catch (SQLException e) {
             LOG.error("SQLException: ", e);
         } catch (PropertyVetoException e) {
-            LOG.error("PropertyVetoException: "+e.getMessage(), e);
+            LOG.error("PropertyVetoException: {}", e.getMessage(), e);
         }
         // XXX We don't throw an exception?
         

@@ -90,8 +90,8 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
         for (int i = 0; i < arguments.size(); i++) {
 
             Argument arg = arguments.get(i);
-            LOG.debug("Current arg switch: " + i + " of " + arguments.size() + " is: " + arg.getSwitch());
-            LOG.debug("Current arg  value: " + i + " of " + arguments.size() + " is: " + arg.getValue());
+            LOG.debug("Current arg switch: {} of {} is: {}", i, arguments.size(), arg.getSwitch());
+            LOG.debug("Current arg  value: {} of {} is: {}", i, arguments.size(), arg.getValue());
 
             /*
              * Note: The recipient gets set by whichever of the two switches:

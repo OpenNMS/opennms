@@ -170,7 +170,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                                                         deliveryOptions.getFormat(),
                                                         bout);
             } catch (ReportException reportException) {
-                LOG.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
             mailReport(deliveryOptions, out);
         } else {
@@ -196,7 +196,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                     mailReport(deliveryOptions, out);
                 }
             } catch (ReportException reportException) {
-                LOG.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
         }
 

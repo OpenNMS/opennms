@@ -104,7 +104,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     // Log the uei, source, and other important aspects
                     final String uuid = event.getUuid();
                     LOG.debug("Event {");
-                    LOG.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                    LOG.debug("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
                     LOG.debug("  uei   = {}", event.getUei());
                     LOG.debug("  src   = {}", event.getSource());
                     LOG.debug("  iface = {}", event.getInterface());
@@ -113,7 +113,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                         LOG.debug("  parms {");
                         for (final Parm parm : event.getParmCollection()) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
-                                LOG.debug("    (" + parm.getParmName().trim() + ", " + parm.getValue().getContent().trim() + ")");
+                                LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
                             }
                         }
                         LOG.debug("  }");
@@ -125,10 +125,10 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     try {
                         eventProcessor.process(m_eventLog.getHeader(), event);
                     } catch (SQLException e) {
-                        LOG.warn("Unable to process event using processor " + eventProcessor + "; not processing with any later processors.", e);
+                        LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
                         break;
                     } catch (Throwable t) {
-                        LOG.warn("Unknown exception processing event with processor " + eventProcessor + "; not processing with any later processors.", t);
+                        LOG.warn("Unknown exception processing event with processor {}; not processing with any later processors.", eventProcessor, t);
                         break;
                     }
                 }

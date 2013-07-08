@@ -197,12 +197,12 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
             
             if(flagResults.size() == 0) {
-                LOG.debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, hrStorageDescrSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                LOG.debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, hrStorageDescrSnmpObject, e.getKey(), e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
 			LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
@@ -215,7 +215,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
                 	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
                 
-                	LOG.debug("DiskUsageMonitor: calculatedPercentage=" + calculatedPercentage + " percentFree="+percentFree);
+			LOG.debug("DiskUsageMonitor: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
                 	
                 	if (calculatedPercentage < percentFree) {
                 	
@@ -254,18 +254,18 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     
     private boolean isMatch(String candidate, String target, int matchType) {
         boolean matches = false;
-        LOG.debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        LOG.debug("isMessage: candidate is '{}', matching against target '{}'", candidate, target);
         if (matchType == MATCH_TYPE_EXACT) {
-            LOG.debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting equality match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.equals(target);
         } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            LOG.debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.startsWith(target);
         } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.endsWith(target);
         } else if (matchType == MATCH_TYPE_REGEX) {
-            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
         LOG.debug("isMatch: Match is positive");

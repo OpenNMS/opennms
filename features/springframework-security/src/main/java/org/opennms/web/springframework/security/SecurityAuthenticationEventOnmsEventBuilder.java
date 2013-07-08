@@ -89,21 +89,21 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         
         if (event instanceof AuthorizedEvent) {
             AuthorizedEvent authEvent = (AuthorizedEvent) event;
-            LOG.debug("AuthorizedEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " +authEvent.getAuthentication().getPrincipal());
+            LOG.debug("AuthorizedEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
         }
         if (event instanceof AuthorizationFailureEvent) {
             AuthorizationFailureEvent authEvent = (AuthorizationFailureEvent) event;
-            LOG.debug("AuthorizationFailureEvent received  -\n   Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " +authEvent.getAuthentication().getPrincipal());
+            LOG.debug("AuthorizationFailureEvent received  -\n   Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
         }
         if (event instanceof InteractiveAuthenticationSuccessEvent) {
             InteractiveAuthenticationSuccessEvent authEvent = (InteractiveAuthenticationSuccessEvent) event;
-            LOG.debug("InteractiveAuthenticationSuccessEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() +"\n  Principal -  " + authEvent.getAuthentication().getPrincipal());
+            LOG.debug("InteractiveAuthenticationSuccessEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
             
         }
         if (event instanceof ServletRequestHandledEvent) {
             ServletRequestHandledEvent authEvent = (ServletRequestHandledEvent) event;
-            LOG.debug("ServletRequestHandledEvent received - " + authEvent.getDescription() + "\n  Servlet - " + authEvent.getServletName() +"\n  URL - " + authEvent.getRequestUrl());
-            LOG.info(authEvent.getRequestUrl() + " requested from " + authEvent.getClientAddress() + " by user " + authEvent.getUserName());
+            LOG.debug("ServletRequestHandledEvent received - {}\n  Servlet - {}\n  URL - {}", authEvent.getDescription(), authEvent.getServletName(), authEvent.getRequestUrl());
+            LOG.info("{} requested from {} by user {}", authEvent.getRequestUrl(), authEvent.getClientAddress(), authEvent.getUserName());
         }
         
     }

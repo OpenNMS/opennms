@@ -1610,7 +1610,7 @@ public class ManagerDefaultImpl implements Manager {
     public VMap addElements(VMap map, List<VElement> velems) throws MapsException {
         map.removeAllLinks();
         for (VElement ve: velems) {
-            LOG.debug("adding map element to map with id: {}", ve.getId()+ve.getType());
+            LOG.debug("adding map element to map with id: {}{}", ve.getId(), ve.getType());
             try {
                 String type = MapsConstants.NODE_HIDE_TYPE;
                 if (ve.isMap()) type =MapsConstants.MAP_HIDE_TYPE;
@@ -1620,7 +1620,7 @@ public class ManagerDefaultImpl implements Manager {
                     LOG.debug("preserving label map is hidden: label found: {}", hve.getLabel());
                 }
             } catch (Throwable e) {
-               LOG.debug("No Hidden Element found for id: {}", ve.getId()+ve.getType()); 
+               LOG.debug("No Hidden Element found for id: {}{}", ve.getId(), ve.getType());
             }
             map.addElement(ve);
         }            

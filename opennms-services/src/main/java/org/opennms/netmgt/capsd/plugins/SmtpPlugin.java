@@ -237,7 +237,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                     }
                 }
             } catch (NumberFormatException e) {
-                LOG.info("SmtpPlugin: received invalid result code from server " + InetAddressUtils.str(host), e);
+                LOG.info("SmtpPlugin: received invalid result code from server {}", InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
@@ -254,10 +254,10 @@ public final class SmtpPlugin extends AbstractPlugin {
                 LOG.debug("SmtpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
                 isAServer = false;
             } catch (IOException e) {
-                LOG.info("SmtpPlugin: Error communicating with host " + InetAddressUtils.str(host), e);
+                LOG.info("SmtpPlugin: Error communicating with host {}", InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (Throwable t) {
-                LOG.warn("SmtpPlugin: Undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
+                LOG.warn("SmtpPlugin: Undeclared throwable exception caught contacting host {}", InetAddressUtils.str(host), t);
                 isAServer = false;
             } finally {
                 try {

@@ -221,7 +221,7 @@ public abstract class HttpUtils extends Object {
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
 
         // log data
-        LOG.debug("HTTP Post: Current time: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
+        LOG.debug("HTTP Post: Current time: {}", new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
         LOG.debug("Data posted:");
 
         // initialize a buffer to use to read and write

@@ -152,9 +152,9 @@ public final class MSExchangePlugin extends AbstractPlugin {
                 // ignore this
                 LOG.debug("MSExchangePlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
             } catch (IOException e) {
-                LOG.info("isServer: Unexpected I/O exception occured with host {} on port " + port, e, InetAddressUtils.str(host));
+                LOG.info("isServer: Unexpected I/O exception occured with host {} on port {}", InetAddressUtils.str(host), port, e);
             } catch (Throwable t) {
-                LOG.error("isServer: Undeclared throwable caught communicating with host {} on port " + port, t, InetAddressUtils.str(host));
+                LOG.error("isServer: Undeclared throwable caught communicating with host {} on port {}", InetAddressUtils.str(host), port, t);
             } finally {
                 try {
                     if (socket != null) {

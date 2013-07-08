@@ -254,7 +254,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     try {
                         thresholdEntity.addThreshold(wrapper);
                     } catch (IllegalStateException e) {
-                        LOG.warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
+                        LOG.warn("Encountered duplicate {} for datasource {}", thresh.getType(), wrapper.getDatasourceExpression(), e);
                     }
  
                     // Add new entity to the map
@@ -344,13 +344,13 @@ public abstract class JMXThresholder implements ServiceThresholder {
         // Debug
         final String hostAddress = InetAddressUtils.str(ipAddr);
 		if (LOG.isDebugEnabled()) {
-            LOG.debug("initialize: dumping node thresholds defined for " + hostAddress + "/" + groupName + ":");
+            LOG.debug("initialize: dumping node thresholds defined for {}/{}:", hostAddress, groupName);
             Iterator<ThresholdEntity> iter = nodeMap.values().iterator();
             while (iter.hasNext()) {
                 LOG.debug(iter.next().toString());
             }
 
-            LOG.debug("initialize: dumping interface thresholds defined for " + hostAddress + "/" + groupName + ":");
+            LOG.debug("initialize: dumping interface thresholds defined for {}/{}:", hostAddress, groupName);
             iter = baseIfMap.values().iterator();
             while (iter.hasNext()) {
                 LOG.debug(iter.next().toString());
@@ -397,11 +397,11 @@ public abstract class JMXThresholder implements ServiceThresholder {
         int    interval  = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
 
         final String hostAddress = InetAddressUtils.str(primary);
-	LOG.debug("check: service= " + serviceName.toUpperCase() + " address= " + hostAddress + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
+	LOG.debug("check: service= {} address= {} thresholding-group={} interval={} mS range = {} mS", serviceName.toUpperCase(), hostAddress, groupName, interval, range);
 
         // RRD Repository attribute
         String repository = iface.getAttribute(RRD_REPOSITORY_KEY);
-        LOG.debug("check: rrd repository=", repository);
+        LOG.debug("check: rrd repository={}", repository);
 
         // Nodeid attribute
         Integer nodeId = iface.getAttribute(NODE_ID_KEY);
@@ -434,7 +434,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         try {
             checkNodeDir(nodeDirectory, nodeId, primary, range, interval, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
-            LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress, e);
+            LOG.info("check: Threshold checking failed for primary {} interface {}", serviceName, hostAddress, e);
             return THRESHOLDING_FAILED;
         }
 
@@ -454,7 +454,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
-                    LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress, e);
+                    LOG.info("check: Threshold checking failed for primary {} interface {}", serviceName, hostAddress, e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -485,16 +485,16 @@ public abstract class JMXThresholder implements ServiceThresholder {
             if(dsFile.exists()) {
                 try {
                     if (range != 0) {
-                        LOG.debug("checking values within " + range + " mS of last possible PDP");
+                        LOG.debug("checking values within {} mS of last possible PDP", range);
                         thisValue = RrdUtils.fetchLastValueInRange(dsFile.getAbsolutePath(), ds, interval, range);
                     } else {
                         LOG.debug("checking value of last possible PDP only");
                         thisValue = RrdUtils.fetchLastValue(dsFile.getAbsolutePath(), ds, interval);
                     }
                 } catch (NumberFormatException e) {
-                    LOG.warn("Unable to convert retrieved value for datasource '" + ds + "' to a double, skipping evaluation.");
+                    LOG.warn("Unable to convert retrieved value for datasource '{}' to a double, skipping evaluation.", ds);
                 } catch (RrdException e) {
-                    LOG.info("An error occurred retriving the last value for datasource '" + ds, e);
+                    LOG.info("An error occurred retriving the last value for datasource '{}'", ds, e);
                 }
             }
         

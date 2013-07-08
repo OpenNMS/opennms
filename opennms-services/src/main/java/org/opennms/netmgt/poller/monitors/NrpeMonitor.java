@@ -223,7 +223,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                 }
             } catch (NoRouteToHostException e) {
                    reason = "No route to host exception for address " + hostAddress;
-                   LOG.warn("poll: " + reason, e);
+                   LOG.warn("poll: {}", reason, e);
             } catch (InterruptedIOException e) {
                 reason = "did not connect to host within " + tracker;
                 LOG.debug("NrpeMonitor: did not connect to host within {}", tracker);
@@ -233,20 +233,20 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                 //
                 if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    LOG.debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } catch (NrpeException e) {
 				reason = "NrpeException while polling address: " + ipv4Addr;
                 if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    LOG.debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } catch (IOException e) {
                 // Ignore
 				reason = "IOException while polling address: " + ipv4Addr;
                 if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    LOG.debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } finally {
                 try {

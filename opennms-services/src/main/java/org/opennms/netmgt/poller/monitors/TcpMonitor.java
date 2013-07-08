@@ -131,7 +131,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-	LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+	LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         //
@@ -146,7 +146,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("TcpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("TcpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -168,7 +168,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 if (response == null)
                     continue;
                 LOG.debug("poll: banner = {}", response);
-                LOG.debug("poll: responseTime= " + responseTime + "ms");
+                LOG.debug("poll: responseTime= {}ms", responseTime);
 
                 if (response.indexOf(strBannerMatch) > -1) {
                     serviceStatus = PollStatus.available(responseTime);

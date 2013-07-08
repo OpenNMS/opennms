@@ -212,7 +212,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     Integer.parseInt(bgpPeerState.toString()) <= BGP_PEER_STATE.ESTABLISHED.value())
                 {
                     // Session detected
-                    LOG.debug("poll: bgpPeerState: " + bgpPeerState + " is valid, protocol supported.");
+                    LOG.debug("poll: bgpPeerState: {} is valid, protocol supported.", bgpPeerState);
                     return true;
                 }
             }
@@ -223,7 +223,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         } catch (IllegalArgumentException e) {
             LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            LOG.warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", ipaddr, t);
         }
         return false;
     }

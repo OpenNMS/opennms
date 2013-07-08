@@ -71,7 +71,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
     @Override
     public void process(AGateway gateway, OutboundMessage msg) {
 
-        log.debug( "Forwarding message to registered listeners: " + getListeners() + " : " + msg );
+        log.debug( "Forwarding message to registered listeners: {} : {}", getListeners(), msg);
 
         for( IOutboundMessageNotification listener : getListeners() )
         {

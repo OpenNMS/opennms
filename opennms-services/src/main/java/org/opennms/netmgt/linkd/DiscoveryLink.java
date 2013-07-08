@@ -880,14 +880,14 @@ public final class DiscoveryLink implements ReadyRunnable {
                 for (final Integer p : endBridge.getBridgePortsFromMac(curBridgeIdentifier)) {
                     port = p;
                     if (endBridge.isBackBoneBridgePort(port)) {
-                        LOG.debug("getBridgePortOnEndBridge: found backbone bridge port " + port + " .... Skipping.");
+                        LOG.debug("getBridgePortOnEndBridge: found backbone bridge port {} .... Skipping.", port);
                         continue;
                     }
                     if (port == -1) {
-                        LOG.debug("getBridgePortOnEndBridge: no port found on bridge nodeid " + endBridge.getNodeId() + " for node bridge identifiers nodeid " + startBridge.getNodeId() + " . .....Skipping.");
+                        LOG.debug("getBridgePortOnEndBridge: no port found on bridge nodeid {} for node bridge identifiers nodeid {} . .....Skipping.", endBridge.getNodeId(), startBridge.getNodeId());
                         continue;
                     }
-                    LOG.debug("getBridgePortOnEndBridge: using MAC address table found bridge port " + port + " on node " + endBridge.getNodeId());
+                    LOG.debug("getBridgePortOnEndBridge: using MAC address table found bridge port {} on node {}", port, endBridge.getNodeId());
                     return port;
                 }
 
@@ -1118,12 +1118,12 @@ public final class DiscoveryLink implements ReadyRunnable {
         } else {
             for (String curMacAddress : macs) {
                 if (m_macsParsed.contains(curMacAddress)) {
-                    LOG.warn("addLinks: MAC address " + curMacAddress + " just found on other bridge port! Skipping...");
+                    LOG.warn("addLinks: MAC address {} just found on other bridge port! Skipping...", curMacAddress);
                     continue;
                 }
 
                 if (macsExcluded.contains(curMacAddress)) {
-                    LOG.warn("addLinks: MAC address " + curMacAddress + " is excluded from discovery package! Skipping...");
+                    LOG.warn("addLinks: MAC address {} is excluded from discovery package! Skipping...", curMacAddress);
                     continue;
                 }
                 if (m_linkd.getAtInterfaces(getPackageName()) != null && m_linkd.getAtInterfaces(getPackageName()).containsKey(curMacAddress)) {

@@ -198,7 +198,7 @@ final class UdpUuidSender implements Runnable {
                 try {
                     JaxbUtils.marshal(receipt, writer);
                 } catch (DataAccessException e) {
-                    LOG.warn("Failed to build event receipt for agent " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
+                    LOG.warn("Failed to build event receipt for agent {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 }
 
                 String xml = writer.getBuffer().toString();
@@ -215,7 +215,7 @@ final class UdpUuidSender implements Runnable {
                             try {
                                 handler.receiptSent(receipt);
                             } catch (Throwable t) {
-                                LOG.warn("Error processing event receipt: "+ t, t);
+                                LOG.warn("Error processing event receipt", t);
                             }
                         }
                     }
@@ -228,7 +228,7 @@ final class UdpUuidSender implements Runnable {
                 } catch (UnsupportedEncodingException e) {
                     LOG.warn("Failed to convert XML to byte array", e);
                 } catch (IOException e) {
-                    LOG.warn("Failed to send packet to host" + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
+                    LOG.warn("Failed to send packet to host {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 }
             }
             

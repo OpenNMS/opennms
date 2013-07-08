@@ -229,7 +229,7 @@ public class NotificationTask extends Thread {
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
         } catch (Throwable e) {
-            LOG.error("Unable to get response status on notice #" + m_notifyId, e);
+            LOG.error("Unable to get response status on notice #{}", m_notifyId, e);
         }
 
         // check to see if someone has responded, if so remove all the brothers
@@ -252,7 +252,7 @@ public class NotificationTask extends Thread {
                             }
                             String binaryCommand = command.getBinary();
                             if (binaryCommand == null) {
-                                LOG.error("binary flag not set for command: " + command.getExecute() + ".  Guessing false.");
+                                LOG.error("binary flag not set for command: {}.  Guessing false.", command.getExecute());
                                 binaryCommand = "false";
                             }
                             if (binaryCommand.equals("true")) {
@@ -263,13 +263,13 @@ public class NotificationTask extends Thread {
                             LOG.debug("Class created is: {}", command.getClass());
 
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
-                            LOG.debug("command " + command.getName() + " return code = " + returnCode);
+                            LOG.debug("command {} return code = {}", command.getName(), returnCode);
                         } catch (Throwable e) {
-                            LOG.warn("Notification command failed: " + command.getName(), e);
+                            LOG.warn("Notification command failed: {}", command.getName(), e);
                         }
                     }
                 } else {
-                    LOG.debug("User " + m_user.getUserId() + " is not on duty, skipping");
+                    LOG.debug("User {} is not on duty, skipping", m_user.getUserId());
                 }
             } catch (IOException e) {
                 LOG.warn("Could not get user duty schedule information: ", e);
@@ -309,7 +309,7 @@ public class NotificationTask extends Thread {
         List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue());
 
             commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }

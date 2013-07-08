@@ -165,7 +165,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     boolean currentAliasIsOutOfDate(String ifAlias) {
-        LOG.debug("currentAliasIsOutOfDate: ifAlias from collection = " + ifAlias + ", current ifAlias = " + getCurrentIfAlias());
+        LOG.debug("currentAliasIsOutOfDate: ifAlias from collection = {}, current ifAlias = {}", ifAlias, getCurrentIfAlias());
         return ifAlias != null && !ifAlias.equals(getCurrentIfAlias());
     }
 
@@ -194,7 +194,7 @@ public final class IfInfo extends SnmpCollectionResource {
 
     void logForceRescan(String ifAlias) {
 
-        LOG.debug("Forcing rescan.  IfAlias " + ifAlias + " for index " + getIndex() + " does not match DB value: " + getCurrentIfAlias());
+        LOG.debug("Forcing rescan.  IfAlias {} for index {} does not match DB value: {}", ifAlias, getIndex(), getCurrentIfAlias());
     }
 
     public boolean isScheduledForCollection() {

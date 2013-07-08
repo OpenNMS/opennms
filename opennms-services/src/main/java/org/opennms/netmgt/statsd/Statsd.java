@@ -103,7 +103,7 @@ public class Statsd implements SpringServiceDaemon {
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                 } catch (Throwable exception) {
-                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                     ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -150,10 +150,10 @@ public class Statsd implements SpringServiceDaemon {
         synchronized (m_scheduler) {
             LOG.info("start: lock acquired (may have reentered), scheduling Reports...");
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                LOG.debug("start: scheduling Report: "+reportDef+"...");
+                LOG.debug("start: scheduling Report: {}", reportDef);
                 scheduleReport(reportDef);
             }
-            LOG.info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length);
         }
         LOG.debug("start: lock released (unless reentrant).");
     }
@@ -218,7 +218,7 @@ public class Statsd implements SpringServiceDaemon {
         try {
             report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
         } catch (Throwable t) {
-            LOG.error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
+            LOG.error("Could not create a report instance for report definition {}", reportDef, t);
             throw t;
         }
         
@@ -230,7 +230,7 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("Completed report {}", report);
                 
                 m_reportPersister.persist(report);
-                LOG.debug("Report " + report + " persisted");
+                LOG.debug("Report {} persisted", report);
             }
         });
     }

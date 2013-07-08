@@ -263,7 +263,7 @@ final class MergeableRange implements Comparable<Range> {
                 getRange().setEnd(InetAddressUtils.decr(specific.getSpecific()));
             }
         } catch (UnknownHostException e) {
-            LOG.error("Error converting string to IP address: " + e.getMessage(), e);
+            LOG.error("Error converting string to IP address", e);
         }
 
         return newRange;

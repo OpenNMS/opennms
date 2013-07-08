@@ -415,13 +415,13 @@ public class Collectd extends AbstractServiceDaemon implements
         
         OnmsIpInterface iface = getIpInterface(nodeId, ipAddress);
         if (iface == null) {
-            LOG.error("Unable to find interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find interface with address {} on node {}", ipAddress, nodeId);
             return;
         }
         
         OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
         if (svc == null) {
-            LOG.error("Unable to find service "+svcName+" on interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find service {} on interface with address {} on node {}", svcName, ipAddress, nodeId);
             return;
         }
         
@@ -816,7 +816,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    LOG.debug("Marking CollectableService for deletion because an interface was deleted:  Service nodeid="+cSvc.getNodeId()+ ", deleted node:"+nodeId+ "service address:"+addr.getHostName()+ "deleted interface:"+ipAddr);
+                    LOG.debug("Marking CollectableService for deletion because an interface was deleted:  Service nodeid={}, deleted node:{}service address:{}deleted interface:{}", cSvc.getNodeId(), nodeId, addr.getHostName(), ipAddr);
 
                     updates.markForDeletion();
                 }
@@ -827,7 +827,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-            LOG.debug("interfaceDeletedHandler: processing of interfaceDeleted event for " + nodeId + "/" + ipAddr + " completed.");
+            LOG.debug("interfaceDeletedHandler: processing of interfaceDeleted event for {}/{} completed", nodeId, ipAddr);
     }
 
     /**
@@ -923,13 +923,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
-                        LOG.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
+                        LOG.debug("interfaceReparentedHandler: marking {} for reparenting for service SNMP.", event.getInterface());
                     }
                 }
             }
         }
 
-        LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
+        LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface {} completed.", event.getInterface());
     }
 
     /**
@@ -948,7 +948,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
+        LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid {} completed.", nodeId);
     }
 
     /**
@@ -965,7 +965,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
+        LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
         scheduleNode(nodeId.intValue(), true);
         
@@ -993,7 +993,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    LOG.debug("Marking CollectableService for deletion because a node was deleted:  Service nodeid="+cSvc.getNodeId()+ ", deleted node:"+nodeId);
+                    LOG.debug("Marking CollectableService for deletion because a node was deleted:  Service nodeid={}, deleted node:{}", cSvc.getNodeId(), nodeId);
                     updates.markForDeletion();
                 }
 
@@ -1068,7 +1068,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Throwable e) {
                 // Preparing failed event
-                LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: " + e.getMessage(), e);
+                LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: {}", e.getMessage(), e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
@@ -1171,7 +1171,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                             // Now set the deleted flag
                             updates.markForDeletion();
-                            LOG.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
+                            LOG.debug("primarySnmpInterfaceChangedHandler: marking {} as deleted for service SNMP.", oldPrimaryIfAddr);
                         }
 
                         // Now safe to remove the collectable service from
@@ -1186,7 +1186,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //
         scheduleForCollection(event);
 
-        LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
+        LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid {} completed.", event.getNodeid());
     }
 
     /**
@@ -1232,7 +1232,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
-                LOG.debug("Comparing CollectableService ip address = " + addrString + " and event ip interface = " + ipAddress);
+                LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
                 if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
@@ -1245,7 +1245,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                         // Now set the reinitialization flag
                         updates.markForReinitialization(iface);
-                        LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking " + ipAddress + " for reinitialization for service SNMP.");
+                        LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking {} for reinitialization for service SNMP.", ipAddress);
                     }
                 }
             }
@@ -1306,7 +1306,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    LOG.debug("Marking CollectableService for deletion because a service was deleted:  Service nodeid="+cSvc.getNodeId()+ ", deleted node:"+nodeId+ ", service address:"+addr.getHostName()+ ", deleted interface:"+ipAddr+ ", service servicename:"+cSvc.getServiceName()+ ", deleted service name:"+svcName+ ", event source "+event.getSource());
+                    LOG.debug("Marking CollectableService for deletion because a service was deleted:  Service nodeid={}, deleted node:{}, service address:{}, deleted interface:{}, service servicename:{}, deleted service name:{}, event source {}", cSvc.getNodeId(), nodeId, addr.getHostName(), ipAddr, cSvc.getServiceName(), svcName, event.getSource());
                     updates.markForDeletion();
                 }
 
@@ -1316,7 +1316,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-        LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+        LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for {}/{}/{} completed.", nodeId, ipAddr, svcName);
     }
 
     /**
@@ -1421,7 +1421,7 @@ public class Collectd extends AbstractServiceDaemon implements
         for (Collector collector : collectors) {
             String svcName = collector.getService();
             try {
-                LOG.debug("instantiateCollectors: Loading collector " + svcName + ", classname " + collector.getClassName());
+                LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
                 Class<?> cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
@@ -1429,7 +1429,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                 setServiceCollector(svcName, sc);
             } catch (Throwable t) {
-                LOG.warn("instantiateCollectors: Failed to load collector " + collector.getClassName() + " for service " + svcName + ": " + t, t);
+                LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
             }
         }
     }

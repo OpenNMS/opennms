@@ -157,10 +157,10 @@ public final class Pop3Plugin extends AbstractPlugin {
                 isAServer = false;
             } catch (IOException e) {
                 isAServer = false;
-                LOG.info("Pop3Plugin: An unexpected I/O exception occured contacting host " + InetAddressUtils.str(host), e);
+                LOG.info("Pop3Plugin: An unexpected I/O exception occured contacting host {}", InetAddressUtils.str(host), e);
             } catch (Throwable t) {
                 isAServer = false;
-                LOG.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + InetAddressUtils.str(host), t);
+                LOG.error("Pop3Plugin: An undeclared throwable exception was caught contacting host {}", InetAddressUtils.str(host), t);
             } finally {
                 try {
                     if (socket != null)

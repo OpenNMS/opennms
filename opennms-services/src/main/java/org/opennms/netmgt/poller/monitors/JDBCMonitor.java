@@ -233,7 +233,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 						status = PollStatus.available(responseTime);
 
 						LOG.debug("JDBC service is AVAILABLE on: {}", ipv4Addr.getCanonicalHostName());
-						LOG.debug("poll: responseTime= " + responseTime + "ms");
+						LOG.debug("poll: responseTime= {}ms", responseTime);
 
 						break;
 					}

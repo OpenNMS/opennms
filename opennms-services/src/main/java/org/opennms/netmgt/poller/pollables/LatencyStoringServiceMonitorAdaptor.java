@@ -166,7 +166,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 }
             }
             if (m_thresholdingSet.isNodeInOutage()) {
-                LOG.info("applyThresholds: the threshold processing will be skipped because the service " + service + " is on a scheduled outage.");
+                LOG.info("applyThresholds: the threshold processing will be skipped because the service {} is on a scheduled outage.", service);
             } else if (m_thresholdingSet.hasThresholds(attributes)) {
                 List<Event> events = m_thresholdingSet.applyThresholds(dsName, attributes);
                 if (events.size() > 0) {
@@ -176,7 +176,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                 }
             }
 	} catch(Throwable e) {
-	    LOG.error("Failed to threshold on " + service + " for " + dsName + " because of an exception", e);
+	    LOG.error("Failed to threshold on {} for {} because of an exception", service, dsName, e);
 	}
     }
 

@@ -155,7 +155,7 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-        LOG.debug("poll: address=" + hostAddress + ", port=" + port + ", " + tracker);
+        LOG.debug("poll: address={}, port={}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         //
@@ -169,7 +169,7 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("Connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("Connected to host: {} on port: {}", ipv4Addr, port);
                 SSLSocket sslSocket = (SSLSocket) getSocketWrapper().wrapSocket(socket);
 
                 // We're connected, so upgrade status to unresponsive
@@ -179,7 +179,7 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                 for (int i = 0; i < certs.length && !serviceStatus.isAvailable(); i++) {
                     if (certs[i] instanceof X509Certificate) {
                         X509Certificate certx = (X509Certificate) certs[i];
-                        LOG.debug("Checking validity against dates: [current: " + calCurrent.getTime() + ", valid: " + calValid.getTime() +"], NotBefore: " + certx.getNotBefore() + ", NotAfter: " + certx.getNotAfter());
+                        LOG.debug("Checking validity against dates: [current: {}, valid: {}], NotBefore: {}, NotAfter: {}", calCurrent.getTime(), calValid.getTime(), certx.getNotBefore(), certx.getNotAfter());
                         calBefore.setTime(certx.getNotBefore());
                         calAfter.setTime(certx.getNotAfter());
                         if (calCurrent.before(calBefore)) {

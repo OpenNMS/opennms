@@ -108,7 +108,7 @@ public class Tl1d extends AbstractServiceDaemon {
 
                 startClients();
 
-                LOG.debug("handleReloadConfigurationEvent: "+m_tl1Clients.size()+" defined.");
+                LOG.debug("handleReloadConfigurationEvent: {} defined.", m_tl1Clients.size());
                 LOG.info("handleReloadConfigurationEvent: completed.");
                 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());

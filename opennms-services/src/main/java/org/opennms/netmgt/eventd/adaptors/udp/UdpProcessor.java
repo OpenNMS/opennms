@@ -161,14 +161,14 @@ final class UdpProcessor implements Runnable {
             // Convert the Event
             Event[] events = null;
             try {
-                LOG.debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
-                LOG.debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
+                LOG.debug("Event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
+                LOG.debug("Unmarshalling Event text \\{{}{}{}}", System.getProperty("line.separator"), re.getXmlData(), System.getProperty("line.separator"));
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {
-                LOG.warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
+                LOG.warn("Failed to unmarshal the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 continue;
             } catch (ValidationException e) {
-                LOG.warn("Failed to validate the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
+                LOG.warn("Failed to validate the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 continue;
             }
 
@@ -176,7 +176,7 @@ final class UdpProcessor implements Runnable {
                 LOG.debug("The event log record contained no events");
                 continue;
             } else {
-                LOG.debug("Processing " + events.length + " events");
+                LOG.debug("Processing {} events", events.length);
             }
 
             // process the event

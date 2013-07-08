@@ -240,7 +240,7 @@ public final class ThresholdEntity implements Cloneable {
             return events; //No events to report
         }
         
-        LOG.debug("evaluate: value= " + dsValue + " against threshold: " + this);
+        LOG.debug("evaluate: value= {} against threshold: {}", dsValue, this);
 
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
             Status status = item.evaluate(dsValue);
@@ -272,11 +272,11 @@ public final class ThresholdEntity implements Cloneable {
         Double dsValue = null;
         try {
             if (getDatasourceType().equals("if")) {
-                LOG.debug("Fetching last value from dataSource '" + datasource + "'");
+                LOG.debug("Fetching last value from dataSource '{}'", datasource);
 
                 File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
                 if (!rrdFile.exists()) {
-                    LOG.info("rrd file "+rrdFile+" does not exist");
+                    LOG.info("rrd file {} does not exist", rrdFile);
                     return null;
                 }
 
@@ -294,11 +294,11 @@ public final class ThresholdEntity implements Cloneable {
                 throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
             }
 
-            LOG.debug("Last value from dataSource '" + datasource + "' was "+dsValue);
+            LOG.debug("Last value from dataSource '{}' was {}", datasource, dsValue);
         } catch (NumberFormatException nfe) {
-            LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
+            LOG.warn("Unable to convert retrieved value for datasource '{}' to a double, skipping evaluation.", datasource);
         } catch (RrdException e) {
-            LOG.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+            LOG.error("An error occurred retriving the last value for datasource '{}'", datasource, e);
         }
 
         return dsValue;

@@ -62,14 +62,14 @@ public class ClassExecutor implements ExecutorStrategy {
             ns = (NotificationStrategy) Class.forName(className).newInstance();
             LOG.debug("{} class created: {}", className, ns.getClass());
         } catch (Throwable e) {
-            LOG.error("Execption creating notification strategy class: " + className, e);
+            LOG.error("Execption creating notification strategy class: {}", className, e);
             return 1;
         }
 
         try {
             return ns.send(arguments);
         } catch (Throwable t) {
-            LOG.error("Throwable received while sending message: " + t, t);
+            LOG.error("Throwable received while sending message", t);
             return 1;
         }
     }

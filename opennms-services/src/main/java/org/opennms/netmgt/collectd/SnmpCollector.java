@@ -408,7 +408,7 @@ public class SnmpCollector implements ServiceCollector {
     }*/
 
     private void logNoDataToCollect(CollectionAgent agent) {
-        LOG.info("agent "+agent+" defines no data to collect.  Skipping.");
+        LOG.info("agent {} defines no data to collect.  Skipping.", agent);
     }
 
     

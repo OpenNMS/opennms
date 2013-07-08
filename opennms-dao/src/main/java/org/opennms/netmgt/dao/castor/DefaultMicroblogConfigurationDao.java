@@ -88,7 +88,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
     @Override
     public MicroblogProfile getDefaultProfile() {
         String defaultProfileName = getContainer().getObject().getDefaultMicroblogProfileName();
-        LOG.debug("Requesting default microblog, which is called '" + defaultProfileName + "'");
+        LOG.debug("Requesting default microblog, which is called '{}'", defaultProfileName);
         return getProfile(defaultProfileName);
     }
 

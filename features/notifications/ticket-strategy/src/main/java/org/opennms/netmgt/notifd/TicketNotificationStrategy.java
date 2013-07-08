@@ -127,7 +127,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         
         // Pull the arguments we're interested in from the list.
         for (Argument arg : m_arguments) {
-        	LOG.debug("arguments: "+arg.getSwitch() +" = "+arg.getValue());
+		LOG.debug("arguments: {} = {}", arg.getSwitch(), arg.getValue());
         	
             if ("eventID".equalsIgnoreCase(arg.getSwitch())) {
             	eventID = arg.getValue();
@@ -140,31 +140,31 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         
         // Make sure we have the arguments we need.
         if( StringUtils.isBlank(eventID) ) {
-        	LOG.error("There is no event-id associated with the notice-id='" + noticeID + "'. Cannot create ticket.");
+		LOG.error("There is no event-id associated with the notice-id='{}'. Cannot create ticket.", noticeID);
         	return 1;
         } else if( StringUtils.isBlank(eventUEI) ) {
-        	LOG.error("There is no event-uei associated with the notice-id='" + noticeID + "'. Cannot create ticket.");
+		LOG.error("There is no event-uei associated with the notice-id='{}'. Cannot create ticket.", noticeID);
         	return 1;
         }
         
         // Determine the type of alarm based on the UEI.
         AlarmType alarmType = getAlarmTypeFromUEI(eventUEI);
         if( alarmType == AlarmType.NOT_AN_ALARM ) {
-        	LOG.warn("The event type associated with the notice-id='" + noticeID + "' is not an alarm. Will not create ticket.");
+		LOG.warn("The event type associated with the notice-id='{}' is not an alarm. Will not create ticket.", noticeID);
         	return 0;
         }
         
         // We know the event is an alarm, pull the alarm and current ticket details from the database
         AlarmState alarmState = getAlarmStateFromEvent(Integer.parseInt(eventID));
         if( alarmState.getAlarmID() == 0 ) {
-        	LOG.error("There is no alarm-id associated with the event-id='" + eventID + "'. Will not create ticket.");
+		LOG.error("There is no alarm-id associated with the event-id='{}'. Will not create ticket.", eventID);
         	return 1;
         }
         
         /* Log everything we know so far.
          * The tticketid and tticketstate are only informational.
          */
-        LOG.info("Got event-uei='"+ eventUEI +"' with event-id='" + eventID + "', notice-id='" + noticeID + "', alarm-type='" + alarmType + "', alarm-id='" + alarmState.getAlarmID() + "', tticket-id='" + alarmState.getTticketID() + "'and tticket-state='" + alarmState.getTticketState() + "'");
+        LOG.info("Got event-uei='{}' with event-id='{}', notice-id='{}', alarm-type='{}', alarm-id='{}', tticket-id='{}'and tticket-state='{}'", eventUEI, eventID, noticeID, alarmType, alarmState.getAlarmID(), alarmState.getTticketID(), alarmState.getTticketState());
         
         sendCreateTicketEvent(alarmState.getAlarmID(), eventUEI);
 
@@ -215,7 +215,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      * @return
      */
 	public void sendCreateTicketEvent(int alarmID, String alarmUEI) {
-        LOG.debug("Sending create ticket for alarm '" + alarmUEI + "' with id=" + alarmID);
+        LOG.debug("Sending create ticket for alarm '{}' with id={}", alarmUEI, alarmID);
         EventBuilder ebldr = new EventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, getName());
         ebldr.addParam(EventConstants.PARM_ALARM_ID, alarmID);
         // These fields are required by the trouble ticketer, but not used

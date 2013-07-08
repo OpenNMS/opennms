@@ -60,7 +60,7 @@ public class Win32ServicePlugin extends SnmpPlugin {
 			serviceOidBuf.append(".").append(Byte.toString(thisByte));
 		}
 		
-		LOG.debug("For Win32 service '" + serviceName +"', OID to check is " + serviceOidBuf.toString());
+		LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
 		qualifiers.put("vbname", serviceOidBuf.toString());
 		qualifiers.put("vbvalue", "1");
 		

@@ -108,7 +108,7 @@ public class XMPPNotificationManager {
 
                 @Override
         public void reconnectingIn(int seconds) {
-            LOG.debug("XMPP reconnecting in " + seconds + " seconds");
+            LOG.debug("XMPP reconnecting in {} seconds", seconds);
         }
 
                 @Override
@@ -140,7 +140,7 @@ public class XMPPNotificationManager {
 			try {
 				config = ConfigFileConstants.getFile(ConfigFileConstants.XMPP_CONFIG_FILE_NAME);
 			} catch (IOException e) {
-				LOG.warn(ConfigFileConstants.XMPP_CONFIG_FILE_NAME + " not readable", e);
+				LOG.warn("{} not readable", ConfigFileConstants.XMPP_CONFIG_FILE_NAME, e);
 			}
 			if (Boolean.getBoolean("useSystemXMPPConfig") || !config.canRead()) {
 				this.props.putAll(System.getProperties());
@@ -150,9 +150,9 @@ public class XMPPNotificationManager {
 					fis = new FileInputStream(config);
 					this.props.load(fis);
 				} catch (FileNotFoundException e) {
-					LOG.warn("unable to load " + config, e);
+					LOG.warn("unable to load {}", config, e);
 				} catch (IOException e) {
-					LOG.warn("unable to load " + config, e);
+					LOG.warn("unable to load {}", config, e);
 				} finally {
 					IOUtils.closeQuietly(fis);
 				}
@@ -196,7 +196,7 @@ public class XMPPNotificationManager {
 
 	private void connectToServer() {
 		try {
-			LOG.debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
+			LOG.debug("Attempting vanilla XMPP Connection to {}:{}", xmppServer, xmppPort);
 			xmpp.connect();
 			if (xmpp.isConnected()) {
 				LOG.debug("XMPP Manager successfully connected");

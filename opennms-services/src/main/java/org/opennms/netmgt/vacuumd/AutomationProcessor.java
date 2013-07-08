@@ -136,7 +136,7 @@ public class AutomationProcessor implements ReadyRunnable {
 
                 return triggerResultSet;
 			} catch (SQLException e) {
-				LOG.warn("Error executing trigger "+getName(), e);
+				LOG.warn("Error executing trigger {}", getName(), e);
 				throw e;
 			}
 		}
@@ -154,11 +154,11 @@ public class AutomationProcessor implements ReadyRunnable {
 		public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
 		    
 		    if (trigRowCount == 0 || trigOp == null) {
-		        LOG.debug("triggerRowCheck: trigger has no row-count restrictions: operator is: "+trigOp+", row-count is: "+trigRowCount);
+		        LOG.debug("triggerRowCheck: trigger has no row-count restrictions: operator is: {}, row-count is: {}", trigOp, trigRowCount);
 		        return true;
 		    }
 		    
-		    LOG.debug("triggerRowCheck: Verifying trigger resulting row count " +resultRows+" is "+trigOp+" "+trigRowCount);
+		    LOG.debug("triggerRowCheck: Verifying trigger resulting row count {} is {} {}", resultRows, trigOp, trigRowCount);
 		    
 		    boolean runAction = false;
 		    if ("<".equals(trigOp)) {
@@ -243,7 +243,7 @@ public class AutomationProcessor implements ReadyRunnable {
         PreparedStatement createPreparedStatement() throws SQLException {
             String actionJDBC = getActionSQL().replaceAll("\\$\\{\\w+\\}", "?");
             
-            LOG.debug("createPrepareStatement: This action SQL: "+getActionSQL()+"\nTurned into this: "+actionJDBC);
+            LOG.debug("createPrepareStatement: This action SQL: {}\nTurned into this: {}", getActionSQL(), actionJDBC);
             
             Connection conn = Transaction.getConnection(m_action.getDataSource());
             PreparedStatement stmt = conn.prepareStatement(actionJDBC);
@@ -274,7 +274,7 @@ public class AutomationProcessor implements ReadyRunnable {
             int count = 0;
             while (matcher.find()) {
                 count++;
-                LOG.debug("getTokenizedColumns: Token "+count+": "+matcher.group(1));
+                LOG.debug("getTokenizedColumns: Token {}: {}", count, matcher.group(1));
                 
                 tokens.add(matcher.group(1));
             }
@@ -309,7 +309,7 @@ public class AutomationProcessor implements ReadyRunnable {
             int count = 0;
             while (matcher.find()) {
                 count++;
-                LOG.debug("getTokenCount: Token "+count+": "+matcher.group(1));
+                LOG.debug("getTokenCount: Token {}: {}", count, matcher.group(1));
             }
             return count;
         }
@@ -317,7 +317,7 @@ public class AutomationProcessor implements ReadyRunnable {
         boolean execute() throws SQLException {
             //No trigger defined, just running the action.
             if (getTokenCount(getActionSQL()) != 0) {
-                LOG.info("execute: not running action: "+m_action.getName()+".  Action contains tokens in an automation ("+m_automationName+") with no trigger.");
+                LOG.info("execute: not running action: {}.  Action contains tokens in an automation ({}) with no trigger.", m_action.getName(), m_automationName);
                 return false;
             } else {
                 //Convert the sql to a PreparedStatement
@@ -449,7 +449,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
             if (hasEvent()) {
                 //create and send event
-                LOG.debug("AutoEventProcessor: Sending auto-event "+getUei()+" for automation "+m_automationName);
+                LOG.debug("AutoEventProcessor: Sending auto-event {} for automation {}", getUei(), m_automationName);
                 
                 EventBuilder bldr = new EventBuilder(getUei(), "Automation");
                 sendEvent(bldr.getEvent());
@@ -573,7 +573,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 // the uei will be set by the event assignments
                 EventBuilder bldr = new EventBuilder(null, "Automation");
                 buildEvent(bldr, new InvalidSymbolTable());
-                LOG.debug("ActionEventProcessor: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
+                LOG.debug("ActionEventProcessor: Sending action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
                 sendEvent(bldr.getEvent());
                 
             } else {
@@ -615,7 +615,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();
                 }
-                LOG.debug("processTriggerResults: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
+                LOG.debug("processTriggerResults: Sending action-event {} for automation {}", bldr.getEvent().getUei(), m_automationName);
                 sendEvent(bldr.getEvent());
             }
 
@@ -695,13 +695,13 @@ public class AutomationProcessor implements ReadyRunnable {
             try {
                 runAutomation();
             } catch (SQLException e) {
-                LOG.warn("Error running automation: "+getAutomation().getName()+", "+e.getMessage());
+                LOG.warn("Error running automation: {}, {}", getAutomation().getName(), e.getMessage());
             } finally {
                 setReady(true);
             }
         }
 
-        LOG.debug("run: Finished automation "+m_automation.getName()+", started at "+startDate);
+        LOG.debug("run: Finished automation {}, started at {}", m_automation.getName(), startDate);
         
     }
 
@@ -716,13 +716,13 @@ public class AutomationProcessor implements ReadyRunnable {
      * @return a boolean.
      */
     public boolean runAutomation() throws SQLException {
-        LOG.debug("runAutomation: "+m_automation.getName()+" running...");
+        LOG.debug("runAutomation: {} running...", m_automation.getName());
 
         if (hasTrigger()) {
-            LOG.debug("runAutomation: "+m_automation.getName()+" trigger statement is: "+ m_trigger.getTriggerSQL());
+            LOG.debug("runAutomation: {} trigger statement is: {}", m_automation.getName(), m_trigger.getTriggerSQL());
         }
             
-        LOG.debug("runAutomation: "+m_automation.getName()+" action statement is: "+m_action.getActionSQL());
+        LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName());
         
@@ -742,7 +742,7 @@ public class AutomationProcessor implements ReadyRunnable {
 
         } catch (Throwable e) {
         	Transaction.rollbackOnly();
-            LOG.warn("runAutomation: Could not execute automation: "+m_automation.getName(), e);
+            LOG.warn("runAutomation: Could not execute automation: {}", m_automation.getName(), e);
             return false;
         } finally {
 
@@ -807,7 +807,7 @@ public class AutomationProcessor implements ReadyRunnable {
         int triggerRowCount = m_trigger.getTrigger().getRowCount();
         String triggerOperator = m_trigger.getTrigger().getOperator();
 
-        LOG.debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+(triggerOperator == null ? "<null>" : triggerOperator)+" than "+triggerRowCount);
+        LOG.debug("verifyRowCount: Verifying trigger result: {} is {} than {}", resultRows, (triggerOperator == null ? "<null>" : triggerOperator), triggerRowCount);
 
         if (!m_trigger.triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
             validRows = false;

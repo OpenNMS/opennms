@@ -185,7 +185,7 @@ class SyslogReceiver implements Runnable {
             LOG.debug("Setting receive buffer size to {}", length);
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            LOG.info("Failed to set the receive buffer to " + length, e);
+            LOG.info("Failed to set the receive buffer to {}", length, e);
         }
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
@@ -214,10 +214,10 @@ class SyslogReceiver implements Runnable {
                 ioInterrupted = true;
                 continue;
             } catch (ExecutionException e) {
-                LOG.error("Task execution failed in " + this.getClass().getSimpleName(), e);
+                LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (InterruptedException e) {
-                LOG.error("Task interrupted in " + this.getClass().getSimpleName(), e);
+                LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (IOException e) {
                 LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);

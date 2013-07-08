@@ -187,7 +187,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     @Override
     public String getNumericValue() {
         if (getValue() == null) {
-            LOG.debug("No data collected for attribute "+this+". Skipping");
+            LOG.debug("No data collected for attribute {}. Skipping", this);
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());

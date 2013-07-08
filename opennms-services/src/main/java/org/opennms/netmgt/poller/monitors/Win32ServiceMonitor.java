@@ -59,7 +59,7 @@ public class Win32ServiceMonitor extends SnmpMonitor {
 			serviceOidBuf.append(".").append(Byte.toString(thisByte));
 		}
 		
-		LOG.debug("For Win32 service '" + serviceName +"', OID to check is " + serviceOidBuf.toString());
+		LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
 		
 		parameters.put("oid", serviceOidBuf.toString());
 		parameters.put("operator", "=");

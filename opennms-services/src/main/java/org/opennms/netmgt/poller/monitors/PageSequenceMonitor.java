@@ -215,7 +215,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 LOG.debug("Executing HttpPage: {}", page.toString());
                 page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
-                    LOG.debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
+                    LOG.debug("Recording response time {} for ds {}", page.getResponseTime(), page.getDsName());
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
@@ -386,12 +386,12 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (getLocationPattern() != null) {
                     Header locationHeader = response.getFirstHeader("location");
                     if (locationHeader == null) {
-                        LOG.debug("locationMatch was set, but no Location: header was returned at " + uri, new Exception());
+                        LOG.debug("locationMatch was set, but no Location: header was returned at {}", uri, new Exception());
                         throw new PageSequenceMonitorException("locationMatch was set, but no Location: header was returned at " + uri);
                     }
                     Matcher matcher = getLocationPattern().matcher(locationHeader.getValue());
                     if (!matcher.find()) {
-                        LOG.debug("failed to find '" + getLocationPattern() + "' in Location: header at " + uri + ":\n" + locationHeader.getValue(), new Exception());
+                        LOG.debug("failed to find '{}' in Location: header at {}:\n{}", getLocationPattern(), uri, locationHeader.getValue(), new Exception());
                         throw new PageSequenceMonitorException("failed to find '" + getLocationPattern() + "' in Location: header at " + uri);
                     }
                 }
@@ -406,7 +406,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (getSuccessPattern() != null) {
                     Matcher matcher = getSuccessPattern().matcher(responseString);
                     if (!matcher.find()) {
-                        LOG.debug("failed to find '" + getSuccessPattern() + "' in page content at " + uri + ":\n" + responseString.trim(), new Exception());
+                        LOG.debug("failed to find '{}' in page content at {}:\n{}", getSuccessPattern(), uri, responseString.trim(), new Exception());
                         throw new PageSequenceMonitorException("failed to find '" + getSuccessPattern() + "' in page content at " + uri);
                     }
                     updateSequenceProperties(sequenceProperties, matcher);
@@ -427,17 +427,17 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             List<NameValuePair> expandedParms = new ArrayList<NameValuePair>();
             Properties svcProps = getServiceProperties(svc);
             if (svcProps != null) {
-                LOG.debug("I have " + svcProps.size() + " service properties.");
+                LOG.debug("I have {} service properties.", svcProps.size());
             }
             Properties seqProps = getSequenceProperties();
             if (seqProps != null) {
-                LOG.debug("I have " + seqProps.size() + " sequence properties.");
+                LOG.debug("I have {} sequence properties.", seqProps.size());
             }
             for (NameValuePair nvp : m_parms) {
                 String value = PropertiesUtils.substitute((String)nvp.getValue(), getServiceProperties(svc), getSequenceProperties());
                 expandedParms.add(new BasicNameValuePair(nvp.getName(), value));
                 if (!nvp.getValue().equals(value) ) {
-                    LOG.debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
+                    LOG.debug("Expanded parm with name '{}' from '{}' to '{}'", nvp.getName(), nvp.getValue(), value);
                 }
             }
             return expandedParms;
@@ -450,7 +450,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (vbValue == null)
                     vbValue = "";
                 props.put(vbName, vbValue);
-                LOG.debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
+                LOG.debug("Just set session variable '{}' to '{}'", vbName, vbValue);
             }
 
             setSequenceProperties(props);

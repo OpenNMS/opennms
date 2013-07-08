@@ -183,7 +183,7 @@ class MailAckProcessor implements AckProcessor {
      * @return a {@link java.lang.Integer} object.
      */
     protected static Integer detectId(final String subject, final String expression) {
-        LOG.debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
+        LOG.debug("detectId: Detecting aknowledgable ID from subject: {} using expression: {}", subject, expression);
         Integer id = null;
 
         //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
@@ -262,7 +262,7 @@ class MailAckProcessor implements AckProcessor {
             LOG.warn(concern);
             throw new MessagingException(concern);
         }
-        LOG.info("determineAckAcktion: evaluated message, "+action+" action determined from message.");
+        LOG.info("determineAckAcktion: evaluated message, {} action determined from message.", action);
         return action;
     }
 
@@ -277,7 +277,7 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: " + "host: " + readMailConfig.getReadmailHost().getHost() + " port: " + readMailConfig.getReadmailHost().getPort() + " ssl: " + readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable() + " transport: " + readMailConfig.getReadmailHost().getReadmailProtocol().getTransport() + " user: "+readMailConfig.getUserAuth().getUserName() + " password: "+readMailConfig.getUserAuth().getPassword());
+        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readMailConfig.getReadmailHost().getHost(), readMailConfig.getReadmailHost().getPort(), readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable(), readMailConfig.getReadmailHost().getReadmailProtocol().getTransport(), readMailConfig.getUserAuth().getUserName(), readMailConfig.getUserAuth().getPassword());
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
@@ -293,7 +293,7 @@ class MailAckProcessor implements AckProcessor {
         Pattern alarmPattern = Pattern.compile(alarmRe);
         
         List<Message> msgs = readMailer.retrieveMessages();
-        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+ " and alarm expression: "+alarmRe);
+        LOG.info("retrieveAckMessages: Iterating {} messages with notif expression: {} and alarm expression: {}", msgs.size(), notifRe, alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();

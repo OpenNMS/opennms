@@ -120,13 +120,13 @@ public final class LldpLocalGroup extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving lldpLocalGroup from "+m_address+". "+msg);
+        LOG.warn("Error retrieving lldpLocalGroup from {}. {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving lldpLocalGroup from "+m_address+". "+msg);
+        LOG.info("Error retrieving lldpLocalGroup from {}. {}", m_address, msg);
     }
 
 

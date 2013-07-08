@@ -298,7 +298,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         try {
             return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
         } catch (ParseException e) {
-            LOG.warn("Failed to convert time " + event.getTime() + " to Timestamp, setting current time instead.", e);
+            LOG.warn("Failed to convert time {} to Timestamp, setting current time instead.", event.getTime(), e);
             return new Timestamp(System.currentTimeMillis());
         }
     }
@@ -396,7 +396,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if ("donotpersist".equals(event.getLogmsg().getDest()) || "suppress".equals(event.getLogmsg().getDest())) {
-            LOG.debug(logPrefix + ": uei '" + event.getUei() + "' marked as '" + event.getLogmsg().getDest() + "'; not processing event.");
+            LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
         }
         return true;
