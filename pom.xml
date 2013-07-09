@@ -474,6 +474,28 @@
       						<ignore/>
       					</action>
       				</pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.opennms.maven.plugins</groupId>
+                      <artifactId>castor-maven-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <goal>add-source</goal>
+                        <goal>add-test-source</goal>
+                        <goal>add-resource</goal>
+                        <goal>add-test-resource</goal>
+                        <goal>maven-version</goal>
+                        <goal>parse-version</goal>
+                        <goal>generate</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
       			</pluginExecutions>
       		</lifecycleMappingMetadata>
       	</configuration>
