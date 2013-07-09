@@ -88,7 +88,7 @@ import java.io.InputStream;
         "http://maps.google.com/maps/api/js?sensor=false",
         "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
         "gwt/public/openlayers/OpenLayers.js",
-        "gwt/public/markercluster/leaflet.markercluster.js"
+        "gwt/public/markercluster/leaflet.markercluster-src.js"
         
 })
 @StyleSheet({
