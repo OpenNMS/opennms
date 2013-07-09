@@ -317,7 +317,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 break;
             case 3:
                 n.setForeignId(computeHashCode(nodeLabel+addr));
-                LOG.debug("Generating foreignId from hash of nodelabel+ipAddress " + nodeLabel + addr);
+                LOG.debug("Generating foreignId from hash of nodelabel+ipAddress {}{}", nodeLabel, addr);
                 break;
             default:
                 n.setForeignId(computeHashCode(nodeLabel));
@@ -367,12 +367,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 Matcher m = p.matcher(rec.getName().toString());
 
                 // Try matching on host name only for backwards compatibility
-                LOG.debug("matchingRecord: attempting to match hostname: [{}] with expression: [ {}", expression+"]", rec.getName());
+                LOG.debug("matchingRecord: attempting to match hostname: [{}] with expression: [ {} ]", rec.getName(), expression);
                 if (m.matches()) {
                     matches = true;
                 } else {
                     // include the IP address and try again
-                    LOG.debug("matchingRecord: attempting to match record: ["+rec.getName().toString()+" "+rec.rdataToString()+"] with expression: ["+expression+"]");
+                    LOG.debug("matchingRecord: attempting to match record: [{} {}] with expression: [{}]", rec.getName(), rec.rdataToString(), expression);
                     m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
                     if (m.matches()) {
                         matches = true;

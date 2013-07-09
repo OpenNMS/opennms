@@ -75,15 +75,15 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            LOG.debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
             OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
             if (serviceType == null) {
-                LOG.debug("Did not find entry for '" + serviceName + "' in database.");
+                LOG.debug("Did not find entry for '{}' in database.", serviceName);
                 return -1;
             }
             
-            LOG.debug("Found entry for '" + serviceName + "' (ID " + serviceType.getId() + " in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceType.getId());
 
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
             

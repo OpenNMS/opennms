@@ -83,7 +83,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         	LOG.error("IOException: ", e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-        	LOG.error("Unable to initialize database: "+e.getMessage(), e);
+		LOG.error("Unable to initialize database", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
         	LOG.error("SQLException: ", e);

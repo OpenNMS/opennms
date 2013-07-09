@@ -83,7 +83,7 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
                 LOG.debug("Found: PARAM_HOME_PHONE => {}", arg.getValue());
                 ao.setLegAExtension(arg.getValue());
             } else if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_MOBILE_PHONE => {}" + arg.getValue());
+                LOG.debug("Found: PARAM_MOBILE_PHONE => {}", arg.getValue());
                 ao.setLegAExtension(arg.getValue());
             } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
                 LOG.debug("Found: PARAM_SUBJECT => {}", arg.getValue());

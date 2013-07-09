@@ -84,7 +84,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
                 ThresholdResourceType genericType = merge ? mergeType(name, id, group.getGenericResourceTypeMap().get(id)) : createType(name, id);
                 if (genericType.getThresholdMap().size() > 0) {
-                    LOG.info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
+                    LOG.info("Adding {}::{} with {} elements", name, id, genericType.getThresholdMap().size());
                     newGroup.getGenericResourceTypeMap().put(id, genericType);
                 }
             }
@@ -137,7 +137,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                             thresholdEntitySet.add(thresholdEntity);
                         }
                     } catch (IllegalStateException e) {
-                        LOG.warn("fillThresholdStateMap: Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
+                        LOG.warn("fillThresholdStateMap: Encountered duplicate {} for datasource {}", thresh.getType(), wrapper.getDatasourceExpression(), e);
                     } 
                 }
                 catch (ThresholdExpressionException e) {
@@ -147,7 +147,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         }
         // Search for deleted configuration
         if (merge) {
-            LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group " + groupName + " using type " + typeName);
+            LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group {} using type {}", groupName, typeName);
             for (String expression : thresholdMap.keySet()) {
                 for (Iterator<ThresholdEntity> i = thresholdMap.get(expression).iterator(); i.hasNext();) {
                     ThresholdEntity entity = i.next();

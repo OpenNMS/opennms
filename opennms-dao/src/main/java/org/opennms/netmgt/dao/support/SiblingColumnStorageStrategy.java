@@ -67,7 +67,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
-        LOG.debug("Finding the value of sibling column " + m_siblingColumnName + " for resource " + resource.getInstance() + "@" + resource.getParent());
+        LOG.debug("Finding the value of sibling column {} for resource {}@{}", m_siblingColumnName, resource.getInstance(), resource.getParent());
         StringAttributeVisitor visitor = new StringAttributeVisitor(m_siblingColumnName);
         resource.visit(visitor);
         String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());
@@ -77,11 +77,11 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
         
         // Then perform all replacement operations specified in the parameters
         for (StringReplaceOperation op : m_replaceOps) {
-            LOG.debug("Doing string replacement on instance name '" + name + "' using " + op);
+            LOG.debug("Doing string replacement on instance name '{}' using {}", name, op);
             name = op.replace(name);
         }
 
-        LOG.debug("Inbound instance name was '" + resource.getInstance() + "', outbound was '" + ("".equals(name) ? resource.getInstance() : name) + "'");
+        LOG.debug("Inbound instance name was '{}', outbound was '{}'", resource.getInstance(), ("".equals(name) ? resource.getInstance() : name));
         return ("".equals(name) ? resource.getInstance() : name);
     }
     
@@ -107,7 +107,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
                     LOG.error(msg);
                     throw new IllegalArgumentException(msg);
                 } else {
-                    LOG.warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_NAME + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
+                    LOG.warn("Encountered unsupported parameter key=\"{}\". Can accept: {}, {}, {}", param.getKey(), PARAM_SIBLING_COLUMN_NAME, PARAM_REPLACE_FIRST, PARAM_REPLACE_ALL);
                 }
             }
         }

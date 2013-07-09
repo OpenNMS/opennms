@@ -417,7 +417,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                         try {
                             processPendingOperationForNode(this);
                         } catch (ProvisioningAdapterException e) {
-                            LOG.warn("Exception thrown during adapter queuing, rescheduling: " + e.getMessage(), e);
+                            LOG.warn("Exception thrown during adapter queuing, rescheduling: {}", e.getMessage(), e);
                             //reschedule if the adapter throws a provisioning adapter exception
                             schedule(getExecutorService(), true);
                         } finally {
@@ -428,7 +428,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                     schedule(getExecutorService(), false);
                 }
             } catch (Throwable e) {
-                LOG.error("Unexpected exception during node operation: " + e.getMessage(), e);
+                LOG.error("Unexpected exception during node operation: {}", e.getMessage(), e);
             }
         }
     }

@@ -179,7 +179,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
         } catch (IllegalArgumentException e) {
             LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            LOG.warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", ipaddr, t);
         }
         return false;
     }

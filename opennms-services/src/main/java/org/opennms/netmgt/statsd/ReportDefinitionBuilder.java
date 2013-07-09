@@ -83,7 +83,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 Report report = packageReport.getReport();
 
                 if (!packageReport.isEnabled()) {
-                    LOG.debug("skipping report '" + report.getName() + "' in package '" + pkg.getName() + "' because the report is not enabled");
+                    LOG.debug("skipping report '{}' in package '{}' because the report is not enabled", report.getName(), pkg.getName());
                 }
                 
                 Class<? extends AttributeStatisticVisitorWithResults> clazz;
@@ -103,7 +103,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 try {
                     bw.setPropertyValues(packageReport.getAggregateParameters());
                 } catch (BeansException e) {
-                    LOG.error("Could not set properties on report definition: " + e.getMessage(), e);
+                    LOG.error("Could not set properties on report definition: {}", e.getMessage(), e);
                 }
                 
                 reportDef.afterPropertiesSet();

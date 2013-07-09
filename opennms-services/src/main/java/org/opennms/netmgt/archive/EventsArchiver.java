@@ -227,7 +227,7 @@ public class EventsArchiver {
             LOG.info("Events archive age specified = {}", archAgeStr);
             LOG.info("Events archive age in millisconds = {}", archAge);
 
-            LOG.info("Events created before \'" + archAgeStr + " \' will be deleted");
+            LOG.info("Events created before '{}' will be deleted", archAgeStr);
 
             LOG.info("Separator to be used in archive: {}", m_archSeparator);
         }
@@ -267,12 +267,12 @@ public class EventsArchiver {
             m_eventDeleteStmt.setInt(1, eventID);
             m_eventDeleteStmt.executeUpdate();
         } catch (SQLException sqle) {
-            LOG.error("Unable to delete event \'" + eventID + "\': " + sqle.getMessage());
+            LOG.error("Unable to delete event '{}': {}", eventID, sqle.getMessage());
             return false;
         }
 
         // debug logs
-        LOG.debug("EventID: " + eventID + " removed from events table");
+        LOG.debug("EventID: {} removed from events table", eventID);
 
         return true;
     }
@@ -320,7 +320,7 @@ public class EventsArchiver {
                 // eventAckUser for this event
                 eventAckUser = eventsRS.getString(EVENT_ACK_USER);
 
-                LOG.debug("Event id: " + eventID + " uei: " + eventUEI + " log: " + eventLog + " display: " + eventDisplay + " eventAck: " + eventAckUser);
+                LOG.debug("Event id: {} uei: {} log: {} display: {} eventAck: {}", eventID, eventUEI, eventLog, eventDisplay, eventAckUser);
 
                 if (eventLog.equals(MSG_NO) && eventDisplay.equals(MSG_NO)) {
                     // log = N, display = N, delete event
@@ -334,7 +334,7 @@ public class EventsArchiver {
                     ret = removeEvent(eventID);
                     if (ret) {
                         sendToArchive(eventsRS, colCount);
-                        LOG.debug("eventID " + eventID + " archived");
+                        LOG.debug("eventID {} archived", eventID);
 
                         archCount++;
 
@@ -361,7 +361,7 @@ public class EventsArchiver {
                         ret = removeEvent(eventID);
                         if (ret) {
                             sendToArchive(eventsRS, colCount);
-                            LOG.debug("eventID " + eventID + " archived");
+                            LOG.debug("eventID {} archived", eventID);
                             archCount++;
 
                             remCount++;
@@ -380,7 +380,7 @@ public class EventsArchiver {
             try {
                 eventsRS.close();
             } catch (Throwable e) {
-                LOG.info("EventsArchiver: Exception while events result " + "set: message -> " + e.getMessage());
+                LOG.info("EventsArchiver: Exception while events result set: message -> {}", e.getMessage());
             }
         }
 
@@ -464,8 +464,7 @@ public class EventsArchiver {
                 m_conn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
             m_eventDeleteStmt = m_conn.prepareStatement(DB_DELETE_EVENT);
         } catch (SQLException e) {
-            LOG.error("EventsArchiver: Exception in opening the database " + "connection or in the prepared statement for the " + "get events");
-            LOG.error(e.getMessage());
+            LOG.error("EventsArchiver: Exception in opening the database connection or in the prepared statement for the get events", e);
             throw new ArchiverException("EventsArchiver: " + e.getMessage());
         }
     }

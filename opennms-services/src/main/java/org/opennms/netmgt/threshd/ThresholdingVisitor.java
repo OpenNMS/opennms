@@ -98,7 +98,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
 
         CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, roProps);
         if (!thresholdingSet.hasThresholds()) {
-            LOG.warn("create: the ipaddress/service " + hostAddress + "/" + serviceName + " on node " + nodeId + " has no configured thresholds.");
+            LOG.warn("create: the ipaddress/service {}/{} on node {} has no configured thresholds.", hostAddress, serviceName, nodeId);
         }
 
         return new ThresholdingVisitor(thresholdingSet);
@@ -170,7 +170,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
                 if (value == null) {
                     value = attribute.getStringValue();
                 }
-                LOG.debug("visitAttribute: storing value "+ value +" for attribute named " + name);
+                LOG.debug("visitAttribute: storing value {} for attribute named {}", value, name);
             }
         }
     }

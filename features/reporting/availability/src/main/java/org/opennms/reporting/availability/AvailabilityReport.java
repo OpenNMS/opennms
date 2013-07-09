@@ -273,7 +273,7 @@ public class AvailabilityReport extends Object {
         
 
         Logging.putPrefix(LOG4J_CATEGORY);
-        LOG.debug("main() called with args: "+ StringUtils.arrayToDelimitedString(args, ", "));
+        LOG.debug("main() called with args: {}", StringUtils.arrayToDelimitedString(args, ", "));
 
         System.setProperty("java.awt.headless", "true");
 

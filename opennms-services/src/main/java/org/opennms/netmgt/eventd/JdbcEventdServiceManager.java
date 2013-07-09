@@ -78,14 +78,14 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            LOG.debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
             int serviceId;
             try {
                 serviceId = new JdbcTemplate(m_dataSource).queryForInt("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName });
             } catch (IncorrectResultSizeDataAccessException e) {
                 if (e.getActualSize() == 0) {
-                    LOG.debug("Did not find entry for '" + serviceName + "' in database.");
+                    LOG.debug("Did not find entry for '{}' in database.", serviceName);
                     return -1; // not found
                 } else {
                     throw e; // more than one found... WTF?!?!
@@ -94,7 +94,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
             
             m_serviceMap.put(serviceName, serviceId);
             
-            LOG.debug("Found entry for '" + serviceName + "' (ID " + serviceId + ") in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceId);
             
             return serviceId;
         }

@@ -91,7 +91,7 @@ public class IfLabel extends Object {
        final String desc2 = desc;
        final String mac2 = mac;
  
-        LOG.debug("getInterfaceInfoFromIfLabel: desc=" + desc + " mac=" + mac);
+        LOG.debug("getInterfaceInfoFromIfLabel: desc={} mac={}", desc, mac);
 
         String queryDesc = desc.replace('_', '%');
 
@@ -227,7 +227,7 @@ public class IfLabel extends Object {
                 if (name != null || descr != null) {
                     holder.setLabel(getIfLabel(name, descr, physAddr));
                 } else {
-                    LOG.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    LOG.warn("Interface (nodeId/ipAddr={}/{}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", nodeId, ipAddr);
                     holder.setLabel("no_ifLabel");
                 }
             }
@@ -292,7 +292,7 @@ public class IfLabel extends Object {
                 if (name != null || descr != null) {
                     holder.setLabel(getIfLabel(name, descr, physAddr));
                 } else {
-                    LOG.warn("Interface (nodeId/ipAddr=" + nodeId + "/" + ipAddr + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    LOG.warn("Interface (nodeId/ipAddr={}/{}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", nodeId, ipAddr);
                     holder.setLabel("no_ifLabel");
                 }
             }
@@ -345,7 +345,7 @@ public class IfLabel extends Object {
                 if (name != null || descr != null) {
                     holder.setLabel(getIfLabel(name, descr, physAddr));
                 } else {
-                    LOG.warn("Interface (nodeId/ifIndex=" + nodeId + "/" + ifIndex + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+                    LOG.warn("Interface (nodeId/ifIndex={}/{}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", nodeId, ifIndex);
                     holder.setLabel("no_ifLabel");
                 }
             }

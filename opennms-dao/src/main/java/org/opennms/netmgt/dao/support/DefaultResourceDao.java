@@ -352,7 +352,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                     resource = getChildResource(resource, resourceTypeName, resourceName);
                 }
             } catch (Throwable e) {
-                LOG.warn("Could not get resource for resource ID \"" + id + "\"", e);
+                LOG.warn("Could not get resource for resource ID \"{}\"", id, e);
                 return null;
             }
 
@@ -362,7 +362,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         m.appendTail(sb);
 
         if (sb.length() > 0) {
-            LOG.warn("resource ID '" + id + "' does not match pattern '" + p.toString() + "' at '" + sb + "'");
+            LOG.warn("resource ID '{}' does not match pattern '{}' at '{}'", id, p.toString(), sb);
             return null;
         } else {
             return resource;
@@ -551,7 +551,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             if (found) {
                 resources.add(m_nodeSourceResourceType.createChildResource(node.getForeignSource() + ":" + node.getForeignId()));
                 nodesFound.add(node.getId());
-                LOG.debug("findNodeSourceResources: adding resource for " + node.getForeignSource() + ":" + node.getForeignId());
+                LOG.debug("findNodeSourceResources: adding resource for {}:{}", node.getForeignSource(), node.getForeignId());
             }
         }
 
@@ -618,7 +618,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         if (idDir.isDirectory() && RrdFileConstants.NODESOURCE_DIRECTORY_FILTER.accept(idDir)) {
             return m_nodeSourceResourceType.createChildResource(resource);
         } else {
-           LOG.debug("resource " + resource + " not found by foreign source/foreignId. Trying as a node resource instead...");
+           LOG.debug("resource {} not found by foreign source/foreignId. Trying as a node resource instead...", resource);
            String[] ident = resource.split(":");
            OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
            if (node == null) {

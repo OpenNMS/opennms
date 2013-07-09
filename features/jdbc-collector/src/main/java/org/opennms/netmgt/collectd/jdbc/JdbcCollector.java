@@ -265,7 +265,7 @@ public class JdbcCollector implements ServiceCollector {
                     
                         // Determine if there were any results for this query to                    
                         if (results.isBeforeFirst() && results.isAfterLast()) {
-                            LOG.warn("Query '"+ query.getQueryName() + "' returned no results.");
+                            LOG.warn("Query '{}' returned no results.", query.getQueryName());
                             // Close the statement, but retain the connection.
                             agentState.closeResultSet(results);
                             agentState.closeStmt(stmt);
@@ -308,7 +308,7 @@ public class JdbcCollector implements ServiceCollector {
                     }
                 } catch(SQLException e) {
                     // Close the statement but retain the connection, log the exception and continue to the next query.
-                    LOG.warn("There was a problem executing query '" + query.getQueryName() + "' Please review the query or configuration. Reason: " + e.getMessage());
+                    LOG.warn("There was a problem executing query '{}' Please review the query or configuration. Reason: {}", query.getQueryName(), e.getMessage());
                     agentState.closeResultSet(results);
                     agentState.closeStmt(stmt);
                     agentState.closeConnection(con);
@@ -356,14 +356,14 @@ public class JdbcCollector implements ServiceCollector {
                 status = true;
             }
         } catch(SQLException sqlEx) {
-            LOG.warn("Error checking group (" + query.getQueryName() + ") availability", sqlEx);
+            LOG.warn("Error checking group ({}) availability", query.getQueryName(), sqlEx);
             agentState.setGroupIsAvailable(query.getQueryName(), status);
             status=false;
         } finally {
             agentState.closeResultSet(resultset);
             agentState.closeConnection(con);
         }
-        LOG.debug("Group " + query.getQueryName() + " is " + (status ? "" : "not") + "available ");
+        LOG.debug("Group {} is {} available", query.getQueryName(), (status ? "" : "not"));
         agentState.setGroupIsAvailable(query.getQueryName(), status);
         return status;
     }

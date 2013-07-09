@@ -116,7 +116,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            LOG.debug("FtpMonitor.poll: Polling interface: " + InetAddressUtils.str(ipv4Addr) + tracker);
+            LOG.debug("FtpMonitor.poll: Polling interface: {} {}", InetAddressUtils.str(ipv4Addr), tracker);
 
             Socket socket = null;
             try {
@@ -126,7 +126,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("FtpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -152,10 +152,10 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                             
                             FtpResponse passResponse = FtpResponse.readResponse(lineRdr);
                             if (passResponse.isSuccess()) {
-                                LOG.debug("FtpMonitor.poll: Login successful, parsed return code: " + passResponse.getCode());
+                                LOG.debug("FtpMonitor.poll: Login successful, parsed return code: {}", passResponse.getCode());
                                 loggedInSuccessfully = true;
                             } else {
-                                LOG.debug("FtpMonitor.poll: Login failed, parsed return code: " + passResponse.getCode() + ", full response: " + passResponse.toString());
+                                LOG.debug("FtpMonitor.poll: Login failed, parsed return code: {}, full response: {}", passResponse.getCode(), passResponse);
                                 loggedInSuccessfully = false;
                             }
                         }

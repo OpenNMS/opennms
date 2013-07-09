@@ -416,7 +416,7 @@ public abstract class NotificationManager {
         try {
             return FilterDaoFactory.getInstance().isRuleMatching(rule);
         } catch (FilterParseException e) {
-            LOG.error("Invalid filter rule for notification {}: " + notif.getRule(), e, notif.getName());
+            LOG.error("Invalid filter rule for notification {}: {}", notif.getName(), notif.getRule(), e);
             throw e;
         }
     }
@@ -523,7 +523,7 @@ public abstract class NotificationManager {
                 outstanding = true;
             }
         } catch (SQLException e) {
-            LOG.error("Error getting notice status: " + e.getMessage(), e);
+            LOG.error("Error getting notice status", e);
         } finally {
             d.cleanUp();
         }

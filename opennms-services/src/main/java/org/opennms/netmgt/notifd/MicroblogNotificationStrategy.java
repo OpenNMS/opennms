@@ -90,12 +90,12 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         String messageBody = buildMessageBody(arguments);
         Status response;
         
-        LOG.debug("Dispatching microblog notification for user '" + svc.getUserId() + "' at base URL '" + svc.getBaseURL() + "' with message '" + messageBody + "'");
+        LOG.debug("Dispatching microblog notification for user '{}' at base URL '{}' with message '{}'", svc.getUserId(), svc.getBaseURL(), messageBody);
         try {
             response = svc.updateStatus(messageBody);
         } catch (TwitterException e) {
             LOG.error("Microblog notification failed");
-            LOG.info("Failed to update status for user '" + svc.getUserId() + "' at service URL '" + svc.getBaseURL() + "', caught exception: " + e.getMessage());
+            LOG.info("Failed to update status for user '{}' at service URL '{}', caught exception: {}", svc.getUserId(), svc.getBaseURL(), e.getMessage());
             return 1;
         }
         
@@ -121,11 +121,11 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
             profile = m_microblogConfigurationDao.getDefaultProfile();
 
         if (profile == null) {
-            LOG.error("Unable to find a microblog profile called '" + UBLOG_PROFILE_NAME + "', and default profile does not exist; we cannot send microblog notifications!");
+            LOG.error("Unable to find a microblog profile called '{}', and default profile does not exist; we cannot send microblog notifications!", UBLOG_PROFILE_NAME);
             throw new RuntimeException("Could not find a usable microblog profile.");
         }
         
-        LOG.info("Using microblog profile with name '" + profile.getName() + "'");
+        LOG.info("Using microblog profile with name '{}'", profile.getName());
         
         serviceUrl = profile.getServiceUrl();
         authenUser = profile.getAuthenUsername();
@@ -171,7 +171,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         
         // Collapse whitespace in final message
         messageBody = messageBody.replaceAll("\\s+", " ");
-        LOG.debug("Final message body after collapsing whitespace is: '" + messageBody + "'");
+        LOG.debug("Final message body after collapsing whitespace is: '{}'", messageBody);
 
         return messageBody;
     }

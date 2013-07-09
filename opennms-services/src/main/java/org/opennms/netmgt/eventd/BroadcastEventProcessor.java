@@ -121,7 +121,7 @@ public class BroadcastEventProcessor implements EventListener {
     @Override
     public void onEvent(Event event) {
         
-        LOG.debug("onEvent: received event, UEI = " + event.getUei());
+        LOG.debug("onEvent: received event, UEI = {}", event.getUei());
         EventBuilder ebldr = null;
         
         if (isReloadConfigEvent(event)) {

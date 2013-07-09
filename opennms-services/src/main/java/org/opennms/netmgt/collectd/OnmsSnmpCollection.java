@@ -291,7 +291,7 @@ public class OnmsSnmpCollection {
         String collectionName = getName();
         String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
-            LOG.warn("getStorageFlag: Configuration error, failed to " + "retrieve SNMP storage flag for collection: " + collectionName);
+            LOG.warn("getStorageFlag: Configuration error, failed to retrieve SNMP storage flag for collection: {}", collectionName);
             storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
         }
         return storageFlag;
@@ -376,7 +376,7 @@ public class OnmsSnmpCollection {
             groupType.addAttributeType(attrType);
             typeList.add(attrType);
         }
-        LOG.debug("getAttributeTypes(" + agent + ", " + ifType + "): " + typeList);
+        LOG.debug("getAttributeTypes({}, {}): {}", agent, ifType, typeList);
         return typeList;
     }
 
@@ -464,7 +464,7 @@ public class OnmsSnmpCollection {
                 try {
                     resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
                 } catch (IllegalArgumentException e) {
-                    LOG.warn("Ignoring resource type " + configuredResourceType.getLabel() + " (" + configuredResourceType.getName() + ") because it is not properly configured.");
+                    LOG.warn("Ignoring resource type {} ({}) because it is not properly configured.", configuredResourceType.getLabel(), configuredResourceType.getName());
                 }
             }
             m_genericIndexResourceTypes = resourceTypes;

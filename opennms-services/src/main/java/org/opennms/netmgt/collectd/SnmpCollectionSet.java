@@ -342,11 +342,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private void logStartedWalker() {
-        LOG.debug("collect: successfully instantiated " + "SnmpNodeCollector() for " + getCollectionAgent().getHostAddress());
+        LOG.debug("collect: successfully instantiated SnmpNodeCollector() for {}", getCollectionAgent().getHostAddress());
     }
 
     private void logFinishedWalker() {
-        LOG.info("collect: node SNMP query for address " + getCollectionAgent().getHostAddress() + " complete.");
+        LOG.info("collect: node SNMP query for address {} complete.", getCollectionAgent().getHostAddress());
     }
 
     /**
@@ -416,7 +416,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         logIfCounts();
 
         if (getIfNumber().isChanged(getCollectionAgent().getSavedIfCount())) {
-            LOG.info("Sending rescan event because the number of interfaces on primary SNMP " + "interface " + getCollectionAgent().getHostAddress() + " has changed, generating 'ForceRescan' event.");
+            LOG.info("Sending rescan event because the number of interfaces on primary SNMP interface {} has changed, generating 'ForceRescan' event.", getCollectionAgent().getHostAddress());
             rescanNeeded.rescanIndicated();
         }
 
@@ -437,7 +437,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     	m_ignorePersist = false;
         if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
-            LOG.info("Sending rescan event because sysUpTime has changed on primary SNMP " + "interface " + getCollectionAgent().getHostAddress() + ", generating 'ForceRescan' event.");
+            LOG.info("Sending rescan event because sysUpTime has changed on primary SNMP interface {}, generating 'ForceRescan' event.", getCollectionAgent().getHostAddress());
             rescanNeeded.rescanIndicated();
             /*
              * Only on sysUpTime change (i.e. SNMP Agent Restart) we must ignore collected data
@@ -453,14 +453,14 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private void logIfCounts() {
         if (LOG.isDebugEnabled()) {
             CollectionAgent agent = getCollectionAgent();
-            LOG.debug("collect: nodeId: " + agent.getNodeId() + " interface: " + agent.getHostAddress() + " ifCount: " + getIfNumber().getIntValue() + " savedIfCount: " + agent.getSavedIfCount());
+            LOG.debug("collect: nodeId: {} interface: {} ifCount: {} savedIfCount: {}", agent.getNodeId(), agent.getHostAddress(), getIfNumber().getIntValue(), agent.getSavedIfCount());
         }
     }
 
     private void logSysUpTime() {
         if (LOG.isDebugEnabled()) {
             CollectionAgent agent = getCollectionAgent();
-            LOG.debug("collect: nodeId: " + agent.getNodeId() + " interface: " + agent.getHostAddress() + " sysUpTime: " + getSysUpTime().getLongValue() + " savedSysUpTime: " + agent.getSavedSysUpTime());
+            LOG.debug("collect: nodeId: {} interface: {} sysUpTime: {} savedSysUpTime: {}", agent.getNodeId(), agent.getHostAddress(), getSysUpTime().getLongValue(), agent.getSavedSysUpTime());
         }
     }
 
@@ -478,7 +478,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             public void visitResource(CollectionResource resource) {
                 LOG.debug("rescanNeeded: Visiting resource {}", resource);
                 if (resource.rescanNeeded()) {
-                    LOG.debug("Sending rescan event for "+getCollectionAgent()+" because resource "+resource+" indicated it was needed");
+                    LOG.debug("Sending rescan event for {} because resource {} indicated it was needed", getCollectionAgent(), resource);
                     rescanNeeded.rescanIndicated();
                 }
             }
@@ -525,7 +525,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
-        LOG.info("Unable to locate resource for agent "+getCollectionAgent()+" with instance id "+res.getInstance()+" while collecting attribute "+attrType);
+        LOG.info("Unable to locate resource for agent {} with instance id {} while collecting attribute {}", getCollectionAgent(), res.getInstance(), attrType);
     }
 
     /* Not used anymore - done in CollectableService

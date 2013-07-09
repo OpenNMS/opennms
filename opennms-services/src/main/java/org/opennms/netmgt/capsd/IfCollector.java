@@ -176,7 +176,7 @@ public final class IfCollector implements Runnable {
         for (int i = 0; i < plugins.length; i++) {
             LOG.debug("{} testing plugin {}", logAddr, plugins[i].getProtocol());
             if (plugins[i].isAutoEnabled()) {
-                LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " is auto enabled");
+                LOG.debug("{} protocol {} is auto enabled", logAddr, plugins[i].getProtocol());
                 supports.add(new SupportedProtocol(plugins[i].getProtocol(), null));
                 continue;
             }
@@ -186,7 +186,7 @@ public final class IfCollector implements Runnable {
                 Map<String, Object> q = plugins[i].getParameters();
                 boolean r = p.isProtocolSupported(target, q);
 
-                LOG.debug(logAddr + " protocol " + plugins[i].getProtocol() + " supported? " + (r ? "true" : "false"));
+                LOG.debug("{} protocol {} supported? {}", logAddr, plugins[i].getProtocol(), (r ? "true" : "false"));
 
                 if (r) {
                     supports.add(new SupportedProtocol(plugins[i].getProtocol(), q));
@@ -195,18 +195,19 @@ public final class IfCollector implements Runnable {
                 Throwable t = utE.getUndeclaredThrowable();
                 if (t instanceof NoRouteToHostException) {
                     if (CapsdConfigFactory.getInstance().getAbortProtocolScansFlag()) {
-                        LOG.info("IfCollector: No route to host " + logAddr + ", aborting protocol scans.");
+                        LOG.info("IfCollector: No route to host {}, aborting protocol scans.", logAddr);
                         break; // Break out of plugin loop
                     } else {
-                        LOG.info("IfCollector: No route to host " + logAddr + ", continuing protocol scans.");
+                        LOG.info("IfCollector: No route to host {}, continuing protocol scans.", logAddr);
                     }
                 } else {
-                    LOG.warn("IfCollector: Caught undeclared throwable exception when testing for protocol " + plugins[i].getProtocol() + " on host " + logAddr, utE);
+                    LOG.warn("IfCollector: Caught undeclared throwable exception when testing for protocol {} on host {}",
+                             plugins[i].getProtocol(), logAddr, utE);
                 }
             } catch (Throwable t) {
-                LOG.warn("IfCollector: Caught an exception when testing for protocol " + plugins[i].getProtocol() + " on host " + logAddr, t);
+                LOG.warn("IfCollector: Caught an exception when testing for protocol {} on host {}", plugins[i].getProtocol(), logAddr, t);
             }
-            LOG.debug(logAddr + " plugin " + plugins[i].getProtocol() + " completed!");
+            LOG.debug("{} plugin {} completed!", logAddr, plugins[i].getProtocol());
         }
     }
 
@@ -363,7 +364,7 @@ public final class IfCollector implements Runnable {
                 m_smbCollector.run();
             } catch (Throwable t) {
                 m_smbCollector = null;
-                LOG.warn("IfCollector.run: Caught an exception when collecting SMB information from target " + InetAddressUtils.str(m_target), t);
+                LOG.warn("IfCollector.run: Caught an exception when collecting SMB information from target {}", InetAddressUtils.str(m_target), t);
             }
 
             LOG.debug("IfCollector.run: SMB collection completed");
@@ -431,7 +432,7 @@ public final class IfCollector implements Runnable {
                             // now check for loopback
                             if (subtarget.isLoopbackAddress()) {
                                 // Skip if loopback
-                                LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
+                                LOG.debug("ifCollector.run: Loopback interface: {}, skipping...", InetAddressUtils.str(subtarget));
                                 continue;
                             }
 
@@ -453,7 +454,7 @@ public final class IfCollector implements Runnable {
                             probe(subtarget, probelist);
                             m_previouslyProbed.add(subtarget);
 
-                            LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                            LOG.debug("ifCollector.run: adding subtarget {} # supported protocols: {}", InetAddressUtils.str(subtarget), probelist.size());
                             LOG.debug("----------------------------------------------------------------------------------------");
                             m_subTargets.put(subtarget, probelist);
                         } // end while(more ip addresses)
@@ -480,7 +481,7 @@ public final class IfCollector implements Runnable {
                         // now check for loopback
                         if (subtarget.isLoopbackAddress()) {
                             // Skip if loopback
-                            LOG.debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
+                            LOG.debug("ifCollector.run: Loopback interface: {}, skipping...", InetAddressUtils.str(subtarget));
                             continue;
                         }
 
@@ -493,7 +494,7 @@ public final class IfCollector implements Runnable {
                         probe(subtarget, probelist);
                         m_previouslyProbed.add(subtarget);
                         
-                        LOG.debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
+                        LOG.debug("ifCollector.run: adding subtarget {} # supported protocols: {}", InetAddressUtils.str(subtarget), probelist.size());
                         LOG.debug("----------------------------------------------------------------------------------------");
                         m_subTargets.put(subtarget, probelist);
                     } // end while(more ip addresses)
@@ -501,7 +502,7 @@ public final class IfCollector implements Runnable {
             } // end try()
             catch (Throwable t) {
                 m_snmpCollector = null;
-                LOG.warn("IfCollector.run: Caught an exception when collecting SNMP information from target " + InetAddressUtils.str(m_target), t);
+                LOG.warn("IfCollector.run: Caught an exception when collecting SNMP information from target {}", InetAddressUtils.str(m_target), t);
             }
 
             LOG.debug("IfCollector.run: SNMP collection completed");

@@ -132,7 +132,7 @@ public class SmsPinger {
 	 * @param pingTracker a {@link org.opennms.sms.ping.SmsPingTracker} object.
 	 */
 	public synchronized static void setSmsPingTracker(SmsPingTracker pingTracker) {
-	    log.debug("Initializing SmsPinger with pingTracker " + pingTracker);
+	    log.debug("Initializing SmsPinger with pingTracker {}", pingTracker);
 	    s_pingTracker = pingTracker;
 	}
 

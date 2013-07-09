@@ -455,7 +455,7 @@ final class Executor implements Runnable, PausableFiber {
                     }
                     m_processes.add(new DatedProc(cmd, px));
                 } catch (IOException ex) {
-                    LOG.warn("Failed to execute command: " + cmd, ex);
+                    LOG.warn("Failed to execute command: {}", cmd, ex);
                 } catch (SecurityException ex) {
                     LOG.warn("Application not authorized to exec commands!", ex);
                     break;

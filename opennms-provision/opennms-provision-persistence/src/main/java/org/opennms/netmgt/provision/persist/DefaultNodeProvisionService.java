@@ -171,7 +171,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             .getEvent();
         m_eventForwarder.sendNow(e);
 
-        LOG.warn("about to return (" + System.currentTimeMillis() + ")");
+        LOG.warn("about to return ({})", System.currentTimeMillis());
         return true;
     }
     

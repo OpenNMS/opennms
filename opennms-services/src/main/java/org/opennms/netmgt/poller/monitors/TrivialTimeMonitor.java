@@ -186,7 +186,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         Map<String,Number> skewProps = new LinkedHashMap<String,Number>();
         if (persistSkew) {
             skewProps.put("skew", skew);
-	    LOG.debug("persistSkew: Persisting time skew (value = " + skew + ") for this node");
+	    LOG.debug("persistSkew: Persisting time skew (value = {}) for this node", skew);
         }
         skewProps.put("response-time", responseTime);
         serviceStatus.setProperties(skewProps);
@@ -219,7 +219,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("Connected to host: " + ipv4Addr + " on TCP port: " + port);
+                LOG.debug("Connected to host: {} on TCP port: {}", ipv4Addr, port);
 
                 //
                 // Try to read from the socket
@@ -358,7 +358,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     }
     
     private PollStatus qualifyTime(int remoteTime, int localTime, int allowedSkew, PollStatus serviceStatus, double responseTime, boolean persistSkew) {
-        LOG.debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
+        LOG.debug("qualifyTime: checking remote time {} against local time {} with max skew of {}", remoteTime, localTime, allowedSkew);
         if ((localTime - remoteTime > allowedSkew) || (remoteTime - localTime > allowedSkew)) {
             String reason = "Remote time is " + (localTime > remoteTime ? ""+(localTime-remoteTime)+" seconds slow" : ""+(remoteTime-localTime)+" seconds fast");
             LOG.debug(reason);

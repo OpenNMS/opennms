@@ -146,7 +146,7 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
-                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + InetAddressUtils.str(ipaddr) + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={} service name={} value={}", InetAddressUtils.str(ipaddr), serviceName, nameResults.get(nameInstance));
                     status = true;
                     break;
                 }
@@ -157,7 +157,7 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         } catch (IllegalArgumentException e) {
             LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            LOG.warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", InetAddressUtils.str(ipaddr), t);
         }
 
         return status;

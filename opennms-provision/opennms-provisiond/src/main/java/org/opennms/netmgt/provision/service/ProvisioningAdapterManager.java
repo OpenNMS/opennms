@@ -101,9 +101,9 @@ public class ProvisioningAdapterManager implements InitializingBean {
             try {
                 adapter.addNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
-                LOG.error("handleNodeAddedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+                LOG.error("handleNodeAddedEvent: Adapter threw known exception: {}", adapter.getName(), pae);
             } catch (Throwable t) {
-                LOG.error("handleNodeAddedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+                LOG.error("handleNodeAddedEvent: Unanticpated exception when calling adapter: {}", adapter.getName(), t);
             }
         }
     }
@@ -120,9 +120,9 @@ public class ProvisioningAdapterManager implements InitializingBean {
             try {
                 adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
-                LOG.error("handleNodeUpdatedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+                LOG.error("handleNodeUpdatedEvent: Adapter threw known exception: {}", adapter.getName(), pae);
             } catch (Throwable t) {
-                LOG.error("handleNodeUpdatedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+                LOG.error("handleNodeUpdatedEvent: Unanticpated exception when calling adapter: {}", adapter.getName(), t);
             }
         }
     }
@@ -139,9 +139,9 @@ public class ProvisioningAdapterManager implements InitializingBean {
             try {
                 adapter.deleteNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
-                LOG.error("handleNodeDeletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+                LOG.error("handleNodeDeletedEvent: Adapter threw known exception: {}", adapter.getName(), pae);
             } catch (Throwable t) {
-                LOG.error("handleNodeDeletedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+                LOG.error("handleNodeDeletedEvent: Unanticpated exception when calling adapter: {}", adapter.getName(), t);
             }
         }
     }
@@ -161,9 +161,9 @@ public class ProvisioningAdapterManager implements InitializingBean {
             try {
                 adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
-                LOG.error("handleNodeScanCompletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+                LOG.error("handleNodeScanCompletedEvent: Adapter threw known exception: {}", adapter.getName(), pae);
             } catch (Throwable t) {
-                LOG.error("handleNodeScanCompletedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+                LOG.error("handleNodeScanCompletedEvent: Unanticpated exception when calling adapter: {}", adapter.getName(), t);
             }
         }
     }
@@ -184,9 +184,9 @@ public class ProvisioningAdapterManager implements InitializingBean {
                     LOG.warn("handleNodeChangedEvent: received configChanged event without nodeId: {}", e);
                 }
             } catch (ProvisioningAdapterException pae) {
-                LOG.error("handleNodeChangedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+                LOG.error("handleNodeChangedEvent: Adapter threw known exception: {}", adapter.getName(), pae);
             } catch (Throwable t) {
-                LOG.error("handleNodeChangedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+                LOG.error("handleNodeChangedEvent: Unanticpated exception when calling adapter: {}", adapter.getName(), t);
             }
         }
     }

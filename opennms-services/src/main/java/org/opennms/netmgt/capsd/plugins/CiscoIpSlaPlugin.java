@@ -207,7 +207,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 // Iterate over the list of configured IP SLAs
                 for (SnmpInstId ipslaInstance : tagResults.keySet()) {
 
-                    LOG.debug("poll: " + "admin tag=" + adminTag + " value=" + tagResults.get(ipslaInstance) + " oper state=" + operStateResults.get(ipslaInstance));
+                    LOG.debug("poll: admin tag={} value={} oper state={}", adminTag, tagResults.get(ipslaInstance), operStateResults.get(ipslaInstance));
                     /*
                      *  Check if a configured ip sla with specific tag exist
                      *  and is the operational state active 
@@ -227,7 +227,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         } catch (IllegalArgumentException e) {
             LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            LOG.warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", InetAddressUtils.str(ipaddr), t);
         }
         return status;
     }

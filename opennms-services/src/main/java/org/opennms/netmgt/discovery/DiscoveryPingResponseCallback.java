@@ -79,7 +79,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
-        LOG.debug("an error occurred pinging " + address, t);
+        LOG.debug("an error occurred pinging {}", address, t);
     }
 
 }

@@ -102,7 +102,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             
             rtt = PingerFactory.getInstance().ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
-            LOG.debug("failed to ping " + host, e);
+            LOG.debug("failed to ping {}", host, e);
         }
         
         if (rtt != null) {

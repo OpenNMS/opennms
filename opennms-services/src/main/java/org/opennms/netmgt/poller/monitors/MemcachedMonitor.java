@@ -104,7 +104,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = svc.getAddress();
         String host = InetAddressUtils.str(ipv4Addr);
 
-        LOG.debug("polling interface: " + host + timeoutTracker);
+        LOG.debug("polling interface: {} {}", host, timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -117,7 +117,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeoutTracker.getConnectionTimeout());
                 socket.setSoTimeout(timeoutTracker.getSoTimeout());
-                LOG.debug("connected to host: " + host + " on port: " + port);
+                LOG.debug("connected to host: {} on port: {}", host, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();

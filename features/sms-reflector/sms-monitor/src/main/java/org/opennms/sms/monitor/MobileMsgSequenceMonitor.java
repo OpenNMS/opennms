@@ -97,7 +97,7 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
 	        MobileSequenceConfig sequenceConfig = factory.getSequenceForXml(config);
 
 	        if (!sequenceConfig.hasTransactions()) {
-	            log.warn("No transactions were configured for host " + svc.getIpAddr());
+	            log.warn("No transactions were configured for host {}", svc.getIpAddr());
 	            return PollStatus.unavailable("No transactions were configured for host " + svc.getIpAddr());
 	        }
 
@@ -121,10 +121,10 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
 
 
 	    } catch (PhonebookException e) {
-	        log.warn("Unable to locate recpient phone number for IP address " + svc.getIpAddr(), e);
+	        log.warn("Unable to locate recpient phone number for IP address {}", svc.getIpAddr(), e);
 	        return PollStatus.unavailable("Unable to find phone number for IP address " + svc.getIpAddr());
 	    } catch (SequenceException e) {
-	        log.warn("Unable to parse sequence configuration for host " + svc.getIpAddr(), e);
+	        log.warn("Unable to parse sequence configuration for host {}", svc.getIpAddr(), e);
 	        return PollStatus.unavailable("unable to read sequence configuration");
 	    } catch (Throwable e) {
 	        log.debug("Sequence failed", e);

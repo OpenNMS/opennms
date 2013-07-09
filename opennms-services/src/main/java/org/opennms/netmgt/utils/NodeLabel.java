@@ -485,7 +485,7 @@ public class NodeLabel {
         }
 
         if (!method.equals(SELECT_METHOD_MIN) && !method.equals(SELECT_METHOD_MAX)) {
-        	LOG.warn("Interface selection method is '" + method + "'.  Valid values are 'min' & 'max'.  Will use default value: " + DEFAULT_SELECT_METHOD);
+		LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
             method = DEFAULT_SELECT_METHOD;
         }
 
@@ -503,7 +503,7 @@ public class NodeLabel {
             // Process result set, store retrieved addresses/host names in lists
             loadAddressList(rs, ipv4AddrList, ipHostNameList);
         } catch (Throwable e) {
-            LOG.warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
+            LOG.warn("Exception thrown while fetching managed interfaces: {}", e.getMessage(), e);
         } finally {
             d.cleanUp();
         }
@@ -529,7 +529,7 @@ public class NodeLabel {
                 d.watch(rs);
                 loadAddressList(rs, ipv4AddrList, ipHostNameList);
             } catch (Throwable e) {
-                LOG.warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
+                LOG.warn("Exception thrown while fetching managed interfaces: {}", e.getMessage(), e);
             } finally {
                 d.cleanUp();
             }
@@ -538,7 +538,7 @@ public class NodeLabel {
         }
 
         if (primaryAddr == null) {
-            LOG.warn("Could not find primary interface for node " + nodeID + ", cannot compute nodelabel");
+            LOG.warn("Could not find primary interface for node {}, cannot compute nodelabel", nodeID);
             return new NodeLabel("Unknown", SOURCE_UNKNOWN);
         }
 

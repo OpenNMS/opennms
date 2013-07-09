@@ -116,7 +116,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("Finish polling {} using pkg {} result = {}", result, m_service, packageName);
             return result;
         } catch (Throwable e) {
-            LOG.error("Unexpected exception while polling {}. Marking service as DOWN", e, m_service);
+            LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
             return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
         }
     }

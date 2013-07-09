@@ -85,7 +85,7 @@ public class MockProxy implements CommandResponder {
           StatusInformation statusInformation = new StatusInformation();
           StateReference ref = e.getStateReference();
           try {
-              LOG.debug("Replying with: "+command);
+              LOG.debug("Replying with: {}", command);
               e.setProcessed(true);
               e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
                                                          e.getSecurityModel(),
@@ -97,7 +97,7 @@ public class MockProxy implements CommandResponder {
                                                          statusInformation);
           }
           catch (MessageException ex) {
-              LOG.error("Error while sending response: "+ex.getMessage(), ex);
+              LOG.error("Error while sending response", ex);
           }
           
         

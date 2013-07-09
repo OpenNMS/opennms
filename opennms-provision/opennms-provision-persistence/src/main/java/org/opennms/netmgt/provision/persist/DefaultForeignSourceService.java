@@ -320,7 +320,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    LOG.warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
             for (String key : m_detectors.keySet()) {
@@ -328,7 +328,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    LOG.warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
         }

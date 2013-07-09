@@ -116,7 +116,7 @@ public class CiscoIpSlaDetector extends SnmpDetector {
             // Iterate over the list of configured IP SLAs
             for (Entry<SnmpInstId,SnmpValue> ipslaEntry : tagResults.entrySet()) {
                 SnmpValue status = operStateResults.get(ipslaEntry.getKey());
-                LOG.debug("isServiceDetected: " + "admin-tag=" + m_adminTag + " value=" + formatValue(ipslaEntry.getValue()) + " oper-state=" + status.toInt());
+                LOG.debug("isServiceDetected: admin-tag={} value={} oper-state={}", m_adminTag, formatValue(ipslaEntry.getValue()), status.toInt());
                 //  Check if a configured IP SLA with specific tag exist and is the operational state active 
                 if (m_adminTag.equals(formatValue(ipslaEntry.getValue())) && status.toInt() == RTT_MON_OPER_STATE_ACTIVE) {
                     LOG.debug("isServiceDetected: admin tag found");

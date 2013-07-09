@@ -105,7 +105,7 @@ public class AddNodesController extends AbstractController {
 		
 		String action = request.getParameter("action");
 		String elems = request.getParameter("elems");
-		LOG.debug("Adding Nodes action:"+action+", elems="+elems );
+		LOG.debug("Adding Nodes action:{}, elems={}", action, elems);
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {

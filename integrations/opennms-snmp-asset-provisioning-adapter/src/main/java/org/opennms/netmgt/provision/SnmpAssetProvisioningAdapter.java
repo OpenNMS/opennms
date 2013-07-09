@@ -149,18 +149,18 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		    for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId())) {
     			try {
     			    final String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
-    				LOG.debug("doAdd: Setting asset field \" {} \" to value: {}", value, field.getName());
+				LOG.debug("doAdd: Setting asset field \" {} \" to value: {}", field.getName(), value);
     				// Use Spring bean-accessor classes to set the field value
     				final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
     				try {
     					wrapper.setPropertyValue(field.getName(), value);
     				} catch (final BeansException e) {
-    					LOG.warn("doAdd: Could not set property \" {} \" on asset object: " + e.getMessage(), e, field.getName());
+					LOG.warn("doAdd: Could not set property \" {} \" on asset object {}", field.getName(), e.getMessage(), e);
     				}
     			} catch (final MissingFormatArgumentException e) {
     				// This exception is thrown if the SNMP operation fails or an incorrect number of
     				// parameters is returned by the agent or because of a misconfiguration.
-    				LOG.warn("doAdd: Could not set value for asset field \" {} \": " + e.getMessage(), e, field.getName());
+				LOG.warn("doAdd: Could not set value for asset field \" {} \": {}", field.getName(), e.getMessage(), e);
     			}
     		}
 		} finally {
@@ -265,12 +265,12 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
     				try {
     					wrapper.setPropertyValue(field.getName(), value);
     				} catch (BeansException e) {
-    					LOG.warn("doUpdate: Could not set property \" {} \" on asset object: " + e.getMessage(), e, field.getName());
+					LOG.warn("doUpdate: Could not set property \" {} \" on asset object: {}", field.getName(), e.getMessage(), e);
     				}
     			} catch (MissingFormatArgumentException e) {
     				// This exception is thrown if the SNMP operation fails or an incorrect number of
     				// parameters is returned by the agent or because of a misconfiguration.
-    				LOG.warn("doUpdate: Could not set value for asset field \" {} \": " + e.getMessage(), e, field.getName());
+				LOG.warn("doUpdate: Could not set value for asset field \" {} \": {}", field.getName(), e.getMessage(), e);
     			}
     		}
 		} finally {

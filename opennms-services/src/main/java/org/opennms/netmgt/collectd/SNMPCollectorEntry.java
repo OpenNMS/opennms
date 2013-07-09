@@ -111,7 +111,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
                 putIfIndex(res.getInstance().toInt());
             }
             attrType.storeResult(m_collectionSet, this, res);
-            LOG.debug("storeResult: added value for "+attrType.getAlias()+": " + res.toString());
+            LOG.debug("storeResult: added value for {}: {}", attrType.getAlias(), res.toString());
         }
     }
 

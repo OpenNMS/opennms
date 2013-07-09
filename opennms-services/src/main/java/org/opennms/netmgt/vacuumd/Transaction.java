@@ -131,7 +131,7 @@ public class Transaction {
         try {
             Transaction tx = getTX();
             tx.doEnd();
-            LOG.debug((tx.m_rollbackOnly ? "Rolled Back" : "Committed") + " transaction for "+Thread.currentThread());
+            LOG.debug("{} transaction for {}", (tx.m_rollbackOnly ? "Rolled Back" : "Committed"), Thread.currentThread());
         } finally {
             clearTX();
         }

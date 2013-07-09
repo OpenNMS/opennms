@@ -197,7 +197,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         try {
             w.setPropertyValue(name, value);
         } catch (final BeansException e) {
-            LOG.warn("Could not set property on object of type {}: " + name, e, m_node.getClass().getName());
+            LOG.warn("Could not set property on object of type {}: {}", m_node.getClass().getName(), name, e);
         }
     }
 }

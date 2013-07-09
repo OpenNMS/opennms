@@ -39,28 +39,13 @@ import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smslib.AGateway;
-import org.smslib.GatewayException;
-import org.smslib.ICallNotification;
-import org.smslib.IGatewayStatusNotification;
-import org.smslib.IInboundMessageNotification;
-import org.smslib.IOutboundMessageNotification;
-import org.smslib.IQueueSendingNotification;
-import org.smslib.IUSSDNotification;
-import org.smslib.InboundMessage;
-import org.smslib.OutboundMessage;
-import org.smslib.Phonebook;
-import org.smslib.SMSLibException;
-import org.smslib.Service;
-import org.smslib.Settings;
-import org.smslib.TimeoutException;
-import org.smslib.USSDRequest;
+import org.smslib.*;
 import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Message.MessageTypes;
 import org.smslib.Service.ServiceStatus;
 import org.smslib.balancing.LoadBalancer;
 import org.smslib.crypto.KeyManager;
-import org.smslib.queues.QueueManager;
+import org.smslib.queues.AbstractQueueManager;
 import org.smslib.routing.Router;
 
 
@@ -74,7 +59,7 @@ public class SmsServiceImpl implements SmsService {
     
 	private static Logger log = LoggerFactory.getLogger(SmsServiceImpl.class);
 	
-	private Service m_service = new Service();
+	private Service m_service = Service.getInstance();
 	private String m_modemId;
 	private String m_modemPort;
 	private int m_baudRate;
@@ -91,14 +76,16 @@ public class SmsServiceImpl implements SmsService {
     	public InboundNotificationAdapter(OnmsInboundMessageNotification onmsInbound) {
     		m_inboundNotification = onmsInbound;
     	}
-            @Override
-		public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
-			m_inboundNotification.process(SmsServiceImpl.this.findGateway(gatewayId), msgType, msg);
-		}
-		
+
+        @Override
+        public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
+            m_inboundNotification.process(SmsServiceImpl.this.findGateway(gateway.getGatewayId()), msgType, msg);
+        }
+
 		public OnmsInboundMessageNotification getOnmsInboundMessageNotification() {
 			return m_inboundNotification;
 		}
+
     }
 	
     /**
@@ -252,7 +239,7 @@ public class SmsServiceImpl implements SmsService {
     /**
      * <p>stop</p>
      */
-    public void stop() {
+    public void stop() throws InterruptedException, IOException, SMSLibException {
     	m_service.stopService();
     }
 
@@ -262,7 +249,7 @@ public class SmsServiceImpl implements SmsService {
      * @param properties a {@link java.util.Map} object.
      */
 	public void refresh(Map<?,?> properties) {
-    	log.debug("Received a configuration refresh! " + properties);
+	log.debug("Received a configuration refresh! {}", properties);
 	}
 	
 	/** {@inheritDoc} */
@@ -375,7 +362,7 @@ public class SmsServiceImpl implements SmsService {
 	 */
         @Override
 	public OnmsInboundMessageNotification getInboundNotification() {
-		return ((InboundNotificationAdapter)m_service.getInboundNotification()).getOnmsInboundMessageNotification();
+		return ((InboundNotificationAdapter)m_service.getInboundMessageNotification()).getOnmsInboundMessageNotification();
 	}
 
 	/**
@@ -432,16 +419,16 @@ public class SmsServiceImpl implements SmsService {
 	 */
         @Override
 	public IOutboundMessageNotification getOutboundNotification() {
-		return m_service.getOutboundNotification();
+		return m_service.getOutboundMessageNotification();
 	}
 
 	/**
 	 * <p>getQueueManager</p>
 	 *
-	 * @return a {@link org.smslib.queues.QueueManager} object.
+	 * @return a {@link org.smslib.queues.AbstractQueueManager} object.
 	 */
         @Override
-	public QueueManager getQueueManager() {
+	public AbstractQueueManager getQueueManager() {
 		return m_service.getQueueManager();
 	}
 
@@ -700,7 +687,7 @@ public class SmsServiceImpl implements SmsService {
         @Override
 	public void setInboundNotification(OnmsInboundMessageNotification inboundNotification) {
 		InboundNotificationAdapter adapter = new InboundNotificationAdapter(inboundNotification);
-		m_service.setInboundNotification(adapter);
+		m_service.setInboundMessageNotification(adapter);
 	}
 
 	/** {@inheritDoc} */
@@ -712,7 +699,7 @@ public class SmsServiceImpl implements SmsService {
 	/** {@inheritDoc} */
         @Override
 	public void setOutboundNotification(IOutboundMessageNotification outboundNotification) {
-		m_service.setOutboundNotification(outboundNotification);
+		m_service.setOutboundMessageNotification(outboundNotification);
 	}
 
 	/** {@inheritDoc} */
@@ -750,7 +737,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.lang.InterruptedException if any.
 	 */
         @Override
-	public void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException {
+	public void stopService() throws SMSLibException, IOException, InterruptedException {
 		m_service.stopService();
 	}
 
