@@ -195,7 +195,7 @@ final class TcpServer implements Runnable {
         }
 
         LOG.debug("Attempting to stop and join all stream handlers");
-        LOG.debug("There are " + m_receivers.size() + " receivers");
+        LOG.debug("There are {} receivers", m_receivers.size());
 
         // stop all the receivers
         int ndx = 0; // for tracing!
@@ -266,7 +266,7 @@ final class TcpServer implements Runnable {
             return;
         }
 
-        LOG.debug("Server connection processor started on " + m_ipAddress + ":" + m_tcpPort);
+        LOG.debug("Server connection processor started on {}:{}", m_ipAddress, m_tcpPort);
 
         /*
          *
@@ -364,7 +364,7 @@ final class TcpServer implements Runnable {
 
             m_tcpSock.close();
         } catch (Throwable t) {
-            LOG.error("An I/O Error Occcured Closing the Server Socket: " + t, t);
+            LOG.error("An I/O Error Occcured Closing the Server Socket", t);
         }
 
         // Log the termination of this runnable

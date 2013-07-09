@@ -224,7 +224,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             if (minServices > 0 && maxServices > 0 && minServices >= maxServices) {
                 String reason = "min-services(" + minServices + ") should be less than max-services(" + maxServices + ")";
                 status.setReason("HostResourceSwRunMonitor " + reason + ", addr=" + hostAddress+ ", service-name=" + serviceName);
-                LOG.warn("HostResourceSwRunMonitor.poll: " + reason + ".");
+                LOG.warn("HostResourceSwRunMonitor.poll: {}.", reason);
                 return status;
             }
 
@@ -251,7 +251,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
                     matches++;
-                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + ", service-name=" + serviceName + ", value=" + nameResults.get(nameInstance));
+                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={}, service-name={}, value={}", hostAddress, serviceName, nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
                         status = PollStatus.available();
@@ -268,7 +268,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     }
                 }
             }
-            LOG.debug("poll: HostResourceSwRunMonitor the number of matches found for " + serviceName + " was " + matches);
+            LOG.debug("poll: HostResourceSwRunMonitor the number of matches found for {} was {}", serviceName, matches);
 
         } catch (NumberFormatException e) {
             String reason = "Number operator used on a non-number " + e.getMessage();

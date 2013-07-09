@@ -255,10 +255,10 @@ public class HttpPlugin extends AbstractTcpPlugin {
                 }
             }
         } catch (SocketException e) {
-            LOG.debug(getPluginName() + ": a protocol error occurred talking to host " + InetAddressUtils.str(config.getInetAddress()), e);
+            LOG.debug("{}: a protocol error occurred talking to host {}", getPluginName(), InetAddressUtils.str(config.getInetAddress()), e);
             isAServer = false;
         } catch (NumberFormatException e) {
-            LOG.debug(getPluginName() + ": failed to parse response code from host " + InetAddressUtils.str(config.getInetAddress()), e);
+            LOG.debug("{}: failed to parse response code from host {}", getPluginName(), InetAddressUtils.str(config.getInetAddress()), e);
             isAServer = false;
         }
         return isAServer;

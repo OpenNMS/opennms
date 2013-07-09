@@ -166,7 +166,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *             Thrown if an error occurs adding the element to the queue.
      */
     public synchronized void schedule(ReadyRunnable runnable, long interval) {
-        LOG.debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
+        LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
 
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
@@ -183,7 +183,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                 LOG.debug("schedule: queue element added, notification not performed");
             }
         } catch (InterruptedException e) {
-            LOG.info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler", e);
+            LOG.info("schedule: failed to add new ready runnable instance {} to scheduler", runnable, e);
             Thread.currentThread().interrupt();
         }
     }
@@ -368,7 +368,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             synchronized (this) {
                 
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    LOG.debug("run: status = " + m_status + ", time to exit");
+                    LOG.debug("run: status = {}, time to exit", m_status);
                     break;
                 }
 

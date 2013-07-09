@@ -63,14 +63,14 @@ final class DataUpdater implements Runnable {
     private void handleNodeGainedService(long nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + svcName);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
             return;
         }
 
         DataManager dataMgr = RTCManager.getDataManager();
         dataMgr.nodeGainedService(nodeid, ip, svcName);
 
-        LOG.debug(m_event.getUei() + " added " + nodeid + ": " + InetAddressUtils.str(ip) + ": " + svcName + " to data store");
+        LOG.debug("{} added {}: {}: {} to data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
 
     }
 
@@ -80,7 +80,7 @@ final class DataUpdater implements Runnable {
     private void handleNodeLostService(long nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + svcName + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
             return;
         }
 
@@ -97,7 +97,7 @@ final class DataUpdater implements Runnable {
     private void handleInterfaceDown(long nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
             return;
         }
 
@@ -114,7 +114,7 @@ final class DataUpdater implements Runnable {
     private void handleNodeDown(long nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
             return;
         }
 
@@ -131,7 +131,7 @@ final class DataUpdater implements Runnable {
     private void handleNodeUp(long nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
             return;
         }
 
@@ -148,7 +148,7 @@ final class DataUpdater implements Runnable {
     private void handleInterfaceUp(long nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
             return;
         }
 
@@ -165,7 +165,7 @@ final class DataUpdater implements Runnable {
     private void handleNodeRegainedService(long nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + svcName + "/" + eventTime);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
             return;
         }
 
@@ -182,7 +182,7 @@ final class DataUpdater implements Runnable {
     private void handleServiceDeleted(long nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + svcName);
+            LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
             return;
         }
 
@@ -190,7 +190,7 @@ final class DataUpdater implements Runnable {
         dataMgr.serviceDeleted(nodeid, ip, svcName);
 
 
-        LOG.debug(m_event.getUei() + " deleted " + nodeid + ": " + InetAddressUtils.str(ip) + ": " + svcName + " from data store");
+        LOG.debug("{} deleted {}: {}: {} from data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
 
     }
 
@@ -200,7 +200,7 @@ final class DataUpdater implements Runnable {
     private void handleInterfaceReparented(InetAddress ip, List<Parm> list) {
 
         if (ip == null || list == null) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete - ip/parms: " + InetAddressUtils.str(ip) + "/" + list);
+            LOG.warn("{} ignored - info incomplete - ip/parms: {}/{}", m_event.getUei(), InetAddressUtils.str(ip), list);
             return;
         }
 
@@ -228,7 +228,7 @@ final class DataUpdater implements Runnable {
                 try {
                     oldNodeId = Long.valueOf(temp).longValue();
                 } catch (NumberFormatException nfe) {
-                    LOG.warn("Parameter {} cannot be non-numeric", nfe, EventConstants.PARM_OLD_NODEID);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_OLD_NODEID, nfe);
                     oldNodeId = -1;
                 }
             }
@@ -239,7 +239,7 @@ final class DataUpdater implements Runnable {
                 try {
                     newNodeId = Long.valueOf(temp).longValue();
                 } catch (NumberFormatException nfe) {
-                    LOG.warn("Parameter {} cannot be non-numeric", nfe, EventConstants.PARM_NEW_NODEID);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_NEW_NODEID, nfe);
                     newNodeId = -1;
                 }
             }
@@ -247,12 +247,12 @@ final class DataUpdater implements Runnable {
         }
 
         if (oldNodeId == -1 || newNodeId == -1) {
-            LOG.warn(m_event.getUei() + " did not have all required information for " + InetAddressUtils.str(ip) + " Values contained old nodeid: " + oldNodeId + " new nodeid: " + newNodeId);
+            LOG.warn("{} did not have all required information for {} Values contained old nodeid: {} new nodeid: {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
         } else {
             DataManager dataMgr = RTCManager.getDataManager();
             dataMgr.interfaceReparented(ip, oldNodeId, newNodeId);
 
-            LOG.debug(m_event.getUei() + " reparented ip: " + InetAddressUtils.str(ip) + " from " + oldNodeId + " to " + newNodeId);
+            LOG.debug("{} reparented ip: {} from {} to {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
 
         }
 
@@ -305,11 +305,12 @@ final class DataUpdater implements Runnable {
 
         // check that we got all required parms
         if (url == null || clabel == null || user == null || passwd == null) {
-            LOG.warn(m_event.getUei() + " did not have all required information. Values contained url:  " + url + " catlabel: " + clabel + " user: " + user + "passwd: " + passwd);
+            LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", m_event.getUei(), url, clabel, user, passwd);
+
         } else {
             RTCManager.getInstance().getDataSender().subscribe(url, clabel, user, passwd);
 
-            LOG.debug(m_event.getUei() + " subscribed " + url + ": " + clabel + ": " + user);
+            LOG.debug("{} subscribed {}: {}: {}", m_event.getUei(), url, clabel, user);
 
         }
     }
@@ -418,7 +419,7 @@ final class DataUpdater implements Runnable {
             java.util.Date date = EventConstants.parseToDate(eventTimeStr);
             eventTime = date.getTime();
         } catch (ParseException pe) {
-            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", pe, eventTime);
+            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", eventTime, pe);
 
             eventTime = (new java.util.Date()).getTime();
         }

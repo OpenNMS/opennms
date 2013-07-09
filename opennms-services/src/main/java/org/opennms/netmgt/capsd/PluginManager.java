@@ -157,14 +157,14 @@ public class PluginManager implements InitializingBean {
                     InetAddress start = null;
                     start = InetAddressUtils.addr(rng.getBegin());
                     if (start == null) {
-                        LOG.warn("CapsdConfigFactory: failed to convert address " + rng.getBegin() + " to InetAddress");
+                        LOG.warn("CapsdConfigFactory: failed to convert address {} to InetAddress", rng.getBegin());
                         continue;
                     }
     
                     InetAddress stop = null;
                     stop = InetAddressUtils.addr(rng.getEnd());
                     if (stop == null) {
-                        LOG.warn("CapsdConfigFactory: failed to convert address " + rng.getEnd() + " to InetAddress");
+                        LOG.warn("CapsdConfigFactory: failed to convert address {} to InetAddress", rng.getEnd());
                         continue;
                     }
     

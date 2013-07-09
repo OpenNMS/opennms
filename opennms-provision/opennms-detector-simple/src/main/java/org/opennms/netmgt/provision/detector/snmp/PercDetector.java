@@ -93,7 +93,7 @@ public class PercDetector extends SnmpDetector {
             SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + '.' + m_arrayNumber);
             SnmpValue value = SnmpUtils.get(agentConfig, snmpObjectId);
             if (value.toInt() != 2) {
-                LOG.debug("PercMonitor.poll: Bad Disk Found. Log vol(" + m_arrayNumber + ") degraded");
+                LOG.debug("PercMonitor.poll: Bad Disk Found. Log vol({}) degraded", m_arrayNumber);
                 return false;
             }
         } catch (Throwable t) {

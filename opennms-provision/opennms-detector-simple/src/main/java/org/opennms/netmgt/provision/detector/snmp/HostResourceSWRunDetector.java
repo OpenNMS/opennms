@@ -135,7 +135,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(value.toString())) && !status) {
-                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + value);
+                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={} service name={} value={}", hostAddress, serviceName, value);
                     status = true;
                     break;
                 }

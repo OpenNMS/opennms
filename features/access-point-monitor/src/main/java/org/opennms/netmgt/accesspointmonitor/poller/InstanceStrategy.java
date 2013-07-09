@@ -131,7 +131,7 @@ public class InstanceStrategy implements AccessPointPoller {
                 // of online APs
                 if (isUp) {
                     String physAddr = getPhysAddrFromInstance(instance);
-                    LOG.debug("AP at instance '" + instance + "' with MAC '" + physAddr + "' is considered to be ONLINE on controller '" + m_iface.getIpAddress() + "'");
+                    LOG.debug("AP at instance '{}' with MAC '{}' is considered to be ONLINE on controller '{}'", instance, physAddr, m_iface.getIpAddress());
                     OnmsAccessPoint ap = m_accessPointDao.findByPhysAddr(physAddr);
                     if (ap != null) {
                         if (ap.getPollingPackage().compareToIgnoreCase(getPackage().getName()) == 0) {
@@ -139,10 +139,10 @@ public class InstanceStrategy implements AccessPointPoller {
                             ap.setControllerIpAddress(ipaddr);
                             apsUp.add(ap);
                         } else {
-                            LOG.info("AP with MAC '" + physAddr + "' is in a different package.");
+                            LOG.info("AP with MAC '{}' is in a different package.", physAddr);
                         }
                     } else {
-                        LOG.info("No matching AP in database for instance '" + instance + "'.");
+                        LOG.info("No matching AP in database for instance '{}'.", instance);
                     }
                 }
             }
@@ -151,7 +151,7 @@ public class InstanceStrategy implements AccessPointPoller {
         } catch (IllegalArgumentException e) {
             LOG.error("Invalid SNMP Criteria ", e);
         } catch (InterruptedException e) {
-            LOG.error("Interrupted while polling " + hostAddress, e);
+            LOG.error("Interrupted while polling {}", hostAddress, e);
         }
 
         return apsUp;

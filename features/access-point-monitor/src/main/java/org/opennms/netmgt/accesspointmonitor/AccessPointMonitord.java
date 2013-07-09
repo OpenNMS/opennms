@@ -381,9 +381,9 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 PollingContext p = m_activePollers.get(pkg.getName());
                 if (p != null) {
                     if (p.getPackage().getIsDynamic()) {
-                        LOG.debug("Package '" + pkg.getName() + "' is already active.");
+                        LOG.debug("Package '{}' is already active.", pkg.getName());
                     } else {
-                        LOG.error("Package '" + pkg.getName() + "' is statically defined and matches a dynamic definitions.");
+                        LOG.error("Package '{}' is statically defined and matches a dynamic definitions.", pkg.getName());
                     }
                 } else {
                     schedulePackage(pkg);
@@ -448,7 +448,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         p.init();
 
         // Schedule it
-        LOG.debug("schedulePackages: Scheduling " + pkg.getName() + " every " + svc.getInterval());
+        LOG.debug("schedulePackages: Scheduling {} every {}", pkg.getName(), svc.getInterval());
         getScheduler().schedule(svc.getInterval(), p);
 
         // Store in the map

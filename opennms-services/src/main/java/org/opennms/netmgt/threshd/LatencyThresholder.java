@@ -134,7 +134,7 @@ final class LatencyThresholder implements ServiceThresholder {
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
-        LOG.debug("initialize: latency thresholder for service '" + m_svcName + "'");
+        LOG.debug("initialize: latency thresholder for service '{}'", m_svcName);
     }
     
     /**
@@ -225,7 +225,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress);
             }
 
-            LOG.debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + hostAddress);
+            LOG.debug("initialize: db retrieval info: nodeid = {}, address = {}", nodeId, hostAddress);
 
             if (nodeId == -1)
                 throw new RuntimeException("Unable to retrieve node id for interface " + hostAddress);
@@ -283,7 +283,7 @@ final class LatencyThresholder implements ServiceThresholder {
                     try {
                         thresholdEntity.addThreshold(wrapper);
                     } catch (IllegalStateException e) {
-                        LOG.warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
+                        LOG.warn("Encountered duplicate {} for datasource {}", thresh.getType(), wrapper.getDatasourceExpression(), e);
                     }
 
                     // Add new entity to the map
@@ -305,7 +305,7 @@ final class LatencyThresholder implements ServiceThresholder {
         // Debug
         //
         if (LOG.isDebugEnabled()) {
-            LOG.debug("initialize: dumping interface thresholds defined for " + hostAddress + "/" + groupName + ":");
+            LOG.debug("initialize: dumping interface thresholds defined for {}/{}:", hostAddress, groupName);
             Iterator<ThresholdEntity> iter = thresholdMap.values().iterator();
             while (iter.hasNext())
                 LOG.debug(iter.next().toString());
@@ -341,7 +341,7 @@ final class LatencyThresholder implements ServiceThresholder {
             // Get configuration parameters
             //
             // NodeId attribute
-            LOG.debug("check: service= " + m_svcName + " interface= " + latIface.getHostAddress() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
+            LOG.debug("check: service={} interface={} nodeId={} thresholding-group={} interval={}ms", m_svcName, latIface.getHostAddress(), latIface.getNodeId(), latParms.getGroupName(), latParms.getInterval());
             
             // RRD Repository attribute
             //

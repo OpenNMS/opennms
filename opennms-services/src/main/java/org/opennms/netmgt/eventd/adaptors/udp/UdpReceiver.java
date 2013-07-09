@@ -145,7 +145,7 @@ class UdpReceiver implements Runnable {
 
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            LOG.info("Failed to set the receive buffer to " + length, e);
+            LOG.info("Failed to set the receive buffer to {}", length, e);
         }
 
         // set to avoid numerious tracing message

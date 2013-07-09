@@ -134,7 +134,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(config.getSocketAddress(), timeout);
                 socket.setSoTimeout(timeout);
-                LOG.debug(getPluginName() + ": connected to host: " + config.getInetAddress() + " on port: " + config.getPort());
+                LOG.debug("{}: connected to host: {} on port: {}", getPluginName(), config.getInetAddress(), config.getPort());
 
                 socket = getSocketWrapper().wrapSocket(socket);
 
@@ -143,22 +143,22 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug(getPluginName() + ": connection refused to " + config.getInetAddress() + ":" + config.getPort());
+                LOG.debug("{}: connection refused to {}:{}", getPluginName(), config.getInetAddress(), config.getPort());
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                LOG.info(getPluginName() + ": Unable to test host " + config.getInetAddress() + ", no route available", e);
+                LOG.info("{}: Unable to test host {}, no route available", getPluginName(), config.getInetAddress(), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
-                LOG.debug(getPluginName() + ": did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("{}: did not connect to host within timeout: {} attempt: {}", getPluginName(), timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
-                LOG.info(getPluginName() + ": Error communicating with host " + config.getInetAddress(), e);
+                LOG.info("{}: Error communicating with host {}", getPluginName(), config.getInetAddress(), e);
                 isAServer = false;
             } catch (Throwable t) {
-                LOG.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress(), t);
+                LOG.warn("{}: Undeclared throwable exception caught contacting host {}", getPluginName(), config.getInetAddress(), t);
                 isAServer = false;
             } finally {
                 if (socket != null)

@@ -241,7 +241,7 @@ public class CentricTicketerPlugin implements Plugin {
             in = new FileInputStream(config);
             props.load(in);
         } catch (IOException e) {
-            LOG.error("Unable to load {} ignoring.", e, config);
+            LOG.error("Unable to load {} ignoring.", config, e);
         } finally {
             IOUtils.closeQuietly(in);
         }

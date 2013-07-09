@@ -78,7 +78,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
         try {
             sev = Integer.parseInt(severity);
         } catch (NumberFormatException e) {
-            LOG.warn("Problem converting severity: "+severity+" to an int value.");
+            LOG.warn("Problem converting severity: {} to an int value.", severity);
         }
 
         switch (sev) {

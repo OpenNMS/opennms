@@ -87,7 +87,7 @@ public final class SmbPlugin extends AbstractPlugin {
 
             LOG.debug("SmbPlugin: UnknownHostException: {}", e.getMessage());
         } catch (Throwable t) {
-            LOG.error("SmbPlugin: An undeclared throwable exception was caught checking host " + InetAddressUtils.str(host), t);
+            LOG.error("SmbPlugin: An undeclared throwable exception was caught checking host {}", InetAddressUtils.str(host), t);
         }
 
         return isAServer;

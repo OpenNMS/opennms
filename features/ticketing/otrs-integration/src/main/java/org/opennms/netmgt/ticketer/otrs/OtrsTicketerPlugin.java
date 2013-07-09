@@ -122,7 +122,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		opennmsTicket.setUser(ticketWithArticles.getTicket().getOwner());
 		opennmsTicket.setState(otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 		
-		LOG.debug("Retrieved ticket state : {}" + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
+		LOG.debug("Retrieved ticket state : {}", otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 		
 		// add all the article details from the OTRS ticket
 		// this is not strictly essential as we have no way of viewing this atm.

@@ -159,10 +159,10 @@ public class TcaCollectionSet implements CollectionSet {
 			TcaData tracker = new TcaData(m_agent.getInetAddress());
 			SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker);
 			walker.start();
-			LOG.debug("collect: successfully instantiated " + "TCA Collector for " + m_agent.getHostAddress());
+			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
 
 			walker.waitFor();
-			LOG.info("collect: node TCA query for address " + m_agent.getHostAddress() + " complete.");
+			LOG.info("collect: node TCA query for address {} complete.", m_agent.getHostAddress());
 
 			verifySuccessfulWalk(walker);
 			process(tracker);
@@ -212,7 +212,7 @@ public class TcaCollectionSet implements CollectionSet {
 	 * @throws Exception the exception
 	 */
 	private void process(TcaData tracker) throws Exception {
-		LOG.debug("process: processing raw TCA data for " + tracker.size() + " peers.");
+		LOG.debug("process: processing raw TCA data for {} peers.", tracker.size());
 		AttributeGroupType attribGroupType = new AttributeGroupType(TcaCollectionResource.RESOURCE_TYPE_NAME, "all"); // It will be treated like a Multi-Instance Resource
 		long timestamp = 0;
 		for (TcaDataEntry entry : tracker.getEntries()) {
@@ -221,7 +221,7 @@ public class TcaCollectionSet implements CollectionSet {
 			int samples = Integer.parseInt(rawData[1]);
 			SnmpObjId entryObjId = SnmpObjId.get(".1.3.6.1.4.1.27091.3.1.6.1.2", entry.getInstance().toString());
 			for (int i=0; i<samples; i++) {
-				LOG.debug("process: processing row " + i + ": " + rawData[2 + i]);
+				LOG.debug("process: processing row {}: {}", i, rawData[2 + i]);
 				String[] rawEntry = rawData[2 + i].split(",");
 				timestamp = Long.parseLong(rawEntry[0]);
 				if (timestamp > lastTimestamp) {
@@ -234,7 +234,7 @@ public class TcaCollectionSet implements CollectionSet {
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, TIMESYNC_STATUS), rawEntry[5]);
 					m_collectionResources.add(resource);
 				} else {
-					LOG.debug("process: skipping row " + i + " " + rawData[2 + i] + " because it was already processed.");
+					LOG.debug("process: skipping row {} {} because it was already processed.", i, rawData[2+i]);
 				}
 			}
 			setLastTimestamp(new TcaCollectionResource(m_agent, entry.getPeerAddress()), timestamp);

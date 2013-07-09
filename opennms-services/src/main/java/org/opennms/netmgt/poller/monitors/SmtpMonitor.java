@@ -147,7 +147,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
         InetAddress ipAddr = iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-        LOG.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+        LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -162,7 +162,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                LOG.debug("SmtpMonitor: connected to host: " + ipAddr + " on port: " + port);
+                LOG.debug("SmtpMonitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();

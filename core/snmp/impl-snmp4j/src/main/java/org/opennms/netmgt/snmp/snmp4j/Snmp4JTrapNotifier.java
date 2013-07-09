@@ -184,7 +184,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         @Override
         protected long getTimeStamp() {
 
-        	LOG.debug("V2 {}"+m_pduTypeString+" first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
+		LOG.debug("V2 {} first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
 
             switch (getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable().getSyntax()) {
             case SMIConstants.SYNTAX_TIMETICKS:
@@ -299,7 +299,8 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         														statusInformation);
         			LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
         		} catch (MessageException ex) {
-        			LOG.error("Error while sending RESPONSE PDU to peer " + addr + ": " + ex.getMessage() + "acknowledging receipt of INFORM (reqId=" + command.getRequestID() + ")");
+				LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID()
+				        );
         		}
         	}
         }

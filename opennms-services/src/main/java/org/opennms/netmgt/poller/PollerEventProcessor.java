@@ -582,7 +582,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             if ((event.getNodeid() < 0) || (event.getInterface() == null) || (event.getService() == null)) {
-                LOG.info("PollerEventProcessor: invalid nodeid or no nodeinterface " + "or service found, discarding event");
+                LOG.info("PollerEventProcessor: invalid nodeid or no nodeinterface or service found, discarding event");
             } else {
                 serviceDeletedHandler(event);
             }
@@ -622,7 +622,7 @@ final class PollerEventProcessor implements EventListener {
            InetAddress addr;
            addr = InetAddressUtils.addr(row[0]);
            if (addr == null) {
-               LOG.warn("Rescheduler: Could not convert "+row[0]+" to an InetAddress");
+               LOG.warn("Rescheduler: Could not convert {} to an InetAddress", row[0]);
                return;
            }
            

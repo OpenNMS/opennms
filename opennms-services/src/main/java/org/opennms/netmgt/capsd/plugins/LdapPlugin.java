@@ -162,17 +162,17 @@ public class LdapPlugin extends AbstractPlugin {
         } catch (ConnectException e) {
             // Connection refused!! No need to perform retries.
             //
-            LOG.debug(getClass().getName() + ": connection refused to " + InetAddressUtils.str(host) + ":" + port);
+            LOG.debug("{}: connection refused to {}:{}", getClass().getName(), InetAddressUtils.str(host), port);
         } catch (NoRouteToHostException e) {
             // No route to host!! No need to perform retries.
             e.fillInStackTrace();
-            LOG.info(getClass().getName() + ": No route to host " + InetAddressUtils.str(host), e);
+            LOG.info("{}: No route to host {}", getClass().getName(), InetAddressUtils.str(host), e);
             throw new UndeclaredThrowableException(e);
         } catch (InterruptedIOException e) {
             // Connection failed, retry until attempts exceeded
             LOG.debug("LDAPPlugin: failed to connect within specified timeout");
         } catch (Throwable t) {
-            LOG.warn(getClass().getName() + ": An undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
+            LOG.warn("{}: An undeclared throwable exception caught contacting host {}", getClass().getName(), InetAddressUtils.str(host), t);
         } finally {
             try {
                 // close the socket channel

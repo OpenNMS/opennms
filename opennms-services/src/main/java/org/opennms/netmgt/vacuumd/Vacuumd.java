@@ -226,7 +226,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         while (!m_stopped && ((now - m_startTime) < period)) {
             try {
                 if (count % 100 == 0) {
-                    LOG.debug("Vacuumd: " + (period - now + m_startTime) + "ms remaining to execution.");
+                    LOG.debug("Vacuumd: {}ms remaining to execution.", (period - now + m_startTime));
                 }
                 Thread.sleep(waitTime);
                 now = System.currentTimeMillis();
@@ -255,11 +255,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             int count = stmt.executeUpdate();
             stmt.close();
 
-            LOG.debug("Vacuumd: Ran update " + sql + ": this affected " + count + " rows");
+            LOG.debug("Vacuumd: Ran update {}: this affected {} rows", sql, count);
 
             commitRequired = transactional;
         } catch (SQLException ex) {
-            LOG.error("Vacuumd:  Database error execuating statement  " + sql, ex);
+            LOG.error("Vacuumd:  Database error execuating statement {}", sql, ex);
         } finally {
             if (dbConn != null) {
                 try {
@@ -348,15 +348,15 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         EventBuilder ebldr = null;
         
         try {
-            LOG.debug("onEvent: Number of elements in schedule:"+m_scheduler.getScheduled()+"; calling stop on scheduler...");
+            LOG.debug("onEvent: Number of elements in schedule:{}; calling stop on scheduler...", m_scheduler.getScheduled());
             stop();
             ExecutorService runner = m_scheduler.getRunner();
             while (!runner.isShutdown() || m_scheduler.getStatus() != STOPPED) {
-                LOG.debug("onEvent: waiting for scheduler to stop." + " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+                LOG.debug("onEvent: waiting for scheduler to stop. Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
                 Thread.sleep(500);
             }
-            LOG.debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
-            LOG.debug("onEvent: Number of elements in schedule:", m_scheduler.getScheduled());
+            LOG.debug("onEvent: Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+            LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
             LOG.debug("onEvent: reloading vacuumd configuration.");
 
             VacuumdConfigFactory.reload();
@@ -366,7 +366,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             LOG.debug("onEvent: restarting vacuumd and scheduler.");
 
             start();
-            LOG.debug("onEvent: Number of elements in schedule:", m_scheduler.getScheduled());
+            LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
             
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");

@@ -273,7 +273,7 @@ public final class XmpPlugin extends AbstractPlugin {
         session = new XmpSession(sockopts, address, port, authenUser);
         /*
         if (session == null) {
-            log.info("XMP connection failed to " + address + ":" + port + " with user " + authenUser + " and " + sockopts);
+            LOG.info("XMP connection failed to {}:{} with user {} and {}", address, port, authenUser, sockopts);
             return false;
         }
         */

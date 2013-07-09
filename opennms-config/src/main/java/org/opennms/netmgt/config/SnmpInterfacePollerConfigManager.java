@@ -309,7 +309,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                LOG.error("createPackageIpMap: failed to map package: {} to an IP List: " + t, t, pkg.getName());
+                LOG.error("createPackageIpMap: failed to map package: {} to an IP List", pkg.getName(), t);
             }
 
         }

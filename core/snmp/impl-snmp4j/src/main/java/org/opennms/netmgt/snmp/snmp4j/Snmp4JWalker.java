@@ -136,7 +136,7 @@ public class Snmp4JWalker extends SnmpWalker {
 
         private void processResponse(PDU response) {
             try {
-                LOG.debug("Received a tracker PDU of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+", errorStatus = "+response.getErrorStatus()+", errorStatusText = "+response.getErrorStatusText()+", errorIndex = "+response.getErrorIndex());
+                LOG.debug("Received a tracker PDU of type {} from {} of size {}, errorStatus = {}, errorStatusText = {}, errorIndex = {}", PDU.getTypeString(response.getType()), getAddress(), response.size(), response.getErrorStatus(), response.getErrorStatusText(), response.getErrorIndex());
                 if (response.getType() == PDU.REPORT) {
                     handleAuthError("A REPORT PDU was returned from the agent.  This is most likely an authentication problem.  Please check the config");
                 } else {
@@ -162,7 +162,7 @@ public class Snmp4JWalker extends SnmpWalker {
 
             // Check to see if we got an interrupted exception
             if (responseEvent.getError() instanceof InterruptedException) {
-                LOG.debug("Interruption event.  We have probably tried to close the session due to an error: " + responseEvent.getError(), responseEvent.getError());
+                LOG.debug("Interruption event.  We have probably tried to close the session due to an error", responseEvent.getError());
             // Check to see if the response is null, indicating a timeout
             } else if (responseEvent.getResponse() == null) {
                 handleTimeout(getName()+": snmpTimeoutError for: " + getAddress());
@@ -196,7 +196,7 @@ public class Snmp4JWalker extends SnmpWalker {
         @Override
     public void start() {
         
-        LOG.info("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
+        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
             
         super.start();
     }

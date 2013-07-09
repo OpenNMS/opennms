@@ -79,7 +79,7 @@ public final class IcmpPlugin extends AbstractPlugin {
 	    		return true;
 	    	}
 		} catch (Throwable e) {
-			LOG.warn("Pinger failed to ping " + address, e);
+			LOG.warn("Pinger failed to ping {}", address, e);
 		}
 		return false;
     }
@@ -111,7 +111,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			return true;
     		}
     	} catch (Throwable e) {
-			LOG.warn("Pinger failed to ping " + address, e);
+			LOG.warn("Pinger failed to ping {}", address, e);
         }
     	
     	return false;

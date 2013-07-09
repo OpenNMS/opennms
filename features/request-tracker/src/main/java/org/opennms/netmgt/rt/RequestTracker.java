@@ -164,7 +164,7 @@ public class RequestTracker {
                 }
             }
         } catch (final Exception e) {
-            LOG.error("An exception occurred while getting user info for " + username, e);
+            LOG.error("An exception occurred while getting user info for {}", username, e);
             return null;
         }
 
@@ -282,7 +282,7 @@ public class RequestTracker {
                 }
             }
         } catch (final Exception e) {
-            LOG.error("An exception occurred while getting tickets for queue " + queueName, e);
+            LOG.error("An exception occurred while getting tickets for queue {}", queueName, e);
             return null;
         }
 
@@ -360,7 +360,7 @@ public class RequestTracker {
                 attributes = parseResponseStream(response.getEntity().getContent());
             }
         } catch (final Exception e) {
-            LOG.error("An exception occurred while getting queue #" + id, e);
+            LOG.error("An exception occurred while getting queue #{}", id, e);
             return null;
         }
 

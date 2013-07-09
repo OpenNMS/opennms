@@ -108,7 +108,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = svc.getAddress();
         String host = InetAddressUtils.str(ipv4Addr);
 
-        LOG.debug("CitrixMonitor.poll: Polling interface: " + host + timeoutTracker);
+        LOG.debug("CitrixMonitor.poll: Polling interface: {} {}", host, timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -121,7 +121,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeoutTracker.getConnectionTimeout());
                 socket.setSoTimeout(timeoutTracker.getSoTimeout());
-                LOG.debug("CitrixMonitor: connected to host: " + host + " on port: " + port);
+                LOG.debug("CitrixMonitor: connected to host: {} on port: {}", host, port);
 
                 // We're connected, so upgrade status to unresponsive
 

@@ -318,7 +318,7 @@ public class HttpCollector implements ServiceCollector {
 
             buildCredentials(collectionSet, client, method);
 
-            LOG.info("doCollection: collecting for client: "+client+" using method: "+method);
+            LOG.info("doCollection: collecting for client: {} using method: {}", client, method);
             HttpResponse response = client.execute(method);
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
             persistResponse(collectionSet, collectionResource, client, response);
@@ -388,7 +388,7 @@ public class HttpCollector implements ServiceCollector {
                     return Double.valueOf(val.toString()).toString();
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
-            LOG.debug("Value for attribute " + this.toString() + " does not appear to be a number, skipping");
+            LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);
             return null;
         }
 
@@ -517,10 +517,10 @@ public class HttpCollector implements ServiceCollector {
                     for (final Locale locale : locales) {
                         try {
                             num = NumberFormat.getNumberInstance(locale).parse(value);
-                            LOG.debug("processResponse: found a parsable number with locale \"" + locale + "\".");
+                            LOG.debug("processResponse: found a parsable number with locale \"{}\".", locale);
                             break;
                         } catch (final ParseException e) {
-                            LOG.error("attribute "+attribDef.getAlias()+" failed to match a parsable number with locale \"" + locale + "\"! Matched \""+value+"\" instead.");
+                            LOG.error("attribute {} failed to match a parsable number with locale \"{}\"! Matched \"{}\" instead.", attribDef.getAlias(), locale, value);
                         }
                     }
 
@@ -597,7 +597,7 @@ public class HttpCollector implements ServiceCollector {
                                 responseLocale = new Locale(values[0], values[1]);
                                 break;
                             default:
-                                LOG.warn("doCollection: Ignoring Content-Language header with value " + headers[0].getValue() + ". No support for more than 1 language subtag!");
+                                LOG.warn("doCollection: Ignoring Content-Language header with value {}. No support for more than 1 language subtag!", headers[0].getValue());
                         }
                     } else {
                         LOG.warn("doCollection: Multiple languages specified. That doesn't make sense. Ignoring...");
@@ -744,7 +744,7 @@ public class HttpCollector implements ServiceCollector {
                 newFragment = newFragment.replaceAll("\\$\\{" + key + "\\}", substitutions.get(key));
             }
             if (LOG.isDebugEnabled() && newFragment.compareTo(urlFragment) != 0) {
-                LOG.debug("doSubs: "+desc+" substituted as \""+newFragment+"\"");
+                LOG.debug("doSubs: {} substituted as \"{}\"", desc, newFragment);
             }
         }
         return newFragment;

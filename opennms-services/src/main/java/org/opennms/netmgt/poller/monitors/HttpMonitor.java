@@ -141,7 +141,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
 
             httpClient.setTimeoutTracker(new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT));
-            LOG.debug("Port = " + currentPort + ", Address = " + (iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
+            LOG.debug("Port = {}, Address = {}, {}", currentPort, (iface.getAddress()), httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
 
@@ -152,7 +152,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 try {
                     httpClient.getTimeoutTracker().startAttempt();                    
                     httpClient.connect();
-                    LOG.debug("HttpMonitor: connected to host: " + (iface.getAddress()) + " on port: " + currentPort);
+                    LOG.debug("HttpMonitor: connected to host: {} on port: {}", (iface.getAddress()), currentPort);
 
                     httpClient.sendHttpCommand();
                     
@@ -181,7 +181,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    LOG.warn("checkStatus: No route to host exception for address " + (iface.getAddress()), e);
+                    LOG.warn("checkStatus: No route to host exception for address {}", iface.getAddress(), e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (SocketTimeoutException e) {
@@ -191,13 +191,13 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     LOG.info(String.format("checkStatus: HTTP connection interrupted after {} bytes transferred with {}", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
-                    LOG.warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
+                    LOG.warn("Connection exception for {}:{}", iface.getAddress(), determinePorts(httpClient.getParameters())[portIndex], e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    LOG.warn("IOException while polling address " + (iface.getAddress()), e);
+                    LOG.warn("IOException while polling address {}", iface.getAddress(), e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } catch (Throwable e) {
-                    LOG.warn("Unexpected exception while polling address " + (iface.getAddress()), e);
+                    LOG.warn("Unexpected exception while polling address {}", iface.getAddress(), e);
                     httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
@@ -211,7 +211,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
     private void logResponseTimes(Double responseTime, String line) {
         LOG.debug("poll: response= {}", line);
-        LOG.debug("poll: responseTime= " + responseTime + "ms");
+        LOG.debug("poll: responseTime= {}ms", responseTime);
     }
 
     /**
@@ -496,7 +496,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     serverResponse = Integer.parseInt(t.nextToken());
                 } catch (final NumberFormatException nfE) {
                     if (HttpMonitor.LOG.isInfoEnabled()) {
-                        HttpMonitor.LOG.info("Error converting response code from host = " + (m_iface.getAddress()) + ", response = " + m_currentLine);
+                        HttpMonitor.LOG.info("Error converting response code from host = {}, response = {}", (m_iface.getAddress()), m_currentLine);
                     }
                 }
             }

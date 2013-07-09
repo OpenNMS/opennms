@@ -326,7 +326,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
                         return status;
                     }
                     
-                    LOG.debug("poll: " + "instance=" + ipslaInstance.toInt() + "admin tag=" + adminTag + " value=" + tagResults.get(ipslaInstance) + " oper state=" + operStateResults.get(ipslaInstance) + " ignoreThreshold=" + ignoreThreshold + " latest RTT" + latestRttResults.get(ipslaInstance));
+                    LOG.debug("poll: instance={} admin tag={} value={} oper state={} ignoreThreshold={} latest RTT{}", ipslaInstance.toInt(), adminTag, tagResults.get(ipslaInstance), operStateResults.get(ipslaInstance), ignoreThreshold, latestRttResults.get(ipslaInstance));
                     
                     // Build return value for service down
                     returnValue = "Cisco IP SLA tag "
@@ -352,7 +352,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
                         }
 
                         // Threshold monitoring
-                        LOG.debug("IP SLA: " + tagResults.get(ipslaInstance) + " threshold exceeded.");
+                        LOG.debug("IP SLA: {} threshold exceeded.", tagResults.get(ipslaInstance));
                         returnValue += ". Monitoring threshold is enabled. Threshold value is " 
                             + threshResults.get(ipslaInstance);
                         // Configured threshold is exceeded, service unavailable

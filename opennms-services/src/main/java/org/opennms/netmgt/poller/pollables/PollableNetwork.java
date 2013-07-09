@@ -206,17 +206,17 @@ public class PollableNetwork extends PollableContainer {
         
         @Override
         public void visitNode(PollableNode pNode) {
-            LOG.debug(" nodeid=" + pNode.getNodeId() + " status=" + getStatusString(pNode));
+            LOG.debug(" nodeid={} status={}", pNode.getNodeId(), getStatusString(pNode));
         }
 
         @Override
         public void visitInterface(PollableInterface pIf) {;
-            LOG.debug("     interface=" + pIf.getIpAddr() + " status=" + getStatusString(pIf));
+            LOG.debug("     interface={} status={}", pIf.getIpAddr(), getStatusString(pIf));
         }
 
         @Override
         public void visitService(PollableService pSvc) {
-            LOG.debug("         service=" + pSvc.getSvcName() + " status=" + getStatusString(pSvc));
+            LOG.debug("         service={} status={}", pSvc.getSvcName(), getStatusString(pSvc));
         }
         
         private String getStatusString(PollableElement e) {

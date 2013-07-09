@@ -84,7 +84,7 @@ class GeocodingHandler implements LocationDefHandler {
 		final Date now = new Date();
 		if (now.getTime() - m_date.getTime() >= 500) {
 			m_eventService.addEventUserSpecific(new GeocodingUpdatingRemoteEvent(m_count, m_size));
-			LOG.debug("initializing locations (" + m_count + "/" + m_size + ")");
+			LOG.debug("initializing locations ({}/{})", m_count, m_size);
 			m_date = now;
 		}
 		m_count++;

@@ -152,7 +152,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                LOG.info("TcpPlugin: Could not connect to host {}, no route to host", e, InetAddressUtils.str(host));
+                LOG.info("TcpPlugin: Could not connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
@@ -161,11 +161,11 @@ public final class TcpPlugin extends AbstractPlugin {
                 LOG.debug("TcpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
                 isAServer = false;
             } catch (IOException e) {
-                LOG.info("TcpPlugin: An expected I/O exception occured connecting to host {} on port " + port, e, InetAddressUtils.str(host));
+                LOG.info("TcpPlugin: An expected I/O exception occured connecting to host {} on port {}", InetAddressUtils.str(host), port, e);
                 isAServer = false;
             } catch (Throwable t) {
                 isAServer = false;
-                LOG.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host {} on port " + port, t, InetAddressUtils.str(host));
+                LOG.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host {} on port {}", InetAddressUtils.str(host), port, t);
             } finally {
                 try {
                     if (socket != null)
