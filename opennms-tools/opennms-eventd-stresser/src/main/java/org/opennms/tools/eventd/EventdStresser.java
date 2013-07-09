@@ -66,8 +66,6 @@ public class EventdStresser {
      * @param args
      */
     public static void main(String[] args) {
-//        LogUtils.logToConsole();
-//        LogUtils.enableDebugging();
 
         parseArgs(args);
 
