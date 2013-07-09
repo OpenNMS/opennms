@@ -375,7 +375,7 @@ public class CollectionResourceWrapper {
                 if (interval > 0) {
                     m_localCache.put(id, delta / interval);
                 } else {
-                    log().warn("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
+                    log().info("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
                     m_localCache.put(id, 0.0);
                     // Restore the original value inside the static cache
                     s_cache.put(id, last);
