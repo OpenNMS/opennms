@@ -41,7 +41,6 @@ import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -49,8 +48,8 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  * TODO Pending features:
  * 
- * 1) Support for HTTPS
- * 2) Support for POST with different content types
+ * 1) Support for POST with different content types (xml, json, form-urlencoded)
+ * 2) Support for custom headers (user-agent, host/virtualhost)
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
