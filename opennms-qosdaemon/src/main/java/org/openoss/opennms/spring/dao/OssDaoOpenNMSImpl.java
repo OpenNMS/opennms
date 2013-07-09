@@ -36,8 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -45,8 +43,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.openoss.opennms.spring.qosd.QoSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -242,11 +242,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				String uniqueKey=alarm.getApplicationDN()+alarm.getOssPrimaryKey();
 
 				//_alarmDao.save(alarm); // - replaced by;
-				transTemplate.execute(new TransactionCallback<Object>() {
+				transTemplate.execute(new TransactionCallbackWithoutResult() {
                                         @Override
-					public Object doInTransaction(TransactionStatus status) {
+					public void doInTransactionWithoutResult(TransactionStatus status) {
 						_alarmDao.save(alarm);
-						return null;
 					}
 				});				
 
@@ -301,11 +300,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 			try { // if alarm in database then update alarm in OpenNMS
 				LOG.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database", alarmToStringBrief(alarm));
 
-				transTemplate.execute(new TransactionCallback<Object>() {
+				transTemplate.execute(new TransactionCallbackWithoutResult() {
                                         @Override
-					public Object doInTransaction(TransactionStatus status) {
+					public void doInTransactionWithoutResult(TransactionStatus status) {
 						_alarmDao.update(alarm);
-						return null;
 					}
 				});	
 			
@@ -366,11 +364,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateAlarmCache(){
-		transTemplate.execute(new TransactionCallback<Object>() {
+		transTemplate.execute(new TransactionCallbackWithoutResult() {
                         @Override
-			public Object doInTransaction(TransactionStatus status) {
+			public void doInTransactionWithoutResult(TransactionStatus status) {
 				localUpdateAlarmCacheTransaction();
-				return null;
 			}
 		});
 	}
@@ -698,11 +695,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 						
 						// save asset data back with new node information 
 						// (Note - data may not have changed)
-						transTemplate.execute(new TransactionCallback<Object>() {
+						transTemplate.execute(new TransactionCallbackWithoutResult() {
                                                         @Override
-							public Object doInTransaction(TransactionStatus status) {
+							public void doInTransactionWithoutResult(TransactionStatus status) {
 								_assetRecordDao.update(assetRecord);
-								return null;
 							}
 						});
 						

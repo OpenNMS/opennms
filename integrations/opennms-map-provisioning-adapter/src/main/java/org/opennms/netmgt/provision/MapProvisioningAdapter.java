@@ -42,9 +42,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.MapsAdapterConfig;
 import org.opennms.netmgt.config.MapsAdapterConfigFactory;
@@ -64,9 +61,11 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -390,9 +389,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
-        m_template.execute(new TransactionCallback<Object>() {
+        m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus arg0) {
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
                     for (Integer nodeid: deletes) {
@@ -402,7 +401,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
                     // skip operation if there are only deletes
                     if (adds.isEmpty() && updates.isEmpty())
-                        return null;
+                        return;
 
                     Map<String,OnmsMap> mapNames= new ConcurrentHashMap<String,OnmsMap>(m_mapNameMapSizeListMap.size());
                     
@@ -602,7 +601,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     LOG.error(e.getMessage());
                     sendAndThrow(e);
                 }
-                return null;
             }
         });
     }
@@ -638,9 +636,9 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private void syncMaps() throws ProvisioningAdapterException {
 
         try {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
 
                     LOG.info("syncMaps: acquiring lock...");
                     synchronized (m_lock) {
@@ -788,7 +786,6 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                         }
                     }
                     LOG.info("syncMaps: lock released.");
-                    return null;
                 }
 
             });
