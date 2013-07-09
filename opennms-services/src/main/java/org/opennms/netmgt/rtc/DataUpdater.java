@@ -228,7 +228,7 @@ final class DataUpdater implements Runnable {
                 try {
                     oldNodeId = Long.valueOf(temp).longValue();
                 } catch (NumberFormatException nfe) {
-                    LOG.warn("Parameter {} cannot be non-numeric", nfe, EventConstants.PARM_OLD_NODEID);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_OLD_NODEID, nfe);
                     oldNodeId = -1;
                 }
             }
@@ -239,7 +239,7 @@ final class DataUpdater implements Runnable {
                 try {
                     newNodeId = Long.valueOf(temp).longValue();
                 } catch (NumberFormatException nfe) {
-                    LOG.warn("Parameter {} cannot be non-numeric", nfe, EventConstants.PARM_NEW_NODEID);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_NEW_NODEID, nfe);
                     newNodeId = -1;
                 }
             }
@@ -419,7 +419,7 @@ final class DataUpdater implements Runnable {
             java.util.Date date = EventConstants.parseToDate(eventTimeStr);
             eventTime = date.getTime();
         } catch (ParseException pe) {
-            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", pe, eventTime);
+            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", eventTime, pe);
 
             eventTime = (new java.util.Date()).getTime();
         }

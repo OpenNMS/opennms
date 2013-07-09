@@ -146,7 +146,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                LOG.info("isServer: Failed to connect to host {}, no route to host", e, InetAddressUtils.str(host));
+                LOG.info("isServer: Failed to connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // ignore this

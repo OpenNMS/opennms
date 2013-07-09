@@ -148,7 +148,7 @@ public final class Pop3Plugin extends AbstractPlugin {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                LOG.info("Pop3Plugin: No route to host {} was available", e, InetAddressUtils.str(host));
+                LOG.info("Pop3Plugin: No route to host {} was available", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {

@@ -152,7 +152,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                LOG.info("TcpPlugin: Could not connect to host {}, no route to host", e, InetAddressUtils.str(host));
+                LOG.info("TcpPlugin: Could not connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {

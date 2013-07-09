@@ -563,9 +563,9 @@ public class Provisioner implements SpringServiceDaemon {
                     t.schedule();
                     t.waitFor();
                 } catch (InterruptedException ex) {
-                    LOG.error("Task interrupted waiting for new suspect scan of {} to finish", ex, ip);
+                    LOG.error("Task interrupted waiting for new suspect scan of {} to finish", ip, ex);
                 } catch (ExecutionException ex) {
-                    LOG.error("An expected execution occurred waiting for new suspect scan of {} to finish", ex, ip);
+                    LOG.error("An expected execution occurred waiting for new suspect scan of {} to finish", ip, ex);
                 }
                 
             }

@@ -247,7 +247,7 @@ public final class SmtpPlugin extends AbstractPlugin {
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                LOG.info("SmtpPlugin: Unable to test host {}, no route available", e, InetAddressUtils.str(host));
+                LOG.info("SmtpPlugin: Unable to test host {}, no route available", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
