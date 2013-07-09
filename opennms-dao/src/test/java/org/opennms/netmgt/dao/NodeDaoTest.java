@@ -64,6 +64,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -346,32 +347,29 @@ public class NodeDaoTest implements InitializingBean {
 
         final Date timestamp = new Date(1234);
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 simulateScan(timestamp);
-                return null;
             }
             
         });
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 deleteObsoleteInterfaces(timestamp);
-                return null;
             }
             
         });
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 validateScan();
-                return null;
             }
             
         });

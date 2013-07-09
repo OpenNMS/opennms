@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -350,16 +351,15 @@ public class Collectd extends AbstractServiceDaemon implements
         instrumentation().beginScheduleExistingInterfaces();
         try {
 
-            m_transTemplate.execute(new TransactionCallback<Object>() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
                 @Override
-                public Object doInTransaction(TransactionStatus status) {
+                public void doInTransactionWithoutResult(TransactionStatus status) {
                     
                     // Loop through collectors and schedule for each one present
                     for(String name : getCollectorNames()) {
                         scheduleInterfacesWithService(name);
                     }
-                    return null;
                 }
 
             });
@@ -660,12 +660,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
             @Override
             public void run() {
-                m_transTemplate.execute(new TransactionCallback<Object>() {
+                m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
                     @Override
-                    public Object doInTransaction(TransactionStatus status) {
+                    public void doInTransactionWithoutResult(TransactionStatus status) {
                         onEventInTransaction(event);
-                        return null;
                     }
 
                 });

@@ -69,7 +69,7 @@ import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -244,9 +244,9 @@ public class JdbcFilterDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testGetActiveIPListWithDeletedNode() throws Exception {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
                 
                 assertEquals("should be 1 interface", 1, ifaces.size());
@@ -255,7 +255,6 @@ public class JdbcFilterDaoTest implements InitializingBean {
                 iface.setIsManaged("D");
                 m_interfaceDao.save(iface);
                 m_interfaceDao.flush();
-                return null;
             }
         });
 
@@ -265,13 +264,12 @@ public class JdbcFilterDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
                 assertNotNull("returned list should not be null", list);
                 assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
-                return null;
             }
         });
     }

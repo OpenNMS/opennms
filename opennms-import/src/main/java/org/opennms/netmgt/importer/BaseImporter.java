@@ -339,13 +339,12 @@ public class BaseImporter implements ImportOperationFactory {
 	}
 
     private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
-    	m_transTemplate.execute(new TransactionCallback<Object>() {
+    	m_transTemplate.execute(new TransactionCallbackWithoutResult() {
     
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 ImportAccountant accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
-                return null;
             }
             
         });

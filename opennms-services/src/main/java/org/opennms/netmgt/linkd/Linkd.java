@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -174,12 +174,11 @@ public class Linkd extends AbstractServiceDaemon {
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 m_nodes = m_queryMgr.getSnmpNodeList();
                 m_queryMgr.updateDeletedNodes();
-                return null;
             }
         });
 

@@ -30,7 +30,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 // TODO: Set the polling context class type using Spring.
@@ -386,16 +386,15 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 continue;
             }
 
-            transactionTemplate.execute(new TransactionCallback<Object>() {
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus status) {
+                public void doInTransactionWithoutResult(TransactionStatus status) {
                     for (String pkgName : m_accessPointDao.findDistinctPackagesLike(pkg.getName())) {
                         Package newPkg = new Package(pkg);
                         newPkg.setName(pkgName);
                         newPkg.setIsDynamic(true);
                         dynamicPackages.put(pkgName, newPkg);
                     }
-                    return null;
                 }
             });
         }
