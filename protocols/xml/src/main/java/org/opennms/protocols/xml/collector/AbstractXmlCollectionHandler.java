@@ -62,6 +62,10 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.protocols.xml.config.Content;
+import org.opennms.protocols.xml.config.Header;
+import org.opennms.protocols.xml.config.Parameter;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -87,6 +91,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The Service Name associated with this Collection Handler. */
     private String m_serviceName;
+
+    /** OpenNMS Node DAO. */
+    private NodeDao m_nodeDao;
 
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
@@ -126,6 +133,27 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      */
     public RrdRepository getRrdRepository() {
         return m_rrdRepository;
+    }
+
+    /**
+     * Gets the Node DAO.
+     *
+     * @return the Node DAO
+     */
+    public NodeDao getNodeDao() {
+        if (m_nodeDao == null) {
+            m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+        }
+        return m_nodeDao;
+    }
+
+    /**
+     * Sets the Node DAO.
+     *
+     * @param nodeDao the new Node DAO
+     */
+    public void setNodeDao(NodeDao nodeDao) {
+        this.m_nodeDao = nodeDao;
     }
 
     /**
@@ -258,6 +286,51 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /**
      * Parses the URL.
      * 
+     * <p>Additional placeholders:</p>
+     * <ul>
+     * <li><b>step</b>, The Collection Step in seconds</li>
+     * </ul>
+     * 
+     * @param unformattedUrl the unformatted URL
+     * @param agent the collection agent
+     * @param collectionStep the collection step (in seconds)
+     * @return the string
+     * 
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
+        final OnmsNode node = getNodeDao().get(agent.getNodeId());
+        String url = parseString("URL", unformattedUrl, node, agent.getHostAddress());
+        return url.replaceAll("[{]step[}]", collectionStep.toString());
+    }
+
+    /**
+     * Parses the request.
+     *
+     * @param unformattedRequest the unformatted request
+     * @param agent the agent
+     * @return the request
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    protected Request parseRequest(final Request unformattedRequest, final CollectionAgent agent) throws IllegalArgumentException {
+        if (unformattedRequest == null)
+            return null;
+        final OnmsNode node = getNodeDao().get(agent.getNodeId());
+        final Request request = new Request();
+        for (Header header : unformattedRequest.getHeaders()) {
+            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress()));
+        }
+        for (Parameter param : unformattedRequest.getParameters()) {
+            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress()));
+        }
+        final Content cnt = unformattedRequest.getContent();
+        request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress())));
+        return request;
+    }
+
+    /**
+     * Parses the string.
+     *
      * <p>Valid placeholders are:</p>
      * <ul>
      * <li><b>ipaddr</b>, The Node IP Address</li>
@@ -268,49 +341,49 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * <li><b>foreignSource</b>, The Node Foreign Source</li>
      * <li>Any asset property defined on the node.</li>
      * </ul>
-     *
-     * @param unformattedUrl the unformatted URL
-     * @param agent the collection agent
-     * @param collectionStep the collection step (in seconds)
-     * @return the string
      * 
+     * @param reference the reference
+     * @param unformattedString the unformatted string
+     * @param node the node
+     * @param ipAddress the IP address
+     * @return the string
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
-        NodeDao nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-        OnmsNode node = nodeDao.get(agent.getNodeId());
-        String url = unformattedUrl.replace("{ipaddr}", agent.getHostAddress());
-        url = url.replace("{step}", collectionStep.toString());
-        url = url.replace("{nodeId}", node.getNodeId());
+    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress) throws IllegalArgumentException {
+        if (unformattedString == null)
+            return null;
+        String formattedString = unformattedString.replaceAll("[{]ipaddr[}]", ipAddress);
+        formattedString = formattedString.replaceAll("[{]nodeId[}]", node.getNodeId());
         if (node.getLabel() != null)
-            url = url.replace("{nodeLabel}", node.getLabel());
+            formattedString = formattedString.replaceAll("[{]nodeLabel[}]", node.getLabel());
         if (node.getForeignId() != null)
-            url = url.replace("{foreignId}", node.getForeignId());
+            formattedString = formattedString.replaceAll("[{]foreignId[}]", node.getForeignId());
         if (node.getForeignSource() != null)
-            url = url.replace("{foreignSource}", node.getForeignSource());
+            formattedString = formattedString.replaceAll("[{]foreignSource[}]", node.getForeignSource());
         if (node.getAssetRecord() != null) {
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {
                 Object obj = wrapper.getPropertyValue(p.getName());
                 if (obj != null)
-                    url = url.replace('{' + p.getName() + '}', obj.toString());
+                    formattedString = formattedString.replaceAll("[{]" + p.getName() + "[}]", obj.toString());
             }
         }
-        if (url.matches(".*\\{.+\\}.*"))
-            throw new IllegalArgumentException("The URL " + url + " contains unknown placeholders.");
-        return url;
+        if (formattedString.matches(".*[{].+[}].*"))
+            throw new IllegalArgumentException("The " + reference + " " + formattedString + " contains unknown placeholders.");
+        return formattedString;
     }
 
     /**
      * Gets the XML document.
      *
      * @param urlString the URL string
+     * @param request the request
      * @return the XML document
      */
-    protected Document getXmlDocument(String urlString) {
+    protected Document getXmlDocument(String urlString, Request request) {
         InputStream is = null;
         try {
-            URL url = UrlFactory.getUrl(urlString);
+            URL url = UrlFactory.getUrl(urlString, request);
             URLConnection c = url.openConnection();
             is = c.getInputStream();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

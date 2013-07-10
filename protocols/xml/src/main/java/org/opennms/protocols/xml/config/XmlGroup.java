@@ -33,8 +33,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -45,12 +48,15 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@XmlRootElement(name="xml-group")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlGroup implements Serializable, Comparable<XmlGroup> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 2716588565159391498L;
 
     /** The Constant OF_XML_OBJECTS. */
+    @XmlTransient
     private static final XmlObject[] OF_XML_OBJECTS = new XmlObject[0];
 
     /** The group name. */
@@ -90,7 +96,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the name
      */
-    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -109,7 +114,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the XML objects
      */
-    @XmlTransient
     public List<XmlObject> getXmlObjects() {
         return m_xmlObjects;
     }
@@ -161,7 +165,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the resource type
      */
-    @XmlTransient
     public String getResourceType() {
         return m_resourceType;
     }
@@ -180,7 +183,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the resource XPath
      */
-    @XmlTransient
     public String getResourceXpath() {
         return m_resourceXpath;
     }
@@ -199,7 +201,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      * 
      * @return the key XPath
      */
-    @XmlTransient
     public String getKeyXpath() {
         return m_keyXpath;
     }
@@ -218,7 +219,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the timestamp XPath
      */
-    @XmlTransient
     public String getTimestampXpath() {
         return m_timestampXpath;
     }
@@ -237,7 +237,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the timestamp format
      */
-    @XmlTransient
     public String getTimestampFormat() {
         return m_timestampFormat;
     }
@@ -256,7 +255,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the if type
      */
-    @XmlTransient
     public String getIfType() {
         return m_resourceType.equals("node") ? "ignore" : "all";
     }
@@ -266,7 +264,6 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
      *
      * @return the XML resource key
      */
-    @XmlTransient
     public XmlResourceKey getXmlResourceKey() {
         return m_xmlResourceKey;
     }

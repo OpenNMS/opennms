@@ -25,31 +25,52 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.protocols.http;
 
-package org.opennms.protocols.sftp;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
 
 /**
- * A factory for creating SFTP URL Handler objects.
+ * The Class FormFields.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class SftpUrlFactory implements URLStreamHandlerFactory {
+@XmlRootElement(name="form-fields")
+@SuppressWarnings("serial")
+public class FormFields extends ArrayList<FormField> {
 
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandlerFactory#createURLStreamHandler(java.lang.String)
+    /**
+     * Gets the fields.
+     *
+     * @return the fields
      */
-    @Override
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if (SftpUrlHandler.PROTOCOL.equals(protocol)) {
-            return new SftpUrlHandler();
+    @XmlElement(name="form-field")
+    public List<FormField> getFields() {
+        return this;
+    }
+
+    /**
+     * Gets the entity.
+     *
+     * @return the entity
+     * @throws UnsupportedEncodingException the unsupported encoding exception
+     */
+    @XmlTransient
+    public UrlEncodedFormEntity getEntity() throws UnsupportedEncodingException {
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        for (FormField field : this) {
+            nvps.add(new BasicNameValuePair(field.getName(), field.getValue()));
         }
-        if (Sftp3gppUrlHandler.PROTOCOL.equals(protocol)) {
-            return new Sftp3gppUrlHandler();
-        }
-        return null;
+        return new UrlEncodedFormEntity(nvps, "UTF-8");
     }
 
 }
