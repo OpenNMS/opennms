@@ -26,26 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.xml.collector;
+package org.opennms.protocols.json.collector;
+
+import net.sf.json.JSONObject;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.protocols.xml.collector.XmlResourceType;
 import org.opennms.protocols.xml.config.XmlResourceUtils;
-import org.w3c.dom.Document;
 
 /**
- * The Mock Class for DefaultXmlCollectionHandler.
+ * The Mock Class for DefaultJSONCollectionHandler.
  * <p>This file is created in order to avoid calling a real server to retrieve a valid file and  parse a provided sample file through MockDocumentBuilder</p>
  * 
+ * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler {
+public class MockDefaultJsonCollectionHandler extends DefaultJsonCollectionHandler {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
      */
     @Override
-    protected Document getXmlDocument(String urlString) {
-        return MockDocumentBuilder.getXmlDocument();
+    protected JSONObject getJSONObject(String urlString) {
+        return MockDocumentBuilder.getJSONDocument();
     }
 
     /* (non-Javadoc)

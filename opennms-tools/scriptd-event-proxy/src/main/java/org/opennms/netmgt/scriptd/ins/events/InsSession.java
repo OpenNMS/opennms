@@ -59,7 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 class InsSession extends InsAbstractSession {
@@ -382,8 +382,9 @@ class InsSession extends InsAbstractSession {
         final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
         final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
-                transTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction(final TransactionStatus status) {
+                transTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
                 	LOG.debug("Entering transaction call back: selection with criteria: {}", criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
@@ -395,7 +396,6 @@ class InsSession extends InsAbstractSession {
                     	final Event xmlEvent = getXMLEvent(onmsEvent);
                         if (xmlEvent != null) addEvent(xmlEvent);
                     }
-                    return new Object();
                 }
 
             });

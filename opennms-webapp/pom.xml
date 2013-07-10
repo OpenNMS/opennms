@@ -238,23 +238,6 @@
     						<pluginExecution>
     							<pluginExecutionFilter>
     								<groupId>
-    									org.opennms.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									castor-maven-plugin
-    								</artifactId>
-    								<versionRange>[1.0,)</versionRange>
-    								<goals>
-    									<goal>generate</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
     									org.apache.maven.plugins
     								</groupId>
     								<artifactId>

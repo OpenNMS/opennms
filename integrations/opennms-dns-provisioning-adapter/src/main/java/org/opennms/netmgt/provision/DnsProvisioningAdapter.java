@@ -34,17 +34,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.xbill.DNS.Name;
@@ -89,11 +89,10 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
         
         //load current nodes into the map
-        m_template.execute(new TransactionCallback<Object>() {
+        m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus arg0) {
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 createDnsRecordMap();
-                return null;
             }
         });
 
@@ -189,19 +188,17 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
         LOG.info("processPendingOperationForNode: Handling Operation: {}", op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doUpdate(op);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doDelete(op);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {

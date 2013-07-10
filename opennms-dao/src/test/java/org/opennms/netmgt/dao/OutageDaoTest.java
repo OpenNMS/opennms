@@ -62,6 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -110,8 +111,13 @@ public class OutageDaoTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                OnmsServiceType t = new OnmsServiceType("ICMP");
+                m_serviceTypeDao.save(t);
+            }
+        });
     }
 
     @Test
@@ -146,14 +152,13 @@ public class OutageDaoTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetMatchingOutages() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-                return null;
             }
         });
 
@@ -163,14 +168,13 @@ public class OutageDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 String[] svcs = new String[] { "ICMP" };
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(svcs));
                 Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
                 assertEquals("outage count", 1, outages.size());
-                return null;
             }
         });
     }
@@ -178,14 +182,13 @@ public class OutageDaoTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetMatchingOutagesWithEmptyServiceList() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-                return null;
             }
         });
 
@@ -195,13 +198,12 @@ public class OutageDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
                 Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
                 assertEquals(1, outages.size());
-                return null;
             }
         });
     }
