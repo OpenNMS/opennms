@@ -36,11 +36,12 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition
 import org.opennms.poller.remote.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -51,7 +52,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 
 class GroovyPollerView implements InitializingBean {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(GroovyPollerView.class);
     private static final String REGISTRATION = "registration";
     private static final String STATUS = "status";
 
@@ -136,7 +137,7 @@ class GroovyPollerView implements InitializingBean {
 	   try {
 		   return m_frontEnd.getMonitoringLocations();
 	   } catch (final Exception e) {
-		   LogUtils.errorf(this, e, "an error occurred getting the list of monitoring locations");
+		   LOG.errorf("an error occurred getting the list of monitoring locations", e);
            System.exit(1);
 	   }
    }

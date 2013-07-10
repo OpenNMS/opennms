@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.Collectd;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class TcaCollector.
@@ -56,6 +57,7 @@ import org.opennms.netmgt.model.events.EventProxy;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 public class TcaCollector implements ServiceCollector {
+	private static final Logger LOG = LoggerFactory.getLogger(TcaCollector.class);
 
 	/** The service name. */
 	private String m_serviceName;
@@ -86,13 +88,13 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
-		log().debug("initialize: initializing TCA collector");
+		LOG.debug("initialize: initializing TCA collector");
 
 		// Initialize SNMP Factory
 		try {
 			SnmpPeerFactory.init();
 		} catch (IOException e) {
-			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
+			LOG.error("initSnmpPeerFactory: Failed to load SNMP configuration: {}", e, e);
 			throw new UndeclaredThrowableException(e);
 		}
 
@@ -101,7 +103,7 @@ public class TcaCollector implements ServiceCollector {
 			m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
 
 		// If the RRD file repository directory does NOT already exist, create it.
-		log().debug("initialize: Initializing RRD repo from XmlCollector...");
+		LOG.debug("initialize: Initializing RRD repo from XmlCollector...");
 		File f = new File(m_configDao.getConfig().getRrdRepository());
 		if (!f.isDirectory()) {
 			if (!f.mkdirs()) {
@@ -115,7 +117,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-		log().debug("initialize: initializing TCA collection handling using " + parameters + " for collection agent " + agent);
+		LOG.debug("initialize: initializing TCA collection handling using {} for collection agent {}", parameters, agent);
 		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
 	}
 
@@ -124,7 +126,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void release() {
-		log().debug("release: realeasing TCA collection");
+		LOG.debug("release: realeasing TCA collection");
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +134,7 @@ public class TcaCollector implements ServiceCollector {
 	 */
 	@Override
 	public void release(CollectionAgent agent) {
-		log().debug("release: realeasing TCA collection for agent " + agent);
+		LOG.debug("release: realeasing TCA collection for agent {}", agent);
 	}
 
 	/* (non-Javadoc)
@@ -169,14 +171,4 @@ public class TcaCollector implements ServiceCollector {
 	public RrdRepository getRrdRepository(String collectionName) {
 		return m_configDao.getConfig().buildRrdRepository(collectionName);
 	}
-
-	/**
-	 * Log.
-	 *
-	 * @return the thread category
-	 */
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
 }

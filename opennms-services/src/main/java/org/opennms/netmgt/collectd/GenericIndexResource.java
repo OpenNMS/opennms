@@ -34,6 +34,8 @@ import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>GenericIndexResource class.</p>
@@ -42,7 +44,7 @@ import org.opennms.netmgt.snmp.SnmpInstId;
  * @version $Id: $
  */
 public class GenericIndexResource extends SnmpCollectionResource {
-
+    private static final Logger LOG = LoggerFactory.getLogger(GenericIndexResource.class);
     private SnmpInstId m_inst;
     private String m_name;
     private String m_resourceLabel;
@@ -65,7 +67,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-        log().debug("getResourceDir: " + resourceDir);
+        LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
     }
 

@@ -39,11 +39,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 
 public class FtpSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(FtpSystemReportFormatter.class);
     private URL m_url;
     private ZipSystemReportFormatter m_zipFormatter;
     private File m_zipFile;
@@ -84,23 +86,23 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
         try {
             m_url = new URL(getOutput());
         } catch (final MalformedURLException e) {
-            LogUtils.errorf(this, e, "Unable to parse %s as an FTP URL", getOutput());
+            LOG.error("Unable to parse {} as an FTP URL", getOutput(), e);
             throw new IllegalArgumentException(String.format("Unable to parse \"%s\" as an FTP URL", getOutput()));
         }
         if (!m_url.getProtocol().equalsIgnoreCase("ftp")) {
-            LogUtils.errorf(this, "URL %s is not an FTP URL", m_url);
+            LOG.error("URL {} is not an FTP URL", m_url);
             throw new IllegalArgumentException(String.format("URL \"%s\" is not an FTP URL", getOutput()));
         }
         m_zipFormatter = new ZipSystemReportFormatter();
         try {
             m_zipFile = File.createTempFile("ftpSystemReportFormatter", null);
-            LogUtils.debugf(this, "Temporary ZIP file for system report FTP transfer = %s", m_zipFile.getPath());
+            LOG.debug("Temporary ZIP file for system report FTP transfer = {}", m_zipFile.getPath());
             m_outputStream = new FileOutputStream(m_zipFile);
             m_zipFormatter.setOutput(getOutput());
             m_zipFormatter.setOutputStream(m_outputStream);
             m_zipFormatter.begin();
         } catch (final IOException e) {
-            LogUtils.errorf(this, e, "Unable to create temporary file for system report FTP transfer");
+            LOG.error("Unable to create temporary file for system report FTP transfer", e);
             throw new IllegalStateException("Unable to create temporary file for system report FTP transfer");
         }
     }
@@ -134,32 +136,32 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
             int reply = ftp.getReplyCode();
             if(!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
-                LogUtils.errorf(this, "FTP server refused connection.");
+                LOG.error("FTP server refused connection.");
                 return;
             }
 
             String path = m_url.getPath();
             if (path.endsWith("/")) {
-                LogUtils.errorf(this, "Your FTP URL must specify a filename.");
+                LOG.error("Your FTP URL must specify a filename.");
                 return;
             }
             File f = new File(path);
             path = f.getParent();
             if (!ftp.changeWorkingDirectory(path)) {
-                LogUtils.infof(this, "unable to change working directory to %s", path);
+                LOG.info("unable to change working directory to {}", path);
                 return;
             }
-            LogUtils.infof(this, "uploading %s to %s", f.getName(), path);
+            LOG.info("uploading {} to {}", f.getName(), path);
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
             ftp.enterLocalPassiveMode();
             fis = new FileInputStream(m_zipFile);
             if (!ftp.storeFile(f.getName(), fis)) {
-                LogUtils.infof(this, "unable to store file");
+                LOG.info("unable to store file");
                 return;
             }
-            LogUtils.infof(this, "finished uploading");
+            LOG.info("finished uploading");
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "Unable to FTP file to %s", m_url);
+            LOG.error("Unable to FTP file to {}", m_url, e);
         } finally {
             IOUtils.closeQuietly(fis);
             if (ftp.isConnected()) {

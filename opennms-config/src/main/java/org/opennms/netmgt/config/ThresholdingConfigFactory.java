@@ -47,7 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Group;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
  * @version $Id: $
  */
 public final class ThresholdingConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -170,9 +172,7 @@ public final class ThresholdingConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-        if (log().isDebugEnabled()) {
-            log().debug("init: config file path: " + cfgFile.getPath());
-        }
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         ThresholdingConfigFactory tcf = new ThresholdingConfigFactory(cfgFile.getPath());
 
@@ -339,9 +339,5 @@ public final class ThresholdingConfigFactory {
                 IOUtils.closeQuietly(stream);
             }
         }
-    }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(ThresholdingConfigFactory.class);
     }
 }

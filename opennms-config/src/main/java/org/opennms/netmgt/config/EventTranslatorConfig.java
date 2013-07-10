@@ -40,8 +40,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface EventTranslatorConfig {
 	
-	/** Constant <code>TRANSLATOR_NAME="OpenNMS.EventTranslator"</code> */
-	static final String TRANSLATOR_NAME = "OpenNMS.EventTranslator";
+    static final String TRANSLATOR_NAME = "event-translator";
 
     /**
      * Get the list of UEIs that are registered in the passive status configuration.

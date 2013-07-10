@@ -49,6 +49,8 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.ICallNotification;
 import org.smslib.IGatewayStatusNotification;
@@ -71,6 +73,7 @@ import org.smslib.test.TestGateway;
 
 @RunWith(JUnit4TestRunner.class)
 public class SmsLibTest {
+    private static final Logger LOG = LoggerFactory.getLogger(SmsLibTest.class);
 
     @Configuration
     public static Option[] configuration(){
@@ -295,7 +298,7 @@ public class SmsLibTest {
             Thread.sleep(20000);
 
         } catch (Throwable e) {
-            LogUtils.warnf(this, e, "failed to read message");
+            LOG.warn("failed to read message");
         } finally {
             if (srv != null) srv.stopService();
         }
@@ -324,7 +327,7 @@ public class SmsLibTest {
                 // upon arrival.
                 // ReadMessages.this.srv.deleteMessage(msg);
             } catch (Throwable e) {
-                LogUtils.errorf(this, e, "Oops!!! Something gone bad...");
+                LOG.error("Oops!!! Something gone bad...");
             }
         }
     }

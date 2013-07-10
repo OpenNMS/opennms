@@ -36,12 +36,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
 
 final class InitializeTask extends TimerTask {
+    private static final Logger LOG = LoggerFactory.getLogger(InitializeTask.class);
     /** Constant <code>m_updateTaskScheduled</code> */
     public static AtomicBoolean m_updateTaskScheduled = new AtomicBoolean(false);
 
@@ -73,7 +75,7 @@ final class InitializeTask extends TimerTask {
 
             startUpdateTaskIfNecessary(startDate);
     	} catch (final Exception e) {
-    		LogUtils.warnf(this, e, "An exception occurred pushing initial data.");
+    		LOG.warn("An exception occurred pushing initial data.", e);
     	}
     }
 

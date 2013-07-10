@@ -46,7 +46,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.config.linkd.ExcludeRange;
 import org.opennms.netmgt.config.linkd.Filter;
@@ -66,6 +67,7 @@ import org.opennms.protocols.snmp.SnmpObjectId;
  * @version $Id: $
  */
 abstract public class LinkdConfigManager implements LinkdConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -178,7 +180,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 				filterPassed = ipList.contains(iface);
             }
         
-            LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", str(iface), pkg.getName(), (filterPassed? "True":"False"));
+            LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", str(iface), pkg.getName(), (filterPassed? "True":"False"));
         
             if (!filterPassed) return false;
     
@@ -306,7 +308,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             final StringBuffer filterRules = new StringBuffer(filter.getContent());
     
-            LogUtils.debugf(this, "getIpList: package is %s. filter rules are: %s", pkg.getName(), filterRules.toString());
+            LOG.debug("getIpList: package is {}. filter rules are: {}", pkg.getName(), filterRules);
             return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
@@ -578,13 +580,13 @@ abstract public class LinkdConfigManager implements LinkdConfig {
                 //
                 try {
                     final List<InetAddress> ipList = getIpList(pkg);
-                    LogUtils.tracef(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+                    LOG.trace("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
     
                     if (ipList != null && ipList.size() > 0) {
                         m_pkgIpMap.put(pkg, ipList);
                     }
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
+                    LOG.error("createPackageIpMap: failed to map package: {} to an IP list", pkg.getName(), t);
                 }
             }
         } finally {
@@ -612,7 +614,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         try {
             final Iproutes iproutes = m_config.getIproutes();
             if (iproutes == null) {
-                LogUtils.infof(this, "no iproutes found in config");
+                LOG.info("no iproutes found in config");
                 return;
             }
 
@@ -624,7 +626,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
                     final SnmpObjectId oidMask = new SnmpObjectId(specific);
                     oidMask.prepend(curRootSysOid);
                     m_oidMask2IpRouteclassName.put(oidMask.toString(), curClassName);
-                    LogUtils.debugf(this, "initializeIpRouteClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+                    LOG.debug("initializeIpRouteClassNames:  adding class {} for oid {}", curClassName, oidMask);
                 }
             }
         } finally {
@@ -638,7 +640,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	    try {
     		final Vlans vlans = m_config.getVlans();
     		if (vlans == null) {
-    		    LogUtils.infof(this, "initializeVlanClassNames: no vlans found in config");
+    		    LOG.info("initializeVlanClassNames: no vlans found in config");
     		}
     
             final List<String> excludedOids = new ArrayList<String>();
@@ -650,7 +652,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     			    final SnmpObjectId oidMask = new SnmpObjectId(specific);
     				oidMask.prepend(curRootSysOid);
     				m_oidMask2VlanclassName.put(oidMask.toString(), curClassName);
-    				LogUtils.debugf(this, "initializeVlanClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+    				LOG.debug("initializeVlanClassNames:  adding class {} for oid {}", curClassName, oidMask);
     			}
     
     			for (final ExcludeRange excludeRange : vendor.getExcludeRangeCollection()) {
@@ -661,7 +663,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     				    final SnmpObjectId snmpCurOid = new SnmpObjectId(snmpBeginOid);
     					while (snmpCurOid.compare(snmpEndOid) <= 0) {
     						excludedOids.add(snmpCurOid.toString());
-    						LogUtils.debugf(this, "initializeVlanClassNames:  signing excluded class %s for oid %s", curClassName, curRootSysOid.toString().concat(snmpCurOid.toString()));
+    						LOG.debug("initializeVlanClassNames:  signing excluded class {} for oid {}", curClassName, curRootSysOid.toString().concat(snmpCurOid.toString()));
     						int lastCurCipher = snmpCurOid.getLastIdentifier();
     						lastCurCipher++;
     						int[] identifiers = snmpCurOid.getIdentifiers();
@@ -682,7 +684,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     							final SnmpObjectId oidMask = new SnmpObjectId(snmpBeginOid);
     							oidMask.prepend(curRootSysOid);
     							m_oidMask2VlanclassName.put(oidMask.toString(), curClassName);
-    							LogUtils.debugf(this, "initializeVlanClassNames:  adding class %s for oid %s", curClassName, oidMask.toString());
+    							LOG.debug("initializeVlanClassNames:  adding class {} for oid {}", curClassName, oidMask);
     						}
     						int lastCipher = snmpBeginOid.getLastIdentifier();
     						lastCipher++;

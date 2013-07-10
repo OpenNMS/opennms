@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jdbc-pool-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JDBC-Pool Dependencies</name>
+  <name>OpenNMS Dependencies JDBC-Pool</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use Tomcat JDBC-Pool.

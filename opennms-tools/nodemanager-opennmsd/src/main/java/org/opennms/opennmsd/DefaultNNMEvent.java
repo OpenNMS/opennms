@@ -30,13 +30,14 @@ package org.opennms.opennmsd;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.opennms.nnm.swig.OVsnmpPdu;
 import org.opennms.ovapi.OVsnmpPduUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultNNMEvent implements NNMEvent {
     
-    private static Logger log = Logger.getLogger(DefaultNNMEvent.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultNNMEvent.class);
 
     public DefaultNNMEvent(OVsnmpPdu trap) {
         log.debug(OVsnmpPduUtils.toString(trap));

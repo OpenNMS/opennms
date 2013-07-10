@@ -39,7 +39,6 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than
@@ -68,6 +69,10 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 // NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
 @Distributable
 public class JDBCMonitor extends AbstractServiceMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(JDBCMonitor.class);
+    
 	/**
 	 * Number of miliseconds to wait before timing out a database login using
 	 * JDBC Hint: 1 minute is 6000 miliseconds.
@@ -87,7 +92,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 * @throws java.lang.IllegalAccessException if any.
 	 */
 	public JDBCMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		log().info("JDBCmonitor class loaded");
+		LOG.info("JDBCmonitor class loaded");
 	}
 
 	/**
@@ -98,7 +103,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
         @Override
 	public void initialize(Map<String, Object> parameters) {
 		super.initialize(parameters);
-		log().debug("Calling init");
+		LOG.debug("Calling init");
 	}
 
 	/**
@@ -110,7 +115,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 */
         @Override
 	public void release() {
-		log().debug("Shuting down plugin");
+		LOG.debug("Shuting down plugin");
 	}
 
 	/**
@@ -127,7 +132,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
         @Override
 	public void initialize(MonitoredService svc) {
 		super.initialize(svc);
-		log().debug("initialize");
+		LOG.debug("initialize");
 	}
 
 	/**
@@ -139,7 +144,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 */
         @Override
 	public void release(MonitoredService svc) {
-		log().debug("Shuting down plugin");
+		LOG.debug("Shuting down plugin");
 	}
 
 	/**
@@ -175,7 +180,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		ResultSet resultset = null;
 
 		if (iface.getType() != NetworkInterface.TYPE_INET) {
-			log().error("Unsupported interface type, only TYPE_INET currently supported");
+			LOG.error("Unsupported interface type, only TYPE_INET currently supported");
 			throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Unsupported interface type, only TYPE_INET currently supported");
 		}
 
@@ -185,17 +190,18 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		try {
 			String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 			driver = (Driver)Class.forName(driverClass).newInstance();
+			LOG.debug("Loaded JDBC driver: {}", driverClass);
 		} catch (Throwable exp) {
 			throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
 		}
 
-		log().info("Loaded JDBC driver");
+		LOG.info("Loaded JDBC driver");
 
 		// Get the JDBC url host part
 		InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 		String url = null;
 		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
-		log().debug("JDBC url: " + url);
+		LOG.debug("JDBC url: {}", url);
 		
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -216,7 +222,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 				status = PollStatus.unresponsive();
 
 				if (con != null) {
-					log().debug("JDBC Connection Established");
+					LOG.debug("JDBC Connection Established");
 
 					tracker.startAttempt();
 
@@ -226,15 +232,17 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 						double responseTime = tracker.elapsedTimeInMillis();
 						status = PollStatus.available(responseTime);
 
-						log().debug("JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
-						log().debug("poll: responseTime= " + responseTime + "ms");
+						LOG.debug("JDBC service is AVAILABLE on: {}", ipv4Addr.getCanonicalHostName());
+						LOG.debug("poll: responseTime= {}ms", responseTime);
 
 						break;
 					}
 				} // end if con
 			} catch (SQLException sqlEx) {
 				
-				status = logDown(Level.INFO, "JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+				String reason = "JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString();
+                LOG.debug(reason, sqlEx);
+                status = PollStatus.unavailable(reason);
 
 			} finally {
 				closeResultSet(resultset);
@@ -308,7 +316,9 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		}
 		catch (SQLException sqlEx)
 		{
-			status = logDown(Level.DEBUG, "JDBC service failed to retrieve metadata: " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+			String reason = "JDBC service failed to retrieve metadata: " + sqlEx.getSQLState() + ", " + sqlEx.toString();
+            LOG.debug(reason, sqlEx);
+            status = PollStatus.unavailable(reason);
 		}
 		finally
 		{

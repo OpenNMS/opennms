@@ -62,13 +62,14 @@ import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarm;
 import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarmNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Forwards north bound alarms via HTTP.
@@ -78,6 +79,8 @@ import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarmNotification;
  */
 public class NCSNorthbounder extends AbstractNorthbounder {
 	
+    private static final Logger LOG = LoggerFactory.getLogger(NCSNorthbounder.class);
+
     //FIXME: This should be wired with Spring but is implmented as was in the PSM
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
@@ -189,7 +192,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
     	
     	if (!m_config.isEnabled()) return;
     	
-        LogUtils.infof(this, "Forwarding %d alarms", alarms.size());
+        LOG.info("Forwarding {} alarms", alarms.size());
   
         HttpEntity entity = createEntity(alarms);
         
@@ -257,7 +260,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
         }
         
         System.err.println(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
-        LogUtils.debugf(this, response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
+        LOG.debug(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
 	}
 
 

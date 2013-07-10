@@ -31,7 +31,6 @@ package org.opennms.web.svclayer.support;
 import java.io.File;
 import java.util.*;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -60,6 +59,9 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphResultsService.class);
+
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + DefaultGraphResultsService.class);
 
@@ -112,29 +114,29 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String parent = values[0];
             String childType = values[1];
             String childName = values[2];
-            log().debug("findResults: parent, childType, childName = " + values[0] + ", " + values[1] + ", " + values[2]);
+            LOG.debug("findResults: parent, childType, childName = {}, {}, {}", values[0], values[1], values[2]);
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
                 if (resourceList == null) {
-                    log().warn("findResults: zero child resources found for " + parent);
+                    LOG.warn("findResults: zero child resources found for {}", parent);
                 } else {
                     resourcesMap.put(parent, resourceList);
-                    log().debug("findResults: add resourceList to map for " + parent);
+                    LOG.debug("findResults: add resourceList to map for {}", parent);
                 }
             }
             for (OnmsResource r : resourcesMap.get(parent)) {
                 if (childType.equals(r.getResourceType().getName())
                         && childName.equals(r.getName())) {
                     resource = r;
-                    log().debug("findResults: found resource in map" + r.toString());
+                    LOG.debug("findResults: found resource in map{}", r.toString());
                     break;
                 }
             }
             try {
                 graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
             } catch (IllegalArgumentException e) {
-                log().warn(e.getMessage(), e);
+                LOG.warn(e.getMessage(), e);
                 continue;
             }
         }
@@ -161,7 +163,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String childName = child.substring(child.indexOf('[') + 1, child.indexOf(']'));
             return new String[]{parent, childType, childName};
         } catch (Throwable e) {
-            log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
+            LOG.warn("Illegally formatted resourceId found in DefaultGraphResultsService: {}", resourceId, e);
             return null;
         }
     }
@@ -228,23 +230,19 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException e) {
-            log().warn("Unable to send promotion event to opennms daemon", e);
+            LOG.warn("Unable to send promotion event to opennms daemon", e);
         }
 
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultGraphResultsService.class);
-    }
+   
 
     private void getAttributeFiles(Graph graph, List<String> filesToPromote) {
 
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
 
         for(RrdGraphAttribute rrdAttr : attrs) {
-            log().debug("getAttributeFiles: ResourceType, ParentResourceType = "
-                        + rrdAttr.getResource().getResourceType().getLabel() + ", "
-                        + rrdAttr.getResource().getParent().getResourceType().getLabel());
+            LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}", rrdAttr.getResource().getResourceType().getLabel(), rrdAttr.getResource().getParent().getResourceType().getLabel());
             if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
                 filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+"foreignSource"+File.separator+rrdAttr.getRrdRelativePath());
             } else {

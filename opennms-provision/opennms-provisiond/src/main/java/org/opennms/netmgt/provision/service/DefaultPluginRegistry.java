@@ -36,7 +36,8 @@ import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -60,6 +61,7 @@ import org.springframework.context.ApplicationContext;
  * @version $Id: $
  */
 public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginRegistry.class);
     
     
     @Autowired(required=false)
@@ -94,25 +96,18 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
     
     private static void debug(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args));
-        }
+        LOG.debug(String.format(format, args));
     }
     
     private static void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
+        LOG.info(String.format(format, args));
     }
     
     private static void error(Throwable cause, String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
         if (cause == null) {
-            log.error(String.format(format, args));
+            LOG.error(String.format(format, args));
         } else {
-            log.error(String.format(format, args), cause);
+            LOG.error(String.format(format, args), cause);
         }
     }
     

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-jmx</artifactId>
-  <name>OpenNMS JMX Detectors</name>
+  <name>OpenNMS Provision JMX Detectors</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-api</artifactId>
-  <name>OpenNMS Alarm API</name>
+  <name>OpenNMS Alarms API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

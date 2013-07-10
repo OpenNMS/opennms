@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-simple</artifactId>
-  <name>OpenNMS Simple Detectors</name>
+  <name>OpenNMS Provision Simple Detectors</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

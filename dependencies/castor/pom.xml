@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>castor-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Castor Dependencies</name>
+  <name>OpenNMS Dependencies Castor</name>
   <properties>
     <castorVersion>1.1.2.1</castorVersion>
   </properties>
@@ -20,6 +20,10 @@
       <version>${castorVersion}</version>
       <scope>compile</scope>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>javax.jms</groupId>
           <artifactId>jms</artifactId>
@@ -37,6 +41,10 @@
           <artifactId>xerces</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
       <groupId>oro</groupId>

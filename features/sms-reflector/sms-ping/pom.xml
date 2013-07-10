@@ -49,9 +49,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
+      <groupId>org.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-20100302</version>
+      <version>3.5.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -75,9 +75,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>compile</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

@@ -44,6 +44,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>EventTranslator class.</p>
@@ -53,6 +55,8 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EventTranslator.class);
     
     private static EventTranslator s_instance = new EventTranslator();
 
@@ -148,16 +152,16 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         }
 
         if (getName().equals(e.getSource())) {
-            log().debug("onEvent: ignoring event with EventTranslator as source");
+            LOG.debug("onEvent: ignoring event with EventTranslator as source");
             return;
         }
 
         if (!m_config.isTranslationEvent(e)) {
-            log().debug("onEvent: received event that matches no translations: \n"+EventUtils.toString(e));
+            LOG.debug("onEvent: received event that matches no translations: \n", EventUtils.toString(e));
             return;
         }
 
-        log().debug("onEvent: received valid registered translation event: \n"+EventUtils.toString(e));
+        LOG.debug("onEvent: received valid registered translation event: \n", EventUtils.toString(e));
         
         List<Event> translated = m_config.translateEvent(e);
         if (translated != null) {
@@ -166,7 +170,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             for (Iterator<Event> iter = translated.iterator(); iter.hasNext();) {
                 Event event = iter.next();
                 events.addEvent(event);
-                log().debug("onEvent: sended translated event: \n"+EventUtils.toString(event));
+                LOG.debug("onEvent: sended translated event: \n", EventUtils.toString(event));
             }
             log.setEvents(events);
             getEventManager().sendNow(log);
@@ -180,7 +184,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
      * @param e The reload daemon config event<code>Event</code>
      */
     protected void handleReloadEvent(Event e) {
-        log().info("onEvent: reloading configuration....");
+        LOG.info("onEvent: reloading configuration....");
         EventBuilder ebldr = null;
         try {
             List<String> previousUeis = m_config.getUEIList();
@@ -191,11 +195,11 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             getEventManager().removeEventListener(this, previousUeis);
             getEventManager().addEventListener(this, m_config.getUEIList());
             
-            log().debug("onEvent: configuration reloaded.");
+            LOG.debug("onEvent: configuration reloaded.");
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
         } catch (Throwable exception) {
-            log().error("onEvent: reload config failed:"+e, exception);
+            LOG.error("onEvent: reload config failed: {}", e, exception);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
             ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -204,7 +208,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             m_eventMgr.sendNow(ebldr.getEvent());
         }
         
-        log().info("onEvent: reload configuration: reload configuration contains "+m_config.getUEIList().size()+" UEI specs.");
+        LOG.info("onEvent: reload configuration: reload configuration contains {} UEI specs.", m_config.getUEIList().size());
     }
 
     private boolean isReloadConfigEvent(Event event) {
@@ -222,7 +226,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
                 }
             }
 
-            log().debug("isReloadConfigEventTarget: Event Translator was target of reload event: "+isTarget);
+            LOG.debug("isReloadConfigEventTarget: Event Translator was target of reload event: {}", isTarget);
         }
         return isTarget;
     }

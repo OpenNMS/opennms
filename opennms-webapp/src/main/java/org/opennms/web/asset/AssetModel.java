@@ -40,8 +40,9 @@ import java.util.List;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -49,6 +50,9 @@ import org.springframework.util.StringUtils;
  * <p>AssetModel class.</p>
  */
 public class AssetModel {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AssetModel.class);
+
 
     /**
      * <p>getAsset</p>
@@ -568,7 +572,7 @@ public class AssetModel {
             try {
                 return Float.valueOf(value);
             } catch (final NumberFormatException e) {
-                LogUtils.tracef(this, e, "Failed to parse float value from %s", value);
+                LOG.trace("Failed to parse float value from {}", value, e);
             }
         }
         return null;

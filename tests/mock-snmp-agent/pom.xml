@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tests</groupId>
   <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
-  <name>OpenNMS Mock SNMP Agent</name>
+  <name>OpenNMS Tests Mock SNMP Agent</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

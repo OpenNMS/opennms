@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -51,6 +52,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public abstract class SnmpCollectionResource implements CollectionResource {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionResource.class);
     
     private ResourceType m_resourceType;
 
@@ -110,15 +113,6 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     public abstract int getType();
     
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
      * <p>rescanNeeded</p>
      *
      * @return a boolean.
@@ -141,9 +135,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
 
     private void addAttribute(final SnmpAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        if (log().isDebugEnabled()) {
-            log().debug("Adding attribute " + attr.getClass().getName() + ": " + attr + " to group " + group);
-        }
+        LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr, group);
         group.addAttribute(attr);
     }
 

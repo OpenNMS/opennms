@@ -36,12 +36,14 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to the rrd configuration data.
  */
 public abstract class RrdConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdConfig.class);
 
     private static Properties m_properties = null;
 
@@ -63,7 +65,7 @@ public abstract class RrdConfig {
                 in = new FileInputStream(configFile);
                 m_properties.load(in);
             } catch (FileNotFoundException e) {
-                ThreadCategory.getInstance(RrdConfig.class).info(configFileName + " not found, loading RRD configuration solely from system properties");
+                LOG.info("{} not found, loading RRD configuration solely from system properties", configFileName);
             } finally {
                 if (in != null) { 
                     in.close(); 

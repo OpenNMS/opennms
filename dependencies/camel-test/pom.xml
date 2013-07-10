@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>camel-test-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Camel Test Dependencies</name>
+  <name>OpenNMS Dependencies Camel Test</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.camel</groupId>

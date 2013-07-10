@@ -37,10 +37,12 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SyslogParser {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogParser.class);
     private static Pattern m_pattern = Pattern.compile("^.*$");
     private Matcher m_matcher = null;
     private final String m_text;
@@ -50,7 +52,7 @@ public class SyslogParser {
 
     protected SyslogParser(final String text) {
         m_text = text;
-        m_traceEnabled = LogUtils.isTraceEnabled(this);
+        m_traceEnabled = LOG.isTraceEnabled();
     }
 
     public boolean find() {
@@ -123,7 +125,7 @@ public class SyslogParser {
                 c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
                 date = c.getTime();
             } catch (final Exception e2) {
-                LogUtils.debugf(this, e2, "Unable to parse date '%s'", dateString);
+                LOG.debug("Unable to parse date '{}'", dateString, e2);
                 date = null;
             }
         }

@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.management.remote.JMXConnector;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.jmxconfiggenerator.Starter;
 import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
@@ -51,15 +50,20 @@ import org.opennms.features.jmxconfiggenerator.webui.ui.ProgressWindow;
 import org.opennms.features.jmxconfiggenerator.webui.ui.UiState;
 import org.opennms.features.jmxconfiggenerator.webui.ui.mbeans.MBeansView;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import javax.management.remote.JMXServiceURL;
 
 @SuppressWarnings("serial")
 public class JmxConfigGeneratorApplication extends com.vaadin.Application implements ModelChangeListener<UiModel> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmxConfigGeneratorApplication.class);
 
 	/**
 	 * The Header panel which holds the steps which are necessary to complete
@@ -206,7 +210,8 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 
                 // TODO loading of the dictionary should not be done via the Starter class and not in a static way!
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getHost(), config.getPort(), config.getUser(), config.getPassword(), config.isSsl(), config.isJmxmp());
+                JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(config.isJmxmp(), config.getHost(), config.getPort());
+                JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL);
                 JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), config.isRunWritableMBeans(), Starter.loadInternalDictionary());
                 connector.close();
 
@@ -246,7 +251,7 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 				model.setSnmpGraphProperties(graphConfigGenerator.generateSnmpGraph(reports));
 			} catch (IOException ex) {
 				model.setSnmpGraphProperties(ex.getMessage()); // TODO handle Errors in UI
-				LogUtils.errorf(this, ex, "SNMP Graph-Properties couldn't be created.");
+				LOG.error("SNMP Graph-Properties couldn't be created.", ex);
 			}
 
 			model.updateOutput();

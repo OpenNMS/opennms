@@ -35,15 +35,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockSnmpWalker extends SnmpWalker {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockSnmpWalker.class);
 
 	private static class MockPduBuilder extends WalkerPduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
@@ -120,44 +123,44 @@ public class MockSnmpWalker extends SnmpWalker {
     protected void sendNextPdu(final WalkerPduBuilder pduBuilder) throws IOException {
         final MockPduBuilder builder = (MockPduBuilder)pduBuilder;
         final List<SnmpObjId> oids = builder.getOids();
-        LogUtils.debugf(this, "'Sending' tracker PDU of size " + oids.size());
+        LOG.debug("'Sending' tracker PDU of size {}", oids.size());
 
         m_executor.submit(new ResponseHandler(oids));
     }
 
     @Override
     protected void handleDone() {
-    	LogUtils.debugf(this, "handleDone()");
+    	LOG.debug("handleDone()");
     	super.handleDone();
     }
 
     @Override
     protected void handleAuthError(final String msg) {
-    	LogUtils.debugf(this, "handleAuthError(%s)", msg);
+    	LOG.debug("handleAuthError({})", msg);
     	super.handleAuthError(msg);
     }
     
     @Override
     protected void handleError(final String msg) {
-    	LogUtils.debugf(this, "handleError(%s)", msg);
+    	LOG.debug("handleError({})", msg);
     	super.handleError(msg);
     }
     
     @Override
     protected void handleError(final String msg, final Throwable t) {
-    	LogUtils.debugf(this, t, "handleError(%s, %s)", msg, t.getLocalizedMessage());
+    	LOG.debug("handleError({}, {})", msg, t.getLocalizedMessage(), t);
     	super.handleError(msg, t);
     }
     
     @Override
     protected void handleFatalError(final Throwable e) {
-    	LogUtils.debugf(this, e, "handleFatalError(%s)", e.getLocalizedMessage());
+    	LOG.debug("handleFatalError({})", e.getLocalizedMessage(), e);
     	super.handleFatalError(e);
     }
 
     @Override
     protected void handleTimeout(final String msg) {
-    	LogUtils.debugf(this, "handleTimeout(%s)", msg);
+    	LOG.debug("handleTimeout({})", msg);
     	super.handleTimeout(msg);
     }
 
@@ -168,7 +171,7 @@ public class MockSnmpWalker extends SnmpWalker {
 
     @Override
     protected void buildAndSendNextPdu() throws IOException {
-    	LogUtils.debugf(this, "buildAndSendNextPdu()");
+    	LOG.debug("buildAndSendNextPdu()");
     	super.buildAndSendNextPdu();
     }
 
@@ -185,10 +188,10 @@ public class MockSnmpWalker extends SnmpWalker {
 		}
 
 	    protected void handleResponses() {
-	    	LogUtils.debugf(this, "handleResponses(%s)", m_oids);
+	    	LOG.debug("handleResponses({})", m_oids);
 	        try {
 	            if (m_container == null) {
-	            	LogUtils.infof(this, "No SNMP response data configured for %s; pretending we've timed out.", m_agentAddress);
+	            	LOG.info("No SNMP response data configured for {}; pretending we've timed out.", m_agentAddress);
 	            	Thread.sleep(100);
 	            	handleTimeout("No MockSnmpAgent data configured for '" + m_agentAddress + "'.");
 	            	return;
@@ -201,8 +204,8 @@ public class MockSnmpWalker extends SnmpWalker {
 	            int index = 1; // snmp index start at 1
 	            for (final SnmpObjId oid : m_oids) {
 	            	SnmpObjId nextOid = m_container.findNextOidForOid(oid);
-	            	if (nextOid == null) { 
-		            	LogUtils.debugf(this, "No OID following %s", oid);
+	            	if (nextOid == null) {
+	            		LOG.debug("No OID following {}", oid);
 	            		if (m_snmpVersion == SnmpAgentConfig.VERSION1) {
 	            			if (errorStatus == 0) { // for V1 only record the index of the first failing varbind
 	            				errorStatus = CollectionTracker.NO_SUCH_NAME_ERR;
@@ -217,7 +220,7 @@ public class MockSnmpWalker extends SnmpWalker {
 	            }
 
 	            if (!processErrors(errorStatus, errorIndex)) {
-	            	LogUtils.debugf(this, "Responding with PDU of size %d.", responses.size());
+	            	LOG.debug("Responding with PDU of size {}.", responses.size());
 	            	for(MockVarBind vb : responses) {
 	                	processResponse(vb.getOid(), vb.getValue());
 	                }

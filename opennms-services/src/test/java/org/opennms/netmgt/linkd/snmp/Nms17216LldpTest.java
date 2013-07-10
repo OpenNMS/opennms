@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class Nms17216LldpTest extends Nms17216NetworkBuilder implements InitializingBean {
     
     @Override

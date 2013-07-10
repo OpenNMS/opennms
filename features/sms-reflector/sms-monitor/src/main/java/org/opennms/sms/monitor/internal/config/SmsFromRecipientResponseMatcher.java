@@ -30,7 +30,8 @@ package org.opennms.sms.monitor.internal.config;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.monitor.MobileSequenceSession;
 import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
@@ -45,11 +46,12 @@ import org.opennms.sms.reflector.smsservice.SmsResponse;
  */
 @XmlRootElement(name="from-recipient")
 public class SmsFromRecipientResponseMatcher extends SequenceResponseMatcher {
+    private static final Logger LOG = LoggerFactory.getLogger(SmsFromRecipientResponseMatcher.class);
 
 	/** {@inheritDoc} */
 	@Override
     public boolean matches(MobileSequenceSession session, MobileMsgRequest request, MobileMsgResponse response) {
-        LogUtils.tracef(this, "smsFromRecipient.matches(%s, %s)", request, response);
+        LOG.trace("smsFromRecipient.matches({}, {})", request, response);
         if (request instanceof SmsRequest && response instanceof SmsResponse) {
         	return equals(((SmsResponse)response).getOriginator(), ((SmsRequest)request).getRecipient());
         }

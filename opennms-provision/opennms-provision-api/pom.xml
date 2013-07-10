@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision-api</artifactId>
-  <name>OpenNMS Provisioning API</name>
+  <name>OpenNMS Provision API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

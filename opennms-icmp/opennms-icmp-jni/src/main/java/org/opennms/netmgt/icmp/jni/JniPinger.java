@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -118,6 +119,9 @@ import org.opennms.protocols.rt.RequestTracker;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class JniPinger implements Pinger {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JniPinger.class);
+
     
     private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
     
@@ -162,7 +166,7 @@ public class JniPinger implements Pinger {
 	    try {
 	        initialize();
 	    } catch (final Throwable t) {
-            LogUtils.tracef(this, t, "Failed to initialize IPv4");
+            LOG.trace("Failed to initialize IPv4", t);
 	    }
 	    if (s_pingTracker != null && m_error == null) return true;
 	    return false;

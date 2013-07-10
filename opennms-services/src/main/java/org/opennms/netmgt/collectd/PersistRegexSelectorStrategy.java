@@ -30,11 +30,11 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.datacollection.Parameter;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -50,6 +50,8 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * TODO Implement "match-behavior" (any/all)
  */
 public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PersistRegexSelectorStrategy.class);
     
     public static final String MATCH_EXPRESSION = "match-expression";
     public static final String MATCH_STRATEGY = "match-strategy";
@@ -77,9 +79,9 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
 
     @Override
     public boolean shouldPersist(CollectionResource resource) {
-        log().debug("shouldPersist: checking resource " + resource);
+        LOG.debug("shouldPersist: checking resource {}", resource);
         if (m_parameterCollection == null) {
-            log().warn("shouldPersist: no parameters defined; the resource will be persisted.");
+            LOG.warn("shouldPersist: no parameters defined; the resource will be persisted.");
             return true;
         }
         EvaluatorContextVisitor visitor = new EvaluatorContextVisitor();
@@ -92,9 +94,9 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
                 try {
                     shouldPersist = exp.getValue(visitor.getEvaluationContext(), Boolean.class);
                 } catch (Exception e) {
-                    log().warn("shouldPersist: can't evaluate expression " + param.getValue() + " for resource " + resource + " because: " + e.getMessage());
+                    LOG.warn("shouldPersist: can't evaluate expression {} for resource {} because: {}", param.getValue(), resource, e.getMessage());
                 }
-                log().debug("shouldPersist: checking " + param.getValue() + " ? " + shouldPersist);
+                LOG.debug("shouldPersist: checking {} ? {}", param.getValue(), shouldPersist);
                 if (shouldPersist)
                     return true;
             }
@@ -105,10 +107,6 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
     @Override
     public void setParameters(List<Parameter> parameterCollection) {
         m_parameterCollection = parameterCollection;
-    }
-
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

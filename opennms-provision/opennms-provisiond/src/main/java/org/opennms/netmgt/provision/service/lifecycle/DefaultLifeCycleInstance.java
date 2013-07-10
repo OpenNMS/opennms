@@ -38,9 +38,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultLifeCycleInstance.class);
     
     /*
      * Complications... 
@@ -85,12 +87,12 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         m_name = lifeCycleName;
         m_providers = providers;
 
-        LogUtils.debugf(this, "Set up default lifecycle instance");
+        LOG.debug("Set up default lifecycle instance");
 
         m_phases = new Phase[phaseNames.length];
         for(int i = 0; i < phaseNames.length; i++) {
             m_phases[i] = new Phase(this, this, phaseNames[i], m_providers);
-            LogUtils.debugf(this, "Adding phase %s to lifecycle", m_phases[i].getName());
+            LOG.debug("Adding phase {} to lifecycle", m_phases[i].getName());
             add(m_phases[i]);
         }
         

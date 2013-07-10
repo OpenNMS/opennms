@@ -32,7 +32,8 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.integration.otrs.ticketservice.Article;
 import org.opennms.integration.otrs.ticketservice.ArticleCore;
 import org.opennms.integration.otrs.ticketservice.Credentials;
@@ -52,6 +53,7 @@ import org.opennms.api.integration.ticketing.*;
  * @version $Id: $
  */
 public class OtrsTicketerPlugin implements Plugin {
+    private static final Logger LOG = LoggerFactory.getLogger(OtrsTicketerPlugin.class);
     
 	private DefaultOtrsConfigDao m_configDao; 
 	
@@ -79,7 +81,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		if (ticketId == null)  {
 		    
-		    log().error("No OTRS ticketID available in OpenNMS Ticket");
+		    LOG.error("No OTRS ticketID available in OpenNMS Ticket");
 		    throw new PluginException("No OTRS ticketID available in OpenNMS Ticket");
 		    
 		} else {
@@ -100,7 +102,7 @@ public class OtrsTicketerPlugin implements Plugin {
     			try {
     				ticketWithArticles = port.getByNumber(otrsTicketNumber, creds);
     			} catch (RemoteException e) {
-    				log().error("Failed to retrieve OTRS ticket" + e);
+				LOG.error("Failed to retrieve OTRS ticket", e);
     				throw new PluginException("Failed to retrieve OTRS ticket");
     			}
     			
@@ -110,9 +112,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		// add ticket basics from the OTRS ticket
 		
-		log().debug(
-				"Adding Ticket details from OTRS ticket # "
-						+ ticketWithArticles.getTicket().getTicketNumber());
+		LOG.debug("Adding Ticket details from OTRS ticket # {}", ticketWithArticles.getTicket().getTicketNumber());
 		opennmsTicket.setId(ticketWithArticles.getTicket().getTicketNumber().toString());
 		opennmsTicket.setSummary(ticketWithArticles.getTicket().getTitle());
 		
@@ -122,7 +122,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		opennmsTicket.setUser(ticketWithArticles.getTicket().getOwner());
 		opennmsTicket.setState(otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 		
-		log().debug("Retrieved ticket state : " + otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
+		LOG.debug("Retrieved ticket state : {}", otrsToOpenNMSState(ticketWithArticles.getTicket().getStateID()));
 		
 		// add all the article details from the OTRS ticket
 		// this is not strictly essential as we have no way of viewing this atm.
@@ -130,9 +130,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		String opennmsTicketDetails = "";
 
 		for (Article article : ticketWithArticles.getArticles()) {
-			log().debug(
-					"Adding Article details from OTRS article ID "
-							+ article.getArticleID());
+			LOG.debug("Adding Article details from OTRS article ID {}", article.getArticleID());
 			opennmsTicketDetails = opennmsTicketDetails + "\n"
 					+ "From:    " + article.getFrom() + "\n" + "Subject: "
 					+ article.getSubject() + "\n" + "Body:\n"
@@ -171,7 +169,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 				newTicket.setId(String.valueOf(idAndNumber.getTicketNumber()));
 
-				log().debug("created new ticket: " + newTicket.getId());
+				LOG.debug("created new ticket: {}", newTicket.getId());
 				
 				newOTRSArticle(idAndNumber.getTicketNumber(), newTicket, port, creds);
 				
@@ -180,7 +178,7 @@ public class OtrsTicketerPlugin implements Plugin {
 			    
 			    currentTicket = get(newTicket.getId()); 
 				
-				log().debug("updating existing ticket : " + currentTicket.getId());
+				LOG.debug("updating existing ticket : {}", currentTicket.getId());
 				
 				if (currentTicket.getState() != newTicket.getState()) {
 					
@@ -197,7 +195,7 @@ public class OtrsTicketerPlugin implements Plugin {
 			}
 			
 		} catch (RemoteException e) {
-			log().error("Failed to create or update OTRS ticket" + e);
+			LOG.error("Failed to create or update OTRS ticket", e);
 			throw new PluginException("Failed to create or update OTRS ticket");
 		}
 			
@@ -217,10 +215,10 @@ public class OtrsTicketerPlugin implements Plugin {
 		} else {
 			stateUpdate.setUser(m_configDao.getDefaultUser());
 		}
-		log().debug("Updating ticket with new state");
-		log().debug("Ticket ID:     " + ticket.getId());
-		log().debug("OpenNMS State: " + ticket.getState().toString());
-		log().debug("OTRS state:    " + otrsStateId.toString());
+		LOG.debug("Updating ticket with new state");
+		LOG.debug("Ticket ID:     {}", ticket.getId());
+		LOG.debug("OpenNMS State: {}", ticket.getState().toString());
+		LOG.debug("OTRS state:    {}", otrsStateId.toString());
 		
 		port.ticketStateUpdate(stateUpdate, creds);
 	}
@@ -266,7 +264,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		// All OTRS article fields from ticket
 		
-		log().debug("Adding a new article to ticket: " + otrsTicketNumber);
+		LOG.debug("Adding a new article to ticket: {}", otrsTicketNumber);
 		
 		newOtrsArticle.setBody(newTicket.getDetails());
 		newOtrsArticle.setTicketNumber(otrsTicketNumber);
@@ -302,7 +300,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		// All OTRS article fields from ticket
 		
-		log().debug("Adding a new article to ticket: " + otrsTicketNumber);
+		LOG.debug("Adding a new article to ticket: {}", otrsTicketNumber);
 		
 		switch (newTicket.getState()) {
 
@@ -319,7 +317,7 @@ public class OtrsTicketerPlugin implements Plugin {
                         newOtrsArticle.setBody(m_configDao.getTicketClosedMessage());
                         break;
                     default:
-                        log().debug("No valid OpenNMS state on ticket");
+                        LOG.debug("No valid OpenNMS state on ticket");
                         newOtrsArticle.setBody(m_configDao.getTicketUpdatedMessage());
         	}
 
@@ -363,7 +361,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		Integer otrsStateId;
 		
-		log().debug("getting otrs state from OpenNMS State " + state.toString());
+		LOG.debug("getting otrs state from OpenNMS State {}", state.toString());
 
         switch (state) {
         
@@ -380,12 +378,12 @@ public class OtrsTicketerPlugin implements Plugin {
                 otrsStateId = m_configDao.getClosedStateId();
                 break;
             default:
-            	log().debug("No valid OpenNMS state on ticket");
+		LOG.debug("No valid OpenNMS state on ticket");
                 otrsStateId =  m_configDao.getOpenStateId();
         }
         
-        log().debug("OpenNMS state was        " + state.toString());
-        log().debug("setting OTRS state ID to " + otrsStateId.toString());
+        LOG.debug("OpenNMS state was        {}", state.toString());
+        LOG.debug("setting OTRS state ID to {}", otrsStateId.toString());
         
         return otrsStateId;
     }
@@ -403,16 +401,16 @@ public class OtrsTicketerPlugin implements Plugin {
     	Ticket.State openNMSState;
     	
         if (m_configDao.getValidOpenStateId().contains(otrsStateId)) {
-        	log().debug("OTRS state ID " + otrsStateId.toString() + " matched OpenNMS state Open");
+		LOG.debug("OTRS state ID {} matched OpenNMS state Open", otrsStateId);
         	openNMSState = Ticket.State.OPEN;
         } else if (m_configDao.getValidClosedStateId().contains(otrsStateId)) {
-        	log().debug("OTRS state ID " + otrsStateId.toString() + " matched OpenNMS state Closed");
+                LOG.debug("OTRS state ID {} matched OpenNMS state Closed", otrsStateId);
         	openNMSState = Ticket.State.CLOSED;
 		} else if (m_configDao.getValidCancelledStateId().contains(otrsStateId)) {
-			log().debug("OTRS state ID " + otrsStateId.toString() + " matched OpenNMS state Cancelled");
+		        LOG.debug("OTRS state ID {} matched OpenNMS state Cancelled", otrsStateId);
 			openNMSState = Ticket.State.CANCELLED;
 		} else {
-			log().debug("OTRS state ID " + otrsStateId.toString() + " has no matching OpenNMS state");
+		        LOG.debug("OTRS state ID {} has no matching OpenNMS state", otrsStateId);
 			// we dont know what it is, so default to keeping it open.
 			openNMSState = Ticket.State.OPEN;
 		}
@@ -438,22 +436,13 @@ public class OtrsTicketerPlugin implements Plugin {
         try {
             port = service.getTicketServicePort();
         } catch (ServiceException e) {
-            log().error("Failed initialzing OTRS TicketServicePort" + e);
+            LOG.error("Failed initialzing OTRS TicketServicePort", e);
             throw new PluginException("Failed initialzing OTRS TicketServicePort");
         }
         
         return port;
     }
     
-    /**
-	 * Covenience logging.
-	 * 
-	 * @return a log4j Category for this class
-	 */
-	ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
     /**
      * <p>getEndpoint</p>
      *

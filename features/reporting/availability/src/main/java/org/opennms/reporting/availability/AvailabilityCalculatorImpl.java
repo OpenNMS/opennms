@@ -43,7 +43,10 @@ import java.util.GregorianCalendar;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
@@ -65,8 +68,9 @@ import org.opennms.reporting.core.svclayer.ReportStoreService;
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  */
 public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityCalculatorImpl.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     // String of Months
     public static String[] months = new String[] { "January", "February",
@@ -117,8 +121,6 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private Report m_report = null;
 
-    private final ThreadCategory log;
-
     private ReportStoreService m_reportStoreService;
     
     private AvailabilityData m_availabilityData;
@@ -127,11 +129,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
      * <p>Constructor for AvailabilityCalculatorImpl.</p>
      */
     public AvailabilityCalculatorImpl() {
-
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(this.getClass());
-        ThreadCategory.setPrefix(oldPrefix);
+        Logging.putPrefix(LOG4J_CATEGORY);
         
         m_report = new Report();
         m_report.setAuthor(m_author);
@@ -165,20 +163,20 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public void calculate() throws AvailabilityCalculationException {
 
-        log.debug("Calculation Started");
-        log.debug("periodEndDate: " + m_periodEndDate);
+        LOG.debug("Calculation Started");
+        LOG.debug("periodEndDate: {}", m_periodEndDate);
 
         m_report.setLogo(m_logoURL);
-        log.debug("logoURL: " + m_logoURL);
+        LOG.debug("logoURL: {}", m_logoURL);
         ViewInfo viewInfo = new ViewInfo();
         m_report.setViewInfo(viewInfo);
         org.opennms.reporting.availability.Categories categories = new org.opennms.reporting.availability.Categories();
         m_report.setCategories(categories);
         try {
-            log.debug("Populating datastructures and calculating availability");
-            log.debug("category:     " + m_categoryName);
-            log.debug("monthFormat:  " + m_monthFormat);
-            log.debug("reportFormat: " + m_reportFormat);
+            LOG.debug("Populating datastructures and calculating availability");
+            LOG.debug("category: {}", m_categoryName);
+            LOG.debug("monthFormat: {}", m_monthFormat);
+            LOG.debug("reportFormat: {}", m_reportFormat);
             /* We just initialize this to make sure there are no exceptions, I guess?
              * AvailabilityData availData =
              */
@@ -189,16 +187,16 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                                                               m_monthFormat,
                                                               m_periodEndDate);
         } catch (MarshalException me) {
-            log.fatal("MarshalException ", me);
+            LOG.error("MarshalException ", me);
             throw new AvailabilityCalculationException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception ", ve);
+            LOG.error("Validation Exception ", ve);
             throw new AvailabilityCalculationException(ve);
         } catch (IOException ioe) {
-            log.fatal("Validation Exception ", ioe);
+            LOG.error("Validation Exception ", ioe);
             throw new AvailabilityCalculationException(ioe);
         } catch (Throwable e) {
-            log.fatal("Exception ", e);
+            LOG.error("Exception ", e);
             throw new AvailabilityCalculationException(e);
         }
 
@@ -216,19 +214,19 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public String writeXML() throws AvailabilityCalculationException {
         try {
-            log.debug("Writing the XML");
+            LOG.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
             String catFileName = m_categoryName.replace(' ', '-');
             m_outputFileName = m_baseDir + catFileName + "-" + m_monthFormat
                     + fmt.format(m_periodEndDate) + ".xml";
-            log.debug("Report Store XML file: " + m_outputFileName);
+            LOG.debug("Report Store XML file: {}", m_outputFileName);
             File reportFile = new File(m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
             
         } catch (AvailabilityCalculationException e) {
-            log.fatal("Unable to marshal report as XML");
+            LOG.error("Unable to marshal report as XML");
             throw new AvailabilityCalculationException(e);
         }
         
@@ -243,15 +241,15 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public void writeXML(String outputFileName) throws AvailabilityCalculationException {
        try {
-           log.debug("Writing the XML");
+           LOG.debug("Writing the XML");
            m_outputFileName = outputFileName;
            // Create a file name of type Category-monthFormat-startDate.xml
-           log.debug("Report Store XML file: " + m_outputFileName);
+           LOG.debug("Report Store XML file: {}", m_outputFileName);
            File reportFile = new File(m_baseDir, m_outputFileName);
            // marshal the XML into the file.
            marshal(reportFile);
        } catch (AvailabilityCalculationException e) {
-           log.fatal("Unable to marshal report as XML");
+           LOG.error("Unable to marshal report as XML");
            throw new AvailabilityCalculationException(e);
        }
    }
@@ -266,13 +264,13 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public String writeLocateableXML(String id) throws AvailabilityCalculationException {
         try {
-            log.debug("Writing the XML");
+            LOG.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
             String catFileName = m_categoryName.replace(' ', '-');
             m_outputFileName = catFileName + "-" + m_monthFormat
                     + fmt.format(m_periodEndDate) + ".xml";
-            log.debug("Report Store XML file: " + m_outputFileName);
+            LOG.debug("Report Store XML file: {}", m_outputFileName);
             File reportFile = new File(m_baseDir, m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
@@ -285,7 +283,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
             m_reportStoreService.save(catalogEntry);
 
         } catch (AvailabilityCalculationException e) {
-            log.fatal("Unable to marshal report as XML");
+            LOG.error("Unable to marshal report as XML");
             throw new AvailabilityCalculationException(e);
         }
         
@@ -302,10 +300,10 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     @Override
     public void writeXML(OutputStream outputStream) throws AvailabilityCalculationException {
         try {
-            log.debug("Writing the XML");
+            LOG.debug("Writing the XML");
             marshal(outputStream);
         } catch (AvailabilityCalculationException e) {
-            log.fatal("Unable to marshal report as XML");
+            LOG.error("Unable to marshal report as XML");
             throw new AvailabilityCalculationException(e);
         }
     }
@@ -323,17 +321,16 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
-            log.debug("The xml marshalled from the castor classes is saved in "
-                    + outputFile.getAbsoluteFile());
+            LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
             fileWriter.close();
         } catch (MarshalException me) {
-            log.fatal("MarshalException ", me);
+            LOG.error("MarshalException ", me);
             throw new AvailabilityCalculationException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception ", ve);
+            LOG.error("Validation Exception ", ve);
             throw new AvailabilityCalculationException(ve);
         } catch (IOException ioe) {
-            log.fatal("IO Exception ", ioe);
+            LOG.error("IO Exception ", ioe);
             throw new AvailabilityCalculationException(ioe);
         }
     }
@@ -345,16 +342,16 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
             Marshaller marshaller = new Marshaller(writer);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
-            log.debug("The xml marshalled from the castor classes has been written to the output stream");
+            LOG.debug("The xml marshalled from the castor classes has been written to the output stream");
             writer.flush();
         } catch (MarshalException me) {
-            log.fatal("MarshalException ", me);
+            LOG.error("MarshalException ", me);
             throw new AvailabilityCalculationException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception ", ve);
+            LOG.error("Validation Exception ", ve);
             throw new AvailabilityCalculationException(ve);
         } catch (IOException ioe) {
-            log.fatal("IO Exception ", ioe);
+            LOG.error("IO Exception ", ioe);
             throw new AvailabilityCalculationException(ioe);
         }
     }

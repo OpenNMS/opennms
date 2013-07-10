@@ -35,7 +35,8 @@ import java.util.Map;
 import jcifs.netbios.NbtAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -50,6 +51,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class SmbPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(SmbPlugin.class);
     /**
      * The protocol that this plugin checks for.
      */
@@ -65,28 +67,27 @@ public final class SmbPlugin extends AbstractPlugin {
      *         name. False otherwise.
      */
     private boolean isSmb(InetAddress host) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean isAServer = false;
         try {
-            log.debug("host.getHostAddress(): " + InetAddressUtils.str(host));
+            LOG.debug("host.getHostAddress(): {}", InetAddressUtils.str(host));
             NbtAddress nbtAddr = NbtAddress.getByName(InetAddressUtils.str(host));
 
             // If the retrieved SMB name is equal to the IP address
             // of the host, the it is safe to assume that the interface
             // does not support SMB
             //
-            log.debug("nbtAddr.getHostName(): " + nbtAddr.getHostName());
+            LOG.debug("nbtAddr.getHostName(): {}", nbtAddr.getHostName());
             if (nbtAddr.getHostName().equals(InetAddressUtils.str(host))) {
-                if (log.isDebugEnabled())
-                    log.debug("SmbPlugin: failed to retrieve SMB name for " + InetAddressUtils.str(host));
+
+                LOG.debug("SmbPlugin: failed to retrieve SMB name for {}", InetAddressUtils.str(host));
             } else {
                 isAServer = true;
             }
         } catch (UnknownHostException e) {
-            if (log.isDebugEnabled())
-                log.debug("SmbPlugin: UnknownHostException: " + e.getMessage());
+
+            LOG.debug("SmbPlugin: UnknownHostException: {}", e.getMessage());
         } catch (Throwable t) {
-            log.error("SmbPlugin: An undeclared throwable exception was caught checking host " + InetAddressUtils.str(host), t);
+            LOG.error("SmbPlugin: An undeclared throwable exception was caught checking host {}", InetAddressUtils.str(host), t);
         }
 
         return isAServer;

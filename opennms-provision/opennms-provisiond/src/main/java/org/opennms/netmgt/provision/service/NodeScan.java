@@ -29,9 +29,10 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.LogUtils.debugf;
-import static org.opennms.core.utils.LogUtils.infof;
-import static org.opennms.core.utils.LogUtils.warnf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -73,6 +74,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class NodeScan implements RunInBatch {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
     private Integer m_nodeId;
     private String m_foreignSource;
@@ -217,7 +219,7 @@ public class NodeScan implements RunInBatch {
     public void abort(final String reason) {
         m_aborted = true;
         
-        infof(this, "Aborting Scan of node %d for the following reason: %s", m_nodeId, reason);
+        LOG.info("Aborting Scan of node {} for the following reason: {}", m_nodeId, reason);
         
         final EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_ABORTED_UEI, "Provisiond");
         if (m_nodeId != null) {
@@ -238,7 +240,7 @@ public class NodeScan implements RunInBatch {
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask parent) {
-        infof(this, "Scanning node %d/%s/%s", m_nodeId, m_foreignSource, m_foreignId);
+        LOG.info("Scanning node {}/{}/{}", m_nodeId, m_foreignSource, m_foreignId);
 
         parent.getBuilder().addSequence(
                 new RunInBatch() {
@@ -282,12 +284,12 @@ public class NodeScan implements RunInBatch {
                     t.schedule();
                     t.waitFor();
                     
-                    debugf(NodeScan.this, "Finished scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.info("Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
                 } catch (final InterruptedException e) {
-                    warnf(NodeScan.this, e, "The node scan for node %d/%s/%s was interrupted", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.warn("The node scan for node {}/{}/{} was interrupted", getNodeId(), getForeignSource(), getForeignId(), e);
                     Thread.currentThread().interrupt();
                 } catch (final ExecutionException e) {
-                    warnf(NodeScan.this, e, "An error occurred while scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.warn("An error occurred while scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId(), e);
                 }
             }
         };
@@ -385,7 +387,7 @@ public class NodeScan implements RunInBatch {
             if (!isAborted()) {
                 getProvisionService().updateNodeScanStamp(getNodeId(), getScanStamp());
                 getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
-                debugf(this, "Finished deleteObsoleteResources for %s", this);
+                LOG.debug("Finished deleteObsoleteResources for {}", this);
             }
         }
 
@@ -396,7 +398,7 @@ public class NodeScan implements RunInBatch {
         public void detectIpAddressTable(final BatchTask currentPhase) {
         	final OnmsNode node = getNode();
 
-            debugf(this, "Attempting to scan the IPAddress table for node %s", node);
+            LOG.debug("Attempting to scan the IPAddress table for node {}", node);
 
 			// mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
@@ -411,26 +413,26 @@ public class NodeScan implements RunInBatch {
             	@Override
             	public void processIPAddressRow(final IPAddressRow row) {
             		final String ipAddress = row.getIpAddress();
-					infof(this, "Processing IPAddress table row with ipAddr %s", ipAddress);
+					LOG.info("Processing IPAddress table row with ipAddr {}", ipAddress);
 
 					final InetAddress address = addr(ipAddress);
 
 					// skip if it's any number of unusual/local address types
 					if (address == null) return;
 					if (address.isAnyLocalAddress()) {
-						debugf(this, "%s.isAnyLocalAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isAnyLocalAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isLinkLocalAddress()) {
-						debugf(this, "%s.isLinkLocalAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isLinkLocalAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isLoopbackAddress()) {
-						debugf(this, "%s.isLoopbackAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isLoopbackAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isMulticastAddress()) {
-						debugf(this, "%s.isMulticastAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isMulticastAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 
@@ -463,7 +465,7 @@ public class NodeScan implements RunInBatch {
         public void detectIpInterfaceTable(final BatchTask currentPhase) {
         	final OnmsNode node = getNode();
 
-            debugf(this, "Attempting to scan the IPInterface table for node %s", node);
+            LOG.debug("Attempting to scan the IPInterface table for node {}", node);
 
 			// mark all provisioned interfaces as 'in need of scanning' so we can mark them
             // as scanned during ipAddrTable processing
@@ -478,26 +480,26 @@ public class NodeScan implements RunInBatch {
             	@Override
             	public void processIPInterfaceRow(final IPInterfaceRow row) {
             		final String ipAddress = row.getIpAddress();
-            		infof(this, "Processing IPInterface table row with ipAddr %s for node %d/%s/%s", ipAddress, node.getId(), node.getForeignSource(), node.getForeignId());
+            		LOG.info("Processing IPInterface table row with ipAddr {} for node {}/{}/{}", ipAddress, node.getId(), node.getForeignSource(), node.getForeignId());
 
 					final InetAddress address = addr(ipAddress);
 
 					// skip if it's any number of unusual/local address types
 					if (address == null) return;
 					if (address.isAnyLocalAddress()) {
-						debugf(this, "%s.isAnyLocalAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isAnyLocalAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isLinkLocalAddress()) {
-						debugf(this, "%s.isLinkLocalAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isLinkLocalAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isLoopbackAddress()) {
-						debugf(this, "%s.isLoopbackAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isLoopbackAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 					if (address.isMulticastAddress()) {
-						debugf(this, "%s.isMulticastAddress() == true, Skipping.", ipAddress);
+						LOG.debug("{}.isMulticastAddress() == true, Skipping.", ipAddress);
 						return;
 					}
 
@@ -532,10 +534,10 @@ public class NodeScan implements RunInBatch {
 
 		private void walkTable(final BatchTask currentPhase, final Set<InetAddress> provisionedIps, final TableTracker tracker) {
             final OnmsNode node = getNode();
-			infof(this, "detecting IP interfaces for node %d/%s/%s using table tracker %s", node.getId(), node.getForeignSource(), node.getForeignId(), tracker);
+			LOG.info("detecting IP interfaces for node {}/{}/{} using table tracker {}", node.getId(), node.getForeignSource(), node.getForeignId(), tracker);
 
 			if (isAborted()) {
-				debugf(this, "'%s' is marked as aborted; skipping scan of table %s", currentPhase, tracker);
+				LOG.debug("'{}' is marked as aborted; skipping scan of table {}", currentPhase, tracker);
 			} else {
 	            Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 	
@@ -567,7 +569,7 @@ public class NodeScan implements RunInBatch {
 				            }
 				        }
 	      
-				        debugf(this, "Finished phase %s", currentPhase);
+				        LOG.debug("Finished phase {}", currentPhase);
 	      
 				    }
 				} catch (final InterruptedException e) {
@@ -584,7 +586,7 @@ public class NodeScan implements RunInBatch {
             final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
                 @Override
                 public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
-                	infof(this, "Processing ifTable row for ifIndex %d on node %d/%s/%s", row.getIfIndex(), getNodeId(), getForeignSource(), getForeignId());
+                	LOG.info("Processing ifTable row for ifIndex {} on node {}/{}/{}", row.getIfIndex(), getNodeId(), getForeignSource(), getForeignId());
                 	OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
                     snmpIface.setLastCapsdPoll(getScanStamp());
                     
@@ -624,7 +626,7 @@ public class NodeScan implements RunInBatch {
                     abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
                 }
                 else {
-                    debugf(this, "Finished phase %s", currentPhase);
+                    LOG.debug("Finished phase {}", currentPhase);
                 }
             } catch (final InterruptedException e) {
                 abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
@@ -720,7 +722,7 @@ public class NodeScan implements RunInBatch {
             if (!isAborted()) {
                 getProvisionService().updateNodeAttributes(getNode());
             }
-            debugf(this, "Finished phase %s", phase);
+            LOG.debug("Finished phase {}", phase);
         }
 
         @Override
@@ -854,10 +856,10 @@ public class NodeScan implements RunInBatch {
         	final OnmsNode node = getNode();
         	final OnmsIpInterface primaryIface = m_provisionService.getPrimaryInterfaceForNode(node);
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-                debugf(this, "Found primary interface and SNMP service for node %d/%s/%s", node.getId(), node.getForeignSource(), node.getForeignId());
+                LOG.debug("Found primary interface and SNMP service for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
                 onAgentFound(currentPhase, primaryIface);
             } else {
-                debugf(this, "Failed to locate primary interface and SNMP service for node %d/%s/%s", node.getId(), node.getForeignSource(), node.getForeignId());
+                LOG.debug("Failed to locate primary interface and SNMP service for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
             }
         }
     }

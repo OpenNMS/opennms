@@ -41,7 +41,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserFactory;
@@ -65,6 +66,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
  */
 public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SpringSecurityUserDaoImpl.class);
     private UserManager m_userManager;
 
     private GroupManager m_groupManager;
@@ -121,7 +123,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             throw new DataRetrievalFailureException("Unable to get user list.", t);
         }
 
-        log().debug("Loaded the users.xml file with " + users.size() + " users");
+        LOG.debug("Loaded the users.xml file with {} users", users.size());
 
         m_usersLastModified = m_userManager.getLastModified();
         m_userFileSize = m_userManager.getFileSize();
@@ -159,7 +161,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             }
         }
 
-        log().debug("Loaded roles from groups.xml file for " + roleMap.size() + " users");
+        LOG.debug("Loaded roles from groups.xml file for {} users", roleMap.size());
 
         m_groupsLastModified = lastModified;
 
@@ -250,7 +252,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             roles.put(user, getAuthorityListFromRoleList(roleMap.get(user), roleAddDefaultMap));
         }
         
-        log().debug("Loaded the magic-users.properties file with " + magicUsers.size() + " magic users, " + configuredRoles.length + " roles, and " + roles.size() + " user roles");
+        LOG.debug("Loaded the magic-users.properties file with {} magic users, {} roles, and {} user roles", magicUsers.size(), configuredRoles.length, roles.size());
 
 
         m_magicUsersLastModified = lastModified; 
@@ -444,13 +446,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         if (isMagicUsersParseNecessary() || (m_useGroups && isGroupsParseNecessary())) {
             parseMagicUsers();
         }
-    }
-
-    /**
-     * Returns the Log4J category for logging web authentication messages.
-     */
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

@@ -40,10 +40,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -60,6 +61,9 @@ import org.springframework.util.Assert;
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
  */
 public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TcpEventReceiver.class);
+    
     /**
      * The value that defines unlimited events per connection.
      */
@@ -202,7 +206,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         try {
             m_server.stop();
         } catch (InterruptedException e) {
-            log().warn("Thread Interrupted while attempting to join server socket thread", e);
+            LOG.warn("Thread Interrupted while attempting to join server socket thread", e);
         }
         m_server = null;
         m_worker = null;
@@ -385,9 +389,5 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     private void assertNotRunning() {
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

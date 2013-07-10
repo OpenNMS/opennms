@@ -35,7 +35,8 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.rt.ReadOnlyRtConfigDao;
 import org.opennms.netmgt.rt.RTTicket;
 import org.opennms.netmgt.rt.RequestTracker;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.rt.RequestTrackerException;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public class RtTicketerPlugin implements Plugin {
+    private static final Logger LOG = LoggerFactory.getLogger(RtTicketerPlugin.class);
     private static Pattern m_tagPattern = Pattern.compile("<[^>]*>");
     
     private RequestTracker m_requestTracker;
@@ -131,7 +133,7 @@ public class RtTicketerPlugin implements Plugin {
 			
 			if ((newTicket.getId() == null) ) {
 			    
-			    LogUtils.debugf(this, "TicketId is null creating a new ticket");
+			    LOG.debug("TicketId is null creating a new ticket");
                 RTTicket ticket = rtTicketFromTicket(newTicket);
                 
                 Long rtTicketNumber = null;
@@ -148,13 +150,13 @@ public class RtTicketerPlugin implements Plugin {
 			    newTicketID = rtTicketNumber.toString();
 				newTicket.setId(newTicketID);
 
-				LogUtils.debugf(this, "created new ticket: %s", newTicket.getId());
+				LOG.debug("created new ticket: {}", newTicket.getId());
 				
 				
 			} else {
 			    
 			    currentTicket = get(newTicket.getId()); 
-				LogUtils.debugf(this, "updating existing ticket: %s", currentTicket.getId());
+				LOG.debug("updating existing ticket: {}", currentTicket.getId());
 				
 				if (currentTicket.getState() != newTicket.getState()) {
 					updateRtStatus(newTicket);
@@ -166,7 +168,7 @@ public class RtTicketerPlugin implements Plugin {
 			}
 			
 		} catch (final PluginException e) {
-			LogUtils.errorf(this, e, "Failed to create or update RT ticket");
+			LOG.error("Failed to create or update RT ticket", e);
 			throw e;
 		}
 			
@@ -183,7 +185,7 @@ public class RtTicketerPlugin implements Plugin {
         try {
             m_requestTracker.updateTicket(Long.valueOf(ticket.getId()), "Status: " + openNMSToRTState(ticket.getState()));
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Error updating ticket %s to state %s", ticket.getId(), ticket.getState().toString());
+            LOG.warn("Error updating ticket {} to state {}", ticket.getId(), ticket.getState(), e);
         }
 	}
 
@@ -216,31 +218,31 @@ public class RtTicketerPlugin implements Plugin {
 
 		String rtStatus;
 		
-		LogUtils.debugf(this, "getting RT status from OpenNMS State %s", state.toString());
+		LOG.debug("getting RT status from OpenNMS State {}", state);
 
         switch (state) {
         
             case OPEN:
             	// ticket is new
             	rtStatus = m_openStatus;
-            	LogUtils.debugf(this, "OpenNMS Status OPEN matched rt status %s", rtStatus);
+            	LOG.debug("OpenNMS Status OPEN matched rt status {}", rtStatus);
             	break;
             case CLOSED:
                 // closed successful
                 rtStatus = m_closedStatus;
-                LogUtils.debugf(this, "OpenNMS Status CLOSED matched rt status %s", rtStatus);
+                LOG.debug("OpenNMS Status CLOSED matched rt status {}", rtStatus);
                 break;
             case CANCELLED:
             	// not sure how often we see this
             	rtStatus = m_cancelledStatus;
-            	LogUtils.debugf(this, "OpenNMS Status CANCELLED matched rt status %s", rtStatus);
+            	LOG.debug("OpenNMS Status CANCELLED matched rt status {}", rtStatus);
             	break;
             default:
-                LogUtils.debugf(this, "No valid OpenNMS state on ticket");
+                LOG.debug("No valid OpenNMS state on ticket");
                 rtStatus = m_openStatus;
         }
         
-        LogUtils.debugf(this, "OpenNMS state was %s, setting RT status to %s", state.toString(), rtStatus);
+        LOG.debug("OpenNMS state was {}, setting RT status to {}", state, rtStatus);
         
         return rtStatus;
     }
@@ -256,13 +258,13 @@ public class RtTicketerPlugin implements Plugin {
     private Ticket.State rtToOpenNMSState(final String rtStatus) {
     	
         if (m_validOpenStatus.contains(rtStatus)) {
-        	LogUtils.debugf(this, "RT status %s matched OpenNMS state Open", rtStatus);
+        	LOG.debug("RT status {} matched OpenNMS state Open", rtStatus);
         	return Ticket.State.OPEN;
         } else if (m_validClosedStatus.contains(rtStatus)) {
-            LogUtils.debugf(this, "RT status %s matched OpenNMS state Closed", rtStatus);
+            LOG.debug("RT status {} matched OpenNMS state Closed", rtStatus);
             return Ticket.State.CLOSED;
 		} else if (m_validCancelledStatus.contains(rtStatus)) {
-            LogUtils.debugf(this, "RT status %s matched OpenNMS state Cancelled", rtStatus);
+            LOG.debug("RT status {} matched OpenNMS state Cancelled", rtStatus);
             return Ticket.State.CANCELLED;
 		}
         

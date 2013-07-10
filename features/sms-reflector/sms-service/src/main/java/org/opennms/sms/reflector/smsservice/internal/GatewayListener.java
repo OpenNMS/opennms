@@ -30,7 +30,8 @@ package org.opennms.sms.reflector.smsservice.internal;
 
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.Service;
 import org.smslib.Service.ServiceStatus;
@@ -42,6 +43,7 @@ import org.smslib.Service.ServiceStatus;
  * @version $Id: $
  */
 public class GatewayListener {
+    private static final Logger LOG = LoggerFactory.getLogger(GatewayListener.class);
 	
 	private Service m_service;
 	
@@ -72,7 +74,7 @@ public class GatewayListener {
 				m_service.startService();
 				
 			}catch(final Exception e){
-			    LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateway);
+			    LOG.warn("Unable to add gateway ({}) to SMS service", gateway, e);
 			}
 			
 		}
@@ -93,7 +95,7 @@ public class GatewayListener {
 				m_service.removeGateway(gateway);
 				m_service.startService();
 			}catch(final Exception e){
-			    LogUtils.warnf(this, e, "Unable to remove gateway (%s) from SMS service", gateway);
+			    LOG.warn("Unable to remove gateway ({}) from SMS service", gateway, e);
 			}
 			
 		}

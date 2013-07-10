@@ -33,12 +33,13 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
@@ -53,6 +54,9 @@ import org.xbill.DNS.Type;
  */
 @Distributable
 public class DNSResolutionMonitor extends AbstractServiceMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(DNSResolutionMonitor.class);
     
     public static final String RESOLUTION_TYPE_PARM = "resolution-type";
     public static final String RT_V4 = "v4";
@@ -79,7 +83,7 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
             boolean v4found = false;
             boolean v6found = false;
             for(InetAddress addr : addrs) {
-                log().debug("Resolved " + nodeLabel + " to " + addr);
+                LOG.debug("Resolved {} to {}", nodeLabel, addr);
                 if (addr instanceof Inet4Address) {
                     v4found = true;
                 } else if(addr instanceof Inet6Address) {
@@ -88,18 +92,27 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
             }
 
             if (!v4found && !v6found) {
-                return logDown(Level.INFO, "Unable to resolve " + nodeLabel);
+                String reason = "Unable to resolve " + nodeLabel;
+                LOG.debug(reason);
+                return PollStatus.unavailable(reason);
             } 
             if (requireV4 && !v4found) {
-                return logDown(Level.INFO, nodeLabel + " could only be resolved to an IPv6 address");
+                String reason = nodeLabel + " could only be resolved to an IPv6 address";
+                LOG.debug(reason);
+                return PollStatus.unavailable(reason);
             }
             if (requireV6 && !v6found) {
-                return logDown(Level.INFO, nodeLabel + " could only be resolved to an IPv4 address");
+                String reason = nodeLabel + " could only be resolved to an IPv4 address";
+                LOG.debug(reason);
+                return PollStatus.unavailable(reason);
             }
-            return logUp(Level.INFO, (double)(end - start), "Resolved " + nodeLabel + " correctly!");
+            LOG.debug("Resolved {} correctly!", nodeLabel);
+            return PollStatus.available((double)(end - start));
 
         } catch (TextParseException e) {
-            return logDown(Level.INFO,"Unable to resolve "+nodeLabel+": "+e.getMessage());
+            String reason = "Unable to resolve "+nodeLabel+": "+e.getMessage();
+            LOG.debug(reason);
+            return PollStatus.unavailable(reason);
         }
 
     }

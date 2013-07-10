@@ -54,7 +54,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -77,6 +78,7 @@ import org.opennms.netmgt.config.ami.Range;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class AmiPeerFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(AmiPeerFactory.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -145,7 +147,7 @@ public class AmiPeerFactory {
         }
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME);
-        LogUtils.debugf(AmiPeerFactory.class, "init: config file path: %s", cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
         m_singleton = new AmiPeerFactory(cfgFile.getPath());
         m_loaded = true;
     }
@@ -249,7 +251,7 @@ public class AmiPeerFactory {
                 final Definition definition = definitionsIterator.next();
                 if (definition.getSpecificCount() == 0
                     && definition.getRangeCount() == 0) {
-                    LogUtils.debugf(this, "optimize: Removing empty definition element");
+                    LOG.debug("optimize: Removing empty definition element");
                     definitionsIterator.remove();
                 }
             }

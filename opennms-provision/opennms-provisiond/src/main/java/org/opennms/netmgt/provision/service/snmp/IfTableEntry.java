@@ -30,7 +30,8 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 
 
@@ -61,6 +62,7 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public final class IfTableEntry extends SnmpTableEntry {
+    private static final Logger LOG = LoggerFactory.getLogger(IfTableEntry.class);
     //
     // Lookup strings for specific table entries
     //
@@ -252,7 +254,7 @@ public final class IfTableEntry extends SnmpTableEntry {
                 return normalizeMacAddress(getDisplayString(IfTableEntry.IF_PHYS_ADDR));
             }
         } catch (IllegalArgumentException e) {
-            LogUtils.warnf(this, e, e.getMessage());
+            LOG.warn(e.getMessage(), e);
             return getDisplayString(IfTableEntry.IF_PHYS_ADDR);
         }
     }

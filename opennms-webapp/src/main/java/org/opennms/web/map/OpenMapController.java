@@ -40,12 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -62,7 +65,9 @@ import org.springframework.web.servlet.mvc.Controller;
  * @since 1.8.1
  */
 public class OpenMapController implements Controller {
-	ThreadCategory log;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OpenMapController.class);
+
 
 	private Manager manager;
 	
@@ -88,24 +93,23 @@ public class OpenMapController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
 
-		log.debug(request.getQueryString());
+		LOG.debug(request.getQueryString());
 		String mapIdStr = request.getParameter("MapId");
-		log.debug("MapId=" + mapIdStr);
+		LOG.debug("MapId={}", mapIdStr);
 		String mapWidthStr = request.getParameter("MapWidth");
-        log.debug("MapWidth=" + mapWidthStr);
+        LOG.debug("MapWidth={}", mapWidthStr);
         String mapHeightStr = request.getParameter("MapHeight");
-        log.debug("MapHeight=" + mapHeightStr);
+        LOG.debug("MapHeight={}", mapHeightStr);
         String adminModeStr = request.getParameter("adminMode");
-        log.debug("adminMode=" + adminModeStr);
+        LOG.debug("adminMode={}", adminModeStr);
 		
 		String user = request.getRemoteUser();
 		
 		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))) {
-			log.info(user + " has Admin admin Role");
+			LOG.info("{} has Admin admin Role", user);
 		}					
 
 		float widthFactor = 1;
@@ -118,15 +122,14 @@ public class OpenMapController implements Controller {
 			int mapWidth = WebSecurityUtils.safeParseInt(mapWidthStr);
 			int mapHeight = WebSecurityUtils.safeParseInt(mapHeightStr);
 			
-			log.debug("Current mapWidth=" + mapWidth
-						+ " and MapHeight=" + mapHeight);
+			LOG.debug("Current mapWidth={} and MapHeight={}", mapWidth, mapHeight);
 			VMap map = null;
 			if(mapIdStr!=null){
 				int mapid = WebSecurityUtils.safeParseInt(mapIdStr);
-				log.debug("Opening map "+mapid+" for user "+user);
+				LOG.debug("Opening map {} for user {}", mapid, user);
 				map = manager.openMap(mapid, user, !(adminModeStr.equals("true")));
 			}else{
-				log.debug("Try to Opening default map");
+				LOG.debug("Try to Opening default map");
 				VMapInfo defaultmapinfo = manager.getDefaultMapsMenu(user);
 				if (defaultmapinfo != null ) {
 	                map = manager.openMap(defaultmapinfo.getId(),user,!(adminModeStr.equals("true")));
@@ -142,11 +145,10 @@ public class OpenMapController implements Controller {
 				widthFactor = (float) mapWidth / dbMapWidth;
 				heightFactor = (float) mapHeight / dbMapHeight;
 
-				log.debug("Old saved mapWidth=" + dbMapWidth
-						+ " and MapHeight=" + dbMapHeight);
-				log.debug("widthFactor=" + widthFactor);
-				log.debug("heightFactor=" + heightFactor);
-				log.debug("Setting new width and height to the session map");
+				LOG.debug("Old saved mapWidth={} and MapHeight={}", dbMapWidth, dbMapHeight);
+				LOG.debug("widthFactor={}", widthFactor);
+				LOG.debug("heightFactor={}", heightFactor);
+				LOG.debug("Setting new width and height to the session map");
 				
 				map.setHeight(mapHeight);
 				map.setWidth(mapWidth);
@@ -160,7 +162,7 @@ public class OpenMapController implements Controller {
 			bw.write(ResponseAssembler.getMapResponse(map));
 
 		} catch (Throwable e) {
-			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user,e);
+			LOG.error("Error while opening map with id:{}, for user:{}", mapIdStr, user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.OPENMAP_ACTION));
 		} finally {
 			bw.close();

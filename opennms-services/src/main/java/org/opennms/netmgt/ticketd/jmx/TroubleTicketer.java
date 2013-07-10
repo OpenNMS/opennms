@@ -41,7 +41,7 @@ public class TroubleTicketer extends AbstractSpringContextJmxServiceDaemon<org.o
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.TroubleTicketer";
+        return org.opennms.netmgt.ticketd.TroubleTicketer.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

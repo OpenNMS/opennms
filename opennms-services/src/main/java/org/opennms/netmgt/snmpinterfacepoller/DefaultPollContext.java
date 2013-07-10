@@ -28,18 +28,14 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
-
-import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.InetAddressUtils.*;
 
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
@@ -50,6 +46,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a DefaultPollContext
@@ -58,6 +56,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class DefaultPollContext implements PollContext {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
     
     private volatile EventIpcManager m_eventManager;
     private volatile String m_name;
@@ -185,8 +186,8 @@ public class DefaultPollContext implements PollContext {
         getEventManager().sendNow(event);
     }
 
-    ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private Logger log() {
+        return LOG;
     }
 
     /* (non-Javadoc)

@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>features</artifactId>
-  <name>NRTG Karaf Features</name>
+  <name>OpenNMS Features NRTG Features Features</name>
 
   <packaging>pom</packaging>
   <modules>

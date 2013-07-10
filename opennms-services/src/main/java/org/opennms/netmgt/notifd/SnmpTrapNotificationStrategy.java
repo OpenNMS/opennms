@@ -35,13 +35,14 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SnmpTrapNotificationStrategy class.</p>
@@ -50,6 +51,8 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
  * @version $Id: $
  */
 public class SnmpTrapNotificationStrategy implements NotificationStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapNotificationStrategy.class);
     
     private List<Argument> m_arguments;
 
@@ -61,7 +64,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String argVersion = getVersion();
         
         if (argVersion == null) {
-            log().info("send: trapVersion paramenter is null, defaulting to \"v1\".");
+            LOG.info("send: trapVersion paramenter is null, defaulting to \"v1\".");
             argVersion = "v1";
         }
 
@@ -72,14 +75,14 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             } else if (argVersion.equals("v2c") || argVersion.equals("v2")) {
                 sendV2Trap();
             } else if (argVersion.equals("v3")) {
-                log().info("send: Version3 not supported in notifications, yet, falling back to v2c.");
+                LOG.info("send: Version3 not supported in notifications, yet, falling back to v2c.");
                 sendV2Trap();
             } else {
-                log().info("send: No version specified in first argument to notification.");
+                LOG.info("send: No version specified in first argument to notification.");
                 return 1;
             }
         } catch (Throwable e) {
-            log().info("send: Exception trying to send trap. ",e);
+            LOG.info("send: Exception trying to send trap. ",e);
             return 1;
         }
         
@@ -88,10 +91,6 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
     
     private String getVersion() {
         return getSwitchValue("trapVersion");
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
     }
 
     /**
@@ -159,10 +158,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapHost");
         
         if (switchValue == null) {
-            log().info("getHostInetAddress: trapHost not specified, defaulting to: \"127.0.0.1\".");
+            LOG.info("getHostInetAddress: trapHost not specified, defaulting to: \"127.0.0.1\".");
             switchValue = "127.0.0.1";
         } else {
-            log().debug("getHostInetAddress: trapHost argument: "+switchValue);
+            LOG.debug("getHostInetAddress: trapHost argument: {}", switchValue);
         }
         return InetAddressUtils.addr(switchValue);
     }
@@ -175,10 +174,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapPort");
         
         if (switchValue == null) {
-            log().info("getPort: trapPort argument not specified, defaulting to: \"162\".");
+            LOG.info("getPort: trapPort argument not specified, defaulting to: \"162\".");
             return 162;
         } else {
-            log().debug("getPort: trapPort argument: "+Integer.parseInt(switchValue));
+            LOG.debug("getPort: trapPort argument: {}", Integer.parseInt(switchValue));
         }
         return Integer.parseInt(switchValue);
     }
@@ -191,10 +190,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapCommunity");
         
         if (switchValue == null) {
-            log().info("getCommunity: trapCommunity not specified, defaulting to: \"public\".");
+            LOG.info("getCommunity: trapCommunity not specified, defaulting to: \"public\".");
             switchValue = "public";
         } else {
-            log().debug("getCommunity: trapCommunity argument: "+switchValue);
+            LOG.debug("getCommunity: trapCommunity argument: {}", switchValue);
         }
         return switchValue;
     }
@@ -207,10 +206,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapEnterprise");
         
         if (switchValue == null) {
-            log().info("getEnterpriseId: trapEnterprise not specified, defaulting to: \".1.3.6.1.4.1.5813\".");
+            LOG.info("getEnterpriseId: trapEnterprise not specified, defaulting to: \".1.3.6.1.4.1.5813\".");
             switchValue = ".1.3.6.1.4.1.5813";
         } else {
-            log().debug("getEnterpriseId: trapEnterprise argument: "+switchValue);
+            LOG.debug("getEnterpriseId: trapEnterprise argument: {}", switchValue);
         }
         return switchValue;
     }
@@ -223,10 +222,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapGeneric");
         
         if (switchValue == null) {
-            log().info("getGenericId: trapGeneric argument not specified, defaulting to: \"6\".");
+            LOG.info("getGenericId: trapGeneric argument not specified, defaulting to: \"6\".");
             return 6;
         } else {
-            log().debug("getGenericId: trapGeneric argument: "+switchValue);
+            LOG.debug("getGenericId: trapGeneric argument: {}", switchValue);
         }
         return Integer.parseInt(switchValue);
     }
@@ -239,10 +238,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapSpecific");
         
         if (switchValue == null) {
-            log().info("getSpecificId: trapSpecific argument not specified, defaulting to: \"1\".");
+            LOG.info("getSpecificId: trapSpecific argument not specified, defaulting to: \"1\".");
             return 1;
         } else {
-            log().debug("getSpecificId: trapSpecific argument: "+Integer.parseInt(switchValue));
+            LOG.debug("getSpecificId: trapSpecific argument: {}", Integer.parseInt(switchValue));
         }
         return Integer.parseInt(switchValue);
     }
@@ -255,10 +254,10 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         String switchValue = getSwitchValue("trapVarbind");
         
         if (switchValue == null) {
-            log().info("getVarbind: trapVarbind argument not specified, defaulting to: \"OpenNMS Trap Notification\".");
+            LOG.info("getVarbind: trapVarbind argument not specified, defaulting to: \"OpenNMS Trap Notification\".");
             return "OpenNMS Trap Notification";
         } else {
-            log().debug("getVarbind: trapVarbind argument: "+switchValue);
+            LOG.debug("getVarbind: trapVarbind argument: {}", switchValue);
         }
         return switchValue;
     }

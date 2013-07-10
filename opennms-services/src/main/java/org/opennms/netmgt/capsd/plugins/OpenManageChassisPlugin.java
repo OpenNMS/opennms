@@ -31,13 +31,14 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.core.utils.ParameterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -54,6 +55,9 @@ import org.opennms.core.utils.ParameterMap;
  * @version $Id: $
  */
 public final class OpenManageChassisPlugin extends SnmpPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(OpenManageChassisPlugin.class);
+    
     /**
      * Name of monitored service.
      */
@@ -153,12 +157,10 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
                 // If no chassis status received, do not detect the protocol and quit
                 if (chassisStatus == null)
                 {
-                    log().warn("Cannot receive chassis status");
+                    LOG.warn("Cannot receive chassis status");
                     return false;
                 } else {
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: OpenManageChassis: " + chassisStatus);
-                    }
+                    LOG.debug("poll: OpenManageChassis: {}", chassisStatus);
                 }
 
                 // Validate chassis status, check status is somewhere between OTHER and NON_RECOVERABLE
@@ -166,30 +168,19 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
                     Integer.parseInt(chassisStatus.toString()) <= DELL_STATUS.NON_RECOVERABLE.value())
                 {
                     // OpenManage chassis status detected
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: OpenManageChassis: is valid, protocol supported.");
-                    }
+                    LOG.debug("poll: OpenManageChassis: is valid, protocol supported.");
                     return true;
                 }
             }
         } catch (NullPointerException e) {
-            log().warn("SNMP not available!");
+            LOG.warn("SNMP not available!");
         } catch (NumberFormatException e) {
-            log().warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", ipaddr, t);
         }
         return false;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public static ThreadCategory log() {
-        return ThreadCategory.getInstance(OpenManageChassisPlugin.class);
     }
 }

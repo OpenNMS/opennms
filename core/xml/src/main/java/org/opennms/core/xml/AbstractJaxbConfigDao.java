@@ -31,7 +31,8 @@ package org.opennms.core.xml;
 
 import org.opennms.core.utils.FileReloadCallback;
 import org.opennms.core.utils.FileReloadContainer;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -46,6 +47,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractJaxbConfigDao.class);
+	
     private Class<K> m_jaxbClass;
     private String m_description;
     private Resource m_configResource;
@@ -77,15 +81,6 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     protected abstract V translateConfig(K castorConfig);
 
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
      * <p>loadConfig</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
@@ -94,27 +89,15 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     protected V loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
         
-        if (log().isDebugEnabled()) {
-            log().debug("Loading " + m_description + " configuration from " + resource);
-        }
+        LOG.debug("Loading {} configuration from {}", m_description, resource);
 
         V config = translateConfig(JaxbUtils.unmarshal(m_jaxbClass, resource));
         
         long endTime = System.currentTimeMillis();
-        log().info(createLoadedLogMessage(config, (endTime - startTime)));
+        
+        LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
         
         return config;
-    }
-
-    /**
-     * <p>createLoadedLogMessage</p>
-     *
-     * @param translatedConfig a V object.
-     * @param diffTime a long.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String createLoadedLogMessage(final V translatedConfig, final long diffTime) {
-        return "Loaded " + getDescription() + " in " + diffTime + "ms";
     }
 
     /**

@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smslib.AGateway;
 import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;
 
@@ -65,17 +66,15 @@ public class UssdNotificationDispatcher implements IUSSDNotification {
 
     /** {@inheritDoc} */
     @Override
-    public void process(String gatewayId, USSDResponse msg) {
-
-        log.debug( "Forwarding message to registered listeners: " + getListeners() + " : " + msg );
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
+        log.debug( "Forwarding message to registered listeners: {} : {}", getListeners(), ussdResponse);
 
         for( IUSSDNotification listener : getListeners() )
         {
             if (listener != this) {
-                listener.process( gatewayId, msg );
+                listener.process( gateway, ussdResponse );
             }
         }
-
     }
 
     private Collection<IUSSDNotification> getListeners() {
@@ -90,5 +89,6 @@ public class UssdNotificationDispatcher implements IUSSDNotification {
     public void setListenerList(List<IUSSDNotification> list){
         m_listenerList = list;
     }
+
 
 }

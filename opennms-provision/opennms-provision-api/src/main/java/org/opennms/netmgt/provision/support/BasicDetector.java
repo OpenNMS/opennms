@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,8 @@ import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract BasicDetector class.</p>
@@ -45,6 +46,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public abstract class BasicDetector<Request, Response> extends SyncAbstractDetector {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BasicDetector.class);
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
@@ -79,14 +82,14 @@ public abstract class BasicDetector<Request, Response> extends SyncAbstractDetec
     	final int port = getPort();
     	final int retries = getRetries();
         final int timeout = getTimeout();
-        LogUtils.infof(this, "isServiceDetected: Checking address: %s for %s capability on port %s", ipAddr, getServiceName(), getPort());
+        LOG.info("isServiceDetected: Checking address: {} for {} capability on port {}", ipAddr, getServiceName(), getPort());
 
         final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {
 
             try {
                 client.connect(address, port, timeout);
-                LogUtils.infof(this, "isServiceDetected: Attempting to connect to address: %s, port: %d, attempt: #%s", ipAddr, port, attempts);
+                LOG.info("isServiceDetected: Attempting to connect to address: {}, port: {}, attempt: #{}", ipAddr, port, attempts);
                 
                 if (attemptConversation(client)) {
                     return true;
@@ -94,20 +97,20 @@ public abstract class BasicDetector<Request, Response> extends SyncAbstractDetec
                 
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
-                LogUtils.infof(this, e, "isServiceDetected: %s: Unable to connect to address: %s port %d, attempt #%s",getServiceName(), ipAddr, port, attempts);
+                LOG.info("isServiceDetected: {}: Unable to connect to address: {} port {}, attempt #{}",getServiceName(), ipAddr, port, attempts, e);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
-                LogUtils.infof(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
+                LOG.info("isServiceDetected: {}: No route to address {} was available", getServiceName(), ipAddr, e);
             } catch (final PortUnreachableException e) {
                 // Port unreachable
-                LogUtils.infof(this, e, "isServiceDetected: %s: Port unreachable while connecting to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                LOG.info("isServiceDetected: {}: Port unreachable while connecting to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                LOG.info("isServiceDetected: {}: Did not connect to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
             } catch (IOException e) {
-                LogUtils.errorf(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
+                LOG.error("isServiceDetected: {}: An unexpected I/O exception occured contacting address {} port {}",getServiceName(), ipAddr, port, e);
             } catch (Throwable t) {
-                LogUtils.errorf(this, t, "isServiceDetected: %s: Unexpected error trying to detect %s on address %s port %d", getServiceName(), getServiceName(), ipAddr, port);
+                LOG.error("isServiceDetected: {}: Unexpected error trying to detect {} on address {} port {}", getServiceName(), getServiceName(), ipAddr, port, t);
             } finally {
                 client.close();
             }

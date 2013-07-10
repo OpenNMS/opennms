@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>spring-web-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Spring Web Dependencies</name>
+  <name>OpenNMS Dependencies Spring Web</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the spring library.
@@ -96,6 +96,10 @@
       <version>${springWebFlowVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-beans</artifactId>
         </exclusion>
@@ -119,6 +123,10 @@
       <version>${springWebFlowVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-beans</artifactId>
         </exclusion>
@@ -141,6 +149,10 @@
       <artifactId>spring-webflow</artifactId>
       <version>${springWebFlowVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-beans</artifactId>
@@ -173,6 +185,10 @@
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
       <groupId>xalan</groupId>

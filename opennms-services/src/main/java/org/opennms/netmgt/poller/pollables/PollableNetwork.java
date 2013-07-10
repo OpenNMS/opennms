@@ -31,9 +31,10 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -199,26 +200,23 @@ public class PollableNetwork extends PollableContainer {
         throw new UnsupportedOperationException("No up event for the network");
     }
     
-    class DumpVisitor extends PollableVisitorAdaptor {
+    static class DumpVisitor extends PollableVisitorAdaptor {
         
-        private ThreadCategory m_log;
-
-        public DumpVisitor(ThreadCategory log) {
-            m_log = log;
-        }
+        private static final Logger LOG = LoggerFactory.getLogger(PollableNetwork.DumpVisitor.class);
+        
         @Override
         public void visitNode(PollableNode pNode) {
-            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + getStatusString(pNode));
+            LOG.debug(" nodeid={} status={}", pNode.getNodeId(), getStatusString(pNode));
         }
 
         @Override
         public void visitInterface(PollableInterface pIf) {;
-            m_log.debug("     interface=" + pIf.getIpAddr() + " status=" + getStatusString(pIf));
+            LOG.debug("     interface={} status={}", pIf.getIpAddr(), getStatusString(pIf));
         }
 
         @Override
         public void visitService(PollableService pSvc) {
-            m_log.debug("         service=" + pSvc.getSvcName() + " status=" + getStatusString(pSvc));
+            LOG.debug("         service={} status={}", pSvc.getSvcName(), getStatusString(pSvc));
         }
         
         private String getStatusString(PollableElement e) {
@@ -237,9 +235,8 @@ public class PollableNetwork extends PollableContainer {
      * <p>dump</p>
      */
     public void dump() {
-        final ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        DumpVisitor dumper = new DumpVisitor(log);
+        DumpVisitor dumper = new DumpVisitor();
         visit(dumper);
         
     }

@@ -35,10 +35,8 @@ import java.util.Properties;
 
 import junit.framework.AssertionFailedError;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.spi.LoggingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>MockLogAppender class. If you do not specify the log level specifically, the level
@@ -58,48 +56,21 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author brozow
  * @version $Id: $
  */
-public class MockLogAppender extends AppenderSkeleton {
-    private static List<LoggingEvent> s_events = null;
+public class MockLogAppender {
+    private static final LoggingEvent[] EMPTY_LOGGING_EVENT = new LoggingEvent[0];
 
-    private static Level s_logLevel = Level.ALL;
+    private static List<LoggingEvent> s_events;
+    private static Level s_highestLoggedLevel = Level.TRACE;
+    private static String s_defaultLevel = "DEBUG";
+    private static MockLogAppender s_instance = null;
 
     /**
      * <p>Constructor for MockLogAppender.</p>
      */
-    public MockLogAppender() {
-        super();
+    protected MockLogAppender() {
+        MockLoggerFactory.setAppender(this);
         resetEvents();
         resetLogLevel();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public synchronized void doAppend(final LoggingEvent event) {
-        super.doAppend(event);
-        receivedLogLevel(event.getLevel());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void append(final LoggingEvent event) {
-        s_events.add(event);
-    }
-
-    /**
-     * <p>close</p>
-     */
-    @Override
-    public void close() {
-    }
-
-    /**
-     * <p>requiresLayout</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean requiresLayout() {
-        return false;
     }
 
     /**
@@ -112,30 +83,27 @@ public class MockLogAppender extends AppenderSkeleton {
     /**
      * <p>getEvents</p>
      *
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEvents() {
-        return (LoggingEvent[]) s_events.toArray(new LoggingEvent[0]);
+        return (LoggingEvent[]) s_events.toArray(EMPTY_LOGGING_EVENT);
     }
 
     /**
      * <p>getEventsGreaterOrEqual</p>
      *
-     * @param level a {@link org.apache.log4j.Level} object.
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEventsGreaterOrEqual(final Level level) {
         LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
-                if (event.getLevel().isGreaterOrEqual(level)) {
+                if (event.getLevel().ge(level)) {
                     matching.add(event);
                 }
             }
         }
 
-        return matching.toArray(new LoggingEvent[0]);
+        return matching.toArray(EMPTY_LOGGING_EVENT);
     }
 
     /**
@@ -143,21 +111,19 @@ public class MockLogAppender extends AppenderSkeleton {
      *
      * Returns events that were logged at the specified level
      * 
-     * @param level a {@link org.apache.log4j.Level} object.
-     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
      */
     public static LoggingEvent[] getEventsAtLevel(final Level level) {
-        LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
+        final LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
 
         synchronized (s_events) {
             for (final LoggingEvent event : s_events) {
-                if (event.getLevel().isGreaterOrEqual(level)) {
+                if (event.getLevel().ge(level)) {
                     matching.add(event);
                 }
             }
         }
 
-        return matching.toArray(new LoggingEvent[0]);
+        return matching.toArray(EMPTY_LOGGING_EVENT);
     }
 
     /**
@@ -192,10 +158,10 @@ public class MockLogAppender extends AppenderSkeleton {
      * @param props a {@link java.util.Properties} object.
      */
     public static void setupLogging(final boolean toConsole, final Properties props) {
-    	final String level = System.getProperty("mock.logLevel", "DEBUG");
+        final String level = System.getProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, s_defaultLevel);
         setupLogging(toConsole, level, props);
     }
-    
+
     /**
      * <p>setupLogging</p>
      *
@@ -205,7 +171,7 @@ public class MockLogAppender extends AppenderSkeleton {
     public static void setupLogging(final boolean toConsole, final String level) {
         setupLogging(toConsole, level, new Properties());
     }
-    
+
     /**
      * <p>setupLogging</p>
      *
@@ -213,34 +179,45 @@ public class MockLogAppender extends AppenderSkeleton {
      * @param level a {@link java.lang.String} object.
      * @param config a {@link java.util.Properties} object.
      */
-    public static void setupLogging(final boolean toConsole, final String level, final Properties config) {
+    public static void setupLogging(final boolean toConsole, String level, final Properties config) {
+        s_defaultLevel = level;
         resetLogLevel();
-        
-        final Properties logConfig = new Properties(config);
-        final String consoleAppender = (toConsole ? ", CONSOLE" : "");
-        
-        setProperty(logConfig, "log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
-        setProperty(logConfig, "log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-        setProperty(logConfig, "log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-        setProperty(logConfig, "log4j.appender.MOCK", MockLogAppender.class.getName());
-        setProperty(logConfig, "log4j.appender.MOCK.layout", "org.apache.log4j.PatternLayout");
-        setProperty(logConfig, "log4j.appender.MOCK.layout.ConversionPattern", "%-5p [%t] %c: %m%n");
+        resetEvents();
 
-        setProperty(logConfig, "log4j.rootCategory", level + consoleAppender + ", MOCK");
-        setProperty(logConfig, "log4j.logger.org.apache.commons.httpclient.HttpMethodBase", "ERROR");
-        setProperty(logConfig, "log4j.logger.org.exolab.castor", "INFO");
-        setProperty(logConfig, "log4j.logger.org.snmp4j", "ERROR");
-        setProperty(logConfig, "log4j.logger.org.snmp4j.agent", "ERROR");
-        setProperty(logConfig, "log4j.logger.com.mchange.v2.c3p0.impl", "WARN");
-        setProperty(logConfig, "log4j.logger.org.hibernate.cfg.AnnotationBinder", "ERROR" + consoleAppender + ", MOCK");
-        
-        PropertyConfigurator.configure(logConfig);
-    }
-    
-    private static void setProperty(final Properties logConfig, final String key, final String value) {
-        if (!logConfig.containsKey(key)) {
-            logConfig.put(key, value);
+        if (s_instance == null) {
+            s_instance = new MockLogAppender();
         }
+
+        LoggerFactory.getILoggerFactory();
+        final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
+        setProperty(logger, MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2.c3p0.impl", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "mx4j", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.SQL", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.hibernate.cfg.AnnotationBinder", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.security", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "snaq.db", "INFO");
+
+        for (final Object oKey : config.keySet()) {
+            final String key = ((String)oKey).replaceAll("^log4j.logger.", MockLogger.LOG_KEY_PREFIX);
+            setProperty(logger, key, config.getProperty((String)oKey));
+        }
+    }
+
+    private static void setProperty(final Logger logger, final String key, final String value) {
+        System.setProperty(key, System.getProperty(key, value));
     }
 
     /**
@@ -258,8 +235,9 @@ public class MockLogAppender extends AppenderSkeleton {
      * @param level a {@link org.apache.log4j.Level} object.
      */
     public static void receivedLogLevel(final Level level) {
-        if (level.isGreaterOrEqual(s_logLevel)) {
-            s_logLevel = level;
+        if (level.gt(s_highestLoggedLevel)) {
+            //System.err.println("MockLogAppender: current level: " + s_highestLoggedLevel + ", new level: " + level);
+            s_highestLoggedLevel = level;
         }
     }
 
@@ -267,7 +245,8 @@ public class MockLogAppender extends AppenderSkeleton {
      * <p>resetLogLevel</p>
      */
     public static void resetLogLevel() {
-        s_logLevel = Level.ALL;
+        s_highestLoggedLevel = Level.TRACE;
+        System.setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, s_defaultLevel);
     }
 
     /**
@@ -276,13 +255,12 @@ public class MockLogAppender extends AppenderSkeleton {
      * @return a boolean.
      */
     public static boolean noWarningsOrHigherLogged() {
-        return Level.INFO.isGreaterOrEqual(s_logLevel);
+        return Level.INFO.ge(s_highestLoggedLevel);
     }
 
     /**
      * <p>assertNotGreaterOrEqual</p>
      *
-     * @param level a {@link org.apache.log4j.Level} object.
      * @throws junit.framework.AssertionFailedError if any.
      */
     public static void assertNotGreaterOrEqual(final Level level) throws AssertionFailedError {
@@ -293,7 +271,7 @@ public class MockLogAppender extends AppenderSkeleton {
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
-        	Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
         final LoggingEvent[] events = getEventsGreaterOrEqual(level);
         if (events.length == 0) {
@@ -304,8 +282,8 @@ public class MockLogAppender extends AppenderSkeleton {
 
         for (final LoggingEvent event : events) {
             message.append("\n\t[").append(event.getLevel()).append("] ")
-            	.append(event.getLoggerName()).append(": ")
-            	.append(event.getMessage());
+            .append(event.getLoggerName()).append(": ")
+            .append(event.getMessage());
         }
 
         throw new AssertionFailedError(message.toString());
@@ -319,7 +297,15 @@ public class MockLogAppender extends AppenderSkeleton {
     public static void assertNoWarningsOrGreater() throws AssertionFailedError {
         assertNotGreaterOrEqual(Level.WARN);
     }
-    
+
+    public static void assertNoErrorOrGreater() throws AssertionFailedError {
+        assertNotGreaterOrEqual(Level.ERROR);
+    }
+
+    public static void assertNoFatalOrGreater() throws AssertionFailedError {
+        assertNotGreaterOrEqual(Level.FATAL);
+    }
+
     /**
      * <p>assertLogAtLevel</p>
      * Asserts that a message was logged at the requested level.
@@ -327,7 +313,6 @@ public class MockLogAppender extends AppenderSkeleton {
      * Useful for testing code that *should* have logged an error message 
      * (or a notice or some other special case)
      *
-     * @param level a {@link org.apache.log4j.Level} object.
      * @throws junit.framework.AssertionFailedError if any.
      */
     public static void assertLogAtLevel(final Level level) throws AssertionFailedError {
@@ -338,7 +323,7 @@ public class MockLogAppender extends AppenderSkeleton {
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt();
         }
         final LoggingEvent[] events = getEventsAtLevel(level);
         if (events.length == 0) {
@@ -347,4 +332,46 @@ public class MockLogAppender extends AppenderSkeleton {
 
     }
 
+    public static void addEvent(final LoggingEvent loggingEvent) {
+        s_events.add(loggingEvent);
+        receivedLogLevel(loggingEvent.getLevel());
+    }
+
+    public static MockLogAppender getInstance() {
+        setupLogging();
+        return s_instance;
+    }
+
+    public static void assertNoLogging() throws AssertionFailedError {
+        if (s_events.size() > 0) {
+            throw new AssertionFailedError("Unhancled logging occurred.");
+        }
+    }
+
+    public static void assertLogMatched(final Level level, final String message) {
+        for (final LoggingEvent event : s_events) {
+            if (event.getLevel().eq(level) && event.getMessage().contains(message)) {
+                return;
+            }
+        }
+        throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
+    }
+
+}
+
+class LoggingEvent {
+    private String m_name;
+    private Level m_level;
+    private String m_message;
+    public LoggingEvent(final String name, final Level level, final String message) {
+        m_name = name;
+        m_level = level;
+        m_message = message;
+    }
+    String getLoggerName() { return m_name; }
+    String getMessage() { return m_message; }
+    Level getLevel() { return m_level; }
+    @Override public String toString() {
+        return m_name + "(" + m_level + "): " + m_message;
+    }
 }

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an OID to be collected (it might be specific or an indexed object).
@@ -57,6 +58,8 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @version $Id: $
  */
 public abstract class SnmpAttributeType implements AttributeDefinition, CollectionAttributeType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpAttributeType.class);
     
     private MibObject m_mibObj;
     private String m_collectionName;
@@ -243,7 +246,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
-        log().debug("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
+        LOG.debug("Setting attribute: {}.[{}] = '{}'", this, res.getInstance(), res.getValue());
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());
@@ -287,15 +290,6 @@ public abstract class SnmpAttributeType implements AttributeDefinition, Collecti
         return getAlias().hashCode();
     }
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>getGroupIfType</p>
      *

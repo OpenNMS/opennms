@@ -32,7 +32,8 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.EventConstants;
@@ -66,6 +67,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  */
 @SuppressWarnings("serial")
 public class EventAdminApplication extends Application {
+    private static final Logger LOG = LoggerFactory.getLogger(EventAdminApplication.class);
 
     /** The OpenNMS Event Proxy. */
     private EventProxy eventProxy;
@@ -128,11 +130,11 @@ public class EventAdminApplication extends Application {
                 if (file == null)
                     return;
                 try {
-                    LogUtils.infof(this, "Loading events from %s", file);
+                    LOG.info("Loading events from {}", file);
                     final Events events = JaxbUtils.unmarshal(Events.class, file);
                     addEventPanel(layout, file, events);
                 } catch (Exception e) {
-                    LogUtils.errorf(this, e, "an error ocurred while saving the event configuration %s: %s", file, e.getMessage());
+                    LOG.error("an error ocurred while saving the event configuration {}: {}", file, e.getMessage(), e);
                     getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
                 }
             }
@@ -147,7 +149,7 @@ public class EventAdminApplication extends Application {
                     @Override
                     public void textFieldChanged(String fieldValue) {
                         final File file = new File(eventsDir, fieldValue);
-                        LogUtils.infof(this, "Adding new events file %s", file);
+                        LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
                     }
@@ -177,7 +179,7 @@ public class EventAdminApplication extends Application {
                     @Override
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
-                            LogUtils.infof(this, "deleting file %s", file);
+                            LOG.info("deleting file {}", file);
                             if (file.delete()) {
                                 try {
                                     // Updating eventconf.xml
@@ -201,7 +203,7 @@ public class EventAdminApplication extends Application {
                                     if (layout.getComponentCount() > 1)
                                         layout.removeComponent(layout.getComponent(1));
                                 } catch (Exception e) {
-                                    LogUtils.errorf(this, e, "an error ocurred while saving the event configuration: %s", e.getMessage());
+                                    LOG.error("an error ocurred while saving the event configuration: {}", e.getMessage(), e);
                                     getMainWindow().showNotification("Can't save event configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                                 }
                             } else {

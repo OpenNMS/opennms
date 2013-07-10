@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jinterop-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS J-Interop Dependencies</name>
+  <name>OpenNMS Dependencies J-Interop</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use J-Interop

@@ -35,8 +35,8 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.lf5.util.StreamUtils;
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.servlet.MissingParameterException;
@@ -72,7 +72,7 @@ public class DownloadReportController extends AbstractController {
             response.setHeader("Pragma", "public");
             response.setHeader("Cache-Control", "cache");
             response.setHeader("Cache-Control", "must-revalidate");
-            StreamUtils.copy(new FileInputStream(new File(fileName)), response.getOutputStream());
+            StreamUtils.streamToStream(new FileInputStream(new File(fileName)), response.getOutputStream());
             return null;
         }
 

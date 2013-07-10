@@ -33,10 +33,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -50,6 +51,9 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(HibernateTrapdIpMgr.class);
+	
     private IpInterfaceDao m_ipInterfaceDao;
     
     /**
@@ -101,7 +105,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         if (m_knownips.containsKey(InetAddressUtils.getInetAddress(addr))) {
             OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(Integer.valueOf((int) nodeid), addr);
             add = intf != null && intf.isPrimary();
-            log().info("setNodeId: address found " + intf + ". Should be added? " + add);
+            LOG.info("setNodeId: address found {}. Should be added? {}", intf, add);
         }
         return add ? longValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), Integer.valueOf((int) nodeid))) : -1;
     }
@@ -161,7 +165,4 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }

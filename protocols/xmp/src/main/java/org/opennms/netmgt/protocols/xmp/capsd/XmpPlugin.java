@@ -44,12 +44,14 @@ import org.krupczak.xmp.SocketOpts;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -67,6 +69,8 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public final class XmpPlugin extends AbstractPlugin {
+	private static final Logger LOG = LoggerFactory.getLogger(XmpPlugin.class);
+
 
     /**
      * The protocol supported by the plugin
@@ -185,7 +189,7 @@ public final class XmpPlugin extends AbstractPlugin {
      */
     @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+        
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
@@ -269,19 +273,19 @@ public final class XmpPlugin extends AbstractPlugin {
         session = new XmpSession(sockopts, address, port, authenUser);
         /*
         if (session == null) {
-            log.info("XMP connection failed to " + address + ":" + port + " with user " + authenUser + " and " + sockopts);
+            LOG.info("XMP connection failed to {}:{} with user {} and {}", address, port, authenUser, sockopts);
             return false;
         }
         */
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {
             try {
-                result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, log, valueCaseSensitive);
+                result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, valueCaseSensitive);
             } catch (XmpUtilException e) {
                 result = false;
             }
         } else if (requestType.equalsIgnoreCase("GetRequest")) {
             try {
-                result = XmpUtil.handleScalarQuery(session, mib, object, valueOperator, valueOperand, log, valueCaseSensitive);
+                result = XmpUtil.handleScalarQuery(session, mib, object, valueOperator, valueOperand, valueCaseSensitive);
             } catch (XmpUtilException e) {
                 result = false;
             }

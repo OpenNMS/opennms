@@ -38,7 +38,8 @@ import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -56,6 +57,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="mailto:ayres@net.orst.edu">Bill Ayres</a>
  */
 public final class GpPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(GpPlugin.class);
     /**
      * The protocol supported by the plugin
      */
@@ -104,11 +106,10 @@ public final class GpPlugin extends AbstractPlugin {
      *         regex.
      */
     private boolean isServer(InetAddress host, int retry, int timeout, String script, String args, RE regex, StringBuffer bannerResult, String hoption, String toption) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 
-        log.debug("poll: address = " + InetAddressUtils.str(host) + ", script = " + script + ", arguments = " + args + ", timeout(seconds) = " + timeout + ", retry = " + retry);
+        LOG.debug("poll: address = {}, script = {}, arguments = {}, timeout(seconds) = {}, retry = {}", retry, InetAddressUtils.str(host), script, args, timeout);
 
         for (int attempts = 0; attempts <= retry && !isAServer; attempts++) {
             try {
@@ -120,11 +121,11 @@ public final class GpPlugin extends AbstractPlugin {
                 else
                     exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
-                    log.debug(script + " failed with exit code " + exitStatus);
+                    LOG.debug("{} failed with exit code {}", script, exitStatus);
                     isAServer = false;
                 }
                 if (er.isMaxRunTimeExceeded()) {
-                    log.debug(script + " failed. Timeout exceeded");
+                    LOG.debug("{} failed. Timeout exceeded", script);
                     isAServer = false;
                 } else {
                     if (exitStatus == 0) {
@@ -133,26 +134,26 @@ public final class GpPlugin extends AbstractPlugin {
                         response = er.getOutString();
                         error = er.getErrString();
                         if (response.equals(""))
-                            log.debug(script + " returned no output");
+                            LOG.debug("{} returned no output", script);
                         if (!error.equals(""))
-                            log.debug(script + " error = " + error);
+                            LOG.debug("{} error = {}", script, error);
                         if (regex == null || regex.match(response)) {
-                            if (log.isDebugEnabled())
-                                log.debug("isServer: matching response = " + response);
+
+                            LOG.debug("isServer: matching response = {}", response);
                             isAServer = true;
                             if (bannerResult != null)
                                 bannerResult.append(response);
                         } else {
                             isAServer = false;
-                            if (log.isDebugEnabled())
-                                log.debug("isServer: NON-matching response = " + response);
+
+                            LOG.debug("isServer: NON-matching response = {}", response);
                         }
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
                 isAServer = false;
                 e.fillInStackTrace();
-                log.debug(script + " ArrayIndexOutOfBoundsException");
+                LOG.debug("{} ArrayIndexOutOfBoundsException", script);
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
@@ -160,18 +161,18 @@ public final class GpPlugin extends AbstractPlugin {
             } catch (IOException e) {
                 isAServer = false;
                 e.fillInStackTrace();
-                log.debug("IOException occurred. Check for proper operation of " + script);
+                LOG.debug("IOException occurred. Check for proper operation of {}", script);
             } catch (Throwable e) {
                 isAServer = false;
                 e.fillInStackTrace();
-                log.debug(script + " Exception occurred");
+                LOG.debug("{} Exception occurred", script);
             }
         }
 
         //
         // return the status of the server
         //
-        log.debug("poll: GP - isAServer = " + isAServer + "  " + InetAddressUtils.str(host));
+        LOG.debug("poll: GP - isAServer = {} {}", InetAddressUtils.str(host), isAServer);
         return isAServer;
     }
 

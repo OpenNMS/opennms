@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.collector</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtcollector</bundle.namespace>
   </properties>
-  <name>NRTG NRTCollector</name>
+  <name>OpenNMS Features NRTG NRTCollector</name>
   <description>
     The Collector module represents a system that will consume
     CollectionJobs and handles them by running ProtocolCollectors. A

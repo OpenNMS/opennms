@@ -233,29 +233,6 @@
             </exclusions>
           </dependency>
           <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4jVersion}</version>
-            <exclusions>
-              <exclusion>
-                <groupId>javax.jms</groupId>
-                <artifactId>jms</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jdmk</groupId>
-                <artifactId>jmxtools</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jmx</groupId>
-                <artifactId>jmxri</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>${oroVersion}</version>
@@ -358,7 +335,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.4</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -497,6 +474,44 @@
       						<ignore/>
       					</action>
       				</pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.codehaus.mojo</groupId>
+                      <artifactId>build-helper-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <goal>add-source</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.opennms.maven.plugins</groupId>
+                      <artifactId>castor-maven-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <!--
+                        <goal>add-test-source</goal>
+                        <goal>add-resource</goal>
+                        <goal>add-test-resource</goal>
+                        -->
+                        <goal>add-source</goal>
+                        <goal>generate</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
       			</pluginExecutions>
       		</lifecycleMappingMetadata>
       	</configuration>
@@ -762,7 +777,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.13.0.A</opennms.osgi.version>
+    <opennms.osgi.version>1.13.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -779,10 +794,7 @@
     <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
-    <install.daemonlogs.dir>${install.logs.dir}/daemon</install.daemonlogs.dir>
-    <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
-    <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
-    <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
+    <install.pid.file>${install.logs.dir}/opennms.pid</install.pid.file>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
@@ -832,7 +844,7 @@
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
     <commonsIoVersion>2.0.1</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLoggingVersion>1.1.1</commonsLoggingVersion>
+    <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
@@ -843,7 +855,8 @@
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
-    <log4jVersion>1.2.16</log4jVersion>
+    <log4jVersion>99.99.99-use-log4j2</log4jVersion>
+    <log4j2Version>2.0-beta7</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -1052,6 +1065,16 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.logging</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.logging.log4j</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2128,6 +2151,12 @@
         <groupId>bsf</groupId>
         <artifactId>bsf</artifactId>
         <version>2.4.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>bsh</groupId>
@@ -2148,11 +2177,23 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commonsBeanutilsVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils-core</artifactId>
         <version>${commonsBeanutilsVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-chain</groupId>
@@ -2178,6 +2219,12 @@
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>1.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
@@ -2188,6 +2235,12 @@
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -2203,11 +2256,22 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commonsIoVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-jxpath</groupId>
+        <artifactId>commons-jxpath</artifactId>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -2233,11 +2297,23 @@
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>${commonsValidatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator-core</artifactId>
         <version>${commonsValidatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.dbunit</groupId>
@@ -2584,9 +2660,34 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4jVersion}</version>
+        <scope>runtime</scope>
         <exclusions>
           <exclusion>
             <groupId>javax.jms</groupId>
@@ -2630,16 +2731,19 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4jVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>
@@ -2647,10 +2751,9 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
-        <groupId>org.opennms.smslib</groupId>
+        <groupId>org.smslib</groupId>
         <artifactId>smslib</artifactId>
-        <version>3.4.3-20100302</version>
+        <version>3.5.3</version>
       </dependency>
       <dependency>
         <groupId>org.rxtx</groupId>
@@ -2681,6 +2784,12 @@
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.2.9</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -2723,6 +2832,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>2.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
@@ -2739,6 +2854,11 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+		<repository>
+      <id>smslib-snapshots</id>
+      <name>SMSLib Repository</name>
+      <url>http://smslib.org/maven2/v3/</url>
+		</repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -2753,7 +2873,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>true</enabled></snapshots>

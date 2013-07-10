@@ -45,7 +45,8 @@ import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
@@ -68,6 +69,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public final class XmlRpcNotifier {
+    private static final Logger LOG = LoggerFactory.getLogger(XmlRpcNotifier.class);
 
     /**
      * The external xmlrpc server procedure to process an event success.
@@ -549,7 +551,7 @@ public final class XmlRpcNotifier {
             dbConn = DataSourceFactory.getInstance().getConnection();
             d.watch(dbConn);
 
-            LogUtils.debugf(this, "getNodeLabel: retrieve node label for: %d", nodeId);
+            LOG.debug("getNodeLabel: retrieve node label for: {}", nodeId);
 
             final PreparedStatement stmt = dbConn.prepareStatement("SELECT nodelabel FROM NODE WHERE nodeid = ?");
             d.watch(stmt);
@@ -562,12 +564,12 @@ public final class XmlRpcNotifier {
             }
 
         } catch (final SQLException sqle) {
-            LogUtils.warnf(this, sqle, "SQL exception while retrieving nodeLabel for: %d", nodeId);
+            LOG.warn("SQL exception while retrieving nodeLabel for: {}", nodeId, sqle);
         } finally {
             d.cleanUp();
         }
 
-        LogUtils.debugf(this, "getNodeLabel: retrieved node label '%s' for: %d", nodeLabel, nodeId);
+        LOG.debug("getNodeLabel: retrieved node label '{}' for: {}", nodeLabel, nodeId);
 
         return nodeLabel;
     }
@@ -594,16 +596,16 @@ public final class XmlRpcNotifier {
         for (int i = 0; i < m_retries; i++) {
             try {
             	final Object reply = m_xmlrpcClient.execute(command, params);
-            	LogUtils.debugf(this, "Response from XMLRPC server: %s\n\t%s", m_xmlrpcClient.getURL(), reply);
+		LOG.debug("Response from XMLRPC server: {}\n\t{}", m_xmlrpcClient.getURL(), reply);
                 success = true;
             } catch (final XmlRpcException e) {
-                LogUtils.warnf(this, e, "Failed to send message to XMLRPC server %s", m_xmlrpcClient.getURL());
+                LOG.warn("Failed to send message to XMLRPC server {}", m_xmlrpcClient.getURL(), e);
             } catch (final ConnectException e) {
-                LogUtils.warnf(this, e, "Failed to send message to XMLRPC server %s due to connect exception", m_xmlrpcClient.getURL());
+                LOG.warn("Failed to send message to XMLRPC server {} due to connect exception", m_xmlrpcClient.getURL(), e);
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "Failed to send message to XMLRPC server %s", m_xmlrpcClient.getURL());
+                LOG.warn("Failed to send message to XMLRPC server {}", m_xmlrpcClient.getURL(), e);
             } catch (final Throwable t) {
-            	LogUtils.errorf(this, t, "Received unknown error.");
+		LOG.error("Received unknown error.", t);
             }
             
             if (success) {
@@ -612,7 +614,7 @@ public final class XmlRpcNotifier {
         }
 
         if (!success) {
-            LogUtils.errorf(this, "Could not successfully communicate with XMLRPC server '%s' after %d tries", m_xmlrpcClient.getURL(), m_retries);
+            LOG.error("Could not successfully communicate with XMLRPC server '{}' after {} tries", m_xmlrpcClient.getURL(), m_retries);
         }
 
         return success;
@@ -646,13 +648,13 @@ public final class XmlRpcNotifier {
         	final String url = xServer.getUrl();
         	final int timeout = xServer.getTimeout();
 
-        	LogUtils.debugf(this, "Start to set up communication to XMLRPC server: %s", url);
-        	LogUtils.debugf(this, "Setting timeout value to: %d", timeout);
+		LOG.debug("Start to set up communication to XMLRPC server: {}", url);
+		LOG.debug("Setting timeout value to: {}", timeout);
 
             try {
                 m_xmlrpcClient = new TimeoutSecureXmlRpcClient(url, timeout);
             } catch (final MalformedURLException e) {
-                LogUtils.errorf(this, e, "Failed to send message to XMLRPC server: %s", url);
+                LOG.error("Failed to send message to XMLRPC server: {}", url, e);
                 continue;
             }
 
@@ -660,14 +662,14 @@ public final class XmlRpcNotifier {
                 try {
                 	final Object reply = m_xmlrpcClient.execute(XMLRPC_SERVER_RECEIVE_EVENT_COMMAND, params);
 
-                	LogUtils.debugf(this, "Response from XMLRPC server: %s\n\t%s", url, reply);
+			LOG.debug("Response from XMLRPC server: {}\n\t{}", url, reply);
                     success = true;
                 } catch (final XmlRpcException e) {
-                    LogUtils.warnf(this, e, "Failed to send message to XMLRPC server: %s", url);
+                    LOG.warn("Failed to send message to XMLRPC server: {}", url, e);
                 } catch (final ConnectException e) {
-                    LogUtils.warnf(this, e, "Failed to send message to XMLRPC server %s due to connect exception", url);
+                    LOG.warn("Failed to send message to XMLRPC server {} due to connect exception", url, e);
                 } catch (final IOException e) {
-                    LogUtils.warnf(this, e, "Failed to send message to XMLRPC server: %s", url);
+                    LOG.warn("Failed to send message to XMLRPC server: {}", url, e);
                 }
 
                 // break inner loop, no more retries
@@ -678,7 +680,7 @@ public final class XmlRpcNotifier {
                 try {
                     Thread.sleep(m_elapseTime);
                 } catch (final InterruptedException ie) {
-                	LogUtils.infof(this, ie, "Interrupted while waiting to retry.");
+			LOG.info("Interrupted while waiting to retry.", ie);
                 }
             }
 
@@ -690,7 +692,7 @@ public final class XmlRpcNotifier {
         }
 
         if (!success) {
-            LogUtils.errorf(this, "Can not set up communication with any XMLRPC server");
+            LOG.error("Can not set up communication with any XMLRPC server");
             m_xmlrpcClient = null;
         }
     }

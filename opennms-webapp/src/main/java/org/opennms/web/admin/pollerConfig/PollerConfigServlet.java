@@ -51,7 +51,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -62,6 +61,8 @@ import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -71,6 +72,9 @@ import org.opennms.netmgt.config.poller.Service;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class PollerConfigServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PollerConfigServlet.class);
+
     /**
      * 
      */
@@ -251,10 +255,10 @@ public class PollerConfigServlet extends HttpServlet {
             Marshaller.marshal(m_pollerConfig, poller_fileWriter);
             Marshaller.marshal(m_capsdConfig, capsd_fileWriter);
         } catch (MarshalException e) {
-            log().error("Could not marshal config object when writing config file: " + e, e);
+            LOG.error("Could not marshal config object when writing config file: {}", e, e);
             throw new ServletException(e);
         } catch (ValidationException e) {
-            log().error("Could not validate config object when writing config file: " + e, e);
+            LOG.error("Could not validate config object when writing config file: {}", e, e);
             throw new ServletException(e);
         }
 
@@ -317,7 +321,7 @@ public class PollerConfigServlet extends HttpServlet {
                         if (svc != null) {
                             if (svc.getName().equals(svcname)) {
                                 m_pkg.removeService(svc);
-                                log().info("Package removed " + svc.getName());
+                                LOG.info("Package removed {}", svc.getName());
                                 removeMonitor(svc.getName());
                                 deleteCapsdInfo(svc.getName());
                                 m_props.remove("service." + svc.getName() + ".protocol");
@@ -381,7 +385,5 @@ public class PollerConfigServlet extends HttpServlet {
     /**
      * @return logger for this servlet
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 }

@@ -46,7 +46,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.joda.time.Duration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
@@ -59,6 +60,7 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 @XmlRootElement(name="foreign-source")
 @ValidateUsing("foreign-sources.xsd")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
+    private static final Logger LOG = LoggerFactory.getLogger(ForeignSource.class);
     private static final long serialVersionUID = -1903289015976502808L;
 
     @XmlAttribute(name="name", required=true)
@@ -165,7 +167,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         } catch (final DatatypeConfigurationException e) {
-            LogUtils.warnf(this, e, "unable to update datestamp");
+            LOG.warn("unable to update datestamp", e);
         }
     }
     /**

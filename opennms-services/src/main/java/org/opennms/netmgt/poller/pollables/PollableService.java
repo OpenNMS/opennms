@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a PollableService
@@ -49,6 +50,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PollableService.class);
 
     private final class PollRunner implements Runnable {
     	
@@ -394,14 +397,14 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 
 	private PollStatus doRun(int timeout) {
 		long startDate = System.currentTimeMillis();
-        log().debug("Start Scheduled Poll of service "+this);
+        LOG.debug("Start Scheduled Poll of service {}", this);
         PollStatus status;
         if (getContext().isNodeProcessingEnabled()) {
             PollRunner r = new PollRunner();
             try {
 				withTreeLock(r, timeout);
             } catch (LockUnavailable e) {
-                log().info("Postponing poll for "+this+" because "+e);
+                LOG.info("Postponing poll for {}", this, e);
                 throw new PostponeNecessary("LockUnavailable postpone poll");
             }
             status = r.getPollStatus();
@@ -411,16 +414,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             processStatusChange(new Date());
             status = getStatus();
         }
-        if (log().isDebugEnabled())
-            log().debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
+        LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
         return status;
 	}
 
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(PollableService.class);
-	}
-
-    /**
+	/**
      * <p>delete</p>
      */
     @Override

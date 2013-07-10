@@ -41,7 +41,8 @@ import javax.sql.DataSource;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Transaction class.</p>
@@ -50,6 +51,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class Transaction {
+	
+	public static final Logger LOG = LoggerFactory.getLogger(Transaction.class);
 	
 	private static ThreadLocal<Transaction> s_threadTX = new ThreadLocal<Transaction>();
 
@@ -70,20 +73,16 @@ public class Transaction {
 	 */
 	public static void begin() {
         
-        log().debug("About to begin Transaction for "+Thread.currentThread());
+        LOG.debug("About to begin Transaction for {}", Thread.currentThread());
 		Transaction tx = s_threadTX.get();
 		if (tx != null) {
 			throw new IllegalStateException("Cannot begin a transaction.. one has already been begun");
 		}
-        log().debug("Began Transaction for "+Thread.currentThread());
+        LOG.debug("Began Transaction for {}", Thread.currentThread());
 		s_threadTX.set(new Transaction());
 		
 	}
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(Transaction.class);
-    }
-
     /**
      * <p>getConnection</p>
      *
@@ -128,11 +127,11 @@ public class Transaction {
      * @throws java.sql.SQLException if any.
      */
     public static void end() throws SQLException {
-        log().debug("Ending transaction for "+Thread.currentThread());
+        LOG.debug("Ending transaction for {}", Thread.currentThread());
         try {
             Transaction tx = getTX();
             tx.doEnd();
-            log().debug((tx.m_rollbackOnly ? "Rolled Back" : "Committed") + " transaction for "+Thread.currentThread());
+            LOG.debug("{} transaction for {}", (tx.m_rollbackOnly ? "Rolled Back" : "Committed"), Thread.currentThread());
         } finally {
             clearTX();
         }

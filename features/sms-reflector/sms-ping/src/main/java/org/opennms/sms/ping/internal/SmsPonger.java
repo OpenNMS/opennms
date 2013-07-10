@@ -34,8 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -53,17 +54,17 @@ import org.smslib.Message.MessageTypes;
  * @version $Id: $
  */
 public class SmsPonger implements OnmsInboundMessageNotification {
+    private static final Logger LOG = LoggerFactory.getLogger(SmsPonger.class);
     
-    Logger log = Logger.getLogger(getClass());
     Map<String,String> s_tokenResponses = buildTokenResponses();
     
     /** {@inheritDoc} */
     @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
-        debugf("SmsPonger.processInboundMessage");
+        LOG.debug("SmsPonger.processInboundMessage");
         
         if (isPingRequest(msg)) {
-            debugf("Message is a ping request: %s", msg.getText());
+            LOG.debug("Message is a ping request: {}", msg.getText());
             sendPong(gateway, msg);
         }
     }
@@ -84,7 +85,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
     
     private boolean isPseudoPingRequest(InboundMessage msg) {
         if (s_tokenResponses.size() == 0) {
-            debugf("No token responses found, not processing pseudo-pings");
+            LOG.debug("No token responses found, not processing pseudo-pings");
             return false;
         }
         
@@ -100,21 +101,21 @@ public class SmsPonger implements OnmsInboundMessageNotification {
     
     private void sendPong(AGateway gateway, InboundMessage msg) {
         String pongResponse = (isCanonicalPingRequest(msg)) ? "pong" : getPseudoPongResponse(msg);
-        debugf("SmsPonger.sendPong: sending string '%s'", pongResponse);
+        LOG.debug("SmsPonger.sendPong: sending string '{}'", pongResponse);
         try {
             OutboundMessage pong = new OutboundMessage(msg.getOriginator(), pongResponse);
             pong.setGatewayId(gateway.getGatewayId());
             if (!gateway.sendMessage(pong)) {
-                errorf("Failed to send pong request to %s", msg.getOriginator());
+                LOG.error("Failed to send pong request to {}", msg.getOriginator());
             }
         } catch (TimeoutException e) {
-            errorf(e, "Timeout sending pong request to %s", msg.getOriginator());
+            LOG.error("Timeout sending pong request to {}", msg.getOriginator(), e);
         } catch (GatewayException e) {
-            errorf(e, "Gateway exception sending pong request to %s", msg.getOriginator());
+            LOG.error("Gateway exception sending pong request to {}", msg.getOriginator(), e);
         } catch (IOException e) {
-            errorf(e, "IOException sending pong request to %s", msg.getOriginator());
+            LOG.error("IOException sending pong request to {}", msg.getOriginator(), e);
         } catch (InterruptedException e) {
-            errorf(e, "InterruptedException sending poing request to %s", msg.getOriginator());
+            LOG.error("InterruptedException sending poing request to {}", msg.getOriginator(), e);
         } 
     }
     
@@ -125,7 +126,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
             }
         }
         
-        debugf("No pseudo-ping response found, defaulting to 'pong' (this should not happen)");
+        LOG.debug("No pseudo-ping response found, defaulting to 'pong' (this should not happen)");
         return "";
     }
 
@@ -138,34 +139,19 @@ public class SmsPonger implements OnmsInboundMessageNotification {
         String[] tokens = pseudoPingTokensPsv.split(";");
         String[] responses = pseudoPingResponsesPsv.split(";");
         if (tokens.length == 0) {
-            LogUtils.debugf(SmsPonger.class, "No pseudo-ping tokens defined");
+            LOG.debug("No pseudo-ping tokens defined");
             return tokenResponses;
         }
         if (tokens.length != responses.length) {
-            LogUtils.errorf(SmsPonger.class, "Length of sms.ping.tokens (%d) is mismatched with length of sms.ping.responses (%d)", tokens.length, responses.length);
+            LOG.error("Length of sms.ping.tokens ({}) is mismatched with length of sms.ping.responses ({})", tokens.length, responses.length);
             return tokenResponses;
         }
         
         for (int i = 0; i < tokens.length; i++) {
             tokenResponses.put(tokens[i], responses[i]);
-            LogUtils.debugf(SmsPonger.class, "Setting response '%s' for pseudo-ping token '%s'", responses[i], tokens[i]);
+            LOG.debug("Setting response '{}' for pseudo-ping token '{}'", responses[i], tokens[i]);
         }
         
         return tokenResponses;
     }
-
-    private void debugf(String fmt, Object... args) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(fmt, args));
-        }
-    }
-    
-    private void errorf(Throwable t, String fmt, Object... args) {
-        log.error(String.format(fmt, args), t);
-    }
-
-    private void errorf(String fmt, Object... args) {
-        log.error(String.format(fmt, args));
-    }
-
 }

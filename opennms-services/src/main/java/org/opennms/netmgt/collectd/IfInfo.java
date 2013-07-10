@@ -34,9 +34,10 @@ import java.io.File;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -49,7 +50,9 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public final class IfInfo extends SnmpCollectionResource {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IfInfo.class);
+    
     private SNMPCollectorEntry m_entry;
     private String m_ifAlias;
     private SnmpIfData m_snmpIfData;
@@ -162,15 +165,12 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     boolean currentAliasIsOutOfDate(String ifAlias) {
-        log().debug("currentAliasIsOutOfDate: ifAlias from collection = " + ifAlias + ", current ifAlias = " + getCurrentIfAlias());
+        LOG.debug("currentAliasIsOutOfDate: ifAlias from collection = {}, current ifAlias = {}", ifAlias, getCurrentIfAlias());
         return ifAlias != null && !ifAlias.equals(getCurrentIfAlias());
     }
 
     void logAlias(String ifAlias) {
-        ThreadCategory log = log();
-        if (log.isDebugEnabled()) {
-            log.debug("Alias for RRD directory name = " + ifAlias);
-        }
+        LOG.debug("Alias for RRD directory name = {}", ifAlias);
     }
 
     String getAliasDir(String ifAlias, String ifAliasComment) {
@@ -194,21 +194,16 @@ public final class IfInfo extends SnmpCollectionResource {
 
     void logForceRescan(String ifAlias) {
 
-        if (log().isDebugEnabled()) {
-            log().debug("Forcing rescan.  IfAlias " + ifAlias
-                        + " for index " + getIndex()
-                        + " does not match DB value: "
-                        + getCurrentIfAlias());
-        }
+        LOG.debug("Forcing rescan.  IfAlias {} for index {} does not match DB value: {}", ifAlias, getIndex(), getCurrentIfAlias());
     }
 
     public boolean isScheduledForCollection() {
-        log().debug(this+".collectionEnabled = "+isCollectionEnabled());
-        log().debug("selectCollectionOnly = "+getCollection().isSelectCollectionOnly());
+        LOG.debug("{} .collectionEnabled = {}", this, isCollectionEnabled());
+        LOG.debug("selectCollectionOnly = {}", getCollection().isSelectCollectionOnly());
 
         boolean isScheduled = isCollectionEnabled() || !getCollection().isSelectCollectionOnly();
         
-        log().debug("isScheduled = "+isScheduled);
+        LOG.debug("isScheduled = {}", isScheduled);
 
         return isScheduled;
 
@@ -249,7 +244,7 @@ public final class IfInfo extends SnmpCollectionResource {
     public boolean shouldPersist(ServiceParameters serviceParameters) {
 
         boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
-        log().debug("shouldPersist = " + shdprsist);
+        LOG.debug("shouldPersist = {}", shdprsist);
         return shdprsist;
     }
     

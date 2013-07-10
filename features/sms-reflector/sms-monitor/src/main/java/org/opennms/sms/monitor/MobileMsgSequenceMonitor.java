@@ -31,7 +31,6 @@ package org.opennms.sms.monitor;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -46,6 +45,8 @@ import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,7 +63,7 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
     /** Constant <code>CONTEXT_KEY="mobileMessageContextName"</code> */
     public static final String CONTEXT_KEY = "mobileMessageContextName";
 
-    private static Logger log = Logger.getLogger(MobileMsgSequenceMonitor.class);
+    private static Logger log = LoggerFactory.getLogger(MobileMsgSequenceMonitor.class);
 
     private Phonebook m_phonebook;
 	private MobileMsgTracker m_tracker;
@@ -96,7 +97,7 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
 	        MobileSequenceConfig sequenceConfig = factory.getSequenceForXml(config);
 
 	        if (!sequenceConfig.hasTransactions()) {
-	            log.warn("No transactions were configured for host " + svc.getIpAddr());
+	            log.warn("No transactions were configured for host {}", svc.getIpAddr());
 	            return PollStatus.unavailable("No transactions were configured for host " + svc.getIpAddr());
 	        }
 
@@ -120,10 +121,10 @@ public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
 
 
 	    } catch (PhonebookException e) {
-	        log.warn("Unable to locate recpient phone number for IP address " + svc.getIpAddr(), e);
+	        log.warn("Unable to locate recpient phone number for IP address {}", svc.getIpAddr(), e);
 	        return PollStatus.unavailable("Unable to find phone number for IP address " + svc.getIpAddr());
 	    } catch (SequenceException e) {
-	        log.warn("Unable to parse sequence configuration for host " + svc.getIpAddr(), e);
+	        log.warn("Unable to parse sequence configuration for host {}", svc.getIpAddr(), e);
 	        return PollStatus.unavailable("unable to read sequence configuration");
 	    } catch (Throwable e) {
 	        log.debug("Sequence failed", e);

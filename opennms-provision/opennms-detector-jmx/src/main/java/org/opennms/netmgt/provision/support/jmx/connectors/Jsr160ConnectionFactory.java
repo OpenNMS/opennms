@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,8 @@ import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import mx4j.tools.remote.*;
 
@@ -54,7 +55,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Jsr160ConnectionFactory {
     
-    static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
 
     /**
      * <p>getMBeanServerConnection</p>
@@ -80,7 +81,7 @@ public class Jsr160ConnectionFactory {
         JMXServiceURL url = null;
         
         final String hostAddress = InetAddressUtils.str(address);
-		log.debug("JMX: " + factory + " - service:" + protocol + "//" + hostAddress + ":" + port + urlPath);
+        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, hostAddress, port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
             try {
@@ -93,9 +94,9 @@ public class Jsr160ConnectionFactory {
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
             } catch(MalformedURLException e) {
-                log.warn("URL was malformed: " + url, e);
+                LOG.warn("URL was malformed: {}", url, e);
             } catch (IOException e) {
-                log.warn("An I/O exception occurred: " +url, e);
+                LOG.warn("An I/O exception occurred: {}", url, e);
             }
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
@@ -125,7 +126,7 @@ public class Jsr160ConnectionFactory {
                 catch (SecurityException x)
                 {
                     // Uh-oh ! Bad credentials 
-                    log.error("Security exception: bad credentials");
+                    LOG.error("Security exception: bad credentials");
                     throw x;
                 }
 
@@ -134,7 +135,7 @@ public class Jsr160ConnectionFactory {
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                 
             } catch(Throwable e) {
-                log.error("Unable to get MBeanServerConnection: " + url, e);
+                LOG.error("Unable to get MBeanServerConnection: {}", url, e);
             }
         }
         /*

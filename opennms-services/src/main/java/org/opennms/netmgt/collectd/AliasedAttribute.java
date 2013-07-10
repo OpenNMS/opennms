@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -40,6 +39,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public class AliasedAttribute extends SnmpAttribute {
+    
 	
 	/**
 	 * <p>Constructor for AliasedAttribute.</p>
@@ -108,16 +108,6 @@ public class AliasedAttribute extends SnmpAttribute {
         @Override
 	public int hashCode() {
 		return m_attr.hashCode();
-	}
-
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-        @Override
-	public ThreadCategory log() {
-		return m_attr.log();
 	}
 
 	/** {@inheritDoc} */

@@ -40,7 +40,7 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Trapd";
+        return org.opennms.netmgt.trapd.Trapd.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

@@ -29,7 +29,8 @@
 package org.opennms.web.springframework.security;
 
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,6 +43,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
 
 public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationProvider, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(HybridOpenNMSUserAuthenticationProvider.class);
     private UserManager m_userManager = null;
     private SpringSecurityUserDao m_userDao = null;
 
@@ -84,7 +86,7 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
             try {
                 m_userManager.reload();
             } catch (final Exception reloadException) {
-                LogUtils.debugf(this, reloadException, "Failed to reload UserManager.");
+                LOG.debug("Failed to reload UserManager.", reloadException);
             }
             checkUserPassword(authUsername, authPassword, user);
         }

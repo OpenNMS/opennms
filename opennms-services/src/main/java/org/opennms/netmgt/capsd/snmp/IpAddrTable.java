@@ -33,9 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -52,6 +53,9 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IpAddrTable.class);
 
     /**
      * <P>
@@ -104,8 +108,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        if (log().isDebugEnabled())
-            log().debug("getIfIndex: num ipAddrTable entries: " + this.size());
+        LOG.debug("getIfIndex: num ipAddrTable entries: {}", this.size());
 
         for(IpAddrTableEntry entry : this) {
 
@@ -115,22 +118,13 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
                 // extract the ifIndex
                 //
                 Integer ndx = entry.getIpAdEntIfIndex();
-                log().debug("getIfIndex: got a match for address " + InetAddressUtils.str(address) + " index: " + ndx);
+                LOG.debug("getIfIndex: got a match for address {} index: {}", InetAddressUtils.str(address), ndx);
                 if (ndx != null)
                     return ndx.intValue();
             }
         }
-        log().debug("getIfIndex: no matching ipAddrTable entry for " + InetAddressUtils.str(address));
+        LOG.debug("getIfIndex: no matching ipAddrTable entry for {}", InetAddressUtils.str(address));
         return -1;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IpAddrTable.class);
     }
 
     /**

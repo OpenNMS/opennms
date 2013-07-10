@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 public class Nms10205bCapsdNetworkBuilderTest extends Nms10205bNetworkBuilder implements InitializingBean {
 

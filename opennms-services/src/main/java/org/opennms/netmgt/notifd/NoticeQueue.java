@@ -29,7 +29,8 @@
 package org.opennms.netmgt.notifd;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a data class designed to hold NotificationTasks in an ordered map
@@ -42,6 +43,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version 1.1.1.1
  */
 public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
+    private static final Logger LOG = LoggerFactory.getLogger(NoticeQueue.class);
     /**
      * 
      */
@@ -52,13 +54,12 @@ public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
     public NotificationTask putItem(Long key, NotificationTask value) {
         NotificationTask ret = super.putItem(key, value);
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         
-        if (log.isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             if (value.getNotifyId() == -1) {
-                log.debug("autoNotify task queued");
+                LOG.debug("autoNotify task queued");
             } else {
-                log.debug("task queued for notifyID " + value.getNotifyId());
+                LOG.debug("task queued for notifyID {}", value.getNotifyId());
             }
         }
         

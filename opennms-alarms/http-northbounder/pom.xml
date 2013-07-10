@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-northbounder-http</artifactId>
-  <name>OpenNMS Northbounder HTTP</name>
+  <name>OpenNMS Alarms Northbounder HTTP</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

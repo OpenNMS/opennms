@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * <p>ThresholdGroup class.</p>
  *
@@ -42,7 +40,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class ThresholdGroup {
-
+    
 	private String m_name;
 	private File m_rrdRepository;
 	private ThresholdResourceType m_nodeResourceType;
@@ -111,10 +109,6 @@ public class ThresholdGroup {
 	 */
 	public File getRrdRepository() {
 		return m_rrdRepository;
-	}
-
-	ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 	/**

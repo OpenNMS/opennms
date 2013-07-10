@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,44 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.provisiond.utils;
-
-import static org.junit.Assert.*;
+package org.opennms.protocols.http;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+/**
+ * The class for handling HTTPS URL Connection using Apache HTTP Client
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public class HttpsUrlHandler extends URLStreamHandler {
 
-public class CvsRequisitionParserTest {
+    /** The Constant PROTOCOL. */
+    public static final String PROTOCOL = "https";
 
-	@Test
-	@Ignore
-	public void testParseCsv() throws IOException {
-//		Resource r = new ClassPathResource(":classpath:opennms/requisition.csv");
-		Resource r = new ClassPathResource("/Users/david/Documents/Business/Support/Towerstream/requisition2.csv");
-		CsvRequisitionParser.parseCsv("/Users/david/Documents/Business/Support/Towerstream/requisition2.csv", "/tmp");
-	}
-	
-	@Test
-	public void testRegex() {
-		Pattern p = Pattern.compile(".*[0-9]{4}+.*");
-		String nodeLabel = "canopy-1467zz";
-		Matcher m = p.matcher(nodeLabel);
-		assertTrue(m.matches());
-		
-		p = Pattern.compile("(?!).*[0-9]{4}+.*");
-		nodeLabel = "abc";
-	}
+    /* (non-Javadoc)
+     * @see java.net.URLStreamHandler#getDefaultPort()
+     */
+    @Override
+    protected int getDefaultPort() {
+        return 443;
+    }
 
-	@Test
-	@Ignore
-	public void testCreateRequistionData() {
-		fail("Not yet implemented");
-	}
+    /* (non-Javadoc)
+     * @see java.net.URLStreamHandler#openConnection(java.net.URL)
+     */
+    @Override
+    protected URLConnection openConnection(URL url) throws IOException {
+        return new HttpUrlConnection(url);
+    }
 
 }

@@ -29,7 +29,8 @@
 package org.openoss.opennms.spring.qosd;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openoss.opennms.spring.dao.OssDao;
 
 /**
@@ -45,6 +46,7 @@ import org.openoss.opennms.spring.dao.OssDao;
  * @version $Id: $
  */
 public class OpenNMSEventHandlerThread extends Thread {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSEventHandlerThread.class);
 
 	// ---------------SPRING DAO DECLARATIONS----------------
 
@@ -78,7 +80,6 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 */
         @Override
 	public void run() throws IllegalStateException 	{
-		ThreadCategory log = getLog();	
 		//instance=this;
 		boolean localupdateNCache=false;
 		boolean localsendList=false;
@@ -92,11 +93,11 @@ public class OpenNMSEventHandlerThread extends Thread {
 				try{
 					// test to see if there have been more requests to update the list while updating the list
 					if ((sendList==false)&&(updateNCache==false)){
-						if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() thread waiting for interrupt");
+						LOG.debug("OpenNMSEventHandlerThread.run() thread waiting for interrupt");
 						wait(); 
 					}
 				} catch ( InterruptedException e){
-					if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() thread woken up");
+					LOG.debug("OpenNMSEventHandlerThread.run() thread woken up");
 				}
 				localupdateNCache=updateNCache;
 				localsendList=sendList;
@@ -104,21 +105,21 @@ public class OpenNMSEventHandlerThread extends Thread {
 				sendList=false;
 			}
 			if (localupdateNCache) try {
-				if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() updating node list");
+				LOG.debug("OpenNMSEventHandlerThread.run() updating node list");
 				ossDao.updateNodeCaches();
 			} catch (Throwable ex) {
-				log.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateNodeCaches():", ex);
+				LOG.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateNodeCaches()", ex);
 			}
 			if (localsendList) try{
-				if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() updating and sending alarm list");
+				LOG.debug("OpenNMSEventHandlerThread.run() updating and sending alarm list");
 				ossDao.updateAlarmCacheAndSendAlarms();
 			}
 			catch (Throwable ex) {
-				log.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateAlarmCacheAndSendAlarms():", ex);
+				LOG.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateAlarmCacheAndSendAlarms()", ex);
 			}
 
 		}
-		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() STOPPED");
+		LOG.debug("OpenNMSEventHandlerThread.run() STOPPED");
 
 	}
 
@@ -126,8 +127,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * Initialise the Thread. Must be called before a call to run.
 	 */
 	synchronized public void init()	{
-		ThreadCategory log = getLog();	
-		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.init() initialised");
+		LOG.debug("OpenNMSEventHandlerThread.init() initialised");
 		init = true;	//inform the thread that it has been initialised 
 		//and can execute the run() method.
 		runThread=true;
@@ -142,8 +142,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 		// Thread.stop() is unsafe so ending run method by changing
 		// a status variable that tells the run method to return
 		// and end execution.
-		ThreadCategory log = getLog();	
-		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.kill() request received to kill thread");
+		LOG.debug("OpenNMSEventHandlerThread.kill() request received to kill thread");
 		runThread=false;
 		//instance.notify();
 		notify();
@@ -156,8 +155,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * another update when the previous one completes
 	 */
 	synchronized public void sendAlarmList(){
-		ThreadCategory log = getLog();	
-		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.sendAlarmList() request received to update alarm list");
+		LOG.debug("OpenNMSEventHandlerThread.sendAlarmList() request received to update alarm list");
 		sendList=true;
 		//instance.notify();
 		notify();
@@ -172,15 +170,9 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * in only one update when the previous one completes
 	 */
 	synchronized public void updateNodeCache(){
-		ThreadCategory log = getLog();	
-		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.updateNodeCache() request received to update node list");
+		LOG.debug("OpenNMSEventHandlerThread.updateNodeCache() request received to update node list");
 		updateNCache=true;
 		//instance.notify();
 		notify();
 	}
-
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
-	}
-
 }

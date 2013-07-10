@@ -31,7 +31,8 @@ package org.opennms.netmgt.xmlrpcd;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.xml.event.Value;
  * 
  */
 class EventQueueProcessor implements Runnable, PausableFiber {
+    private static final Logger LOG = LoggerFactory.getLogger(EventQueueProcessor.class);
     /**
      * The input queue
      */
@@ -98,13 +100,13 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     private void processEvent(final Event event) {
     	final String uei = event.getUei();
         if (uei == null) {
-            LogUtils.debugf(this, "Event received with null UEI, ignoring event");
+            LOG.debug("Event received with null UEI, ignoring event");
             return;
         }
 
-        LogUtils.debugf(this, "About to process event: %s", event.getUei());
+        LOG.debug("About to process event: {}", event.getUei());
 
-        LogUtils.debugf(this,  event.toString());
+        LOG.debug(event.toString());
 
         if (m_useGenericMessages) {
             // new single RPC for all events (subject to config uei filter)
@@ -172,7 +174,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 parmContent = parmValue.getContent();
             }
 
-            LogUtils.debugf(this, "ParmName: %s /parmContent: ", parmName, parmContent);
+            LOG.debug("ParmName: {} /parmContent: ", parmName, parmContent);
 
             // get txNo
             if (parmName.equals(EventConstants.PARM_TRANSACTION_NO)) {
@@ -181,7 +183,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 try {
                     txNo = Long.valueOf(temp).longValue();
                 } catch (final NumberFormatException nfe) {
-                    LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_TRANSACTION_NO, nfe);
                     txNo = -1L;
                 }
             } else if (parmName.equals(EventConstants.PARM_SOURCE_EVENT_UEI)) {
@@ -193,7 +195,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 try {
                     status = Integer.valueOf(temp).intValue();
                 } catch (final NumberFormatException nfe) {
-                    LogUtils.warnf(this, nfe, "Parameter %s cannot be non-numeric", EventConstants.PARM_SOURCE_EVENT_STATUS);
+                    LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_SOURCE_EVENT_STATUS, nfe);
                     status = -1;
                 }
             }
@@ -201,7 +203,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
         final boolean validParameters = (txNo != -1L) && (sourceUei != null) && (notification != null) && (status != -1);
         if (!validParameters) {
-            LogUtils.errorf(this, "Invalid parameters.");
+            LOG.error("Invalid parameters.");
             return;
         }
 
@@ -233,15 +235,15 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         try {
             if (m_eventQ.size() < m_maxQSize) {
                 m_eventQ.add(event);
-                LogUtils.debugf(this, "Push the event back to queue.");
+                LOG.debug("Push the event back to queue.");
             }
 
             // re-establish connection to xmlrpc servers
             m_notifier.createConnection();
         } catch (final FifoQueueException e) {
-            LogUtils.errorf(this, e, "Failed to push the event back to queue");
+            LOG.error("Failed to push the event back to queue", e);
         } catch (final InterruptedException e) {
-            LogUtils.errorf(this, e, "Failed to push the event back to queue");
+            LOG.error("Failed to push the event back to queue", e);
         }
     }
 
@@ -258,7 +260,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         while (!exitCheck) {
             // check the child thread!
             if (m_worker.isAlive() == false && m_status != STOP_PENDING) {
-            	LogUtils.warnf(this, "%s terminated abnormally", getName());
+		LOG.warn("{} terminated abnormally", getName());
                 m_status = STOP_PENDING;
             }
 
@@ -306,7 +308,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         m_worker = new Thread(this, getName());
         m_worker.start();
 
-        LogUtils.infof(this, "%s started", getName());
+        LOG.info("{} started", getName());
     }
 
     /**
@@ -395,13 +397,13 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             try {
                 event = m_eventQ.remove(1000);
             } catch (final InterruptedException iE) {
-            	LogUtils.debugf(this, iE, "Caught interrupted exception, transitioning to STOP_PENDING status");
+		LOG.debug("Caught interrupted exception, transitioning to STOP_PENDING status", iE);
 
                 event = null;
 
                 m_status = STOP_PENDING;
             } catch (final FifoQueueException qE) {
-            	LogUtils.debugf(this, qE, "Caught FIFO queue exception.");
+		LOG.debug("Caught FIFO queue exception.", qE);
 
                 event = null;
 
@@ -412,11 +414,11 @@ class EventQueueProcessor implements Runnable, PausableFiber {
                 try {
                     processEvent(event);
                 } catch (Throwable t) {
-                    LogUtils.errorf(this, t, "Unexpected error processing event.");
+                    LOG.error("Unexpected error processing event.", t);
                 }
             }
             if (event != null && !statusOK()) {
-            	LogUtils.errorf(this, "EventQueueProcessor not OK, exiting with status: %d", m_status);
+		LOG.error("EventQueueProcessor not OK, exiting with status: {}", m_status);
             }
         }
     }

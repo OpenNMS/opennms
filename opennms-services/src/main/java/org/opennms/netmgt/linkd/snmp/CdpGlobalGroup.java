@@ -30,7 +30,8 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -45,9 +46,9 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class CdpGlobalGroup extends AggregateTracker
-{
+public final class CdpGlobalGroup extends AggregateTracker {
 	
+    private static final Logger LOG = LoggerFactory.getLogger(CdpGlobalGroup.class);
     /**
      * the bridge type
      */
@@ -105,13 +106,13 @@ public final class CdpGlobalGroup extends AggregateTracker
     /** {@inheritDoc} */
         @Override
     protected void reportGenErr(final String msg) {
-        LogUtils.warnf(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
+        LOG.warn("Error retrieving systemGroup from {}: {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
         @Override
     protected void reportNoSuchNameErr(final String msg) {
-        LogUtils.infof(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
+        LOG.info("Error retrieving systemGroup from {}: {}", m_address, msg);
     }
 
     /**

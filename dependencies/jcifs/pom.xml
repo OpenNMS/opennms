@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jcifs-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JCIFS Dependencies</name>
+  <name>OpenNMS Dependencies JCIFS</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JCIFS.

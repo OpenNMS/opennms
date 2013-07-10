@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,11 @@ package org.opennms.netmgt.provision.detector.icmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class IcmpDetector extends SyncAbstractDetector {
     
+    private static final Logger LOG = LoggerFactory.getLogger(IcmpDetector.class);
     /**
      * <p>Constructor for IcmpDetector.</p>
      */
@@ -58,28 +60,27 @@ public class IcmpDetector extends SyncAbstractDetector {
     /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address) {
-        
-        LogUtils.debugf(this, "isServiceDetected: Testing ICMP based service for address: %s...", address);
+        LOG.debug("isServiceDetected: Testing ICMP based service for address: {}...", address);
 
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
                 Number retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
                 
-                LogUtils.debugf(this, "isServiceDetected: Response time for address: %s is: %d.", address, retval);
+                LOG.debug("isServiceDetected: Response time for address: {} is: {}.", address, retval);
                 
                 if (retval != null) {
                     found = true;
                 }
             }
             
-            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s.", address, found);
+            LOG.info("isServiceDetected: ICMP based service for address: {} is detected: {}.", address, found);
 
         } catch (final InterruptedException e) {
-            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an InterruptedException.", address, false);
+            LOG.info("isServiceDetected: ICMP based service for address: {} is detected: {}. Received an InterruptedException.", address, false);
             Thread.currentThread().interrupt();
         } catch (Throwable e) {
-            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an Exception %s.", address, false, e);
+            LOG.info("isServiceDetected: ICMP based service for address: {} is detected: {}. Received an Exception {}.", address, false, e);
         }
         
         return found;

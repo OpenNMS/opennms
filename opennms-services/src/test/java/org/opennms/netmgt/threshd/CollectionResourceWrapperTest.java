@@ -38,7 +38,6 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Level;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -75,19 +74,17 @@ import org.opennms.netmgt.snmp.SnmpValue;
  *
  */
 public class CollectionResourceWrapperTest {
+    private boolean m_ignoreWarnings = false;
 
-    Level m_logLevelToCheck;
-    
     @Before
     public void setUp() throws Exception {
         CollectionResourceWrapper.s_cache.clear();
-        m_logLevelToCheck = Level.WARN;
         MockLogAppender.setupLogging();
     }
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(m_logLevelToCheck);
+        if (!m_ignoreWarnings ) MockLogAppender.assertNoWarningsOrGreater();
     }
     
     @Test
@@ -201,9 +198,7 @@ public class CollectionResourceWrapperTest {
       */
 	@Test
 	public void testGetCounterValueWithGap() throws Exception {
-
-		m_logLevelToCheck = Level.ERROR; // We're expecting a WARN; an ERROR or
-											// worse would be unexpected
+	        m_ignoreWarnings = true; // we get a warning on the first getAttributeValue()
 
 		CollectionAgent agent = createCollectionAgent();
 		SnmpCollectionResource resource = createNodeResource(agent);
@@ -423,6 +418,7 @@ public class CollectionResourceWrapperTest {
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
+        EasyMock.expect(agent.getStorageDir()).andReturn(new File("target/foo")).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }

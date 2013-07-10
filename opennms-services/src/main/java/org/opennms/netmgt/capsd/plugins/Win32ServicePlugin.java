@@ -32,7 +32,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Win32ServicePlugin class.</p>
@@ -41,6 +42,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class Win32ServicePlugin extends SnmpPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Win32ServicePlugin.class);
+    
 	private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
@@ -56,21 +60,10 @@ public class Win32ServicePlugin extends SnmpPlugin {
 			serviceOidBuf.append(".").append(Byte.toString(thisByte));
 		}
 		
-		if (log().isDebugEnabled()) {
-			log().debug("For Win32 service '" + serviceName +"', OID to check is " + serviceOidBuf.toString());
-		}
+		LOG.debug("For Win32 service '{}', OID to check is {}", serviceName, serviceOidBuf);
 		qualifiers.put("vbname", serviceOidBuf.toString());
 		qualifiers.put("vbvalue", "1");
 		
 		return super.isProtocolSupported(address, qualifiers);
-	}
-	
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	public static ThreadCategory log() {
-		return ThreadCategory.getInstance(Win32ServicePlugin.class);
 	}
 }

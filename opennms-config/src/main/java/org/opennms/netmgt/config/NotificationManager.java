@@ -56,11 +56,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
@@ -83,6 +84,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public abstract class NotificationManager {
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationManager.class);
 
     /**
      * Object containing all Notification objects parsed from the xml file
@@ -153,7 +155,7 @@ public abstract class NotificationManager {
         } catch (RESyntaxException e) {
             // this shouldn't throw an exception, should be tested prior to
             // runtime
-            LogUtils.errorf(NotificationManager.class, e, "failed to compile RE %s", NOTIFD_EXPANSION_PARM);
+            LOG.error("failed to compile RE {}", NOTIFD_EXPANSION_PARM, e);
             // FIXME: wrap this in runtime exception since SOMETIMES we are using
             // an incorrect version of regexp pulled from xalan that is doesn't
             // extend RuntimeException only Exception.  We really need to fix that.
@@ -266,22 +268,21 @@ public abstract class NotificationManager {
         update();
         List<Notification> notifList = new ArrayList<Notification>();
         boolean matchAll = getConfigManager().getNotificationMatch();
-        ThreadCategory log = this.log();
   
         // This if statement will check to see if notification should be suppressed for this event.
 
         if (event == null) {
-            log.warn("unable to get notification for null event!");
+            LOG.warn("unable to get notification for null event!");
             return null;
         } else if (event.getLogmsg() != null && !(event.getLogmsg().getNotify())) {
-            if (log.isDebugEnabled())
-                log.debug("Event " + event.getUei() + " is configured to suppress notifications.");
+
+            LOG.debug("Event {} is configured to suppress notifications.", event.getUei());
             return null;
         }
     
         for (Notification curNotif : m_notifications.getNotificationCollection()) {
-            if (log.isDebugEnabled())
-                log.debug("Checking " + event.getUei() + " against " + curNotif.getUei());
+
+            LOG.debug("Checking {} against {}", curNotif.getUei(), event.getUei());
  
             if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
                // Match!
@@ -289,29 +290,29 @@ public abstract class NotificationManager {
                if (event.getUei().matches(curNotif.getUei().substring(1))) {
                     // Match!
                } else {
-                   if (log.isDebugEnabled())
-                       log.debug("Notification regex " + curNotif.getUei() + " failed to match event UEI: " + event.getUei());
+
+                   LOG.debug("Notification regex {} failed to match event UEI: {}", event.getUei(), curNotif.getUei());
                    continue;
                }
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("Event UEI " + event.getUei() + " did not match " + curNotif.getUei());
+
+                LOG.debug("Event UEI {} did not match {}", curNotif.getUei(), event.getUei());
                 continue;
             }
 
             /**
              * Check if event severity matches pattern in notification
              */
-            if (log.isDebugEnabled())
-                log.debug("Checking event severity: " + event.getSeverity() + " against notification severity: " + curNotif.getEventSeverity());
+
+            LOG.debug("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
             // parameter is optional, return true if not set
             if (curNotif.getEventSeverity() == null) {
                 // Skip matching on severity
             } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
                 // Severities match
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("Event severity: " + event.getSeverity() + " did not match notification severity: " + curNotif.getEventSeverity());
+
+                LOG.debug("Event severity: {} did not match notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
                 continue;
             }
            
@@ -326,25 +327,25 @@ public abstract class NotificationManager {
                     boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
     
                     if (!parmsmatched) {
-                        if (log.isDebugEnabled())
-                            log.debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
+
+                        LOG.debug("Event {} did not match parameters for notice {}", curNotif.getName(), event.getUei());
                         continue;
                     }
                     // Add this notification to the return value
                     notifList.add(curNotif);
     
-                    if (log.isDebugEnabled())
-                        log.debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
+
+                    LOG.debug("Event {} matched notice {}", curNotif.getName(), event.getUei());
                     
                     if (!matchAll)
                         break;
                 } else {
-                    if (log.isDebugEnabled())
-                        log.debug("Node/interface/service combination in the event was invalid");
+
+                    LOG.debug("Node/interface/service combination in the event was invalid");
                 }
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("Current notification is turned off.");
+
+                LOG.debug("Current notification is turned off.");
             }
         }
     
@@ -355,9 +356,6 @@ public abstract class NotificationManager {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
     /**
      * <p>getConfigManager</p>
      *
@@ -385,6 +383,8 @@ public abstract class NotificationManager {
          */
         if (event.getNodeid() == 0 && event.getInterface() == null && event.getService() == null) {
             if ("MATCH-ANY-UEI".equals(notif.getUei())) {
+               // TODO: Trim parentheses from the filter and trim whitespace from inside the
+               // filter statement. This comparison is very brittle as it is.
                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
                    return true;
                } else {
@@ -416,7 +416,7 @@ public abstract class NotificationManager {
         try {
             return FilterDaoFactory.getInstance().isRuleMatching(rule);
         } catch (FilterParseException e) {
-            log().error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
+            LOG.error("Invalid filter rule for notification {}: {}", notif.getName(), notif.getRule(), e);
             throw e;
         }
     }
@@ -519,7 +519,7 @@ public abstract class NotificationManager {
                 outstanding = true;
             }
         } catch (SQLException e) {
-            log().error("Error getting notice status: " + e.getMessage(), e);
+            LOG.error("Error getting notice status", e);
         } finally {
             d.cleanUp();
         }
@@ -542,7 +542,6 @@ public abstract class NotificationManager {
         Connection connection = null;
         List<Integer> notifIDs = new LinkedList<Integer>();
         final DBUtils d = new DBUtils(getClass());
-        ThreadCategory log = this.log();
 
         try {
             // First get most recent event ID from notifications 
@@ -579,8 +578,8 @@ public abstract class NotificationManager {
             d.watch(results);
             if (results != null && results.next()) {
                 eventID = results.getInt(1);
-                if (log.isDebugEnabled())
-                    log.debug("EventID for notice(s) to be acked: " + eventID);
+
+                LOG.debug("EventID for notice(s) to be acked: {}", eventID);
 
 
                 sql = new StringBuffer("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
@@ -599,15 +598,15 @@ public abstract class NotificationManager {
                             ansBy = "auto-acknowledged";
                             ts = new Timestamp((new Date()).getTime());
                         } else if(ansBy.indexOf("auto-acknowledged") > -1) {
-                            if (log.isDebugEnabled())
-                                log.debug("Notice has previously been auto-acknowledged. Skipping...");
+
+                            LOG.debug("Notice has previously been auto-acknowledged. Skipping...");
                             continue;
                         } else {
                             wasAcked = true;
                             ansBy = ansBy + "/auto-acknowledged";
                         }
-                        if (log.isDebugEnabled())
-                            log.debug("Matching DOWN notifyID = " + notifID + ", was acked by user = " + wasAcked + ", ansBy = " +ansBy);
+
+                        LOG.debug("Matching DOWN notifyID = {}, was acked by user = {}, ansBy = {}", ansBy, notifID, wasAcked);
                         final PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
                         d.watch(update);
     
@@ -625,8 +624,8 @@ public abstract class NotificationManager {
                     }
                 }
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("No matching DOWN eventID found");
+
+                LOG.debug("No matching DOWN eventID found");
             }
         } finally {
             d.cleanUp();
@@ -723,10 +722,7 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(final String userId, final int noticeId, final String media, final String contactInfo, final String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
-        ThreadCategory log = this.log();
-        if (log.isDebugEnabled()) {
-            log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
-        }
+        LOG.debug("updating usersnotified: ID = {} User = {}, notice ID = {}, conctactinfo = {}, media = {}, autoNotify = {}", autoNotify, userNotifId, userId, noticeId, contactInfo, media);
         Connection connection = null;
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -774,7 +770,7 @@ public abstract class NotificationManager {
             // notifications textMsg field
             String textMsg = params.get(NotificationManager.PARAM_TEXT_MSG);
             if (textMsg != null && textMsg.length() > 4000) {
-                log().warn("textmsg too long, it will be truncated");
+                LOG.warn("textmsg too long, it will be truncated");
                 textMsg = textMsg.substring(0, 4000);
             }
             statement.setString(1, textMsg);
@@ -782,7 +778,7 @@ public abstract class NotificationManager {
             // notifications numericMsg field
             String numMsg = params.get(NotificationManager.PARAM_NUM_MSG);
             if (numMsg != null && numMsg.length() > 256) {
-                log().warn("numericmsg too long, it will be truncated");
+                LOG.warn("numericmsg too long, it will be truncated");
                 numMsg = numMsg.substring(0, 256);
             }
             statement.setString(2, numMsg);

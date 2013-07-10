@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.dbcp.PoolingConnection;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -67,8 +66,6 @@ public class EventdStresser {
      * @param args
      */
     public static void main(String[] args) {
-        LogUtils.logToConsole();
-        LogUtils.enableDebugging();
 
         parseArgs(args);
 

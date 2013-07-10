@@ -35,7 +35,8 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
 
@@ -51,6 +52,7 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class DominoIIOPPlugin extends AbstractTcpPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(DominoIIOPPlugin.class);
 
     /**
      * Encapsulates the configuration characteristics unique to a DominoIIOP
@@ -162,7 +164,6 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         DominoConnectionConfig config = (DominoConnectionConfig) tcpConfig;
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -175,8 +176,8 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         } catch (FileNotFoundException e) {
             return true;
         } catch (Throwable e) {
-            if (log.isDebugEnabled())
-                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + InetAddressUtils.str(config.getInetAddress()));
+
+            LOG.debug("DominoIIOPMonitor: failed to get the corba IOR from {}", InetAddressUtils.str(config.getInetAddress()));
             return false;
         }
     }

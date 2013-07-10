@@ -6,9 +6,8 @@ import java.util.List;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
-
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -69,13 +68,12 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     @Override
     public List<ReverseDnsRecord> get(final Integer nodeid) {
         final List<ReverseDnsRecord> records = new ArrayList<ReverseDnsRecord>();
-        m_template.execute(new TransactionCallback<Object>() {
+        m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus arg0) {
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 for (OnmsIpInterface ipInterface : m_nodeDao.get(nodeid).getIpInterfaces()) {
                     records.add(new ReverseDnsRecord(ipInterface));
                 }
-                return null;
             }
         });
         return records;

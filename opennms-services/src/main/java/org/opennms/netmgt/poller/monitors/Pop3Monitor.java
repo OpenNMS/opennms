@@ -40,7 +40,6 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -49,6 +48,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -64,6 +65,8 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 @Distributable
 final public class Pop3Monitor extends AbstractServiceMonitor {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(Pop3Monitor.class);
 
     /**
      * Default POP3 port.
@@ -115,8 +118,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
 
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr + ", port = " + port + ", " + tracker);
+        LOG.debug("poll: address = {}, port = {}, {}", ipv4Addr, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -132,7 +134,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("Pop3Monitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("Pop3Monitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -177,18 +179,26 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                 }
             } catch (NoRouteToHostException e) {
             	
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
+            	String reason = "No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
                 
             } catch (InterruptedIOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+            	String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             	
             } catch (ConnectException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + hostAddress, e);
+            	String reason = "Connection exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + hostAddress, e);
+            	String reason = "IOException while polling address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -196,8 +206,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                         socket.close();
 
                 } catch (IOException e) {
-                    if (log().isDebugEnabled())
-                        log().debug("poll: Error closing socket.", e);
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

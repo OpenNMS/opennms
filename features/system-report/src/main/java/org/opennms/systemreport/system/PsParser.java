@@ -36,9 +36,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class PsParser extends Thread {
+    private static final Logger LOG = LoggerFactory.getLogger(PsParser.class);
     private final Set<Integer> m_processes = Collections.synchronizedSet(new HashSet<Integer>());
     private DataInputStream m_input;
     private final String m_matchText;
@@ -63,10 +65,10 @@ public final class PsParser extends Thread {
                 line = line.trim();
                 if (line.contains(m_matchText)) {
                     if (m_skipText != null && m_skipText.length() > 0 && line.contains(m_skipText)) {
-                        LogUtils.debugf(this, "skipped match: %s", line);
+                        LOG.debug("skipped match: {}", line);
                         continue;
                     } else {
-                        LogUtils.debugf(this, "found match: %s", line);
+                        LOG.debug("found match: {}", line);
                     }
                     final String[] entries = line.split(" +");
                     m_processes.add(Integer.valueOf(entries[m_matchField]));
@@ -79,10 +81,10 @@ public final class PsParser extends Thread {
             if (e.getMessage().contains("Write end dead")) {
                 // ignore this, the stream is finished
             } else {
-                LogUtils.debugf(this, e, "An error occurred matching '%s' for field '%d' in the input stream.", m_matchText, m_matchField);
+                LOG.debug("An error occurred matching '{}' for field '{}' in the input stream.", m_matchText, m_matchField, e);
             }
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "An error occurred matching '%s' for field '%d' in the input stream.", m_matchText, m_matchField);
+            LOG.debug("An error occurred matching '{}' for field '{}' in the input stream.", m_matchText, m_matchField, e);
         }
     }
 

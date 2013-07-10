@@ -41,13 +41,14 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the interface used to send events into the event subsystem - It is
@@ -59,6 +60,9 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class TcpEventProxy implements EventProxy {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(TcpEventProxy.class);
+	
     /** Constant <code>DEFAULT_PORT=5817</code> */
     public static final int DEFAULT_PORT = 5817;
 
@@ -144,10 +148,6 @@ public final class TcpEventProxy implements EventProxy {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     private class Connection {
         private Socket m_sock;
 
@@ -161,8 +161,8 @@ public final class TcpEventProxy implements EventProxy {
             m_sock = new Socket();
             m_sock.connect(m_address, m_timeout);
             m_sock.setSoTimeout(500);
-            log().debug("Default Charset:" + Charset.defaultCharset().displayName());
-            log().debug("Setting Charset: UTF-8");
+            LOG.debug("Default Charset:", Charset.defaultCharset().displayName());
+            LOG.debug("Setting Charset: UTF-8");
             m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.forName("UTF-8"));
             m_input = m_sock.getInputStream();
             m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
@@ -193,7 +193,7 @@ public final class TcpEventProxy implements EventProxy {
                 try {
                     m_sock.close();
                 } catch (IOException e) {
-                    log().warn("Error closing socket " + m_sock + ": " + e, e);
+                    LOG.warn("Error closing socket {}", m_sock, e);
                 }
             }
 

@@ -41,7 +41,7 @@ public class JettyServer extends AbstractSpringContextJmxServiceDaemon<org.openn
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.JettyServer";
+        return org.opennms.netmgt.jetty.JettyServer.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

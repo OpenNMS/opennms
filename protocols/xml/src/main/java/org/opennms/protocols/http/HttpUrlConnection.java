@@ -48,15 +48,14 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * The class for managing HTTP URL Connection using Apache HTTP Client
  * 
  * TODO Pending features:
  * 
- * 1) Support for HTTPS
- * 2) Support for POST with different content types
+ * 1) Support for POST with different content types (xml, json, form-urlencoded)
+ * 2) Support for custom headers (user-agent, host/virtualhost)
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -161,8 +160,5 @@ public class HttpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

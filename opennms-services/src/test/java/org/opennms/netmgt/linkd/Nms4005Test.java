@@ -71,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-linkdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 @Ignore
 public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBean {

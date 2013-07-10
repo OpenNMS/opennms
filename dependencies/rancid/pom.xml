@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>rancid-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS RANCID Dependencies</name>
+  <name>OpenNMS Dependencies RANCID</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the RANCID library
@@ -18,7 +18,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>rancid-api</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <repositories>

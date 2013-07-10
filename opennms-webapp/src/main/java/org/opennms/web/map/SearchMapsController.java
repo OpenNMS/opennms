@@ -43,13 +43,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 
 
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -65,7 +68,9 @@ import org.springframework.web.servlet.mvc.Controller;
  * @since 1.8.1
  */
 public class SearchMapsController implements Controller {
-	ThreadCategory log;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SearchMapsController.class);
+
 
 	private Manager manager;
 	
@@ -91,43 +96,41 @@ public class SearchMapsController implements Controller {
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 	    int mapWidth = WebSecurityUtils.safeParseInt(request
 	                                                   .getParameter("MapWidth"));
         int mapHeight = WebSecurityUtils.safeParseInt(request
 	                                                       .getParameter("MapHeight"));
 
-        log.debug("Current mapWidth=" + mapWidth + " and MapHeight=" + mapHeight);
+        LOG.debug("Current mapWidth={} and MapHeight={}", mapWidth, mapHeight);
 
         int d = WebSecurityUtils.safeParseInt(request
                                                      .getParameter("MapElemDimension"));
         
-        log.debug("default element dimension: "+d );
+        LOG.debug("default element dimension: {}", d );
 
 
         String elems = request.getParameter("elems");
-        log.debug("Adding Searching Maps: elems="+elems );
+        LOG.debug("Adding Searching Maps: elems={}", elems );
 
 
         int n = mapWidth /4/d;
         int k = mapHeight/2/d;
-        log.debug("Max number of element on the row: "+n );
-        log.debug("Max number of element in the map: "+n * k );
+        LOG.debug("Max number of element on the row: {}", n );
+        LOG.debug("Max number of element in the map: {}", n * k );
 
         String[] smapids = elems.split(",");
 
-        log.debug("Map Element to add to the Search Map: " + smapids.length);
+        LOG.debug("Map Element to add to the Search Map: {}", smapids.length);
 
         while (smapids.length > n*k) {
-            log.info("the map dimension is too big: resizing");
+            LOG.info("the map dimension is too big: resizing");
             d = d - 5;
-            log.info("new element dimension: " + d);
+            LOG.info("new element dimension: {}", d);
             n = mapWidth /4/d;
             k = mapHeight/2/d;
-            log.debug("Recalculated - Max number of element on the row: "+n );
-            log.debug("Recalculated - Max number of element in the map: "+n * k );
+            LOG.debug("Recalculated - Max number of element on the row: {}", n );
+            LOG.debug("Recalculated - Max number of element in the map: {}", n * k );
         }
 		
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
@@ -161,10 +164,10 @@ public class SearchMapsController implements Controller {
             VMap map = manager.searchMap(request
                                          .getRemoteUser(), request.getRemoteUser(),
                                          mapWidth, mapHeight,velems);
-            log.debug("Got search map from manager "+map);
+            LOG.debug("Got search map from manager {}", map);
 			bw.write(ResponseAssembler.getMapResponse(map));
 		} catch (Throwable e) {
-			log.error("Error while adding Maps: ",e);
+			LOG.error("Error while adding Maps: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SEARCHMAPS_ACTION));
 		} finally {
 			bw.close();

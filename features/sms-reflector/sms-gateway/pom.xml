@@ -42,9 +42,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
+      <groupId>org.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-20100302</version>
+      <version>3.5.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -34,8 +34,9 @@ import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.rtc.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adapts the functionality of the category definition and RTC category updates
@@ -51,6 +52,9 @@ import org.opennms.netmgt.xml.rtc.Node;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class Category {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Category.class);
+
     /** The category definition (from the categories.xml file). */
     protected final org.opennms.netmgt.config.categories.Category m_categoryDef;
 
@@ -239,7 +243,7 @@ public class Category {
         }
 
         if (m_serviceDownCount == null) {
-            ThreadCategory.getInstance(this.getClass()).warn("Could not fetch service down count for category: " + m_rtcCategory.getCatlabel());
+            LOG.warn("Could not fetch service down count for category: {}", m_rtcCategory.getCatlabel());
             return 0;
         } else {
             return m_serviceDownCount.longValue();
@@ -259,7 +263,7 @@ public class Category {
         }
 
         if (m_servicePercentage == null) {
-            ThreadCategory.getInstance(this.getClass()).warn("Could not fetch service percentage for category: " + m_rtcCategory.getCatlabel());
+            LOG.warn("Could not fetch service percentage for category: {}", m_rtcCategory.getCatlabel());
             return 0.0;
         } else {
             return m_servicePercentage.doubleValue();

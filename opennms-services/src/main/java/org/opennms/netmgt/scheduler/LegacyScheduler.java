@@ -39,7 +39,8 @@ import java.util.concurrent.RejectedExecutionException;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -52,6 +53,9 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyScheduler.class);
+    
     /**
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
@@ -162,28 +166,24 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *             Thrown if an error occurs adding the element to the queue.
      */
     public synchronized void schedule(ReadyRunnable runnable, long interval) {
-        if (log().isDebugEnabled()) {
-            log().debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
-        }
+        LOG.debug("schedule: Adding ready runnable {} at interval {}", runnable, interval);
 
         Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
-            if (log().isDebugEnabled()) {
-                log().debug("schedule: interval queue did not exist, a new one has been created");
-            }
+            LOG.debug("schedule: interval queue did not exist, a new one has been created");
             m_queues.put(key, new PeekableFifoQueue<ReadyRunnable>());
         }
 
         try {
             m_queues.get(key).add(runnable);
             if (m_scheduled++ == 0) {
-                log().debug("schedule: queue element added, calling notify all since none were scheduled");
+                LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
                 notifyAll();
-            } else if (log().isDebugEnabled()) {
-                log().debug("schedule: queue element added, notification not performed");
+            } else {
+                LOG.debug("schedule: queue element added, notification not performed");
             }
         } catch (InterruptedException e) {
-            log().info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
+            LOG.info("schedule: failed to add new ready runnable instance {} to scheduler", runnable, e);
             Thread.currentThread().interrupt();
         }
     }
@@ -239,7 +239,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_worker.start();
         m_status = STARTING;
 
-        log().info("start: scheduler started");
+        LOG.info("start: scheduler started");
     }
 
     /* (non-Javadoc)
@@ -256,7 +256,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_worker.interrupt();
         m_runner.shutdown();
 
-        log().info("stop: scheduler stopped");
+        LOG.info("stop: scheduler stopped");
     }
 
     /* (non-Javadoc)
@@ -353,7 +353,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             m_status = RUNNING;
         }
 
-        log().debug("run: scheduler running");
+        LOG.debug("run: scheduler running");
 
         /*
          * Loop until a fatal exception occurs or until
@@ -368,16 +368,14 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             synchronized (this) {
                 
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("run: status = " + m_status + ", time to exit");
-                    }
+                    LOG.debug("run: status = {}, time to exit", m_status);
                     break;
                 }
 
                 // if paused or pause pending then block
                 while (m_status == PAUSE_PENDING || m_status == PAUSED) {
                     if (m_status == PAUSE_PENDING) {
-                        log().debug("run: pausing.");
+                        LOG.debug("run: pausing.");
                     }
                     m_status = PAUSED;
                     try {
@@ -391,14 +389,14 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                 // if resume pending then change to running
 
                 if (m_status == RESUME_PENDING) {
-                    log().debug("run: resuming.");
+                    LOG.debug("run: resuming.");
                     
                     m_status = RUNNING;
                 }
 
                 if (m_scheduled == 0) {
                     try {
-                        log().debug("run: no ready runnables scheduled, waiting...");
+                        LOG.debug("run: no ready runnables scheduled, waiting...");
                         wait();
                     } catch (InterruptedException ex) {
                         break;
@@ -434,9 +432,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                         try {
                             readyRun = in.peek();
                             if (readyRun != null && readyRun.isReady()) {
-                                if (log().isDebugEnabled()) {
-                                    log().debug("run: found ready runnable "+readyRun);
-                                }
+                                LOG.debug("run: found ready runnable {}", readyRun);
 
                                 /*
                                  * Pop the interface/readyRunnable from the
@@ -476,14 +472,10 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
 
         }
 
-        log().debug("run: scheduler exiting, state = STOPPED");
+        LOG.debug("run: scheduler exiting, state = STOPPED");
         synchronized (this) {
             m_status = STOPPED;
         }
 
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }
