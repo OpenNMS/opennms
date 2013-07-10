@@ -55,16 +55,16 @@ public class UrlFactoryTest {
      */
     @Test
     public void testUrlFactory() throws Exception {
-        URL url = UrlFactory.getUrl("https://www.google.com");
-        Assert.assertEquals(HttpsUrlHandler.PROTOCOL, url.getProtocol());
+        URL url = UrlFactory.getUrl("https://www.google.com", null);
+        Assert.assertEquals(HttpsUrlHandler.HTTPS, url.getProtocol());
         Assert.assertTrue(url.openConnection() instanceof HttpUrlConnection);
-        url = UrlFactory.getUrl("HTTP://www.opennms.org");
-        Assert.assertEquals(HttpUrlHandler.PROTOCOL, url.getProtocol());
+        url = UrlFactory.getUrl("HTTP://www.opennms.org", null);
+        Assert.assertEquals(HttpUrlHandler.HTTP, url.getProtocol());
         Assert.assertTrue(url.openConnection() instanceof HttpUrlConnection);
-        url = UrlFactory.getUrl("sftp://www.opennms.org");
+        url = UrlFactory.getUrl("sftp://www.opennms.org", null);
         Assert.assertEquals(SftpUrlHandler.PROTOCOL, url.getProtocol());
         Assert.assertTrue(url.openConnection() instanceof SftpUrlConnection);
-        url = UrlFactory.getUrl("sftp.3GPP://junier-router.local/opt/3gpp/data");
+        url = UrlFactory.getUrl("sftp.3GPP://junier-router.local/opt/3gpp/data", null);
         Assert.assertEquals(Sftp3gppUrlHandler.PROTOCOL, url.getProtocol());
         Assert.assertTrue(url.openConnection() instanceof Sftp3gppUrlConnection);
     }

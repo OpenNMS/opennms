@@ -28,87 +28,83 @@
 
 package org.opennms.protocols.xml.config;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class XmlGroups.
+ * The Class Parameter.
+ * <ul>
+ *   <li>get-disable-ssl-verification</li>
+ *   <li>protocol-version</li>
+ *   <li>retries</li>
+ *   <li>timeout</li>
+ * </ul>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@XmlRootElement(name="xml-groups")
+@XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlGroups implements Serializable {
+public class Parameter {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8626665420339279584L;
+    /** The name. */
+    @XmlAttribute(required=true)
+    private String name;
 
-    /** The XML groups list. */
-    @XmlElement(name="xml-group", required=true)
-    private List<XmlGroup> m_xmlGroups = new ArrayList<XmlGroup>();
+    /** The value. */
+    @XmlAttribute(required=true)
+    private String value;
 
     /**
-     * Instantiates a new XML source.
+     * Instantiates a new parameter.
      */
-    public XmlGroups() {
-    }
+    public Parameter() {}
 
     /**
-     * Gets the XML groups.
-     *
-     * @return the XML groups
-     */
-    public List<XmlGroup> getXmlGroups() {
-        return m_xmlGroups;
-    }
-
-    /**
-     * Sets the XML groups.
-     *
-     * @param xmlGroups the new XML groups
-     */
-    public void setXmlGroups(List<XmlGroup> xmlGroups) {
-        m_xmlGroups = xmlGroups;
-    }
-
-    /**
-     * Adds the XML group.
-     *
-     * @param group the group
-     */
-    public void addXmlGroup(XmlGroup group) {
-        m_xmlGroups.add(group);
-    }
-
-    /**
-     * Removes the XML group.
-     *
-     * @param group the group
-     */
-    public void removeXmlGroup(XmlGroup group) {
-        m_xmlGroups.remove(group);
-    }
-
-    /**
-     * Removes the group by name.
+     * Instantiates a new parameter.
      *
      * @param name the name
+     * @param value the value
      */
-    public void removeGroupByName(String name) {
-        for (Iterator<XmlGroup> itr = m_xmlGroups.iterator(); itr.hasNext();) {
-            XmlGroup query = itr.next();
-            if(query.getName().equals(name)) {
-                m_xmlGroups.remove(query);
-                return;
-            }
-        }
+    public Parameter(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

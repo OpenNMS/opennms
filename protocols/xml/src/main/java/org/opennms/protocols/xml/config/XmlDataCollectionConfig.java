@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -49,12 +51,14 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="xml-datacollection-config")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlDataCollectionConfig implements Serializable, Comparable<XmlDataCollectionConfig> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7884808717236892997L;
 
     /** The Constant XML_DATACOLLECTION_CONFIG_FILE. */
+    @XmlTransient
     public static final String XML_DATACOLLECTION_CONFIG_FILE = "xml-datacollection-config.xml";
 
     /** The Constant OF_DATA_COLLECTIONS. */
@@ -80,7 +84,6 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
      *
      * @return the XML data collections
      */
-    @XmlTransient
     public List<XmlDataCollection> getXmlDataCollections() {
         return m_xmlDataCollections;
     }
@@ -99,7 +102,6 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
      *
      * @return the RRD repository
      */
-    @XmlTransient
     public String getRrdRepository() {
         return m_rrdRepository;
     }

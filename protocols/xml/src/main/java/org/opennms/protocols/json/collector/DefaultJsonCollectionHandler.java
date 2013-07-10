@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
 
@@ -62,7 +63,8 @@ public class DefaultJsonCollectionHandler extends AbstractJsonCollectionHandler 
         try {
             for (XmlSource source : collection.getXmlSources()) {
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                JSONObject json = getJSONObject(urlStr);
+                Request request = parseRequest(source.getRequest(), agent);
+                JSONObject json = getJSONObject(urlStr, request);
                 fillCollectionSet(agent, collectionSet, source, json);
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);

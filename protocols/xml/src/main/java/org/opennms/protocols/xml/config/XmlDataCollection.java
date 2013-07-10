@@ -32,10 +32,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -69,13 +71,15 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@XmlType(name="xml-collection")
+@XmlRootElement(name="xml-collection")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlDataCollection implements Serializable, Comparable<XmlDataCollection> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 6448438583337362122L;
 
     /** The Constant OF_XML_SOURCES. */
+    @XmlTransient
     private static final XmlSource[] OF_XML_SOURCES = new XmlSource[0];
 
     /** The data collection name. */
@@ -101,7 +105,6 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
      *
      * @return the name
      */
-    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -120,7 +123,6 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
      *
      * @return the XML RRD
      */
-    @XmlTransient
     public XmlRrd getXmlRrd() {
         return m_xmlRrd;
     }
@@ -139,7 +141,6 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
      *
      * @return the XML sources
      */
-    @XmlTransient
     public List<XmlSource> getXmlSources() {
         return m_xmlSources;
     }
