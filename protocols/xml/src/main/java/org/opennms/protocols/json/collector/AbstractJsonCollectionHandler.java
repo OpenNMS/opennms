@@ -56,6 +56,7 @@ import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
 import org.opennms.protocols.xml.collector.XmlCollectorException;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -159,12 +160,13 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * Gets the JSON object.
      *
      * @param urlString the URL string
+     * @param request the request
      * @return the JSON object
      */
-    protected JSONObject getJSONObject(String urlString) {
+    protected JSONObject getJSONObject(String urlString, Request request) {
         InputStream is = null;
         try {
-            URL url = UrlFactory.getUrl(urlString);
+            URL url = UrlFactory.getUrl(urlString, request);
             URLConnection c = url.openConnection();
             is = c.getInputStream();
             JSONObject jsonObject = JSONObject.fromObject( is.toString() );

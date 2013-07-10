@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -92,13 +93,14 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                URL url = UrlFactory.getUrl(urlStr);
+                Request request = parseRequest(source.getRequest(), agent);
+                URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = getLastFilename(resourceDir, url.getPath());
                 Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
-                    Document doc = getXmlDocument(urlStr);
+                    Document doc = getXmlDocument(urlStr, source.getRequest());
                     fillCollectionSet(agent, collectionSet, source, doc);
                     setLastFilename(resourceDir, url.getPath(), lastFile);
                     deleteFile(connection, lastFile);

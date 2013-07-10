@@ -32,8 +32,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -44,17 +47,24 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@XmlRootElement(name="xml-source")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlSource extends XmlGroups implements Serializable, Comparable<XmlSource> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -9220561601381984080L;
 
     /** The Constant OF_XML_GROUPS. */
+    @XmlTransient
     private static final XmlGroup[] OF_XML_GROUPS = new XmlGroup[0];
 
     /** Import Groups List. */
     @XmlElement(name="import-groups", required=false)
     private List<String> m_importGroupsList = new ArrayList<String>();
+
+    /** The request object. */
+    @XmlElement(name="request", required=false)
+    private Request m_request;
 
     /** The source URL. */
     @XmlAttribute(name="url", required=true)
@@ -71,7 +81,6 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
      *
      * @return the URL
      */
-    @XmlTransient
     public String getUrl() {
         return m_url;
     }
@@ -86,11 +95,28 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
     }
 
     /**
+     * Gets the request.
+     *
+     * @return the request
+     */
+    public Request getRequest() {
+        return m_request;
+    }
+
+    /**
+     * Sets the request.
+     *
+     * @param request the new request
+     */
+    public void setRequest(Request request) {
+        this.m_request = request;
+    }
+
+    /**
      * Gets the import groups list.
      *
      * @return the import groups list
      */
-    @XmlTransient
     public List<String> getImportGroupsList() {
         return m_importGroupsList;
     }

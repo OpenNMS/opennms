@@ -30,9 +30,10 @@ package org.opennms.protocols.xml.config;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -43,6 +44,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="xml-object")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlObject implements Serializable, Comparable<XmlObject> {
 
     /** The Constant serialVersionUID. */
@@ -84,7 +86,6 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @return the name
      */
-    @XmlTransient
     public String getName() {
         return m_name;
     }
@@ -103,7 +104,6 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @return the data type
      */
-    @XmlTransient
     public String getDataType() {
         return m_dataType;
     }
@@ -123,7 +123,6 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @return the XPath
      */
-    @XmlTransient
     public String getXpath() {
         return m_xpath;
     }

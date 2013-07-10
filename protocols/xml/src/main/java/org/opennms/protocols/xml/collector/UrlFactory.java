@@ -39,6 +39,7 @@ import org.opennms.protocols.http.HttpsUrlHandler;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
 import org.opennms.protocols.sftp.SftpUrlHandler;
+import org.opennms.protocols.xml.config.Request;
 
 /**
  * A factory for creating URL objects.
@@ -55,12 +56,13 @@ public class UrlFactory {
     /**
      * Gets the URL Object.
      * <p>This method has been created because it is not possible to call URL.setURLStreamHandlerFactory more than once.</p>
-     * 
+     *
      * @param urlStr the URL String
+     * @param request the request
      * @return the URL Object
      * @throws MalformedURLException the malformed URL exception
      */
-    public static URL getUrl(String urlStr) throws MalformedURLException {
+    public static URL getUrl(String urlStr, Request request) throws MalformedURLException {
         URL url = null;
         String protocol = null;
         try {
@@ -72,10 +74,10 @@ public class UrlFactory {
             url = new URL(null, urlStr, new SftpUrlHandler());
         } else if (Sftp3gppUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new Sftp3gppUrlHandler());
-        } else if (HttpUrlHandler.PROTOCOL.equals(protocol)) {
-            url = new URL(null, urlStr, new HttpUrlHandler());
-        } else if (HttpsUrlHandler.PROTOCOL.equals(protocol)) {
-            url = new URL(null, urlStr, new HttpsUrlHandler());
+        } else if (HttpUrlHandler.HTTP.equals(protocol)) {
+            url = new URL(null, urlStr, new HttpUrlHandler(request));
+        } else if (HttpsUrlHandler.HTTPS.equals(protocol)) {
+            url = new URL(null, urlStr, new HttpsUrlHandler(request));
         } else {
             url = new URL(urlStr);
         }
