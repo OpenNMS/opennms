@@ -35,6 +35,7 @@ import java.net.URLConnection;
 
 import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
+import org.opennms.protocols.http.HttpsUrlHandler;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
 import org.opennms.protocols.sftp.SftpUrlHandler;
@@ -61,12 +62,20 @@ public class UrlFactory {
      */
     public static URL getUrl(String urlStr) throws MalformedURLException {
         URL url = null;
-        if (urlStr.startsWith(SftpUrlHandler.PROTOCOL + "://")) {
+        String protocol = null;
+        try {
+            protocol = urlStr.substring(0, urlStr.indexOf("://")).toLowerCase();
+        } catch (Exception e) {
+            return null;
+        }
+        if (SftpUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new SftpUrlHandler());
-        } else if (urlStr.startsWith(Sftp3gppUrlHandler.PROTOCOL + "://")) {
+        } else if (Sftp3gppUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new Sftp3gppUrlHandler());
-        } else if (urlStr.startsWith(HttpUrlHandler.PROTOCOL + "://")) {
+        } else if (HttpUrlHandler.PROTOCOL.equals(protocol)) {
             url = new URL(null, urlStr, new HttpUrlHandler());
+        } else if (HttpsUrlHandler.PROTOCOL.equals(protocol)) {
+            url = new URL(null, urlStr, new HttpsUrlHandler());
         } else {
             url = new URL(urlStr);
         }
