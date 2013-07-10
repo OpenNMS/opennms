@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
@@ -43,7 +43,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public abstract class InsAbstractSession extends Thread {
-
     private static final Logger LOG = LoggerFactory.getLogger(InsAbstractSession.class);
 
     private String m_criteria;

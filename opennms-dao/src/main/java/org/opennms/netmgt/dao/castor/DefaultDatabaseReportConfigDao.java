@@ -34,7 +34,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.Report;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
+import org.opennms.netmgt.dao.api.DatabaseReportConfigDao;
 
 public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
         implements DatabaseReportConfigDao {

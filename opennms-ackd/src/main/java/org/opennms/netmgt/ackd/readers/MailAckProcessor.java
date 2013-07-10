@@ -49,9 +49,9 @@ import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -388,14 +388,14 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>setAckdConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdDao = configDao;
     }
     
     /**
-     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
@@ -414,7 +414,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>getJmConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     protected JavaMailConfigurationDao getJmConfigDao() {
         return m_jmConfigDao;
@@ -423,7 +423,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>setJmConfigDao</p>
      *
-     * @param jmConfigDao a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @param jmConfigDao a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     public void setJmConfigDao(final JavaMailConfigurationDao jmConfigDao) {
         m_jmConfigDao = jmConfigDao;

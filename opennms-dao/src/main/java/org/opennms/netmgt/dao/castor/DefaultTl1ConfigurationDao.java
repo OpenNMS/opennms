@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
-import org.opennms.netmgt.dao.Tl1ConfigurationDao;
+import org.opennms.netmgt.dao.api.Tl1ConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

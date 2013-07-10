@@ -31,13 +31,12 @@ package org.opennms.core.db;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.resource.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import org.opennms.core.resource.Vault;
 
 /**
  * <p>DataSourceFactoryBean class.</p>

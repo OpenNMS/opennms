@@ -33,7 +33,7 @@ import java.util.Collection;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.api.LinkStateDao;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.springframework.orm.hibernate3.HibernateCallback;
 

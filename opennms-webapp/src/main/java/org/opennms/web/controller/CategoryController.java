@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.surveillanceViews.RowDef;
 import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
+import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.opennms.web.svclayer.support.DefaultAdminCategoryService.EditModel;

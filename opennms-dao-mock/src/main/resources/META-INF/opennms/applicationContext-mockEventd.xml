@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+    ">
+
+    <bean id="transactionManager" class="org.opennms.netmgt.dao.mock.MockTransactionManager" />
+
+    <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.model.events.EventIpcManagerProxy">
+        <qualifier value="standard" />
+    </bean>
+    
+    <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigManager-init" factory-method="getInstance"/>
+
+    <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
+    <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
+
+    <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+		<property name="eventProcessors">
+			<list>
+				<!-- This EventProcessor can be used to perform regex replacements on 
+					incoming parm values. It was added in 1.11 and because of performance concerns, 
+					it is commented-out for now. -->
+				<!-- <ref local="eventParmRegexFilter"/> -->
+				<ref bean="eventExpander" />
+				<ref bean="eventWriter" />
+				<ref bean="eventIpcBroadcastProcessor" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+		<property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize" />
+		<property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength" />
+		<property name="eventHandler" ref="eventdEventHandler" />
+		<property name="eventIpcManagerProxy" ref="eventIpcManager" />
+	</bean>
+
+	<bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
+	</bean>
+
+	<bean id="eventExpander" class="org.opennms.netmgt.config.EventExpander">
+		<property name="eventConfDao" ref="eventConfDao" />
+	</bean>
+
+	<bean id="eventWriter" class="org.opennms.netmgt.dao.mock.MockEventWriter">
+		<property name="eventDao" ref="eventDao" />
+		<property name="distPollerDao" ref="distPollerDao" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="serviceTypeDao" ref="serviceTypeDao" />
+	</bean>
+
+</beans>

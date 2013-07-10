@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.rrd.RrdStrategy;

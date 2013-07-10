@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2005-12-27T09:12:54">
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2005-12-27T09:12:54" foreign-source="empty">
 	<node node-label="apknd" foreign-id="4243">
 		<interface ip-addr="10.136.160.1" status="1" snmp-primary="P" descr="VPN interface">
 			<monitored-service service-name="ICMP"/>

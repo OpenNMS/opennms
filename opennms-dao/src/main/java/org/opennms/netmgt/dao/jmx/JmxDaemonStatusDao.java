@@ -39,9 +39,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.QueryExp;
 
-import org.opennms.netmgt.dao.DaemonStatusDao;
-import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.dao.api.DaemonStatusDao;
 import org.opennms.netmgt.model.ServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jmx.access.MBeanProxyFactoryBean;
 

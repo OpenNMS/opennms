@@ -37,7 +37,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -63,7 +63,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * <p>create</p>
      *
      * @param ifaceId a {@link java.lang.Integer} object.
-     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
      */

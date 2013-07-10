@@ -37,10 +37,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.importer.config.types.InterfaceSnmpPrimaryType;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -392,7 +392,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     protected NodeDao getNodeDao() {
         return m_nodeDao;
@@ -401,7 +401,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getDistPollerDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     protected DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
@@ -457,7 +457,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -466,7 +466,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
@@ -475,7 +475,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param svcTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param svcTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao svcTypeDao) {
         m_svcTypeDao = svcTypeDao;
@@ -484,7 +484,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -493,7 +493,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setDistPollerDao</p>
      *
-     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;

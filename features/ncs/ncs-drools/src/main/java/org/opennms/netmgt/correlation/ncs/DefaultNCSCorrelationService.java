@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;

@@ -29,14 +29,15 @@
 package org.opennms.netmgt.model;
 
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 
 
 /**
  * <p>LocationMonitorIpInterface class.</p>
  */
 public class LocationMonitorIpInterface {
-    private OnmsLocationMonitor m_locationMonitor;
-    private OnmsIpInterface m_ipInterface;
+    private final OnmsLocationMonitor m_locationMonitor;
+    private final OnmsIpInterface m_ipInterface;
 
     /**
      * <p>Constructor for LocationMonitorIpInterface.</p>
@@ -45,6 +46,8 @@ public class LocationMonitorIpInterface {
      * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     public LocationMonitorIpInterface(final OnmsLocationMonitor locationMonitor, final OnmsIpInterface ipInterface) {
+        Assert.notNull(locationMonitor);
+        Assert.notNull(ipInterface);
         m_locationMonitor = locationMonitor;
         m_ipInterface = ipInterface;
     }
@@ -74,5 +77,35 @@ public class LocationMonitorIpInterface {
             .append("ipInterface", m_ipInterface)
             .toString();
     }
-}
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_ipInterface.getId().hashCode();
+        result = prime * result + m_locationMonitor.getId().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof LocationMonitorIpInterface))
+            return false;
+        LocationMonitorIpInterface other = (LocationMonitorIpInterface) obj;
+        if (m_ipInterface.getId() == null) {
+            if (other.m_ipInterface.getId() != null)
+                return false;
+        } else if (!m_ipInterface.getId().equals(other.m_ipInterface.getId()))
+            return false;
+        if (m_locationMonitor.getId() == null) {
+            if (other.m_locationMonitor.getId() != null)
+                return false;
+        } else if (!m_locationMonitor.getId().equals(other.m_locationMonitor.getId()))
+            return false;
+        return true;
+    }
+}

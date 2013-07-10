@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.InputStream;
 
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -209,7 +209,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * {@inheritDoc}
      *
      * Create an RRD graph.
-     * @see org.opennms.netmgt.dao.RrdDao#createGraph(java.lang.String, java.io.File)
+     * @see org.opennms.netmgt.dao.api.RrdDao#createGraph(java.lang.String, java.io.File)
      */
     @Override
     public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
@@ -223,7 +223,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     /**
      * <p>getGraphTopOffsetWithText</p>
      *
-     * @see org.opennms.netmgt.dao.RrdDao#getGraphTopOffsetWithText()
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphTopOffsetWithText()
      * @return a int.
      */
     @Override
@@ -234,7 +234,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     /**
      * <p>getGraphLeftOffset</p>
      *
-     * @see org.opennms.netmgt.dao.RrdDao#getGraphLeftOffset()
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphLeftOffset()
      * @return a int.
      */
     @Override
@@ -245,7 +245,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     /**
      * <p>getGraphRightOffset</p>
      *
-     * @see org.opennms.netmgt.dao.RrdDao#getGraphRightOffset()
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphRightOffset()
      * @return a int.
      */
     @Override

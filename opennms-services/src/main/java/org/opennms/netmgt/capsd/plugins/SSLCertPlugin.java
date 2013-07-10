@@ -48,8 +48,6 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.log.LogUtils;
-
 /**
  * <P>
  * This class is designed to be used by the capabilities daemon to test for the

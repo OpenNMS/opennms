@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.ResourceReferenceDao;
+import org.opennms.netmgt.dao.api.ResourceReferenceDao;
 import org.opennms.netmgt.model.ResourceReference;
 
 /**

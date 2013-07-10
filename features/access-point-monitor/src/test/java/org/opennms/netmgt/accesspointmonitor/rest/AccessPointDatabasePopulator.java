@@ -29,8 +29,8 @@
 package org.opennms.netmgt.accesspointmonitor.rest;
 
 import org.opennms.netmgt.dao.AccessPointDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsNode;
 

@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;

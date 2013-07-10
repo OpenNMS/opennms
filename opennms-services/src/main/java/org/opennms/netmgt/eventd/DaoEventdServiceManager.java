@@ -31,7 +31,8 @@ package org.opennms.netmgt.eventd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.EventdServiceManager;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>getServiceTypeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
@@ -128,7 +129,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;

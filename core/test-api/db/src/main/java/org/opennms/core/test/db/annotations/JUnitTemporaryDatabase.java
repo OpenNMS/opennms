@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabasePostgreSQL;
 
 /**
  * JUnitTemporaryDatabase
@@ -47,7 +48,7 @@ import org.opennms.core.test.db.TemporaryDatabase;
 public @interface JUnitTemporaryDatabase {
     boolean createSchema() default true;
     String useExistingDatabase() default "";
-    Class<? extends TemporaryDatabase> tempDbClass() default TemporaryDatabase.class;
+    Class<? extends TemporaryDatabase> tempDbClass() default TemporaryDatabasePostgreSQL.class;
     boolean reuseDatabase() default true;
     boolean dirtiesContext() default true;
 }

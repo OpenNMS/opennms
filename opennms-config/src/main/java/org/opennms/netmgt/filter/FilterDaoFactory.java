@@ -30,6 +30,8 @@ package org.opennms.netmgt.filter;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -39,6 +41,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @version $Id: $
  */
 public class FilterDaoFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(FilterDaoFactory.class);
     private static FilterDao m_filterDao;
 
     // Only static methods, so don't let the constructor be called
@@ -63,7 +66,8 @@ public class FilterDaoFactory {
      *
      * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
      */
-    public static void setInstance(FilterDao filterDao) {
+    public static void setInstance(final FilterDao filterDao) {
+        LOG.debug("setInstance({})", filterDao);
         m_filterDao = filterDao;
     }
 

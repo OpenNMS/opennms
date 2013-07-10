@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**

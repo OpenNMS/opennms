@@ -44,8 +44,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -61,6 +59,8 @@ import org.opennms.netmgt.poller.remote.ServicePollState;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.opennms.netmgt.poller.remote.TimeAdjustment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -206,6 +206,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                         break;
                     case STARTED:
                         onStarted();
+                        break;
+                    default:
+                        LOG.debug("Unhandled status on checkIn(): {}", status);
                         break;
                 }
             } catch (final Exception e) {

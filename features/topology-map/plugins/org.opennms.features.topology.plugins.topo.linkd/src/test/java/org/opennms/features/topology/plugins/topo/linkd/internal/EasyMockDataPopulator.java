@@ -41,17 +41,16 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -116,41 +115,45 @@ public class EasyMockDataPopulator {
     public void populateDatabase() {
         final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
-        final OnmsServiceType icmp = new OnmsServiceType("ICMP");
-        final OnmsServiceType snmp = new OnmsServiceType("SNMP");
-        final OnmsServiceType http = new OnmsServiceType("HTTP");
+        final String icmp = "ICMP";
+        final String snmp = "SNMP";
+        final String http = "HTTP";
         
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.setBuilding("HQ");
-        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface(1)
+        builder.addSnmpInterface(1)
             .setCollectionEnabled(true)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfDescr("ATM0")
             .setIfAlias("Initial ifAlias value")
-            .setIfType(37);
+            .setIfType(37)
+            .addIpInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
-        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface(2)
+        builder.addSnmpInterface(2)
             .setCollectionEnabled(true)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfName("eth0")
-            .setIfType(6);
+            .setIfType(6)
+            .addIpInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S");
         builder.addService(icmp);
         builder.addService(http);
-        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(3)
+        builder.addSnmpInterface(3)
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
-            .setIfSpeed(10000000);
+            .setIfSpeed(10000000)
+            .addIpInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
-        builder.addInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(4)
+        builder.addSnmpInterface(4)
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
-            .setIfSpeed(10000000);
+            .setIfSpeed(10000000)
+            .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         final OnmsNode node1 = builder.getCurrentNode();
         setNode1(node1);

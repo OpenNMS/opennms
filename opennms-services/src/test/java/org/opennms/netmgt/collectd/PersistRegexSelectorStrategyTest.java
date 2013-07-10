@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;

@@ -44,7 +44,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;

@@ -39,9 +39,9 @@ import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -255,7 +255,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -264,7 +264,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -273,7 +273,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
@@ -282,7 +282,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setSiteStatusViewConfigDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.SiteStatusViewConfigDao} object.
      */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
         m_siteStatusViewConfigDao = dao;

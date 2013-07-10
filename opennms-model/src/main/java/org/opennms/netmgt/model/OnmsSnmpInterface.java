@@ -669,6 +669,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     public void addIpInterface(OnmsIpInterface iface) {
+        iface.setSnmpInterface(this);
         m_ipInterfaces.add(iface);
     }
 

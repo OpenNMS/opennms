@@ -647,10 +647,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="node")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="node",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -680,10 +678,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="node")
-    @org.hibernate.annotations.Cascade( {
-         org.hibernate.annotations.CascadeType.ALL,
-         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="node",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsSnmpInterface> getSnmpInterfaces() {
         return m_snmpInterfaces;
     }
@@ -703,10 +699,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="sourceNode")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="sourceNode",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsArpInterface> getArpInterfacesBySource() {
         return m_arpInterfacesBySource;
     }

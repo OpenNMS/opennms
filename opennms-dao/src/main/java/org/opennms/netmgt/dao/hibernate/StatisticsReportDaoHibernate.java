@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.StatisticsReportDao;
+import org.opennms.netmgt.dao.api.StatisticsReportDao;
 import org.opennms.netmgt.model.StatisticsReport;
 
 /**

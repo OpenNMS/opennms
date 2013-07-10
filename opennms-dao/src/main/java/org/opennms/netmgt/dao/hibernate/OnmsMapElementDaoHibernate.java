@@ -34,7 +34,7 @@ import java.util.Collection;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
+import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.springframework.orm.hibernate3.HibernateCallback;

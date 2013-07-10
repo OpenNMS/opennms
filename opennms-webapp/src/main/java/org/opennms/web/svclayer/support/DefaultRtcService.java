@@ -36,8 +36,8 @@ import java.util.Map;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -219,7 +219,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>getMonitoredServiceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
@@ -227,7 +227,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
@@ -235,7 +235,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>getOutageDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public OutageDao getOutageDao() {
         return m_outageDao;
@@ -243,7 +243,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>setOutageDao</p>
      *
-     * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @param outageDao a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public void setOutageDao(OutageDao outageDao) {
         m_outageDao = outageDao;

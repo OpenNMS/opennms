@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
@@ -102,7 +102,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	protected AssetRecordDao _assetRecordDao;
 
@@ -118,7 +118,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	protected NodeDao _nodeDao;
 
@@ -133,7 +133,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	protected AlarmDao _alarmDao;
 

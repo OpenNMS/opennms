@@ -9,7 +9,7 @@ import java.util.ListIterator;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSVertex;
 import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSPathEdge;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.w3c.dom.Node;

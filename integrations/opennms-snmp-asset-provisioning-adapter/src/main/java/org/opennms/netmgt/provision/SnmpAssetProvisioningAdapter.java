@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.SnmpAssetAdapterConfig;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObj;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObjs;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -296,7 +296,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * <p>getNodeDao</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public NodeDao getNodeDao() {
 		return m_nodeDao;
@@ -304,7 +304,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * <p>setNodeDao</p>
 	 *
-	 * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param dao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public void setNodeDao(final NodeDao dao) {
 		m_nodeDao = dao;

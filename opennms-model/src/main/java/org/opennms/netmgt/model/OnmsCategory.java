@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -44,7 +45,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.annotations.CollectionOfElements;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -163,7 +163,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
-	@CollectionOfElements
+	@ElementCollection
 	@JoinTable(name="category_group", joinColumns=@JoinColumn(name="categoryId"))
 	@Column(name="groupId", nullable=false, length=64)
 	public Set<String> getAuthorizedGroups() {

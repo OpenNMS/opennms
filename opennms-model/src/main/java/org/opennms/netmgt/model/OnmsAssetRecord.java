@@ -421,7 +421,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @param id a {@link java.lang.Integer} object.
      */
-    protected void setId(Integer id) {
+    public void setId(Integer id) {
         m_id = id;
     }
 
