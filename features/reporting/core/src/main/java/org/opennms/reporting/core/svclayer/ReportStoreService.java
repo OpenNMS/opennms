@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.api.reporting.ReportFormat;
-import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,7 +93,7 @@ public interface ReportStoreService {
     /**
      * <p>setReportCatalogDao</p>
      *
-     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.api.ReportCatalogDao} object.
      */
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao);
 

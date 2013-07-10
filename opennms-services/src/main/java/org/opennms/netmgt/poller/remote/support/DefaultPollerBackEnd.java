@@ -53,8 +53,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -633,7 +633,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locMonDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param locMonDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public void setLocationMonitorDao(final LocationMonitorDao locMonDao) {
         m_locMonDao = locMonDao;
@@ -642,7 +642,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monSvcDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monSvcDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(final MonitoredServiceDao monSvcDao) {
         m_monSvcDao = monSvcDao;

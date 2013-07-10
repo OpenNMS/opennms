@@ -56,14 +56,14 @@ import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
@@ -180,10 +180,13 @@ public class CollectdIntegrationTest extends TestCase {
         EasyMock.expect(m_ifaceDao.load(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
         
         m_mockUtils.replayAll();
-        
+
+        final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
+        transTemplate.afterPropertiesSet();
+
         m_collectd.setCollectorConfigDao(m_collectorConfigDao);
         m_collectd.setEventIpcManager(m_eventIpcManager);
-        m_collectd.setTransactionTemplate(new MockTransactionTemplate());
+        m_collectd.setTransactionTemplate(transTemplate);
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         

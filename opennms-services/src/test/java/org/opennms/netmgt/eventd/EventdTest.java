@@ -33,19 +33,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -57,7 +60,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -67,20 +69,14 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:META-INF/opennms/smallEventConfDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
-
-    @Autowired
-    private JdbcTemplate m_jdbcTemplate;
+public class EventdTest implements InitializingBean {
+    private static final long SLEEP_TIME = 50;
 
     @Autowired
     @Qualifier(value="eventIpcManagerImpl")
@@ -90,14 +86,13 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
     private Eventd m_eventd;
 
     @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
-
-    private TemporaryDatabase m_database;
-
-    @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -105,65 +100,70 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockLogAppender.setupLogging();
         m_databasePopulator.populateDatabase();
         m_eventd.onStart();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         m_eventd.onStop();
+        m_databasePopulator.resetDatabase();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
     @Test
-    @JUnitTemporaryDatabase
     public void testPersistEvent() throws Exception {
-        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
+        cb.eq("eventuei", EventConstants.NODE_DOWN_EVENT_UEI);
+        assertEquals(0, m_eventDao.countMatching(cb.toCriteria()));
 
         OnmsNode node = m_databasePopulator.getNode1();
         assertNotNull(node);
         sendNodeDownEvent(null, node);
-        Thread.sleep(1000);
+        Thread.sleep(SLEEP_TIME);
 
-        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+        final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
+        System.err.println("matching = " + matching);
+        assertEquals(1, m_eventDao.countMatching(cb.toCriteria()));
 
         node = m_databasePopulator.getNode2();
         assertNotNull(node);
         Event generatedEvent = sendNodeDownEvent(null, node);
-        Thread.sleep(1000);
+        Thread.sleep(SLEEP_TIME);
 
-        assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.NODE_DOWN_EVENT_UEI)));
+        assertEquals(2, m_eventDao.countMatching(cb.toCriteria()));
 
         assertNull(generatedEvent.getInterfaceAddress());
-        assertEquals(2, m_database.countRows(String.format("select * from events where eventuei = '%s' AND ipaddr IS NULL", EventConstants.NODE_DOWN_EVENT_UEI)));
+        cb.isNull("ipaddr");
+        assertEquals("failed, found: " + m_eventDao.findMatching(cb.toCriteria()), 2, m_eventDao.countMatching(cb.toCriteria()));
     }
 
     /**
      * Test that eventd's service ID lookup works properly.
      */
     @Test
-    @JUnitTemporaryDatabase
     public void testPersistEventWithService() throws Exception {
-
-        assertEquals(0, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
-        assertEquals("service ID for ICMP", 1, m_jdbcTemplate.queryForInt("select serviceid from service where servicename = 'ICMP'"));
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
+        cb.eq("eventuei", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+        assertEquals(0, m_eventDao.countMatching(cb.toCriteria()));
+        assertNotNull(m_serviceTypeDao.findByName("ICMP"));
 
         OnmsNode node = m_databasePopulator.getNode1();
         assertNotNull(node);
         OnmsIpInterface intf = node.getIpInterfaceByIpAddress("192.168.1.1");
         assertNotNull(intf);
+        System.err.println("services = " + intf.getMonitoredServices());
         OnmsMonitoredService svc = intf.getMonitoredServiceByServiceType("ICMP");
         assertNotNull(svc);
-        assertEquals(1, svc.getNodeId().intValue());
         assertEquals("192.168.1.1", str(svc.getIpAddress()));
-        assertEquals(1, svc.getServiceId().intValue());
+        final Integer serviceId = svc.getServiceId();
         sendServiceDownEvent(null, svc);
 
-        Thread.sleep(1000);
-        assertEquals(1, m_database.countRows(String.format("select * from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
-        assertEquals("service ID for event", 1, m_jdbcTemplate.queryForInt(String.format("select serviceID from events where eventuei = '%s'", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)));
+        Thread.sleep(SLEEP_TIME);
+        assertEquals(1, m_eventDao.countMatching(cb.toCriteria()));
+        assertEquals("service ID for event", serviceId, m_eventDao.findMatching(cb.toCriteria()).get(0).getServiceType().getId());
     }
 
 
@@ -196,7 +196,7 @@ public class EventdTest implements TemporaryDatabaseAware<TemporaryDatabase>, In
      * @param reductionKey
      */
     private void sendServiceDownEvent(String reductionKey, OnmsMonitoredService svc) {
-        EventBuilder e = MockEventUtil.createEventBuilder("Test", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc.getNodeId(), str(svc.getIpAddress()), svc.getServiceName(), "Not responding");
+        final EventBuilder e = MockEventUtil.createEventBuilder("Test", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc.getNodeId(), str(svc.getIpAddress()), svc.getServiceName(), "Not responding");
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();

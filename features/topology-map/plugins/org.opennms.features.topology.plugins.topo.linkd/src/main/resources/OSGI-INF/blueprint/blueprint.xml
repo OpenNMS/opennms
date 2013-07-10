@@ -16,15 +16,15 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
    <!--reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" /-->
 
-   <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
+   <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" availability="mandatory" />
 
-   <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
-   <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory" />
+   <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
 
-   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.SnmpInterfaceDao" availability="mandatory" />
+   <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
 
-   <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
    
    <bean id="topologyProvider"  init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
             <!--property name="transactionTemplate" ref="transactionTemplate" /-->

@@ -37,8 +37,8 @@ import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.RrdRepository;
@@ -116,7 +116,7 @@ final class CollectableService implements ReadyRunnable {
      * @param iface The interface on which to collect data
      * @param spec
      *            The package containing parms for this collectable service.
-     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
@@ -204,7 +204,7 @@ final class CollectableService implements ReadyRunnable {
 	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
 	 * Should be called when the collect config has been reloaded.
 	 *
-	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
 	 */
 	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);

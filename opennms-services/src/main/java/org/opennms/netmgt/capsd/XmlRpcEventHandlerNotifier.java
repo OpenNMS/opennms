@@ -41,8 +41,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.log.LogUtils;
-
 /**
  * XmlRpcEventHandlerNotifier
  *

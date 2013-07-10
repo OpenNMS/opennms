@@ -37,9 +37,9 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;

@@ -28,7 +28,7 @@
 
 package org.opennms.web.validator;
 
-import org.opennms.netmgt.dao.StatisticsReportDao;
+import org.opennms.netmgt.dao.api.StatisticsReportDao;
 import org.opennms.web.command.StatisticsReportCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -87,7 +87,7 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
     /**
      * <p>getStatisticsReportDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.StatisticsReportDao} object.
      */
     public StatisticsReportDao getStatisticsReportDao() {
         return m_statisticsReportDao;
@@ -96,7 +96,7 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
     /**
      * <p>setStatisticsReportDao</p>
      *
-     * @param statisticsReportDao a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     * @param statisticsReportDao a {@link org.opennms.netmgt.dao.api.StatisticsReportDao} object.
      */
     public void setStatisticsReportDao(StatisticsReportDao statisticsReportDao) {
         m_statisticsReportDao = statisticsReportDao;

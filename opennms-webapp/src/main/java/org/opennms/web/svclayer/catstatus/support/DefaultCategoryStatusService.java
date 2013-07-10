@@ -36,7 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -155,7 +155,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 	/**
 	 * <p>setOutageDao</p>
 	 *
-	 * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+	 * @param outageDao a {@link org.opennms.netmgt.dao.api.OutageDao} object.
 	 */
 	public void setOutageDao(OutageDao outageDao) {
 		m_outageDao = outageDao;

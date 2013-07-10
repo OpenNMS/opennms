@@ -36,7 +36,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
-import org.opennms.netmgt.dao.MicroblogConfigurationDao;
+import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.slf4j.Logger;
@@ -207,7 +207,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     /**
      * <p>setMicroblogConfigurationDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.MicroblogConfigurationDao} object.
      */
     public void setMicroblogConfigurationDao(MicroblogConfigurationDao dao) {
         m_microblogConfigurationDao = dao;
@@ -216,7 +216,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     /**
      * <p>getMicroblogConfigurationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MicroblogConfigurationDao} object.
      */
     public MicroblogConfigurationDao getMicroblogConfigurationDao() {
         return m_microblogConfigurationDao;

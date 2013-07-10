@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.stats;
 import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

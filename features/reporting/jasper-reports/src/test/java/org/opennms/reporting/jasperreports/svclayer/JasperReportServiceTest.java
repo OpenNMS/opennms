@@ -48,7 +48,7 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.JasperReportConfigDao;
+import org.opennms.netmgt.dao.api.JasperReportConfigDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

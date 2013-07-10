@@ -57,9 +57,9 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -1337,7 +1337,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setCollectorConfigDao</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
     public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
         m_collectorConfigDao = collectorConfigDao;
@@ -1350,7 +1350,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setIpInterfaceDao</p>
      *
-     * @param ifSvcDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifSvcDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
@@ -1372,7 +1372,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;

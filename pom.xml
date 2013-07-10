@@ -103,7 +103,9 @@
     <module>opennms-ackd</module>
     <module>opennms-alarms</module>
     <module>opennms-config-tester</module>
+    <module>opennms-dao-api</module>
     <module>opennms-dao</module>
+    <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -1629,6 +1631,16 @@
         <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-mock</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

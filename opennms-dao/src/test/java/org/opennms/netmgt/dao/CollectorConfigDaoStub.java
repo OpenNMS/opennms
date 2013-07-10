@@ -33,6 +33,7 @@ import java.util.Collections;
 
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
 
 public class CollectorConfigDaoStub implements CollectorConfigDao {
 

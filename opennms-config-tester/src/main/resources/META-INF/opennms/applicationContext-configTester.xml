@@ -509,7 +509,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   
   <bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory"/>
 
-  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.FactoryBasedSnmpConfigDao"/>
+  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.api.FactoryBasedSnmpConfigDao"/>
   
   <bean id="snmpAdhocGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
   	<property name="prefabConfigs">

@@ -39,8 +39,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -414,14 +414,14 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     }
 
      /**
-     * @return a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_ackDao;
     }
 
     /**
-     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public void setAcknowledgmentDao(AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
@@ -430,7 +430,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>getConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public AckdConfigurationDao getConfigDao() {
         return m_configDao;
@@ -439,7 +439,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>setConfigDao</p>
      *
-     * @param config a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param config a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public void setConfigDao(AckdConfigurationDao config) {
         m_configDao = config;

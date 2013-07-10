@@ -34,7 +34,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class AlarmDetailController extends MultiActionController {
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.AlarmRepository}
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository}
      * object.
      */
     public void setAlarmRepository(AlarmRepository webAlarmRepository) {

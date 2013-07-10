@@ -33,8 +33,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
@@ -44,7 +44,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.core.io.ByteArrayResource;
@@ -53,12 +52,12 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-systemReport.xml"
+        "classpath:/META-INF/opennms/applicationContext-systemReport.xml",
+        "classpath:/applicationContext-test-systemReport.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class JavaReportPluginTest {
     @Resource(name="serviceRegistry")
     private ServiceRegistry m_defaultServiceRegistry;

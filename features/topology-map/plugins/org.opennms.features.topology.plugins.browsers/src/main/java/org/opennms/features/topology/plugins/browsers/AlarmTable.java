@@ -35,7 +35,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;

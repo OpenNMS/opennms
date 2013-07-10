@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.statsd;
 
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
-import org.opennms.netmgt.dao.castor.statsd.PackageReport;
+import org.opennms.netmgt.config.statsd.model.PackageReport;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.springframework.beans.factory.InitializingBean;
@@ -161,7 +161,7 @@ public class ReportDefinition implements InitializingBean {
     /**
      * <p>getReport</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.castor.statsd.PackageReport} object.
+     * @return a {@link org.opennms.netmgt.config.statsd.model.PackageReport} object.
      */
     public PackageReport getReport() {
         return m_report;
@@ -169,7 +169,7 @@ public class ReportDefinition implements InitializingBean {
     /**
      * <p>setReport</p>
      *
-     * @param report a {@link org.opennms.netmgt.dao.castor.statsd.PackageReport} object.
+     * @param report a {@link org.opennms.netmgt.config.statsd.model.PackageReport} object.
      */
     public void setReport(PackageReport report) {
         m_report = report;
@@ -245,8 +245,8 @@ public class ReportDefinition implements InitializingBean {
     /**
      * <p>createReport</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
      * @return a {@link org.opennms.netmgt.statsd.ReportInstance} object.
      * @throws java.lang.Exception if any.

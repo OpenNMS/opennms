@@ -36,7 +36,7 @@ import java.util.TreeMap;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.RWSConfig;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.InventoryElement2;
@@ -109,7 +109,7 @@ public class InventoryService implements InitializingBean {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -117,7 +117,7 @@ public class InventoryService implements InitializingBean {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;

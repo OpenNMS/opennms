@@ -38,11 +38,11 @@ import java.util.TreeMap;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
-import org.opennms.netmgt.dao.castor.statsd.PackageReport;
-import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.config.statsd.model.PackageReport;
+import org.opennms.netmgt.config.statsd.model.StatsdPackage;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.BottomNAttributeStatisticVisitor;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.mock.MockResourceType;

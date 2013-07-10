@@ -1115,6 +1115,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
         @Override
 	public String toString() {
 		return new ToStringCreator(this).append("eventid", getId())
+		        .append("eventuei", getEventUei())
 				.toString();
 	}
 

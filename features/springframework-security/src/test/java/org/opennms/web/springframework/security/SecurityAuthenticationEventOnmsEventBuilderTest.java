@@ -42,7 +42,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.opennms.netmgt.eventd.mock.EventWrapper;
+import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;

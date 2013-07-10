@@ -67,7 +67,7 @@ import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
-import org.opennms.netmgt.dao.CriteriaConverter;
+import org.opennms.netmgt.dao.api.CriteriaConverter;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {

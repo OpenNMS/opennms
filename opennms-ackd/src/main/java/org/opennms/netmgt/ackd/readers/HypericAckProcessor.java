@@ -76,9 +76,9 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.config.ackd.Parameter;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -628,14 +628,14 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>setAckdConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdConfigDao = configDao;
     }
 
     /**
-     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
@@ -653,7 +653,7 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>setAlarmDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public synchronized void setAlarmDao(final AlarmDao dao) {
         m_alarmDao = dao;

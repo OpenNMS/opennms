@@ -29,7 +29,7 @@
 package org.opennms.web.controller.element;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

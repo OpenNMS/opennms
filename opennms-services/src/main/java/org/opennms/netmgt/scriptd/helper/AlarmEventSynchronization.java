@@ -36,7 +36,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.AlarmDao;
+
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;

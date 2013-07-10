@@ -30,7 +30,7 @@ package org.opennms.web.navigate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
+import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.web.api.Util;
 
 /**
@@ -58,7 +58,7 @@ public class SurveillanceViewNavBarEntry extends LocationBasedNavBarEntry {
     /**
      * <p>getSurveillanceViewConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
         return m_surveillanceViewConfigDao;
@@ -67,7 +67,7 @@ public class SurveillanceViewNavBarEntry extends LocationBasedNavBarEntry {
     /**
      * <p>setSurveillanceViewConfigDao</p>
      *
-     * @param surveillanceViewConfigDao a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @param surveillanceViewConfigDao a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
         m_surveillanceViewConfigDao = surveillanceViewConfigDao;
