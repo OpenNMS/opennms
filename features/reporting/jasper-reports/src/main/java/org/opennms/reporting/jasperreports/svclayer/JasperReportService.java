@@ -708,7 +708,7 @@ public class JasperReportService implements ReportService {
         	JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
             jasperReport = JasperCompileManager.compileReport(jasperDesign);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 		
@@ -728,10 +728,10 @@ public class JasperReportService implements ReportService {
          		} else if(ReportFormat.XLS == format){
          			exportReportToXls(jasperPrint,outputStream);
          		} else {
-                	log.error("Unknown file format : " + format);
+                	LOG.error("Unknown file format : {}", format);
                 }
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception", e);
                 throw new ReportException("unable to run or render jasperReport",e);
             }
         }
@@ -741,12 +741,12 @@ public class JasperReportService implements ReportService {
         File eventReportfolder = new File(baseDir);  
 		if (!eventReportfolder.exists()){  
 			if(eventReportfolder.mkdir()){
-				log.debug("The event report folder is successfully created in "+baseDir+" location");
+				LOG.debug("The event report folder is successfully created in {} location", baseDir);
 			} else {
-				log.debug("unable to creat the event report folder in "+baseDir+" location");
+				LOG.debug("unable to create the event report folder in {} location", baseDir);
 			}
 		}else{  
-			log.debug("The event report folder is already exist in server location");
+			LOG.debug("The event report folder is already exist in server location");
 		}
 		
 		// Store the event report into the local server
@@ -761,12 +761,12 @@ public class JasperReportService implements ReportService {
      		} else if(ReportFormat.XLS == format){
      			exportReportToXls(jasperPrint,outputReportStream);
      		} else {
-     			log.error("Unknown file format : " + format);
+     			LOG.error("Unknown file format : {}", format);
      		}
 		} catch(JRException e){
-			log.error("jasper report exception ", e);
+			LOG.error("jasper report exception", e);
 		} catch (FileNotFoundException e) {
-			log.error("unable to find the server location ", e);
+			LOG.error("unable to find the server location", e);
 		}
 	}
 	
@@ -827,7 +827,7 @@ public class JasperReportService implements ReportService {
 		
 		 catch(Exception e)
 		 {
-			 log.error("Error in EventReportStructure report", e);
+			 LOG.error("Error in EventReportStructure report", e);
 	            throw new ReportException("Error in EventReportStructure report", e);
 		 }
 		 
@@ -913,7 +913,7 @@ public class JasperReportService implements ReportService {
 		 
 		 catch(Exception e)
 		 {
-			 log.error("Error in EventReportStructure CSV report ", e);
+			 LOG.error("Error in EventReportStructure CSV report", e);
 	         throw new ReportException("Error in EventReportStructure CSV report ", e); 
 			 
 		 }
@@ -926,7 +926,7 @@ public class JasperReportService implements ReportService {
     public void runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
     		String reportId, ReportFormat format, OutputStream outputStream, String fileName) throws ReportException {
     	
-    	log.info("Enter into the rundAndRender action for alarm report");
+    	LOG.info("Enter into the rundAndRender action for alarm report");
     	// Get the alarm report details
         ArrayList<AlarmReportStructure> alarmReportList = new ArrayList<AlarmReportStructure>();
         alarmReportList = getAlarmReportList(alarmIds,eventIdsForAlarms,format);
@@ -938,7 +938,7 @@ public class JasperReportService implements ReportService {
         	JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
             jasperReport = JasperCompileManager.compileReport(jasperDesign);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 		
@@ -956,10 +956,10 @@ public class JasperReportService implements ReportService {
          		} else if(ReportFormat.XLS == format){
          			exportReportToXls(jasperPrint,outputStream);
          		} else {
-                	log.error("Unknown file format : " + format);
+                	LOG.error("Unknown file format : {}", format);
                 }
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception", e);
                 throw new ReportException("unable to run or render jasperReport",e);
             }
         }
@@ -972,9 +972,9 @@ public class JasperReportService implements ReportService {
         	baseDir = System.getProperty("opennms.report.dir")+"/alarm";
         	alarmReportfolder = new File(baseDir);
         	if(alarmReportfolder.mkdir()){
-        		 log.debug("The alarm report folder is successfully created in "+baseDir+" location");
+        		 LOG.debug("The alarm report folder is successfully created in {} location", baseDir);
 			} else {
-				 log.error("Unable to creat the alarm report folder in "+baseDir+" location");
+				 LOG.error("Unable to create the alarm report folder in {} location", baseDir);
 			}
         }
 		
@@ -982,26 +982,26 @@ public class JasperReportService implements ReportService {
  		String outputFileName = new String(baseDir + "/" + fileName);
  		OutputStream outputReportStream = null;
 		try{
-			log.info("The alarm report is currently exporting...");
+			LOG.info("The alarm report is currently exporting...");
 			outputReportStream = new FileOutputStream (outputFileName);
 			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
      			exportReport(format, jasperPrint, outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.HTML == format) {
      			exportReportToHtml(jasperPrint,outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.XLS == format){
      			exportReportToXls(jasperPrint,outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else {
-     			log.error("Unknown file format : " + format);
+     			LOG.error("Unknown file format : {}", format);
      		}
 		} catch(JRException e){
-			log.error("jasper report exception ", e);
+			LOG.error("jasper report exception", e);
 		} catch (FileNotFoundException e) {
-			log.error("unable to find the server location ", e);
+			LOG.error("unable to find the server location", e);
 		}
-		log.info("Terminated from the rundAndRender action for alarm report");
+		LOG.info("Terminated from the rundAndRender action for alarm report");
     }
     
     

@@ -310,7 +310,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     	try {
     		getReportService(reportId).runAndRender(alarmIds,eventIdsForAlarms,reportId,reportFormat,outputStream, fileName);
 		} catch (ReportException reportException) {
-			log.error("failed to run or render report: " + reportId, reportException);
+			LOG.error("failed to run or render report: {}", reportId, reportException);
 		}
     }
     @Override
@@ -320,7 +320,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     	try {
     		getReportService(reportId).runAndRender(eventIds,reportId,reportFormat,outputStream);
 		} catch (ReportException reportException) {
-			log.error("failed to run or render report: " + reportId, reportException);
+			LOG.error("failed to run or render report: {}", reportId, reportException);
 		}
     
 	}

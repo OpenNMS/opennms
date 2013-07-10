@@ -480,7 +480,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 
 	@Override
 	public void reloadConfig() {
-		LogUtils.debugf(this, "Reload configuration - not yet implemented.");
+		LOG.debug("Reload configuration - not yet implemented.");
 	}
 
 }

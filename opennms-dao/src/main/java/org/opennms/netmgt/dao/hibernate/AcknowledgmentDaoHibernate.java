@@ -228,7 +228,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     	    Object[] values = {ackRefId};
     	    return bulkDelete(hql, values);
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to delete an acknowledgment with Id %d", ackRefId);
+            LOG.warn("Unable to delete an acknowledgment with Id {}", ackRefId, e);
         }
 		return 0;
 	}

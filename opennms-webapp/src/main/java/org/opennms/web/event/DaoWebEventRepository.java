@@ -325,7 +325,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
 		List<String> deleteSuccessStatus = new ArrayList<String>();
 		List<String> deleteFailStatus = new ArrayList<String>();
 		int eventsDeleted = 0;
-		log().debug("Event Id's received : "+eventIds);
+		LOG.debug("Event Id's received : {}", eventIds);
 		for(Integer eventId : eventIds){
 			//Delete an event by Id
 			
@@ -335,9 +335,9 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
 				deleteSuccessStatus.add(String.valueOf(eventId));
 				eventsDeleted = eventsDeleted + 1;
 			}else{
-				log().warn("Event id "+eventId+" does not exist in DB");
+				LOG.warn("Event id {} does not exist in DB", eventId);
 			}
-			log().debug("Event Id's "+deleteSuccessStatus+" are successfully deleted from the DB for event id "+eventId);
+			LOG.debug("Event Id's {} are successfully deleted from the DB for event id {}", deleteSuccessStatus, eventId);
 		}
 		return eventsDeleted;
 	}
