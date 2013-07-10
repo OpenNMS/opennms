@@ -77,7 +77,7 @@ public class CsvRequisitionParser {
     private static String m_dbName = "opennms";
     private static String m_dbUser = "opennms";
     private static String m_dbPass = "opennms";
-	private static boolean m_useNodeId = false;
+	private static Boolean m_useNodeId = false;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		Runtime.getRuntime().addShutdownHook(createShutdownHook());
@@ -259,17 +259,18 @@ public class CsvRequisitionParser {
 	//need to do some better exception handling here
 	private static boolean validateProperties() throws IOException, FileNotFoundException, IllegalArgumentException  {
 		
+		System.out.println("\n\nProperties:\n");
 		m_foreignSource = System.getProperty(PROPERTY_FOREIGN_SOURCE, m_foreignSource);
-		System.out.println(PROPERTY_FOREIGN_SOURCE+":"+m_foreignSource);
+		System.out.println("\t"+PROPERTY_FOREIGN_SOURCE+":"+m_foreignSource);
 		
 		m_parseDb = Boolean.valueOf(System.getProperty(PROPERTY_PARSE_DB, m_parseDb.toString()));
-		System.out.println(PROPERTY_PARSE_DB+":"+m_parseDb);
+		System.out.println("\t"+PROPERTY_PARSE_DB+":"+m_parseDb);
 		
 		
 		if (!m_parseDb.booleanValue()) {
 
 			String csvFileName = System.getProperty(PROPERTY_CSV_FILE, m_csvFile.getCanonicalPath());
-			System.out.println(PROPERTY_CSV_FILE+":"+m_csvFile);
+			System.out.println("\t"+PROPERTY_CSV_FILE+":"+m_csvFile);
 			
 			m_csvFile = new File(csvFileName);
 			if (!m_csvFile.exists()) {
@@ -277,43 +278,39 @@ public class CsvRequisitionParser {
 			}
 		} else {
 			m_dbSvr = System.getProperty(PROPERTY_DB_SVR, m_dbSvr);
-			System.out.println(PROPERTY_DB_SVR+":"+m_dbSvr);
+			System.out.println("\t"+PROPERTY_DB_SVR+":"+m_dbSvr);
 
 			m_dbName = System.getProperty(PROPERTY_DB_NAME, m_dbName);
-			System.out.println(PROPERTY_DB_NAME+":"+m_dbName);
+			System.out.println("\t"+PROPERTY_DB_NAME+":"+m_dbName);
 			
 			m_dbUser = System.getProperty(PROPERTY_DB_USER, m_dbUser);
-			System.out.println(PROPERTY_DB_USER+":"+m_dbUser);
+			System.out.println("\t"+PROPERTY_DB_USER+":"+m_dbUser);
 			
 			m_dbPass = System.getProperty(PROPERTY_DB_PW, m_dbPass);
-			System.out.println(PROPERTY_DB_PW+":"+m_dbPass);
+			System.out.println("\t"+PROPERTY_DB_PW+":"+m_dbPass);
 			
 			m_iplikeQuery = System.getProperty(PROPERTY_IPLIKE_QUERY, m_iplikeQuery);
-			System.out.println(PROPERTY_IPLIKE_QUERY+":"+m_iplikeQuery);
+			System.out.println("\t"+PROPERTY_IPLIKE_QUERY+":"+m_iplikeQuery);
 			
-			System.out.println("*******");
-			System.out.println(System.getProperty(PROPERTY_USE_NODE_ID));
-			System.out.println("*******");
-			
-			m_useNodeId = Boolean.getBoolean(System.getProperty(PROPERTY_USE_NODE_ID, String.valueOf(m_useNodeId)));
-			System.out.println(PROPERTY_USE_NODE_ID+":"+m_useNodeId);
+			m_useNodeId = Boolean.valueOf(System.getProperty(PROPERTY_USE_NODE_ID, m_useNodeId.toString()));
+			System.out.println("\t"+PROPERTY_USE_NODE_ID+":"+m_useNodeId);
 			
 		}
 		
 		String fsRepo = System.getProperty(PROPERTY_FS_REPO_PATH, m_repoPath.getCanonicalPath());
-		System.out.println(PROPERTY_FS_REPO_PATH+":"+fsRepo);
+		System.out.println("\t"+PROPERTY_FS_REPO_PATH+":"+fsRepo);
 		
 		m_repoPath = new File(fsRepo);
 		
 		if (!m_repoPath.exists() || !m_repoPath.isDirectory() || !m_repoPath.canWrite()) {
-			throw new IllegalArgumentException("The specified fs.repo either doesn't exist, isn't writable, or isn't a directory.");
+			throw new IllegalArgumentException("The specified "+PROPERTY_FS_REPO_PATH+": "+m_repoPath.getCanonicalPath()+", either doesn't exist, isn't writable, or isn't a directory.");
 		} else {
 			m_fsr = new FilesystemForeignSourceRepository();
 			m_fsr.setRequisitionPath(m_repoPath.getCanonicalPath());
 		}
 		
 		m_resolveIps = Boolean.valueOf(System.getProperty(PROPERTY_RESOLVE_IPS, m_resolveIps.toString()));
-		System.out.println(PROPERTY_RESOLVE_IPS+":"+m_resolveIps.toString());
+		System.out.println("\t"+PROPERTY_RESOLVE_IPS+":"+m_resolveIps.toString()+"\n\n");
 
 		return true;
 	}
