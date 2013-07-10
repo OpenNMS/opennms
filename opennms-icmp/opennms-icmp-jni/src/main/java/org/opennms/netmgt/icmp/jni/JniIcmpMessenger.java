@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
@@ -45,14 +46,11 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingResponse> {
-	
-	
-	private static final Logger LOG = LoggerFactory
-			.getLogger(JniIcmpMessenger.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(JniIcmpMessenger.class);
+
     private int m_pingerId;
     private IcmpSocket m_socket;
-    
+
     /**
      * <p>Constructor for JniIcmpMessenger.</p>
      * @param pingerId 
@@ -69,9 +67,9 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         while (true) {
             try {
                 DatagramPacket packet = m_socket.receive();
-        
+
                 JniPingResponse reply = JniIcmpMessenger.createPingResponse(packet);
-                
+
                 if (reply.isEchoReply() && reply.getIdentifier() == pingerId) {
                     // Remove this so we don't send a lot of time in this method when we should be processing packets
                     // LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
@@ -86,10 +84,10 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
             } catch (Throwable e) {
                 LOG.error("Unexpected Exception processing reply packet!", e);
             }
-            
+
         }
     }
-    
+
     /**
      * <p>sendRequest</p>
      *
@@ -103,10 +101,10 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
     /** {@inheritDoc} */
     @Override
     public void start(final Queue<JniPingResponse> responseQueue) {
-        Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
-
+        final Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
             @Override
             public void run() {
+                Logging.putPrefix("icmp");
                 try {
                     processPackets(responseQueue);
                 } catch (Throwable t) {
@@ -145,13 +143,13 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
             throw new IllegalArgumentException("The packet is not the correct network size");
         }
-    
+
         // Construct a new packet
         //
         ICMPEchoPacket pkt = new ICMPEchoPacket(packet.getData());
         if (pkt.getReceivedTime() == 0)
             pkt.setReceivedTime();
-    
+
         // Construct and return the new reply
         //
         return new JniPingResponse(packet.getAddress(), pkt);
