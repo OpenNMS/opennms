@@ -56,11 +56,11 @@ class RequisitionData {
 		
 	}
 	
-	public RequisitionData(String label, String ipaddr, String fs) {
+	public RequisitionData(String label, String ipaddr, String fs, String fid) {
 		m_nodeLabel = StringUtils.isBlank(label) ? "nolabel" : label;
 		m_primaryIp = StringUtils.isBlank(ipaddr) ? "169.254.1.1" : ipaddr;
 		m_foreignSource = StringUtils.isBlank(fs) ? "default" : StringUtils.deleteWhitespace(fs);
-		m_foreignId = StringUtils.isBlank(m_nodeLabel) ? null : m_nodeLabel;
+		m_foreignId = StringUtils.isBlank(fid) ? String.valueOf(System.currentTimeMillis()) : fid;
 	}
 	
 	@Override
