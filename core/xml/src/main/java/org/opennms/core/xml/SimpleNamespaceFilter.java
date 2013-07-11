@@ -46,7 +46,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     public SimpleNamespaceFilter(final String namespaceUri, final boolean addNamespace) {
         super();
 
-        LOG.debug("SimpleNamespaceFilter initalized with namespace {} ({})", namespaceUri, Boolean.valueOf(addNamespace));
+        LOG.trace("SimpleNamespaceFilter initalized with namespace {} ({})", namespaceUri, Boolean.valueOf(addNamespace));
         if (addNamespace) {
             this.m_namespaceUri = namespaceUri.intern();
         } else { 

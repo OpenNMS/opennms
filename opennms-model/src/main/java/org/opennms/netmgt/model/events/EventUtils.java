@@ -31,10 +31,12 @@ package org.opennms.netmgt.model.events;
 import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_UPDATED_EVENT_UEI;
+import static org.opennms.netmgt.EventConstants.PARM_CAT_LABEL;
 import static org.opennms.netmgt.EventConstants.PARM_IP_HOSTNAME;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL_SOURCE;
@@ -344,6 +346,14 @@ public abstract class EventUtils {
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
         bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        return bldr.getEvent();
+    }
+
+    public static Event createNodeCategoryMembershipChangedEvent(final String source, final Integer nodeId, final String categoryName) {
+        LOG.debug("creating node category changed event: {}/{}", nodeId, categoryName);
+        EventBuilder bldr = new EventBuilder(NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_CAT_LABEL, categoryName);
         return bldr.getEvent();
     }
 

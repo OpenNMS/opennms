@@ -75,4 +75,12 @@ public class AbstractEntityVisitor implements EntityVisitor {
     public void visitMonitoredServiceComplete(final OnmsMonitoredService monSvc) {
     }
 
+    @Override
+    public void visitNodeCategory(final OnmsNode node, final OnmsCategory onmsCategory) {
+    }
+
+    @Override
+    public void visitNodeCategoryComplete(final OnmsNode node, final OnmsCategory onmsCategory) {
+    }
+
 }

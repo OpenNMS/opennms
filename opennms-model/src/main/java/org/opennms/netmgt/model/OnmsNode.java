@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1254,8 +1255,30 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     public void mergeCategorySet(OnmsNode scannedNode) {
-        if (!getCategories().equals(scannedNode.getCategories())) {
-            setCategories(scannedNode.getCategories());
+        mergeCategorySet(scannedNode, null);
+    }
+
+    public void mergeCategorySet(final OnmsNode scannedNode, EventForwarder eventForwarder) {
+        final AddEventVisitor add = new AddEventVisitor(eventForwarder);
+        final DeleteEventVisitor delete = new DeleteEventVisitor(eventForwarder);
+
+        final Set<OnmsCategory> scannedCategories = new HashSet<OnmsCategory>(scannedNode.getCategories());
+        final Set<OnmsCategory> existingCategories = new HashSet<OnmsCategory>(getCategories());
+
+        for (final OnmsCategory cat : scannedCategories) {
+            if (!getCategories().contains(cat)) {
+                addCategory(cat);
+                add.visitNodeCategory(this, cat);
+                add.visitNodeCategoryComplete(this, cat);
+            }
+        }
+        
+        for (final OnmsCategory cat : existingCategories) {
+            if (!scannedCategories.contains(cat)) {
+                removeCategory(cat);
+                delete.visitNodeCategory(this, cat);
+                delete.visitNodeCategoryComplete(this, cat);
+            }
         }
     }
 
@@ -1294,7 +1317,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         
         mergeIpInterfaces(scannedNode, eventForwarder, deleteMissing);
         
-    	mergeCategorySet(scannedNode);
+    	mergeCategorySet(scannedNode, eventForwarder);
     	
     	mergeAssets(scannedNode);
     }

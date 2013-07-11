@@ -3,9 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
        >
 
   <tx:annotation-driven />
@@ -19,6 +21,7 @@
     <qualifier value="transactionAware" />
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
+  <onmsgi:service interface="org.opennms.netmgt.model.events.EventForwarder" ref="transactionAwareEventForwarder" />
   
   <bean id="importThreads" factory-bean="provisiondConfigDao" factory-method="getImportThreads" class="java.lang.Integer" >
   </bean>

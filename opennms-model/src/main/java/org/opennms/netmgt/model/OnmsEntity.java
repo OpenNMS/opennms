@@ -32,15 +32,15 @@ package org.opennms.netmgt.model;
  * <p>Abstract OnmsEntity class.</p>
  */
 public abstract class OnmsEntity {
-	
-	/**
-	 * <p>hasNewValue</p>
-	 *
-	 * @param newVal a {@link java.lang.Object} object.
-	 * @param existingVal a {@link java.lang.Object} object.
-	 * @return a boolean.
-	 */
-	protected static boolean hasNewValue(Object newVal, Object existingVal) {
+
+    /**
+     * <p>hasNewValue</p>
+     *
+     * @param newVal a {@link java.lang.Object} object.
+     * @param existingVal a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
+    protected static boolean hasNewValue(Object newVal, Object existingVal) {
         return newVal != null && !newVal.equals(existingVal);
     }
 

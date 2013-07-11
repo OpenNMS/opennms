@@ -30,6 +30,7 @@ package org.opennms.netmgt.model.events;
 
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -37,60 +38,42 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class AddEventVisitor extends AbstractEntityVisitor {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AddEventVisitor.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AddEventVisitor.class);
 
     private static final String m_eventSource = "Provisiond";
-	private final EventForwarder m_eventForwarder;
+    private final EventForwarder m_eventForwarder;
 
-	/**
-	 * <p>Constructor for AddEventVisitor.</p>
-	 *
-	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-	 */
-	public AddEventVisitor(EventForwarder eventForwarder) {
-		m_eventForwarder = eventForwarder;
-	}
+    /**
+     * <p>Constructor for AddEventVisitor.</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
+    public AddEventVisitor(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
-	public void visitNode(OnmsNode node) {
-        LOG.info("Sending nodeAdded Event for {}\n", node);
-	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
-	}
+    public void visitNode(OnmsNode node) {
+        m_eventForwarder.sendNow(EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource()));
+    }
 
     /** {@inheritDoc} */
     @Override
     public void visitIpInterface(OnmsIpInterface iface) {
-        LOG.info("Sending nodeGainedInterface Event for {}\n", iface);
-        m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
+        m_eventForwarder.sendNow(EventUtils.createNodeGainedInterfaceEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress()));
     }
 
     /** {@inheritDoc} */
     @Override
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
-        LOG.info("Sending nodeGainedService Event for {}\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 
-    /**
-     * <p>createNodeAddedEvent</p>
-     *
-     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    protected Event createNodeAddedEvent(OnmsNode node) {
-        return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
-    }
-
-    /**
-     * <p>createNodeGainedInterfaceEvent</p>
-     *
-     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    protected Event createNodeGainedInterfaceEvent(OnmsIpInterface iface) {
-        return EventUtils.createNodeGainedInterfaceEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress());
+    @Override
+    public void visitNodeCategory(final OnmsNode node, final OnmsCategory category) {
+        m_eventForwarder.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent(m_eventSource, node.getId(), category.getName()));
     }
 
     /**
@@ -100,13 +83,12 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     protected Event createNodeGainedServiceEvent(final OnmsMonitoredService monSvc) {
-    	final OnmsIpInterface iface = monSvc.getIpInterface();
-		final OnmsNode node = iface.getNode();
-		LOG.debug("ipinterface = {}", iface);
-		LOG.debug("snmpinterface = {}", iface.getSnmpInterface());
-		LOG.debug("node = {}", node);
-		return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
+        final OnmsIpInterface iface = monSvc.getIpInterface();
+        final OnmsNode node = iface.getNode();
+        LOG.debug("ipinterface = {}", iface);
+        LOG.debug("snmpinterface = {}", iface.getSnmpInterface());
+        LOG.debug("node = {}", node);
+        return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
     }
-	
 
 }

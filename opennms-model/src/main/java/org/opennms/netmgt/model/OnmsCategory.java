@@ -54,7 +54,6 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="categories")
 public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
-
     private static final long serialVersionUID = 4694348093332239377L;
 
     /** identifier field */
@@ -235,5 +234,4 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     public int compareTo(OnmsCategory o) {
         return m_name.compareToIgnoreCase(o.m_name);
     }
-
 }
