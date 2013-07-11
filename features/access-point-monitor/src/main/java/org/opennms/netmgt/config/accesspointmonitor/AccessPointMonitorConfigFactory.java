@@ -33,13 +33,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
+import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -80,7 +78,7 @@ public class AccessPointMonitorConfigFactory {
         m_loaded = true;
     }
 
-    public static synchronized void init() throws IOException, JAXBException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -101,12 +99,12 @@ public class AccessPointMonitorConfigFactory {
         }
     }
 
-    public static synchronized void reload() throws IOException, JAXBException {
+    public static synchronized void reload() throws IOException {
         init();
         getInstance().update();
     }
 
-    public synchronized void update() throws IOException, JAXBException {
+    public synchronized void update() throws IOException {
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
@@ -124,17 +122,13 @@ public class AccessPointMonitorConfigFactory {
         }
     }
 
-    public AccessPointMonitorConfigFactory(long currentVersion, InputStream is) throws JAXBException {
+    public AccessPointMonitorConfigFactory(long currentVersion, InputStream is) {
         m_accessPointMonitorConfig = unmarshall(is);
         m_currentVersion = currentVersion;
     }
 
-    private static AccessPointMonitorConfig unmarshall(InputStream is) throws JAXBException {
-        InputStream apmcStream = is;
-        JAXBContext context = JAXBContext.newInstance(AccessPointMonitorConfig.class);
-        Unmarshaller um = context.createUnmarshaller();
-        um.setSchema(null);
-        return (AccessPointMonitorConfig) um.unmarshal(apmcStream);
+    private static AccessPointMonitorConfig unmarshall(InputStream is) {
+        return JaxbUtils.unmarshal(AccessPointMonitorConfig.class, new InputSource(is));
     }
 
     protected static ThreadCategory log() {
