@@ -25,37 +25,81 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.protocols.http;
 
-import org.opennms.protocols.xml.config.Request;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
- * The class for handling HTTPS URL Connection using Apache HTTP Client
+ * The Class FormField.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class HttpsUrlHandler extends HttpUrlHandler {
+@XmlRootElement(name="form-field")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class FormField {
 
-    /** The Constant PROTOCOL. */
-    public static final String HTTPS = "https";
+    /** The name. */
+    @XmlAttribute
+    private String name;
+
+    /** The value. */
+    @XmlValue
+    private String value;
+
 
     /**
-     * Instantiates a new HTTPS URL handler.
+     * Instantiates a new form field.
+     */
+    public FormField() {}
+
+    /**
+     * Instantiates a new form field.
      *
-     * @param request the request
+     * @param name the name
+     * @param value the value
      */
-    public HttpsUrlHandler(Request request) {
-        super(request);
+    public FormField(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandler#getDefaultPort()
+    /**
+     * Gets the name.
+     *
+     * @return the name
      */
-    @Override
-    protected int getDefaultPort() {
-        return 443;
+    public String getName() {
+        return name;
     }
 
+    /**
+     * Sets the name.
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

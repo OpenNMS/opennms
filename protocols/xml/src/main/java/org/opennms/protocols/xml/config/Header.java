@@ -26,52 +26,79 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.http;
+package org.opennms.protocols.xml.config;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-
-import org.opennms.protocols.xml.config.Request;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The class for handling HTTP URL Connection using Apache HTTP Client
+ * The Class Header.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class HttpUrlHandler extends URLStreamHandler {
+@XmlRootElement(name="header")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Header {
 
-    /** The Constant PROTOCOL. */
-    public static final String HTTP = "http";
+    /** The name. */
+    @XmlAttribute(required=true)
+    private String name;
 
-    /** The Request. */
-    private Request request;
+    /** The value. */
+    @XmlAttribute(required=true)
+    private String value;
 
     /**
-     * Instantiates a new HTTP URL handler.
+     * Instantiates a new header.
+     */
+    public Header() {}
+
+    /**
+     * Instantiates a new header.
      *
-     * @param request the request
+     * @param name the name
+     * @param value the value
      */
-    public HttpUrlHandler(Request request) {
-        super();
-        this.request = request;
+    public Header(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandler#getDefaultPort()
+    /**
+     * Gets the name.
+     *
+     * @return the name
      */
-    @Override
-    protected int getDefaultPort() {
-        return 80;
+    public String getName() {
+        return name;
     }
 
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandler#openConnection(java.net.URL)
+    /**
+     * Gets the value.
+     *
+     * @return the value
      */
-    @Override
-    protected URLConnection openConnection(URL url) throws IOException {
-        return new HttpUrlConnection(url, request);
+    public String getValue() {
+        return value;
     }
 
+    /**
+     * Sets the name.
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

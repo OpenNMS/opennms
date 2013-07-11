@@ -32,9 +32,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -45,6 +46,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="resource-key")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> {
 
 
@@ -67,7 +69,6 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> 
      *
      * @return the key XPath list
      */
-    @XmlTransient
     public List<String> getKeyXpathList() {
         return m_keyXpathList;
     }

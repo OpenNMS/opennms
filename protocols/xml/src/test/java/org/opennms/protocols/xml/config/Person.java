@@ -26,36 +26,64 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.http;
+package org.opennms.protocols.xml.config;
 
-import org.opennms.protocols.xml.config.Request;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The class for handling HTTPS URL Connection using Apache HTTP Client
+ * The Class Person.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class HttpsUrlHandler extends HttpUrlHandler {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Person {
 
-    /** The Constant PROTOCOL. */
-    public static final String HTTPS = "https";
+    /** The first name. */
+    @XmlElement
+    private String firstName;
+
+    /** The last name. */
+    @XmlElement
+    private String lastName;
 
     /**
-     * Instantiates a new HTTPS URL handler.
+     * Gets the first name.
      *
-     * @param request the request
+     * @return the first name
      */
-    public HttpsUrlHandler(Request request) {
-        super(request);
+    public String getFirstName() {
+        return firstName;
     }
 
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandler#getDefaultPort()
+    /**
+     * Gets the last name.
+     *
+     * @return the last name
      */
-    @Override
-    protected int getDefaultPort() {
-        return 443;
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * Sets the first name.
+     *
+     * @param firstName the new first name
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    /**
+     * Sets the last name.
+     *
+     * @param lastName the new last name
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 }

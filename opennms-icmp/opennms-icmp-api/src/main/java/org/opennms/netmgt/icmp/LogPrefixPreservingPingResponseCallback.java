@@ -37,10 +37,7 @@ import org.slf4j.MDC;
 
 
 public class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
-	
-	
-	private static final Logger LOG = LoggerFactory
-			.getLogger(LogPrefixPreservingPingResponseCallback.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogPrefixPreservingPingResponseCallback.class);
 	
     private final PingResponseCallback m_cb;
     private final Map m_mdc = getCopyOfContextMap();

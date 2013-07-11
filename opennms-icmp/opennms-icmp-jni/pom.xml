@@ -37,8 +37,8 @@
       <version>1.4.1</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

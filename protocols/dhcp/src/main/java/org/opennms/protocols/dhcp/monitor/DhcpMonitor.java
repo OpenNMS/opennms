@@ -115,11 +115,11 @@ final public class DhcpMonitor extends AbstractServiceMonitor {
             }
         } catch (IOException e) {
             e.fillInStackTrace();
-            this.LOG.debug("An I/O exception occured during DHCP polling", e);
+            DhcpMonitor.LOG.debug("An I/O exception occured during DHCP polling", e);
             serviceStatus = PollStatus.unavailable("An I/O exception occured during DHCP polling");
         } catch (Throwable e) {
             e.fillInStackTrace();
-            this.LOG.debug("An unexpected exception occured during DHCP polling", e);
+            DhcpMonitor.LOG.debug("An unexpected exception occured during DHCP polling", e);
             serviceStatus = PollStatus.unavailable("An unexpected exception occured during DHCP polling");
         }
 
