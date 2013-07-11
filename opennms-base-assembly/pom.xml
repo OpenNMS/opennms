@@ -611,6 +611,10 @@
       <groupId>commons-jxpath</groupId>
       <artifactId>commons-jxpath</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+    </dependency>
     <!-- this is a runtime dependency we need at install time -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

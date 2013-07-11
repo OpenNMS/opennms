@@ -29,6 +29,10 @@
 package org.opennms.protocols.xml.collector;
 
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -40,6 +44,11 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -50,6 +59,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.jsoup.Jsoup;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -107,8 +117,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setRrdRepository(org.opennms.netmgt.model.RrdRepository)
      */
-    public void setRrdRepository(RrdRepository m_rrdRepository) {
-        this.m_rrdRepository = m_rrdRepository;
+    public void setRrdRepository(RrdRepository rrdRepository) {
+        this.m_rrdRepository = rrdRepository;
     }
 
     /**
@@ -318,7 +328,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress()));
         }
         final Content cnt = unformattedRequest.getContent();
-        request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress())));
+        if (cnt != null)
+            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress())));
         return request;
     }
 
@@ -346,20 +357,20 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress) throws IllegalArgumentException {
         if (unformattedString == null)
             return null;
-        String formattedString = unformattedString.replaceAll("[{]ipaddr[}]", ipAddress);
-        formattedString = formattedString.replaceAll("[{]nodeId[}]", node.getNodeId());
+        String formattedString = unformattedString.replaceAll("[{](?i)(ipAddr|ipAddress)[}]", ipAddress);
+        formattedString = formattedString.replaceAll("[{](?i)nodeId[}]", node.getNodeId());
         if (node.getLabel() != null)
-            formattedString = formattedString.replaceAll("[{]nodeLabel[}]", node.getLabel());
+            formattedString = formattedString.replaceAll("[{](?i)nodeLabel[}]", node.getLabel());
         if (node.getForeignId() != null)
-            formattedString = formattedString.replaceAll("[{]foreignId[}]", node.getForeignId());
+            formattedString = formattedString.replaceAll("[{](?i)foreignId[}]", node.getForeignId());
         if (node.getForeignSource() != null)
-            formattedString = formattedString.replaceAll("[{]foreignSource[}]", node.getForeignSource());
+            formattedString = formattedString.replaceAll("[{](?i)foreignSource[}]", node.getForeignSource());
         if (node.getAssetRecord() != null) {
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {
                 Object obj = wrapper.getPropertyValue(p.getName());
                 if (obj != null)
-                    formattedString = formattedString.replaceAll("[{]" + p.getName() + "[}]", obj.toString());
+                    formattedString = formattedString.replaceAll("[{](?i)" + p.getName() + "[}]", obj.toString());
             }
         }
         if (formattedString.matches(".*[{].+[}].*"))
@@ -380,6 +391,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             URL url = UrlFactory.getUrl(urlString, request);
             URLConnection c = url.openConnection();
             is = c.getInputStream();
+            is = preProcessHtml(request, is);
+            is = applyXsltTransformation(request, is);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -391,6 +404,51 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * Apply XSLT transformation.
+     *
+     * @param request the request
+     * @param is the is
+     * @return the input stream
+     * @throws Exception the exception
+     */
+    private InputStream applyXsltTransformation(Request request, InputStream is) throws Exception {
+        if (request == null)
+            return is;
+        String xsltFilename = request.getParameter("xslt-source-file");
+        if (xsltFilename == null)
+            return is;
+        File xsltFile = new File(xsltFilename);
+        if (!xsltFile.exists())
+            return is;
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Source xslt = new StreamSource(xsltFile);
+        Transformer transformer = factory.newTransformer(xslt);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        transformer.transform(new StreamSource(is), new StreamResult(baos));
+        IOUtils.closeQuietly(is);
+        return new ByteArrayInputStream(baos.toByteArray());
+    }
+
+    /**
+     * Pre-process HTML.
+     *
+     * @param request the request
+     * @param is the input stream
+     * @return the updated input stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private InputStream preProcessHtml(Request request, InputStream is) throws IOException {
+        if (request == null)
+            return is;
+        if (Boolean.parseBoolean(request.getParameter("pre-parse-html"))) {
+            org.jsoup.nodes.Document doc = Jsoup.parse(is, "UTF-8", "/");
+            IOUtils.closeQuietly(is);
+            return new ByteArrayInputStream(doc.outerHtml().getBytes());
+        }
+        return is;
     }
 
     /**
