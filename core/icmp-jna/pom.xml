@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.icmp-jna</artifactId>
+	<name>OpenNMS Core ICMP JNA</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

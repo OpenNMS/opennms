@@ -35,14 +35,17 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockSnmpValueFactory implements SnmpValueFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockSnmpValueFactory.class);
+	
 	final Charset m_defaultCharset;
 	
 	public MockSnmpValueFactory() {
@@ -168,7 +171,7 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 				}
 			} else {
 				if (trimmed.length() % 2 != 0) {
-					LogUtils.warnf(SnmpUtils.class, "Hex-STRING %s does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
+					LOG.warn("Hex-STRING {} does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
 				}
 				final Matcher m = MockSnmpValueFactory.HEX_CHUNK_PATTERN.matcher(trimmed);
 				while (m.find()) {

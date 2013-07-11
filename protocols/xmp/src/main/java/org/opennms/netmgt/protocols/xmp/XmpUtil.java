@@ -43,10 +43,13 @@ import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpMessage;
 import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XmpUtil {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(XmpUtil.class);
+
     /** Constant <code>LESS_THAN="<"</code> */
     public static final String LESS_THAN = "<";
     /** Constant <code>GREATER_THAN=">"</code> */
@@ -62,7 +65,7 @@ public class XmpUtil {
     /** Constant <code>MATCHES="~"</code> */
     public static final String MATCHES = "~";
     
-    private static boolean valueMeetsCriteria(XmpVar replyVar, String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive)
+    private static boolean valueMeetsCriteria(XmpVar replyVar, String valueOperator, String valueOperand, boolean caseSensitive)
             throws XmpUtilException {
         RE valueRegex = null;
         if (MATCHES.equals(valueOperator)) {
@@ -72,47 +75,35 @@ public class XmpUtil {
 	            	valueRegex.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
 	            }
             } catch (final RESyntaxException e) {
-            	LogUtils.debugf(XmpUtil.class, e, "Unable to initialize regular expression.");
+            	LOG.debug("Unable to initialize regular expression.", e);
             }
         }
         
         if ((valueRegex != null) && valueRegex.match(replyVar.getValue())) {
-            if (log.isDebugEnabled()) {
-                log.debug("handleScalarQuery: Response value |" + replyVar.getValue() + "| matches, returning true");
-            }
+            LOG.debug("handleScalarQuery: Response value |{}| matches, returning true", replyVar.getValue());
             return true;
         } else if ((MATCHES.equals(valueOperator)) && ((valueRegex == null) || ("".equals(valueRegex)))) {
-            if (log.isDebugEnabled()) {
-                log.debug("handleScalarQuery: Doing regex match but regex is null or empty, considering value |" + replyVar.getValue() + "| a match!");
-            }
+                LOG.debug("handleScalarQuery: Doing regex match but regex is null or empty, considering value |{}| a match!", replyVar.getValue());
             return true;
         } else if (! MATCHES.equals(valueOperator)) {
             if (valueOperand == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("valueMeetsCriteria: operand is null, so any non-error reply will match");
-                }
+                    LOG.debug("valueMeetsCriteria: operand is null, so any non-error reply will match");
                 if (replyVar.getValue() != null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("valueMeetsCriteria: non-null reply value |" + replyVar.getValue() + "| considered a match");
-                    }
+                        LOG.debug("valueMeetsCriteria: non-null reply value |{}| considered a match", replyVar.getValue());
                     return true;
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("valueMeetsCriteria: null reply NOT considered a match");
-                    }
+                        LOG.debug("valueMeetsCriteria: null reply NOT considered a match");
                     return false;
                 }
             } else if (valueOperand.matches("^-?[0-9]+$")) {
-                if (log.isDebugEnabled()) {
-                    log.debug("valueMeetsCriteria: operand " + valueOperand + " looks like an integer, treating with BigInteger");
-                }
+                    LOG.debug("valueMeetsCriteria: operand {} looks like an integer, treating with BigInteger", valueOperand);
                 BigInteger intOperand, intValue;
                 try {
                     intValue = new BigInteger(replyVar.getValue());
                     intOperand = new BigInteger(valueOperand);
                 } catch (NumberFormatException nfe) {
-                    log.error("Failed to parse operand " + valueOperand + " or observed value " + replyVar.getValue() + " as a BigInteger, giving up");
-                    log.info(nfe.getMessage());
+                    LOG.error("Failed to parse operand {} or observed value {} as a BigInteger, giving up", valueOperand, replyVar.getValue());
+                    LOG.info(nfe.getMessage());
                     throw new XmpUtilException("Operand '" + valueOperand + "' or observed value '" + replyVar.getValue() + "' is a malformed integer");
                 }
                 if (LESS_THAN.equals(valueOperator)) {
@@ -128,19 +119,18 @@ public class XmpUtil {
                 } else if (NOT_EQUAL.equals(valueOperator)) {
                     return (intValue.compareTo(intOperand) != 0);
                 } else {
-                    log.error("Unknown value operator '" + valueOperator + "', giving up");
+                    LOG.error("Unknown value operator '{}', giving up", valueOperator);
                     throw new XmpUtilException("Operator '" + valueOperator + "' unknown");
                 }
             } else if (valueOperand.matches("^-?[0-9]+([,.]?[0-9]+)$")) {
-                if (log.isDebugEnabled())
-                    log.debug("valueMeetsCriteria: operand " + valueOperand + " looks like a float, treating with float");
+                    LOG.debug("valueMeetsCriteria: operand {} looks like a float, treating with float", valueOperand);
                 float floatValue, floatOperand;
                 try {
                     floatValue = Float.parseFloat(valueOperand);
                     floatOperand = Float.parseFloat(valueOperand);
                 } catch (NumberFormatException nfe) {
-                    log.error("Failed to parse operand " + valueOperand + " or observed value " + replyVar.getValue() + " as a Float, giving up");
-                    log.info(nfe.getMessage());
+                    LOG.error("Failed to parse operand {} or observed value {} as a Float, giving up", valueOperand, replyVar.getValue());
+                    LOG.info(nfe.getMessage());
                     throw new XmpUtilException("Operand '" + valueOperand + "' or observed value '" + replyVar.getValue() + "' is a malformed floating-point number");
                 }
                 if (LESS_THAN.equals(valueOperator)) {
@@ -156,14 +146,13 @@ public class XmpUtil {
                 } else if (NOT_EQUAL.equals(valueOperator)) {
                     return (floatValue != floatOperand);
                 } else {
-                    log.error("Unknown value operator '" + valueOperator + "', giving up");
+                    LOG.error("Unknown value operator '{}', giving up", valueOperator);
                     throw new XmpUtilException("Value operator '" + valueOperator + "' unknown");
                 }
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("valueMeetsCriteria: operand " + valueOperand + " looks non-numeric, treating with String");
+                    LOG.debug("valueMeetsCriteria: operand {} looks non-numeric, treating with String", valueOperand);
                 if (!EQUALS.equals(valueOperator)) {
-                    log.error("Value operator '" + valueOperator + "' does not apply for non-numeric value operand '" + valueOperand + "', giving up");
+                    LOG.error("Value operator '{}' does not apply for non-numeric value operand '{}', giving up", valueOperator, valueOperand);
                     throw new XmpUtilException("Value operator '" + valueOperator + "' does not apply for non-numeric value operand '" + valueOperand + "'");
                 }
                 if (caseSensitive) {
@@ -173,11 +162,13 @@ public class XmpUtil {
 				}
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("handleScalarQuery: Response value |" + replyVar.getValue() + "| does not match for value operator |" + valueOperator +"| and value operand |" + valueOperand + "|, returning false");
+        	if(LOG.isDebugEnabled()){
+                LOG.debug("handleScalarQuery: Response value |{}| does not match for value operator |{}| and value operand |{}|, returning false", replyVar.getValue(), valueOperator, valueOperand);
+                //FIXME do we really want to throw only when debugging is enabled?
                 throw new XmpUtilException("Response value '" + replyVar.getValue() + "' does not match for value operator '" + valueOperator +"' and value operand '" + valueOperand +"'");
-            }
+        	}
         }
+        	
         return false;
     }
 
@@ -189,13 +180,12 @@ public class XmpUtil {
      * @param object a {@link java.lang.String} object.
      * @param valueOperator a {@link java.lang.String} object.
      * @param valueOperand a {@link java.lang.String} object.
-     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
      * @param caseSensitive a boolean.
      * @return a boolean.
      * @throws org.opennms.netmgt.protocols.xmp.XmpUtilException if any.
      */
     public static boolean handleScalarQuery(XmpSession session, String mib,
-            String object, String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive) throws XmpUtilException {
+            String object, String valueOperator, String valueOperand, boolean caseSensitive) throws XmpUtilException {
         XmpMessage reply;
         XmpVar[] queryVars = new XmpVar[1];
         XmpVar[] replyVars;
@@ -204,17 +194,17 @@ public class XmpUtil {
         
         reply = session.queryVars(queryVars);
         if (reply == null) {
-            log.warn("handleScalarQuery: query for object " + object + " from MIB " + mib + " failed, " + Xmp.errorStatusToString(session.getErrorStatus()));
+            LOG.warn("handleScalarQuery: query for object {} from MIB {} failed, {}", object, mib, Xmp.errorStatusToString(session.getErrorStatus()));
             return false;
-        } else if (log.isDebugEnabled()) {
-            log.debug("handleScalarQuery: query for object " + object + " from MIB " + mib + " succeeded.");
+        } else {
+            LOG.debug("handleScalarQuery: query for object {} from MIB {} succeeded.", object, mib);
         }
         
         replyVars = reply.getMIBVars();
         if (replyVars[0].getMibName().equals(mib) && replyVars[0].getObjName().equals(object)) {
-            return valueMeetsCriteria(replyVars[0], valueOperator, valueOperand, log, caseSensitive);
+            return valueMeetsCriteria(replyVars[0], valueOperator, valueOperand, caseSensitive);
         } else {
-            log.error("Observed MIB name (" + replyVars[0].getMibName() + ") or object name (" + replyVars[0].getObjName() + ") does not match specified MIB name (" + mib + ") or object name (" + object + "), giving up");
+            LOG.error("Observed MIB name ({}) or object name ({}) does not match specified MIB name ({}) or object name ({}), giving up", replyVars[0].getMibName(), replyVars[0].getObjName(), mib, object);
             throw new XmpUtilException("Received unexpected response (MIB: " + replyVars[0].getMibName() + " Object: " + replyVars[0].getObjName());
         }
     }
@@ -233,7 +223,6 @@ public class XmpUtil {
      * @param minMatches a int.
      * @param maxMatches a int.
      * @param maxMatchesUnbounded a boolean.
-     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
      * @param caseSensitive a boolean.
      * @return a boolean.
      * @throws org.opennms.netmgt.protocols.xmp.XmpUtilException if any.
@@ -242,7 +231,7 @@ public class XmpUtil {
             String table, String object, String instance, RE instanceRegex, 
             String valueOperator, String valueOperand, int minMatches,
             int maxMatches, boolean maxMatchesUnbounded,
-            ThreadCategory log, boolean caseSensitive) throws XmpUtilException {
+            boolean caseSensitive) throws XmpUtilException {
         XmpMessage reply;
         String[] tableInfo = new String[3];
         XmpVar[] queryVars = new XmpVar[1];
@@ -257,14 +246,12 @@ public class XmpUtil {
         reply = session.queryTableVars(tableInfo, 0, queryVars);
         
         if (reply == null) {
-            log.warn("handleTableQuery: query for object " + object + " from MIB " + mib + " failed, " + Xmp.errorStatusToString(session.getErrorStatus()));
+            LOG.warn("handleTableQuery: query for object {} from MIB {} failed, {}", object, mib, Xmp.errorStatusToString(session.getErrorStatus()));
             throw new XmpUtilException("XMP query failed (MIB " + mib + ", object " + object + "): " + Xmp.errorStatusToString(session.getErrorStatus()));
         }
         
         replyVars = reply.getMIBVars();
-        if (log.isDebugEnabled()) {
-            log.debug("handleTableQuery: Got reply with " + replyVars.length + " variables"); 
-        }
+        LOG.debug("handleTableQuery: Got reply with {} variables", replyVars.length);
         
         
         /* Since we're constrained to a single object, we know that there's
@@ -276,48 +263,34 @@ public class XmpUtil {
         for (XmpVar thisVar : replyVars) {
             String rowInstance = thisVar.getKey();
             if ((instanceRegex != null) && (!instanceRegex.match(rowInstance))) {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: instance " + rowInstance + " does not match, skipping this row.");
-                }
+                
+            	LOG.debug("handleTableQuery: instance {} does not match, skipping this row.", rowInstance);
+                
                 continue;  // to next var
             } else if (instanceRegex == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: instance match not specified, evaluating value of instance " + rowInstance);
-                }
+            	LOG.debug("handleTableQuery: instance match not specified, evaluating value of instance {}", rowInstance);
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: instance " + rowInstance + " matches, evaluating value");
-                }
+                    LOG.debug("handleTableQuery: instance {} matches, evaluating value", rowInstance);
             }
-            if (valueMeetsCriteria(thisVar, valueOperator, valueOperand, log, caseSensitive)) {
+            if (valueMeetsCriteria(thisVar, valueOperator, valueOperand, caseSensitive)) {
                 numMatches++;
             }
         }
         
         if (numMatches >= minMatches) {
-            if (log.isDebugEnabled()) {
-                log.debug("handleTableQuery: Found " + numMatches + " matches, meets specified minimum of " + minMatches);
-            }
+                LOG.debug("handleTableQuery: Found {} matches, meets specified minimum of {}", numMatches, minMatches);
             if (maxMatchesUnbounded) {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: Maximum matches unbounded, returning true");
-                }
+                    LOG.debug("handleTableQuery: Maximum matches unbounded, returning true");
                 return true;
             } else if (numMatches <= maxMatches) {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: Found " + numMatches + " matches, meets specified maximum of " + maxMatches + ", returning true");
-                }
+                    LOG.debug("handleTableQuery: Found {} matches, meets specified maximum of {}, returning true", numMatches, maxMatches);
                 return true;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("handleTableQuery: Found " + numMatches + " matches, exceeds specified maximum of " + maxMatches + ", returning false");
-                }
+                    LOG.debug("handleTableQuery: Found {} matches, exceeds specified maximum of {}, returning false", numMatches, maxMatches);
                 throw new XmpUtilException("Found too many value matches (" + numMatches + " > " + maxMatches + ") for condition " + mib + "." + object + " " + valueOperator + " " + valueOperand);
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Found only " + numMatches + " matches, too few to meet specified minimum of " + minMatches);
-            }
+                LOG.debug("Found only {} matches, too few to meet specified minimum of {}", numMatches, minMatches);
             throw new XmpUtilException("Found too few value matches (" + numMatches + " < " + minMatches + ") for condition " + mib + "." + object + " " + valueOperator + " " + valueOperand);
         }
     }

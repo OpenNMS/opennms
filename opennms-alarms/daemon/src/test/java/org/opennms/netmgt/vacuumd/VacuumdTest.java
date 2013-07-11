@@ -466,7 +466,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test
     public final void testGetName() {
-        assertEquals("OpenNMS.Vacuumd", m_vacuumd.getName());
+        assertEquals("vacuumd", m_vacuumd.getName());
     }
 
     /**

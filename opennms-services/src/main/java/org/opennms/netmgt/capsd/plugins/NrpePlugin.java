@@ -44,10 +44,11 @@ import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -62,6 +63,9 @@ import org.opennms.netmgt.poller.nrpe.NrpePacket;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class NrpePlugin extends AbstractPlugin {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NrpePlugin.class);
 
     /**
      * The protocol supported by the plugin
@@ -114,8 +118,6 @@ public final class NrpePlugin extends AbstractPlugin {
      *         line contains the bannerMatch text.
      */
     private boolean isServer(InetAddress host, int port, String command, int padding, int retries, int timeout, RE regex, StringBuffer bannerResult) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
             Socket socket = null;
@@ -126,7 +128,7 @@ public final class NrpePlugin extends AbstractPlugin {
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket = wrapSocket(socket, host.toString(), port);
                 socket.setSoTimeout(timeout);
-                log.debug("NrpePlugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("NrpePlugin: connected to host: {} on port: {}", host, port);
 				
 				NrpePacket p = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0,
 						command);
@@ -143,16 +145,12 @@ public final class NrpePlugin extends AbstractPlugin {
 						if (r.match(response_msg)) {
 							isAServer = true;
 						} else {
-							log.info("received 1-2 return code, " +
-									response.getResultCode() + ", with message: " + 
-									response.getBuffer());
+							LOG.info("received 1-2 return code, {}, with message: {}", response.getResultCode(), response.getBuffer());
 							isAServer = false;
 							break;
 						}
 				} else {
-						log.info("received 3+ return code, " +
-								response.getResultCode() + ", with message: " +
-								response.getBuffer());
+						LOG.info("received 3+ return code, {}, with message: {}", response.getResultCode(), response.getBuffer());
                         isAServer = false;
 						break;
                 }
@@ -194,26 +192,26 @@ public final class NrpePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("NrpePlugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("NrpePlugin: Connection refused to {}:{}", InetAddressUtils.str(host), port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("NrpePlugin: Could not connect to host " + InetAddressUtils.str(host) + ", no route to host", e);
+                LOG.info("NrpePlugin: Could not connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
-                log.debug("NrpePlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("NrpePlugin: did not connect to host within timeout: {} attempt: {}", timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("NrpePlugin: An expected I/O exception occured connecting to host " + InetAddressUtils.str(host) + " on port " + port, e);
+                LOG.info("NrpePlugin: An expected I/O exception occured connecting to host {} on port {}", InetAddressUtils.str(host), port, e);
                 isAServer = false;
             } catch (Throwable t) {
                 isAServer = false;
-                log.warn("NrpePlugin: An undeclared throwable exception was caught connecting to host " + InetAddressUtils.str(host) + " on port " + port, t);
+                LOG.warn("NrpePlugin: An undeclared throwable exception was caught connecting to host {} on port {}", InetAddressUtils.str(host), port, t);
             } finally {
                 try {
                     if (socket != null)
@@ -319,24 +317,11 @@ public final class NrpePlugin extends AbstractPlugin {
      */
     protected Socket wrapSocket(Socket socket, String hostAddress, int hostPort) throws Exception {
     	if (! m_useSsl) {
-    		if (log().isDebugEnabled()) {
-    			log().debug("Parameter 'usessl' is unset or false, not using SSL");
-    		}
+		LOG.debug("Parameter 'usessl' is unset or false, not using SSL");
     		return socket;
     	} else {
-    		if (log().isDebugEnabled()) {
-    			log().debug("Parameter 'usessl' is true, using SSL");
-    		}
+		LOG.debug("Parameter 'usessl' is true, using SSL");
     		return SocketUtils.wrapSocketInSslContext(socket, ADH_CIPHER_SUITES);
     	}
-    }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-    	return ThreadCategory.getInstance(getClass());
     }
 }

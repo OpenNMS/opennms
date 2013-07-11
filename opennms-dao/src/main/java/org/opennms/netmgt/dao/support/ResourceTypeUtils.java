@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,8 +38,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.PropertiesCache;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
@@ -51,6 +52,8 @@ import org.springframework.util.Assert;
  * <p>ResourceTypeUtils class.</p>
  */
 public abstract class ResourceTypeUtils {
+    
+    private static Logger LOG = LoggerFactory.getLogger(ResourceTypeUtils.class);
 
     /** Constant <code>DS_PROPERTIES_FILE="ds.properties"</code> */
     public static String DS_PROPERTIES_FILE = "ds.properties";
@@ -123,7 +126,7 @@ public abstract class ResourceTypeUtils {
         try {
             return s_cache.getProperties(propertiesFile);
         } catch(IOException e) {
-            log().error("ds.properties error: " + e, e);
+            LOG.error("ds.properties error", e);
             return new Properties();
         }
     }
@@ -141,7 +144,7 @@ public abstract class ResourceTypeUtils {
             try {
                 rrdBaseName = s_cache.getProperty(new File(directory, DS_PROPERTIES_FILE), ds);
             } catch (IOException e) {
-                log().error("ds.properties error: " + e, e);
+                LOG.error("ds.properties error", e);
                 rrdBaseName = ds;
             }
         }
@@ -199,20 +202,11 @@ public abstract class ResourceTypeUtils {
             return s_cache.findProperties(file);
         } catch (IOException e) {
             String message = "loadProperties: Error opening properties file " + file.getAbsolutePath() + ": " + e;
-            log().warn(message, e);
+            LOG.warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
     }
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public static ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
-
     /**
      * <p>saveUpdatedProperties</p>
      *
@@ -235,7 +229,7 @@ public abstract class ResourceTypeUtils {
         try {
             s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
         } catch (IOException e) {
-            log().error("Unable to save DataSource Properties file" + e, e);
+            LOG.error("Unable to save DataSource Properties file", e);
         }
     }
 
@@ -266,7 +260,7 @@ public abstract class ResourceTypeUtils {
             return s_cache.getProperty(file, key);
         } catch (IOException e) {
             String message = "loadProperties: Error opening properties file " + file.getAbsolutePath() + ": " + e;
-            log().warn(message, e);
+            LOG.warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
     }

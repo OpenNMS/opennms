@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Provisioning</name>
+  <name>OpenNMS Provision</name>
   <modules>
     <module>opennms-provision-api</module>
     <module>opennms-mock-simpleserver</module>

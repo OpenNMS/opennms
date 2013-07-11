@@ -32,7 +32,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.jrobin.graph.RrdGraph;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 
@@ -47,6 +48,7 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
  * @version $Id: $
  */
 public class JRobinRrdGraphDetails implements RrdGraphDetails {
+    private static final Logger LOG = LoggerFactory.getLogger(JRobinRrdGraphDetails.class);
     
     private RrdGraph m_rrdGraph;
     private String m_graphCommand;
@@ -132,12 +134,8 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
     private void assertGraphProduced() throws RrdException {
         if (m_rrdGraph.getRrdGraphInfo().getBytes() == null) {
             String message = "no graph was produced by JRobin for command '" + getGraphCommand() + "'.  Does the command have any drawing commands (e.g.: LINE1, LINE2, LINE3, AREA, STACK, GPRINT)?";
-            log().error(message);
+            LOG.error(message);
             throw new RrdException(message);
         }
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

@@ -52,7 +52,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
 import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
@@ -71,6 +72,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 abstract public class RancidAdapterConfigManager implements RancidAdapterConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(RancidAdapterConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -212,13 +214,13 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                     //
                     try {
                         final List<InetAddress> ipList = getIpList(pkg);
-                        LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+                        LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
             
                         if (ipList.size() > 0) {
                             m_pkgIpMap.put(pkg, ipList);
                         }
                     } catch (final Throwable t) {
-                        LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
+                        LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
                     }
         
                 }
@@ -237,7 +239,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             filterRules.append('\"');
             filterRules.append(")");
         }
-        LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), filterRules.toString());
+        LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
         return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
     }
     
@@ -271,7 +273,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
 			filterPassed = ipList.contains(ifaceAddr);
         }
     
-        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", iface, pkg.getName(), Boolean.valueOf(filterPassed));
     
         if (!filterPassed) return false;
     

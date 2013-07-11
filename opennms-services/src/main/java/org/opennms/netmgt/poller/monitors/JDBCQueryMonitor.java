@@ -37,6 +37,8 @@ import java.util.HashMap;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -47,6 +49,9 @@ import org.opennms.netmgt.model.PollStatus;
  * @version $Id: $
  */
 public final class JDBCQueryMonitor extends JDBCMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(JDBCQueryMonitor.class);
 
     private static final int OPERATOR_MAP_EQUALS = 0;
     private static final int OPERATOR_MAP_LESS_THAN = 1;
@@ -100,7 +105,7 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
         String operator = ParameterMap.getKeyedString(parameters, "operator", ">=");
         String message = ParameterMap.getKeyedString(parameters, "message", null );
         
-        log().debug("Query: " + query);
+        LOG.debug("Query: {}", query);
         
         if (query == null) {
             ps = PollStatus.unavailable("Null Query, ensure query value set in poller configuration.");

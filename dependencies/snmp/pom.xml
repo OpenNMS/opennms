@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>snmp-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS SNMP Dependencies</name>
+  <name>OpenNMS Dependencies SNMP</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use SNMP

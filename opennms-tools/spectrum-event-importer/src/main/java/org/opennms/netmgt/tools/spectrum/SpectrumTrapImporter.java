@@ -28,15 +28,10 @@
 
 package org.opennms.netmgt.tools.spectrum;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -61,7 +56,6 @@ import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -69,11 +63,15 @@ import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.mchange.v2.log.LogUtils;
 
 /**
  * @author Jeff Gehlbach <jeffg@opennms.org>
@@ -81,6 +79,9 @@ import org.xml.sax.SAXException;
  *
  */
 public class SpectrumTrapImporter {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(SpectrumTrapImporter.class);
+
     private List<AlertMapping> m_alertMappings;
     private List<EventDisposition> m_eventDispositions;
     private Map<String,EventFormat> m_eventFormats;
@@ -148,7 +149,6 @@ public class SpectrumTrapImporter {
     }
     
     private void initialize() throws Exception {
-        LogUtils.logToConsole();
         Resource alertMapResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "AlertMap");
         Resource eventDispResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "EventDisp");
         
@@ -167,7 +167,7 @@ public class SpectrumTrapImporter {
         Map<String,String> unformattedEvents = new LinkedHashMap<String,String>();
         for (AlertMapping mapping : m_alertMappings) {
             if (formats.containsKey(mapping.getEventCode())) {
-                LogUtils.debugf(this, "Already have read an event-format for event-code [%s], not loading again", mapping.getEventCode());
+                LOG.debug("Already have read an event-format for event-code [{}], not loading again", mapping.getEventCode());
                 continue;
             }
             String formatFileName = csEvFormatDirName + "/Event" + (mapping.getEventCode().substring(2));
@@ -179,7 +179,7 @@ public class SpectrumTrapImporter {
                 continue;
             }
         }
-        LogUtils.infof(this, "Loaded %d event-formats from files in [%s]", formats.size(), csEvFormatDirName);
+        LOG.info("Loaded {} event-formats from files in [{}]", formats.size(), csEvFormatDirName);
         if (unformattedEvents.keySet().size() > 0) {
             StringBuilder uelBuilder = new StringBuilder("");
             for (String ec : unformattedEvents.keySet()) {
@@ -188,7 +188,7 @@ public class SpectrumTrapImporter {
                 }
                 uelBuilder.append(ec);
             }
-            LogUtils.infof(this, "Unable to load an event-format for %d event-codes [%s].  Continuing without them.", unformattedEvents.keySet().size(), uelBuilder.toString());
+            LOG.info("Unable to load an event-format for {} event-codes [{}].  Continuing without them.", unformattedEvents.keySet().size(), uelBuilder.toString());
         }
         m_eventFormats = formats;
     }
@@ -273,7 +273,7 @@ public class SpectrumTrapImporter {
                 }
             }
         }
-        LogUtils.debugf(this, "Made %d events", events.getEventCollection().size());
+        LOG.debug("Made {} events", events.getEventCollection().size());
         return events;
     }
     
@@ -291,7 +291,7 @@ public class SpectrumTrapImporter {
         evt.setVarbindsdecode(makeVarbindsDecodes(mapping));
         
         if (shouldDiscardEvent(dispo)) {
-            LogUtils.warnf(this, "Not creating an OpenNMS event definition corresponding to the following Spectrum event-disposition, because doing so would cause a conflict with an existing alarm-creating event for the same event-code and discriminators: %s. Hand-tweaking the output may be needed to compensate for this omission.", dispo);
+            LOG.warn("Not creating an OpenNMS event definition corresponding to the following Spectrum event-disposition, because doing so would cause a conflict with an existing alarm-creating event for the same event-code and discriminators: {}. Hand-tweaking the output may be needed to compensate for this omission.", dispo);
             return null;
         }
         return evt;

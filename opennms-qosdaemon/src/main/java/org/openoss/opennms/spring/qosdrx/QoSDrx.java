@@ -28,7 +28,8 @@
 
 package org.openoss.opennms.spring.qosdrx;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -45,7 +46,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class QoSDrx extends AbstractServiceDaemon {
-
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDrx.class);
+    
 	/**
 	 * <p>Constructor for QoSDrx.</p>
 	 */
@@ -137,8 +139,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	/*---------------VARIABLE DECLARATIONS----------------*/
 
 
-	/** Constant <code>NAME="OpenOSS.QoSDrx"</code> */
-	public static final String NAME = "OpenOSS.QoSDrx";
+	public static final String NAME = "oss-qosdrx";
 	private static String m_stats=null;  //not used but needed for initialisation	
 
 
@@ -155,16 +156,16 @@ public class QoSDrx extends AbstractServiceDaemon {
         @Override
 	protected void onInit()
 	{
-		ThreadCategory log = getLog();	//Get a reference to the QosDrx logger instance assigned by OpenNMS
-		log.info("QoSDrx.init(): Initialising QoSDrx");
-		if (log.isDebugEnabled()) log.debug("QoSDrx.init(): Setting initialOssBeanRunner.setLogName(_logName) to:"+ log.getName());
-		initialOssBeanRunner.setLogName(log.getName());
+		//Get a reference to the QosDrx logger instance assigned by OpenNMS
+		LOG.info("QoSDrx.init(): Initialising QoSDrx");
+		LOG.debug("QoSDrx.init(): Setting initialOssBeanRunner.setLogName(_logName) to:{}", LOG.getName());
+		initialOssBeanRunner.setLogName(LOG.getName());
 
 		if (initialOssBeanRunner.getStatus()==OssBean.UNINITIALISED){
 			initialOssBeanRunner.setParentApplicationContext(m_context);
 			initialOssBeanRunner.init();
 		}
-		log.info("QoSDrx.init(): QoSDrx initialised. Status= START_PENDING");
+		LOG.info("QoSDrx.init(): QoSDrx initialised. Status= START_PENDING");
 	}
 
 	/**
@@ -173,15 +174,15 @@ public class QoSDrx extends AbstractServiceDaemon {
         @Override
 	protected void onStart()
 	{
-		ThreadCategory log = getLog();	//Get a reference to the QoSDrx logger instance assigned by OpenNMS
-		log.info("QoSDrx.start(): Starting QoSDrx");
+		//Get a reference to the QoSDrx logger instance assigned by OpenNMS
+		LOG.info("QoSDrx.start(): Starting QoSDrx");
 
 		if (initialOssBeanRunner.getStatus()==OssBean.START_PENDING){
 			initialOssBeanRunner.run();  // begins startup of OssBean
 			while (initialOssBeanRunner.getStatus()!=OssBean.RUNNING); // wait for bean to start up
-			log.info("QoSDrx.start(): OssBean Receiver Configurations: "+initialOssBeanRunner.getOssBeanInstancesStatus());
+			LOG.info("QoSDrx.start(): OssBean Receiver Configurations: {}", initialOssBeanRunner.getOssBeanInstancesStatus());
 		} else {
-			log.error("QoSDrx.start(): initialOssBeanRunner not initialised status= STOPPED");
+			LOG.error("QoSDrx.start(): initialOssBeanRunner not initialised status= STOPPED");
 			this.setStatus(STOPPED);
 			initialOssBeanRunner.stop(); // release any resources held by bean
 		}
@@ -195,8 +196,8 @@ public class QoSDrx extends AbstractServiceDaemon {
         @Override
 	protected void onStop()
 	{
-		ThreadCategory log = getLog(); //Get a reference to the QoSDrx logger instance assigned by OpenNMS
-		log.info("QoSDrx.stop(): Stopping QoSDrx");
+		//Get a reference to the QoSDrx logger instance assigned by OpenNMS
+		LOG.info("QoSDrx.stop(): Stopping QoSDrx");
 		initialOssBeanRunner.stop();
 		while (initialOssBeanRunner.getStatus()!=OssBean.STOPPED); // wait for bean to stop
 	}
@@ -211,13 +212,12 @@ public class QoSDrx extends AbstractServiceDaemon {
 	protected void onPause()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		log.error("QoSDrx.pause(): NOT IMPLEMENTED - this method does nothing and returns");
+		LOG.error("QoSDrx.pause(): NOT IMPLEMENTED - this method does nothing and returns");
 
-		//log.info("Pausing QoSDrx");
+		//LOG.info("Pausing QoSDrx");
 		//status = PAUSE_PENDING;
 		//status = PAUSED;
-		//log.info("QoSDrx Paused");
+		//LOG.info("QoSDrx Paused");
 	}
 
 	/**
@@ -230,22 +230,13 @@ public class QoSDrx extends AbstractServiceDaemon {
 	protected void onResume()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		log.error("QoSDrx.resume(): NOT IMPLEMENTED - this method does nothing and returns");
+		LOG.error("QoSDrx.resume(): NOT IMPLEMENTED - this method does nothing and returns");
 
-		//log.info("Resuming QoSDrx");
+		//LOG.info("Resuming QoSDrx");
 		//status = RESUME_PENDING;
 		//registerListener();		//start responding to OpenNMS events
 		//status = RUNNING;
-		//log.info("QoSDrx Resumed");
-	}
-
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog()
-	{
-		return ThreadCategory.getInstance(QoSDrx.class);	
+		//LOG.info("QoSDrx Resumed");
 	}
 
 	/**
@@ -254,13 +245,12 @@ public class QoSDrx extends AbstractServiceDaemon {
 	 * @return string representation of the statistics for the running receivers
 	 */
 	public String getRuntimeStatistics(){
-		ThreadCategory log = getLog();	
 		String runtimeStats="QoSDrx.getRuntimeStatistics(): NOT AVAILABLE";
 		try {
 			runtimeStats=initialOssBeanRunner.getRuntimeStatistics();
 		}
 		catch (Throwable ex){
-			log.error("QoSDrx.getStats() Problem getting statistics:",ex);
+			LOG.error("QoSDrx.getStats() Problem getting statistics:",ex);
 		}
 		return runtimeStats;
 	}

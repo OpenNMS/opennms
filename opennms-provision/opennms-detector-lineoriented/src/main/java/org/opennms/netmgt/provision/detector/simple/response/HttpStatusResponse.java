@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,8 @@ package org.opennms.netmgt.provision.detector.simple.response;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,6 +43,7 @@ import org.opennms.core.utils.LogUtils;
  */
 public class HttpStatusResponse extends LineOrientedResponse {
     
+    private static final Logger LOG = LoggerFactory.getLogger(HttpStatusResponse.class);
     
     private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)");
 
@@ -81,7 +82,7 @@ public class HttpStatusResponse extends LineOrientedResponse {
         }
 
         final Matcher m = p.matcher(getResponse().trim());
-        LogUtils.infof(this, "HTTP status regex: %s\n", p.pattern());
+        LOG.info("HTTP status regex: {}\n", p.pattern());
         return m.matches();
     }
 

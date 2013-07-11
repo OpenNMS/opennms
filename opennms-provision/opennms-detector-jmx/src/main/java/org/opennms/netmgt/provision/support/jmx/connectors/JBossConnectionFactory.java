@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,10 +42,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.support.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The JBossConnectionFactory class handles the creation of a connection to the 
@@ -60,6 +61,7 @@ import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
  */
 public class JBossConnectionFactory {
     
+    private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)
@@ -120,7 +122,7 @@ public class JBossConnectionFactory {
                         Object rmiAdaptor = ctx.lookup("jmx/rmi/RMIAdaptor");
                         wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
                     } catch (final Throwable t) {
-                        LogUtils.debugf(JBossConnectionFactory.class, t, "Unable to connect to JBOSS");
+                        LOG.debug("Unable to connect to JBOSS", t);
                     }
                 } finally {
                     try {

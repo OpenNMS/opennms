@@ -47,10 +47,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>CategoryList class.</p>
@@ -59,6 +60,9 @@ import org.opennms.netmgt.config.viewsdisplay.View;
  * @version $Id: $
  */
 public class CategoryList {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CategoryList.class);
+
 
     protected CategoryModel m_model;
 
@@ -79,7 +83,7 @@ public class CategoryList {
         try {
             m_model = CategoryModel.getInstance();
         } catch (Throwable e) {
-            log().error("failed to instantiate the category model: " + e, e);
+            LOG.error("failed to instantiate the category model: {}", e, e);
             throw new ServletException("failed to instantiate the category model: " + e, e);
         }
 
@@ -92,18 +96,15 @@ public class CategoryList {
             if (view != null) {
                 m_sections = view.getSection();
                 m_disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
-                log().debug("found display rules from viewsdisplay.xml");
+                LOG.debug("found display rules from viewsdisplay.xml");
             } else {
-                log().debug("did not find display rules from viewsdisplay.xml");
+                LOG.debug("did not find display rules from viewsdisplay.xml");
             }
         } catch (Throwable e) {
-            log().error("Couldn't open viewsdisplay factory on categories box: " + e, e);
+            LOG.error("Couldn't open viewsdisplay factory on categories box: {}", e, e);
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
     /**
      * For the given map of category names to Category objects, organize the

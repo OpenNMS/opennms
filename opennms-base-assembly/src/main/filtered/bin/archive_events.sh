@@ -11,5 +11,5 @@ for FILE in $OPENNMS_HOME/lib/*.jar; do
 done
 
 exec ${install.bin.dir}/runjava -r -- \
-	$ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$CP" "$@"
+	$ADDITIONAL_MANAGER_OPTIONS -Dlog4j.configurationFile="$OPENNMS_HOME/etc/log4j2-archive-events.xml" -Dopennms.home="$OPENNMS_HOME" -cp "$CP" org.opennms.netmgt.archive.EventsArchiver "$@"
 

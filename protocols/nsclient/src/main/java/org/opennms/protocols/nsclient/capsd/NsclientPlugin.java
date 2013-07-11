@@ -33,13 +33,14 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
 import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -52,6 +53,9 @@ import org.opennms.protocols.nsclient.NsclientPacket;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class NsclientPlugin extends AbstractPlugin {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NsclientPlugin.class);
+
 
     /**
      * The protocol supported by the plugin
@@ -167,7 +171,7 @@ public class NsclientPlugin extends AbstractPlugin {
                                        timeout, params);
 
         if (pack == null) {
-            log().debug("Received a null packet response from isServer.");
+            LOG.debug("Received a null packet response from isServer.");
             return false;
         }
 
@@ -217,7 +221,7 @@ public class NsclientPlugin extends AbstractPlugin {
                 client.init();
 
                 response = client.processCheckCommand(NsclientManager.convertStringToType(command), params);
-                log().debug("NsclientPlugin: " + command + ": " + response.getResponse());
+                LOG.debug("NsclientPlugin: {}: {}", command, response.getResponse());
                 isAServer = true;
             } catch (NsclientException e) {
                 StringBuffer message = new StringBuffer();
@@ -225,15 +229,12 @@ public class NsclientPlugin extends AbstractPlugin {
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "": e.getCause().getMessage()));
-                log().info(message.toString());
+                LOG.info(message.toString());
                 isAServer = false;
             }
         }
         return response;
     }
 
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 
 }

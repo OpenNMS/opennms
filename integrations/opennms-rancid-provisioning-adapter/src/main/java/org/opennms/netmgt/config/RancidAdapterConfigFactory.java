@@ -39,7 +39,8 @@ import java.io.Writer;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>RancidAdapterConfigFactory class.</p>
@@ -48,6 +49,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(RancidAdapterConfigFactory.class);
 
     /**
      * The singleton instance of this factory
@@ -114,7 +116,7 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
 
-        LogUtils.debugf(RancidAdapterConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         final InputStream reader = new FileInputStream(cfgFile);
         RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(cfgFile.lastModified(), reader,onmsSvrConfig.getServerName(),onmsSvrConfig.verifyServer());
@@ -172,12 +174,12 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
             try {
                 long timestamp = System.currentTimeMillis();
                 File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
-                LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+                LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
                 Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
                 fileWriter.write(xml);
                 fileWriter.flush();
                 fileWriter.close();
-                LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+                LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
             } finally {
                 getWriteLock().unlock();
             }
@@ -197,9 +199,9 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
-                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                LOG.debug("init: config file path: {}", cfgFile.getPath());
                 reloadXML(new FileInputStream(cfgFile));
-                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
+                LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
             }
         } finally {
             getWriteLock().unlock();

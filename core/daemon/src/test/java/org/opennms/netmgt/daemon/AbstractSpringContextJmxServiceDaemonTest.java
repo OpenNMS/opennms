@@ -61,7 +61,7 @@ public class AbstractSpringContextJmxServiceDaemonTest {
 
     public class MockServiceDaemon extends AbstractServiceDaemon {
         public MockServiceDaemon() {
-            super("MockServiceDaemon");
+            super("mock-service-daemon");
         }
 
         @Override

@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author ranger
  * @version $Id: $
  */
-@EventListener(name="pollerBackEnd")
+@EventListener(name="pollerBackEnd", logPrefix="poller")
 public class PollerBackEndEventProcessor {
 
     private PollerBackEnd m_pollerBackEnd;

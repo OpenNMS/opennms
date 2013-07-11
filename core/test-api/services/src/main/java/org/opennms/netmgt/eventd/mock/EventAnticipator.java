@@ -36,14 +36,17 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author brozow
  */
 public class EventAnticipator implements EventListener {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EventAnticipator.class);
     
     boolean m_discardUnanticipated = false;
 
@@ -180,7 +183,7 @@ public class EventAnticipator implements EventListener {
             try {
                 wait(waitTime);
             } catch (InterruptedException e) {
-                LogUtils.errorf(this, e, "interrupted while waiting for anticipated events");
+            	LOG.error("interrupted while waiting for anticipated events", e);
             }
             now = System.currentTimeMillis();
             waitTime -= (now - last);

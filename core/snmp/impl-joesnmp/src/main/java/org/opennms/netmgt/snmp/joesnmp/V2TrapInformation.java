@@ -104,9 +104,7 @@ public class V2TrapInformation extends TrapInformation {
     @Override
     protected long getTimeStamp() {
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("V2 trap first varbind value: " + m_pdu.getVarBindAt(0).getValue().toString());
-        }
+        LOG.debug("V2 trap first varbind value: {}", m_pdu.getVarBindAt(0).getValue().toString());
 
         switch (m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
         case SnmpSMI.SMI_TIMETICKS:
@@ -152,9 +150,7 @@ public class V2TrapInformation extends TrapInformation {
             // if not V2 trap, do nothing
             throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("V2 trap numVars or pdu length: " + getPduLength());
-        }
+        LOG.debug("V2 trap numVars or pdu length: {}", getPduLength());
         if (getPduLength() < 2) // check number of varbinds
         {
             throw new IllegalArgumentException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed 2");
@@ -168,7 +164,7 @@ public class V2TrapInformation extends TrapInformation {
         String varBindName0 = m_pdu.getVarBindAt(0).getName().toString();
         String varBindName1 = m_pdu.getVarBindAt(1).getName().toString();
         if (varBindName0.equals(V2TrapInformation.EXTREME_SNMP_SYSUPTIME_OID)) {
-            LOG.info("V2 trap from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+            LOG.info("V2 trap from {} has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : {} and {}", getTrapAddress(), varBindName0, varBindName1);
             varBindName0 = V2TrapInformation.SNMP_SYSUPTIME_OID;
         }
         if ((!(varBindName0.equals(V2TrapInformation.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(V2TrapInformation.SNMP_TRAP_OID)))) {

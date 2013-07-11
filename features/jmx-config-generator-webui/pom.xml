@@ -210,7 +210,7 @@
             <url>http://maven.vaadin.com/vaadin-addons</url>
         </repository>
         <repository>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
             <id>junit_4</id>
             <layout>default</layout>
             <name>Repository for library Library[junit_4]</name>

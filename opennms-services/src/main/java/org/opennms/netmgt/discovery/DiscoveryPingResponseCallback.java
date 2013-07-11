@@ -31,12 +31,13 @@ package org.opennms.netmgt.discovery;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DiscoveryPingResponseCallback class.</p>
@@ -45,6 +46,9 @@ import org.opennms.netmgt.model.events.EventBuilder;
  * @version $Id: $
  */
 public class DiscoveryPingResponseCallback implements PingResponseCallback {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryPingResponseCallback.class);
+    
     final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
     /** {@inheritDoc} */
@@ -59,11 +63,9 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(eb.getEvent());
 
-            if (log().isDebugEnabled()) {
-                log().debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-            }
+            LOG.debug("Sent event: {}", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
         } catch (Throwable t) {
-            log().warn("run: unexpected throwable exception caught during send to middleware", t);
+            LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
         }
 
     }
@@ -71,17 +73,13 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
-        log().debug("request timed out: " + address);
+        LOG.debug("request timed out: {}", address);
     }
 
     /** {@inheritDoc} */
     @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
-        log().debug("an error occurred pinging " + address, t);
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
+        LOG.debug("an error occurred pinging {}", address, t);
     }
 
 }

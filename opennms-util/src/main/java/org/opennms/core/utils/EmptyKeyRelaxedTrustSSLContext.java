@@ -15,7 +15,8 @@ import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -49,6 +50,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a mailto:seth@opennms.org>Seth Leger</a>
  */
 public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EmptyKeyRelaxedTrustSSLContext.class);
+	
     public static final String ALGORITHM = "EmptyKeyRelaxedTrust";
 
     private final SSLContext m_delegate;
@@ -82,10 +86,10 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
             customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
             // Should never happen
-            ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
+        	LOG.error("Could not find SSL algorithm in JVM", e);
         } catch (KeyManagementException e) {
             // Should never happen
-            ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
+        	LOG.error("Could not find SSL algorithm in JVM", e);
         }
         m_delegate = customContext;
     }

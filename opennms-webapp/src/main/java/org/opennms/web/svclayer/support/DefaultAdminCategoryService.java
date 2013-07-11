@@ -357,6 +357,11 @@ public class DefaultAdminCategoryService implements
         }
         
         OnmsNode node = findNode(nodeIdString);
+        if (node == null) {
+            throw new IllegalArgumentException("No 'node' with id '"
+                                               + nodeIdString
+                                               + "' could be found");
+        }
        
         if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
@@ -374,10 +379,10 @@ public class DefaultAdminCategoryService implements
                                                        + "' is not an integer");
                 }
                 OnmsCategory category = m_categoryDao.get(id);
-                if (node == null) {
+                if (category == null) {
                     throw new IllegalArgumentException("Category with "
                                                        + "id of " + id
-                                                       + "could not be found");
+                                                       + " could not be found");
                 }
                 if (node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("Category with "
@@ -406,10 +411,10 @@ public class DefaultAdminCategoryService implements
                                                        + "' is not an integer");
                 }
                 OnmsCategory category = m_categoryDao.get(id);
-                if (node == null) {
+                if (category == null) {
                     throw new IllegalArgumentException("Category with "
                                                        + "id of " + id
-                                                       + "could not be found");
+                                                       + " could not be found");
                 }
                 if (!node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("Category with "

@@ -31,7 +31,8 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public final class SystemGroup extends AggregateTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemGroup.class);
 
     //
     // Lookup strings for specific table entries
@@ -267,17 +269,13 @@ public final class SystemGroup extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
+        LOG.warn("Error retrieving systemGroup from {}. {}", msg, m_address);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        log().info("Error retrieving systemGroup from "+m_address+". "+msg);
-    }
-
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        LOG.info("Error retrieving systemGroup from {}. {}", msg, m_address);
     }
 
     /**

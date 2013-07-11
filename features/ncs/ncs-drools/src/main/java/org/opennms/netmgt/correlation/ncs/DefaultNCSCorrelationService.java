@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.opennms.core.utils.LogUtils;
 
 import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
 import org.opennms.netmgt.dao.NodeDao;
@@ -45,8 +44,12 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Transactional
 public class DefaultNCSCorrelationService implements NCSCorrelationService {
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultNCSCorrelationService.class);
 	
 	@Autowired
 	NCSComponentRepository m_componentRepo;
@@ -149,9 +152,9 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
         assert e.getNodeid() != null;
         assert e.getNodeid() != 0;
         
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s'",e.getNodeid().intValue(), e.getDbid());
+        LOG.trace("Node Id '{}' in the Event '{}'",e.getNodeid().intValue(), e.getDbid());
         List<NCSComponent> components = m_componentRepo.findComponentsByNodeId(e.getNodeid().intValue());
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - Total NCS component identified '%d'",
+        LOG.trace("Node Id '{}' in the Event '{}' - Total NCS component identified '{}'",
         		e.getNodeid().intValue(), 
         		e.getDbid(),
         		components.size());
@@ -160,7 +163,7 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
         for(NCSComponent component : components)
         {
             if (matches(component, e, index, Name)) {
-            	LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - NCS component is added '%s'",
+            	LOG.trace("Node Id '{}' in the Event '{}' - NCS component is added '{}'",
             			e.getNodeid().intValue(), 
                 		e.getDbid(),
             			component.getId());
@@ -168,7 +171,7 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
             }
         }
 
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - Total component impacted '%s'",
+        LOG.trace("Node Id '{}' in the Event '{}' - Total component impacted '{}'",
     			e.getNodeid().intValue(), 
         		e.getDbid(),
         		matching.size());
@@ -190,18 +193,18 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
     	List<Parm> parms = event.getParmCollection();
     	Parm parm = parms.get(index - 1); // get the second index
         
-        LogUtils.tracef(this,"%s parameter name in event db %s " + event.getDbid(), parm.getParmName()); 
+        LOG.trace("{} parameter name in event db {}", parm.getParmName(), event.getDbid());
         String attrVal = component.getAttributes().get(Name);
         String parmName = parm.getParmName();
         
         if (parmName == null ) {
-        	LogUtils.tracef(this,"Event parameter is null. No matching NCS component found for event %s " + event.getDbid());
+        	LOG.trace("Event parameter is null. No matching NCS component found for event {}", event.getDbid());
         	return false;
         } else if (attrVal == null) {
-        	LogUtils.tracef(this,"%s No matching NCS component found for parameter name %s " + event.getDbid(), parmName);
+        	LOG.trace("{} No matching NCS component found for parameter name {}", event.getDbid(), parmName);
         	return false;
         } else if (attrVal.equals(parmName)) {
-        	LogUtils.tracef(this,"%s Matching NCS component found for parameter name %s " + event.getDbid(), parm.getParmName());
+        	LOG.trace("{} Matching NCS component found for parameter name {}", event.getDbid(), parm.getParmName());
         	return true;
         }
        

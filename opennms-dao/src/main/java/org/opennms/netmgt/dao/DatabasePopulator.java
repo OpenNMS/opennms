@@ -37,7 +37,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -50,8 +49,11 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -82,6 +84,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
+    private static final Logger LOG = LoggerFactory.getLogger(DatabasePopulator.class);
+
     private DistPollerDao m_distPollerDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
@@ -113,11 +117,10 @@ public class DatabasePopulator {
 
     public void populateDatabase() {
         if (POPULATE_DATABASE_IN_SEPARATE_TRANSACTION) {
-            m_transTemplate.execute(new TransactionCallback<Object>() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(final TransactionStatus status) {
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
                     doPopulateDatabase();
-                    return null;
                 }
             });
         } else {
@@ -126,6 +129,8 @@ public class DatabasePopulator {
     }
 
     private void doPopulateDatabase() {
+        LOG.debug("Populating Database");
+
         final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
         
         final OnmsCategory ac = getCategory("DEV_AC");

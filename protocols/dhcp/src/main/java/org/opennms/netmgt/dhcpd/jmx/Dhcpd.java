@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.dhcpd.jmx;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>Dhcpd class.</p>
@@ -37,6 +39,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class Dhcpd implements DhcpdMBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Dhcpd.class);
+
     /**
      * <p>init</p>
      */
@@ -93,7 +98,7 @@ public class Dhcpd implements DhcpdMBean {
     public String getStatusText() {
         int status = getStatus();
         String statusText = org.opennms.core.fiber.Fiber.STATUS_NAMES[status];
-        ThreadCategory.getInstance(getClass()).debug("getStatusText: status = "+status+", statusText = "+statusText);
+        LOG.debug("getStatusText: status = {}, statusText = {}", status, statusText);
         return statusText;
     }
 }

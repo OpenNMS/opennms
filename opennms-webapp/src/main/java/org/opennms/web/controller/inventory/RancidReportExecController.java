@@ -38,7 +38,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.report.configuration.svclayer.ConfigurationReportCriteria;
 import org.opennms.report.configuration.svclayer.ConfigurationReportService;
 import org.opennms.report.inventory.svclayer.InventoryReportCriteria;
@@ -56,6 +57,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @since 1.8.1
  */
 public class RancidReportExecController extends SimpleFormController {
+    private static final Logger LOG = LoggerFactory.getLogger(RancidReportExecController.class);
     
 //    InventoryService m_inventoryService;
     ConfigurationReportService m_configurationReportService;
@@ -103,12 +105,12 @@ public class RancidReportExecController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("RancidReportExecController ModelAndView onSubmit");
+        LOG.debug("RancidReportExecController ModelAndView onSubmit");
         
         RancidReportExecCommClass bean = (RancidReportExecCommClass) command;
         
-        log().debug("RancidReportExecController ModelAndView type" + bean.getReporttype());
-        log().debug("RancidReportExecController ModelAndView type" + bean.getFieldhas());
+        LOG.debug("RancidReportExecController ModelAndView type {}", bean.getReporttype());
+        LOG.debug("RancidReportExecController ModelAndView type {}", bean.getFieldhas());
         
         String user = request.getRemoteUser();
         Date reportRequestDate = new Date();
@@ -117,21 +119,21 @@ public class RancidReportExecController extends SimpleFormController {
         ModelAndView mav = new ModelAndView(getSuccessView());
 
         if (bean.getReporttype().compareTo("rancidlist") == 0){
-            log().debug("RancidReportExecController rancidlist report ");
+            LOG.debug("RancidReportExecController rancidlist report");
             ConfigurationReportCriteria criteria = new ConfigurationReportCriteria(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
 //            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
             boolean done = m_configurationReportService.runReport(criteria);
             mav.addObject("type", "Rancid List");
             if (!done){
-                log().debug("RancidReportExecController error ");
+                LOG.debug("RancidReportExecController error");
             }
         } else if (bean.getReporttype().compareTo("inventory") == 0){
-            log().debug("RancidReportExecController inventory report ");
+            LOG.debug("RancidReportExecController inventory report");
             InventoryReportCriteria criteria = new InventoryReportCriteria(bean.getDate(), bean.getFieldhas(), bean.getReportfiletype(),bean.getReportemail(), user, reportRequestDate);
             boolean done = m_inventoryReportService.runReport(criteria);
             mav.addObject("type", "Inventory Report");
             if (!done){
-                log().debug("RancidReportExecController error ");
+                LOG.debug("RancidReportExecController error");
             }
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy/M/d");
@@ -158,11 +160,7 @@ public class RancidReportExecController extends SimpleFormController {
     /** {@inheritDoc} */
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        log().debug("RancidReportExecController initBinder");
+        LOG.debug("RancidReportExecController initBinder");
     }
     
-   
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 }

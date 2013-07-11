@@ -43,11 +43,15 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 public class DefaultLinkAdapterConfigurationDao extends AbstractJaxbConfigDao<LinkAdapterConfiguration, LinkAdapterConfiguration> implements LinkAdapterConfigurationDao {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultLinkAdapterConfigurationDao.class);    
+
     /**
      * <p>Constructor for DefaultLinkAdapterConfigurationDao.</p>
      */
@@ -130,15 +134,12 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractJaxbConfigDao<Li
     protected LinkAdapterConfiguration loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
 
-        if (log().isDebugEnabled()) {
-            log().debug("Loading " + getDescription() + " configuration from " + resource);
-        }
+        LOG.debug("Loading {} configuration from {}", getDescription(), resource);
 
         try {
             LinkAdapterConfiguration config = JaxbUtils.unmarshal(LinkAdapterConfiguration.class, resource);
             long endTime = System.currentTimeMillis();
-            log().info(createLoadedLogMessage(config, (endTime - startTime)));
-            log().info(config.toString());
+            LOG.info(config.toString());
             return config;
         } catch (Throwable e) {
             throw new MarshallingResourceFailureException("Unable to unmarshal the link adapter configuration.", e);

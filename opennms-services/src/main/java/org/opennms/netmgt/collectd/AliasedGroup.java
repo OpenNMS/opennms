@@ -30,13 +30,14 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>AliasedGroup class.</p>
@@ -45,6 +46,9 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @version $Id: $
  */
 public class AliasedGroup extends AttributeGroup {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AliasedGroup.class);
 	
 	AttributeGroup m_group;
 
@@ -130,10 +134,6 @@ public class AliasedGroup extends AttributeGroup {
 		return m_group.toString();
 	}
 	
-	ThreadCategory log(){
-		return ThreadCategory.getInstance(getClass());
-	}
-
 	/** {@inheritDoc} */
         @Override
 	public void visit(CollectionSetVisitor visitor) {
@@ -141,7 +141,7 @@ public class AliasedGroup extends AttributeGroup {
 		
 		for(CollectionAttribute attr : getAttributes()) {
 		    AliasedAttribute aliased = new AliasedAttribute(getResource(), (SnmpAttribute)attr);
-		    log().debug("visiting at aliased  = " + aliased);
+		    LOG.debug("visiting at aliased  = {}", aliased);
 		    aliased.visit(visitor);
 		}
 		

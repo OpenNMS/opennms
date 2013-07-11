@@ -45,7 +45,8 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -61,6 +62,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class SmtpPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(SmtpPlugin.class);
 
     /**
      * The regular expression test used to determine if the reply is a multi
@@ -126,7 +128,6 @@ public final class SmtpPlugin extends AbstractPlugin {
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
         // get a log to send errors
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -135,7 +136,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("SmtpPlugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("SmtpPlugin: connected to host: {} on port: {}", port, host);
 
                 // Allocate a line reader
                 //
@@ -151,7 +152,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                 } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                 if (result == null || result.length() == 0) {
-                    log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
+                    LOG.info("Received truncated response from SMTP server {}", InetAddressUtils.str(host));
                     continue;
                 }
 
@@ -188,7 +189,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                     } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                     if (result == null || result.length() == 0) {
-                        log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
+                        LOG.info("Received truncated response from SMTP server {}", InetAddressUtils.str(host));
                         continue;
                     }
 
@@ -224,7 +225,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                         } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                         if (result == null || result.length() == 0) {
-                            log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
+                            LOG.info("Received truncated response from SMTP server {}", InetAddressUtils.str(host));
                             continue;
                         }
 
@@ -236,27 +237,27 @@ public final class SmtpPlugin extends AbstractPlugin {
                     }
                 }
             } catch (NumberFormatException e) {
-                log.info("SmtpPlugin: received invalid result code from server " + InetAddressUtils.str(host), e);
+                LOG.info("SmtpPlugin: received invalid result code from server {}", InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("SmtpPlugin: connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("SmtpPlugin: connection refused to {}: {}", port, InetAddressUtils.str(host));
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                log.info("SmtpPlugin: Unable to test host " + InetAddressUtils.str(host) + ", no route available", e);
+                LOG.info("SmtpPlugin: Unable to test host {}, no route available", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
-                log.debug("SmtpPlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("SmtpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("SmtpPlugin: Error communicating with host " + InetAddressUtils.str(host), e);
+                LOG.info("SmtpPlugin: Error communicating with host {}", InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (Throwable t) {
-                log.warn("SmtpPlugin: Undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
+                LOG.warn("SmtpPlugin: Undeclared throwable exception caught contacting host {}", InetAddressUtils.str(host), t);
                 isAServer = false;
             } finally {
                 try {

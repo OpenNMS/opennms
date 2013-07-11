@@ -38,7 +38,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,7 +103,7 @@ public class JdbcQueryDetectorTest implements InitializingBean {
 
     @After
     public void tearDown(){
-        MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
+        MockLogAppender.assertNoFatalOrGreater();
     }
 
     @Test(timeout=90000)

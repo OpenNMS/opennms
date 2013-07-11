@@ -34,7 +34,8 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -52,6 +53,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public final class CapsdConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(CapsdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -89,9 +91,7 @@ public final class CapsdConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
 
-        if (log().isDebugEnabled()) {
-            log().debug("init: config file path: " + cfgFile.getPath());
-        }
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager();
         capsdConfig.update();
@@ -142,9 +142,4 @@ public final class CapsdConfigFactory {
     public static synchronized void setInstance(CapsdConfig instance) {
         s_singleton = instance;
     }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(CapsdConfigFactory.class);
-    }
-
 }

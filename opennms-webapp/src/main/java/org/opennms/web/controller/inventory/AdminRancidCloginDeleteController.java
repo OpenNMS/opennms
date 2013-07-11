@@ -34,9 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,6 +52,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class AdminRancidCloginDeleteController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCloginDeleteController.class);
+
     
     InventoryService m_inventoryService;
     
@@ -59,13 +63,13 @@ public class AdminRancidCloginDeleteController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidCloginDeleteController ModelAndView onSubmit");
+        LOG.debug("AdminRancidCloginDeleteController ModelAndView onSubmit");
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
             boolean done = m_inventoryService.deleteClogin(bean.getDeviceName());
             if (!done){
-                log().debug("AdminRancidCloginController error on submitting cLogin changes");
+                LOG.debug("AdminRancidCloginController error on submitting cLogin changes");
             }            
         }
         String redirectURL = request.getHeader("Referer");
@@ -75,7 +79,7 @@ public class AdminRancidCloginDeleteController extends SimpleFormController {
     /** {@inheritDoc} */
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        log().debug("AdminRancidCloginController initBinder");
+        LOG.debug("AdminRancidCloginController initBinder");
     }
     
     /**
@@ -96,8 +100,4 @@ public class AdminRancidCloginDeleteController extends SimpleFormController {
         m_inventoryService = inventoryService;
     }
 
-    
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 }

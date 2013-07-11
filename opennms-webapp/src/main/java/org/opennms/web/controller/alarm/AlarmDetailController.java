@@ -65,6 +65,8 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author Ronny Trommer <ronny@opennms.org>
  */
 public class AlarmDetailController extends MultiActionController {
+	
+
 
 	/** Constant <code>DEFAULT_MULTIPLE=0</code> */
 	public static final int DEFAULT_MULTIPLE = 0;

@@ -43,8 +43,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +57,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Main {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     
     String[] m_args;
     ClassPathXmlApplicationContext m_context;
@@ -83,25 +86,12 @@ public class Main {
         
         final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
         if (pingerClass == null) {
-        	LogUtils.infof(this, "org.opennms.netmgt.icmp.pingerClass not set; using JnaPinger by default");
+        	LOG.info("org.opennms.netmgt.icmp.pingerClass not set; using JnaPinger by default");
         	System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
     }
 
     private void initializeLogging() throws Exception {
-        String logFile;
-        logFile = System.getProperty("poller.logfile", m_pollerHome + File.separator + "opennms-remote-poller.log");
-        File logDirectory = new File(logFile).getParentFile();
-        if (!logDirectory.exists()) {
-            if (!logDirectory.mkdirs()) {
-                throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
-            }
-        }
-        if (Boolean.getBoolean("debug")) {
-        	LogUtils.logToConsole();
-        } else {
-        	LogUtils.logToFile(logFile);
-        }
     }
 
     private void getAuthenticationInfo() {
@@ -146,7 +136,7 @@ public class Main {
             if (!m_gui) {
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        LogUtils.errorf(this, "No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        LOG.error("No location name provided.  You must pass a location name the first time you start the remote poller!");
                         System.exit(27);
                     } else {
                         m_frontEnd.register(m_locationName);
@@ -155,7 +145,7 @@ public class Main {
             }
         } catch(Throwable e) {
             // a fatal exception occurred
-            LogUtils.errorf(this, e, "Exception occurred during registration!");
+            LOG.error("Exception occurred during registration!", e);
             System.exit(27);
         }
         
@@ -182,7 +172,6 @@ public class Main {
         }
 
         if (m_cl.hasOption("d")) {
-        	LogUtils.enableDebugging();
         }
         
         if (m_cl.hasOption("l")) {
@@ -238,14 +227,14 @@ public class Main {
             homeUrl = homeUrl.substring(0, homeUrl.length()-1);
         }
 
-        LogUtils.infof(this, "user.home.url = %s", homeUrl);
+        LOG.info("user.home.url = {}", homeUrl);
         System.setProperty("user.home.url", homeUrl);
 
         String serverURI = m_uri.toString().replaceAll("/*$", "");
-        LogUtils.infof(this, "opennms.poller.server.url = %s", serverURI);
+        LOG.info("opennms.poller.server.url = {}", serverURI);
         System.setProperty("opennms.poller.server.url", serverURI);
 
-        LogUtils.infof(this, "location name = %s", m_locationName);
+        LOG.info("location name = {}", m_locationName);
 
         List<String> configs = new ArrayList<String>();
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
@@ -261,23 +250,23 @@ public class Main {
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
             
             private boolean shouldExit(PropertyChangeEvent e) {
-            	LogUtils.infof(this, "shouldExit: received property change event: %s;oldvalue:%s;newvalue:%s", e.getPropertyName(), e.getOldValue(), e.getNewValue());
+				LOG.info("shouldExit: received property change event: {};oldvalue:{};newvalue:{}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
                 String propName = e.getPropertyName();
                 Object newValue = e.getNewValue();
 
                 // if exitNecessary becomes true.. then return true
                 if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
-                	LogUtils.infof(this, "shouldExit: Exiting because exitNecessary is TRUE");
+                	LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
                     return true;
                 }
                 
                 // if started becomes false the we should exit
                 if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
-                	LogUtils.infof(this, "shouldExit: Exiting because started is now false");
+                	LOG.info("shouldExit: Exiting because started is now false");
                     return true;
                 }
                 
-            	LogUtils.infof(this, "shouldExit: not exiting");
+            	LOG.info("shouldExit: not exiting");
                 return false;
                 
             }

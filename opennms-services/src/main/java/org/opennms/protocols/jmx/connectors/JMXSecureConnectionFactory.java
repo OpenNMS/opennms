@@ -30,7 +30,8 @@ package org.opennms.protocols.jmx.connectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -52,7 +53,8 @@ import java.util.Map;
  * @version $Id: $
  */
 public class JMXSecureConnectionFactory {
-    static ThreadCategory log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureConnectionFactory.class);
 
     /**
      * <p>getMBeanServerConnection</p>
@@ -85,9 +87,9 @@ public class JMXSecureConnectionFactory {
                 url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
-            log.error("JMXServiceURL exception: " + url + ". Error message: " + e.getMessage());
+            LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());
         }
-        log.debug("Set JMXServiceURL: " + url);
+        LOG.debug("Set JMXServiceURL: {}", url);
 
         // configure and create Simple Authentication and Security Layer
         if (factory.equals("SASL")) {
@@ -113,7 +115,7 @@ public class JMXSecureConnectionFactory {
                         SSLSocketFactory ssf = ctx.getSocketFactory();
                         env.put("jmx.remote.tls.socket.factory", ssf);
                     } catch (Throwable e) {
-                        log.error("Something bad occured: " + e.getMessage());
+                    	LOG.error("Something bad occured: {}", e.getMessage());
                         throw e;
                     }
 
@@ -138,16 +140,16 @@ public class JMXSecureConnectionFactory {
                     try {
                         connector.connect(env);
                     } catch (SSLException e) {
-                        log.warn("SSLException occured. Error message: " + e.getMessage());
+                        LOG.warn("SSLException occured. Error message: {}", e.getMessage());
                     } catch (SecurityException x) {
-                        log.error("Security exception: bad credentials. Error message: " + x.getMessage());
+                        LOG.error("Security exception: bad credentials. Error message: {}", x.getMessage());
                     }
                     MBeanServerConnection connection = connector.getMBeanServerConnection();
                     connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                     break;
                 }
             } catch (Throwable e) {
-                log.error("Unable to get MBeanServerConnection: " + url + ". Error message: " + e.getMessage());
+                LOG.error("Unable to get MBeanServerConnection: {}. Error message: {}", url, e.getMessage());
             }
         }
         return connectionWrapper;

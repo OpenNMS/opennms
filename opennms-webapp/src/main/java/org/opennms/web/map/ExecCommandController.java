@@ -40,8 +40,11 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -57,13 +60,14 @@ import org.springframework.web.servlet.mvc.Controller;
  * @since 1.8.1
  */
 public class ExecCommandController implements Controller {
-	ThreadCategory log;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ExecCommandController.class);
+
 
 	/** {@inheritDoc} */
         @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-   		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 
         int timeOut = 1;
         int numberOfRequest = 10;
@@ -125,7 +129,7 @@ public class ExecCommandController implements Controller {
 		    throw new IllegalStateException("Command "+ command+" not supported.");   
 		}
         
-	    log.info("Executing "+commandToExec);
+	    LOG.info("Executing {}", commandToExec);
         response.setBufferSize(0);
         response.setContentType("text/html");
         response.setHeader("pragma","no-Cache");
@@ -165,18 +169,18 @@ public class ExecCommandController implements Controller {
 			            
 			        }
 			        catch(IOException io){
-			        	log.warn(io.getMessage());
+			        	LOG.warn(io.getMessage());
 			        }
 			    }
 			}, this.getClass().getSimpleName()).start();
 			try{
 				p.waitFor();
 			}catch(Throwable e){
-				log.warn(e.getMessage());
+				LOG.warn(e.getMessage());
 			}
 
 		} catch (Throwable e) {
-			log.error("An error occourred while executing command.",e);
+			LOG.error("An error occourred while executing command.",e);
 			os.write("An error occourred.");
 		}finally{
 			os.write("</font>" +

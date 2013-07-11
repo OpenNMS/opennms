@@ -33,10 +33,11 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -47,6 +48,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener, PropertyChangeListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Poller.class);
 	
 	private PollerFrontEnd m_pollerFrontEnd;
 	private Scheduler m_scheduler;
@@ -96,7 +99,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         if (m_pollerFrontEnd.isStarted()) {
             schedulePolls();
         } else {
-            log().debug("Poller not yet registered");
+            LOG.debug("Poller not yet registered");
         }
 
 	}
@@ -113,13 +116,13 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	
 	private void schedulePolls() throws Exception {
         
-        log().debug("Enter schedulePolls");
+        LOG.debug("Enter schedulePolls");
 		
 		Collection<PolledService> polledServices = m_pollerFrontEnd.getPolledServices();
 
 		if (polledServices == null || polledServices.size() == 0) {
-			log().warn("No polling scheduled.");
-            log().debug("Exit schedulePolls");
+			LOG.warn("No polling scheduled.");
+            LOG.debug("Exit schedulePolls");
 			return;
 		}
 
@@ -132,9 +135,9 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
             // remove any currently scheduled job
             if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
-                log().debug(String.format("Job for %s already scheduled.  Rescheduling", polledService));
+                LOG.debug(String.format("Job for {} already scheduled.  Rescheduling", polledService));
             } else {
-                log().debug("Scheduling job for "+polledService);
+                LOG.debug("Scheduling job for {}", polledService);
             }
 			
 			Date initialPollTime = new Date(startTime);
@@ -154,12 +157,8 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 			startTime += scheduleSpacing;
 		}
 		
-        log().debug("Exit schedulePolls");
+        LOG.debug("Exit schedulePolls");
 		
-	}
-
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 	private void assertNotNull(Object propertyValue, String propertyName) {
@@ -169,13 +168,13 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	/** {@inheritDoc} */
         @Override
 	public void pollCompleted(String pollId, PollStatus pollStatus) {
-		log().info("Complete Poll for "+pollId+" status = "+pollStatus);
+		LOG.info("Complete Poll for {} status = {}", pollId, pollStatus);
 	}
 
 	/** {@inheritDoc} */
         @Override
 	public void pollStarted(String pollId) {
-		log().info("Begin Poll for "+pollId);
+		LOG.info("Begin Poll for {}", pollId);
 		
 	}
 
@@ -186,7 +185,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
             unschedulePolls();
             schedulePolls();
         } catch (Throwable ex) {
-            log().fatal("Unable to schedule polls!", ex);
+            LOG.error("Unable to schedule polls!", ex);
             throw new RuntimeException("Unable to schedule polls!");
         }
     }
@@ -211,7 +210,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
                 }
             }
         } catch (Throwable ex) {
-            log().fatal("Unable to schedule polls!", ex);
+            LOG.error("Unable to schedule polls!", ex);
             throw new RuntimeException("Unable to schedule polls!");
         }
     }

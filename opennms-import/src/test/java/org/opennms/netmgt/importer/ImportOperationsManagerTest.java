@@ -72,6 +72,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -186,9 +187,9 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
         //m_distPollerDao.clear();
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = m_nodeDao.findByForeignId("imported:", "7");
                 assertNotNull(node);
                 assertEquals("node7", node.getLabel());
@@ -201,7 +202,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
                 System.err.println("###################3 UPDATE ####################");
                 m_nodeDao.update(node);
-                return null;
             }
         });
 
@@ -261,13 +261,12 @@ public class ImportOperationsManagerTest implements InitializingBean {
         opsMgr.setScanThreads(scanThreads);
         opsMgr.setForeignSource(specFile.getForeignSource());
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 AbstractImportVisitor accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
-                return null;
             }
 
         });

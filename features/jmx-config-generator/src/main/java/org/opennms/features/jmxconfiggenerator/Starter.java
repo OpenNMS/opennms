@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXServiceURL;
+
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -55,53 +58,57 @@ import org.slf4j.LoggerFactory;
  * @author Markus Neumann <markus@opennms.com>
  */
 public class Starter {
-    private static Logger logger = LoggerFactory.getLogger(Starter.class);
 
+    private static Logger logger = LoggerFactory.getLogger(Starter.class);
+    
     @Option(name = "-jmx", usage = "Generate jmx-datacollection.xml by reading JMX over RMI")
     private boolean jmx = false;
-
-    @Option(name = "-service", usage = "Your service-name. Like cassandra, jboss, tomcat")
+    
+    @Option(name = "-service", usage = "Your optional service-name. Like cassandra, jboss, tomcat")
     private String serviceName = "anyservice";
-
+    
     @Option(name = "-host", usage = "Hostname or IP-Adress of JMX-RMI host")
     private String hostName;
-
+    
     @Option(name = "-username", usage = "Username for JMX-RMI Authentication")
     private String username;
-
+    
     @Option(name = "-password", usage = "Password for JMX-RMI Authentication")
     private String password;
-
+    
     @Option(name = "-port", usage = "Port of JMX-RMI service")
     private String port;
-
+    
     @Option(name = "-jmxmp", usage = "Use JMXMP and not JMX-RMI")
     private boolean jmxmp = false;
-
-//    @Option(name = "-ssl", usage = "Use SSL for the connection")
+    
+    // @Option(name = "-ssl", usage = "Use SSL for the connection")
     private boolean ssl = false;
-
+    
     @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
-
+    
     @Option(name = "-runWritableMBeans", usage = "include MBeans that are read- and writable.")
     private boolean runWritableMBeans = false;
-
+    
     @Option(name = "-graph", usage = "Generate snmp-graph.properties linke file to out, by reading jmx-datacollection.xml like file from input")
     private boolean graph = false;
-
+    
     @Option(name = "-input", usage = "Jmx-datacolletion.xml like file to parse")
     private String inputFile;
-
+    
     @Option(name = "-out", usage = "File to write generated snmp-graph.properties linke content")
     private String outFile;
-
+    
     @Option(name = "-template", usage = "Template file for SnmpGraphs")
     private String templateFile;
-
+    
     @Option(name = "-dictionary", usage = "Dictionary properties file for replacing attribute names and parts of this names")
     private String dictionaryFile;
-
+    
+    @Option(name = "-url", usage = "JMX URL Usage: <hostname>:<port> OR service:jmx:<protocol>:<sap> OR service:jmx:remoting-jmx://<hostname>:<port>")
+    private String url;
+	
     private Map<String, String> dictionary = new HashMap<String, String>();
 
     public static void main(String[] args) throws IOException {
@@ -118,48 +125,75 @@ public class Starter {
             parser.parseArgument(args);
             if (jmx && graph) {
                 throw new CmdLineException(parser, "jmx and graph is set. Just use one at a time.");
-            }
-            if (!jmx && !graph) {
+            } else if (!jmx && !graph) {
                 throw new CmdLineException(parser, "set jmx or graph.");
             }
-            if (jmx && hostName != null && port != null && outFile != null) {
-                dictionary = loadInternalDictionary();
-                if (dictionaryFile != null) {
-                    dictionary = loadExternalDictionary(dictionaryFile);
-                }
+
+            dictionary = loadInternalDictionary();
+            if (dictionaryFile != null) {
+                dictionary = loadExternalDictionary(dictionaryFile);
+            }
+
+            if (jmx) {
+                JMXConnector jmxConnector = null;
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, ssl, jmxmp);
+                
+                JMXServiceURL jmxServiceURL = null;
+                if (hostName != null && port != null && outFile != null) {
+                    jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(jmxmp, hostName, port);
+                } else if (url != null && outFile != null) {
+                    jmxServiceURL = new JMXServiceURL(url);
+                } else {
+                    throw new CmdLineException(parser, "no valid call found.");
+                }
+
+                jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
+                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(jmxConnector);
                 JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
                 jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
-                return;
-            }
-            if (graph && inputFile != null && outFile != null) {
-                JmxConfigReader jmxToSnmpGraphConfigGen = new JmxConfigReader();
-                Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig(inputFile);
 
-                GraphConfigGenerator graphConfigGenerator = new GraphConfigGenerator();
-
-                String snmpGraphConfig;
-                if (templateFile != null) {
-                    snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports, templateFile);
-                } else {
-                    snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports);
+                if (jmxConnector != null) {
+                    logger.debug("closing connection");
+                    jmxConnector.close();
+                    logger.debug("connection closed");
                 }
 
-                System.out.println(snmpGraphConfig);
-                FileUtils.writeStringToFile(new File(outFile), snmpGraphConfig, "UTF-8");
                 return;
+
+            } else if (graph) {
+                if (inputFile != null && outFile != null) {
+
+                    JmxConfigReader jmxToSnmpGraphConfigGen = new JmxConfigReader();
+                    Collection<Report> reports = jmxToSnmpGraphConfigGen.generateReportsByJmxDatacollectionConfig(inputFile);
+
+                    GraphConfigGenerator graphConfigGenerator = new GraphConfigGenerator();
+
+                    String snmpGraphConfig;
+                    if (templateFile != null) {
+                        snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports, templateFile);
+                    } else {
+                        snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports);
+                    }
+
+                    System.out.println(snmpGraphConfig);
+                    FileUtils.writeStringToFile(new File(outFile), snmpGraphConfig, "UTF-8");
+                    return;
+                } else {
+                    throw new CmdLineException(parser, "no valid call found.");
+                }
+            } else {
+                throw new CmdLineException(parser, "no valid call found.");
             }
-            throw new CmdLineException(parser, "no valid call found.");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            logger.error("An exception occured", e);
             System.err.println("JmxConfigGenerator [options...] arguments...");
             parser.printUsage(System.err);
             System.err.println();
             // System.err.println("  Example: java -jar JmxConfigGenerator" +
             // parser.printExample(ALL));
             System.err.println("Examples:");
-            System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-runWritableMBeans] [-dictionary dictionary.properties]");
+            System.err
+                    .println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-runWritableMBeans] [-dictionary dictionary.properties]");
             System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
     }
@@ -201,5 +235,5 @@ public class Starter {
         }
         logger.info("Dictionary entries loaded: '{}'", externalDictionary.size());
         return externalDictionary;
-    }
+	}
 }

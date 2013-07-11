@@ -51,7 +51,8 @@ import liquibase.logging.LogFactory;
 import liquibase.logging.LogLevel;
 import liquibase.resource.ResourceAccessor;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
@@ -62,6 +63,9 @@ import org.springframework.core.io.ResourceLoader;
  * @version $Id: $
  */
 public class Migrator {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
+	
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     public static final float POSTGRES_MIN_VERSION = 7.4f;
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.9f;
@@ -199,10 +203,10 @@ public class Migrator {
      */
     public void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
-            LogUtils.infof(this, "skipping database version validation");
+        	LOG.info("skipping database version validation");
             return;
         }
-        LogUtils.infof(this, "validating database version");
+        LOG.info("validating database version");
 
         final Float dbv = getDatabaseVersion();
         if (dbv == null) {
@@ -245,7 +249,7 @@ public class Migrator {
      * @throws org.opennms.core.schema.MigrationException if any.
      */
     public void createLangPlPgsql() throws MigrationException {
-        LogUtils.infof(this, "adding PL/PgSQL support to the database, if necessary");
+    	LOG.info("adding PL/PgSQL support to the database, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -254,9 +258,9 @@ public class Migrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
             if (rs.next()) {
-                LogUtils.infof(this, "PL/PgSQL call handler exists");
+            	LOG.info("PL/PgSQL call handler exists");
             } else {
-                LogUtils.infof(this, "adding PL/PgSQL call handler");
+            	LOG.info("adding PL/PgSQL call handler");
                 st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getExtension(false) + "' LANGUAGE 'c'");
             }
             rs.close();
@@ -268,9 +272,9 @@ public class Migrator {
                     + "pg_proc.oid = pg_language.lanplcallfoid AND "
                     + "pg_language.lanname = 'plpgsql'");
             if (rs.next()) {
-                LogUtils.infof(this, "PL/PgSQL language exists");
+            	LOG.info("PL/PgSQL language exists");
             } else {
-                LogUtils.infof(this, "adding PL/PgSQL language");
+            	LOG.info("adding PL/PgSQL language");
                 st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' "
                         + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
             }
@@ -323,7 +327,7 @@ public class Migrator {
             return;
         }
 
-        LogUtils.infof(this, "creating OpenNMS user, if necessary");
+        LOG.info("creating OpenNMS user, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -412,7 +416,7 @@ public class Migrator {
         if (!m_createDatabase || databaseExists(migration)) {
             return;
         }
-        LogUtils.infof(this, "creating OpenNMS database, if necessary");
+        LOG.info("creating OpenNMS database, if necessary");
         if (!databaseUserExists(migration)) {
             throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", migration.getDatabaseUser()));
         }
@@ -496,7 +500,7 @@ public class Migrator {
                 urls.add(changeLog.getParentFile().toURI().toURL());
             }
         } catch (final MalformedURLException e) {
-            LogUtils.infof(this, "unable to figure out URL for " + migration.getChangeLog(), e);
+		LOG.info("unable to figure out URL for {}", migration.getChangeLog(), e);
         }
         final ClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), this.getClass().getClassLoader());
         return new DefaultResourceLoader(cl);
@@ -507,28 +511,28 @@ public class Migrator {
             try {
                 rs.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, e, "Failed to close result set.");
+            	LOG.warn("Failed to close result set.", e);
             }
         }
         if (st != null) {
             try {
                 st.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, e, "Failed to close statement.");
+            	LOG.warn("Failed to close statement.", e);
             }
         }
         if (dbc != null) {
             try {
                 dbc.close();
             } catch (final DatabaseException e) {
-                LogUtils.warnf(this, e, "Failed to close database connection.");
+            	LOG.warn("Failed to close database connection.", e);
             }
         }
         if (c != null) {
             try {
                 c.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, e, "Failed to close connection.");
+            	LOG.warn("Failed to close connection.", e);
             }
         }
     }

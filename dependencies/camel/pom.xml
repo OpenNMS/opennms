@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>camel-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Camel Dependencies</name>
+  <name>OpenNMS Dependencies Camel</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -31,6 +31,10 @@
       <artifactId>camel-http</artifactId>
       <version>${camelVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
@@ -55,6 +59,10 @@
           <artifactId>jaxb-impl</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

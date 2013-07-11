@@ -40,7 +40,6 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
@@ -59,6 +58,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>DaoWebAlarmRepository class.</p>
  *
@@ -67,6 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.8.1
  */
 public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmRepositoryHibernate.class);
 
     @Autowired
     AlarmDao m_alarmDao;
@@ -359,43 +362,36 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     		//Delete an alarm by Id
     		try{
 				if(m_alarmDao.deleteAlarmById(alarmId)>0){
-					log().warn("An Alarm ["+alarmId+"] is successfully deleted from the DB");
+					LOG.warn("An Alarm [{}] is successfully deleted from the DB", alarmId);
 					
 					//Delete the events by alarmId
 					try{
 						if(m_eventDao.deleteEventByAlarmId(alarmId)>0){
-							log().warn("The event for the alarm ["+alarmId+"] is successfully deleted from the DB");
+							LOG.warn("The event for the alarm [{}] is successfully deleted from the DB", alarmId);
 						} else {
-							log().warn("The event for alarm ["+alarmId+"] does not exist in the DB");
+							LOG.warn("The event for alarm [{}] does not exist in the DB", alarmId);
 						}
 					} catch(Exception ex){
-						ex.printStackTrace();
-						log().error("Unable to delete the event for the alarm ["+alarmId+"] from then DB");
+						LOG.error("Unable to delete the event for the alarm [{}] from then DB", alarmId, ex);
 					}
 					
 					//Delete the acknowledgments by refId
 					try{
 						if(m_ackDao.deleteAcknowledgmentByRefId((int)alarmId)>0){
-							log().warn("The acknowledgment for the alarm ["+alarmId+"] is successfully deleted from the DB");
+							LOG.warn("The acknowledgment for the alarm [{}] is successfully deleted from the DB", alarmId);
 						} else {
-							log().warn("The acknowledgment for the alarm ["+alarmId+"] does not exist in the DB");
+							LOG.warn("The acknowledgment for the alarm [{}] does not exist in the DB", alarmId);
 						}
 					} catch(Exception ex) {
-						ex.printStackTrace();
-						log().error("Unable to delete the acknowledgment for the alarm ["+alarmId+"] from then DB");
+						LOG.error("Unable to delete the acknowledgment for the alarm [{}] from then DB", alarmId, ex);
 					}
 					
 				} else {
-					log().warn("An alarm ["+alarmId+"] does not exist in the DB");
+					LOG.warn("An alarm [{}] does not exist in the DB", alarmId);
 				}
     		} catch(Exception ex){
-    			ex.printStackTrace();
-    			log().error("Unable to delete an alarm ["+alarmId+"] from then DB");
+    			LOG.error("Unable to delete an alarm [{}] from then DB", alarmId, ex);
     		}
     	}
     }
-    
-    private static ThreadCategory log() {
-		return ThreadCategory.getInstance(AlarmRepositoryHibernate.class);
-	}
 }

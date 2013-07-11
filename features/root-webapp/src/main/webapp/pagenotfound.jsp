@@ -1,7 +1,8 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,15 +27,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+--%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	isErrorPage="true"
+%>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Error" />
+  <jsp:param name="headTitle" value="Page Not Found" />
+  <jsp:param name="headTitle" value="Error" />
+  <jsp:param name="breadcrumb" value="Error" />
+</jsp:include>
 
-import org.junit.Test;
+<h1>Page Not Found</h1>
+<p>
+  The page you were looking for does not exist.
+</p>
 
-/**
- */
-public class ThreadCategoryTest {
-	@Test
-	public void smokeTest() {
-		ThreadCategory.getInstance(this.getClass()).info("Test me!");
-	}
-}
+<jsp:include page="/includes/footer.jsp" flush="false" />

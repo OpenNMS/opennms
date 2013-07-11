@@ -36,18 +36,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.BaseConnectionFactory;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 
 public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(TomcatJdbcPoolConnectionFactory.class);
 
 	private org.apache.tomcat.jdbc.pool.DataSource m_dataSource;
 
@@ -137,20 +138,20 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     /** {@inheritDoc} */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     @Override
     public void close() throws SQLException {
     	super.close();
-    	LogUtils.infof(this, "Closing Tomcat DBCP pool.");
+    	LOG.info("Closing Tomcat DBCP pool.");
     	m_dataSource.close();
     }
 
     @Override
 	public void setIdleTimeout(final int idleTimeout) {
-		LogUtils.warnf(this, "Tomcat DBCP doesn't have the concept of a generic idle timeout.  Ignoring.");
+		LOG.warn("Tomcat DBCP doesn't have the concept of a generic idle timeout.  Ignoring.");
 	}
 
     @Override
@@ -160,7 +161,7 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
 
     @Override
 	public void setMaxPool(final int maxPool) {
-		LogUtils.warnf(this, "Tomcat DBCP doesn't have the concept of a maximum pool.  Ignoring.");
+		LOG.warn("Tomcat DBCP doesn't have the concept of a maximum pool.  Ignoring.");
 	}
 
     @Override

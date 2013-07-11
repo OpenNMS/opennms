@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.castor.collector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,13 +37,14 @@ import java.util.Iterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.springframework.core.io.FileSystemResource;
 
 public class CollectdConfigFile {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFile.class);
 	
 	File m_file;
 	
@@ -90,11 +93,7 @@ public class CollectdConfigFile {
 	}
 
 	private RuntimeException runtimeException(String msg, Exception e) {
-		log().error(msg, e);
+		LOG.error(msg, e);
 		return new RuntimeException(msg, e);
-	}
-
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 }

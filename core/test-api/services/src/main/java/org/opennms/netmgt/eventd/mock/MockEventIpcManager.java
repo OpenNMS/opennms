@@ -43,7 +43,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventExpander;
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -58,11 +57,15 @@ import org.opennms.netmgt.model.events.EventWriter;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
 public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -213,7 +216,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     @Override
     public void broadcastNow(final Event event) {
-        LogUtils.debugf(this, "Sending: %s", new EventWrapper(event));
+    	
+    	LOG.debug("Sending: {}", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
         for (final ListenerKeeper k : listeners) {
             k.sendEventIfAppropriate(event);
@@ -274,8 +278,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         expander.setEventConfDao(new EmptyEventConfDao());
         expander.expandEvent(event);
         m_pendingEvents++;
-        LogUtils.debugf(this, "StartEvent processing (%d remaining)", m_pendingEvents);
-        LogUtils.debugf(this, "Received: ", new EventWrapper(event));
+        LOG.debug("StartEvent processing ({} remaining)", m_pendingEvents);
+        LOG.debug("Received: {}", new EventWrapper(event));
         m_anticipator.eventReceived(event);
 
         final Runnable r = new Runnable() {
@@ -288,7 +292,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                 } finally {
                     synchronized(MockEventIpcManager.this) {
                         m_pendingEvents--;
-                        LogUtils.debugf(this, "Finished processing event (%d remaining)", m_pendingEvents);
+                        LOG.debug("Finished processing event ({} remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
                     }
                 }
@@ -323,7 +327,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      */
     public synchronized void finishProcessingEvents() {
         while (m_pendingEvents > 0) {
-            LogUtils.debugf(this, "Waiting for event processing: (%d remaining)", m_pendingEvents);
+        	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {
                 wait();
             } catch (final InterruptedException e) {

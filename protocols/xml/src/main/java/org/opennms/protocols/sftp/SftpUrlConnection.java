@@ -34,7 +34,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-import org.opennms.core.utils.ThreadCategory;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -162,8 +161,5 @@ public class SftpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

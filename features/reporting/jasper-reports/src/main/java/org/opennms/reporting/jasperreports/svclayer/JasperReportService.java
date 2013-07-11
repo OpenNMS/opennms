@@ -49,7 +49,9 @@ import org.opennms.api.reporting.parameter.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -79,6 +81,7 @@ import java.util.*;
  * @version $Id: $
  */
 public class JasperReportService implements ReportService {
+    private static final Logger LOG = LoggerFactory.getLogger(JasperReportService.class);
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
@@ -86,8 +89,6 @@ public class JasperReportService implements ReportService {
 
     private GlobalReportRepository m_globalReportRepository;
 
-    private final ThreadCategory log;
-    
     @Autowired
     AlarmDao m_alarmDao;
     
@@ -104,10 +105,8 @@ public class JasperReportService implements ReportService {
      * </p>
      */
     public JasperReportService() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(JasperReportService.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        // TODO this should wrap calls to this class
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -147,7 +146,7 @@ public class JasperReportService implements ReportService {
             defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport,
                     null);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -169,18 +168,15 @@ public class JasperReportService implements ReportService {
             if (reportParm.isSystemDefined() == false) {
 
                 if (reportParm.isForPrompting() == false) {
-                    log.debug("report parm  " + reportParm.getName()
-                            + " is not for prompting - continuing");
+                    LOG.debug("report parm {} is not for prompting - continuing", reportParm.getName());
                     continue;
                 } else {
-                    log.debug("found promptable report parm  "
-                            + reportParm.getName());
+                    LOG.debug("found promptable report parm {}", reportParm.getName());
 
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.String")) {
-                    log.debug("adding a string parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a string parm name {}", reportParm.getName());
                     ReportStringParm stringParm = new ReportStringParm();
                     if (reportParm.getDescription() != null) {
                         stringParm.setDisplayName(reportParm.getDescription());
@@ -202,8 +198,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Integer")) {
-                    log.debug("adding a Integer parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Integer parm name {}", reportParm.getName());
                     ReportIntParm intParm = new ReportIntParm();
                     if (reportParm.getDescription() != null) {
                         intParm.setDisplayName(reportParm.getDescription());
@@ -222,8 +217,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Float")) {
-                    log.debug("adding a Float parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Float parm name {}", reportParm.getName());
                     ReportFloatParm floatParm = new ReportFloatParm();
                     if (reportParm.getDescription() != null) {
                         floatParm.setDisplayName(reportParm.getDescription());
@@ -242,8 +236,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.lang.Double")) {
-                    log.debug("adding a Double parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a Double parm name {}", reportParm.getName());
                     ReportDoubleParm doubleParm = new ReportDoubleParm();
                     if (reportParm.getDescription() != null) {
                         doubleParm.setDisplayName(reportParm.getDescription());
@@ -262,8 +255,7 @@ public class JasperReportService implements ReportService {
                 }
 
                 if (reportParm.getValueClassName().equals("java.util.Date")) {
-                    log.debug("adding a java.util.Date parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a java.util.Date parm name {}", reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
                     if (reportParm.getDescription() != null) {
@@ -297,8 +289,7 @@ public class JasperReportService implements ReportService {
 
                 if (reportParm.getValueClassName().equals("java.sql.Date")
                         || reportParm.getValueClassName().equals("java.sql.Timestamp")) {
-                    log.debug("adding a java.sql.Date or Timestamp parm name "
-                            + reportParm.getName());
+                    LOG.debug("adding a java.sql.Date or Timestamp parm name {}", reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
                     if (reportParm.getDescription() != null) {
@@ -352,21 +343,21 @@ public class JasperReportService implements ReportService {
 
             switch (format) {
                 case PDF:
-                    log.debug("rendering as PDF");
+                    LOG.debug("rendering as PDF");
                     exportReportToPdf(jasperPrint, outputStream);
                     break;
 
                 case CSV:
-                    log.debug("rendering as CSV");
+                    LOG.debug("rendering as CSV");
                     exportReportToCsv(jasperPrint, outputStream);
                     break;
 
                 default:
-                    log.debug("rendering as PDF as no valid format found");
+                    LOG.debug("rendering as PDF as no valid format found");
                     exportReportToPdf(jasperPrint, outputStream);
             }
         } catch (JRException e) {
-            log.error("unable to render report", e);
+            LOG.error("unable to render report", e);
             throw new ReportException("unable to render report", e);
         }
     }
@@ -395,7 +386,7 @@ public class JasperReportService implements ReportService {
         try {
             jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -408,7 +399,7 @@ public class JasperReportService implements ReportService {
         outputFileName = new String(baseDir + "/" + jasperReport.getName()
                 + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date())
                 + ".jrprint");
-        log.debug("jrprint output file: " + outputFileName);
+        LOG.debug("jrprint output file: {}", outputFileName);
 
         if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
             Connection connection;
@@ -420,12 +411,12 @@ public class JasperReportService implements ReportService {
 
                 connection.close();
             } catch (SQLException e) {
-                log.error("sql exception getting or closing datasource ", e);
+                LOG.error("sql exception getting or closing datasource ", e);
                 throw new ReportException(
                         "sql exception getting or closing datasource",
                         e);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run emptyDataSource jasperReport",
                         e);
@@ -439,7 +430,7 @@ public class JasperReportService implements ReportService {
                         reportParms,
                         new JREmptyDataSource());
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run emptyDataSource jasperReport",
                         e);
@@ -504,7 +495,7 @@ public class JasperReportService implements ReportService {
         try {
             jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 
@@ -522,12 +513,12 @@ public class JasperReportService implements ReportService {
                 exportReport(format, jasperPrint, outputStream);
                 connection.close();
             } catch (SQLException e) {
-                log.error("sql exception getting or closing datasource ", e);
+                LOG.error("sql exception getting or closing datasource ", e);
                 throw new ReportException(
                         "sql exception getting or closing datasource",
                         e);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run or render jdbc jasperReport",
                         e);
@@ -539,7 +530,7 @@ public class JasperReportService implements ReportService {
                         new JREmptyDataSource());
                 exportReport(format, jasperPrint, outputStream);
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception ", e);
                 throw new ReportException(
                         "unable to run or render emptyDataSource jasperReport",
                         e);
@@ -613,15 +604,13 @@ public class JasperReportService implements ReportService {
         HashMap<String, Object> jrReportParms = new HashMap<String, Object>();
 
         for (JRParameter reportParm : reportParms) {
-            log.debug("found report parm " + reportParm.getName()
-                    + " of class " + reportParm.getValueClassName());
+            LOG.debug("found report parm {} of class {}", reportParm.getValueClassName(), reportParm.getName());
             if (reportParm.isSystemDefined() == false) {
 
                 String parmName = reportParm.getName();
 
                 if (reportParm.isForPrompting() == false) {
-                    log.debug("Required parameter  " + parmName
-                            + " is not for prompting - continuing");
+                    LOG.debug("Required parameter {} is not for prompting - continuing", parmName);
                     continue;
                 }
 
@@ -719,7 +708,7 @@ public class JasperReportService implements ReportService {
         	JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
             jasperReport = JasperCompileManager.compileReport(jasperDesign);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 		
@@ -739,10 +728,10 @@ public class JasperReportService implements ReportService {
          		} else if(ReportFormat.XLS == format){
          			exportReportToXls(jasperPrint,outputStream);
          		} else {
-                	log.error("Unknown file format : " + format);
+                	LOG.error("Unknown file format : {}", format);
                 }
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception", e);
                 throw new ReportException("unable to run or render jasperReport",e);
             }
         }
@@ -752,12 +741,12 @@ public class JasperReportService implements ReportService {
         File eventReportfolder = new File(baseDir);  
 		if (!eventReportfolder.exists()){  
 			if(eventReportfolder.mkdir()){
-				log.debug("The event report folder is successfully created in "+baseDir+" location");
+				LOG.debug("The event report folder is successfully created in {} location", baseDir);
 			} else {
-				log.debug("unable to creat the event report folder in "+baseDir+" location");
+				LOG.debug("unable to create the event report folder in {} location", baseDir);
 			}
 		}else{  
-			log.debug("The event report folder is already exist in server location");
+			LOG.debug("The event report folder is already exist in server location");
 		}
 		
 		// Store the event report into the local server
@@ -772,12 +761,12 @@ public class JasperReportService implements ReportService {
      		} else if(ReportFormat.XLS == format){
      			exportReportToXls(jasperPrint,outputReportStream);
      		} else {
-     			log.error("Unknown file format : " + format);
+     			LOG.error("Unknown file format : {}", format);
      		}
 		} catch(JRException e){
-			log.error("jasper report exception ", e);
+			LOG.error("jasper report exception", e);
 		} catch (FileNotFoundException e) {
-			log.error("unable to find the server location ", e);
+			LOG.error("unable to find the server location", e);
 		}
 	}
 	
@@ -838,7 +827,7 @@ public class JasperReportService implements ReportService {
 		
 		 catch(Exception e)
 		 {
-			 log.error("Error in EventReportStructure report", e);
+			 LOG.error("Error in EventReportStructure report", e);
 	            throw new ReportException("Error in EventReportStructure report", e);
 		 }
 		 
@@ -924,7 +913,7 @@ public class JasperReportService implements ReportService {
 		 
 		 catch(Exception e)
 		 {
-			 log.error("Error in EventReportStructure CSV report ", e);
+			 LOG.error("Error in EventReportStructure CSV report", e);
 	         throw new ReportException("Error in EventReportStructure CSV report ", e); 
 			 
 		 }
@@ -937,7 +926,7 @@ public class JasperReportService implements ReportService {
     public void runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
     		String reportId, ReportFormat format, OutputStream outputStream, String fileName) throws ReportException {
     	
-    	log.info("Enter into the rundAndRender action for alarm report");
+    	LOG.info("Enter into the rundAndRender action for alarm report");
     	// Get the alarm report details
         ArrayList<AlarmReportStructure> alarmReportList = new ArrayList<AlarmReportStructure>();
         alarmReportList = getAlarmReportList(alarmIds,eventIdsForAlarms,format);
@@ -949,7 +938,7 @@ public class JasperReportService implements ReportService {
         	JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
             jasperReport = JasperCompileManager.compileReport(jasperDesign);
         } catch (JRException e) {
-            log.error("unable to compile jasper report", e);
+            LOG.error("unable to compile jasper report", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
 		
@@ -967,10 +956,10 @@ public class JasperReportService implements ReportService {
          		} else if(ReportFormat.XLS == format){
          			exportReportToXls(jasperPrint,outputStream);
          		} else {
-                	log.error("Unknown file format : " + format);
+                	LOG.error("Unknown file format : {}", format);
                 }
             } catch (JRException e) {
-                log.error("jasper report exception ", e);
+                LOG.error("jasper report exception", e);
                 throw new ReportException("unable to run or render jasperReport",e);
             }
         }
@@ -983,9 +972,9 @@ public class JasperReportService implements ReportService {
         	baseDir = System.getProperty("opennms.report.dir")+"/alarm";
         	alarmReportfolder = new File(baseDir);
         	if(alarmReportfolder.mkdir()){
-        		 log.debug("The alarm report folder is successfully created in "+baseDir+" location");
+        		 LOG.debug("The alarm report folder is successfully created in {} location", baseDir);
 			} else {
-				 log.error("Unable to creat the alarm report folder in "+baseDir+" location");
+				 LOG.error("Unable to create the alarm report folder in {} location", baseDir);
 			}
         }
 		
@@ -993,26 +982,26 @@ public class JasperReportService implements ReportService {
  		String outputFileName = new String(baseDir + "/" + fileName);
  		OutputStream outputReportStream = null;
 		try{
-			log.info("The alarm report is currently exporting...");
+			LOG.info("The alarm report is currently exporting...");
 			outputReportStream = new FileOutputStream (outputFileName);
 			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
      			exportReport(format, jasperPrint, outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.HTML == format) {
      			exportReportToHtml(jasperPrint,outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.XLS == format){
      			exportReportToXls(jasperPrint,outputReportStream);
-     			log.info("The alarm report is successfully stored in the local server");
+     			LOG.info("The alarm report is successfully stored in the local server");
      		} else {
-     			log.error("Unknown file format : " + format);
+     			LOG.error("Unknown file format : {}", format);
      		}
 		} catch(JRException e){
-			log.error("jasper report exception ", e);
+			LOG.error("jasper report exception", e);
 		} catch (FileNotFoundException e) {
-			log.error("unable to find the server location ", e);
+			LOG.error("unable to find the server location", e);
 		}
-		log.info("Terminated from the rundAndRender action for alarm report");
+		LOG.info("Terminated from the rundAndRender action for alarm report");
     }
     
     

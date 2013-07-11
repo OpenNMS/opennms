@@ -49,6 +49,8 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("users")
 @Transactional
 public class UserRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(UserRestService.class);
+
     @Autowired
     private UserManager m_userManager;
 
@@ -123,7 +128,7 @@ public class UserRestService extends OnmsRestService {
     public Response addUser(final OnmsUser user) {
         writeLock();
         try {
-            log().debug("addUser: Adding user " + user);
+            LOG.debug("addUser: Adding user {}", user);
             m_userManager.save(user);
             return Response.seeOther(getRedirectUri(m_uriInfo, user.getUsername())).build();
         } catch (final Throwable t) {
@@ -146,7 +151,7 @@ public class UserRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, t);
             }
             if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
-            log().debug("updateUser: updating user " + user);
+            LOG.debug("updateUser: updating user {}", user);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -156,7 +161,7 @@ public class UserRestService extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            log().debug("updateUser: user " + user + " updated");
+            LOG.debug("updateUser: user {} updated", user);
             try {
                 m_userManager.save(user);
             } catch (final Throwable t) {
@@ -180,7 +185,7 @@ public class UserRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, t);
             }
             if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
-            log().debug("deleteUser: deleting user " + user);
+            LOG.debug("deleteUser: deleting user {}", user);
             try {
                 m_userManager.deleteUser(user.getUsername());
             } catch (final Throwable t) {

@@ -261,7 +261,7 @@ public abstract class SnmpUtils {
 	    }
 
 	    Long retVal = Long.decode(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7]));
-	    LOG.trace("Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
+	    LOG.trace("Converted octet-string {} as a proto-Counter64 of value {}", String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7]), retVal);
 	    return retVal;
 	}
 }

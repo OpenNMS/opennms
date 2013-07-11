@@ -35,9 +35,10 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract AbstractThresholdEvaluatorState class.</p>
@@ -46,6 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public abstract class AbstractThresholdEvaluatorState implements ThresholdEvaluatorState {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractThresholdEvaluatorState.class);
 
     private static final String UNKNOWN = "Unknown";
 
@@ -127,13 +131,5 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         return valueFormatter.format(value);
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

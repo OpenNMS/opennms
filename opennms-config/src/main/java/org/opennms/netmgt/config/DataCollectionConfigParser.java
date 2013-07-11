@@ -42,7 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -64,6 +65,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 // FIXME What are the real ways to validate if two elements are the same? Just the element name? additional parameters?
 // FIXME How to apply rules about duplicates? Just warn?, Override?, Override with priorities? Silent ignore?
 public class DataCollectionConfigParser {
+    private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfigParser.class);
     
     private String configDirectory;
     
@@ -102,7 +104,7 @@ public class DataCollectionConfigParser {
                 }
             }
         } else {
-            log().info("parse: SNMP collection " + collection.getName() + " doesn't have any external reference.");
+            LOG.info("parse: SNMP collection {} doesn't have any external reference.", collection.getName());
         }
     }
     
@@ -192,14 +194,14 @@ public class DataCollectionConfigParser {
     private void parseExternalResources() {
         // Ensure that this is called only once.
         if (externalGroupsMap != null && externalGroupsMap.size() > 0) {
-            log().info("parseExternalResources: external data collection groups are already parsed");
+            LOG.info("parseExternalResources: external data collection groups are already parsed");
             return;
         }
         
         // Check configuration files repository
         File folder = new File(configDirectory);
         if (!folder.exists() || !folder.isDirectory()) {
-            log().info("parseExternalResources: directory " + folder + " does not exist or is not a folder.");
+            LOG.info("parseExternalResources: directory {} does not exist or is not a folder.", folder);
             return;
         }
         
@@ -219,7 +221,7 @@ public class DataCollectionConfigParser {
                 @Override
                 public void run() {
                     try {
-                        log().debug("parseExternalResources: parsing " + file);
+                        LOG.debug("parseExternalResources: parsing {}", file);
                         DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource(file));
                         // Synchronize around the map that holds the results
                         synchronized(externalGroupsMap) {
@@ -283,7 +285,7 @@ public class DataCollectionConfigParser {
      * @param systemDefName the system definition name.
      */
     private void addSystemDef(SnmpCollection collection, String systemDefName) {
-        log().debug("addSystemDef: merging system defintion " + systemDefName + " into snmp-collection " + collection.getName());
+        LOG.debug("addSystemDef: merging system defintion {} into snmp-collection {}", collection.getName(), systemDefName);
         // Find System Definition
         SystemDef systemDef = getSystemDef(systemDefName);
         if (systemDef == null) {
@@ -291,20 +293,20 @@ public class DataCollectionConfigParser {
         }
         // Add System Definition to target SNMP collection
         if (contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
-            log().warn("addSystemDef: system definition " + systemDefName + " already exist on SNMP collection " + collection.getName());
+            LOG.warn("addSystemDef: system definition {} already exist on SNMP collection {}", collection.getName(), systemDefName);
         } else {
-            log().debug("addSystemDef: adding system definition " + systemDef.getName() + " to snmp-collection " + collection.getName());
+            LOG.debug("addSystemDef: adding system definition {} to snmp-collection {}", collection.getName(), systemDef.getName());
             collection.getSystems().addSystemDef(systemDef);
             // Add Groups
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
                 Group group = getMibObjectGroup(groupName);
                 if (group == null) {
-                    log().warn("addSystemDef: group " + groupName + " does not exist on global container");
+                    LOG.warn("addSystemDef: group {} does not exist on global container", groupName);
                 } else {
                     if (contains(collection.getGroups().getGroupCollection(), group)) {
-                        log().debug("addSystemDef: group " + groupName + " already exist on SNMP collection " + collection.getName());
+                        LOG.debug("addSystemDef: group {} already exist on SNMP collection {}", collection.getName(), groupName);
                     } else {
-                        log().debug("addSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
+                        LOG.debug("addSystemDef: adding mib object group {} to snmp-collection {}", collection.getName(), group.getName());
                         collection.getGroups().addGroup(group);
                     }
                 }
@@ -324,7 +326,7 @@ public class DataCollectionConfigParser {
         if (group == null) {
             throwException("Group " + dataCollectionGroupName + " does not exist.", null);
         }
-        log().debug("addDatacollectionGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());
+        LOG.debug("addDatacollectionGroup: adding all definitions from group {} to snmp-collection {}", collection.getName(), group.getName());
         for (SystemDef systemDef : group.getSystemDefCollection()) {
             String sysDef = systemDef.getName();
             if (shouldAdd(sysDef, excludeList)) {
@@ -340,11 +342,11 @@ public class DataCollectionConfigParser {
                     final Pattern p = Pattern.compile(re);
                     final Matcher m = p.matcher(sysDef);
                     if (m.matches()) {
-                        log().info("addDatacollectionGroup: system definition " + sysDef + " is blacklisted by filter " + re);
+                        LOG.info("addDatacollectionGroup: system definition {} is blacklisted by filter {}", re, sysDef);
                         return false;
                     }
                 } catch (PatternSyntaxException e) {
-                    log().warn("the regular expression " + re + " is invalid: " + e.getMessage(), e);
+                    LOG.warn("the regular expression {} is invalid: ", re, e);
                 }
             }
         }
@@ -353,16 +355,11 @@ public class DataCollectionConfigParser {
 
     private void throwException(String msg, Throwable e) {
         if (e == null) {
-            log().error(msg);
+            LOG.error(msg);
             throw new DataAccessResourceFailureException(msg);
         } else {
-            log().error(msg, e);
+            LOG.error(msg, e);
             throw new DataAccessResourceFailureException(msg, e);            
         }
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

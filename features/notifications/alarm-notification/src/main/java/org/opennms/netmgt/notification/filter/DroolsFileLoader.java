@@ -28,9 +28,12 @@ import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.io.ResourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DroolsFileLoader implements Serializable {
+	private static final Logger LOG = LoggerFactory.getLogger(DroolsFileLoader.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +48,7 @@ public class DroolsFileLoader implements Serializable {
 				+ "/etc/alarm-notification/drools/");
 		File[] listOfFiles = drlFolder.listFiles();
 		if (listOfFiles == null) {
-			LogUtils.debugf(this,
+			LOG.debug(
 					"No drl file in directory <OPENNMS_HOME>/etc/alarm-notification/drools/");
 			return;
 		}
@@ -59,11 +62,11 @@ public class DroolsFileLoader implements Serializable {
 				builder.add(ResourceFactory.newFileResource(drlFile),
 						ResourceType.DRL);
 				if (builder.hasErrors()) {
-					LogUtils.debugf(this, "Drl file " + drlName
+					LOG.debug("Drl file " + drlName
 							+ " has the following errors : "
 							+ builder.getErrors().toString());
 				} else {
-					LogUtils.debugf(this, "Drl file " + drlName
+					LOG.debug("Drl file " + drlName
 							+ " is loaded successfully");
 				}
 				knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
@@ -71,7 +74,7 @@ public class DroolsFileLoader implements Serializable {
 						.getKnowledgePackages());
 			} catch (Exception e) {
 				e.printStackTrace();
-				LogUtils.debugf(this,
+				LOG.debug(
 						"Exception while creating builder for file " + drlName
 								+ "Exception is " + e.getMessage());
 			}
@@ -86,7 +89,7 @@ public class DroolsFileLoader implements Serializable {
 				+ "/etc/alarm-notification/drools/");
 		File[] listOfFiles = drlFolder.listFiles();
 		if (listOfFiles == null) {
-			LogUtils.debugf(this,
+			LOG.debug(
 					"No drl file in directory <OPENNMS_HOME>/etc/alarm-notification/drools/");
 			return status;
 		}
@@ -100,11 +103,11 @@ public class DroolsFileLoader implements Serializable {
 				builder.add(ResourceFactory.newFileResource(drlFile),
 						ResourceType.DRL);
 				if (builder.hasErrors()) {
-					LogUtils.debugf(this, "Drl file " + drlName
+					LOG.debug("Drl file " + drlName
 							+ " has the following errors : "
 							+ builder.getErrors().toString());
 				} else {
-					LogUtils.debugf(this, "Drl file " + drlName
+					LOG.debug("Drl file " + drlName
 							+ " is loaded successfully");
 				}
 				knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
@@ -113,7 +116,7 @@ public class DroolsFileLoader implements Serializable {
 			} catch (Exception e) {
 				status = false;
 				e.printStackTrace();
-				LogUtils.debugf(this,
+				LOG.debug(
 						"Exception while creating builder for file " + drlName
 								+ "Exception is " + e.getMessage());
 			}

@@ -58,6 +58,8 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Distributable
 /**
@@ -67,7 +69,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 public class WebMonitor extends AbstractServiceMonitor {
-
+    private static final Logger LOG = LoggerFactory.getLogger(WebMonitor.class);
     static Integer DEFAULT_TIMEOUT = 3000;
     static Integer DEFAULT_PORT = 80;
     static String DEFAULT_USER_AGENT = "OpenNMS WebMonitor";
@@ -150,14 +152,14 @@ public class WebMonitor extends AbstractServiceMonitor {
                 }
             }
 
-            log().debug("httpClient request with the following parameters: " + httpClient);
-            log().debug("getMethod parameters: " + getMethod);
+            LOG.debug("httpClient request with the following parameters: {}", httpClient);
+            LOG.debug("getMethod parameters: {}", getMethod);
             HttpResponse response = httpClient.execute(getMethod);
             int statusCode = response.getStatusLine().getStatusCode();
             String statusText = response.getStatusLine().getReasonPhrase();
             String expectedText = ParameterMap.getKeyedString(map,"response-text",null);
 
-            log().debug("returned results are:");
+            LOG.debug("returned results are:");
 
             if(!inRange(ParameterMap.getKeyedString(map, "response-range", DEFAULT_HTTP_STATUS_RANGE),statusCode)){
                 pollStatus = PollStatus.unavailable(statusText);
@@ -184,9 +186,9 @@ public class WebMonitor extends AbstractServiceMonitor {
             }
 
         } catch (IOException e) {
-            log().info(e.getMessage());
+            LOG.info(e.getMessage());
         } catch (URISyntaxException e) {
-            log().info(e.getMessage());
+            LOG.info(e.getMessage());
         } finally {
             if (httpClient != null) {
                 httpClient.getConnectionManager().shutdown();

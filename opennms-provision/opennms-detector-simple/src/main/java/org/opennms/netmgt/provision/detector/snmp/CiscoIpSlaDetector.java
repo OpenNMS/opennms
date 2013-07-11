@@ -38,6 +38,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +53,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class CiscoIpSlaDetector extends SnmpDetector {
 
-    /**
+	private static final Logger LOG = LoggerFactory.getLogger(CiscoIpSlaDetector.class);
+
+	/**
      * Name of monitored service.
      */
     private static final String PROTOCOL_NAME = "Cisco_IP_SLA";
@@ -99,23 +103,23 @@ public class CiscoIpSlaDetector extends SnmpDetector {
 
             Map<SnmpInstId, SnmpValue> tagResults = SnmpUtils.getOidValues(agentConfig, "CiscoIpSlaDetector", SnmpObjId.get(RTT_ADMIN_TAG_OID));
             if (tagResults == null) {
-                log().warn("isServiceDetected: No admin tags received!");
+                LOG.warn("isServiceDetected: No admin tags received!");
                 return false;
             }
 
             Map<SnmpInstId, SnmpValue> operStateResults = SnmpUtils.getOidValues(agentConfig, "CiscoIpSlaDetector", SnmpObjId.get(RTT_OPER_STATE_OID));
             if (operStateResults == null) {
-                log().warn("isServiceDetected: No operational states received!");
+                LOG.warn("isServiceDetected: No operational states received!");
                 return false;
             }
 
             // Iterate over the list of configured IP SLAs
             for (Entry<SnmpInstId,SnmpValue> ipslaEntry : tagResults.entrySet()) {
                 SnmpValue status = operStateResults.get(ipslaEntry.getKey());
-                log().debug("isServiceDetected: " + "admin-tag=" + m_adminTag + " value=" + formatValue(ipslaEntry.getValue()) + " oper-state=" + status.toInt());
+                LOG.debug("isServiceDetected: admin-tag={} value={} oper-state={}", m_adminTag, formatValue(ipslaEntry.getValue()), status.toInt());
                 //  Check if a configured IP SLA with specific tag exist and is the operational state active 
                 if (m_adminTag.equals(formatValue(ipslaEntry.getValue())) && status.toInt() == RTT_MON_OPER_STATE_ACTIVE) {
-                    log().debug("isServiceDetected: admin tag found");
+                    LOG.debug("isServiceDetected: admin tag found");
                     return true;
                 }
             }

@@ -39,14 +39,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 public class CollectdPackage {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectdPackage.class);
 	private Package m_pkg;
 	private List<InetAddress> m_ipList;
 	private List<IncludeURL> m_includeURLs;
@@ -189,18 +191,12 @@ public class CollectdPackage {
 		if (ipList != null && ipList.size() > 0) {
 			filterPassed = ipList.contains(ifaceAddress);
 		} else {
-			log().debug("interfaceInFilter: ipList contains no data");
+			LOG.debug("interfaceInFilter: ipList contains no data");
 		}
 	
 		if (!filterPassed)
-			log().debug("interfaceInFilter: Interface " + iface
-					+ " passed filter for package " + getName()
-					+ "?: false");
+			LOG.debug("interfaceInFilter: Interface {} passed filter for package {}?: false", iface, getName());
 		return filterPassed;
-	}
-
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 	/**
@@ -256,13 +252,9 @@ public class CollectdPackage {
 		boolean packagePassed = has_specific
 				|| (has_range_include && !has_range_exclude);
                 if(packagePassed) {
-		    log().info("interfaceInPackage: Interface " + iface
-				+ " passed filter and specific/range for package "
-				+ getName() + "?: " + packagePassed);
+		    LOG.info("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, getName(), packagePassed);
                 } else {
-		    log().debug("interfaceInPackage: Interface " + iface
-				+ " passed filter and specific/range for package "
-				+ getName() + "?: " + packagePassed);
+		    LOG.debug("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, getName(), packagePassed);
                 }
 		return packagePassed;
 	}
@@ -290,13 +282,11 @@ public class CollectdPackage {
 		//
 		String filterRules = getFilterRule(localServer, verifyServer);
 	
-		if (log().isDebugEnabled())
-			log().debug("createPackageIpMap: package is " + pkg.getName()
-					+ ". filer rules are  " + filterRules);
+		LOG.debug("createPackageIpMap: package is {}. filer rules are {}", pkg.getName(), filterRules);
 		try {
             putIpList(FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules));
 		} catch (Throwable t) {
-		    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
+		    LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
 		}
 	}
 

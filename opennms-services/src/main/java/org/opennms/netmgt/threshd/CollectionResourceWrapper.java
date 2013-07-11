@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>CollectionResourceWrapper class.</p>
@@ -55,6 +56,8 @@ import org.opennms.netmgt.poller.LatencyCollectionResource;
  * @version $Id: $
  */
 public class CollectionResourceWrapper {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionResourceWrapper.class);
     
     private final int m_nodeId;
     private final String m_hostAddress;
@@ -150,13 +153,13 @@ public class CollectionResourceWrapper {
                 if (m_iflabel != null) { // See Bug 3488
                     m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
                 } else {
-                    log().info("Can't find ifLabel for latency resource " + resource.getInstance() + " on node " + getNodeId());                    
+                    LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(), getNodeId());
                 }
             }
             if (m_ifInfo != null) {
                 m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
-                log().info("Can't find ifInfo for " + resource);
+                LOG.info("Can't find ifInfo for {}", resource);
             }
         }
     }    
@@ -303,12 +306,12 @@ public class CollectionResourceWrapper {
      */
     public Double getAttributeValue(String ds) {
         if (m_attributes == null || m_attributes.get(ds) == null) {
-            log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
+            LOG.warn("getAttributeValue: can't find attribute called {} on {}", ds, m_resource);
             return null;
         }
         String numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
-            log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
+            LOG.warn("getAttributeValue: can't find numeric value for {} on {}", ds, m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
@@ -317,13 +320,11 @@ public class CollectionResourceWrapper {
         try {
             current = Double.parseDouble(numValue);
         } catch (NumberFormatException e) {
-            log().error(id + " does not have a numeric value: " + numValue);
+            LOG.error("{} does not have a numeric value: {}", id, numValue);
             return null;
         }
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
-            if (log().isDebugEnabled()) {
-                log().debug("getAttributeValue: id=" + id + ", value= " + current);
-            }
+            LOG.debug("getAttributeValue: id={}, value= {}", id, current);
             return current;
         } else {
             return getCounterValue(id, current);
@@ -339,13 +340,9 @@ public class CollectionResourceWrapper {
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
-            if (log().isDebugEnabled()) {
-                log().debug("getCounterValue: id=" + id + ", last=" + 
-                		(last==null ? last : last.value +"@"+last.timestamp) + 
-                		", current=" + current);
-            }
+            LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.value +"@"+ last.timestamp), current);
             if (last == null) {
-                log().info("getCounterValue: unknown last value, ignoring current");
+                LOG.info("getCounterValue: unknown last value, ignoring current");
                 m_localCache.put(id, Double.NaN);
             } else {                
                 Double delta = current.doubleValue() - last.value.doubleValue();
@@ -359,12 +356,7 @@ public class CollectionResourceWrapper {
                         // try 64-bit adjustment
                         newDelta += Math.pow(2, 64) - Math.pow(2, 32);
                     }
-                    log().info("getCounterValue: " + id + 
-                    		"(counter) wrapped counter adjusted last=" + 
-                    		last.value +"@"+last.timestamp +
-                    		", current=" + current + 
-                    		", olddelta=" + delta + 
-                    		", newdelta=" + newDelta);
+                    LOG.info("getCounterValue: {}(counter) wrapped counter adjusted last={}@{}, current={}, olddelta={}, newdelta={}", id, last.value, last.timestamp, current, delta, newDelta);
                     delta = newDelta;
                 }
                 // Get the interval between when this current collection was taken, and the last time this
@@ -375,7 +367,7 @@ public class CollectionResourceWrapper {
                 if (interval > 0) {
                     m_localCache.put(id, delta / interval);
                 } else {
-                    log().warn("getCounterValue: invalid zero-length rate interval for " + id + ", returning rate of zero");
+                    LOG.info("getCounterValue: invalid zero-length rate interval for {}, returning rate of zero", id);
                     m_localCache.put(id, 0.0);
                     // Restore the original value inside the static cache
                     s_cache.put(id, last);
@@ -385,7 +377,7 @@ public class CollectionResourceWrapper {
         Double value = m_localCache.get(id);
         // This is just a sanity check, we should never have a value of null for the value at this point
         if (value == null) {
-            log().error("getCounterValue: value was not calculated correctly for " + id + ", using NaN");
+            LOG.error("getCounterValue: value was not calculated correctly for {}, using NaN", id);
             m_localCache.put(id, Double.NaN);
             return Double.NaN;
         } else {
@@ -404,9 +396,7 @@ public class CollectionResourceWrapper {
     public String getLabelValue(String ds) {
         if (ds == null || ds.equals(""))
             return null;
-        if (log().isDebugEnabled()) {
-            log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
-        }
+        LOG.debug("getLabelValue: Getting Value for {}::{}", m_resource.getResourceTypeName(), ds);
         if ("nodeid".equals(ds))
             return Integer.toString(m_nodeId);
         if ("ipaddress".equals(ds))
@@ -426,10 +416,10 @@ public class CollectionResourceWrapper {
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
             }
         } catch (Throwable e) {
-            log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
+            LOG.info("getLabelValue: Can't get value for attribute {} for resource {}.", ds, m_resource, e);
         }
         if (value == null) {
-            log().debug("getLabelValue: The field " + ds + " is not a string property. Trying to parse it as numeric metric.");
+            LOG.debug("getLabelValue: The field {} is not a string property. Trying to parse it as numeric metric.", ds);
             Double d = getAttributeValue(ds);
             if (d != null)
                 value = d.toString();
@@ -442,9 +432,4 @@ public class CollectionResourceWrapper {
     public String toString() {
         return m_resource.toString();
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

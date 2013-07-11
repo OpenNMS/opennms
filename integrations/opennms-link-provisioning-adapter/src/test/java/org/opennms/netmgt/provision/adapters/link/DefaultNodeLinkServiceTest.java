@@ -50,12 +50,12 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,6 +65,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
@@ -351,10 +352,10 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     }
     
     public void addPrimaryServiceToNode(final int nodeId, final String serviceName){
-        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsServiceType svcType = m_serviceTypeDao.findByName(serviceName);
                 if(svcType == null){
                     svcType = new OnmsServiceType(serviceName);
@@ -371,8 +372,6 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
                 svc.setServiceType(svcType);
                 m_monitoredServiceDao.save(svc);
                 m_monitoredServiceDao.flush();
-                
-                return null;
             }
         });
         
@@ -381,13 +380,12 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     }
     
     public void saveLinkState(final OnmsLinkState linkState){
-        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             
             @Override
-            public Object doInTransaction(final TransactionStatus status) {
+            public void doInTransactionWithoutResult(final TransactionStatus status) {
                 m_linkStateDao.saveOrUpdate(linkState);
                 m_linkStateDao.flush();
-                return null;
             }
         });
     }

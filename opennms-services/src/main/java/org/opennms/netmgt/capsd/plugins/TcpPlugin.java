@@ -44,7 +44,8 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -60,6 +61,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class TcpPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(TcpPlugin.class);
 
     /**
      * The protocol supported by the plugin
@@ -97,7 +99,6 @@ public final class TcpPlugin extends AbstractPlugin {
      *         line contains the bannerMatch text.
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout, RE regex, StringBuffer bannerResult) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -108,7 +109,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("TcpPlugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("TcpPlugin: connected to host: {} on port: {}", port, host);
 
                 // If banner matching string is null or wildcard ("*") then we
                 // only need to test connectivity and we've got that!
@@ -128,8 +129,8 @@ public final class TcpPlugin extends AbstractPlugin {
                     //
                     String response = lineRdr.readLine();
                     if (regex.match(response)) {
-                        if (log.isDebugEnabled())
-                            log.debug("isServer: matching response=" + response);
+
+                        LOG.debug("isServer: matching response= {}", response);
                         isAServer = true;
                         if (bannerResult != null)
                             bannerResult.append(response);
@@ -137,34 +138,34 @@ public final class TcpPlugin extends AbstractPlugin {
                         // Got a response but it didn't match...no need to
                         // attempt retries
                         isAServer = false;
-                        if (log.isDebugEnabled())
-                            log.debug("isServer: NON-matching response=" + response);
+
+                        LOG.debug("isServer: NON-matching response= {}", response);
                         break;
                     }
                 }
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("TcpPlugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("TcpPlugin: Connection refused to {}: {}", port, InetAddressUtils.str(host));
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("TcpPlugin: Could not connect to host " + InetAddressUtils.str(host) + ", no route to host", e);
+                LOG.info("TcpPlugin: Could not connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
-                log.debug("TcpPlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("TcpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("TcpPlugin: An expected I/O exception occured connecting to host " + InetAddressUtils.str(host) + " on port " + port, e);
+                LOG.info("TcpPlugin: An expected I/O exception occured connecting to host {} on port {}", InetAddressUtils.str(host), port, e);
                 isAServer = false;
             } catch (Throwable t) {
                 isAServer = false;
-                log.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host " + InetAddressUtils.str(host) + " on port " + port, t);
+                LOG.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host {} on port {}", InetAddressUtils.str(host), port, t);
             } finally {
                 try {
                     if (socket != null)

@@ -31,7 +31,8 @@ package org.opennms.netmgt.xmlrpcd.jmx;
 import org.apache.xmlrpc.XmlRpc;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -42,6 +43,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class Provisioner implements ProvisionerMBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
 
     private ClassPathXmlApplicationContext m_context;
     int m_status = Fiber.START_PENDING;
@@ -65,9 +68,9 @@ public class Provisioner implements ProvisionerMBean {
     @Override
     public void start() {
         m_status = Fiber.STARTING;
-        ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
+        LOG.debug("SPRING: thread.classLoader=", Thread.currentThread().getContextClassLoader());
         m_context = BeanUtils.getFactory("provisionerContext", ClassPathXmlApplicationContext.class);
-        ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+        LOG.debug("SPRING: context.classLoader=", m_context.getClassLoader());
         m_status = Fiber.RUNNING;
     }
 

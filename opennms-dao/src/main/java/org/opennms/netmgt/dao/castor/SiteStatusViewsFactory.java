@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.castor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,12 +43,13 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.View;
 
 public class SiteStatusViewsFactory {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SiteStatusViewsFactory.class);
     /** The singleton instance. */
     private static SiteStatusViewsFactory m_instance;
 
@@ -95,7 +98,7 @@ public class SiteStatusViewsFactory {
     }
 
     private void initialize(InputStream stream) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing site status views factory.");
+        LOG.debug("initialize: initializing site status views factory.");
         m_config = CastorUtils.unmarshal(SiteStatusViewConfiguration.class, stream);
 
         initializeViewsMap();
@@ -237,9 +240,5 @@ public class SiteStatusViewsFactory {
      */
     public synchronized static void setViewsMap(Map<String, View> map) {
         m_viewsMap = map;
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
     }
 }

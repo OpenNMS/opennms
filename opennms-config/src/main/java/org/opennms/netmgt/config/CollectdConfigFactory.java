@@ -37,7 +37,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.springframework.util.Assert;
@@ -63,6 +64,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class CollectdConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectdConfigFactory.class);
     final static String SELECT_METHOD_MIN = "min";
 
     /**
@@ -158,7 +160,7 @@ public class CollectdConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
 
-        log().debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         setInstance(new CollectdConfigFactory(cfgFile.getPath(), OpennmsServerConfigFactory.getInstance().getServerName(), OpennmsServerConfigFactory.getInstance().verifyServer()));
     }
@@ -280,9 +282,5 @@ public class CollectdConfigFactory {
 
     private static boolean isInitialized() {
         return m_singleton != null;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(CollectdConfigFactory.class);
     }
 }

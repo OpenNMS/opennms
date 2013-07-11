@@ -37,13 +37,14 @@ import java.util.TreeMap;
 
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.CapsdProtocolInfo.Action;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.capsd.Property;
 import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.capsd.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -54,6 +55,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class PluginManager implements InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
+    
     private CapsdConfig m_capsdConfig;
 
     /**
@@ -97,14 +101,10 @@ public class PluginManager implements InitializingBean {
                 }
             } catch (Throwable t) {
                 String message = "CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", exception = " + t; 
-                log().error(message, t);
+                LOG.error(message, t);
                 throw new ValidationException(message, t);
             }
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -157,14 +157,14 @@ public class PluginManager implements InitializingBean {
                     InetAddress start = null;
                     start = InetAddressUtils.addr(rng.getBegin());
                     if (start == null) {
-                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getBegin() + " to InetAddress");
+                        LOG.warn("CapsdConfigFactory: failed to convert address {} to InetAddress", rng.getBegin());
                         continue;
                     }
     
                     InetAddress stop = null;
                     stop = InetAddressUtils.addr(rng.getEnd());
                     if (stop == null) {
-                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getEnd() + " to InetAddress");
+                        LOG.warn("CapsdConfigFactory: failed to convert address {} to InetAddress", rng.getEnd());
                         continue;
                     }
     

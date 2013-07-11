@@ -38,7 +38,6 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -121,6 +122,9 @@ import org.opennms.protocols.rt.RequestTracker;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Jni6Pinger implements Pinger {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Jni6Pinger.class);
+
 
     private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
 
@@ -168,7 +172,7 @@ public class Jni6Pinger implements Pinger {
         try {
             initialize4();
         } catch (final Throwable t) {
-            LogUtils.tracef(this, t, "Failed to initialize IPv4");
+            LOG.trace("Failed to initialize IPv4", t);
         }
         if (m_jniPinger != null && m_v4Error == null) return m_jniPinger.isV4Available();
         return false;
@@ -179,7 +183,7 @@ public class Jni6Pinger implements Pinger {
         try {
             initialize6();
         } catch (final Throwable t) {
-            LogUtils.tracef(this, t, "Failed to initialize IPv6");
+            LOG.trace("Failed to initialize IPv6", t);
         }
         if (s_pingTracker != null && m_v6Error == null) return true;
         return false;

@@ -29,8 +29,9 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.core.utils.LogUtils.debugf;
-import static org.opennms.core.utils.LogUtils.infof;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.net.InetAddress;
 
@@ -38,7 +39,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
  * @version $Id: $
  */
 public class NewSuspectScan implements RunInBatch {
+    private static final Logger LOG = LoggerFactory.getLogger(NewSuspectScan.class);
     private InetAddress m_ipAddress;
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
@@ -95,7 +97,7 @@ public class NewSuspectScan implements RunInBatch {
      */
     protected void scanUndiscoveredNode(final BatchTask phase) {
     	final String addrString = str(m_ipAddress);
-		infof(this, "Attempting to scan new suspect address %s", addrString);
+		LOG.info("Attempting to scan new suspect address {}", addrString);
         final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString);
         
         if (node != null) {
@@ -115,7 +117,7 @@ public class NewSuspectScan implements RunInBatch {
             @Override
             public void abort(final String message) {
                 m_aborted = true;
-                LogUtils.infof(this, message);
+                LOG.info(message);
             }
 
             @Override
@@ -131,7 +133,7 @@ public class NewSuspectScan implements RunInBatch {
      * @param nodeId a {@link java.lang.Integer} object.
      */
     protected void reparentNodes(final BatchTask batch, final Integer nodeId) {
-        debugf(this, "reparenting node ID %d not supported", nodeId);
+        LOG.debug("reparenting node ID {} not supported", nodeId);
     }
     
 

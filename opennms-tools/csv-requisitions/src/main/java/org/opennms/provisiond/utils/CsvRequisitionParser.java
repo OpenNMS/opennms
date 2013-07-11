@@ -35,10 +35,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
@@ -47,20 +46,40 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 public class CsvRequisitionParser {
 
+	private static final String PROPERTY_FS_REPO_PATH = "fs.repo.path";
+	private static final String PROPERTY_CSV_FILE = "csv.file";
+	private static final String PROPERTY_FOREIGN_SOURCE = "foreign.source";
+	
 	private static FilesystemForeignSourceRepository m_fsr = null;
+	private static File m_csvFile = new File("/tmp/nodes.csv");
+	private static File m_repoPath = new File("/opt/opennms/imports");
+	private static String m_foreignSource = "default";
 
 	public static void main(String[] args) {
 		Runtime.getRuntime().addShutdownHook(createShutdownHook());
-		if (args.length < 2) {
-			System.err.println("Requires 2 parameters.");
+		
+		if (args.length > 0) {
+			try {
+				usageReport();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.exit(0);
+		}
+		
+		try {
+			if (!validProps()) {
+				usageReport();
+				System.exit(-1);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		String fn = args[0];
-		String outDir = args[1];
 		
 		try {
-			parseCsv(fn, outDir);
+			parseCsv(m_csvFile, m_repoPath);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,9 +91,69 @@ public class CsvRequisitionParser {
 		
 		System.out.println("Finished.");
 	}
+
 	
-	protected static void parseCsv(String fname, String outDir) throws IOException {
-		File csv = new File(fname);
+	//need to do some better exception handling here
+	private static boolean validProps() throws IOException, FileNotFoundException, IllegalArgumentException  {
+		
+		String foreignSource = System.getProperty(PROPERTY_FOREIGN_SOURCE);
+		if (foreignSource == null) {
+			m_foreignSource = "default";
+		} else {
+			m_foreignSource = foreignSource;
+		}
+		
+		String csvFileName = System.getProperty(PROPERTY_CSV_FILE);
+		if (csvFileName == null) {
+			return false;
+		} else {
+			m_csvFile = new File(csvFileName);
+			if (!m_csvFile.exists()) {
+				throw new FileNotFoundException("CSV Input File: "+csvFileName+"; Not Found!");
+			}
+		}
+		
+		String fsRepo = System.getProperty(PROPERTY_FS_REPO_PATH);
+		if (fsRepo == null) {
+			fsRepo = ".";
+		}
+		
+		m_repoPath = new File(fsRepo);
+		
+		if (!m_repoPath.exists() || !m_repoPath.isDirectory() || !m_repoPath.canWrite()) {
+			throw new IllegalArgumentException("The specified fs.repo either doesn't exist, isn't writable, or isn't a directory.");
+		} else {
+			m_fsr = new FilesystemForeignSourceRepository();
+			m_fsr.setRequisitionPath(m_repoPath.getCanonicalPath());
+		}
+		
+		return true;
+	}
+
+	private static void usageReport() throws IOException {		
+		System.err.println("Usage: java CsvRequistionParser [<Property>...]\n" +
+				"\n" +
+				"Supported Properties:\n" +
+				"\t"+PROPERTY_CSV_FILE+": default:"+m_csvFile.getCanonicalPath()+"\n" +
+				"\t"+PROPERTY_FS_REPO_PATH+": default:"+m_repoPath.getCanonicalPath()+"\n" +
+				"\t"+PROPERTY_FOREIGN_SOURCE+": default:"+m_foreignSource+"\n" +
+				"\n" +
+				"\n" +
+				"Example:\n" +
+				"\t java -D"+PROPERTY_CSV_FILE+"=/tmp/mynodes.csv "
+				+PROPERTY_FS_REPO_PATH+"= /etc/opennms/imports "
+				+PROPERTY_FOREIGN_SOURCE+"=MyNodes -jar opennms-csv-requisition-1.13.0-SNAPSHOT-jar-with-dependencies.jar"
+				+"\n" +
+				"\n" +
+				"FYI: This application expects the csv file to have 2 elements, nodelabel and IP address.  Example:" +
+				"\n" +
+				"www.opennms.com,64.146.64.212\n" +
+				"github.com,204.232.175.90\n" +
+				"www.juniper.net,2600:1406:1f:195::720\n\n"
+				);
+	}
+
+	protected static void parseCsv(File csv, File m_repo) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
 		
 		String line = null;
@@ -84,24 +163,15 @@ public class CsvRequisitionParser {
 			if (line != null && line.startsWith("#")) {
 				continue;
 			}
-			String[] fields = line.split(",", 6);
-			int commas = fields.length;
-			if (commas != 6) {
-				System.out.println("Error on line: "+Integer.toString(lineNum)+". Found "+Integer.toString(commas)+" fields and expected 6");
+			
+			String[] fields = line.split(",", 2);
+			int fieldCount = fields.length;
+			if (fieldCount != 2) {
+				System.err.println("Error on line: "+Integer.toString(lineNum)+". Found "+Integer.toString(fieldCount)+" fields and expected 2.");
 				continue;
 			}
-			
-			m_fsr = new FilesystemForeignSourceRepository();
-			m_fsr.setRequisitionPath(outDir);
-			
-			RequisitionData rd;
-			try {
-				rd = new RequisitionData(fields);
-			} catch (Throwable e) {
-				System.err.println(e);
-				continue;
-			}
-			
+						
+			RequisitionData rd = new RequisitionData(fields[0], fields[1], m_foreignSource);
 			System.out.println("Line "+Integer.toString(lineNum)+":"+rd.toString());
 
 			Requisition r;
@@ -125,21 +195,21 @@ public class CsvRequisitionParser {
 			iface.setDescr("mgmt-if");
 			iface.setIpAddr(rd.getPrimaryIp());
 			iface.setManaged(true);
-			iface.setSnmpPrimary("P");
+			iface.setSnmpPrimary(PrimaryType.PRIMARY);
 			iface.setStatus(Integer.valueOf(1));
 			iface.setMonitoredServices(services);
 			
 			RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
 			ric.add(iface);
 			
-			RequisitionAssetCollection rac = new RequisitionAssetCollection();
-			rac.add(new RequisitionAsset("Comment", "Customer: "+rd.getCustomerName()));
+			//RequisitionAssetCollection rac = new RequisitionAssetCollection();
+			//rac.add(new RequisitionAsset("Comment", "Customer: "+rd.getCustomerName()));
 			//rac.add(new RequisitionAsset("CustomerID", rd.getCustomerId()));
 			
 			//add categories
 			
 			RequisitionNode rn = new RequisitionNode();
-			rn.setAssets(rac);
+			//rn.setAssets(rac);
 			rn.setBuilding(foreignSource);
 			rn.setCategories(null);
 			rn.setForeignId(rd.getForeignId());

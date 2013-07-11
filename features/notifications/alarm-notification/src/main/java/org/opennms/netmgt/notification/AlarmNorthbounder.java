@@ -35,7 +35,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
@@ -57,7 +56,11 @@ import org.opennms.netmgt.notification.parser.Uei;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AlarmNorthbounder extends AbstractNorthbounder{
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmNorthbounder.class);
 
 	private AlarmNorthbounderConfig m_config;
 
@@ -92,12 +95,10 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			FileInputStream fstream = new FileInputStream(propFile);
 			m_deviceFamilyProp.load(fstream);
 		} catch (IOException e) {
-			LogUtils.errorf(AlarmNorthbounder.class,
-					"IOException while loading devicefamily.properties.IOException "
+			LOG.error("IOException while loading devicefamily.properties.IOException "
 							+ e);
 		} catch (Exception e) {
-			LogUtils.errorf(AlarmNorthbounder.class,
-					"Exception while loading devicefamily.properties.Exception "
+			LOG.error("Exception while loading devicefamily.properties.Exception "
 							+ e);
 		}
 		m_context = JAXBContext.newInstance(AlarmList.class);
@@ -118,8 +119,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			if (isAlarmRequired)
 				return isAlarmRequired;
 			else {
-				LogUtils.debugf(
-						this,
+				LOG.debug(
 						"Alarm with UEI "
 								+ northboundalarm.getUei()
 
@@ -128,7 +128,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			LogUtils.errorf(this, " Exception in accepts method. Message is  ",
+			LOG.error(" Exception in accepts method. Message is  ",
 					e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -173,27 +173,27 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 								|| (clearKey != null && clearKey
 										.contains(configuredUei))) {
 
-							LogUtils.debugf(this, "The UEI " + configuredUei
+							LOG.debug("The UEI " + configuredUei
 									+ " is configured for alarm notification.");
 							int notificationThreshold = 0;
 							try{
 								notificationThreshold = Integer.parseInt(uei.getNotificationThreshold());
 							}catch(NumberFormatException n) {
-								LogUtils.errorf(this,"Notification Threshold " + uei.getNotificationThreshold() + 
+								LOG.error("Notification Threshold " + uei.getNotificationThreshold() + 
 										" is not a valid integer.Taking default value which is 5");
 								notificationThreshold = 5;
 							}
 							int alarmCount = northboundalarm.getCount();
 							if(notificationThreshold == 0) {
-								LogUtils.debugf(this, "Notification Threshold cannot be 0.Taking default value which is 5");
+								LOG.debug("Notification Threshold cannot be 0.Taking default value which is 5");
 								notificationThreshold = 5;
 							}
 							
 							if(alarmCount % notificationThreshold != 1 && notificationThreshold != 1 ) {
 								isAlarmRequired = false;
-								LogUtils.debugf(this, "The northbound alarm count " + alarmCount +" does not match thresholdNotification " + notificationThreshold);
+								LOG.debug("The northbound alarm count " + alarmCount +" does not match thresholdNotification " + notificationThreshold);
 							}else {
-								LogUtils.debugf(this, "The northbound alarm count " + alarmCount +" matches thresholdNotification " + notificationThreshold);
+								LOG.debug("The northbound alarm count " + alarmCount +" matches thresholdNotification " + notificationThreshold);
 								isAlarmRequired = true;
 							}
 							return isAlarmRequired;
@@ -204,8 +204,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 								
 								String reductionKey = northboundalarm.getAlarmKey().split("-")[0];
 
-								LogUtils.debugf(
-										this,
+								LOG.debug(
 										"The alarm with reductionKey"
 												+ reductionKey
 												+ " is configured and is cleared from UI.");
@@ -216,8 +215,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 						}
 					}
 				} else {
-					LogUtils.debugf(
-							this,
+					LOG.debug(
 							"Notification "
 									+ notification.getName()
 									+ " is not enabled and basic filter check not done.");
@@ -225,7 +223,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 				}
 			}
 		} catch (Exception e) {
-			LogUtils.errorf(this, "Error :: in iterateNotificationList method"
+			LOG.error("Error :: in iterateNotificationList method"
 					+ e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -246,18 +244,17 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			String deviceFamilyFromNotifList = basicFilter.getDevicefamily();
 			if (deviceFamilyFromNotifList == null
 					|| deviceFamilyFromNotifList.isEmpty()) {
-				LogUtils.debugf(this, "Device Family Not Configured.");
+				LOG.debug("Device Family Not Configured.");
 				return alarmBoolean;
 			} else if (deviceFamilyFromNotifList.equals("DevicesWithNoSysoid")
 					&& (sysoid == null || sysoid.isEmpty())) {
-				LogUtils.debugf(this, "DevicesWithNoSysoid matches");
+				LOG.debug("DevicesWithNoSysoid matches");
 				return alarmBoolean;
 			} else if ((sysoid == null || sysoid.isEmpty())
 					&& (deviceFamilyFromNotifList != null || !deviceFamilyFromNotifList
 							.isEmpty())) {
 				alarmBoolean = false;
-				LogUtils.debugf(
-						this,
+				LOG.debug(
 						"Sysoid is not present for the received alarm but the device family filter "
 								+ "is configured.Notification will not be sent.");
 				return alarmBoolean;
@@ -271,12 +268,12 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					String sysoidOfDeviceFamily = deviceFamilyEntries.getKey()
 							.toString().trim();
 					if (sysoid.contains(sysoidOfDeviceFamily)) {
-						LogUtils.debugf(this, "Received Device Family "
+						LOG.debug("Received Device Family "
 								+ sysoidOfDeviceFamily + "matches.");
 						alarmBoolean = true;
 						break;
 					} else {
-						LogUtils.debugf(this,
+						LOG.debug(
 								"Device Family does not match matches.Configured :"
 										+ sysoidOfDeviceFamily
 										+ " NorthBoundAlarm Device Family :"
@@ -288,8 +285,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			}
 			}
 		} catch (Exception e) {
-			LogUtils.errorf(
-					this,
+			LOG.error(
 					"Error while checking if device family configured : "
 							+ e.getMessage());
 			throw new NorthbounderException(e);
@@ -309,16 +305,16 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 		boolean alarmBoolean = true;
 		String severityFromNotifList = basicFilter.getSeverity();
 		if (severityFromNotifList == null || severityFromNotifList.isEmpty()) {
-			LogUtils.debugf(this, "Severity is not configured.");
+			LOG.debug("Severity is not configured.");
 			return alarmBoolean;
 		}
 
 		if (severityFromNotifList.contains(northBoundAlarmSeverity)) {
 			alarmBoolean = true;
-			LogUtils.debugf(this, "Received Severity "
+			LOG.debug("Received Severity "
 					+ northBoundAlarmSeverity + " matches.");
 		} else {
-			LogUtils.debugf(this, "Severity does not matches.Configured : "
+			LOG.debug("Severity does not matches.Configured : "
 					+ severityFromNotifList + " NorthBoundAlarmSeverity :"
 					+ northBoundAlarmSeverity);
 			alarmBoolean = false;
@@ -341,18 +337,18 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			for (int j = 0; j < notificationList.size(); j++) {
 				try {
 					notification = notificationList.get(j);
-					LogUtils.debugf(this,
+					LOG.debug(
 							"Checking if " + northboundalarm.getUei()
 									+ " is configured in notification "
 									+ notification.getName());
 					boolean isNotified = processNotification(notification,
 							northboundalarm);
-					LogUtils.warnf(this, "UEI configuration status of "
+					LOG.warn("UEI configuration status of "
 							+ northboundalarm.getUei() + " in notification "
 							+ notification.getName() + " is " + isNotified);
 				} catch (NorthbounderException e) {
 					e.printStackTrace();
-					LogUtils.errorf(this,
+					LOG.error(
 							"Error in alarm notification for north bound alarm with uei " +northboundalarm.getUei() + " while processing the " +
 									"notification " + notification.getName());
 				}
@@ -379,8 +375,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					if (isAlarmRequired) {
 						boolean isNotified = notifyAlarm(notification,
 								northboundalarm);
-						LogUtils.debugf(
-								this,
+						LOG.debug(
 								"Script Invoker status of alarm with UEI "
 										+ uei.getName()
 										+ " w.r.t basic filter in notification "
@@ -388,7 +383,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 										+ isNotified);
 						return isAlarmRequired;
 					} else {
-						LogUtils.debugf(this, "Alarm with UEI "
+						LOG.debug("Alarm with UEI "
 								+ northboundalarm.getUei()
 								+ " need not be notified w.r.t notification "
 								+ notification.getName());
@@ -396,12 +391,11 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					}
 				}
 			} else {
-				LogUtils.warnf(this, "Notification " + notification.getName()
+				LOG.warn("Notification " + notification.getName()
 						+ " is not enabled.");
 			}
 		} catch (Exception e) {
-			LogUtils.errorf(
-					this,
+			LOG.error(
 					"Error in method processNotification. Message is  "
 							+ e.getMessage());
 			throw new NorthbounderException(e);
@@ -420,7 +414,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 	 */
 	private boolean isUeiConfigured(Uei uei, NorthboundAlarm northboundalarm)
 			throws NorthbounderException {
-		LogUtils.debugf(this,
+		LOG.debug(
 				"In method isUeiConfigured for NorthboundAlarm with UEI  "
 						+ northboundalarm.getUei());
 		boolean isAlarmRequired = false;
@@ -447,14 +441,14 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					isAlarmRequired = isAlarmConfiguredByBasicFilter(
 							northboundalarm, basicFilter);
 					if (!isAlarmRequired && !uiclear) {
-						LogUtils.debugf(this,
+						LOG.debug(
 								"Uei " + northboundalarm.getAlarmKey()
 										+ " is not configured.");
 
 					}
 					if (!isAlarmRequired && uiclear) {
 						String reductionKey = northboundalarm.getAlarmKey().split("-")[0];
-						LogUtils.debugf(this,
+						LOG.debug(
 								"Alarm cleared from UI with reduction key  "
 										+ reductionKey + " is not configured or the filter is not matched.");
 
@@ -463,12 +457,11 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 				}
 
 			} else {
-				LogUtils.debugf(this, "Uei " + uei.getName()
+				LOG.debug("Uei " + uei.getName()
 						+ " does not match with " + northboundalarm.getUei());
 			}
 		} catch (Exception e) {
-			LogUtils.errorf(
-					this,
+			LOG.error(
 					"Error in method isUeiConfigured. Message is  "
 							+ e.getMessage());
 			throw new NorthbounderException(e);
@@ -499,7 +492,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			String sysoid = null;
 			Integer nodeId = northboundalarm.getNodeId();
 			if (nodeId == null || nodeId == 0) {
-				LogUtils.debugf(this, "Node id is " + nodeId + ".");
+				LOG.debug("Node id is " + nodeId + ".");
 			}
 			if (nodeId != null) {
 				List<OnmsNode> onmsNodeList = m_nodeDao.findByLabel(m_nodeDao
@@ -516,10 +509,10 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 				}
 			}
 			isAlarmRequired = isDeviceFamilyConfigured(basicFilter, sysoid);
-			LogUtils.debugf(this,"Device family check status " + isAlarmRequired);
+			LOG.debug("Device family check status " + isAlarmRequired);
 
 		} catch (Exception e) {
-			LogUtils.errorf(this,
+			LOG.error(
 					"Error in method isAlarmConfiguredByBasicFilter. Message is  "
 							+ e.getMessage());
 			throw new NorthbounderException(e);
@@ -555,7 +548,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			boolean isAdvanceFilterPresent = advanceFilter.callAdvanceFilter(
 					nbiAlarm, notification.getName(), alarmsXML, script);
 			if (isAdvanceFilterPresent == false) {
-				LogUtils.debugf(this, "Script " + script.getScriptname()
+				LOG.debug("Script " + script.getScriptname()
 						+ " to be invoked for North bound alarm list "
 						+ nbiAlarmList.toString());
 				Errorhandling errorHandling = script.getErrorhandling();
@@ -565,14 +558,14 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 						errorHandling.getRetryIntervalInseconds());
 				scriptInvokerResult = scriptInvoker.invokeScript();
 			} else {
-				LogUtils.debugf(this,
+				LOG.debug(
 						"Advance filtering is done by drl file for notification "
 								+ notification.getName());
 			}
 
 			return scriptInvokerResult;
 		} catch (Exception e) {
-			LogUtils.errorf(this, "Error in method notifyAlarm. Message is  "
+			LOG.error("Error in method notifyAlarm. Message is  "
 					+ e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -591,10 +584,10 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 		try {
 			m_marshaller.marshal(nbiAlarmList, out);
 			String xml = out.toString();
-			LogUtils.debugf(this, "XML to be forwarded is  " + xml);
+			LOG.debug("XML to be forwarded is  " + xml);
 			return xml;
 		} catch (Exception e) {
-			LogUtils.errorf(this, "Failed to convert nbialarms to xml",
+			LOG.error("Failed to convert nbialarms to xml",
 					e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -685,7 +678,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					try{
 						ifIndex = onmsIpInterface.getIfIndex();
 					}catch(Exception e){
-						LogUtils.errorf(this, "Error while getting index for node "
+						LOG.error("Error while getting index for node "
 								+ northboundalarm.getNodeId() + e.getMessage());
 						ifIndex = null;
 					}
@@ -700,7 +693,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			}
 
 		} catch (Exception e) {
-			LogUtils.errorf(this, "Error while creating NBIAlarm for "
+			LOG.error("Error while creating NBIAlarm for "
 					+ northboundalarm.toString() + e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -735,7 +728,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					try{
 						ifIndex = onmsIpInterface.getIfIndex();
 					}catch(Exception e){
-						LogUtils.errorf(this, "Error while getting index for node "
+						LOG.error("Error while getting index for node "
 								+ northboundalarm.getNodeId() + e.getMessage());
 						ifIndex = null;
 					}
@@ -749,7 +742,7 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 				}
 			}
 		} catch (Exception e) {
-			LogUtils.errorf(this, "Error while creating UI Clear NBIAlarm for "
+			LOG.error("Error while creating UI Clear NBIAlarm for "
 					+ northboundalarm.toString() + e.getMessage());
 			throw new NorthbounderException(e);
 		}
@@ -804,18 +797,15 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 					+ "/etc/alarm-notification/devicefamily.properties");
 			FileInputStream fstream = new FileInputStream(propFile);
 			m_deviceFamilyProp.load(fstream);
-			LogUtils.debugf(AlarmNorthbounder.class,
-					"Device family Properties loaded successfully.");
+			LOG.debug("Device family Properties loaded successfully.");
 		} catch (IOException e) {
 			e.printStackTrace();
-			LogUtils.errorf(AlarmNorthbounder.class,
-					"IOException while loading devicefamily.properties.IOException "
+			LOG.error("IOException while loading devicefamily.properties.IOException "
 							+ e.getMessage());
 			return false;
 		} catch (Exception e) {
 			e.printStackTrace();
-			LogUtils.errorf(AlarmNorthbounder.class,
-					"Exception while loading devicefamily.properties.Exception "
+			LOG.error("Exception while loading devicefamily.properties.Exception "
 							+ e.getMessage());
 			return false;
 		}
@@ -829,11 +819,11 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			m_alarmNotificationConfigDao.setConfigResource(resource);
 			m_alarmNotificationConfigDao.afterPropertiesSet();
 			m_config = m_alarmNotificationConfigDao.getConfig();
-			LogUtils.debugf(AlarmNorthbounder.class,"Alarm Notfication Config file loaded successfully.");
+			LOG.debug("Alarm Notfication Config file loaded successfully.");
 		
 		} catch (Exception e) {
 			e.printStackTrace();
-			LogUtils.errorf(AlarmNorthbounder.class,"Error in AlarmNorthBounder in reloading alarmNotificationconf.xml" + e.getMessage());
+			LOG.error("Error in AlarmNorthBounder in reloading alarmNotificationconf.xml" + e.getMessage());
 			return false;
 		}
 		
@@ -848,8 +838,8 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 		boolean drlBoolean = loadDroolFiles();
 		
 		if(confBoolean ==true && deviceFamilyBoolean == true && drlBoolean == true)
-			LogUtils.infof(AlarmNorthbounder.class,"Alarm North bounder configuartion changes loaded suucessfuly.");
+			LOG.info("Alarm North bounder configuartion changes loaded suucessfuly.");
 		else
-			LogUtils.errorf(AlarmNorthbounder.class,"One or more alarm north bounder config files are not loaded properly.");
+			LOG.error("One or more alarm north bounder config files are not loaded properly.");
 	}
 }

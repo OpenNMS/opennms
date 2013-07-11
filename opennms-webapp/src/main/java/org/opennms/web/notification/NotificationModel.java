@@ -38,8 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NotificationModel class.</p>
@@ -49,6 +50,9 @@ import org.opennms.core.resource.Vault;
  * @since 1.8.1
  */
 public class NotificationModel extends Object {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NotificationModel.class);
+
     private static final String USERID = "userID";
 
     private static final String NOTICE_TIME = "notifytime";
@@ -93,9 +97,7 @@ public class NotificationModel extends Object {
 
     private static final String USER_OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
-    private Logger log() {
-        return Logger.getLogger(getClass());
-    }
+    
 
     /**
      * <p>getNoticeInfo</p>
@@ -148,7 +150,7 @@ public class NotificationModel extends Object {
 
             nbean.m_sentTo = sentToList;
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             try {
@@ -214,7 +216,7 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            log().error("allNotifications: Problem getting data from the notifications table: " + e, e);
+            LOG.error("allNotifications: Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -241,21 +243,21 @@ public class NotificationModel extends Object {
                 serviceName = rs.getString("servicename");
             }
         } catch (SQLException e) {
-            log().warn("unable to get service name for service ID '" + id + "'", e);
+            LOG.warn("unable to get service name for service ID '{}'", id, e);
         } finally {
             try {
                 if (rs != null) {
                     rs.close();
                 }
             } catch (SQLException e) {
-                log().warn("unable to close result set while getting service name for service ID '" + id + "'", e);
+                LOG.warn("unable to close result set while getting service name for service ID '{}'", id, e);
             } finally {
                 try {
                     if (ps != null) {
                         ps.close();
                     }
                 } catch (SQLException e) {
-                    log().warn("unable to close prepared statement while getting service name for service ID '" + id + "'", e);
+                    LOG.warn("unable to close prepared statement while getting service name for service ID '{}'", id, e);
                 }
             }
         }
@@ -301,7 +303,7 @@ public class NotificationModel extends Object {
                 vector.addElement(nbean);
             }
         } catch (SQLException e) {
-            log().error("Error occurred in rs2NotifyBean: " + e, e);
+            LOG.error("Error occurred in rs2NotifyBean: {}", e, e);
             throw e;
         }
 
@@ -333,7 +335,7 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -364,7 +366,7 @@ public class NotificationModel extends Object {
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -401,7 +403,7 @@ public class NotificationModel extends Object {
             rs.close();
             pstmt.close();
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -432,7 +434,7 @@ public class NotificationModel extends Object {
             rs.close();
             pstmt.close();
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -465,7 +467,7 @@ public class NotificationModel extends Object {
 
             pstmt.close();
         } catch (SQLException e) {
-            log().error("Problem acknowledging notification " + noticeId + " as answered by '" + name + "': " + e, e);
+            LOG.error("Problem acknowledging notification {} as answered by '{}': {}", noticeId, name, e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);
@@ -503,7 +505,7 @@ public class NotificationModel extends Object {
             // Close prepared statement.
             pstmt.close();
         } catch (SQLException e) {
-            log().error("Problem getting data from the notifications table: " + e, e);
+            LOG.error("Problem getting data from the notifications table: {}", e, e);
             throw e;
         } finally {
             Vault.releaseDbConnection(conn);

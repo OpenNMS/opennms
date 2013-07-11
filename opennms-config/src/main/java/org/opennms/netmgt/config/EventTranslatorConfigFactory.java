@@ -53,7 +53,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
@@ -81,6 +82,7 @@ import org.springframework.beans.PropertyAccessorFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class EventTranslatorConfigFactory implements EventTranslatorConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(EventTranslatorConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -253,10 +255,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		m_loaded=true;
 	}
 	
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(EventTranslatorConfig.class);
-	}
-	
     /**
      * Return the PassiveStatus configuration.
      * 
@@ -384,14 +382,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		boolean matches(Event e) {
 			// short circuit if the eui doesn't match
 			if (!ueiMatches(e)) {
-			    if (log().isDebugEnabled()) {
-			        log().debug("TransSpec.matches: No match comparing spec UEI: "+m_spec.getUei()+" with event UEI: "+e.getUei());
-			    }
+			    LOG.debug("TransSpec.matches: No match comparing spec UEI: {} with event UEI: {}", e.getUei(), m_spec.getUei());
                 return false;
             }
 			
 			// uei matches to go thru the mappings
-            log().debug("TransSpec.matches: checking mappings for spec.");
+            LOG.debug("TransSpec.matches: checking mappings for spec.");
             for (TranslationMapping transMap : getTranslationMappings()) {
 				if (transMap.matches(e)) 
 					return true;
@@ -471,15 +467,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			for (Iterator<AssignmentSpec> it = getAssignmentSpecs().iterator(); it.hasNext();) {
 				assignSpec = it.next();
 				if (!assignSpec.matches(e)) {
-				    if (log().isDebugEnabled()) {
-				        log().debug("TranslationMapping.assignmentsMatch: assignmentSpec: "+assignSpec.getAttributeName()+" doesn't match.");
-				    }
+				    LOG.debug("TranslationMapping.assignmentsMatch: assignmentSpec: {} doesn't match.", assignSpec.getAttributeName());
 					return false;
                 }
 			}
-			if (log().isDebugEnabled()) {
-			    log().debug("TranslationMapping.assignmentsMatch: assignmentSpec: "+assignSpec.getAttributeName()+" matches!");
-			}
+			LOG.debug("TranslationMapping.assignmentsMatch: assignmentSpec: {} matches!", assignSpec.getAttributeName());
 			return true;
 		}
 		boolean matches(Event e) {
@@ -531,7 +523,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 				BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(targetEvent);
 				bean.setPropertyValue(getAttributeName(), value);
 			} catch(FatalBeanException e) {
-				log().error("Unable to set value for attribute "+getAttributeName()+"to value "+value+ " Exception:" +e);
+				LOG.error("Unable to set value for attribute {}to value {} Exception: {}", e, getAttributeName(), value);
 				throw new TranslationFailedException("Unable to set value for attribute "+getAttributeName()+" to value "+value);
 			}
 		}
@@ -546,7 +538,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 @Override
 		protected void setValue(Event targetEvent, String value) {
 			if (value == null) {
-			    log().debug("Value of parameter is null setting to blank");
+			    LOG.debug("Value of parameter is null setting to blank");
 			    value="";
 			}
 
@@ -557,9 +549,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 						val = new org.opennms.netmgt.xml.event.Value();
 						parm.setValue(val);
 					}
-					if (log().isDebugEnabled()) {
-					    log().debug("Overriding value of parameter "+getAttributeName()+". Setting it to "+value);
-					}
+					LOG.debug("Overriding value of parameter {}. Setting it to {}", value, getAttributeName());
 					val.setContent(value);
 					return;
 				}
@@ -570,9 +560,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			newParm.setParmName(getAttributeName());
 			org.opennms.netmgt.xml.event.Value val = new org.opennms.netmgt.xml.event.Value();
 			newParm.setValue(val);
-			if (log().isDebugEnabled()) {
-			    log().debug("Setting value of parameter "+getAttributeName()+" to "+value);
-			}
+			LOG.debug("Setting value of parameter {} to {}", value, getAttributeName());
 			val.setContent(value);
 			targetEvent.addParm(newParm);
 		}
@@ -600,7 +588,6 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 	}
 	
 	class ConstantValueSpec extends ValueSpec {
-		
 		Value m_constant;
 
 		public ConstantValueSpec(Value constant) {
@@ -611,7 +598,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 @Override
 		public boolean matches(Event e) {
 			if (m_constant.getMatches() != null) {
-                log().warn("ConstantValueSpec.matches: matches not allowed for constant value.");
+                LOG.warn("ConstantValueSpec.matches: matches not allowed for constant value.");
 				throw new IllegalStateException("Illegal to use matches with constant type values");
             }
 			return true;
@@ -673,7 +660,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		    int rowCount = query.execute();
 
 		    if (rowCount < 1) {
-                log().info("No results found for query "+query.reproduceStatement()+". No match.");
+                LOG.info("No results found for query {}. No match.", query.reproduceStatement());
                 return false;
 		    }
 		    
@@ -723,14 +710,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		    Query query = createQuery(srcEvent);
             query.execute();
 			if (query.getRowCount() < 1) {
-                log().info("No results found for query "+query.reproduceStatement()+". Returning null");
+                LOG.info("No results found for query {}. Returning null", query.reproduceStatement());
 				return null;
 			}
 			else {
 			    Object result = query.getResult();
-			    if (log().isDebugEnabled()) {
-			        log().debug("getResult: result of single result querier is:"+result);
-			    }
+			    LOG.debug("getResult: result of single result querier is: {}", result);
 			    if (result != null) {
 			        return result.toString();
 			    } else {
@@ -750,24 +735,19 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			
 			String attributeValue = getAttributeValue(e);
 			if (attributeValue == null) {
-                log().debug("AttributeValueSpec.matches: Event attributeValue doesn't match because attributeValue itself is null");
+                LOG.debug("AttributeValueSpec.matches: Event attributeValue doesn't match because attributeValue itself is null");
                 return false;
             }
 
 			if (m_val.getMatches() == null) {
-			    if (log().isDebugEnabled()) {
-			        log().debug("AttributeValueSpec.matches: Event attributeValue: "+attributeValue+" matches because pattern is null");
-			    }
+			    LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} matches because pattern is null", attributeValue);
                 return true;
             }
 
 			Pattern p = Pattern.compile(m_val.getMatches());
 			Matcher m = p.matcher(attributeValue);
 
-			if (log().isDebugEnabled()) {
-			    log().debug("AttributeValueSpec.matches: Event attributeValue: " + attributeValue + " " +
-			                (m.matches()? "matches" : "doesn't match") + " pattern: " + m_val.getMatches());
-			}
+			LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} {} pattern: {}", attributeValue, (m.matches()? "matches" : "doesn't match"), m_val.getMatches());
             if (m.matches()) {
                 return true;
             } else {
@@ -841,7 +821,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
                 
 				return (String)bean.convertIfNecessary(bean.getPropertyValue(getAttributeName()), String.class);
 			} catch (FatalBeanException ex) {
-				log().error("Property "+getAttributeName()+" does not exist on Event", ex);
+				LOG.error("Property {} does not exist on Event", ex, getAttributeName());
 				throw new TranslationFailedException("Property "+getAttributeName()+" does not exist on Event");
 			}
 		}
@@ -863,18 +843,14 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			for (Parm parm : e.getParmCollection()) {
 				
                 if (parm.getParmName().equals(attrName)) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("getAttributeValue: eventParm name: '"+parm.getParmName()+" equals translation parameter name: '"+attrName);
-                    }
+                    LOG.debug("getAttributeValue: eventParm name: '{} equals translation parameter name: ' {}", attrName, parm.getParmName());
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
                 }
                 
 				String trimmedAttrName = StringUtils.removeStart(attrName, "~");
 				
                 if (attrName.startsWith("~") && (parm.getParmName().matches(trimmedAttrName))) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("getAttributeValue: eventParm name: '"+parm.getParmName()+" matches translation parameter name expression: '"+trimmedAttrName);
-                    }
+                    LOG.debug("getAttributeValue: eventParm name: '{} matches translation parameter name expression: ' {}", trimmedAttrName, parm.getParmName());
                     return (parm.getValue() == null ? "" : parm.getValue().getContent());
 				}
 			}

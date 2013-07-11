@@ -34,7 +34,8 @@ import java.util.Properties;
 import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmValue;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
 import org.openoss.opennms.spring.qosd.QoSDimpl2;
@@ -50,9 +51,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class AlarmListConnectionManagerSpringImpl implements AlarmListConnectionManager {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmListConnectionManagerSpringImpl.class);
 
 	boolean init=false; // set true if init called
-	ThreadCategory log;
 	int status = DISCONNECTED; //  this changes to CONNECTED when the bean is instantiated 
 	
 	// ************************
@@ -116,16 +117,14 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/** {@inheritDoc} */
         @Override
 	public void init(PropertiesLoader props, Properties env) {
-		log = QoSDimpl2.getLog();	//Get a reference to the QoSD logger
-
 		try {
-			if (log.isDebugEnabled()) log.debug("AlarmListConnectionManagerSpringImpl.init() initialising AlarmMonitorDao. Setting alarmMonitorDao.setLogName to:"+ log.getName());
-			alarmMonitorDao.setLogName(log.getName());
+			LOG.debug("AlarmListConnectionManagerSpringImpl.init() initialising AlarmMonitorDao. Setting alarmMonitorDao.setLogName to:{}", LOG.getName());
+			alarmMonitorDao.setLogName(LOG.getName());
 			alarmMonitorDao.init();
 			
 		}
 		catch (Throwable ex) {
-			log.error("AlarmListConnectionManagerSpringImpl.init() problem creating AlarmMonitorDao"+ ex);
+			LOG.error("AlarmListConnectionManagerSpringImpl.init() problem creating AlarmMonitorDao", ex);
 		}
 		init = true;		//inform the thread that it has been initialised 
 							//and can execute the run() method.
@@ -144,7 +143,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 		try {
 			//alarmMonitorDao.ejbRemove(); TODO - NEED TO CLOSE BEAN PROPERLY
 		}catch (Throwable ex) {
-			log.error("AlarmListConnectionManagerSpringImpl.init() problem stopping alarmMonitorDao"+ ex);
+			LOG.error("AlarmListConnectionManagerSpringImpl.init() problem stopping alarmMonitorDao", ex);
 		}
 		status = DISCONNECTED;
 

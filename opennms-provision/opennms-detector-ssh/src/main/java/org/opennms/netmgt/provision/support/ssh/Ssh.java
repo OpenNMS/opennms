@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.core.utils.TimeoutTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Ssh class.</p>
@@ -48,6 +49,7 @@ import org.opennms.core.utils.TimeoutTracker;
  */
 public class Ssh extends AbstractPoll {
     
+    private static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
     // SSH port is 22
     /** Constant <code>DEFAULT_PORT=22</code> */
     public static final int DEFAULT_PORT = 22;
@@ -258,11 +260,11 @@ public class Ssh extends AbstractPoll {
 
             return true;
         } catch (NumberFormatException e) {
-            log().debug("unable to parse server version", e);
+            LOG.debug("unable to parse server version", e);
             setError(e);
             disconnect();
         } catch (Throwable e) {
-            log().debug("connection failed", e);
+            LOG.debug("connection failed", e);
             setError(e);
             disconnect();
         }
@@ -277,21 +279,21 @@ public class Ssh extends AbstractPoll {
             try {
                 m_writer.close();
             } catch (IOException e) {
-                log().warn("error disconnecting output stream", e);
+                LOG.warn("error disconnecting output stream", e);
             }
         }
         if (m_reader != null) {
             try {
                 m_reader.close();
             } catch (IOException e) {
-                log().warn("error disconnecting input stream", e);
+                LOG.warn("error disconnecting input stream", e);
             }
         }
         if (m_socket != null) {
             try {
                 m_socket.close();
             } catch (IOException e) {
-                log().warn("error disconnecting socket", e);
+                LOG.warn("error disconnecting socket", e);
             }
         }
     }
@@ -328,9 +330,5 @@ public class Ssh extends AbstractPoll {
         }
         
         return ps;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

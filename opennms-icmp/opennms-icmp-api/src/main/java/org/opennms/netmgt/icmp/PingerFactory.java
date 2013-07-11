@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.icmp;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>PingerFactory class.</p>
@@ -37,6 +38,7 @@ import org.opennms.core.utils.LogUtils;
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  */
 public abstract class PingerFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(PingerFactory.class);
 	/**
      * The {@link Pinger} instance.
      */
@@ -56,19 +58,19 @@ public abstract class PingerFactory {
                 m_pinger = clazz.newInstance();
             } catch (final ClassNotFoundException e) {
                 IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + pingerClassName, e);
-                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                LOG.error(ex.getLocalizedMessage(), ex);
                 throw ex;
             } catch (final InstantiationException e) {
                 IllegalArgumentException ex = new IllegalArgumentException("Error trying to create pinger of type " + clazz, e);
-                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                LOG.error(ex.getLocalizedMessage(), ex);
                 throw ex;
             } catch (final IllegalAccessException e) {
                 IllegalArgumentException ex = new IllegalArgumentException("Unable to create pinger of type " + clazz + ".  It does not appear to have a public constructor", e);
-                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                LOG.error(ex.getLocalizedMessage(), ex);
                 throw ex;
             } catch (final Throwable e) {
                 IllegalArgumentException ex = new IllegalArgumentException("Unexpected exception thrown while trying to create pinger of type " + clazz, e);
-                LogUtils.errorf(PingerFactory.class, ex, ex.getMessage());
+                LOG.error(ex.getLocalizedMessage(), ex);
                 throw ex;
             }
         }

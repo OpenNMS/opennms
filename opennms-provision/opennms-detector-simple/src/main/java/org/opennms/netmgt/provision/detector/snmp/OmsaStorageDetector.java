@@ -35,6 +35,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +49,8 @@ import org.springframework.stereotype.Component;
  */
 @Scope("prototype")
 public class OmsaStorageDetector extends SnmpDetector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OmsaStorageDetector.class);
 
     /**
      * Name of monitored service.
@@ -87,11 +91,11 @@ public class OmsaStorageDetector extends SnmpDetector {
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
 
             if (virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                log().debug("SNMP poll failed: no results, addr=" + address + " oid=" + virtualDiskRollUpStatusSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", address, virtualDiskRollUpStatusSnmpObject);
                 return false;
             }
             if (virtualDiskRollUpStatus.toInt() != 3) { // 3 means Online
-                log().debug("OMSAStorageMonitor.poll: Bad Disk Found. Log vol(" + m_virtualDiskNumber + ") degraded");
+                LOG.debug("OMSAStorageMonitor.poll: Bad Disk Found. Log vol({}) degraded", m_virtualDiskNumber);
                 return false;
             }
         } catch (Throwable t) {

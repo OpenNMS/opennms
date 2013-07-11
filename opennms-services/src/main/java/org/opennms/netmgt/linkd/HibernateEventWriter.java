@@ -40,7 +40,8 @@ import java.util.List;
 import org.hibernate.criterion.Restrictions;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -73,6 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 public class HibernateEventWriter extends AbstractQueryManager implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
 	@Autowired
 	private NodeDao m_nodeDao;
 
@@ -214,42 +216,42 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	
 		final OnmsNode onmsNode = getNode(node.getNodeId());
         if (onmsNode == null) {
-            LogUtils.debugf(this, "no node found!");
+            LOG.debug("no node found!");
             return null;
         }
         
-		LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
+		LOG.debug("storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: {}/{}", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
 		if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
 		    processOspf(node,snmpColl,scanTime);
 		}
 	        
-		LogUtils.debugf(this, "storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
+		LOG.debug("storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: {}/{}/{}", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
 	        if (snmpColl.hasLldpLocalGroup()) {
 		        processLldp(node,snmpColl,scanTime);
 		}
         
-        LogUtils.debugf(this, "storeSnmpCollection: hasIpNetToMediaTable: %b", snmpColl.hasIpNetToMediaTable());
+        LOG.debug("storeSnmpCollection: hasIpNetToMediaTable: {}", snmpColl.hasIpNetToMediaTable());
         if (snmpColl.hasIpNetToMediaTable()) {
             processIpNetToMediaTable(node, snmpColl,scanTime);
         }
 
-        LogUtils.debugf(this, "storeSnmpCollection: hasCdpCacheTable: %b", snmpColl.hasCdpCacheTable());
+        LOG.debug("storeSnmpCollection: hasCdpCacheTable: {}", snmpColl.hasCdpCacheTable());
         if (snmpColl.hasCdpGlobalGroup() && snmpColl.hasCdpCacheTable()) {
             processCdp(node, snmpColl, scanTime);
         }
 
-        LogUtils.debugf(this, "storeSnmpCollection: hasRouteTable: %b", snmpColl.hasRouteTable());
+        LOG.debug("storeSnmpCollection: hasRouteTable: {}", snmpColl.hasRouteTable());
         if (snmpColl.hasRouteTable()) {
             processRouteTable(onmsNode,node, snmpColl,scanTime);
         }
 
-        LogUtils.debugf(this, "storeSnmpCollection: hasVlanTable: %b", snmpColl.hasVlanTable());
+        LOG.debug("storeSnmpCollection: hasVlanTable: {}", snmpColl.hasVlanTable());
         if (snmpColl.hasVlanTable()) {
             processVlanTable(onmsNode,node, snmpColl,scanTime);
         }
 
         for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
-            LogUtils.debugf(this, "storeSnmpCollection: parsing bridge data on VLAN %s/%s", vlan.getVlanId(), vlan.getVlanName());
+            LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
             storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
         }
 
@@ -295,22 +297,16 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
             final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
             if (atInterfaces.size() == 0) {
-                LogUtils.debugf(this,
-                                "storeDiscoveryLink: No nodeid found on DB for mac address %s on link. Skipping.",
-                                lkm.getMacAddress());
+                LOG.debug("storeDiscoveryLink: No nodeid found on DB for mac address {} on link. Skipping.", lkm.getMacAddress());
                 continue;
             }
             if (atInterfaces.size() > 1) {
-                LogUtils.debugf(this,
-                                "storeDiscoveryLink: More than one atInterface returned for the mac address %s. Returning the first.",
-                                lkm.getMacAddress());
+                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Returning the first.", lkm.getMacAddress());
             }
             final OnmsAtInterface atInterface = atInterfaces.iterator().next();
             if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(),
                                               discoveryLink.getPackageName())) {
-                LogUtils.debugf(this,
-                                "storeDiscoveryLink: IP address %s not found on link.  Skipping.",
-                                atInterface.getIpAddress());
+                LOG.debug("storeDiscoveryLink: IP address {} not found on link.  Skipping.", atInterface.getIpAddress());
                 continue;
             }
             final OnmsNode atInterfaceNode = atInterface.getNode();
@@ -329,7 +325,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             dli.setParentIfIndex(lkm.getParentifindex());
             dli.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
-            LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);
+            LOG.debug("storeDiscoveryLink: Storing {}", dli);
         }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now,getLinkd().getSource());
         m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),getLinkd().getSource());
@@ -371,7 +367,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	return -1;
         } else {
         	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "getIfIndexByName: More than one SnmpInterface matches nodeId %d and snmpIfName/snmpIfDescr %s", targetCdpNodeId, cdpTargetDevicePort);
+			LOG.debug("getIfIndexByName: More than one SnmpInterface matches nodeId {} and snmpIfName/snmpIfDescr {}", targetCdpNodeId, cdpTargetDevicePort);
         	}
         	return interfaces.get(0).getIfIndex();
         }
@@ -387,8 +383,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         criteria.add(Restrictions.eq("node.type", "A"));
         List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
         
-        LogUtils.debugf(this, "getNodeidFromIp: Found %d nodeids matching " +
-        		"ipAddress %s", interfaces.size(),str(cdpTargetIpAddr));
+        LOG.debug("getNodeidFromIp: Found {} nodeids matching ipAddress {}", interfaces.size(),str(cdpTargetIpAddr));
         for (final OnmsIpInterface ipinterface : interfaces) {
             nodeids.add(ipinterface.getNode().getId());
         }
@@ -403,8 +398,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
         final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findByIpAddress(str(nexthop));
 		
-        LogUtils.debugf(this, "getRouteInterface: Found %d interface matching " +
-            		"ipAddress %s", interfaces.size(),str(nexthop));
+        LOG.debug("getRouteInterface: Found {} interface matching ipAddress {}", interfaces.size(),str(nexthop));
 
         for (OnmsIpInterface ipInterface : interfaces) {
 			RouterInterface route = null;
@@ -417,7 +411,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 			}
 			route.setNextHop(nexthop);
 			route.setIfindex(ifindex);
-            LogUtils.debugf(this, "getRouteInterface: adding %s route interface" ,route.toString());
+            LOG.debug("getRouteInterface: adding {} route interface" ,route);
 			routes.add(route);
         }
         return routes;
@@ -431,7 +425,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	    if (snmpInterface != null) {
 	        snmpIfType = snmpInterface.getIfType();
 	    }
-	    LogUtils.debugf(this, "getSnmpIfType(%d, %s), found %d.", nodeId, ifIndex, snmpIfType);
+	    LOG.debug("getSnmpIfType({}, {}), found {}.", nodeId, ifIndex, snmpIfType);
 	    return snmpIfType;
 	}
 
@@ -629,7 +623,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        LogUtils.debugf(this, "Initialized %s", this.getClass().getSimpleName());
+        LOG.debug("Initialized {}", this.getClass().getSimpleName());
     }
 
     @Override

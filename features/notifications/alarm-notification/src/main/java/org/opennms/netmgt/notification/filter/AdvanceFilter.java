@@ -19,13 +19,16 @@ package org.opennms.netmgt.notification.filter;
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.notification.NBIAlarm;
 import org.opennms.netmgt.notification.parser.Errorhandling;
 import org.opennms.netmgt.notification.parser.Script;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AdvanceFilter {
+	private static final Logger LOG = LoggerFactory.getLogger(AdvanceFilter.class);
 
 	public boolean callAdvanceFilter(NBIAlarm nbiAlarm,
 			String notificationName, String alarmXML, Script script)
@@ -35,11 +38,7 @@ public class AdvanceFilter {
 			KnowledgeBase knowledgeBase = DroolsFileLoader
 					.getKnowledgeBaseForDrl(notificationName + ".drl");
 			if (knowledgeBase == null) {
-				LogUtils.debugf(
-						this,
-						"Drool file with name "
-								+ notificationName
-								+ ".drl is not present or the knowledgebase is not loaded.");
+				LOG.debug("Drool file with name " + notificationName + ".drl is not present or the knowledgebase is not loaded.");
 				return false;
 			} else {
 				nbiAlarm.setAlarmXML(alarmXML);
@@ -53,12 +52,12 @@ public class AdvanceFilter {
 			}
 			session = knowledgeBase.newStatefulKnowledgeSession();
 			FactHandle factHandle = session.insert(nbiAlarm);
-			LogUtils.debugf(this, "Fact Handle for " + notificationName
+			LOG.debug("Fact Handle for " + notificationName
 					+ ".drl is " + factHandle.toString());
-			LogUtils.debugf(this, "Rules in " + notificationName
+			LOG.debug("Rules in " + notificationName
 					+ ".drl is being triggerred.");
 			int rulesFired = session.fireAllRules();
-			LogUtils.debugf(this, "Number of rules triggered in "
+			LOG.debug("Number of rules triggered in "
 					+ notificationName + ".drl is " + rulesFired);
 		} catch (Exception e) {
 			e.printStackTrace();

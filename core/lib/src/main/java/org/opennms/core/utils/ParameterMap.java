@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
@@ -40,6 +43,8 @@ import java.util.StringTokenizer;
  * @deprecated This class *modifies* the maps that are passed in, we should really do it another way.
  */
 public abstract class ParameterMap {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ParameterMap.class);
 	
 	/**
 	 * This method is used to lookup a specific key in the map. If the mapped
@@ -67,7 +72,7 @@ public abstract class ParameterMap {
                 value = Long.parseLong((String) oValue);
             } catch (NumberFormatException ne) {
                 value = defValue;
-                LogUtils.infof(ParameterMap.class, ne, "getKeyedLong: Failed to convert value %s for key %s", oValue , key);
+                LOG.info("getKeyedLong: Failed to convert value {} for key {}", oValue , key, ne);
             }
             map.put(key, new Long(value));
         } else if (oValue != null) {
@@ -126,7 +131,7 @@ public abstract class ParameterMap {
                     int x = Integer.parseInt(token);
                     tmpList.add(Integer.valueOf(x));
                 } catch (NumberFormatException e) {
-                    LogUtils.warnf(ParameterMap.class, e, "getKeyedIntegerArray: failed to convert value %s to int array for key %s due to value %s", oValue, key, token);
+                	LOG.warn("getKeyedIntegerArray: failed to convert value {} to int array for key {} due to value {}", oValue, key, token, e);
                 }
             }
             result = new int[tmpList.size()];
@@ -198,7 +203,7 @@ public abstract class ParameterMap {
                 value = ((Boolean) oValue).booleanValue();
             } catch (NumberFormatException ne) {
                 value = defValue;
-                LogUtils.infof(ParameterMap.class, ne, "getKeyedBoolean: Failed to convert value %s for key %s", oValue, key);
+                LOG.info("getKeyedBoolean: Failed to convert value {} for key {}", oValue, key, ne);
             }
             map.put(key, Boolean.valueOf(value));
         } else if (oValue != null) {

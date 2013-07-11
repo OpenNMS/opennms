@@ -35,9 +35,11 @@ import junit.framework.TestCase;
 
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RtTicketerPluginTest extends TestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(RtTicketerPluginTest.class);
 
     /**
      * Test Cases for RtTicketerPlugin
@@ -80,7 +82,7 @@ public class RtTicketerPluginTest extends TestCase {
         final String testHome = System.getProperty("user.home") + File.separatorChar + ".opennms" + File.separatorChar + "test-home";
         final File testProp = new File(testHome + File.separatorChar + "etc" + File.separatorChar + "rt.properties");
         if (testProp.exists()) {
-            LogUtils.debugf(this, "%s exists, using it instead of src/test/opennms-home", testHome);
+            LOG.debug("{} exists, using it instead of src/test/opennms-home", testHome);
             System.setProperty("opennms.home", testHome);
         } else {
             System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");

@@ -30,11 +30,14 @@ package org.opennms.netmgt.collectd.jdbc;
 
 import java.io.File;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcMultiInstanceCollectionResource extends JdbcCollectionResource {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcMultiInstanceCollectionResource.class);
+
     private String m_inst;
     private String m_name;
     
@@ -43,20 +46,14 @@ public class JdbcMultiInstanceCollectionResource extends JdbcCollectionResource 
         m_inst = instance;
         m_name = name;
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
+
     @Override
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, getParent());
         File typeDir = new File(nodeDir, m_name);
         File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        if (log().isDebugEnabled()) {
-            log().debug("getResourceDir: " + instDir.toString());
-        }
+        LOG.debug("getResourceDir: {}", instDir.toString());
         return instDir;
     }
     

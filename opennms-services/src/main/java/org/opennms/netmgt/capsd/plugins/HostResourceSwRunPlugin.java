@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import antlr.StringUtils;
 
@@ -53,6 +54,9 @@ import antlr.StringUtils;
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  */
 public class HostResourceSwRunPlugin extends AbstractPlugin {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(HostResourceSwRunPlugin.class);
 
     /**
      * The protocol supported by this plugin
@@ -124,15 +128,13 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        if (log().isDebugEnabled()) log().debug("capsd: service= SNMP address= " + agentConfig);
+        LOG.debug("capsd: service= SNMP address= {}", agentConfig);
 
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 
             if (serviceName == null) {
-                log().warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
+                LOG.warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
                 return status;
             }
 
@@ -144,18 +146,18 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(nameResults.get(nameInstance).toString()))) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + InetAddressUtils.str(ipaddr) + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={} service name={} value={}", InetAddressUtils.str(ipaddr), serviceName, nameResults.get(nameInstance));
                     status = true;
                     break;
                 }
             }
 
         } catch (NumberFormatException e) {
-            log().warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", InetAddressUtils.str(ipaddr), t);
         }
 
         return status;
@@ -172,13 +174,4 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
     private String stripExtraQuotes(String string) {
         return StringUtils.stripFrontBack(string, "\"", "\"");
     }
-
-        /**
-         * <p>log</p>
-         *
-         * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-         */
-        public static ThreadCategory log() {
-                return ThreadCategory.getInstance(HostResourceSwRunPlugin.class);
-        }
 }

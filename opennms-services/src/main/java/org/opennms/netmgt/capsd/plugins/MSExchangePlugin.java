@@ -42,7 +42,8 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -58,6 +59,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class MSExchangePlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(MSExchangePlugin.class);
 
     /**
      * The name of this protocol plugin
@@ -113,7 +115,6 @@ public final class MSExchangePlugin extends AbstractPlugin {
     private final static int IMAP_INDEX = 1;
 
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -122,7 +123,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("MSExchangePlugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("MSExchangePlugin: connected to host: {} on port: {}", port, host);
 
                 // Allocate a line reader
                 //
@@ -140,20 +141,20 @@ public final class MSExchangePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("isServer: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("isServer: Connection refused to {}: {}", port, InetAddressUtils.str(host));
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("isServer: Failed to connect to host " + InetAddressUtils.str(host) + ", no route to host", e);
+                LOG.info("isServer: Failed to connect to host {}, no route to host", InetAddressUtils.str(host), e);
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // ignore this
-                log.debug("MSExchangePlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("MSExchangePlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
             } catch (IOException e) {
-                log.info("isServer: Unexpected I/O exception occured with host " + InetAddressUtils.str(host) + " on port " + port, e);
+                LOG.info("isServer: Unexpected I/O exception occured with host {} on port {}", InetAddressUtils.str(host), port, e);
             } catch (Throwable t) {
-                log.error("isServer: Undeclared throwable caught communicating with host " + InetAddressUtils.str(host) + " on port " + port, t);
+                LOG.error("isServer: Undeclared throwable caught communicating with host {} on port {}", InetAddressUtils.str(host), port, t);
             } finally {
                 try {
                     if (socket != null) {

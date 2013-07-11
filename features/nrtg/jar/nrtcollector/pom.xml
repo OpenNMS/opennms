@@ -7,7 +7,7 @@
     <version>1.13.0-SNAPSHOT</version>
   </parent>
   <artifactId>nrtg-collector-standalone</artifactId>
-  <name>NRTG JAR NRTCollector</name>
+  <name>OpenNMS Features NRTG JAR NRTCollector</name>
   <description>
 	Simple JAR to start a NRT collector
   </description>

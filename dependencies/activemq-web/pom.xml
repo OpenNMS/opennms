@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>activemq-web-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS ActiveMQ Web Dependencies</name>
+  <name>OpenNMS Dependencies ActiveMQ Web</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -17,6 +17,10 @@
       <version>${activemqVersion}</version>
       <scope>compile</scope>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-asm</artifactId>
@@ -76,6 +80,10 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
   </dependencies>
 </project>

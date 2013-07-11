@@ -62,11 +62,12 @@ import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig.HttpMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Forwards north bound alarms via HTTP.
@@ -75,6 +76,8 @@ import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig.HttpMe
  * @author <a mailto:david@opennms.org>David Hustace</a>
  */
 public class HttpNorthbounder extends AbstractNorthbounder {
+    private static final Logger LOG = LoggerFactory.getLogger(HttpNorthbounder.class);
+
     private HttpNorthbounderConfig m_config;
 
     protected HttpNorthbounder() {
@@ -103,7 +106,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         
-        LogUtils.infof(this, "Forwarding %i alarms", alarms.size());
+        LOG.info("Forwarding {} alarms", alarms.size());
         
         //Need a configuration bean for these
         
@@ -191,13 +194,12 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             int code = response.getStatusLine().getStatusCode();
             HttpResponseRange range = new HttpResponseRange("200-399");
             if (!range.contains(code)) {
-                System.err.println("response code out of range for uri:" + uri + ".  Expected " + range + " but received " + code);
+                LOG.debug("response code out of range for uri:{}.  Expected {} but received {}", uri, range, code);
                 throw new NorthbounderException("response code out of range for uri:" + uri + ".  Expected " + range + " but received " + code);
             }
         }
         
-        System.err.println(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
-        LogUtils.debugf(this, response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
+        LOG.debug(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
     }
 
 

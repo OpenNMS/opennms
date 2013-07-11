@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -111,7 +110,6 @@ public class PollerTest {
 
 	private OutageAnticipator m_outageAnticipator;
 
-	private Level m_assertLevel;
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -121,7 +119,6 @@ public class PollerTest {
 
 	@Before
 	public void setUp() throws Exception {
-        m_assertLevel = Level.WARN;
 
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
@@ -225,9 +222,6 @@ public class PollerTest {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		if (m_assertLevel != null) {
-			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
-		}
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
@@ -631,7 +625,6 @@ public class PollerTest {
 	// interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     @Test
 	public void testInterfaceReparented() throws Exception {
-    	m_assertLevel = null;
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,10 +53,11 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.web.request.WebRequest;
 import org.opennms.netmgt.provision.detector.web.response.WebResponse;
 import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>WebClient class.</p>
@@ -65,7 +66,8 @@ import org.opennms.netmgt.provision.support.Client;
  * @version $Id: $
  */
 public class WebClient implements Client<WebRequest, WebResponse> {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(WebClient.class);
     private DefaultHttpClient m_httpClient;
 
     private HttpGet m_httpMethod;
@@ -108,7 +110,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
             HttpResponse response = m_httpClient.execute(m_httpMethod);
             return new WebResponse(request, response);
         } catch (Exception e) {
-            log().info(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
             return new WebResponse(request, null);
         }
     }
@@ -145,7 +147,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     }
 
     public void setAuth(String userName, String password) {
-        log().debug("enabling user authentication using credentials for " + userName);
+        LOG.debug("enabling user authentication using credentials for {}", userName);
         m_httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
     }
 
@@ -174,10 +176,6 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
         };
         m_httpClient.addRequestInterceptor(preemptiveAuth, 0);
-    }
-
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

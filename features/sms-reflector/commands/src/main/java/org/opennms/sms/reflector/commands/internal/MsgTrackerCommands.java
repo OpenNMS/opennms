@@ -41,8 +41,9 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Public API representing an example OSGi service
@@ -50,8 +51,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @author ranger
  * @version $Id: $
  */
-public class MsgTrackerCommands implements CommandProvider
-{
+public class MsgTrackerCommands implements CommandProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(MsgTrackerCommands.class);
     
     private MobileMsgTracker m_tracker;
     
@@ -63,7 +64,7 @@ public class MsgTrackerCommands implements CommandProvider
         @Override
         public void handleError(final MobileMsgRequest request, final Throwable t) {
             t.printStackTrace();
-            LogUtils.warnf(this, t, "failed request: %s", request);
+            LOG.warn("failed request: {}", request, t);
             m_latch.countDown();
         }
 
@@ -76,7 +77,7 @@ public class MsgTrackerCommands implements CommandProvider
 
         @Override
         public void handleTimeout(MobileMsgRequest request) {
-           tracef("Request %s timed out!", request); 
+           LOG.trace("Request {} timed out!", request); 
             m_latch.countDown();
         }
         
@@ -100,9 +101,9 @@ public class MsgTrackerCommands implements CommandProvider
 
         @Override
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-            tracef("Using regex: %s to match response: %s", m_regex, response );
+            LOG.trace("Using regex: {} to match response: {}", m_regex, response );
             boolean retVal = response.getText().matches(m_regex);
-            tracef("Matching: %s for regex %s response %s", retVal, m_regex, response);
+            LOG.trace("Matching: {} for regex {} response {}", retVal, m_regex, response);
             return retVal;
         }
 
@@ -203,20 +204,5 @@ public class MsgTrackerCommands implements CommandProvider
         buffer.append("\n");
         return buffer.toString(); 
     } 
-    
-    /**
-     * <p>tracef</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    public static void tracef(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
-        
-        if (log.isTraceEnabled()) {
-            log.trace(String.format(format, args));
-        }
-    }
-
 }
 

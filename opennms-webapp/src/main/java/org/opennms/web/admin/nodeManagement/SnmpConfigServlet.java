@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 import org.opennms.web.snmpinfo.SnmpInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -61,6 +62,9 @@ import com.google.common.io.Files;
  * @since 1.8.1
  */
 public class SnmpConfigServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigServlet.class);
+
 
 	public static enum SnmpConfigServletAction {
 		Default("default"), 
@@ -79,7 +83,6 @@ public class SnmpConfigServlet extends HttpServlet {
 	}
 	
 	private static final long serialVersionUID = -2298118339644843598L;
-	private static final Logger log = Logger.getLogger(SnmpConfigServlet.class);
 	private static final String ACTION_PARAMETER_NAME = "action";
 
 	@Override
@@ -101,9 +104,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String firstIPAddress = request.getParameter("firstIPAddress");
 		String lastIPAddress = request.getParameter("lastIPAddress");
 		String ipAddress = request.getParameter("ipAddress");
-		log.debug("doPost: snmpInfo:" + snmpInfo.toString() + 
-				", firstIpAddress:" + firstIPAddress + 
-				", lastIpAddress:" + lastIPAddress);
+		LOG.debug("doPost: snmpInfo:{}, firstIpAddress:{}, lastIpAddress:{}", snmpInfo.toString(), firstIPAddress, lastIPAddress);
 
 		final SnmpConfigServletAction action = determineAction(request);
 		boolean sendEvent = parseCheckboxValue(request.getParameter("sendEventOption"));

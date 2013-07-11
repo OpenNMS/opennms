@@ -35,11 +35,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -49,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @version $Id: $
  */
 public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker implements Collection<T> {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTable.class);
 
     private final Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;
@@ -111,17 +115,13 @@ public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker im
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        LOG.warn("Error retrieving {} from {}. {}", m_tableName, m_address, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
-    }
-
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        LOG.info("Error retrieving {} from {}. {}", m_tableName, m_address, msg);
     }
 
     @Override

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jna-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JNA Dependencies</name>
+  <name>OpenNMS Dependencies JNA</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JNA
@@ -18,53 +18,12 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>3.2.7</version>
+      <version>3.2.7-ONMS</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>platform</artifactId>
-      <version>3.2.7</version>
+      <version>3.2.7-ONMS</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>maven-repo</id>
-      <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Repository for Maven</name>
-      <url>http://maven.opennms.org/content/groups/java.net-release</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>maven2-repository.eviware.com</id>
-      <name>EVIWare.com Repository for Maven</name>
-      <url>http://maven.opennms.org/content/groups/eviware.com-release</url>
-    </repository>
-  </repositories>
 </project>

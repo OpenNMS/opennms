@@ -31,17 +31,22 @@ package org.opennms.netmgt.icmp.jna;
 import java.net.InetAddress;
 import java.util.Queue;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.IcmpMessengerIOException;
 import org.opennms.protocols.rt.Messenger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author brozow
  */
 public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>, PingReplyListener {
-
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(JnaIcmpMessenger.class);
+	
 	private V4Pinger m_v4;
 	private V6Pinger m_v6;
     private Queue<JnaPingReply> pendingReplies = null;
@@ -52,7 +57,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	        m_v4 = new V4Pinger(pingerId);
 	        m_v4.addPingReplyListener(this);
 	    } catch (final Throwable t) {
-	        LogUtils.debugf(this, t, "Unable to initialize IPv4 Pinger.");
+	        LOG.debug("Unable to initialize IPv4 Pinger.", t);
 	        error = t;
 	        m_v4 = null;
 	    }
@@ -61,14 +66,14 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	        m_v6 = new V6Pinger(pingerId);
 	        m_v6.addPingReplyListener(this);
 	    } catch (final Throwable t) {
-	        LogUtils.debugf(this, t, "Unable to initialize IPv6 Pinger.");
+	        LOG.debug("Unable to initialize IPv6 Pinger.", t);
 	        if (error == null) error = t;
 	        m_v6 = null;
 	    }
 	    
 	    if (m_v4 == null && m_v6 == null) {
 	        final IcmpMessengerIOException exception = new IcmpMessengerIOException("IPv4 and IPv6 are not available.", error);
-	        LogUtils.warnf(this, exception, "Unable to initialize JNA ICMP messenger");
+	        LOG.warn("Unable to initialize JNA ICMP messenger", exception);
 	        throw exception;
 	    }
 	}

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,13 +40,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao.PrefabGraphTypeDao;
@@ -60,7 +62,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
-public class PropertiesGraphDaoTest extends TestCase {
+public class PropertiesGraphDaoTest {
     private static final Map<String, Resource> s_emptyMap = new HashMap<String, Resource>();
     
     final static String s_prefab =
@@ -267,10 +269,8 @@ public class PropertiesGraphDaoTest extends TestCase {
     private FileOutputStream m_outputStream = null;
     private Writer m_writer = null;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging(true);
         
         m_dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
@@ -286,46 +286,45 @@ public class PropertiesGraphDaoTest extends TestCase {
         m_fileAnticipator = new FileAnticipator();
     }
     
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-        
-        //Allow an individual test to tell us to ignore the logging assertion
-        // e.g. if they're testing with assertLogAtLevel
-        if(!testSpecificLoggingTest) {
-            MockLogAppender.assertNoWarningsOrGreater();
-        }
-    }
-    
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
     	IOUtils.closeQuietly(m_writer);
     	IOUtils.closeQuietly(m_outputStream);
-    	
+
     	// For Windows, see
     	// http://stackoverflow.com/a/4213208/149820 for details
     	m_writer = null;
     	m_outputStream = null;
     	System.gc();
-    	
+
+        //Allow an individual test to tell us to ignore the logging assertion
+        // e.g. if they're testing with assertLogAtLevel
+        if(!testSpecificLoggingTest) {
+            MockLogAppender.assertNoWarningsOrGreater();
+        }
+
     	m_fileAnticipator.deleteExpected();
     	m_fileAnticipator.tearDown();
         MockLogAppender.resetEvents();
     }
 
-    
+    @Test
     public void testCompareToLessThan() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();
         PrefabGraph discards = m_graphs.get("mib2.discards").getObject();;
 
         assertEquals("compareTo", -1, bits.compareTo(discards));
     }
+
+    @Test
     public void testCompareToGreaterThan() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         PrefabGraph discards = m_graphs.get("mib2.discards").getObject();;
 
         assertEquals("compareTo", 1, discards.compareTo(bits));
     }
+
+    @Test
     public void testCompareToEquals() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         PrefabGraph bits2 = m_graphs.get("mib2.bits").getObject();;
@@ -333,21 +332,25 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("compareTo", 0, bits.compareTo(bits2));
     }
 
+    @Test
     public void testGetName() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         assertEquals("getName", "mib2.bits", bits.getName());
     }
 
+    @Test
     public void testGetTitle() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         assertEquals("getTitle", "Bits In/Out", bits.getTitle());
     }
 
+    @Test
     public void testGetOrder() {
         PrefabGraph bits = m_graphs.get("mib2.HCbits").getObject();;
         assertEquals("getOrder", 0, bits.getOrder());
     }
 
+    @Test
     public void testGetColumns() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         String[] columns = bits.getColumns();
@@ -356,6 +359,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("getColumns()[1]", "ifOutOctets", columns[1]);
     }
 
+    @Test
     public void testGetCommand() {
         String expectedCommand = "--title=\"Bits In/Out\" "
                 + "DEF:octIn={rrd1}:ifInOctets:AVERAGE "
@@ -377,6 +381,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("getCommand", expectedCommand, bits.getCommand());
     }
 
+    @Test
     public void testGetExternalValues() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         String[] values = bits.getExternalValues();
@@ -384,12 +389,14 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("getExternalValues()[0]", "ifSpeed", values[0]);
     }
 
+    @Test
     public void testGetExternalValuesEmpty() {
         PrefabGraph discards = m_graphs.get("mib2.discards").getObject();;
         assertEquals("getExternalValues().length", 0,
                      discards.getExternalValues().length);
     }
 
+    @Test
     public void testGetPropertiesValues() {
         PrefabGraph discards = m_graphs.get("mib2.discards").getObject();;
         String[] values = discards.getPropertiesValues();
@@ -397,12 +404,14 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("getPropertiesValues()[0]", "ifSpeed", values[0]);
     }
 
+    @Test
     public void testGetPropertiesValuesEmpty() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         assertEquals("getPropertiesValues().length", 0,
                      bits.getPropertiesValues().length);
     }
 
+    @Test
     public void testGetTypes() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         assertNotNull("getTypes", bits.getTypes());
@@ -410,31 +419,37 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("getTypes 1", "interface", bits.getTypes()[0]);
     }
 
+    @Test
     public void testGetDescription() {
         PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
         assertEquals("getDescription", null, bits.getDescription());
     }
 
+    @Test
     public void testLoadSnmpGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("snmp-graph.properties")));
     }
 
+    @Test
     public void testLoadSnmpAdhocGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("snmp-adhoc-graph.properties"));
     }
 
+    @Test
     public void testLoadResponseTimeGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-graph.properties"));
     }
 
+    @Test
     public void testLoadResponseTimeAdhocGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadAdhocProperties("foo", ConfigurationTestUtils.getInputStreamForConfigFile("response-adhoc-graph.properties"));
     }
     
+    @Test
     public void testPrefabPropertiesReload() throws Exception {
         File f = m_fileAnticipator.tempFile("snmp-graph.properties");
         
@@ -479,9 +494,11 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
     }
     
+    @Test
     public void testPrefabPropertiesReloadBad() throws Exception {
         MockLogAppender.setupLogging(false, "DEBUG");
-        
+        testSpecificLoggingTest = true;
+
         File f = m_fileAnticipator.tempFile("snmp-graph.properties");
 
         m_outputStream = new FileOutputStream(f);
@@ -510,34 +527,15 @@ public class PropertiesGraphDaoTest extends TestCase {
         m_outputStream.close();
         
         type = dao.findPrefabGraphTypeDaoByName("performance");
-        LoggingEvent[] events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
 
         assertNotNull("could not get performance prefab graph type after rewriting config file", type);
         assertNotNull("could not get mib2.bits report after rewriting config file", type.getQuery("mib2.bits"));
-        
-        //Expecting the same events again, as the individual graph reload attempts to re-read the config file
-        events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
-        
         assertNotNull("could not get mib2.discards report after rewriting config file", type.getQuery("mib2.discards"));
-        //And again, same events
-        events = MockLogAppender.getEvents();
-        assertNotNull("logged event list was null", events);
-        assertEquals("should only have received two logged events", 2, events.length);
-        assertEquals("should have received an ERROR event" + events[0], Level.ERROR, events[0].getLevel());
-        assertEquals("should have received an INFO event" + events[1], Level.INFO, events[1].getLevel());
-        MockLogAppender.resetEvents();
+        
+        MockLogAppender.assertLogMatched(Level.ERROR, "Could not reload configuration");
     }
 
+    @Test
     public void testAdhocPropertiesReload() throws Exception {
         File f = m_fileAnticipator.tempFile("snmp-adhoc-graph.properties");
         
@@ -569,6 +567,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("image type isn't correct", "image/png", type.getOutputMimeType());
     }
     
+    @Test
     public void testNoType() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "");
@@ -587,6 +586,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertFalse("should not have responseTime type", graph.hasMatchingType("responseTime"));
     }
     
+    @Test
     public void testOneType() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         ByteArrayInputStream in = new ByteArrayInputStream(s_responsePrefab.getBytes());
@@ -608,6 +608,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertTrue("should have responseTime or distributedStatus type", graph.hasMatchingType("responseTime", "distributedStatus"));
     }
 
+    @Test
     public void testTwoTypes() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         String ourConfig = s_responsePrefab.replaceAll("report.icmp.type=responseTime", "report.icmp.type=responseTime, distributedStatus");
@@ -629,6 +630,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertTrue("should have distributedStatus type", graph.hasMatchingType("distributedStatus"));
     }
     
+    @Test
     public void testGetPrefabGraphsForResource() {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interface");
@@ -642,6 +644,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("prefab graph[0] name", "mib2.bits", graphs[0].getName());
     }
     
+    @Test
     public void testGetPrefabGraphsForResourceWithSuppress() {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interface");
@@ -657,6 +660,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertEquals("prefab graph[0] name", "mib2.HCbits", graphs[0].getName());
     }
     
+    @Test
     public void testGetPrefabGraphsForResourceWithSuppressUnused() {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interface");
@@ -683,6 +687,7 @@ public class PropertiesGraphDaoTest extends TestCase {
     /**
      * Test that individual graph files in an include directory are loaded as expected
      */
+    @Test
     public void testBasicPrefabConfigDirectorySingleReports() throws IOException {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
         File graphDirectory = m_fileAnticipator.tempDir("snmp-graph.properties.d");
@@ -733,6 +738,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * Test that properties files in an included directory with
      * multiple graphs defined in them are loaded correctly
      */
+    @Test
     public void testPrefabConfigDirectoryMultiReports() throws IOException {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
         File graphDirectory = m_fileAnticipator.tempDir("snmp-graph.properties.d");
@@ -801,6 +807,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * Test that properties files in an included directory with
      * multiple graphs defined in some, and single graphs in others, are loaded correctly
      */
+    @Test
     public void testPrefabConfigDirectoryMixedSingleAndMultiReports() throws IOException {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
         File graphDirectory = m_fileAnticipator.tempDir("snmp-graph.properties.d");
@@ -879,6 +886,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * a report in the main properties file. 
      * @throws IOException
      */
+    @Test
     public void testPrefabConfigDirectorySingleReportOverride() throws Exception {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
         File graphDirectory = m_fileAnticipator.tempDir("snmp-graph.properties.d");
@@ -947,6 +955,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         Assert.assertArrayEquals(columns3, mib2Bits.getColumns());
     }
     
+    @Test
     public void testPrefabPropertiesIncludeDirectoryReloadSingleReports() throws Exception {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
         File graphDirectory = m_fileAnticipator.tempDir("snmp-graph.properties.d");
@@ -993,6 +1002,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * NB: It should still complain with an Error log.  Should there be an event as well?
      * @throws Exception
      */
+    @Test
     public void testPrefabPropertiesIncludeDirectoryBadReloadSingleReport() throws Exception {
         //We're expecting an ERROR log, and will be most disappointed if
         // we don't get it.  Turn off the default check in runTest
@@ -1038,8 +1048,6 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertNotNull("could not get mib2.bits report after rewriting config file", graph);
         assertEquals("ifSpeed", graph.getExternalValues()[0]);
         
-        //There should have been an error log about the reload failure 
-        MockLogAppender.assertLogAtLevel(Level.ERROR); 
     }
     
     /**
@@ -1051,6 +1059,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * NB: It should still complain with an Error log.  Should there be an event as well?
      * @throws Exception
      */
+    @Test
     public void testPrefabGraphPartlyBorkedConfig() throws Exception {
         //We're expecting an ERROR log, and will be most disappointed if
         // we don't get it.  Turn off the default check in runTest
@@ -1071,8 +1080,6 @@ public class PropertiesGraphDaoTest extends TestCase {
         PrefabGraph mib2Discards = dao.getPrefabGraph("mib2.discards");
         assertNotNull(mib2Discards);
         
-        //There should have been an error log about the  failure 
-        MockLogAppender.assertLogAtLevel(Level.ERROR); 
 
     }
     
@@ -1082,6 +1089,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * (early code didn't do this right)
      * @throws Exception
      */
+    @Test
     public void testAddingIncludeDirectory() throws Exception {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
 
@@ -1133,6 +1141,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * will be picked up.  Requires the include.directory.rescan to be set low 
      * @throws Exception
      */
+    @Test
     public void testIncludeDirectoryNewFile() throws Exception {
         File rootFile = m_fileAnticipator.tempFile("snmp-graph.properties");
 
@@ -1170,6 +1179,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         assertNotNull(dao.getPrefabGraph("mib2.errors")); //This is the core: this graph should have been picked up
     }
 
+    @Test
     public void testIncludeDirectoryIncludeMissingReportId() throws Exception {
         //We're expecting an ERROR log, and will be most disappointed if
         // we don't get it.  Turn off the default check in runTest
@@ -1203,14 +1213,13 @@ public class PropertiesGraphDaoTest extends TestCase {
             //Expected; no such graph
         }
 
-        //There should have been an error log about the reload failure (but no exception) 
-        MockLogAppender.assertLogAtLevel(Level.ERROR);
     }
 
     /**
      * It would be nice if having found a new file in the include directory that was malformed, that
      * when it is fixed, it is picked up immediately, rather than having to wait for the next rescan interval
      */
+    @Test
     public void testIncludeNewFileMalformedContentThenFixed() throws Exception {
         //Don't do the normal checking of logging for worse than warning; we expect an error or two to be logged, and that's fine
         testSpecificLoggingTest = true;
@@ -1285,6 +1294,7 @@ public class PropertiesGraphDaoTest extends TestCase {
      * noticed immediately when we fix it
      * @throws IOException
      */
+    @Test
     public void testPrefabConfigDirectoryPartlyBorkedMultiReports()
             throws Exception {
         //Don't do the normal checking of logging for worse than warning; we expect an error or two to be logged, and that's fine

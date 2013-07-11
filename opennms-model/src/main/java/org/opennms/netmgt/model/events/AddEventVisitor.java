@@ -29,13 +29,17 @@
 package org.opennms.netmgt.model.events;
 
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class AddEventVisitor extends AbstractEntityVisitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AddEventVisitor.class);
+
     private static final String m_eventSource = "Provisiond";
 	private final EventForwarder m_eventForwarder;
 
@@ -51,21 +55,21 @@ public class AddEventVisitor extends AbstractEntityVisitor {
 	/** {@inheritDoc} */
     @Override
 	public void visitNode(OnmsNode node) {
-        LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
+        LOG.info("Sending nodeAdded Event for {}\n", node);
 	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
 	}
 
     /** {@inheritDoc} */
     @Override
     public void visitIpInterface(OnmsIpInterface iface) {
-        LogUtils.infof(this, "Sending nodeGainedInterface Event for %s\n", iface);
+        LOG.info("Sending nodeGainedInterface Event for {}\n", iface);
         m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
     }
 
     /** {@inheritDoc} */
     @Override
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
-        LogUtils.infof(this, "Sending nodeGainedService Event for %s\n", monSvc);
+        LOG.info("Sending nodeGainedService Event for {}\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 
@@ -98,9 +102,9 @@ public class AddEventVisitor extends AbstractEntityVisitor {
     protected Event createNodeGainedServiceEvent(final OnmsMonitoredService monSvc) {
     	final OnmsIpInterface iface = monSvc.getIpInterface();
 		final OnmsNode node = iface.getNode();
-		LogUtils.debugf(this, "ipinterface = %s", iface);
-		LogUtils.debugf(this, "snmpinterface = %s", iface.getSnmpInterface());
-		LogUtils.debugf(this, "node = %s", node);
+		LOG.debug("ipinterface = {}", iface);
+		LOG.debug("snmpinterface = {}", iface.getSnmpInterface());
+		LOG.debug("node = {}", node);
 		return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
     }
 	

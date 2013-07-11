@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jasper-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Jasper Report Dependencies</name>
+  <name>OpenNMS Dependencies Jasper Report</name>
   <dependencies>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
@@ -19,6 +19,10 @@
         <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
           <groupId>bouncycastle</groupId>
@@ -48,6 +52,10 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jfreechart-dependencies</artifactId>
       <type>pom</type>
@@ -70,6 +78,10 @@
         <exclusion>
           <groupId>backport-util-concurrent</groupId>
           <artifactId>backport-util-concurrent</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
