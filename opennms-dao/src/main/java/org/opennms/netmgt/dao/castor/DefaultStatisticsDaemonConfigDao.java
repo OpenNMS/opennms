@@ -31,10 +31,10 @@ package org.opennms.netmgt.dao.castor;
 import java.util.List;
 
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
-import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
-import org.opennms.netmgt.dao.castor.statsd.Report;
-import org.opennms.netmgt.dao.castor.statsd.StatsdConfig;
-import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.config.statsd.model.Report;
+import org.opennms.netmgt.config.statsd.model.StatsdConfig;
+import org.opennms.netmgt.config.statsd.model.StatsdPackage;
+import org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

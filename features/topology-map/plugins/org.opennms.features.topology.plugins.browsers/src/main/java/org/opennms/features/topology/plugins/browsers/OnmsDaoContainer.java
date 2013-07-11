@@ -38,7 +38,7 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;

@@ -47,10 +47,11 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.netmgt.dao.ApplicationDao;
+import org.opennms.core.test.db.TemporaryDatabasePostgreSQL;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -102,7 +103,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         
         
         if(USE_EXISTING) {
-            TemporaryDatabase db = new TemporaryDatabase("opennms", true);
+            TemporaryDatabase db = new TemporaryDatabasePostgreSQL("opennms", true);
             db.setPopulateSchema(false);
             db.create();
             DataSourceFactory.setInstance(db);
@@ -122,7 +123,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
                 "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
-                "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
+                "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
                 "/WEB-INF/applicationContext-spring-security.xml " +
                 "/WEB-INF/applicationContext-jersey.xml");

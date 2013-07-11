@@ -47,11 +47,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -874,7 +874,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
@@ -884,7 +884,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
@@ -894,7 +894,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setApplicationDao</p>
      *
-     * @param applicationDao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     * @param applicationDao a {@link org.opennms.netmgt.dao.api.ApplicationDao} object.
      */
     public void setApplicationDao(ApplicationDao applicationDao) {
         m_applicationDao = applicationDao;
@@ -904,7 +904,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>getResourceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -913,7 +913,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -922,7 +922,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>getGraphDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public GraphDao getGraphDao() {
         return m_graphDao;
@@ -931,7 +931,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setGraphDao</p>
      *
-     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @param graphDao a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;

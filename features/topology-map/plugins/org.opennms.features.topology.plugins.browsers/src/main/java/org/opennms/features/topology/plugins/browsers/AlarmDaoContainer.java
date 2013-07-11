@@ -63,7 +63,7 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {

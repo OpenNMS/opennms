@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmQueryParms;
@@ -215,7 +215,7 @@ public class AlarmFilterController extends AbstractController implements Initial
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.AlarmRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository} object.
      */
     public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;

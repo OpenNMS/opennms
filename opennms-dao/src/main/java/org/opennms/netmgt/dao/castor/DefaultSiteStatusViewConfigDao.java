@@ -37,7 +37,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.config.siteStatusViews.Views;
-import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
+import org.opennms.netmgt.dao.api.SiteStatusViewConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
@@ -45,10 +45,6 @@ import org.springframework.dao.DataRetrievalFailureException;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
     

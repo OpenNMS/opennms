@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.UserNotificationDao;
+import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.OnmsUserNotification;
 
 public class UserNotificationDaoHibernate extends

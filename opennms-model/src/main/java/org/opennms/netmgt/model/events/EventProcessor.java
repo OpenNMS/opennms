@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.model.events;
 
-import java.sql.SQLException;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 
@@ -48,7 +46,7 @@ public interface EventProcessor {
      *
      * @param eventHeader a {@link org.opennms.netmgt.xml.event.Header} object.
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @throws java.sql.SQLException if any.
+     * @throws {@link EventProcessorException} if any.
      */
-    void process(Header eventHeader, Event event) throws SQLException;
+    void process(Header eventHeader, Event event) throws EventProcessorException;
 }

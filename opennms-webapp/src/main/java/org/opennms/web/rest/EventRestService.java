@@ -49,7 +49,7 @@ import javax.ws.rs.core.UriInfo;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.springframework.beans.factory.annotation.Autowired;

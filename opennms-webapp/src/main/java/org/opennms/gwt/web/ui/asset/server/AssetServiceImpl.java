@@ -37,8 +37,8 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
@@ -343,7 +343,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
      * getNodeDao
      * </p>
      *
-     * @return m_nodeDao a {@link org.opennms.netmgt.dao.NodeDao}
+     * @return m_nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao}
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -354,7 +354,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
      * setNodeDao
      * </p>
      *
-     * @param m_nodeDao a {@link org.opennms.netmgt.dao.NodeDao}
+     * @param m_nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao}
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;

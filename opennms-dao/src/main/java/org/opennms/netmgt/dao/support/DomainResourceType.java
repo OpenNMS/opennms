@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -51,7 +51,7 @@ public class DomainResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for DomainResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public DomainResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;

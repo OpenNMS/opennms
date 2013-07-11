@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.util.Collection;
 
 import org.hibernate.Query;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
+import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 

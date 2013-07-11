@@ -28,22 +28,23 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
@@ -62,6 +63,8 @@ import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.RequisitionImport;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -553,7 +556,7 @@ public class Provisioner implements SpringServiceDaemon {
             @Override
             public void run() {
                 try {
-                    InetAddress addr = InetAddressUtils.addr(ip);
+                    InetAddress addr = addr(ip);
                     if (addr == null) {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
@@ -700,7 +703,7 @@ public class Provisioner implements SpringServiceDaemon {
         OnmsNode node = new OnmsNode();
         node.setLabel(nodeLabel);
         
-        OnmsIpInterface iface = new OnmsIpInterface(ipAddr, node);
+        OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddr), node);
         iface.setIsManaged("M");
         iface.setPrimaryString("N");
         
@@ -882,6 +885,20 @@ public class Provisioner implements SpringServiceDaemon {
      */
     protected String getEventForeignSource(final Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_FOREIGN_SOURCE);
+    }
+
+    public void waitFor() {
+        final ScheduledFuture<?> future = m_scheduledExecutor.schedule(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                return null;
+            }
+        }, 0, TimeUnit.SECONDS);
+        try {
+            future.get();
+        } catch (final Exception e) {
+            // ignore, we're just waiting for a reasonable chance things were finished
+        }
     }
 
 }

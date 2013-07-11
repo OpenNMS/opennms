@@ -46,23 +46,22 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.CategoryDao;
-
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.IpRouteInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.StpInterfaceDao;
-import org.opennms.netmgt.dao.StpNodeDao;
-import org.opennms.netmgt.dao.VlanDao;
-
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpNodeDao;
+import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
@@ -79,9 +78,7 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
-
 import org.opennms.web.svclayer.AggregateStatus;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -178,14 +175,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public String getNodeLabel(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.add(Restrictions.eq("id", nodeId));
-        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.eq("id", nodeId);
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(cb.toCriteria());
         
         if(nodes.size() > 0) {
-            OnmsNode node = nodes.get(0);
+            final OnmsNode node = nodes.get(0);
             return node.getLabel();
-        }else {
+        } else {
             return null;
         }
     }
@@ -195,15 +192,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public String getIpPrimaryAddress(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.add(Restrictions.and(Restrictions.eq("node.id", nodeId), Restrictions.eq("isSnmpPrimary", PrimaryType.PRIMARY)));
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.and(new EqRestriction("node.id", nodeId), new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
         
-        List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
+        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
         
         if(ifaces.size() > 0) {
-            OnmsIpInterface iface = ifaces.get(0);
+            final OnmsIpInterface iface = ifaces.get(0);
             return InetAddressUtils.str(iface.getIpAddress());
-        }else{
+        } else {
             return null;
         }
     }

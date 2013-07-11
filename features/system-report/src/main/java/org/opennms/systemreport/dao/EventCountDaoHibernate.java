@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hibernate.Query;
+import org.opennms.netmgt.dao.api.CountedObject;
+import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsEvent;
 

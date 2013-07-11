@@ -35,7 +35,13 @@
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
 
-    <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
+    <bean id="linkdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="filterDao" lazy-init="true">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="linkdConfig" class="org.opennms.netmgt.config.LinkdConfigFactory" depends-on="linkdConfigFactory-init" factory-method="getInstance" lazy-init="true" />
+    
+    <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd" depends-on="linkdConfig" lazy-init="true">
       <property name="eventForwarder" ref="eventForwarder" />
     </bean>
 

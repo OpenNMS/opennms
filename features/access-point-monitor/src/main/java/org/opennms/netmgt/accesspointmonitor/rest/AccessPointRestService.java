@@ -98,7 +98,7 @@ public class AccessPointRestService {
     final String accessPointId) {
         readLock();
         try {
-            return m_accessPointDao.get(Integer.valueOf(accessPointId));
+            return m_accessPointDao.get(accessPointId);
         } finally {
             readUnlock();
         }

@@ -49,7 +49,7 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.dao.OnmsReportConfigDao;
+import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculationException;
 import org.opennms.reporting.availability.AvailabilityCalculator;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
@@ -57,6 +57,8 @@ import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -331,7 +333,7 @@ public class AvailabilityReportService implements ReportService {
     /**
      * <p>setConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.OnmsReportConfigDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.OnmsReportConfigDao} object.
      */
     public void setConfigDao(OnmsReportConfigDao configDao) {
         m_configDao = configDao;

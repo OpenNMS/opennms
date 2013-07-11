@@ -37,19 +37,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.dao.util.AutoAction;
+import org.opennms.netmgt.dao.util.OperatorAction;
+import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.eventd.EventdConstants;
-import org.opennms.netmgt.eventd.db.AutoAction;
-import org.opennms.netmgt.eventd.db.OperatorAction;
-import org.opennms.netmgt.eventd.db.SnmpInfo;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.Constants;
 import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -94,14 +95,19 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * The method that inserts the event into the database
      */
     @Override
-    public void process(final Header eventHeader, final Event event) throws SQLException, DataAccessException {
+    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
         if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
             return;
         }
 
         LOG.debug("JdbcEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-        final Connection connection = getDataSource().getConnection();
+        Connection connection;
+        try {
+            connection = getDataSource().getConnection();
+        } catch (final SQLException e) {
+            throw new EventProcessorException(e);
+        }
 
         try {
             connection.setAutoCommit(false);
@@ -129,6 +135,10 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
                 throw e;
             }
+        } catch (final DataAccessException e) {
+            throw new EventProcessorException(e);
+        } catch (SQLException e) {
+            throw new EventProcessorException(e);
         } finally {
             try {
                 connection.close();
@@ -268,7 +278,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 19, (event.getPathoutage() != null) ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
 
             // eventCorrelation
-            set(insStmt, 20, (event.getCorrelation() != null) ? org.opennms.netmgt.eventd.db.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
+            set(insStmt, 20, (event.getCorrelation() != null) ? org.opennms.netmgt.dao.util.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
 
             // eventSuppressedCount
             insStmt.setNull(21, Types.INTEGER);
@@ -309,7 +319,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             }
 
             // eventForward
-            set(insStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.eventd.db.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
+            set(insStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.dao.util.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
 
             // event mouseOverText
             set(insStmt, 30, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));

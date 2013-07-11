@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -91,7 +91,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
     /**
      * <p>getRrdDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public RrdDao getRrdDao() {
         return m_rrdDao;
@@ -100,7 +100,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;

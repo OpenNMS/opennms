@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -44,8 +42,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
-import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;

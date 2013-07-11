@@ -16,7 +16,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSServiceCriteria;
 import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;

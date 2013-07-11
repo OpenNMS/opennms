@@ -37,14 +37,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,12 +58,17 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml", "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml" })
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+    "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+public class AccessPointDaoTest implements InitializingBean {
     @Autowired
     private NodeDao m_nodeDao;
 
@@ -74,19 +78,11 @@ public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAw
     @Autowired
     TransactionTemplate m_transTemplate;
 
-    @SuppressWarnings("unused")
-    private TemporaryDatabase m_database;
-
     private final static String AP1_MAC = "00:01:02:03:04:05";
 
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
 
     private final static String AP3_MAC = "0C:0D:0E:0F:01:02";
-
-    @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -120,10 +116,10 @@ public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAw
         addNewAccessPoint("ap1", AP1_MAC, "default-package");
         addNewAccessPoint("ap2", AP2_MAC, "not-default-package");
 
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
         assertEquals("default-package", ap1.getPollingPackage());
 
-        OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        OnmsAccessPoint ap2 = m_accessPointDao.get(AP2_MAC);
         assertEquals("not-default-package", ap2.getPollingPackage());
     }
 

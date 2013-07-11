@@ -44,7 +44,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.NotificationDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
 import org.springframework.beans.factory.annotation.Autowired;

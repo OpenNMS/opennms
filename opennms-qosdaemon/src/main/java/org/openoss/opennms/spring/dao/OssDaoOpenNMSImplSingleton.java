@@ -30,9 +30,9 @@ package org.openoss.opennms.spring.dao;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -91,7 +91,7 @@ public class OssDaoOpenNMSImplSingleton {
 	/**
 	 * <p>Setter for the field <code>alarmDao</code>.</p>
 	 *
-	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
 	 */
 	public void setAlarmDao(AlarmDao alarmDao) {
 		OssDaoOpenNMSImplSingleton.alarmDao = alarmDao;
@@ -100,7 +100,7 @@ public class OssDaoOpenNMSImplSingleton {
 	/**
 	 * <p>Setter for the field <code>assetRecordDao</code>.</p>
 	 *
-	 * @param assetRecordDao a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param assetRecordDao a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
 		OssDaoOpenNMSImplSingleton.assetRecordDao = assetRecordDao;
@@ -118,7 +118,7 @@ public class OssDaoOpenNMSImplSingleton {
 	/**
 	 * <p>Setter for the field <code>nodeDao</code>.</p>
 	 *
-	 * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public void setNodeDao(NodeDao nodeDao) {
 		OssDaoOpenNMSImplSingleton.nodeDao = nodeDao;

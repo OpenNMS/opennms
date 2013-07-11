@@ -37,12 +37,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.test.db.MockDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.eventd.mock.EventWrapper;
+import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 

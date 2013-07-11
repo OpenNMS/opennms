@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -53,25 +54,26 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class CriteriaTest implements InitializingBean {
 
-	@Autowired
+    @Autowired
     private NodeDao m_nodeDao;
 
-	@Autowired
-	private DatabasePopulator m_databasePopulator;
-	
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     private static boolean m_populated = false;
-    
+
     @BeforeTransaction
     public void setUp() {
         try {
@@ -85,36 +87,35 @@ public class CriteriaTest implements InitializingBean {
         }
     }
 
-	@Test
-	@Transactional
-	public void testSimple() {
+    @Test
+    @Transactional
+    public void testSimple() {
         OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
         crit.add(Restrictions.eq("label", "node1"));
-        
+
         Collection<OnmsNode> matching = m_nodeDao.findMatching(crit);
-        
+
         assertEquals("Expect a single node with label node1", 1, matching.size());
-        
+
         OnmsNode node = matching.iterator().next();
         assertEquals("node1", node.getLabel());
         assertEquals(4, node.getIpInterfaces().size());
     }
-    
+
     @Test
-	@Transactional
-	public void testComplicated() {
-        OnmsCriteria crit = 
-            new OnmsCriteria(OnmsNode.class)
+    @Transactional
+    public void testComplicated() {
+        OnmsCriteria crit = new OnmsCriteria(OnmsNode.class)
             .createAlias("ipInterfaces", "iface")
             .add(Restrictions.eq("iface.ipAddress", "192.168.2.1"));
-        
+
         Collection<OnmsNode> matching = m_nodeDao.findMatching(crit);
-        
+
         assertEquals("Expect a single node with an interface 192.168.2.1", 1, matching.size());
-        
+
         OnmsNode node = matching.iterator().next();
         assertEquals("node2", node.getLabel());
         assertEquals(3, node.getIpInterfaces().size());
-            
+
     }
 }

@@ -72,7 +72,7 @@
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
   
-  <bean name="eventProxy" class="org.opennms.netmgt.eventd.mock.MockEventIpcManager">
+  <bean name="eventProxy" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
     <qualifier value="mock" />
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>

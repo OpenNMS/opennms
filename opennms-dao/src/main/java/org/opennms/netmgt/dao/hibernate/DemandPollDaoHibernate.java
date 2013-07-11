@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.DemandPollDao;
+import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.model.DemandPoll;
 
 public class DemandPollDaoHibernate extends

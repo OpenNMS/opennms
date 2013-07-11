@@ -59,7 +59,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath*:/META-INF/opennms/component-reporting.xml",
-        "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

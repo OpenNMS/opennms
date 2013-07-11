@@ -17,11 +17,11 @@
 	</bean>
   
   <bean id="mockReportCatalogDao" class="org.easymock.EasyMock" factory-method="createStrictMock">
-	<constructor-arg value="org.opennms.netmgt.dao.ReportCatalogDao"/>
+	<constructor-arg value="org.opennms.netmgt.dao.api.ReportCatalogDao"/>
   </bean>
   
   <bean id="mockDatabaseReportConfigDao" class="org.easymock.EasyMock" factory-method="createStrictMock">
-	<constructor-arg value="org.opennms.netmgt.dao.DatabaseReportConfigDao"/>
+	<constructor-arg value="org.opennms.netmgt.dao.api.DatabaseReportConfigDao"/>
   </bean>
   
   <bean id="mockReportServiceLocator" class="org.easymock.EasyMock" factory-method="createStrictMock">

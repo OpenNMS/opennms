@@ -37,8 +37,8 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.ServiceInfo;
 import org.opennms.netmgt.model.MockServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 
 public class JmxDaemonStatusDaoTest extends TestCase {
     static private MBeanServer mBeanServer;

@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.api.LinkStateDao;
 import org.opennms.netmgt.model.OnmsLinkState;
 
 /**

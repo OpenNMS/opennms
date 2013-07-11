@@ -56,7 +56,7 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Parameter;
 import org.opennms.netmgt.config.reportd.Report;
-import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +105,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
     /**
      * <p>getReportCatalogDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ReportCatalogDao} object.
      */
     public ReportCatalogDao getReportCatalogDao() {
         return m_reportCatalogDao;
@@ -114,7 +114,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
     /**
      * <p>setReportCatalogDao</p>
      *
-     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.api.ReportCatalogDao} object.
      */
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
         this.m_reportCatalogDao = reportCatalogDao;

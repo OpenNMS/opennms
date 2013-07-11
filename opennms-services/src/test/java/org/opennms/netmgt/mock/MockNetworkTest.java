@@ -42,10 +42,11 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
@@ -308,11 +309,11 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.addEventListener(listener, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
         m_eventMgr.sendEventToListeners(sentEvent);
-        assertTrue(MockEventUtil.eventsMatch(sentEvent, listener.getReceivedEvent()));
+        assertTrue(EventUtils.eventsMatch(sentEvent, listener.getReceivedEvent()));
 
         listener.reset();
         m_eventMgr.sendEventToListeners(sentEvent2);
-        assertFalse(MockEventUtil.eventsMatch(sentEvent2, listener.getReceivedEvent()));
+        assertFalse(EventUtils.eventsMatch(sentEvent2, listener.getReceivedEvent()));
 
     }
 

@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -132,7 +132,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -140,7 +140,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setNodeDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;

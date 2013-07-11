@@ -42,12 +42,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.RequisitionAccountant;
-import org.opennms.netmgt.provision.service.ProvisionService;
 
 /**
  * This class tracks nodes that need to be deleted, inserted, or updated during

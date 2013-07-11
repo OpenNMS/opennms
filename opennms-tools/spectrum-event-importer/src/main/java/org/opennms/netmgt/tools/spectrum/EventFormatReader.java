@@ -31,12 +31,9 @@ package org.opennms.netmgt.tools.spectrum;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StreamTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
 import org.springframework.core.io.Resource;
 
 public class EventFormatReader {

@@ -17,8 +17,6 @@
     <tx:annotation-driven/>
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
-    <bean id="queryManager" class="org.opennms.netmgt.linkd.HibernateEventWriter"/>
-
     <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
       <constructor-arg value="Linkd" />
       <constructor-arg>
@@ -34,7 +32,7 @@
       <property name="annotatedListener" ref="receiver" />
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
-
+    
     <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
       <property name="eventForwarder" ref="eventForwarder" />
     </bean>

@@ -31,7 +31,7 @@ package org.opennms.web.svclayer.daemonstatus;
 import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.model.ServiceInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

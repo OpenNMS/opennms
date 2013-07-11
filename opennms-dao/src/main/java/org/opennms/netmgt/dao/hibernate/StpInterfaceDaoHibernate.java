@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
-import org.opennms.netmgt.dao.StpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpInterfaceDao;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsStpInterface;

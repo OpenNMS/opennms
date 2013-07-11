@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.Query;
-import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 
 /**
