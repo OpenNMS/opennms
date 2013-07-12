@@ -39,9 +39,9 @@ import java.util.Set;
 
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 
@@ -60,8 +60,8 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
    public FilterableHierarchicalContainer(HierarchicalBeanContainer<?,?> container) {
         super();
         m_container = container;
-        m_container.addListener(this);
-        m_container.addListener(new PropertySetChangeListener() {
+        m_container.addItemSetChangeListener(this);
+        m_container.addPropertySetChangeListener(new PropertySetChangeListener() {
 
             @Override
             public void containerPropertySetChange(PropertySetChangeEvent event) {
@@ -82,7 +82,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
     }
 
     @Override
-    public Collection<?> getItemIds() {
+    public List<?> getItemIds() {
         if(isFiltered()) {
             return m_filteredItems;
         }else {
@@ -92,7 +92,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
     }
 
     @Override
-    public Property getContainerProperty(Object itemId, Object propertyId) {
+    public Property<?> getContainerProperty(Object itemId, Object propertyId) {
         
         return m_container.getContainerProperty(itemId, propertyId);
     }

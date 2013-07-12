@@ -141,7 +141,7 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(eventTable);
 
         add = new Button("Add Event");
-        add.addListener(new Button.ClickListener() {
+        add.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
@@ -220,7 +220,7 @@ public abstract class EventPanel extends Panel {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
         final File file = new File(configDir, fileName);
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to override the existig file?<br/>All current information will be lost.",
@@ -256,7 +256,7 @@ public abstract class EventPanel extends Panel {
         if (eventCount == 0) {
             saveFile(file, events, logger);
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",

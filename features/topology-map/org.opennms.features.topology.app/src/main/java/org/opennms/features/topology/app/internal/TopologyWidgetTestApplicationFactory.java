@@ -28,71 +28,42 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
-import org.ops4j.pax.vaadin.ScriptTag;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFactory {
     
 	private final BlueprintContainer m_blueprintContainer;
 	private final String m_beanName;
-	private OnmsHeaderProvider m_headerProvider;
 	
 	public TopologyWidgetTestApplicationFactory(BlueprintContainer container, String beanName) {
 		m_blueprintContainer = container;
 		m_beanName = beanName;
 	}
-	
+
     @Override
-	public Application createApplication(HttpServletRequest request) throws ServletException {
-        TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        application.setHeaderHtml(getHeader(request));
-        application.setUser(request.getRemoteUser());
-        LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
-        return application;
-	}
-
-
-    private String getHeader(HttpServletRequest request) {
-        if(m_headerProvider == null) return "";
-        
-        return m_headerProvider.getHeaderHtml(request);
+    public Class<? extends UI> getUIClass() {
+        return TopologyWidgetTestApplication.class;
     }
-
-    @Override
-	public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
-		return TopologyWidgetTestApplication.class;
-	}
 
     @Override
     public Map<String, String> getAdditionalHeaders() {
         final Map<String,String> headers = new HashMap<String,String>();
         headers.put("X-UA-Compatible", "chrome=1");
+        //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
+        //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
         return headers;
     }
 
     @Override
-    public List<ScriptTag> getAdditionalScripts() {
-        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
-        tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
-        tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
-        return tags;
+    public UI getUI() {
+        TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
+        return application;
     }
-    
-    public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
-    }
+
 }

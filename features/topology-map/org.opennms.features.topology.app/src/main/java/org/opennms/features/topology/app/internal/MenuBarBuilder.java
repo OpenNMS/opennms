@@ -87,7 +87,7 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
         
         Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
         for(Entry<String, Object> entry : sortedEntrySet) {
-            if(entry.getValue() instanceof Map) {
+            if(entry.getValue() instanceof Map<?,?>) {
                 MenuBar.MenuItem menuItem = menuBar.addItem(entry.getKey(), null);
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
@@ -105,7 +105,7 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
 	    Set<Entry<String, Object>> sortedEntrySet = getSortedSubmenuGroup(subMenu.getText(), value);
 	    for(Entry<String, Object> entry : sortedEntrySet) {
 	        String commandKey = entry.getKey();
-	        if(entry.getValue() instanceof Map) {
+	        if(entry.getValue() instanceof Map<?,?>) {
 	            MenuBar.MenuItem subMenuItem = subMenu.addItem(commandKey, null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {

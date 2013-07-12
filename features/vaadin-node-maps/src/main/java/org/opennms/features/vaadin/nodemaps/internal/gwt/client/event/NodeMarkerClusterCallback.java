@@ -1,9 +1,6 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import com.vaadin.client.VConsole;
 import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
@@ -11,7 +8,10 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
-import com.vaadin.terminal.gwt.client.VConsole;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final String TARGET_NONE = "";

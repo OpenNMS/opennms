@@ -30,7 +30,8 @@ package org.opennms.features.topology.netutils.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import com.vaadin.terminal.ExternalResource;
+
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
@@ -52,7 +53,18 @@ public class EventsAlarmsWindow extends Window {
 	private final int heightCushion = 110; //Border cushion for height of window
 	private Embedded eventsBrowser = null; //Browser component which is directed at the events page
 	private Embedded alarmsBrowser = null; //Browser component which is directed at the alarms page
-	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+
+	private static String makeLabel(final Node node) {
+		String label = node == null? "" : node.getLabel();
+		/*Sets up window settings*/
+		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
+			label = "";
+		} else {
+			label = " - " + label;
+		}
+		return label;
+	}
 
 	/**
 	 * The EventsAlarmsWindow method constructs a sub-window instance which can be added to a
@@ -64,18 +76,10 @@ public class EventsAlarmsWindow extends Window {
 	 * @throws MalformedURLException
 	 */
 	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
+		super("Events & Alarms" + makeLabel(node));
 		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
 		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
 		
-		String label = node == null? "" : node.getLabel();
-		/*Sets up window settings*/
-		if (label == null || label.equals("") || label.equalsIgnoreCase(noLabel)) {
-			label = "";
-		} else {
-		    label = " - " + label;
-		}
-		
-		setCaption("Events & Alarms" + label);
 		setImmediate(true);
 		setResizable(false);
 		
@@ -88,15 +92,16 @@ public class EventsAlarmsWindow extends Window {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(tabsheet);
 		
-		addComponent(layout);
+		setContent(layout);
+		//addComponent(layout);
 	}
 	
 	@Override
 	public void attach() {
 		super.attach();
 		
-		int width = (int)getApplication().getMainWindow().getWidth();
-    	int height = (int)getApplication().getMainWindow().getHeight();
+		int width = (int)getUI().getPage().getBrowserWindowWidth();
+    	int height = (int)getUI().getPage().getBrowserWindowHeight();
     	
 		/*Sets the browser and window sizes based on the main window*/
 		int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);

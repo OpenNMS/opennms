@@ -85,8 +85,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
 
         form.setImmediate(true);
         form.setWidth("100%");
-        form.setWriteThrough(false);
-        form.getLayout().setMargin(true);
+        form.setBuffered(true);
 
         final ComboBox valueField = new ComboBox("Value");
         valueField.setEnabled(false);
@@ -102,7 +101,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         typeField.setNullSelectionAllowed(false);
         typeField.addItem(IncludeCollectionWrapper.DC_GROUP);
         typeField.addItem(IncludeCollectionWrapper.SYSTEM_DEF);
-        typeField.addListener(new Property.ValueChangeListener() {
+        typeField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 String selected = (String) typeField.getValue();
@@ -133,7 +132,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
 
         form.setFormFieldFactory(new FormFieldFactory() {
             @Override
-            public Field createField(Item item, Object propertyId, Component uiContext) {
+            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
                 if (propertyId.equals("type"))
                     return typeField;
                 if (propertyId.equals("value"))
@@ -143,19 +142,21 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         });
 
         okButton = new Button("Update");
-        okButton.addListener(this);
+        okButton.addClickListener(this);
 
         cancelButton = new Button("Cancel");
-        cancelButton.addListener(this);
+        cancelButton.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        addComponent(form);
-        addComponent(toolbar);
-
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(form);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        layout.setMargin(true);
+        setContent(layout);
 
         form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(wrapper));
     }

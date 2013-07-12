@@ -93,7 +93,7 @@ public class NameEditForm extends Form implements ModelChangeListener<Item>, Vie
 		setHeight(Config.NAME_EDIT_FORM_HEIGHT + (parameter.hasFooter() ? 0 : -60), UNITS_PIXELS);
 		setReadOnly(true);
 		setImmediate(true);
-		setWriteThrough(false);
+		setBuffered(true);
 		if (parameter.hasFooter()) setFooter(footer);
 		addFooterHooks();
 		setCaption(parameter.getCaption());
@@ -149,7 +149,7 @@ public class NameEditForm extends Form implements ModelChangeListener<Item>, Vie
 				controller.fireViewStateChanged(ViewState.LeafSelected, this);
 				callAdditionalCallbacksIfThereAreAny(type, outer);
 			} else {
-				UIHelper.showValidationError(getWindow(),
+				UIHelper.showValidationError(
 						"There are errors in this view. Please fix them first or cancel.");
 			}
 		}

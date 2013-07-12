@@ -28,13 +28,16 @@
 
 package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-
-import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyDownEvent;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyPressEvent;
 
+@Ignore("This GWT client mode code cannot be run inside a vanilla JUnit test")
 public class CodeTest {
     int testCharCodeFalse = 10; // The char code for the test code where all of the options are false
     int testKeyCodeFalse = 20; // The key code for the test code where all of the options are false

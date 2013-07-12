@@ -27,11 +27,14 @@ package org.opennms.features.jmxconfiggenerator.webui.ui;
 
 import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 /**
- * This class represents the header panel of the jmx config ui tool. It simply
+ * This class represents the header panel of the JMX config UI tool. It simply
  * creates a label with the text according to the {@link UiState}s.
  * 
  * @author Markus von Rüden
@@ -43,9 +46,11 @@ public class HeaderPanel extends Panel implements ModelChangeListener<UiState> {
 	private Label label;
 
 	public HeaderPanel() {
+		Layout layout = new VerticalLayout();
 		label = new Label();
-		label.setContentMode(Label.CONTENT_RAW);
-		addComponent(label);
+		label.setContentMode(ContentMode.HTML);
+		layout.addComponent(label);
+		setContent(layout);
 	}
 
 	/**
