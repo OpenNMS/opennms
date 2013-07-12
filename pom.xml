@@ -2052,6 +2052,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp4j-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>snmp4j-agent-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
