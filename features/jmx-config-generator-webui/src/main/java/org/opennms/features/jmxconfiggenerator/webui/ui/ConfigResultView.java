@@ -41,17 +41,19 @@ import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel.OutputDataKey;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.DownloadStream;
-import com.vaadin.terminal.StreamResource;
+import com.vaadin.server.DownloadStream;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * Represents the result view. It shows all generated configurations (including
@@ -102,6 +104,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 			tabSheet.addTab(eachContent, eachContent.getCaption());
 		tabSheet.setSelectedTab(0); // select first component!
 
+		buttonPanel.getNext().setVisible(false); // TODO MVR enable button again and allow to download
 		buttonPanel.getNext().setCaption("download all");
 		buttonPanel.getNext().setIcon(IconProvider.getIcon(IconProvider.BUTTON_SAVE));
 
@@ -112,7 +115,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (event.getSource().equals(buttonPanel.getPrevious())) app.updateView(UiState.MbeansView);
-		if (event.getSource().equals(buttonPanel.getNext())) downloadConfigFile(event);
+//		if (event.getSource().equals(buttonPanel.getNext())) downloadConfigFile(event);
 	}
 
 	/**
@@ -134,7 +137,8 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 					.getDescriptionText());
 		}
 		// initiate download
-		event.getButton().getWindow().open(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getApplication()));
+//                new FileDownloader(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getUI())).extend(event.getButton());
+//		event.getButton().getUI().open(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getUI()));
 	}
 
 	/**
@@ -179,14 +183,14 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 		 *            The filename for the downloadable zip file.
 		 */
 		public DownloadResource(final Map<String, String> zipContentMap, final String filename,
-				final Application application) {
+				final UI application) {
 			super(new StreamSource() {
 				@Override
 				public InputStream getStream() {
 
 					return new ByteArrayInputStream(getZipByteArray(zipContentMap));
 				}
-			}, filename, application);
+			}, filename);
 			// for "older" browsers to force a download,
 			// otherwise it may not be downloaded
 			setMIMEType("application/unknown");
@@ -252,10 +256,10 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 		private TabContent(OutputDataKey key) {
 			setSizeFull();
 			setLocked(false);
-			setSplitPosition(50, UNITS_PERCENTAGE);
+			setSplitPosition(50, Unit.PERCENTAGE);
 			configTextArea.setSizeFull();
 			descriptionLabel = new Label(UIHelper.loadContentFromFile(getClass(), key.getDescriptionFilename()),
-					Label.CONTENT_RAW);
+					ContentMode.HTML);
 			addComponent(configTextArea);
 			addComponent(descriptionLabel);
 			setCaption(key.name());

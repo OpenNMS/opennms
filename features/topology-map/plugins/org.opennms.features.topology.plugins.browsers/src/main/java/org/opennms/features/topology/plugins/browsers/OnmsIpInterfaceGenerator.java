@@ -40,11 +40,11 @@ public class OnmsIpInterfaceGenerator implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property property = source.getContainerProperty(itemId, columnId);
+		Property<OnmsIpInterface> property = source.getContainerProperty(itemId, columnId);
 		if (property == null || property.getValue() == null) {
 			return null;
 		} else {
-			return ((OnmsIpInterface)property.getValue()).getIpAddressAsString();
+			return property.getValue().getIpAddressAsString();
 		}
 	}
 }

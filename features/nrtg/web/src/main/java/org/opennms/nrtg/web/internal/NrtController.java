@@ -192,7 +192,6 @@ public class NrtController {
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
      */
-    @SuppressWarnings("unchecked")
     private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());

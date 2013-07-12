@@ -28,8 +28,9 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.ui;
 
-import com.vaadin.terminal.ThemeResource;
 import org.opennms.features.jmxconfiggenerator.webui.Config;
+
+import com.vaadin.server.ThemeResource;
 
 /**
  * This class provides the application with icons. If any icon changes or new

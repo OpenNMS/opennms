@@ -42,7 +42,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.dbcp.PoolingConnection;
 import org.opennms.netmgt.model.PrimaryType;
@@ -70,7 +72,9 @@ public class CsvRequisitionParser {
     private static final String PROPERTY_DB_PW = "db.password";
     private static final String PROPERTY_USE_NODE_ID = "use.nodeid";
     private static final String PROPERTY_CATEGORY_LIST = "category.list";
+    private static final String PROPERTY_CATEGORY_ADD_EXISTING = "category.add.existing";
     private static final String PROPERTY_SERVICE_LIST = "service.list";
+    private static final String PROPERTY_ADD_ONLY = "add.only";
 	
 	private static FilesystemForeignSourceRepository m_fsr = null;
 	private static File m_csvFile = new File("/tmp/nodes.csv");
@@ -85,7 +89,9 @@ public class CsvRequisitionParser {
     private static String m_dbPass = "opennms";
 	private static Boolean m_useNodeId = false;
 	private static List<String> m_categoryList = null;
+	private static Boolean m_categoryAddExisting = true;
 	private static List<String> m_serviceList = null;
+	private static Boolean m_addOnly = true;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		Runtime.getRuntime().addShutdownHook(createShutdownHook());
@@ -143,6 +149,22 @@ public class CsvRequisitionParser {
 				"   WHERE iplike(ipaddr, '"+m_iplikeQuery+"')) " +
 				"ORDER BY nodeid";
 		
+		if (m_addOnly) {
+			distinctNodesQueryStr = "  " +
+					"SELECT nodeId AS \"nodeid\"," +
+					"       nodeLabel AS \"nodelabel\"," +
+					"       foreignSource AS \"foreignsource\"," +
+					"       foreignId AS \"foreignid\" " +
+					"  FROM node " +
+					" WHERE nodeid in (" +
+					"  SELECT " +
+					"DISTINCT nodeid " +
+					"    FROM ipinterface " +
+					"   WHERE iplike(ipaddr, '"+m_iplikeQuery+"')) " +
+					"  AND foreignsource is NULL " +
+					"ORDER BY nodeid";
+		}
+		
 		Connection connection = null;
 		Statement distinctNodesStatement = null;
 		PoolingConnection pool = null;
@@ -151,8 +173,6 @@ public class CsvRequisitionParser {
 		pool = new PoolingConnection(connection);
 		distinctNodesStatement = pool.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
-
-		System.out.println("Executing query: "+distinctNodesQueryStr);
 		ResultSet distinctNodesResultSet = null;
 		int rowsFound = 0;
 		distinctNodesResultSet = distinctNodesStatement.executeQuery(distinctNodesQueryStr);
@@ -231,9 +251,30 @@ public class CsvRequisitionParser {
 			distinctNodesResultSet.updateRow();
 			System.out.println("Node updated.");
 
-
 			RequisitionData rd = new RequisitionData(label, primaryIp, m_foreignSource, foreignId);
+			
+			if (m_categoryAddExisting) {
+				String categoriesQueryString = "" +
+						"SELECT c.categoryname as \"categoryname\" " +
+						"  FROM categories c " +
+						"  JOIN category_node cn " +
+						"    ON cn.categoryid = c.categoryid " +
+						"  JOIN node n on n.nodeid = cn.nodeid " +
+						" WHERE n.nodeid = "+nodeId;
+				Statement categoriesStatement = pool.createStatement();
 
+				ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
+
+				Set<String> categories = new LinkedHashSet<String>();
+				while(crs.next()) {
+					categories.add(crs.getString("categoryname"));
+				}
+
+				crs.close();
+				categoriesStatement.close();
+				rd.setCategories(categories);
+			}
+			
 			System.out.println("Updating requistion...");
 			createOrUpdateRequistion(rd);
 			System.out.println("Requistion updated!  Next...\n");
@@ -303,6 +344,12 @@ public class CsvRequisitionParser {
 			m_useNodeId = Boolean.valueOf(System.getProperty(PROPERTY_USE_NODE_ID, m_useNodeId.toString()));
 			System.out.println("\t"+PROPERTY_USE_NODE_ID+":"+m_useNodeId);
 			
+			m_addOnly = Boolean.valueOf(System.getProperty(PROPERTY_ADD_ONLY, m_addOnly.toString()));
+			System.out.println("\t"+PROPERTY_ADD_ONLY+":"+m_addOnly);
+			
+			m_categoryAddExisting = Boolean.valueOf(System.getProperty(PROPERTY_CATEGORY_ADD_EXISTING, m_categoryAddExisting.toString()));
+			System.out.println("\t"+PROPERTY_CATEGORY_ADD_EXISTING+":"+m_categoryAddExisting);
+			
 		}
 		
 		String fsRepo = System.getProperty(PROPERTY_FS_REPO_PATH, m_repoPath.getCanonicalPath());
@@ -360,7 +407,9 @@ public class CsvRequisitionParser {
 				"\t"+PROPERTY_IPLIKE_QUERY+": default:"+m_iplikeQuery+"\n" +
 				"\t"+PROPERTY_USE_NODE_ID+": default:"+m_useNodeId+"\n" +
 				"\t"+PROPERTY_CATEGORY_LIST+": default:null"+"\n" +
+				"\t"+PROPERTY_CATEGORY_ADD_EXISTING+":default:"+m_categoryAddExisting+"\n" +
 				"\t"+PROPERTY_SERVICE_LIST+": default:null"+"\n" +
+				"\t"+PROPERTY_ADD_ONLY+": default:"+m_addOnly+"\n" +
 				"\n" +
 				"\n" +
 				"Example:\n" +
@@ -376,7 +425,9 @@ public class CsvRequisitionParser {
 				"\t\t-D"+PROPERTY_IPLIKE_QUERY+"=\"*.*.*.*\" \\\n" +
 				"\t\t-D"+PROPERTY_USE_NODE_ID+"=false \\\n" +
 				"\t\t-D"+PROPERTY_CATEGORY_LIST+"=Production,Router \\\n" +
+				"\t\t-D"+PROPERTY_CATEGORY_ADD_EXISTING+"=true \\\n" +
 				"\t\t-D"+PROPERTY_SERVICE_LIST+"=ICMP,SNMP \\\n" +
+				"\t\t-D"+PROPERTY_ADD_ONLY+"=false \\\n" +
 				"\t\t-jar opennms-csv-requisition-1.13.0-SNAPSHOT-jar-with-dependencies.jar" +
 				"\n" +
 				"\n" +
@@ -416,12 +467,13 @@ public class CsvRequisitionParser {
 	}
 	
 	private static void createOrUpdateRequistion(RequisitionData rd) throws UnknownHostException {
-		Requisition r;
+		Requisition r = null;
+		RequisitionNode rn = new RequisitionNode();
 		String foreignSource = rd.getForeignSource();
 		
 		r = m_fsr.getRequisition(foreignSource);
 		
-		if (r== null) {
+		if (r == null) {
 			r = new Requisition(foreignSource);
 		}
 		
@@ -445,7 +497,7 @@ public class CsvRequisitionParser {
 		RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
 		ric.add(iface);
 				
-		//add categories
+		//add categories requisition level categories
 		RequisitionCategoryCollection rcc = null;
 		if (m_categoryList != null && m_categoryList.size() > 0) {
 			rcc = new RequisitionCategoryCollection();
@@ -454,7 +506,13 @@ public class CsvRequisitionParser {
 			}
 		}
 		
-		RequisitionNode rn = new RequisitionNode();
+		//add categories already on the node to the requisition
+		if (rd.getCategories() != null) {
+			for (String cat : rd.getCategories()) {
+				rcc.add(new RequisitionCategory(cat));
+			}
+		}
+		
 		rn.setBuilding(foreignSource);
 		rn.setCategories(rcc);
 		rn.setForeignId(rd.getForeignId());
@@ -468,7 +526,8 @@ public class CsvRequisitionParser {
 		
 		rn.setNodeLabel(nodeLabel);
 		
-		r.insertNode(rn);
+		//r.insertNode(rn);
+		r.putNode(rn);
 		m_fsr.save(r);
 	}
 

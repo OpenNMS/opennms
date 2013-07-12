@@ -879,8 +879,13 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
+    <!--
     <vaadinVersion>6.8.2</vaadinVersion>
-    <paxVaadinVersion>0.1.0-ONMS-20121218</paxVaadinVersion>
+    <vaadinVersion>7.0.0.rc2</vaadinVersion>
+    -->
+    <vaadinVersion>7.1.0</vaadinVersion>
+    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
+    <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 
@@ -2047,6 +2052,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp4j-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>snmp4j-agent-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2379,11 +2390,28 @@
         <artifactId>gwt-dev</artifactId>
         <version>${gwtVersion}</version>
       </dependency>
+      <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin</artifactId>
-        <version>${vaadinVersion}</version>
+	<artifactId>vaadin-server</artifactId>
+	<version>${vaadinVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client-compiled</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-themes</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.ops4j.pax.vaadin</groupId>
         <artifactId>service</artifactId>

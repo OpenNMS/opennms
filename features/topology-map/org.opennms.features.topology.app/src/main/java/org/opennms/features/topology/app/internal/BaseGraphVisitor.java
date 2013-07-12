@@ -5,7 +5,7 @@ import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 
-import com.vaadin.terminal.PaintException;
+import com.vaadin.server.PaintException;
 
 public class BaseGraphVisitor implements GraphVisitor {
 

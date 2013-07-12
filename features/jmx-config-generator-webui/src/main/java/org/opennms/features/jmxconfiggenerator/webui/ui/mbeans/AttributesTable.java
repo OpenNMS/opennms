@@ -28,16 +28,11 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.ui.mbeans;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.opennms.features.jmxconfiggenerator.webui.Config;
 import org.opennms.features.jmxconfiggenerator.webui.data.MetaAttribItem;
 import org.opennms.features.jmxconfiggenerator.webui.data.MetaAttribItem.AttribType;
@@ -46,14 +41,27 @@ import org.opennms.features.jmxconfiggenerator.webui.ui.validators.AttributeName
 import org.opennms.features.jmxconfiggenerator.webui.ui.validators.UniqueAttributeNameValidator;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.Select;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextField;
+
 /**
  *
  * @author Markus von Rüden
  */
 public class AttributesTable extends Table {
 
-	final private Map<Object, Field> fieldsToValidate = new HashMap<Object, Field>();
-	private List<Field> fields = new ArrayList<Field>();
+	final private Map<Object, Field<String>> fieldsToValidate = new HashMap<Object, Field<String>>();
+	private List<Field<?>> fields = new ArrayList<Field<?>>();
 	private final UniqueAttributeNameValidator uniqueAttributeNameValidator;
 	private final Callback callback;
 
@@ -102,16 +110,16 @@ public class AttributesTable extends Table {
 		final private Validator lengthValidator = new StringLengthValidator(String.format("Maximal length is %d", Config.ATTRIBUTES_ALIAS_MAX_LENGTH), 0, Config.ATTRIBUTES_ALIAS_MAX_LENGTH, false); 
 
 		@Override
-		public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-			Field field = null;
+		public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+			Field<?> field = null;
 			if (propertyId.toString().equals(MetaAttribItem.ALIAS)) {
-				Field tf = new TableTextFieldWrapper(createAlias(itemId));
+				Field<String> tf = new TableTextFieldWrapper(createAlias(itemId));
 				fieldsToValidate.put(itemId, tf); //is needed to decide if this table is valid or not
 				field = tf;
 			}
 			if (propertyId.toString().equals(MetaAttribItem.SELECTED)) {
 				CheckBox c = new CheckBox();
-				c.setWriteThrough(false);
+				c.setBuffered(true);
 				field = c;
 			}
 			if (propertyId.toString().equals(MetaAttribItem.TYPE))
@@ -121,24 +129,24 @@ public class AttributesTable extends Table {
 			return field;
 		}
 
-		private Select createType(Object itemId) {
-			Select select = new Select();
+		private ComboBox createType(Object itemId) {
+			ComboBox select = new ComboBox();
 			for (AttribType type : AttribType.values())
 				select.addItem(type.name());
 			select.setValue(AttribType.valueOf(itemId).name());
 			select.setNullSelectionAllowed(false);
 			select.setData(itemId);
-			select.setWriteThrough(false);
+			select.setBuffered(true);
 			return select;
 		}
 
 		private TextField createAlias(Object itemId) {
 			final TextField tf = new TextField();
 			tf.setValidationVisible(true);
-			tf.setWriteThrough(false);
+			tf.setBuffered(true);
 			tf.setImmediate(true);
 			tf.setRequired(true);
-			tf.setWidth(100, UNITS_PERCENTAGE);
+			tf.setWidth(100, Unit.PERCENTAGE);
 			tf.setMaxLength(Config.ATTRIBUTES_ALIAS_MAX_LENGTH);
 			tf.setRequiredError("You must provide an attribute name.");
 			tf.addValidator(nameValidator);

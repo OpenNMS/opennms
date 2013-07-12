@@ -8,12 +8,14 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial", "unchecked"})
 public abstract class SelectionTree extends Tree {
 
-    private static class TreeItemClickTracker{
+    private static class TreeItemClickTracker {
         
         private Object m_clickedItemId;
         private boolean m_remove;
@@ -35,15 +37,16 @@ public abstract class SelectionTree extends Tree {
             return m_remove;
         }
     }
-    
+
     private final TreeItemClickTracker m_treeItemClickTracker = new TreeItemClickTracker();
     private boolean m_itemClicked = false;
+    
     protected GraphContainer m_graphContainer;
     
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
         
-        this.addListener(new ValueChangeListener() {
+        this.addValueChangeListener(new ValueChangeListener() {
             
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
@@ -65,25 +68,25 @@ public abstract class SelectionTree extends Tree {
             }
         });
 
-//        /**
-//         * This listener responds to clicks on items within the list and then 
-//         */
-//        this.addListener(new ItemClickListener() {
-//            
-//            @Override
-//            public void itemClick(ItemClickEvent event) {
-//                m_itemClicked = true;
-//                Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
-//                
-//                Object itemId = event.getItemId();
-//                m_treeItemClickTracker.setClickedItemId(itemId);
-//                
-//                if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
-//                    m_treeItemClickTracker.setRemove(true);
-//                } 
-//                
-//            }
-//        });
+        /**
+         * This listener responds to clicks on items within the list and then 
+         */
+        this.addItemClickListener(new ItemClickListener() {
+            
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                m_itemClicked = true;
+                Set<Object> selectedIds = (Set<Object>) ((SelectionTree) event.getSource()).getValue();
+                
+                Object itemId = event.getItemId();
+                m_treeItemClickTracker.setClickedItemId(itemId);
+                
+                if((event.isCtrlKey() || event.isMetaKey()) && selectedIds.contains(itemId)) {
+                    m_treeItemClickTracker.setRemove(true);
+                } 
+                
+            }
+        });
     }
 
     private Set<Object> getSelectedItemIds(Set<Object> selectedIds) {
@@ -137,5 +140,15 @@ public abstract class SelectionTree extends Tree {
 
     public void setGraphContainer(GraphContainer graphContainer) {
         m_graphContainer = graphContainer;
+    }
+
+    @Override
+    public String toString() {
+        Object value = getValue();
+        if (value == null) {
+            return null;
+        } else {
+            return value.toString();
+        }
     }
 }

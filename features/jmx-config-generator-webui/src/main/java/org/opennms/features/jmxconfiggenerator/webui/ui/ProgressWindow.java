@@ -55,7 +55,7 @@ public class ProgressWindow extends Window {
 		layout.addComponent(progress);
 		layout.setSpacing(true);
 		layout.addComponent(label);
-		addComponent(layout);
+		setContent(layout);
 		center();
 	}
 
