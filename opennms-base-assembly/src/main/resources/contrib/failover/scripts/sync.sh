@@ -51,12 +51,12 @@ cfgSync ()
 
 
 # Synchronize the DB
-dbSync
-if [ $? -ne 0 ]
-then
-  echo "Failed db sync of $PRIMARY_NMS!"
-  exit 1
-fi
+#dbSync
+#if [ $? -ne 0 ]
+#then
+#  echo "Failed db sync of $PRIMARY_NMS!"
+#  exit 1
+#fi
 
 # Synchronize the failover $OPENNMS_ETC_FAILOVER with the $PRIMARY_NMS:$OPENNMS_ETC/
 cfgSync
