@@ -52,6 +52,8 @@ import org.opennms.netmgt.collectd.BasePersister;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GroupPersister;
 import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -59,10 +61,13 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.protocols.http.collector.HttpCollectionHandler;
+import org.opennms.protocols.json.collector.DefaultJsonCollectionHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
 import org.opennms.protocols.xml.config.XmlRrd;
 
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -95,6 +100,11 @@ public class HttpDataCollectionTest {
     public void setUp() throws Exception {
         FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
+        DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
+        dao.setConfigDirectory("src/test/resources/etc/datacollection");
+        dao.setConfigResource(new FileSystemResource("src/test/resources/etc/datacollection-config.xml"));
+        dao.afterPropertiesSet();
+        DataCollectionConfigFactory.setInstance(dao);
 
         System.setProperty("org.opennms.rrd.usetcp", "false");
         System.setProperty("org.opennms.rrd.usequeue", "false");
@@ -126,7 +136,7 @@ public class HttpDataCollectionTest {
     }
 
     /**
-     * Test HTTP Data Collection
+     * Test HTTP Data Collection with XPath
      *
      * @throws Exception the exception
      */
@@ -142,7 +152,6 @@ public class HttpDataCollectionTest {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "Http-Count");
-        parameters.put("pre-parse-html", "true");
 
         DefaultXmlCollectionHandler collector = new DefaultXmlCollectionHandler();
         collector.setNodeDao(m_nodeDao);
@@ -157,10 +166,87 @@ public class HttpDataCollectionTest {
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File("target/snmp/1/count-stats.jrb"));
+        Assert.assertNotNull(jrb);
         Assert.assertEquals(1, jrb.getDsCount());
         Datasource ds = jrb.getDatasource("count");
         Assert.assertNotNull(ds);
         Assert.assertEquals(new Double(5), Double.valueOf(ds.getLastValue()));
+    }
+
+    /**
+     * Test HTTP Data Collection with CSS Selector
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @JUnitHttpServer(port=10342, https=false, webapps={
+            @Webapp(context="/junit", path="src/test/resources/test-webapp")
+    })
+    public void testCssSelectorHttpCollection() throws Exception {
+        File configFile = new File("src/test/resources/http-datacollection-config.xml");
+        XmlDataCollectionConfig config = JaxbUtils.unmarshal(XmlDataCollectionConfig.class, configFile);
+        XmlDataCollection collection = config.getDataCollectionByName("Http-Market");
+        RrdRepository repository = createRrdRepository(collection.getXmlRrd());
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("collection", "Http-Market");
+
+        HttpCollectionHandler collector = new HttpCollectionHandler();
+        collector.setNodeDao(m_nodeDao);
+        collector.setRrdRepository(repository);
+        collector.setServiceName("HTTP");
+
+        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+
+        ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
+        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        collectionSet.visit(persister);
+
+        RrdDb jrb = new RrdDb(new File("target/snmp/1/market.jrb"));
+        Assert.assertNotNull(jrb);
+        Assert.assertEquals(2, jrb.getDsCount());
+        Datasource ds = jrb.getDatasource("nasdaq");
+        Assert.assertNotNull(ds);
+        Assert.assertEquals(new Double(3578.30), Double.valueOf(ds.getLastValue()));
+    }
+
+    /**
+     * Test HTTP Data Collection with JSON
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    @JUnitHttpServer(port=10342, https=false, webapps={
+            @Webapp(context="/junit", path="src/test/resources/test-webapp")
+    })
+    public void testJsonHttpCollection() throws Exception {
+        File configFile = new File("src/test/resources/solaris-zones-datacollection-config.xml");
+        XmlDataCollectionConfig config = JaxbUtils.unmarshal(XmlDataCollectionConfig.class, configFile);
+        XmlDataCollection collection = config.getDataCollectionByName("Solaris");
+        RrdRepository repository = createRrdRepository(collection.getXmlRrd());
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("collection", "Solaris");
+
+        DefaultJsonCollectionHandler collector = new DefaultJsonCollectionHandler();
+        collector.setNodeDao(m_nodeDao);
+        collector.setRrdRepository(repository);
+        collector.setServiceName("HTTP");
+
+        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+
+        ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
+        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        collectionSet.visit(persister);
+
+        RrdDb jrb = new RrdDb(new File("target/snmp/1/solarisZoneStats/global/solaris-zone-stats.jrb"));
+        Assert.assertNotNull(jrb);
+        Assert.assertEquals(6, jrb.getDsCount());
+        Datasource ds = jrb.getDatasource("nproc");
+        Assert.assertNotNull(ds);
+        Assert.assertEquals(new Double(245.0), Double.valueOf(ds.getLastValue()));
     }
 
     /**
