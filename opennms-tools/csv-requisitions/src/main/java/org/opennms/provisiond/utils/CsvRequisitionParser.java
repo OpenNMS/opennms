@@ -42,7 +42,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.dbcp.PoolingConnection;
 import org.opennms.netmgt.model.PrimaryType;
@@ -259,7 +261,7 @@ public class CsvRequisitionParser {
 			
 			ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
 			
-			List<String> categories = new ArrayList<String>();
+			Set<String> categories = new LinkedHashSet<String>();
 			while(crs.next()) {
 				categories.add(crs.getString("categoryname"));
 			}
