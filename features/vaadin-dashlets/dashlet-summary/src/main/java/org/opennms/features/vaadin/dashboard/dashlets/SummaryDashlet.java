@@ -27,15 +27,21 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class implements a {@link Dashlet} for testing purposes.
@@ -150,7 +156,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
      * @param notAck number of unacknowledged alarms
      * @return the trend value
      */
-    private int computeTrend(int ack, int notAck) {
+    private int computeTrend(long ack, long notAck) {
         if (ack == notAck) {
             return TREND_EAST;
         } else {
@@ -236,8 +242,8 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
             horizontalLayout.addStyleName("summary");
             horizontalLayout.addStyleName(onmsSeverity.name().toLowerCase());
 
-            int acknowledged = countBySeverity(true, timeslot, onmsSeverity);
-            int notAcknowledged = countBySeverity(false, timeslot, onmsSeverity);
+            long acknowledged = countBySeverity(true, timeslot, onmsSeverity);
+            long notAcknowledged = countBySeverity(false, timeslot, onmsSeverity);
 
             Label labelSeverity = new Label(onmsSeverity.getLabel());
             labelSeverity.addStyleName("summary-font");
@@ -339,8 +345,8 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
                 }
             }
 
-            int acknowledged = countByUei(true, timeslot, uei);
-            int notAcknowledged = countByUei(false, timeslot, uei);
+            long acknowledged = countByUei(true, timeslot, uei);
+            long notAcknowledged = countByUei(false, timeslot, uei);
 
             Label labelSeverity = new Label(uei.replace("uei.opennms.org/nodes/", ""));
             labelSeverity.addStyleName("summary-font");
@@ -466,7 +472,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
      * @param onmsSeverity the {@link OnmsSeverity} to search for
      * @return number of alarms found
      */
-    public int countBySeverity(boolean acknowledged, long age, OnmsSeverity onmsSeverity) {
+    public long countBySeverity(boolean acknowledged, long age, OnmsSeverity onmsSeverity) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
         if (acknowledged) {
@@ -490,7 +496,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
      * @param uei          search for alarms with the specified uei
      * @return number of alarms found
      */
-    public int countByUei(boolean acknowledged, long age, String uei) {
+    public long countByUei(boolean acknowledged, long age, String uei) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
         if (acknowledged) {
