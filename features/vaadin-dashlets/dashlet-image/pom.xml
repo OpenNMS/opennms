@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>org.opennms.features.vaadin-dashlets</groupId>
-    <artifactId>dashlet-ulf</artifactId>
+    <artifactId>dashlet-image</artifactId>
 
     <properties>
-        <bundle.symbolicName>org.opennms.features.vaadin-dashlets.dashlet-ulf</bundle.symbolicName>
+        <bundle.symbolicName>org.opennms.features.vaadin-dashlets.dashlet-image</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.vaadin.dashboard.dashlets</bundle.namespace>
     </properties>
 
