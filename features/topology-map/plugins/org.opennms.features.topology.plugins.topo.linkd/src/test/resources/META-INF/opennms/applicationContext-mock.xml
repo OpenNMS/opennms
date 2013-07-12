@@ -4,19 +4,19 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="dataLinkInterfaceDao"> 
-		<constructor-arg value="org.opennms.netmgt.dao.DataLinkInterfaceDao"/>
+		<constructor-arg value="org.opennms.netmgt.dao.api.DataLinkInterfaceDao"/>
 	</bean>        
 
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="nodeDao"> 
-		<constructor-arg value="org.opennms.netmgt.dao.NodeDao"/>
+		<constructor-arg value="org.opennms.netmgt.dao.api.NodeDao"/>
 	</bean>        
 
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="snmpInterfaceDao"> 
-		<constructor-arg value="org.opennms.netmgt.dao.SnmpInterfaceDao"/>
+		<constructor-arg value="org.opennms.netmgt.dao.api.SnmpInterfaceDao"/>
 	</bean>        
 
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ipInterfaceDao"> 
-		<constructor-arg value="org.opennms.netmgt.dao.IpInterfaceDao"/>
+		<constructor-arg value="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
 	</bean>        
 
 	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext"> 

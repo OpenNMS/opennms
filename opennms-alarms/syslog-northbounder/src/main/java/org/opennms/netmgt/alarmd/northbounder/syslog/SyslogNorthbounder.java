@@ -42,7 +42,7 @@ import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.SyslogConfigIF;

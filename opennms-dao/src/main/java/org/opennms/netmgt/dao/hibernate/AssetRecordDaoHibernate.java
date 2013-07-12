@@ -32,7 +32,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
-import org.opennms.netmgt.dao.AssetRecordDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
 import java.util.Collections;

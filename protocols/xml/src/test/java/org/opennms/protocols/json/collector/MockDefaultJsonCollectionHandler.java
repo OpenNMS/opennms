@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.protocols.xml.collector.XmlResourceType;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlResourceUtils;
 
 /**
@@ -44,10 +45,10 @@ import org.opennms.protocols.xml.config.XmlResourceUtils;
 public class MockDefaultJsonCollectionHandler extends DefaultJsonCollectionHandler {
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
+     * @see org.opennms.protocols.json.collector.AbstractJsonCollectionHandler#getJSONObject(java.lang.String, org.opennms.protocols.xml.config.Request)
      */
     @Override
-    protected JSONObject getJSONObject(String urlString) {
+    protected JSONObject getJSONObject(String urlString, Request request) {
         return MockDocumentBuilder.getJSONDocument();
     }
 

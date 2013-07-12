@@ -43,8 +43,7 @@
         import="
           org.opennms.web.alarm.*,
           org.opennms.web.alarm.AcknowledgeType,
-          org.opennms.web.alarm.SortStyle,
-          org.opennms.netmgt.dao.AlarmRepository,
+          org.opennms.web.alarm.SortStyle,org.opennms.netmgt.dao.api.AlarmRepository,
           org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate,
           org.opennms.web.alarm.filter.AlarmCriteria,
           org.opennms.web.alarm.filter.NodeFilter,

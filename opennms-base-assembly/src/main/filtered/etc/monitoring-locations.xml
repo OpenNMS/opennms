@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<monitoring-locations-configuration 
-  xmlns="http://www.opennms.org/xsd/config/monitoring-locations" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/monitoring-locations 
-                      http://www.opennms.org/xsd/config/monitoring-locations.xsd ">
-  <locations>
-  </locations>
+<monitoring-locations-configuration xmlns="http://xmlns.opennms.org/xsd/config/monitoring-locations">
+    <locations/>
 </monitoring-locations-configuration>

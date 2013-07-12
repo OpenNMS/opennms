@@ -54,8 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>, EchoPacket {
-
-	private static final Logger LOG = LoggerFactory.getLogger(Jni6PingRequest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Jni6PingRequest.class);
 
     private static long s_nextTid = 1;
 

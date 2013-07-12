@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSelectionTree extends SelectionTree {

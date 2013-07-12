@@ -32,6 +32,7 @@ package org.opennms.netmgt.eventd;
 import java.util.Collection;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +151,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * <p>getEventdServiceManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     * @return a {@link org.opennms.netmgt.dao.api.EventdServiceManager} object.
      */
     public EventdServiceManager getEventdServiceManager() {
         return m_eventdServiceManager;
@@ -159,7 +160,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * <p>setEventdServiceManager</p>
      *
-     * @param eventdServiceManager a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     * @param eventdServiceManager a {@link org.opennms.netmgt.dao.api.EventdServiceManager} object.
      */
     public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
         m_eventdServiceManager = eventdServiceManager;

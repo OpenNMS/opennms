@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

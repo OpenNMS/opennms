@@ -32,6 +32,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.IPPacket;
@@ -49,9 +50,7 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 public class V4Pinger extends AbstractPinger<Inet4Address> {
-	
-	
-	private static final Logger LOG = LoggerFactory.getLogger(V4Pinger.class);
+    private static final Logger LOG = LoggerFactory.getLogger(V4Pinger.class);
     
 
     public V4Pinger(final int pingerId) throws Exception {
@@ -72,6 +71,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     
     @Override
     public void run() {
+        Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
             final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);

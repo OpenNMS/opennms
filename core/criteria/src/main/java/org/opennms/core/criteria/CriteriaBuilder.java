@@ -115,6 +115,11 @@ public class CriteriaBuilder {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
     }
 
+
+    public CriteriaBuilder createAlias(final String associationPath, final String alias) {
+        return alias(associationPath, alias);
+    }
+
     public CriteriaBuilder join(final String associationPath, final String alias, final JoinType type) {
         return alias(associationPath, alias, type);
     }

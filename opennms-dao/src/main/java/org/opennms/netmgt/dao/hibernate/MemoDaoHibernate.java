@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.MemoDao;
+import org.opennms.netmgt.dao.api.MemoDao;
 import org.opennms.netmgt.model.OnmsMemo;
 
 /**

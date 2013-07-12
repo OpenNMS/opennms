@@ -32,11 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -47,17 +43,21 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.BeforeTransaction;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
@@ -67,6 +67,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class PollerFrontEndIntegrationTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+    private static final Logger LOG = LoggerFactory.getLogger(PollerFrontEndIntegrationTest.class);
+
     @Autowired
     private DatabasePopulator m_populator;
 
@@ -89,6 +91,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
         BeanUtils.assertAutowiring(this);
     }
 
+    /*
     @BeforeClass
     public static void setUpAnticipator() throws IOException {
         m_fileAnticipator = new FileAnticipator();
@@ -105,15 +108,17 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
 
         m_fileAnticipator.tearDown();
     }
+    */
 
-    @Before
-    public void onSetUpInTransactionIfEnabled() throws Exception {
+    @BeforeTransaction
+    public void setUp() throws Exception {
         m_populator.populateDatabase();
     }
 
     @Test
+    @Transactional
+    @Ignore
     public void testRegister() throws Exception {
-
         // Check preconditions
         assertFalse(m_frontEnd.isRegistered());
         assertEquals(0, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors"));
@@ -122,6 +127,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
 
         // Start up the remote poller
         m_frontEnd.register("RDU");
+        assertTrue(m_frontEnd.isStarted());
         Integer monitorId = m_settings.getMonitorId();
 
         assertTrue(m_frontEnd.isRegistered());
@@ -134,6 +140,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
         while (wait > 0) {
             Thread.sleep(1000L);
             wait -= 1000L;
+            LOG.debug("wait = {}", wait);
 
             if (getMonitorCount(monitorId) == 1
                 && getDisconnectedCount(monitorId) == 0
@@ -143,7 +150,8 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
         assertEquals(1, getMonitorCount(monitorId));
         assertEquals(0, getDisconnectedCount(monitorId));
 
-        assertTrue("Could not find any pollResults", 0 < getSpecificChangesCount(monitorId));
+        final int changesCount = getSpecificChangesCount(monitorId);
+        assertTrue("Could not find any pollResults (changes = " + changesCount + ")", changesCount > 0);
 
         m_frontEnd.stop();
     }

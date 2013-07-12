@@ -46,11 +46,11 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAccessPoint;
@@ -65,10 +65,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml", "classpath:/META-INF/opennms/applicationContext-daemon.xml", "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml", "classpath:META-INF/opennms/smallEventConfDao.xml" })
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+    "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+    "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+    "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml",
+    "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AccessPointMonitordTest implements InitializingBean {
@@ -209,7 +216,7 @@ public class AccessPointMonitordTest implements InitializingBean {
         assertEquals(2, m_apm.getActivePackageNames().size());
 
         // Change the package name for AP1 - the package should be unscheduled
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
         ap1.setPollingPackage("default");
         m_accessPointDao.update(ap1);
         m_accessPointDao.flush();

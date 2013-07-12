@@ -31,9 +31,9 @@ package org.opennms.web.svclayer.daemonstatus.support;
 import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.DaemonStatusDao;
-import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.dao.api.DaemonStatusDao;
 import org.opennms.netmgt.model.ServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
 
 /**
@@ -50,7 +50,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	/**
 	 * <p>Setter for the field <code>daemonStatusDao</code>.</p>
 	 *
-	 * @param daemonStatusDao a {@link org.opennms.netmgt.dao.DaemonStatusDao} object.
+	 * @param daemonStatusDao a {@link org.opennms.netmgt.dao.api.DaemonStatusDao} object.
 	 */
 	public void setDaemonStatusDao(DaemonStatusDao daemonStatusDao) {
 		this.daemonStatusDao = daemonStatusDao;

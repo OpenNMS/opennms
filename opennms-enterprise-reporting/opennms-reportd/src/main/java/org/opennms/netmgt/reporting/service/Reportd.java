@@ -41,7 +41,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.ReportdConfigurationDao;
+import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -321,7 +321,7 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>getReportdConfigurationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ReportdConfigurationDao} object.
      */
     public ReportdConfigurationDao getReportdConfigurationDao() {
         return m_reportConfigurationDao;
@@ -330,7 +330,7 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>setReportdConfigurationDao</p>
      *
-     * @param reportConfigurationDao a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     * @param reportConfigurationDao a {@link org.opennms.netmgt.dao.api.ReportdConfigurationDao} object.
      */
     public void setReportdConfigurationDao(
             ReportdConfigurationDao reportConfigurationDao) {

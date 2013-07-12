@@ -36,6 +36,8 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.api.FactoryBasedSnmpConfigDao;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 

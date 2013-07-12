@@ -99,17 +99,17 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
             } catch (CompilationFailedException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on:" + svc.getIpAddr() + " failed : selenium-test compilation error " + e.getMessage());
                 String reason = "Selenium sequence failed: CompilationFailedException" + e.getMessage();
-                this.LOG.debug(reason);
+                SeleniumMonitor.LOG.debug(reason);
                 PollStatus.unavailable(reason);
             } catch (IOException e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed: IOException occurred, failed to find selenium-test: " + seleniumTestFilename);
                 String reason = "Selenium sequence failed: IOException: " + e.getMessage();
-                this.LOG.debug(reason);
+                SeleniumMonitor.LOG.debug(reason);
                 PollStatus.unavailable(reason);
             } catch (Exception e) {
                 serviceStatus = PollStatus.unavailable("Selenium page sequence attempt on " + svc.getIpAddr() + " failed:\n" + e.getMessage());
                 String reason = "Selenium sequence failed: Exception: " + e.getMessage();
-                this.LOG.debug(reason);
+                SeleniumMonitor.LOG.debug(reason);
                 PollStatus.unavailable(reason);
             }
 		}
@@ -158,7 +158,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
             stringBuilder.append(" " + failure.getMessage() + "\n");
         }
         String reason = "Selenium sequence failed: " + stringBuilder.toString();
-        this.LOG.debug(reason);
+        SeleniumMonitor.LOG.debug(reason);
         
         PollStatus.unavailable(reason);
         return stringBuilder.toString();

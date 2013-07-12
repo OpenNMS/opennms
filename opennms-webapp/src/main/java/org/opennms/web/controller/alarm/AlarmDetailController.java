@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.event.AcknowledgeType;

@@ -34,13 +34,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.dns.JUnitDNSServerExecutionListener;
 import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
@@ -50,26 +49,22 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
     JUnitDNSServerExecutionListener.class
 })
+@RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/provisiond-extensions.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "importer.adapter.dns.server=127.0.0.1:9153",
         "importer.adapter.dns.privatekey=hmac-md5/test.example.com./QBMBi+8THN8iyAuGIhniB+fiURwQjrrpwFuq1L6NmHcya7QdKqjwp6kLIczPjsAUDcqiLAdQJnQUhCPThA4XtQ=="
 })
-@JUnitTemporaryDatabase
 public class DnsProvisioningAdapterTest implements InitializingBean {
     @Autowired
     private DnsProvisioningAdapter m_adapter;
@@ -111,7 +106,6 @@ public class DnsProvisioningAdapterTest implements InitializingBean {
     }
 
     @Test
-    @Transactional
     @JUnitDNSServer(port=9153, zones={
             @DNSZone(name="example.com", entries={
                     @DNSEntry(hostname="test", address="192.168.0.1")
@@ -124,7 +118,6 @@ public class DnsProvisioningAdapterTest implements InitializingBean {
     }
     
     @Test
-    @Transactional
     @JUnitDNSServer(port=9153, zones={
             @DNSZone(name="example.com", entries={
                     @DNSEntry(hostname="test", address="192.168.0.1")

@@ -33,7 +33,7 @@ import java.net.URL;
 import org.opennms.features.topology.api.support.DialogWindow;
 import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.topology.api.support.InfoWindow.LabelCreator;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 import com.vaadin.data.Property;

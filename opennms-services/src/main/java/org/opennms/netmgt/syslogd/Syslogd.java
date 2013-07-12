@@ -36,7 +36,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +185,7 @@ import org.slf4j.LoggerFactory;
     /**
      * <p>getEventDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public EventDao getEventDao() {
         return m_eventDao;
@@ -194,7 +194,7 @@ import org.slf4j.LoggerFactory;
     /**
      * <p>setEventDao</p>
      *
-     * @param eventDao a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @param eventDao a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;

@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -41,16 +40,16 @@ import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -67,17 +66,18 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
-        "classpath:/importerServiceTest.xml"
+        "classpath:/mockForeignSourceContext.xml",
+        "classpath:/importerServiceTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class Nms5414Test {
     private static final Logger LOG = LoggerFactory.getLogger(Nms5414Test.class);
     
@@ -94,7 +94,7 @@ public class Nms5414Test {
     private IpInterfaceDao m_ipInterfaceDao;
     
     @Autowired
-    private NodeDao m_nodeDao;
+    private MockNodeDao m_nodeDao;
 
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
@@ -118,12 +118,13 @@ public class Nms5414Test {
         @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:snmpwalk-NMS-5414.properties")
     })
     public void testScanIPV6z() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
         
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
+        final OnmsNode node = getNodeDao().get(nextNodeId);
         
         eventRecieved.await();
         
@@ -139,7 +140,7 @@ public class Nms5414Test {
         //Verify snmpinterface count
         assertEquals(79,getSnmpInterfaceDao().countAll());
         
-        final OnmsSnmpInterface onmsinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(1, 160);
+        final OnmsSnmpInterface onmsinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(nextNodeId, 160);
 
         assertEquals("Avaya Virtual Services Platform 7024XLS Module - Unit 2 Port 32  ", onmsinterface.getIfDescr());
         assertEquals("ifc160 (Slot: 2 Port: 32)", onmsinterface.getIfName());

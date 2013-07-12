@@ -35,13 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
@@ -105,7 +105,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getDistPollerDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
@@ -114,7 +114,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setDistPollerDao</p>
      *
-     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
@@ -123,7 +123,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -132,7 +132,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -141,7 +141,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getIpInterfaceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
@@ -150,7 +150,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setIpInterfaceDao</p>
      *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
@@ -159,7 +159,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getMonitoredServiceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
@@ -168,7 +168,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
@@ -177,7 +177,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getServiceTypeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
@@ -186,7 +186,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
@@ -195,7 +195,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getAssetRecordDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
      */
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
@@ -204,7 +204,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setAssetRecordDao</p>
      *
-     * @param assetRecordDao a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     * @param assetRecordDao a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
      */
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
@@ -462,7 +462,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -471,7 +471,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;

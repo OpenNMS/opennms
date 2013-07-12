@@ -33,9 +33,9 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -271,7 +271,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getResourceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -280,7 +280,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -289,7 +289,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getRrdDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public RrdDao getRrdDao() {
         return m_rrdDao;
@@ -298,7 +298,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;

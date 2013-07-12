@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS Tests</name>
   <modules>
+    <module>dao</module>
     <module>mock-elements</module>
     <module>mock-snmp-agent</module>
   </modules>

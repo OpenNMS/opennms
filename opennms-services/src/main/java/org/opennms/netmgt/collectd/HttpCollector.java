@@ -89,11 +89,6 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.collectd.HttpCollector.HttpCollectionAttribute;
-import org.opennms.netmgt.collectd.HttpCollector.HttpCollectionAttributeType;
-import org.opennms.netmgt.collectd.HttpCollector.HttpCollectionResource;
-import org.opennms.netmgt.collectd.HttpCollector.HttpCollectionSet;
-import org.opennms.netmgt.collectd.HttpCollector.HttpCollectorException;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
@@ -113,8 +108,6 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mchange.v2.log.LogUtils;
 
 /**
  * Collect data via URI

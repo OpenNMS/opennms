@@ -32,6 +32,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
@@ -79,6 +80,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
 
     @Override
     public void run() {
+        Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
             final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);

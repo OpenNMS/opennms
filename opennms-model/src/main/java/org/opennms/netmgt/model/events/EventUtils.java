@@ -521,4 +521,36 @@ public abstract class EventUtils {
         return b.toString();
     }
 
+
+    /**
+     * <p>eventsMatch</p>
+     *
+     * @param e1 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatch(final Event e1, final Event e2) {
+    	if (e1 == e2) {
+            return true;
+        }
+        if (e1 == null || e2 == null) {
+            return false;
+        }
+        if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
+        		return false;
+        }
+    
+        if (e1.getNodeid() != e2.getNodeid()) {
+            return false;
+        }
+        if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
+            return false;
+        }
+        if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
+            return false;
+        }
+    
+        return true;
+    }
+
 }

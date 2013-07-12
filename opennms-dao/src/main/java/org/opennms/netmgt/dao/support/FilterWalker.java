@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.support;
 
 import java.util.SortedMap;
 
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;

@@ -28,20 +28,27 @@
 
 package org.opennms.protocols.http;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+import org.opennms.protocols.xml.config.Request;
+
 
 /**
  * The class for handling HTTPS URL Connection using Apache HTTP Client
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class HttpsUrlHandler extends URLStreamHandler {
+public class HttpsUrlHandler extends HttpUrlHandler {
 
     /** The Constant PROTOCOL. */
-    public static final String PROTOCOL = "https";
+    public static final String HTTPS = "https";
+
+    /**
+     * Instantiates a new HTTPS URL handler.
+     *
+     * @param request the request
+     */
+    public HttpsUrlHandler(Request request) {
+        super(request);
+    }
 
     /* (non-Javadoc)
      * @see java.net.URLStreamHandler#getDefaultPort()
@@ -49,14 +56,6 @@ public class HttpsUrlHandler extends URLStreamHandler {
     @Override
     protected int getDefaultPort() {
         return 443;
-    }
-
-    /* (non-Javadoc)
-     * @see java.net.URLStreamHandler#openConnection(java.net.URL)
-     */
-    @Override
-    protected URLConnection openConnection(URL url) throws IOException {
-        return new HttpUrlConnection(url);
     }
 
 }

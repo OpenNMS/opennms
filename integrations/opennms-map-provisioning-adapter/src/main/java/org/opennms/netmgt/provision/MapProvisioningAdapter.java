@@ -48,9 +48,9 @@ import org.opennms.netmgt.config.MapsAdapterConfigFactory;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
@@ -164,7 +164,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getOnmsMapDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.OnmsMapDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.OnmsMapDao} object.
      */
     public OnmsMapDao getOnmsMapDao() {
         return m_onmsMapDao;
@@ -173,7 +173,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setOnmsMapDao</p>
      *
-     * @param onmsMapDao a {@link org.opennms.netmgt.dao.OnmsMapDao} object.
+     * @param onmsMapDao a {@link org.opennms.netmgt.dao.api.OnmsMapDao} object.
      */
     public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
         m_onmsMapDao = onmsMapDao;
@@ -182,7 +182,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getOnmsMapElementDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.OnmsMapElementDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.OnmsMapElementDao} object.
      */
     public OnmsMapElementDao getOnmsMapElementDao() {
         return m_onmsMapElementDao;
@@ -191,7 +191,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setOnmsMapElementDao</p>
      *
-     * @param onmsMapElementDao a {@link org.opennms.netmgt.dao.OnmsMapElementDao} object.
+     * @param onmsMapElementDao a {@link org.opennms.netmgt.dao.api.OnmsMapElementDao} object.
      */
     public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
         m_onmsMapElementDao = onmsMapElementDao;
@@ -236,7 +236,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getOnmsNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getOnmsNodeDao() {
         return m_onmsNodeDao;
@@ -245,7 +245,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setOnmsNodeDao</p>
      *
-     * @param onmsNodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param onmsNodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setOnmsNodeDao(NodeDao onmsNodeDao) {
         m_onmsNodeDao = onmsNodeDao;

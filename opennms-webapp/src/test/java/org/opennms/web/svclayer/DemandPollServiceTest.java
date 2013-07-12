@@ -44,8 +44,8 @@ import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.DemandPollDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;

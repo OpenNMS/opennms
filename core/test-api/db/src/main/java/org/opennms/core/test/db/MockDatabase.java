@@ -57,14 +57,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class provides additional utility methods on top of the basic {@link TemporaryDatabase}
+ * This class provides additional utility methods on top of the basic {@link TemporaryDatabasePostgreSQL}
  * class. For instance, it can be populated from a {@link MockNetwork}.
  * 
  * @author brozow
  */
-public class MockDatabase extends TemporaryDatabase implements EventWriter {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
+public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
 	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);

@@ -41,7 +41,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -46,7 +46,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
-public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoint, Integer> implements AccessPointDao {
+public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoint, String> implements AccessPointDao {
 
     /**
      * <p>
@@ -55,13 +55,6 @@ public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoin
      */
     public AccessPointDaoHibernate() {
         super(OnmsAccessPoint.class);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OnmsAccessPoint findByPhysAddr(final String physaddr) {
-        // Case insensitive search
-        return findUnique("from OnmsAccessPoint as aps where upper(aps.physAddr) = ?", physaddr.toUpperCase());
     }
 
     /** {@inheritDoc} */

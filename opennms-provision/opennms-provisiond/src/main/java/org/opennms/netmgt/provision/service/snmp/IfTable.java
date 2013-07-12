@@ -184,11 +184,11 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         }
         
         // IfTable Attributes
-		snmpIf.setIfType(getIfType(ifIndex));
-		snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-		snmpIf.setIfDescr(getIfDescr(ifIndex));
-		snmpIf.setIfSpeed(getIfSpeed(ifIndex));
-		snmpIf.setPhysAddr(getPhysAddr(ifIndex));
+        snmpIf.setIfType(getIfType(ifIndex));
+        snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+        snmpIf.setIfDescr(getIfDescr(ifIndex));
+        snmpIf.setIfSpeed(getIfSpeed(ifIndex));
+        snmpIf.setPhysAddr(getPhysAddr(ifIndex));
     }
 
     /**

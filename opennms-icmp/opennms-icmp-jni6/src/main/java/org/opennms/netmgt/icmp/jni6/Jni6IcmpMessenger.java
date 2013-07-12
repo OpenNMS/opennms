@@ -33,6 +33,7 @@ import java.net.DatagramPacket;
 import java.net.Inet6Address;
 import java.util.Queue;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp6.ICMPv6EchoReply;
 import org.opennms.protocols.icmp6.ICMPv6Packet;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;
@@ -48,9 +49,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingResponse> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Jni6IcmpMessenger.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(Jni6IcmpMessenger.class);
     
     private int m_pingerId;
     private ICMPv6Socket m_socket;
@@ -109,6 +108,7 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
 
             @Override
             public void run() {
+                Logging.putPrefix("icmp");
                 try {
                     processPackets(responseQueue);
                 } catch (Throwable t) {

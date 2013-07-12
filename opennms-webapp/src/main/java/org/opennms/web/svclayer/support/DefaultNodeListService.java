@@ -50,9 +50,9 @@ import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -389,7 +389,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -398,7 +398,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
@@ -407,7 +407,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -416,7 +416,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -425,7 +425,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>getSiteStatusViewConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.SiteStatusViewConfigDao} object.
      */
     public SiteStatusViewConfigDao getSiteStatusViewConfigDao() {
         return m_siteStatusViewConfigDao;
@@ -434,7 +434,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>setSiteStatusViewConfigDao</p>
      *
-     * @param siteStatusViewConfigDao a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
+     * @param siteStatusViewConfigDao a {@link org.opennms.netmgt.dao.api.SiteStatusViewConfigDao} object.
      */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao siteStatusViewConfigDao) {
         m_siteStatusViewConfigDao = siteStatusViewConfigDao;
