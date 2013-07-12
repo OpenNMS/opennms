@@ -42,19 +42,19 @@ import com.vaadin.ui.Field;
  *
  * @author Markus von Rüden
  */
-public class UniqueAttributeNameValidator extends AbstractValidator {
+public class UniqueAttributeNameValidator extends AbstractValidator<String> {
 
 	private final NameProvider provider;
-	private final Map<Object, Field> textFieldItemMap;
+	private final Map<Object, Field<String>> textFieldItemMap;
 
-	public UniqueAttributeNameValidator(NameProvider provider, Map<Object, Field> fieldsForIsValid) {
+	public UniqueAttributeNameValidator(NameProvider provider, Map<Object, Field<String>> fieldsForIsValid) {
 		super("The attribute name must be unique in whole collection!");
 		this.provider = provider;
 		this.textFieldItemMap = fieldsForIsValid;
 	}
 
 	@Override
-	public boolean isValid(Object value) {
+	protected boolean isValidValue(String value) {
 		if (value == null || !(value instanceof String)) return false; //validation not possible
 		String alias = (String) value;
 		//count name occurance
@@ -66,5 +66,10 @@ public class UniqueAttributeNameValidator extends AbstractValidator {
 			nameMultiSet.add( textFieldItemMap.get(itemId) == null ? name : (String)textFieldItemMap.get(itemId).getValue());
 		}
 		return nameMultiSet.count(alias) <= 1; //is only valid if name exists 0 or 1 times 
+	}
+
+	@Override
+	public Class<String> getType() {
+		return String.class;
 	}
 }

@@ -36,6 +36,21 @@ import org.discotools.gwt.leaflet.client.types.LatLng;
 import com.google.gwt.core.client.JsArrayString;
 
 public class NodeMarker extends Marker {
+
+    public static class Property {
+        public static final String CATEGORIES = "categories";
+        public static final String NODE_ID = "nodeId";
+        public static final String NODE_LABEL = "nodeLabel";
+        public static final String FOREIGN_SOURCE = "foreignSource";
+        public static final String FOREIGN_ID = "foreignId";
+        public static final String IP_ADDRESS = "ipAddress";
+        public static final String SEVERITY_LABEL = "severityLabel";
+        public static final String DESCRIPTION = "description";
+        public static final String MAINTCONTRACT = "maintcontract";
+        public static final String SEVERITY = "severity";
+        public static final String UNACKED_COUNT = "unackedCount";
+    }
+
     public NodeMarker(final LatLng latLng) {
         super(latLng, new Options());
     }
@@ -72,7 +87,7 @@ public class NodeMarker extends Marker {
     }-*/;
 
     public JsArrayString getCategories() {
-        final JSObject property = getJSObject().getProperty("categories");
+        final JSObject property = getJSObject().getProperty(Property.CATEGORIES);
         if (property == null) {
             return JsArrayString.createArray().cast();
         } else {
@@ -105,49 +120,49 @@ public class NodeMarker extends Marker {
             array.push(category);
         }
         final JSObject jsObject = array.cast();
-        getJSObject().setProperty("categories", jsObject);
+        getJSObject().setProperty(Property.CATEGORIES, jsObject);
     }
 
     public Integer getNodeId() {
-        final String id = getProperty("nodeId");
+        final String id = getProperty(Property.NODE_ID);
         return id == null? null : Integer.valueOf(id);
     }
 
     public String getNodeLabel() {
-        return getProperty("nodeLabel");
+        return getProperty(Property.NODE_LABEL);
     }
 
     public String getForeignSource() {
-        return getProperty("foreignSource");
+        return getProperty(Property.FOREIGN_SOURCE);
     }
 
     public String getForeignId() {
-        return getProperty("foreignId");
+        return getProperty(Property.FOREIGN_ID);
     }
     
     public String getIpAddress() {
-        return getProperty("ipAddress");
+        return getProperty(Property.IP_ADDRESS);
     }
 
     public String getSeverityLabel() {
-        return getProperty("severityLabel");
+        return getProperty(Property.SEVERITY_LABEL);
     }
 
     public String getDescription() {
-        return getProperty("description");
+        return getProperty(Property.DESCRIPTION);
     }
 
     public String getMaintContract() {
-        return getProperty("maintcontract");
+        return getProperty(Property.MAINTCONTRACT);
     }
 
     public int getSeverity() {
-        final String severity = getProperty("severity");
+        final String severity = getProperty(Property.SEVERITY);
         return severity == null? 0 : Integer.valueOf(severity);
     }
 
     public Integer getUnackedCount() {
-        final String count = getProperty("unackedCount");
+        final String count = getProperty(Property.UNACKED_COUNT);
         return count == null? 0 : Integer.valueOf(count);
     }
 

@@ -102,7 +102,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     </property>
   </bean>
   
-  <onmsgi:service interface="org.opennms.netmgt.dao.GraphDao" ref="graphDao"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao"/>
   
   
 

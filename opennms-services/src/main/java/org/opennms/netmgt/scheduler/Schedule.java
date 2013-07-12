@@ -77,7 +77,7 @@ public class Schedule {
         @Override
         public void run() {
             if (isExpired()) {
-                LOG.debug("Schedule "+this+" expired.  No need to run.");
+                LOG.debug("Schedule {} expired.  No need to run.", this);
                 return;
             }
             
@@ -94,7 +94,7 @@ public class Schedule {
 
             // if it is expired by the current run then don't reschedule
             if (isExpired()) {
-                LOG.debug("Schedule "+this+" expired.  No need to reschedule.");
+                LOG.debug("Schedule {} expired.  No need to reschedule.", this);
                 return;
             }
             

@@ -35,6 +35,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.ResourceReferenceDao;
+import org.opennms.netmgt.dao.api.StatisticsReportDao;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
@@ -57,7 +59,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

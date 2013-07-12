@@ -245,7 +245,7 @@ public class Poller extends AbstractServiceDaemon {
     protected void onInit() {
         
         // serviceUnresponsive behavior enabled/disabled?
-        LOG.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
+        LOG.debug("init: serviceUnresponsive behavior: {}", (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
         
@@ -552,12 +552,12 @@ public class Poller extends AbstractServiceDaemon {
         Package pkg = findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
             if(active && !OpennmsServerConfigFactory.getInstance().verifyServer()){
-                LOG.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package. Marking as Not Polled.");
+                LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
                 updateServiceStatus(nodeId, ipAddr, serviceName, "N");
             }
             return false;
         } else if (!active && !OpennmsServerConfigFactory.getInstance().verifyServer()) {
-            LOG.info("Active service "+serviceName+" on "+ipAddr+" is now configured for any package. Marking as active.");
+            LOG.info("Active service {} on {} is now configured for any package. Marking as active.", serviceName, ipAddr);
             updateServiceStatus(nodeId, ipAddr, serviceName, "A");
         }
 
@@ -570,7 +570,7 @@ public class Poller extends AbstractServiceDaemon {
         InetAddress addr;
         addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
-            LOG.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
+            LOG.error("Could not convert {} as an InetAddress {}", ipAddr, ipAddr);
             return false;
         }
         
@@ -629,7 +629,7 @@ public class Poller extends AbstractServiceDaemon {
     protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
         
         if (pkg.getRemote()) {
-            LOG.debug("pollableServiceInPackage: this package: "+pkg.getName()+", is a remote monitor package.");
+            LOG.debug("pollableServiceInPackage: this package: {}, is a remote monitor package.", pkg.getName());
             return false;
         }
         
@@ -657,7 +657,7 @@ public class Poller extends AbstractServiceDaemon {
      */
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         if (!getPollerConfig().isServiceInPackageAndEnabled(svcName, pkg)) {
-            LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+            LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", ipAddr, svcName, pkg.getName());
             return false;
         }
 
@@ -668,11 +668,11 @@ public class Poller extends AbstractServiceDaemon {
             if (m_initialized) {
                 getPollerConfig().rebuildPackageIpListMap();
                 if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
-                    LOG.debug("packageIncludesIfAndSvc: interface " + ipAddr + " gained service " + svcName + ", but the interface was not in package: " + pkg.getName());
+                    LOG.debug("packageIncludesIfAndSvc: interface {} gained service {}, but the interface was not in package: {}", ipAddr, svcName, pkg.getName());
                     return false;
                 }
             } else {
-                LOG.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                LOG.debug("packageIncludesIfAndSvc: address/service: {}/{} not scheduled, interface does not belong to package: {}", ipAddr, svcName, pkg.getName());
                 return false;
             }
         }

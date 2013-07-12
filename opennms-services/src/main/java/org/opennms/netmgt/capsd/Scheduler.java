@@ -269,7 +269,7 @@ final class Scheduler implements Runnable, PausableFiber {
                     NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
                     m_knownNodes.add(nodeInfo);
                 } else {
-                    LOG.debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
+                    LOG.debug("Node w/ nodeid {} has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.", nodeId);
                 }
             }
         } finally {
@@ -315,7 +315,7 @@ final class Scheduler implements Runnable, PausableFiber {
             while (iter.hasNext()) {
                 NodeInfo nodeInfo = iter.next();
                 if (nodeInfo.getNodeId() == nodeId) {
-                    LOG.debug("unscheduleNode: removing node " + nodeId + " from the scheduler.");
+                    LOG.debug("unscheduleNode: removing node {} from the scheduler.", nodeId);
                     m_knownNodes.remove(nodeInfo);
                     break;
                 }
@@ -334,7 +334,7 @@ final class Scheduler implements Runnable, PausableFiber {
         try {
             m_rescanQ.execute(m_rescanProcessorFactory.createForcedRescanProcessor(nodeId));
         } catch (RejectedExecutionException e) {
-            LOG.error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
+            LOG.error("forceRescan: Failed to add node {} to the rescan queue.", nodeId, e);
         }
     }
 
@@ -464,7 +464,7 @@ final class Scheduler implements Runnable, PausableFiber {
             //
             synchronized (this) {
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
-                    LOG.debug("Scheduler.run: status = " + m_status + ", time to exit");
+                    LOG.debug("Scheduler.run: status = {}, time to exit", m_status);
                     break;
                 }
             }
@@ -477,7 +477,7 @@ final class Scheduler implements Runnable, PausableFiber {
                 firstPass = false;
                 synchronized (this) {
                     try {
-                        LOG.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
+                        LOG.debug("Scheduler.run: initial sleep configured for {}ms...sleeping...", m_initialSleep);
                         wait(m_initialSleep);
                     } catch (InterruptedException ex) {
                         LOG.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
@@ -552,7 +552,7 @@ final class Scheduler implements Runnable, PausableFiber {
                         // a rescanProcessor and run it
                         //
                         else {
-                            LOG.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
+                            LOG.debug("Scheduler.run: adding node {} to the rescan queue.", node.getNodeId());
                             m_rescanQ.execute(node);
                             added++;
                         }

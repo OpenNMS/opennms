@@ -16,8 +16,8 @@ import org.opennms.netmgt.config.accesspointmonitor.Package;
 import org.opennms.netmgt.config.accesspointmonitor.Service;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AccessPointDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -97,7 +97,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      * 
      * @param a
-     *            {@link org.opennms.netmgt.dao.NodeDao} object.
+     *            {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -109,7 +109,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      * 
      * @param nodeDao
-     *            a {@link org.opennms.netmgt.dao.NodeDao} object.
+     *            a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -120,7 +120,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * getIpInterfaceDao
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
@@ -132,7 +132,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      * 
      * @param ipInterfaceDao
-     *            a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     *            a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
@@ -381,9 +381,9 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
                 PollingContext p = m_activePollers.get(pkg.getName());
                 if (p != null) {
                     if (p.getPackage().getIsDynamic()) {
-                        LOG.debug("Package '" + pkg.getName() + "' is already active.");
+                        LOG.debug("Package '{}' is already active.", pkg.getName());
                     } else {
-                        LOG.error("Package '" + pkg.getName() + "' is statically defined and matches a dynamic definitions.");
+                        LOG.error("Package '{}' is statically defined and matches a dynamic definitions.", pkg.getName());
                     }
                 } else {
                     schedulePackage(pkg);
@@ -448,7 +448,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
         p.init();
 
         // Schedule it
-        LOG.debug("schedulePackages: Scheduling " + pkg.getName() + " every " + svc.getInterval());
+        LOG.debug("schedulePackages: Scheduling {} every {}", pkg.getName(), svc.getInterval());
         getScheduler().schedule(svc.getInterval(), p);
 
         // Store in the map

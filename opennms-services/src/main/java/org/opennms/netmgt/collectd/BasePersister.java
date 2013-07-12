@@ -93,7 +93,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             m_builder.commit();
             m_builder = null;
         } catch (RrdException e) {
-            LOG.error("Unable to persist data for " + name, e);
+            LOG.error("Unable to persist data for {}", name, e);
     
         }
     }
@@ -173,7 +173,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistNumericAttribute(CollectionAttribute attribute) {
-    	LOG.debug("Persisting "+attribute + (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed" : ""));
+	LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed" : ""));
     	String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
         m_builder.setAttributeValue(attribute.getAttributeType(), value);
         m_builder.setAttributeMetadata(attribute.getMetricIdentifier(), attribute.getName());
@@ -191,14 +191,14 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             //String attrVal = (value == null ? null : value.toString());
             //if (attrVal == null) {
             if (value == null) {
-                LOG.info("No data collected for attribute "+attribute+".  Skipping.");
+                LOG.info("No data collected for attribute {}.  Skipping.", attribute);
                 return;
             }
             String attrName = attribute.getName();
             try {
                 ResourceTypeUtils.updateStringProperty(resourceDir, value, attrName);
             } catch(IOException e) {
-                LOG.error("Unable to save string attribute " + attribute, e);
+                LOG.error("Unable to save string attribute {}", attribute, e);
             }
     }
 
@@ -269,7 +269,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             attribute.storeAttribute(this);
             LOG.debug("Storing attribute {}", attribute);
         } else {
-            LOG.debug("Not persisting attribute "+attribute + "because shouldPersist is false");
+            LOG.debug("Not persisting attribute {} because shouldPersist is false", attribute);
         }
     }
     

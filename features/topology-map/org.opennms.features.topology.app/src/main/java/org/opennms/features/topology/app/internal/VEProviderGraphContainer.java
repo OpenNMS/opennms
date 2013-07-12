@@ -43,7 +43,7 @@ import com.vaadin.data.util.BeanItem;
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
     
     @SuppressWarnings("serial")
-    public class ScaleProperty implements Property, Property.ValueChangeNotifier{
+    public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
         private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
         
@@ -62,20 +62,26 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Object getValue() {
+        public void addValueChangeListener(ValueChangeListener listener) {
+            m_listeners.add(listener);
+        }
+
+        @Override
+        public void removeValueChangeListener(ValueChangeListener listener) {
+            m_listeners.remove(listener);
+        }
+
+        @Override
+        public Double getValue() {
             return m_scale;
         }
 
         @Override
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-            if(newValue instanceof Number) {
-                double oldScale = m_scale;
-                m_scale = ((Number) newValue).doubleValue();
-                if(oldScale != m_scale) {
-                    fireValueChange();
-                }
-            } else {
-                throw new ConversionException("Scale must be number");
+        public void setValue(Double newValue) {
+            double oldScale = m_scale;
+            m_scale = ((Number) newValue).doubleValue();
+            if(oldScale != m_scale) {
+                fireValueChange();
             }
         }
 
@@ -83,7 +89,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             ValueChangeEvent event = new ValueChangeEvent() {
 
                 @Override
-                public Property getProperty() {
+                public Property<Double> getProperty() {
                     return ScaleProperty.this;
                 }
             };
@@ -93,7 +99,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Class<?> getType() {
+        public Class<Double> getType() {
             return Double.class;
         }
 
@@ -198,7 +204,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
     private int m_semanticZoomLevel = 0;
-    private Property m_scaleProperty = new ScaleProperty(0.0);
+    private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
@@ -237,11 +243,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public double getScale() {
-        return (Double) m_scaleProperty.getValue();
+        return m_scaleProperty.getValue();
     }
     
     @Override
-    public Property getScaleProperty() {
+    public Property<Double> getScaleProperty() {
         return m_scaleProperty;
     }
     

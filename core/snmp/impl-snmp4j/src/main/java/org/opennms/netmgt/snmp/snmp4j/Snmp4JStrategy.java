@@ -309,7 +309,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         // TODO should this throw an exception?  This situation is fairly bogus.
         if (pdu.getVariableBindings().size() != oids.length) {
             Exception e = new Exception("This is a bogus exception so we can get a stack backtrace");
-            LOG.error("Prepared PDU does not have as many variable bindings as there are OIDs.  There are " + oids.length + " OIDs and " + pdu.getVariableBindings() + " variable bindings.", e);
+            LOG.error("Prepared PDU does not have as many variable bindings as there are OIDs.  There are {} OIDs and {} variable bindings.", oids.length,pdu.getVariableBindings(), e);
             return null;
         }
         
@@ -325,7 +325,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         if (responseEvent.getResponse() == null) {
             LOG.warn("processResponse: Timeout.  Agent: {}", agentConfig);
         } else if (responseEvent.getError() != null) {
-            LOG.warn("processResponse: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
+            LOG.warn("processResponse: Error during get operation.  Error: {}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
             LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}", responseEvent.getResponse().getVariableBindings());
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {

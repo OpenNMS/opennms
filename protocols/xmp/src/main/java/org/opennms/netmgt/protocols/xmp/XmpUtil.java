@@ -246,12 +246,12 @@ public class XmpUtil {
         reply = session.queryTableVars(tableInfo, 0, queryVars);
         
         if (reply == null) {
-            LOG.warn("handleTableQuery: query for object " + object + " from MIB " + mib + " failed, " + Xmp.errorStatusToString(session.getErrorStatus()));
+            LOG.warn("handleTableQuery: query for object {} from MIB {} failed, {}", object, mib, Xmp.errorStatusToString(session.getErrorStatus()));
             throw new XmpUtilException("XMP query failed (MIB " + mib + ", object " + object + "): " + Xmp.errorStatusToString(session.getErrorStatus()));
         }
         
         replyVars = reply.getMIBVars();
-        LOG.debug("handleTableQuery: Got reply with " + replyVars.length + " variables");
+        LOG.debug("handleTableQuery: Got reply with {} variables", replyVars.length);
         
         
         /* Since we're constrained to a single object, we know that there's

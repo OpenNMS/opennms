@@ -133,7 +133,7 @@ public class MX4JConnectionFactory {
               connectionWrapper = new MX4JConnectionWrapper(connector, connection);
               
           } catch(Throwable e) {
-        	  LOG.error("Unable to get MBeanServerConnection: " + url, e);
+		  LOG.error("Unable to get MBeanServerConnection: {}", url, e);
           }
       }
       /*

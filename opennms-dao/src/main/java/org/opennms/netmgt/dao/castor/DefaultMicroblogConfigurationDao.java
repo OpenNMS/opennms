@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
-import org.opennms.netmgt.dao.MicroblogConfigurationDao;
+import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -88,7 +88,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
     @Override
     public MicroblogProfile getDefaultProfile() {
         String defaultProfileName = getContainer().getObject().getDefaultMicroblogProfileName();
-        LOG.debug("Requesting default microblog, which is called '" + defaultProfileName + "'");
+        LOG.debug("Requesting default microblog, which is called '{}'", defaultProfileName);
         return getProfile(defaultProfileName);
     }
 

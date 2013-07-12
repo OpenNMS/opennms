@@ -500,7 +500,7 @@ public class Migrator {
                 urls.add(changeLog.getParentFile().toURI().toURL());
             }
         } catch (final MalformedURLException e) {
-        	LOG.info("unable to figure out URL for " + migration.getChangeLog(), e);
+		LOG.info("unable to figure out URL for {}", migration.getChangeLog(), e);
         }
         final ClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), this.getClass().getClassLoader());
         return new DefaultResourceLoader(cl);

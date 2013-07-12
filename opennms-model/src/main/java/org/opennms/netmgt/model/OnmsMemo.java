@@ -111,6 +111,10 @@ public class OnmsMemo implements Serializable {
         return m_id;
     }
 
+    public void setId(final Integer id) {
+        m_id = id;
+    }
+
     public Date getUpdated() {
         return m_updated;
     }

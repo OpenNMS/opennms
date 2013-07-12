@@ -45,7 +45,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -59,13 +59,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 class InsSession extends InsAbstractSession {
-
 	private static final Logger LOG = LoggerFactory.getLogger(InsSession.class);
-
 
 	private Socket server;
 
@@ -382,20 +380,20 @@ class InsSession extends InsAbstractSession {
         final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
         final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
-                transTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction(final TransactionStatus status) {
+                transTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
                 	LOG.debug("Entering transaction call back: selection with criteria: {}", criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
                     
                     final List<OnmsEvent> events = eventDao.findMatching(criteria);
-                    LOG.info("Found %d event(s) with criteria: {}", events.size(), criteriaRestriction);
+                    LOG.info("Found {} event(s) with criteria: {}", events.size(), criteriaRestriction);
                     
                     for (final OnmsEvent onmsEvent : events) {
                     	final Event xmlEvent = getXMLEvent(onmsEvent);
                         if (xmlEvent != null) addEvent(xmlEvent);
                     }
-                    return new Object();
                 }
 
             });

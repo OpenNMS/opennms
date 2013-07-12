@@ -156,7 +156,7 @@ final public class ImapMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
 
-        LOG.debug("ImapMonitor.poll: address: {} port: " + port + tracker, ipv4Addr);
+        LOG.debug("ImapMonitor.poll: address: {} port: {} {}", ipv4Addr, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 

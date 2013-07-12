@@ -83,7 +83,7 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
             boolean v4found = false;
             boolean v6found = false;
             for(InetAddress addr : addrs) {
-                LOG.debug("Resolved " + nodeLabel + " to " + addr);
+                LOG.debug("Resolved {} to {}", nodeLabel, addr);
                 if (addr instanceof Inet4Address) {
                     v4found = true;
                 } else if(addr instanceof Inet6Address) {
@@ -106,7 +106,7 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason);
                 return PollStatus.unavailable(reason);
             }
-            LOG.debug("Resolved " + nodeLabel + " correctly!");
+            LOG.debug("Resolved {} correctly!", nodeLabel);
             return PollStatus.available((double)(end - start));
 
         } catch (TextParseException e) {

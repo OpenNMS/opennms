@@ -31,17 +31,17 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.springframework.core.style.ToStringCreator;
 
-/*
-This is not properly annotated so comment out the annotations so it not discovered during scanning
+
 @Entity
 @Table(name="servermap")
-*/
 public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     /**

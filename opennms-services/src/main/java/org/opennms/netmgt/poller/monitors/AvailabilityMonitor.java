@@ -81,7 +81,7 @@ public class AvailabilityMonitor extends AbstractServiceMonitor {
                     return PollStatus.available(timeoutTracker.elapsedTimeInMillis());
                 }
             } catch (IOException e) {
-                LOG.debug("Unable to contact "+svc.getIpAddr(), e);
+                LOG.debug("Unable to contact {}", svc.getIpAddr(), e);
             }
         }
         String reason = svc+" failed to respond";

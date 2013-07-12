@@ -160,7 +160,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
             socket.setSoTimeout(tracker.getSoTimeout());
-            LOG.debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
+            LOG.debug("LdapMonitor: connected to host: {} on port: {}", address, ldapPort);
 
             // We're connected, so upgrade status to unresponsive
             serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
@@ -174,15 +174,15 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
             
             for (tracker.reset(); tracker.shouldRetry() && !(serviceStatus == PollStatus.SERVICE_AVAILABLE); tracker.nextAttempt()) {
-                LOG.debug("polling LDAP on " + address + ", " + tracker);
+                LOG.debug("polling LDAP on {}, {}", address, tracker);
 
                 // connect to the ldap server
                 tracker.startAttempt();
                 try {
                     lc.connect(address, ldapPort);
-                    LOG.debug("connected to LDAP server " + address + " on port " + ldapPort);
+                    LOG.debug("connected to LDAP server {} on port {}", address, ldapPort);
                 } catch (LDAPException e) {
-                	LOG.debug("could not connect to LDAP server " + address + " on port " + ldapPort);
+			LOG.debug("could not connect to LDAP server {} on port {}", address, ldapPort);
                 	reason = "could not connect to LDAP server " + address + " on port " + ldapPort;
                     continue;
                 }
@@ -191,8 +191,8 @@ public class LdapMonitor extends AbstractServiceMonitor {
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
-                        LOG.debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
-                        LOG.debug("poll: responseTime= " + tracker.elapsedTimeInMillis() + "ms");
+                        LOG.debug("bound to LDAP server version {} with distinguished name {}", ldapVersion, ldapDn);
+                        LOG.debug("poll: responseTime= {}ms", tracker.elapsedTimeInMillis());
                     } catch (LDAPException e) {
                         try {
                             lc.disconnect();
@@ -200,7 +200,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
                             LOG.debug(ex.getMessage());
                         }
 
-                        LOG.debug("could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        LOG.debug("could not bind to LDAP server version {} with distinguished name {}", ldapVersion, ldapDn);
                         reason = "could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn;
                         continue;
                     }
@@ -211,7 +211,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
                 String attrs[] = { LDAPConnection.NO_ATTRS };
                 int searchScope = LDAPConnection.SCOPE_ONE;
 
-                LOG.debug("running search " + searchFilter + " from " + searchBase);
+                LOG.debug("running search {} from {}", searchFilter, searchBase);
                 LDAPSearchResults results = null;
 
                 try {
@@ -219,7 +219,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
                     if (results != null && results.hasMore()) {
                         responseTime = tracker.elapsedTimeInMillis();
-                        LOG.debug("search yielded " + results.getCount() + " result(s)");
+                        LOG.debug("search yielded {} result(s)", results.getCount());
                         serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
                         LOG.debug("no results found from search");
@@ -233,29 +233,29 @@ public class LdapMonitor extends AbstractServiceMonitor {
                         LOG.debug(ex.getMessage());
                     }
 
-                    LOG.debug("could not perform search " + searchFilter + " from " + searchBase);
+                    LOG.debug("could not perform search {} from {}", searchFilter, searchBase);
                     reason = "could not perform search " + searchFilter + " from " + searchBase;
                     continue;
                 }
 
                 try {
                     lc.disconnect();
-                    LOG.debug("disconected from LDAP server " + address + " on port " + ldapPort);
+                    LOG.debug("disconected from LDAP server {} on port {}", address, ldapPort);
                 } catch (LDAPException e) {
                     LOG.debug(e.getMessage());
                 }
             }
         } catch (ConnectException e) {
-        	LOG.debug("connection refused to host " + address, e);
+		LOG.debug("connection refused to host {}", address, e);
         	reason = "connection refused to host " + address;
         } catch (NoRouteToHostException e) {
-        	LOG.debug("No route to host " + address, e);
+		LOG.debug("No route to host {}", address, e);
         	reason = "No route to host " + address;
         } catch (InterruptedIOException e) {
 		LOG.debug("did not connect to host with {}", tracker);
         	reason = "did not connect to host with "+tracker;
         } catch (Throwable t) {
-        	LOG.debug("An undeclared throwable exception caught contacting host " + address, t);
+		LOG.debug("An undeclared throwable exception caught contacting host {}", address, t);
         	reason = "An undeclared throwable exception caught contacting host " + address;
         }
         

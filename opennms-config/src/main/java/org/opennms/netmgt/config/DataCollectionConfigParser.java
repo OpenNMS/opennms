@@ -346,7 +346,7 @@ public class DataCollectionConfigParser {
                         return false;
                     }
                 } catch (PatternSyntaxException e) {
-                    LOG.warn("the regular expression {} is invalid: " + e.getMessage(), e, re);
+                    LOG.warn("the regular expression {} is invalid: ", re, e);
                 }
             }
         }

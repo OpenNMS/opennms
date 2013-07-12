@@ -344,7 +344,7 @@ public class Discovery extends AbstractServiceDaemon {
     	} finally {
     	    d.cleanUp();
     	}
-    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
+	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_alreadyDiscovered.size());
     }
 
     /**

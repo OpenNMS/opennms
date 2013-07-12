@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import java.util.List;
 
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsAccessPointCollection;
 
@@ -40,18 +41,7 @@ import org.opennms.netmgt.model.OnmsAccessPointCollection;
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
-public interface AccessPointDao extends OnmsDao<OnmsAccessPoint, Integer> {
-
-    /**
-     * <p>
-     * findByPhysAddr
-     * </p>
-     * 
-     * @param physaddr
-     *            a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsAccessPoint} object.
-     */
-    public OnmsAccessPoint findByPhysAddr(final String physaddr);
+public interface AccessPointDao extends OnmsDao<OnmsAccessPoint, String> {
 
     /**
      * <p>

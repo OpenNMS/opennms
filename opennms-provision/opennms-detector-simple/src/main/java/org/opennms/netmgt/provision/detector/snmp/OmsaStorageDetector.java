@@ -91,11 +91,11 @@ public class OmsaStorageDetector extends SnmpDetector {
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
 
             if (virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                LOG.debug("SNMP poll failed: no results, addr=" + address + " oid=" + virtualDiskRollUpStatusSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", address, virtualDiskRollUpStatusSnmpObject);
                 return false;
             }
             if (virtualDiskRollUpStatus.toInt() != 3) { // 3 means Online
-                LOG.debug("OMSAStorageMonitor.poll: Bad Disk Found. Log vol(" + m_virtualDiskNumber + ") degraded");
+                LOG.debug("OMSAStorageMonitor.poll: Bad Disk Found. Log vol({}) degraded", m_virtualDiskNumber);
                 return false;
             }
         } catch (Throwable t) {

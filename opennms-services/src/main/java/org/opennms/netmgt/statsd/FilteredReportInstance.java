@@ -31,9 +31,9 @@ package org.opennms.netmgt.statsd;
 import java.util.Date;
 import java.util.SortedSet;
 
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
 import org.opennms.netmgt.dao.support.FilterResourceWalker;
 import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
@@ -90,7 +90,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_walker.setNodeDao(nodeDao);
@@ -99,7 +99,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_walker.setResourceDao(resourceDao);
@@ -108,7 +108,7 @@ public class FilteredReportInstance extends AbstractReportInstance implements Re
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdVisitor.setRrdDao(rrdDao);

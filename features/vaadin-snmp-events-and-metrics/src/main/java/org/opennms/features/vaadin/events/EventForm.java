@@ -36,11 +36,11 @@ import org.opennms.netmgt.xml.eventconf.Mask;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
 
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -97,7 +97,7 @@ public abstract class EventForm extends Form implements ClickListener {
      */
     public EventForm() {
         setCaption("Event Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
         setFormFieldFactory(new EventFormFieldFactory());
         initToolbar();
@@ -107,10 +107,10 @@ public abstract class EventForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -157,14 +157,14 @@ public abstract class EventForm extends Form implements ClickListener {
         }
         // Creating BeanItem
         BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
-        item.addItemProperty("logMsgContent", new NestedMethodProperty(item.getBean(), "logmsg.content"));
-        item.addItemProperty("logMsgDest", new NestedMethodProperty(item.getBean(), "logmsg.dest"));
-        item.addItemProperty("alarmDataReductionKey", new NestedMethodProperty(item.getBean(), "alarmData.ReductionKey"));
-        item.addItemProperty("alarmDataClearKey", new NestedMethodProperty(item.getBean(), "alarmData.ClearKey"));
-        item.addItemProperty("alarmDataAlarmType", new NestedMethodProperty(item.getBean(), "alarmData.AlarmType"));
-        item.addItemProperty("alarmDataAutoClean", new NestedMethodProperty(item.getBean(), "alarmData.AutoClean"));
-        item.addItemProperty("maskElements", new NestedMethodProperty(item.getBean(), "mask.maskelementCollection"));
-        item.addItemProperty("maskVarbinds", new NestedMethodProperty(item.getBean(), "mask.varbindCollection"));
+        item.addItemProperty("logMsgContent", new NestedMethodProperty<String>(item.getBean(), "logmsg.content"));
+        item.addItemProperty("logMsgDest", new NestedMethodProperty<String>(item.getBean(), "logmsg.dest"));
+        item.addItemProperty("alarmDataReductionKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ReductionKey"));
+        item.addItemProperty("alarmDataClearKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ClearKey"));
+        item.addItemProperty("alarmDataAlarmType", new NestedMethodProperty<String>(item.getBean(), "alarmData.AlarmType"));
+        item.addItemProperty("alarmDataAutoClean", new NestedMethodProperty<String>(item.getBean(), "alarmData.AutoClean"));
+        item.addItemProperty("maskElements", new NestedMethodProperty<String>(item.getBean(), "mask.maskelementCollection"));
+        item.addItemProperty("maskVarbinds", new NestedMethodProperty<String>(item.getBean(), "mask.varbindCollection"));
         return item;
     }
 
@@ -209,7 +209,7 @@ public abstract class EventForm extends Form implements ClickListener {
             setReadOnly(false);
         }
         if (source == delete) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the event definition " + getEvent().getUei() + "?<br/>This action cannot be undone.",

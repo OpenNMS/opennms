@@ -52,7 +52,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
     @Override
-    public Field createField(Item item, Object propertyId, Component uiContext) {
+    public Field<?> createField(Item item, Object propertyId, Component uiContext) {
         if ("logMsgDest".equals(propertyId)) {
             final ComboBox dest = new ComboBox("Destination");
             dest.addItem("logndisplay");
@@ -126,7 +126,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
         if ("operinstruct".equals(propertyId)) {
             final TextArea oper = new TextArea("Operator Instructions") {
                 @Override
-                public Object getValue() { // This is because of the intern usage on Event.setOperInstruct()
+                public String getValue() { // This is because of the intern usage on Event.setOperInstruct()
                     return super.getValue() == null ? "" : super.getValue();
                 }
             };
@@ -162,7 +162,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             f.setWidth("100%");
             return f;
         }
-        final Field f = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
+        final Field<?> f = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
         f.setWidth("100%");
         return f;
     }

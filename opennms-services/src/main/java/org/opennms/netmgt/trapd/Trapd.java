@@ -310,7 +310,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /** {@inheritDoc} */
     @Override
     public void trapError(final int error, final String msg) {
-        LOG.warn("Error Processing Received Trap: error = " + error + (msg != null ? ", ref = " + msg : ""));
+        LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
     }
 
     /**

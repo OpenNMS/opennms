@@ -147,9 +147,9 @@ public class CommandExecutor implements ExecutorStrategy {
 
             LOG.debug(commandResult);
         } catch (IOException e) {
-            LOG.error("Error executing command-line binary: " + commandLine, e);
+            LOG.error("Error executing command-line binary: {}", commandLine, e);
         } catch (InterruptedException e) {
-            LOG.error("Error executing command-line binary: " + commandLine, e);
+            LOG.error("Error executing command-line binary: {}", commandLine, e);
         }
 
         return returnCode;

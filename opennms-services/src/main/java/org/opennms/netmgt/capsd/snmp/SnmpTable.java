@@ -114,13 +114,13 @@ public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker im
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        LOG.warn("Error retrieving {} from {}. {}", m_tableName, m_address, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        LOG.info("Error retrieving {} from {}. {}", m_tableName, m_address, msg);
     }
 
     @Override

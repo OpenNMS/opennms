@@ -185,7 +185,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                     LOG.debug(reason);
                     return PollStatus.unavailable(reason);
                 } else {
-                    LOG.debug("valid DNS request received, responseTime= " + responseTime + "ms");
+                    LOG.debug("valid DNS request received, responseTime= {}ms", responseTime);
                     return PollStatus.available(responseTime);
                 }
             } catch (final InterruptedIOException e) {

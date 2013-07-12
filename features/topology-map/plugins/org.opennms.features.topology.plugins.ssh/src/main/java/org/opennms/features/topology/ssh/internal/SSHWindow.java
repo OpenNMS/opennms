@@ -50,15 +50,14 @@ public class SSHWindow extends Window {
 	/**
 	 * The constructor for the SSH window
 	 * 
-	 * @param app The main application to which this window should be attached
 	 * @param session The current SSH session
 	 * @param width The width of the window
 	 * @param height The height of the window
 	 */
 	public SSHWindow(ClientSession session, int width, int height) {
-		setCaption("SSH");
+		super("SSH");
 		setImmediate(true);
-		setResizable(false);
+		setResizeLazy(false);
 		setWidth("" + width + "px");
 		setHeight(""+ height + "px");
 		
@@ -74,15 +73,16 @@ public class SSHWindow extends Window {
 			vPanel.addComponent(errorLabel);
 			vPanel.setComponentAlignment(errorLabel, Alignment.MIDDLE_CENTER);
 		}
-		addComponent(vPanel);
+		setContent(vPanel);
 	}
 	
 	@Override
 	public void attach() {
 		super.attach();
 		 
-		int posX = (int)(getApplication().getMainWindow().getWidth() - getWidth())/2;
-		int posY = (int)(getApplication().getMainWindow().getHeight() - getHeight())/2;
+		int posX = (int)(getUI().getPage().getBrowserWindowWidth() - getWidth())/2;
+		int posY = (int)(getUI().getPage().getBrowserWindowHeight() - getHeight())/2;
+		
 		setPositionX(posX);
 		setPositionY(posY);
 	}

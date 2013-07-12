@@ -168,7 +168,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	/** {@inheritDoc} */
         @Override
 	public void pollCompleted(String pollId, PollStatus pollStatus) {
-		LOG.info("Complete Poll for "+pollId+" status = "+pollStatus);
+		LOG.info("Complete Poll for {} status = {}", pollId, pollStatus);
 	}
 
 	/** {@inheritDoc} */

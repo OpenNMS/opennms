@@ -43,14 +43,15 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Notification.Type;
 
 /**
  * This class provides several helper methods for ui stuff, e.g. creating a
@@ -204,7 +205,7 @@ public class UIHelper {
 	 * {@link Closeable#close()} occurs, the IOException is catched and logged.
 	 * No further information is forwarded.
 	 */
-	public static final void closeSilently(Closeable closeable) {
+	public static void closeSilently(Closeable closeable) {
 		if (closeable == null) return; // prevent NPE
 		try {
 			closeable.close();
@@ -264,10 +265,8 @@ public class UIHelper {
 	 * @param errorMessage
 	 *            the error message.
 	 */
-	public static void showValidationError(Window window, String errorMessage) {
-		if (window == null) return;
-		window.showNotification("Validation error.", errorMessage != null ? errorMessage : "An unknown error occured.",
-				Notification.TYPE_WARNING_MESSAGE);
+	public static void showValidationError(String errorMessage) {
+		Notification.show("Validation Error", errorMessage != null ? errorMessage : "An unknown error occured.", Type.WARNING_MESSAGE);
 
 	}
 }

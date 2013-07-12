@@ -37,8 +37,8 @@ import java.text.ParseException;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.eventd.EventdConstants;
-import org.opennms.netmgt.eventd.EventdServiceManager;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -298,7 +298,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         try {
             return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
         } catch (ParseException e) {
-            LOG.warn("Failed to convert time " + event.getTime() + " to Timestamp, setting current time instead.", e);
+            LOG.warn("Failed to convert time {} to Timestamp, setting current time instead.", event.getTime(), e);
             return new Timestamp(System.currentTimeMillis());
         }
     }
@@ -328,7 +328,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     /**
      * <p>getEventdServiceManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     * @return a {@link org.opennms.netmgt.dao.api.EventdServiceManager} object.
      */
     public EventdServiceManager getEventdServiceManager() {
         return m_eventdServiceManager;
@@ -337,7 +337,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     /**
      * <p>setEventdServiceManager</p>
      *
-     * @param eventdServiceManager a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     * @param eventdServiceManager a {@link org.opennms.netmgt.dao.api.EventdServiceManager} object.
      */
     public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
         m_eventdServiceManager = eventdServiceManager;
@@ -396,7 +396,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
         if ("donotpersist".equals(event.getLogmsg().getDest()) || "suppress".equals(event.getLogmsg().getDest())) {
-            LOG.debug(logPrefix + ": uei '" + event.getUei() + "' marked as '" + event.getLogmsg().getDest() + "'; not processing event.");
+            LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
         }
         return true;

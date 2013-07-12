@@ -42,7 +42,7 @@ import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -68,7 +68,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for GenericIndexResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
      * @param resourceLabelExpression a {@link java.lang.String} object.

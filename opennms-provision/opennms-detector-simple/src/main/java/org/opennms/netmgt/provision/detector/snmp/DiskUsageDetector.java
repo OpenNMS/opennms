@@ -187,10 +187,10 @@ public class DiskUsageDetector extends SnmpDetector {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                LOG.debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(address), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
               
                 if (isMatch(e.getValue().toString(), getDisk(), matchType)) {
-                    LOG.debug("Found disk '" + getDisk() + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");
+                    LOG.debug("Found disk '{}' (matching hrStorageDescr was '{}')", getDisk(), e.getValue());
                     return true;
                         
                 }
@@ -207,18 +207,18 @@ public class DiskUsageDetector extends SnmpDetector {
     
     private boolean isMatch(String candidate, String target, int matchType) {
         boolean matches = false;
-        LOG.debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        LOG.debug("isMessage: candidate is '{}', matching against target '{}'", candidate, target);
         if (matchType == MATCH_TYPE_EXACT) {
-            LOG.debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting equality match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.equals(target);
         } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            LOG.debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.startsWith(target);
         } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.endsWith(target);
         } else if (matchType == MATCH_TYPE_REGEX) {
-            LOG.debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
         LOG.debug("isMatch: Match is positive");

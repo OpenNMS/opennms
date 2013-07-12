@@ -36,9 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.CdpInterface;
 import org.opennms.netmgt.linkd.Linkd;
 import org.opennms.netmgt.linkd.RouterInterface;

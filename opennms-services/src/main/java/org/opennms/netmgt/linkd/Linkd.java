@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

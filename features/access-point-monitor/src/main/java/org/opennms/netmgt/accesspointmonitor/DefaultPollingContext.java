@@ -19,8 +19,8 @@ import org.opennms.netmgt.accesspointmonitor.poller.AccessPointPoller;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.accesspointmonitor.Package;
 import org.opennms.netmgt.dao.AccessPointDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.AccessPointStatus;
@@ -178,12 +178,12 @@ public class DefaultPollingContext implements PollingContext {
 
         // If the list of interfaces is empty, print a warning message
         if (ifaces.isEmpty()) {
-            LOG.warn("Package '" + getPackage().getName() + "' was scheduled, but no interfaces were matched.");
+            LOG.warn("Package '{}' was scheduled, but no interfaces were matched.", getPackage().getName());
         }
 
         // Get the complete list of APs that we are responsible for polling
         OnmsAccessPointCollection apsDown = m_accessPointDao.findByPackage(getPackage().getName());
-        LOG.debug("Found " + apsDown.size() + " APs in package '" + getPackage().getName() + "'");
+        LOG.debug("Found {} APs in package '{}'", apsDown.size(), getPackage().getName());
 
         // Keep track of all APs that we've confirmed to be ONLINE
         OnmsAccessPointCollection apsUp = new OnmsAccessPointCollection();
@@ -232,16 +232,16 @@ public class DefaultPollingContext implements PollingContext {
         // Remove the APs from the list that are ONLINE
         apsDown.removeAll(apsUp);
 
-        LOG.debug("(" + apsUp.size() + ") APs Online, (" + apsDown.size() + ") APs offline in package '" + getPackage().getName() + "'");
+        LOG.debug("({}) APs Online, ({}) APs offline in package '{}'", apsUp.size(), apsDown.size(), getPackage().getName());
 
         if (!succesfullyPolledAController) {
-            LOG.warn("Failed to poll at least one controller in the package '" + getPackage().getName() + "'");
+            LOG.warn("Failed to poll at least one controller in the package '{}'", getPackage().getName());
         }
 
         updateApStatus(apsUp, apsDown);
 
         // Reschedule the service
-        LOG.debug("Re-scheduling the package '" + getPackage().getName() + "' in " + m_interval);
+        LOG.debug("Re-scheduling the package '{}' in {}", getPackage().getName(), m_interval);
         m_scheduler.schedule(m_interval, getReadyRunnable());
     }
 

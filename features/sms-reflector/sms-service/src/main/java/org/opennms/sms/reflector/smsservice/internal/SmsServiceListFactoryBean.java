@@ -130,7 +130,7 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 					}
 					smsService.addGateway(gateways[i]);
 					
-				} catch (final GatewayException e) {
+				} catch (final Exception e) {
 				    LOG.warn("Unable to add gateway ({}) to SMS service", gateways[i], e);
 				}
 			}

@@ -35,20 +35,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-
 import org.opennms.core.utils.BeanUtils;
 
-import org.opennms.netmgt.dao.AlarmDao;
-
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class AlarmEventSynchronization implements EventSynchronization {
@@ -166,9 +162,9 @@ public class AlarmEventSynchronization implements EventSynchronization {
         final List<Event> xmlevents = new ArrayList<Event>();
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
-                transTemplate.execute(new TransactionCallback<Object>() {
+                transTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(final TransactionStatus status) {
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
                     Map<String, OnmsAlarm> forwardAlarms = new HashMap<String, OnmsAlarm>();
                 	for (OnmsAlarm alarm : alarmDao.findAll()) {
                 		// Got Clear alarm
@@ -200,7 +196,6 @@ public class AlarmEventSynchronization implements EventSynchronization {
                         	if (xmlEvent != null) xmlevents.add(xmlEvent);
                 		}
                 	}
-                    return new Object();
                 }
 
             });

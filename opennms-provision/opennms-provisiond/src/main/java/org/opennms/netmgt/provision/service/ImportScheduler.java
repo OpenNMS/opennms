@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -202,7 +202,7 @@ public class ImportScheduler implements InitializingBean {
                     
                     getScheduler().deleteJob(jobName, JOB_GROUP);
                 } catch (SchedulerException e) {
-                    LOG.error("removeCurrentJobsFromSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("removeCurrentJobsFromSchedule: {}", e.getLocalizedMessage(), e);
                 }
             }
         }
@@ -232,9 +232,9 @@ public class ImportScheduler implements InitializingBean {
                     getScheduler().scheduleJob(detail, trigger);
                     
                 } catch (ParseException e) {
-                    LOG.error("buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 } catch (SchedulerException e) {
-                    LOG.error("buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 }                
             }
         }
@@ -302,27 +302,16 @@ public class ImportScheduler implements InitializingBean {
             while (it.hasNext()) {
                 String triggerName = it.next();
                 CronTrigger t = (CronTrigger) getScheduler().getTrigger(triggerName, JOB_GROUP);
-                StringBuilder sb = new StringBuilder("trigger: ");
-                sb.append(triggerName);
-                sb.append(", calendar name: ");
-                sb.append(t.getCalendarName());
-                sb.append(", cron expression: ");
-                sb.append(t.getCronExpression());
-                sb.append(", URL: ");
-                sb.append(t.getJobDataMap().get(ImportJob.KEY));
-                sb.append(", next fire time: ");
-                sb.append(t.getNextFireTime());
-                sb.append(", previous fire time: ");
-                sb.append(t.getPreviousFireTime());
-                sb.append(", time zone: ");
-                sb.append(t.getTimeZone());
-                sb.append(", priority: ");
-                sb.append(t.getPriority());
-                LOG.info(sb.toString());
+                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, next fire time: {}, time zone: {}, priority: {}",
+                         triggerName, t.getCalendarName(),
+                         t.getCronExpression(),
+                         t.getJobDataMap().get(ImportJob.KEY),
+                         t.getNextFireTime(), t.getPreviousFireTime(),
+                         t.getTimeZone(), t.getPriority());
             }
             
         } catch (Throwable e) {
-            LOG.error("printCurrentSchedule: "+e.getLocalizedMessage(), e);
+            LOG.error("printCurrentSchedule: {}", e.getLocalizedMessage(), e);
         }
         
     }

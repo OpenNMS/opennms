@@ -36,6 +36,14 @@ import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.*;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.*;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.RtcService;
@@ -499,7 +507,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -508,7 +516,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setNotificationDao</p>
      *
-     * @param notifDao a {@link org.opennms.netmgt.dao.NotificationDao} object.
+     * @param notifDao a {@link org.opennms.netmgt.dao.api.NotificationDao} object.
      */
     public void setNotificationDao(NotificationDao notifDao) {
         m_notificationDao = notifDao;
@@ -517,7 +525,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -526,7 +534,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setGraphDao</p>
      *
-     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @param graphDao a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
@@ -553,7 +561,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>getSurveillanceViewConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
         return m_surveillanceViewConfigDao;
@@ -562,7 +570,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setSurveillanceViewConfigDao</p>
      *
-     * @param surveillanceViewConfigDao a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @param surveillanceViewConfigDao a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
         m_surveillanceViewConfigDao = surveillanceViewConfigDao;
@@ -571,7 +579,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -580,7 +588,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
@@ -589,7 +597,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>getAlarmDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public AlarmDao getAlarmDao() {
         return m_alarmDao;
@@ -598,7 +606,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setAlarmDao</p>
      *
-     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
@@ -643,7 +651,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>getOutageDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public OutageDao getOutageDao() {
         return m_outageDao;
@@ -652,7 +660,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /**
      * <p>setOutageDao</p>
      *
-     * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @param outageDao a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public void setOutageDao(OutageDao outageDao) {
         m_outageDao = outageDao;

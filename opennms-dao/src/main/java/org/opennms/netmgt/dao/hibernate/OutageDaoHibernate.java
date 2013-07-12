@@ -38,7 +38,7 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;

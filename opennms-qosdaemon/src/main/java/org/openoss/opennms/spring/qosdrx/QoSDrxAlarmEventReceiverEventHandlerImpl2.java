@@ -41,12 +41,10 @@ import javax.oss.fm.monitor.NotifyNewAlarmEvent;
 import javax.oss.util.IRPEvent;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -55,6 +53,8 @@ import org.openoss.opennms.spring.dao.OssDao;
 import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
 import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
 import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -128,7 +128,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private AssetRecordDao _assetRecordDao;
@@ -137,7 +137,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 *
-	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param ar a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -145,7 +145,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private NodeDao _nodeDao;
@@ -153,7 +153,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 *
-	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodedao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -161,7 +161,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	@SuppressWarnings("unused")
 	private AlarmDao _alarmDao;
@@ -169,7 +169,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in alarmDao
 	 *
-	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
 	 */
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
@@ -183,7 +183,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 *
-	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
 	 */
 	public  void setDistPollerDao(DistPollerDao _distPollerDao) {
 		 distPollerDao =  _distPollerDao;
@@ -538,7 +538,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 		try{
 
-			LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+			LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 			OnmsAlarm alarm=null;
 			try {
 				String ossPrimaryKey=nasce.getAlarmKey().getAlarmPrimaryKey();
@@ -559,7 +559,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(nasce.getAckTime());
 						alarm.setAlarmAckUser(nasce.getAckUserId());
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
 						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
@@ -574,7 +574,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(null);  // may throw illegal as putting in null
 						alarm.setAlarmAckUser(null);
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
 						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);

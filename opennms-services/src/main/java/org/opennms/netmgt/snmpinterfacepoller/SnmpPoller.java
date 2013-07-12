@@ -256,10 +256,10 @@ public class SnmpPoller extends AbstractServiceDaemon {
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
             String pkgName = getPollerConfig().getPackageName(ipaddress);
             if (pkgName != null) {
-                LOG.debug("Scheduling snmppolling for node: " + nodeid +" ip address: " + ipaddress + " - Found package interface with name: " + pkgName);
+                LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
                 scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,pkgName), pkgName);
             } else if (!getPollerConfig().useCriteriaFilters()) {
-                LOG.debug("No SNMP Poll Package found for node: " + nodeid +" ip address: " + ipaddress + ". - Scheduling according with default interval");
+                LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
                 scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, "null"), "null");
             }
         }

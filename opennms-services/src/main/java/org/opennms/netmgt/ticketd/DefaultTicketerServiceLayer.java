@@ -30,10 +30,11 @@ package org.opennms.netmgt.ticketd;
 
 import java.util.Map;
 
-import org.opennms.api.integration.ticketing.*;
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Ticket.State;
-
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;

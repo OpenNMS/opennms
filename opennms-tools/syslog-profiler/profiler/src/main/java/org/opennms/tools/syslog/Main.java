@@ -79,7 +79,7 @@ public final class Main {
                 System.exit(1);
             }
         } catch (Throwable e) {
-            LogUtils.warnf(Main.class, e, "An error occurred trying to parse the command-line.");
+            LOG.warn("An error occurred trying to parse the command-line.", e);
         }
         
         System.out.println("- using " + OPENNMS_HOME + "/etc for configuration files");

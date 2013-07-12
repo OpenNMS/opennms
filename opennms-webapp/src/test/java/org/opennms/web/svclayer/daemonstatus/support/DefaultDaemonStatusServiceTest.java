@@ -39,9 +39,9 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.DaemonStatusDao;
-import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.dao.api.DaemonStatusDao;
 import org.opennms.netmgt.model.MockServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 
 public class DefaultDaemonStatusServiceTest extends TestCase {
 

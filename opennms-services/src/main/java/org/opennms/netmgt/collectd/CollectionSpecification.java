@@ -38,7 +38,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
 import org.slf4j.Logger;
@@ -293,7 +293,7 @@ public class CollectionSpecification {
                 if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
                         (outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
                 {
-                    LOG.debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + agent.getHostAddress() + " will not be collected for " + this);
+                    LOG.debug("scheduledOutage: configured outage '{}' applies, interface {} will not be collected for {}", outageName, agent.getHostAddress(), this);
                     outageFound = true;
                     break;
                 }
@@ -306,7 +306,7 @@ public class CollectionSpecification {
     /**
      * <p>refresh</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
     public void refresh(CollectorConfigDao collectorConfigDao) {
         CollectdPackage refreshedPackage = collectorConfigDao.getPackage(getPackageName());

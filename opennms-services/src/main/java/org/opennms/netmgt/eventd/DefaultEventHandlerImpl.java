@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -104,7 +104,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     // Log the uei, source, and other important aspects
                     final String uuid = event.getUuid();
                     LOG.debug("Event {");
-                    LOG.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                    LOG.debug("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
                     LOG.debug("  uei   = {}", event.getUei());
                     LOG.debug("  src   = {}", event.getSource());
                     LOG.debug("  iface = {}", event.getInterface());
@@ -113,7 +113,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                         LOG.debug("  parms {");
                         for (final Parm parm : event.getParmCollection()) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
-                                LOG.debug("    (" + parm.getParmName().trim() + ", " + parm.getValue().getContent().trim() + ")");
+                                LOG.debug("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
                             }
                         }
                         LOG.debug("  }");
@@ -124,11 +124,11 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                 for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
                         eventProcessor.process(m_eventLog.getHeader(), event);
-                    } catch (SQLException e) {
-                        LOG.warn("Unable to process event using processor " + eventProcessor + "; not processing with any later processors.", e);
+                    } catch (EventProcessorException e) {
+                        LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
                         break;
                     } catch (Throwable t) {
-                        LOG.warn("Unknown exception processing event with processor " + eventProcessor + "; not processing with any later processors.", t);
+                        LOG.warn("Unknown exception processing event with processor {}; not processing with any later processors.", eventProcessor, t);
                         break;
                     }
                 }

@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smslib.AGateway;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.OutboundMessage;
 import org.springframework.beans.BeansException;
@@ -66,21 +67,19 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
 	public OutboundMessageNotification(List<IOutboundMessageNotification> listeners){
 	    m_listenerList = listeners;
 	}
-	
-	/** {@inheritDoc} */
-    @Override
-	public void process(String gatewayId, OutboundMessage msg) {
-	    
-	    log.debug( "Forwarding message to registered listeners: " + getListeners() + " : " + msg );
-	    
-		for( IOutboundMessageNotification listener : getListeners() )
-		{
-			if (listener != this) {
-				listener.process( gatewayId, msg );
-			}
-		}
 
-	}
+    @Override
+    public void process(AGateway gateway, OutboundMessage msg) {
+
+        log.debug( "Forwarding message to registered listeners: {} : {}", getListeners(), msg);
+
+        for( IOutboundMessageNotification listener : getListeners() )
+        {
+            if (listener != this) {
+                listener.process( gateway, msg );
+            }
+        }
+    }
 
 	private Collection<IOutboundMessageNotification> getListeners() {
 		if (m_listenerList == null) {

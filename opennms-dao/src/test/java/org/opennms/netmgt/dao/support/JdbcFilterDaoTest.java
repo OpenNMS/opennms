@@ -51,9 +51,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
@@ -68,7 +68,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -81,7 +81,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -241,9 +242,9 @@ public class JdbcFilterDaoTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testGetActiveIPListWithDeletedNode() throws Exception {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
                 
                 assertEquals("should be 1 interface", 1, ifaces.size());
@@ -252,7 +253,6 @@ public class JdbcFilterDaoTest implements InitializingBean {
                 iface.setIsManaged("D");
                 m_interfaceDao.save(iface);
                 m_interfaceDao.flush();
-                return null;
             }
         });
 
@@ -262,13 +262,12 @@ public class JdbcFilterDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
                 assertNotNull("returned list should not be null", list);
                 assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
-                return null;
             }
         });
     }

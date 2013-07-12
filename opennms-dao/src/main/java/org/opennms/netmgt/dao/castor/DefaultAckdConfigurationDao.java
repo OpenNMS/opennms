@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.ReaderSchedule;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

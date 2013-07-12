@@ -36,8 +36,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -45,7 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -61,7 +61,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
         "classpath:org/opennms/netmgt/utils/applicationContext-testTAEventForwarderTest.xml",
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:META-INF/opennms/smallEventConfDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -90,9 +90,9 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
 
     @Test
     public void testSendEventsOnCommit() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
                 event = sendEvent();
@@ -101,19 +101,17 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
                 getEventAnticipator().anticipateEvent(event);
                 event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
-                return null;
             }
         });
     }
 
     @Test
     public void testSendEventsOnRollback() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 sendEvent();
                 status.setRollbackOnly();
-                return null;
             }
         });
     }
@@ -121,39 +119,36 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
 
     @Test
     public void testTwoTransactions() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
-                return null;
             }
         });
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
-                return null;
             }
         });
     }
 
     @Test
     public void testCommitRollbackCommit() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
-                return null;
             }
         });
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 // Doesn't matter how many events we send here, they're
                 // all gonna get rolled back
                 sendEvent();
@@ -161,16 +156,14 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
                 sendEvent();
                 sendEvent();
                 status.setRollbackOnly();
-                return null;
             }
         });
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
-                return null;
             }
         });
     }

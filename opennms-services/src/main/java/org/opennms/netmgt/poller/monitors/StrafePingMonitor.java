@@ -148,7 +148,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
 
             serviceStatus.setProperties(returnval);
         } catch (Throwable e) {
-            LOG.debug("failed to ping " + host, e);
+            LOG.debug("failed to ping {}", host, e);
         }
 
         return serviceStatus;

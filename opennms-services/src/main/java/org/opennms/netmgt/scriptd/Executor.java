@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 import org.opennms.netmgt.config.scriptd.Uei;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -244,7 +244,7 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            LOG.error("Reload script[{}] failed.", ex, i);
+                            LOG.error("Reload script[{}] failed.", i, ex);
                         }
                     }
 
@@ -293,7 +293,7 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            LOG.error("Attached script [{}] execution failed", ex, i);
+                            LOG.error("Attached script [{}] execution failed", i, ex);
                         }
                     }
                 }
@@ -309,7 +309,7 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            LOG.error("UEI-specific event handler script execution failed: " + event.getUei(), ex);
+                            LOG.error("UEI-specific event handler script execution failed: {}", event.getUei(), ex);
                         }
                     }
                 }
@@ -324,7 +324,7 @@ final class Executor implements Runnable, PausableFiber {
                     }
 
                     catch (BSFException ex) {
-                        LOG.error("Non-UEI-specific event handler script [{}] execution failed", ex, i);
+                        LOG.error("Non-UEI-specific event handler script [{}] execution failed", i, ex);
                     }
                 }
 
@@ -422,7 +422,7 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             catch (BSFException ex) {
-                LOG.error("Start script[{}] failed.", ex, i);
+                LOG.error("Start script[{}] failed.", i, ex);
             }
         }
 
@@ -464,7 +464,7 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             catch (BSFException ex) {
-                LOG.error("Stop script[{}] failed.", ex, i);
+                LOG.error("Stop script[{}] failed.", i, ex);
             }
         }
 

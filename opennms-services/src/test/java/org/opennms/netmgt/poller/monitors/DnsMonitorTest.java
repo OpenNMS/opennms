@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -226,6 +227,7 @@ public class DnsMonitorTest {
         
         System.out.println("result: " + l.getResult());
         final Record[] answers = l.getAnswers();
+        assertNotNull(answers);
         assertEquals(answers.length, 1);
         
         final Record record = answers[0];

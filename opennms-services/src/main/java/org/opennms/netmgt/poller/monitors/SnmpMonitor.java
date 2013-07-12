@@ -218,14 +218,14 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
 
                     if (result != null) {
-                        LOG.debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                        LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                         if (meetsCriteria(result, operator, operand)) {
                             matchCount++;
                         }
                     }
                 }
                 svcParams.setProperty("matchCount", String.valueOf(matchCount));
-                LOG.debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
+                LOG.debug("poll: SNMPwalk count succeeded, total={} min={} max={}", matchCount, countMin, countMax);
                 if ((countMin <= matchCount) && (matchCount <= countMax)) {
                     status = PollStatus.available();
                 } else {
@@ -242,7 +242,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
                     if (result != null) {
                         svcParams.setProperty("observedValue", getStringValue(result));
-                        LOG.debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                        LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
                             if ("false".equals(matchstr)) {
@@ -270,7 +270,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
                 if (result != null) {
                     svcParams.setProperty("observedValue", getStringValue(result));
-                    LOG.debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                    LOG.debug("poll: SNMP poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                     
                     if (meetsCriteria(result, operator, operand)) {
                         status = PollStatus.available();

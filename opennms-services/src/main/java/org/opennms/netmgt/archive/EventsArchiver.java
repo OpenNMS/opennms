@@ -36,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,7 +45,6 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * <pre>
@@ -179,13 +177,6 @@ public class EventsArchiver {
      * @throws ArchiverException Thrown if a required property is not specified or is incorrect
      */
     private void init() throws ArchiverException {
-        Map mdc = Logging.getCopyOfContextMap();
-
-        try {
-        
-            // The general logs from the events archiver go to this category'
-            Logging.putPrefix("archiver");
-
 
         EventsArchiverConfigFactory eaFactory;
         
@@ -236,7 +227,7 @@ public class EventsArchiver {
             LOG.info("Events archive age specified = {}", archAgeStr);
             LOG.info("Events archive age in millisconds = {}", archAge);
 
-            LOG.info("Events created before \'" + archAgeStr + " \' will be deleted");
+            LOG.info("Events created before '{}' will be deleted", archAgeStr);
 
             LOG.info("Separator to be used in archive: {}", m_archSeparator);
         }
@@ -265,26 +256,23 @@ public class EventsArchiver {
             throw new UndeclaredThrowableException(e);
         }
         // XXX should we be throwing ArchiverException instead?
-        } finally {
-            Logging.setContextMap(mdc);
-        }
     }
 
     /**
      * Remove event with eventID from events table. NOTE: Postgres does not have
      * the ResultSet.deleteRow() implemented! - so use the eventID to delete!
      */
-    private boolean removeEvent(String eventID) {
+    private boolean removeEvent(Integer eventID) {
         try {
-            m_eventDeleteStmt.setString(1, eventID);
+            m_eventDeleteStmt.setInt(1, eventID);
             m_eventDeleteStmt.executeUpdate();
         } catch (SQLException sqle) {
-            LOG.error("Unable to delete event \'" + eventID + "\': " + sqle.getMessage());
+            LOG.error("Unable to delete event '{}': {}", eventID, sqle.getMessage());
             return false;
         }
 
         // debug logs
-        LOG.debug("EventID: " + eventID + " removed from events table");
+        LOG.debug("EventID: {} removed from events table", eventID);
 
         return true;
     }
@@ -308,7 +296,7 @@ public class EventsArchiver {
             m_eventsGetStmt.setTimestamp(1, new Timestamp(m_archAge));
             eventsRS = m_eventsGetStmt.executeQuery();
             int colCount = eventsRS.getMetaData().getColumnCount();
-            String eventID;
+            Integer eventID;
             String eventUEI;
             String eventLog;
             String eventDisplay;
@@ -318,7 +306,7 @@ public class EventsArchiver {
 
             while (eventsRS.next()) {
                 // get the eventID for the event
-                eventID = eventsRS.getString(EVENT_ID);
+                eventID = eventsRS.getInt(EVENT_ID);
 
                 // get uei for event
                 eventUEI = eventsRS.getString("eventUei");
@@ -332,7 +320,7 @@ public class EventsArchiver {
                 // eventAckUser for this event
                 eventAckUser = eventsRS.getString(EVENT_ACK_USER);
 
-                LOG.debug("Event id: " + eventID + " uei: " + eventUEI + " log: " + eventLog + " display: " + eventDisplay + " eventAck: " + eventAckUser);
+                LOG.debug("Event id: {} uei: {} log: {} display: {} eventAck: {}", eventID, eventUEI, eventLog, eventDisplay, eventAckUser);
 
                 if (eventLog.equals(MSG_NO) && eventDisplay.equals(MSG_NO)) {
                     // log = N, display = N, delete event
@@ -346,7 +334,7 @@ public class EventsArchiver {
                     ret = removeEvent(eventID);
                     if (ret) {
                         sendToArchive(eventsRS, colCount);
-                        LOG.debug("eventID " + eventID + " archived");
+                        LOG.debug("eventID {} archived", eventID);
 
                         archCount++;
 
@@ -373,7 +361,7 @@ public class EventsArchiver {
                         ret = removeEvent(eventID);
                         if (ret) {
                             sendToArchive(eventsRS, colCount);
-                            LOG.debug("eventID " + eventID + " archived");
+                            LOG.debug("eventID {} archived", eventID);
                             archCount++;
 
                             remCount++;
@@ -392,7 +380,7 @@ public class EventsArchiver {
             try {
                 eventsRS.close();
             } catch (Throwable e) {
-                LOG.info("EventsArchiver: Exception while events result " + "set: message -> " + e.getMessage());
+                LOG.info("EventsArchiver: Exception while events result set: message -> {}", e.getMessage());
             }
         }
 
@@ -405,21 +393,33 @@ public class EventsArchiver {
      *                thrown if there is an error getting column values from the
      *                result set
      */
-    private void sendToArchive(ResultSet eventsRS, int colCount)
-            throws SQLException {
-        StringBuffer outBuf = new StringBuffer();
+    private void sendToArchive(final ResultSet eventsRS, final int colCount) {
+        Logging.withPrefix("events", new Runnable() {
 
-        for (int index = 1; index <= colCount; index++) {
-            String colValue = eventsRS.getString(index);
-            if (index == 1) {
-                outBuf.append(colValue);
-            } else {
-                outBuf.append(m_archSeparator + colValue);
+            @Override
+            public void run() {
+                StringBuffer outBuf = new StringBuffer();
+
+                for (int index = 1; index <= colCount; index++) {
+                    String colValue;
+                    try {
+                        colValue = eventsRS.getString(index);
+                    }
+                    catch (SQLException sqlerr) {
+                        throw new RuntimeException(sqlerr);
+                    }
+
+                    if (index == 1) {
+                        outBuf.append(colValue);
+                    } else {
+                        outBuf.append(m_archSeparator + colValue);
+                    }
+                }
+
+                String outBufStr = outBuf.toString();
+                LOG.error(outBufStr);
             }
-        }
-
-        String outBufStr = outBuf.toString();
-        LOG.error(outBufStr);
+        });
     }
 
     /**
@@ -464,8 +464,7 @@ public class EventsArchiver {
                 m_conn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
             m_eventDeleteStmt = m_conn.prepareStatement(DB_DELETE_EVENT);
         } catch (SQLException e) {
-            LOG.error("EventsArchiver: Exception in opening the database " + "connection or in the prepared statement for the " + "get events");
-            LOG.error(e.getMessage());
+            LOG.error("EventsArchiver: Exception in opening the database connection or in the prepared statement for the get events", e);
             throw new ArchiverException("EventsArchiver: " + e.getMessage());
         }
     }
@@ -476,20 +475,26 @@ public class EventsArchiver {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
-        try {
-            // create the archiver
-            EventsArchiver ea = new EventsArchiver();
+    	Logging.withPrefix("archiver", new Runnable() {
 
-            /*
-             * Remove events.  This method sends removed events
-             * to archive file if configured for archival.
-             */
-            ea.archiveEvents();
+            @Override
+            public void run() {
+                try {
+                    // create the archiver
+                    EventsArchiver ea = new EventsArchiver();
 
-            // close the archiver
-            ea.close();
-        } catch (ArchiverException ae) {
-            System.err.println(ae.getMessage());
-        }
+                    /*
+                     * Remove events.  This method sends removed events
+                     * to archive file if configured for archival.
+                     */
+                    ea.archiveEvents();
+
+                    // close the archiver
+                    ea.close();
+                } catch (ArchiverException ae) {
+                    System.err.println(ae.getMessage());
+                }
+            }
+        });
     }
 }

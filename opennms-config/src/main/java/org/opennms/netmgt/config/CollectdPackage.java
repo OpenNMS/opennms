@@ -195,7 +195,7 @@ public class CollectdPackage {
 		}
 	
 		if (!filterPassed)
-			LOG.debug("interfaceInFilter: Interface " + iface + " passed filter for package " + getName() + "?: false");
+			LOG.debug("interfaceInFilter: Interface {} passed filter for package {}?: false", iface, getName());
 		return filterPassed;
 	}
 
@@ -252,7 +252,7 @@ public class CollectdPackage {
 		boolean packagePassed = has_specific
 				|| (has_range_include && !has_range_exclude);
                 if(packagePassed) {
-		    LOG.info("interfaceInPackage: Interface " + iface + " passed filter and specific/range for package " + getName() + "?: " + packagePassed);
+		    LOG.info("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, getName(), packagePassed);
                 } else {
 		    LOG.debug("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, getName(), packagePassed);
                 }
@@ -282,7 +282,7 @@ public class CollectdPackage {
 		//
 		String filterRules = getFilterRule(localServer, verifyServer);
 	
-		LOG.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules);
+		LOG.debug("createPackageIpMap: package is {}. filer rules are {}", pkg.getName(), filterRules);
 		try {
             putIpList(FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules));
 		} catch (Throwable t) {

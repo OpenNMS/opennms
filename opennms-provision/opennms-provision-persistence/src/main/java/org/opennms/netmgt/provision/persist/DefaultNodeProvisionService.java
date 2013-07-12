@@ -34,8 +34,8 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -171,7 +171,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             .getEvent();
         m_eventForwarder.sendNow(e);
 
-        LOG.warn("about to return (" + System.currentTimeMillis() + ")");
+        LOG.warn("about to return ({})", System.currentTimeMillis());
         return true;
     }
     

@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -323,7 +322,7 @@ public class Events implements Serializable {
 	}
 	
 
-	public void loadEventFiles(Resource configResource) throws IOException, JAXBException {
+	public void loadEventFiles(Resource configResource) throws IOException {
 		m_loadedEventFiles.clear();
 		
 		for(String eventFile : m_eventFiles) {
@@ -345,11 +344,6 @@ public class Events implements Serializable {
 
 	public boolean isSecureTag(String tag) {
 		return m_global == null ? false : m_global.isSecureTag(tag);
-	}
-	
-	public static interface Partition {
-		List<String> group(Event eventConf);
-		String group(org.opennms.netmgt.xml.event.Event matchingEvent);
 	}
 	
 	private void partitionEvents(Partition partition) {

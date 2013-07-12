@@ -36,7 +36,8 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class EventsAlarmsWindowTest {
@@ -44,7 +45,7 @@ public class EventsAlarmsWindowTest {
 	EventsAlarmsWindow window;
 	EventsAlarmsWindow window2;
 	Window mainWindow;
-	Application app;
+	UI app;
 	@Before
 	public void setUp() throws Exception {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
@@ -52,19 +53,22 @@ public class EventsAlarmsWindowTest {
         window = new EventsAlarmsWindow(null, url, url);
 		window2 = new EventsAlarmsWindow(testNode1, url, url);
 		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		app = new UI() { //Empty Application
+
+			private static final long serialVersionUID = -7197916089135471254L;
+
 			@Override
-			public void init() {}
+			public void init(VaadinRequest request) {}
 		};
 	}
 
 	@Test
 	public void testAttach() {
-		app.setMainWindow(mainWindow);
-		app.getMainWindow().addWindow(window);
-		assertTrue(app.getMainWindow().getChildWindows().contains(window));
-		app.getMainWindow().removeWindow(window);
-		assertFalse(app.getMainWindow().getChildWindows().contains(window));
+		app.addWindow(mainWindow);
+		app.addWindow(window);
+		assertTrue(app.getWindows().contains(window));
+		app.removeWindow(window);
+		assertFalse(app.getWindows().contains(window));
 	}
 
 }

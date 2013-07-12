@@ -42,7 +42,7 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.TrapdConfigFactory;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -66,7 +66,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
         // Overrides the port that Trapd binds to and sets newSuspectOnTrap to 'true'
         "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest-snmpTrapPort.xml",
-        "classpath:META-INF/opennms/smallEventConfDao.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

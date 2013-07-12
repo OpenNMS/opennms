@@ -33,9 +33,9 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -103,7 +103,7 @@ public class Statsd implements SpringServiceDaemon {
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                 } catch (Throwable exception) {
-                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
+                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
                     ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -150,10 +150,10 @@ public class Statsd implements SpringServiceDaemon {
         synchronized (m_scheduler) {
             LOG.info("start: lock acquired (may have reentered), scheduling Reports...");
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                LOG.debug("start: scheduling Report: "+reportDef+"...");
+                LOG.debug("start: scheduling Report: {}", reportDef);
                 scheduleReport(reportDef);
             }
-            LOG.info("start: "+m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length+" jobs scheduled.");
+            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length);
         }
         LOG.debug("start: lock released (unless reentrant).");
     }
@@ -218,7 +218,7 @@ public class Statsd implements SpringServiceDaemon {
         try {
             report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
         } catch (Throwable t) {
-            LOG.error("Could not create a report instance for report definition " + reportDef + ": " + t, t);
+            LOG.error("Could not create a report instance for report definition {}", reportDef, t);
             throw t;
         }
         
@@ -230,7 +230,7 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("Completed report {}", report);
                 
                 m_reportPersister.persist(report);
-                LOG.debug("Report " + report + " persisted");
+                LOG.debug("Report {} persisted", report);
             }
         });
     }
@@ -271,7 +271,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getResourceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -280,7 +280,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -289,7 +289,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getRrdDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public RrdDao getRrdDao() {
         return m_rrdDao;
@@ -298,7 +298,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;

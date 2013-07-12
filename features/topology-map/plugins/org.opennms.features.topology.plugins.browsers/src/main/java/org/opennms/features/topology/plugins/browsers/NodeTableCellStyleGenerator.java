@@ -18,11 +18,11 @@ package org.opennms.features.topology.plugins.browsers;
 import java.util.List;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
 
 public class NodeTableCellStyleGenerator  implements CellStyleGenerator {
@@ -39,7 +39,7 @@ public class NodeTableCellStyleGenerator  implements CellStyleGenerator {
     }
     
     @Override
-    public String getStyle(Object itemId, Object propertyId) {
+    public String getStyle(Table source, Object itemId, Object propertyId) {
         if (itemId == null || !(itemId instanceof Integer)) return "";
         OnmsAlarm alarm = getAlarm(((Integer)itemId).intValue());
         return cellStyleRenderer.getStyle(alarm);

@@ -61,9 +61,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -165,7 +165,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private AssetRecordDao assetRecordDao;
@@ -182,7 +182,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private NodeDao nodeDao;
@@ -215,7 +215,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	@SuppressWarnings("unused")
 	private AlarmDao alarmDao;
@@ -327,10 +327,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 						
 		} catch(MarshalException mrshl_ex) {
 			//write an error message to the log file
-			LOG.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n" + "\t\t\t\tEnsure tags have correct names: {}", mrshl_ex);
+			LOG.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n\t\t\t\tEnsure tags have correct names", mrshl_ex);
 			throw new UndeclaredThrowableException(mrshl_ex);
 		} catch(ValidationException vldtn_ex){
-			LOG.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n" + "\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml {}", vldtn_ex);
+			LOG.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml", vldtn_ex);
 			throw new UndeclaredThrowableException(vldtn_ex);
 		} catch(IOException io_ex){
 			//Get the OpenNMS home directory
@@ -341,7 +341,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 				configFile = configFile.substring(0, configFile.length() - 1);
 			}
 			configFile += java.io.File.separator + "etc" + java.io.File.separator + "QoSD-configuration.xml";
-			LOG.error("Qosd.start(): Failed to load configuration file: {}\n" + "\t\t\t\tMake sure that it exists", configFile, io_ex);
+			LOG.error("Qosd.start(): Failed to load configuration file: {}\n\t\t\t\tMake sure that it exists", configFile, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 
@@ -361,7 +361,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		catch(IOException io_ex) {
 			//record in log that the properties file could not be read
 			String propertiesFilename = System.getProperty("propertiesFile");
-			LOG.error("Qosd.start(): Could not read from properties file: {}\n" + "\t\t\t\tPlease check the file permissions", propertiesFilename, io_ex);
+			LOG.error("Qosd.start(): Could not read from properties file: {}\n\t\t\t\tPlease check the file permissions", propertiesFilename, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 

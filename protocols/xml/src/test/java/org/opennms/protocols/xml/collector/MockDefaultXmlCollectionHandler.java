@@ -29,10 +29,8 @@
 package org.opennms.protocols.xml.collector;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.protocols.xml.config.Request;
+import org.opennms.protocols.xml.config.XmlResourceUtils;
 import org.w3c.dom.Document;
 
 /**
@@ -44,10 +42,10 @@ import org.w3c.dom.Document;
 public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler {
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String, org.opennms.protocols.xml.config.Request)
      */
     @Override
-    protected Document getXmlDocument(String urlString) {
+    protected Document getXmlDocument(String urlString, Request request) {
         return MockDocumentBuilder.getXmlDocument();
     }
 
@@ -64,14 +62,7 @@ public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler
      */
     @Override
     protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        ResourceType  rt = new ResourceType();
-        rt.setName(resourceType);
-        rt.setStorageStrategy(new StorageStrategy());
-        rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
-        rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-        rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-        XmlResourceType type = new XmlResourceType(agent, rt);
-        return type;
+        return XmlResourceUtils.getXmlResourceType(agent, resourceType);
     }
 }
 

@@ -28,8 +28,11 @@
 
 package org.opennms.core.criteria.restrictions;
 
-public class NotRestriction extends BaseRestriction {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class NotRestriction extends BaseRestriction {
+    private static final Logger LOG = LoggerFactory.getLogger(NotRestriction.class);
     private final Restriction m_restriction;
 
     public NotRestriction(final Restriction restriction) {
@@ -44,7 +47,11 @@ public class NotRestriction extends BaseRestriction {
     @Override
     public void visit(final RestrictionVisitor visitor) {
         visitor.visitNot(this);
-        getRestriction().visit(visitor);
+        try {
+            getRestriction().visit(visitor);
+        } catch (final Exception e) {
+            LOG.trace("Exception during restriction evaluation: {}", e.getMessage(), e);
+        }
         visitor.visitNotComplete(this);
     }
 

@@ -614,13 +614,18 @@
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
+      <groupId>org.smslib</groupId>
       <artifactId>smslib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rxtx-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <!-- dependencies for XML/JSON collector -->
+    <dependency>
+      <groupId>commons-jxpath</groupId>
+      <artifactId>commons-jxpath</artifactId>
     </dependency>
     <!-- this is a runtime dependency we need at install time -->
     <dependency>

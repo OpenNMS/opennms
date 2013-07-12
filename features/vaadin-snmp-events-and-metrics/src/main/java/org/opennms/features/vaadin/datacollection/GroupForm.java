@@ -37,12 +37,12 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -84,7 +84,7 @@ public abstract class GroupForm extends Form implements ClickListener {
      */
     public GroupForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("MIB Group Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
 
         // Adding all resource types already defined on this source
@@ -103,10 +103,10 @@ public abstract class GroupForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -156,7 +156,7 @@ public abstract class GroupForm extends Form implements ClickListener {
                 setReadOnly(true);
                 saveGroup(getGroup());
             } else {
-                getWindow().showNotification("There are errors on the MIB Groups", Notification.TYPE_WARNING_MESSAGE);
+                Notification.show("There are errors on the MIB Groups", Notification.Type.WARNING_MESSAGE);
             }
         }
         if (source == cancel) {
@@ -168,7 +168,7 @@ public abstract class GroupForm extends Form implements ClickListener {
         }
         if (source == delete) {
             // FIXME You cannot delete a group if it is being used on any systemDef
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the Group " + getGroup().getName() + "?<br/>This action cannot be undone.",

@@ -39,14 +39,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RancidAdapterConfig;
 import org.opennms.netmgt.config.RancidAdapterConfigFactory;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -62,9 +59,12 @@ import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.RancidNodeAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -158,11 +158,10 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         
         getRancidCategories();
         
-        m_template.execute(new TransactionCallback<Object>() {
+        m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus arg0) {
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 buildRancidNodeMap();
-                return null;
             }
         });        
     }
@@ -461,7 +460,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -469,7 +468,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>setNodeDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
@@ -667,35 +666,31 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         LOG.debug("processPendingOperationForNode: {} for node: {}", op.getNodeId(), op.getType());
         if (op.getType() == AdapterOperationType.ADD) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doAdd(op.getNodeId(),m_cp,true);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doUpdate(op.getNodeId(),m_cp,true);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doDelete(op.getNodeId(),m_cp,true);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-            m_template.execute(new TransactionCallback<Object>() {
+            m_template.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                public Object doInTransaction(TransactionStatus arg0) {
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doNodeConfigChanged(op.getNodeId(),m_cp,true);
-                    return null;
                 }
             });
         }
@@ -716,11 +711,10 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 factory.getWriteLock().lock();
                 try {
                     factory.update();
-                    m_template.execute(new TransactionCallback<Object>() {
+                    m_template.execute(new TransactionCallbackWithoutResult() {
                         @Override
-                        public Object doInTransaction(TransactionStatus arg0) {
+                        public void doInTransactionWithoutResult(TransactionStatus arg0) {
                             buildRancidNodeMap();
-                            return null;
                         }
                     });  
                 } finally {

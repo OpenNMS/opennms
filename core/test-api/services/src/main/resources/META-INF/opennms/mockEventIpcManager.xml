@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
   
-  <bean name="mockEventIpcManager" class="org.opennms.netmgt.eventd.mock.MockEventIpcManager">
+  <bean name="mockEventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
     <qualifier value="mock" />
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>

@@ -100,13 +100,13 @@ public class SnmpNodeCollector extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("genErr collecting data for node "+m_primaryIf+": "+msg);
+        LOG.warn("genErr collecting data for node {}: {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("noSuchName collecting data for node "+m_primaryIf+": "+msg);
+        LOG.info("noSuchName collecting data for node {}: {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */

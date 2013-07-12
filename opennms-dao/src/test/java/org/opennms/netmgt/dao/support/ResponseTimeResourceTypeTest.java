@@ -37,8 +37,8 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class ResponseTimeResourceTypeTest extends TestCase {

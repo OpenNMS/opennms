@@ -10,7 +10,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.opennms.features.topology.plugins.ncs.NCSServicePath;
 import org.opennms.features.topology.plugins.ncs.xpath.JuniperXPath;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;

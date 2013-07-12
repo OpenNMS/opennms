@@ -93,12 +93,12 @@ public class SnmpStore extends AbstractSnmpStore {
         for (NamedSnmpVar var : ms_elemList) {
             if (res.getBase().equals(var.getSnmpObjId())) {
                 if (res.getValue().isError()) {
-                    LOG.error("storeResult: got an error for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], but we should only be getting non-errors: " + res.getValue());
+                    LOG.error("storeResult: got an error for alias {} [{}].[{}], but we should only be getting non-errors: {}", var.getAlias(), res.getBase(), res.getInstance(), res.getValue());
                 } else if (res.getValue().isEndOfMib()) {
-                    LOG.debug("storeResult: got endOfMib for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], not storing");
+                    LOG.debug("storeResult: got endOfMib for alias {} [{}].[{}], not storing", var.getAlias(), res.getBase(), res.getInstance());
                 } else {
                     SnmpValueType type = SnmpValueType.valueOf(res.getValue().getType());
-                    LOG.debug("Storing Result: alias: "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"] = " + (type == null ? "Unknown" : type.getDisplayString()) + ": "+toLogString(res.getValue()));
+                    LOG.debug("Storing Result: alias: {} [{}].[{}] = {}: {}", var.getAlias(), res.getBase(), res.getInstance(), (type == null ? "Unknown" : type.getDisplayString()), toLogString(res.getValue()));
                     putValue(var.getAlias(), res.getValue());
                 }
             }

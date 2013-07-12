@@ -29,12 +29,13 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -219,9 +220,9 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         // FROM node, ipinterface 
         // WHERE node.nodeid = ipinterface.nodeid 
         // AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'
-        String query = "select COUNT(*) from OnmsNode as node, OnmsIpInterface as ipInterface " +
+        String query = "from OnmsNode as node, OnmsIpInterface as ipInterface " +
         		"where node.id = ipInterface.node.id " +
-        		"and node.label = ? and ipInterface.ipAddress = ? and node.type != 'D'";
+        		"and node.label = ? and ipInterface.ipAddress = ? and node.type != 'D' and ipInterface.isManaged != 'D'";
         
         return queryInt(query, nodeLabel, ipaddr);
     }

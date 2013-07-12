@@ -4,9 +4,9 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
 
-   <reference id="onmsMapDao" interface="org.opennms.netmgt.dao.OnmsMapDao" availability="mandatory" />
-   <reference id="onmsMapElementDao" interface="org.opennms.netmgt.dao.OnmsMapElementDao" availability="mandatory" />
-   <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.DataLinkInterfaceDao" availability="mandatory" />
+   <reference id="onmsMapDao" interface="org.opennms.netmgt.dao.api.OnmsMapDao" availability="mandatory" />
+   <reference id="onmsMapElementDao" interface="org.opennms.netmgt.dao.api.OnmsMapElementDao" availability="mandatory" />
+   <reference id="dataLinkInterfaceDao" interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" availability="mandatory" />
    
     <bean id="onmsTopologyProvider" class="org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider">
 			<property name="onmsMapDao" ref="onmsMapDao" />

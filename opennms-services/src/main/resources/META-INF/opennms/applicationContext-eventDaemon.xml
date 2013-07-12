@@ -41,12 +41,6 @@
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   
-  <!-- 
-  <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">
-    <property name="dataSource" ref="dataSource"/>
-  </bean>
-  -->
-
   <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.DaoEventdServiceManager">
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
   </bean>

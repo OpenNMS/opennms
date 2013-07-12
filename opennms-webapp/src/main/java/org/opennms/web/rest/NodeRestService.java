@@ -53,7 +53,7 @@ import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;

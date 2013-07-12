@@ -41,8 +41,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.log.LogUtils;
-
 /**
  * XmlRpcEventHandlerNotifier
  *
@@ -139,12 +137,12 @@ public class XmlRpcEventHandlerNotifier {
     
     
     private void handleFailedOperationException(Event event, FailedOperationException ex) {
-        LOG.error("BroadcastEventProcessor: operation failed for event: " + event.getUei() + ", exception: " + ex.getMessage());
+        LOG.error("BroadcastEventProcessor: operation failed for event: {}, exception: {}", event.getUei(), ex.getMessage());
         notifyEventError(event, "processing failed: ", ex);
     }
 
     private void handleInsufficientInformationException(Event event, InsufficientInformationException ex) {
-        LOG.info("BroadcastEventProcessor: insufficient information in event, discarding it: " + ex.getMessage());
+        LOG.info("BroadcastEventProcessor: insufficient information in event, discarding it: {}", ex.getMessage());
         notifyEventError(event, "Invalid parameters: ", ex);
     }
 

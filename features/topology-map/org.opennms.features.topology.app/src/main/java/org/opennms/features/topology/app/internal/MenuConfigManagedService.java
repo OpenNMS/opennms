@@ -42,9 +42,8 @@ public class MenuConfigManagedService implements ManagedService {
     }
     
     // Implements OSGi API
-    @SuppressWarnings("unchecked")
     @Override
-    public void updated(Dictionary properties) throws ConfigurationException {
+    public void updated(Dictionary<String,?> properties) throws ConfigurationException {
         m_commandManager.updateMenuConfig(properties);
     }
 

@@ -202,7 +202,7 @@ public final class Threshd extends AbstractServiceDaemon {
         while (eiter.hasMoreElements()) {
             Thresholder thresholder = eiter.nextElement();
             try {
-                LOG.debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
+                LOG.debug("start: Loading thresholder {}, classname {}", thresholder.getService(), thresholder.getClassName());
                 Class<?> tc = Class.forName(thresholder.getClassName());
                 ServiceThresholder st = (ServiceThresholder) tc.newInstance();
 
@@ -217,7 +217,7 @@ public final class Threshd extends AbstractServiceDaemon {
 
                 m_svcThresholders.put(thresholder.getService(), st);
             } catch (Throwable t) {
-                LOG.warn("start: Failed to load thresholder " + thresholder.getClassName() + " for service " + thresholder.getService(), t);
+                LOG.warn("start: Failed to load thresholder {} for service {}", thresholder.getClassName(), thresholder.getService(), t);
             }
         }
     }
@@ -335,7 +335,7 @@ public final class Threshd extends AbstractServiceDaemon {
                     int nodeId = rs.getInt(1);
                     String ipAddress = rs.getString(2);
                     
-                    LOG.debug("Scheduling service nodeId/ipAddress/svcName "+nodeId+'/'+ipAddress+'/'+svcName);
+                    LOG.debug("Scheduling service nodeId/ipAddress/svcName {}/{}/{}",nodeId,ipAddress,svcName);
                     scheduleService(nodeId, ipAddress, svcName, true);
                 }
 
@@ -373,13 +373,13 @@ public final class Threshd extends AbstractServiceDaemon {
             // and enabled!
             //
             if (!m_threshdConfig.serviceInPackageAndEnabled(svcName, pkg)) {
-                LOG.debug("scheduleService: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+                LOG.debug("scheduleService: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", ipAddress, svcName, pkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
             //
-            LOG.debug("scheduleService: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
+            LOG.debug("scheduleService: checking ipaddress {} for inclusion in pkg {}", ipAddress, pkg.getName());
             boolean foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             if (!foundInPkg && existing == false) {
                 // The interface might be a newly added one, rebuild the package
@@ -389,11 +389,11 @@ public final class Threshd extends AbstractServiceDaemon {
                 foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             }
             if (!foundInPkg) {
-                LOG.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                LOG.debug("scheduleInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", ipAddress, svcName, pkg.getName());
                 continue;
             }
 
-            LOG.debug("scheduleService: ipaddress " + ipAddress + " IS in pkg " + pkg.getName());
+            LOG.debug("scheduleService: ipaddress {} IS in pkg {}", ipAddress, pkg.getName());
 
             if (existing == false) {
                 // It is possible that both a nodeGainedService and a
@@ -406,7 +406,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 // services list.
                 //
                 if (alreadyScheduled(ipAddress, pkg.getName())) {
-                    LOG.debug("scheduleService: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in thresholdable service list, skipping.");
+                    LOG.debug("scheduleService: ipAddr/pkgName {}/{} already in thresholdable service list, skipping.", ipAddress, pkg.getName());
                     continue;
                 }
             }
@@ -428,7 +428,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 ServiceThresholder thresholder = Threshd.getServiceThresholder(svcName);
                 if (thresholder == null) {
                     // no thresholder exists for this service so go on to the next one
-                    LOG.warn("Unable to find a Thresholder for service "+svcName+"! But it is configured for Thresholding!");
+                    LOG.warn("Unable to find a Thresholder for service {}! But it is configured for Thresholding!", svcName);
                     continue;
                 }
                 thresholder.initialize(tSvc, tSvc.getPropertyMap());
@@ -445,11 +445,11 @@ public final class Threshd extends AbstractServiceDaemon {
                 // there is data available to be fetched.
                 m_scheduler.schedule(tSvc, tSvc.getInterval());
 
-                LOG.debug("scheduleService: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
+                LOG.debug("scheduleService: {}/{} scheduled for {} threshold checking", nodeId, ipAddress, svcName);
             } catch (RuntimeException rE) {
-                LOG.warn("scheduleService: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
+                LOG.warn("scheduleService: Unable to schedule {} for service {}", ipAddress, svcName, rE);
             } catch (Throwable t) {
-                LOG.error("scheduleService: Uncaught exception, failed to schedule interface " + ipAddress + " for service " + svcName, t);
+                LOG.error("scheduleService: Uncaught exception, failed to schedule interface {} for service {}", ipAddress, svcName, t);
             }
         } // end while more packages exist
     }

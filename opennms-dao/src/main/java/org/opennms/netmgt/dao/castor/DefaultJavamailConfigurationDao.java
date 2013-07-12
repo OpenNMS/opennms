@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

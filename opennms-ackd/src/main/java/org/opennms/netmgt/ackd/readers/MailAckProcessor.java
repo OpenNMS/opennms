@@ -49,9 +49,9 @@ import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -183,7 +183,7 @@ class MailAckProcessor implements AckProcessor {
      * @return a {@link java.lang.Integer} object.
      */
     protected static Integer detectId(final String subject, final String expression) {
-        LOG.debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
+        LOG.debug("detectId: Detecting aknowledgable ID from subject: {} using expression: {}", subject, expression);
         Integer id = null;
 
         //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
@@ -262,7 +262,7 @@ class MailAckProcessor implements AckProcessor {
             LOG.warn(concern);
             throw new MessagingException(concern);
         }
-        LOG.info("determineAckAcktion: evaluated message, "+action+" action determined from message.");
+        LOG.info("determineAckAcktion: evaluated message, {} action determined from message.", action);
         return action;
     }
 
@@ -277,7 +277,7 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: " + "host: " + readMailConfig.getReadmailHost().getHost() + " port: " + readMailConfig.getReadmailHost().getPort() + " ssl: " + readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable() + " transport: " + readMailConfig.getReadmailHost().getReadmailProtocol().getTransport() + " user: "+readMailConfig.getUserAuth().getUserName() + " password: "+readMailConfig.getUserAuth().getPassword());
+        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readMailConfig.getReadmailHost().getHost(), readMailConfig.getReadmailHost().getPort(), readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable(), readMailConfig.getReadmailHost().getReadmailProtocol().getTransport(), readMailConfig.getUserAuth().getUserName(), readMailConfig.getUserAuth().getPassword());
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
@@ -293,7 +293,7 @@ class MailAckProcessor implements AckProcessor {
         Pattern alarmPattern = Pattern.compile(alarmRe);
         
         List<Message> msgs = readMailer.retrieveMessages();
-        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+ " and alarm expression: "+alarmRe);
+        LOG.info("retrieveAckMessages: Iterating {} messages with notif expression: {} and alarm expression: {}", msgs.size(), notifRe, alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
             Message msg = iterator.next();
@@ -388,14 +388,14 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>setAckdConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdDao = configDao;
     }
     
     /**
-     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
@@ -414,7 +414,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>getJmConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     protected JavaMailConfigurationDao getJmConfigDao() {
         return m_jmConfigDao;
@@ -423,7 +423,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>setJmConfigDao</p>
      *
-     * @param jmConfigDao a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @param jmConfigDao a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     public void setJmConfigDao(final JavaMailConfigurationDao jmConfigDao) {
         m_jmConfigDao = jmConfigDao;

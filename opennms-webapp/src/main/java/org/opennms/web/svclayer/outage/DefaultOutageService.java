@@ -33,7 +33,7 @@ import java.util.Date;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
 
@@ -58,7 +58,7 @@ public class DefaultOutageService implements OutageService {
     /**
      * <p>Constructor for DefaultOutageService.</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public DefaultOutageService(OutageDao dao) {
         m_dao = dao;
@@ -67,7 +67,7 @@ public class DefaultOutageService implements OutageService {
     /**
      * <p>getDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public OutageDao getDao() {
         return m_dao;
@@ -76,7 +76,7 @@ public class DefaultOutageService implements OutageService {
     /**
      * <p>setDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.OutageDao} object.
      */
     public void setDao(OutageDao dao) {
         this.m_dao = dao;

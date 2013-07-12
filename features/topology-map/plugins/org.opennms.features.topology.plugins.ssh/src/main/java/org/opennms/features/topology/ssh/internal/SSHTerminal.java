@@ -25,10 +25,9 @@ import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.opennms.features.topology.ssh.internal.gwt.client.ui.VTerminal;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ClientWidget;
 
 /**
  * The SSHTerminal class is a custom Vaadin component that emulates VT100
@@ -36,7 +35,6 @@ import com.vaadin.ui.ClientWidget;
  * @author lmbell
  * @author pdgrenon
  */
-@ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
 
 
@@ -86,42 +84,46 @@ public class SSHTerminal extends AbstractComponent {
 		return closeClient;
 	}
 
+	@Override
+	protected SSHTerminalState getState() {
+	    return (SSHTerminalState) super.getState();
+	}
 	/** Paint (serialize) the component for the client. */
-	@Override
-	public synchronized void paintContent(PaintTarget target) throws PaintException {
-		// Superclass writes any common attributes in the paint target.
-		super.paintContent(target);
-
-		target.addVariable(this, "fromSSH", dumpContents);
-		target.addVariable(this, "update", forceUpdate);
-		target.addVariable(this, "focus", focus);
-		target.addVariable(this, "closeClient", closeClient);
-		forceUpdate = false;
-	}
-
-	/** Deserialize changes received from client. */
-	@Override
-	public synchronized void changeVariables(Object source, Map<String,Object> variables) {
-		if (variables.containsKey("isClosed")) {
-			isClosed = ((Boolean)variables.get("isClosed"));
-			if (isClosed){
-				channel.close(true);
-				getApplication().getMainWindow().removeWindow(sshWindow);
-				requestRepaint();
-			}
-		}
-		if (variables.containsKey("toSSH") && !isReadOnly()) {
-			final String bytesToSSH = (String) variables.get("toSSH");
-			try {
-				dumpContents = st.handle(bytesToSSH, true);
-				requestRepaint();
-			} catch (IOException e) { e.printStackTrace(); }
-		}
-		if (variables.containsKey("isFocused")) {
-			boolean isFocused = ((Boolean)variables.get("isFocused"));
-			focus = !isFocused;
-		}
-	}
+//	@Override
+//	public synchronized void paintContent(PaintTarget target) throws PaintException {
+//		// Superclass writes any common attributes in the paint target.
+//		super.paintContent(target);
+//
+//		target.addVariable(this, "fromSSH", dumpContents);
+//		target.addVariable(this, "update", forceUpdate);
+//		target.addVariable(this, "focus", focus);
+//		target.addVariable(this, "closeClient", closeClient);
+//		forceUpdate = false;
+//	}
+//
+//	/** Deserialize changes received from client. */
+//	@Override
+//	public synchronized void changeVariables(Object source, Map<String,Object> variables) {
+//		if (variables.containsKey("isClosed")) {
+//			isClosed = ((Boolean)variables.get("isClosed"));
+//			if (isClosed){
+//				channel.close(true);
+//				getApplication().getMainWindow().removeWindow(sshWindow);
+//				requestRepaint();
+//			}
+//		}
+//		if (variables.containsKey("toSSH") && !isReadOnly()) {
+//			final String bytesToSSH = (String) variables.get("toSSH");
+//			try {
+//				dumpContents = st.handle(bytesToSSH, true);
+//				requestRepaint();
+//			} catch (IOException e) { e.printStackTrace(); }
+//		}
+//		if (variables.containsKey("isFocused")) {
+//			boolean isFocused = ((Boolean)variables.get("isFocused"));
+//			focus = !isFocused;
+//		}
+//	}
 	
 
 	/**

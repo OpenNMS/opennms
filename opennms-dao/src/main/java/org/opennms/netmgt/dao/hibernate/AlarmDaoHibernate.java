@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 

@@ -686,7 +686,7 @@ public class MapPropertiesFactory {
             boolean flashBool = false;
             if(flash!=null && flash.equalsIgnoreCase("false"))
                 flashBool=false;			
-            LOG.debug("found linkstatus " + linkStatuses[i] + " with color=" + color + ", flash=" + flashBool+ ". Adding it.");
+            LOG.debug("found linkstatus {} with color={}, flash={}. Adding it.", linkStatuses[i], color, flashBool);
             LinkStatus ls = new LinkStatus(linkStatuses[i],color,flashBool);
             linkStatusesMap.put(linkStatuses[i], ls);
         }		

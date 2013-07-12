@@ -246,17 +246,17 @@ public final class RTCManager extends AbstractServiceDaemon {
      *            the task that is finishing.
      */
     private synchronized void timerTaskComplete(RTCTimerTask tt) {
-        LOG.debug("TimerTask \'" + tt.getID() + "\' complete, status: " + getStatus());
+        LOG.debug("TimerTask \'{}\' complete, status: {}", tt.getID(), getStatus());
 
         if (tt.getID().equals(LOWT_TASK)) {
             // cancel user timer
             boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: " + USERTIMER + " cancelled: " + ret);
+            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER, ret);
 
             // send out the info and reset both timers
             if (m_highTtask != null) {
                 ret = m_highTtask.cancel();
-                LOG.debug("timerTaskComplete: " + HIGHT_TASK + " cancelled: " + ret);
+                LOG.debug("timerTaskComplete: {} cancelled: {}", HIGHT_TASK, ret);
 
                 m_highTtask = null;
             }
@@ -271,16 +271,16 @@ public final class RTCManager extends AbstractServiceDaemon {
 
             // reset the user timer
             m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("timerTaskComplete: " + USERTIMER + " scheduled");
+            LOG.debug("timerTaskComplete: {} scheduled", USERTIMER);
         } else if (tt.getID().equals(HIGHT_TASK)) {
             // cancel user timer
             boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: " + USERTIMER + " cancelled: " + ret);
+            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER, ret);
 
             // send the category information out reset all timers
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("timerTaskComplete: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("timerTaskComplete: {} cancelled: {}", LOWT_TASK, ret);
 
                 m_lowTtask = null;
             }
@@ -295,7 +295,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
             // reset the user timer
             m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("timerTaskComplete: " + USERTIMER + " scheduled");
+            LOG.debug("timerTaskComplete: {} scheduled", USERTIMER);
         } else if (tt.getID().equals(USERTIMER)) {
             // send if not pasued
             if (isRunning()) {
@@ -323,7 +323,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
         // cancel user timer
         boolean ret = m_userTask.cancel();
-        LOG.debug("checkTimerTasksOnEventReceipt: " + USERTIMER + " cancelled: " + ret);
+        LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", USERTIMER, ret);
 
         // Check the counter to see if timers need to be started afresh
         if (m_counter == -1) {
@@ -338,7 +338,7 @@ public final class RTCManager extends AbstractServiceDaemon {
                 try {
 
                     m_timer.schedule((m_lowTtask = new RTCTimerTask(LOWT_TASK)), m_lowThresholdInterval);
-                    LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " scheduled");
+                    LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", LOWT_TASK);
                 } catch (IllegalStateException isE) {
                     LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
                 }
@@ -348,7 +348,7 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (m_highTtask == null) {
                 try {
                     m_timer.schedule((m_highTtask = new RTCTimerTask(HIGHT_TASK)), m_highThresholdInterval);
-                    LOG.debug("checkTimerTasksOnEventReceipt: " + HIGHT_TASK + " scheduled");
+                    LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", HIGHT_TASK);
                 } catch (IllegalStateException isE) {
                     LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
                 }
@@ -361,14 +361,14 @@ public final class RTCManager extends AbstractServiceDaemon {
             // send the category information out and reset all timers
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK, ret);
 
                 m_lowTtask = null;
             }
 
             if (m_highTtask != null) {
                 ret = m_highTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + HIGHT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", HIGHT_TASK, ret);
                 m_highTtask = null;
             }
 
@@ -385,13 +385,13 @@ public final class RTCManager extends AbstractServiceDaemon {
             // went off
             if (m_lowTtask != null) {
                 ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " cancelled: " + ret);
+                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK, ret);
                 m_lowTtask = null;
             }
 
             try {
                 m_timer.schedule((m_lowTtask = new RTCTimerTask(LOWT_TASK)), m_lowThresholdInterval);
-                LOG.debug("checkTimerTasksOnEventReceipt: " + LOWT_TASK + " scheduled");
+                LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", LOWT_TASK);
             } catch (IllegalStateException isE) {
                 LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
             }
@@ -409,7 +409,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
         try {
             m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("resetUserTimer: " + USERTIMER + " scheduled");
+            LOG.debug("resetUserTimer: {} scheduled", USERTIMER);
         } catch (IllegalStateException isE) {
             LOG.error("dataReceived: Illegal State adding new RTCTimerTask", isE);
         }

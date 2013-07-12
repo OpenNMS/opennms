@@ -30,8 +30,6 @@ package org.opennms.features.topology.ssh.internal.testframework;
 
 import com.google.gwt.event.dom.client.KeyDownEvent;
 
-
-
 public class SudoKeyDownEvent extends KeyDownEvent {
     private int keyCode;
     private boolean isCtrlDown;

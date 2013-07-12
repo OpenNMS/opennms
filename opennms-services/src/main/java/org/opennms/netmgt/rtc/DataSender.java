@@ -235,7 +235,7 @@ final class DataSender implements Fiber {
         try {
             postInfo = new HttpPostInfo(url, catlabel, user, passwd);
         } catch (MalformedURLException mue) {
-            LOG.warn("ERROR subscribing: Invalid URL \'" + url + "\' - Data WILL NOT be SENT to the specified url");
+            LOG.warn("ERROR subscribing: Invalid URL '{}' - Data WILL NOT be SENT to the specified url", url);
             return;
         }
 
@@ -247,9 +247,9 @@ final class DataSender implements Fiber {
         }
         
         if (!urlList.add(postInfo)) {
-            LOG.debug("Already subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user + " - IGNORING LATEST subscribe event");
+            LOG.debug("Already subscribed to URL: {}\tcatlabel: {}\tuser: {} - IGNORING LATEST subscribe event", url, catlabel, user);
         } else {
-            LOG.debug("Subscribed to URL: " + url + "\tcatlabel: " + catlabel + "\tuser:" + user);
+            LOG.debug("Subscribed to URL: {}\tcatlabel: {}\tuser:{}", url, catlabel, user);
         }
 
         // send data
@@ -273,7 +273,7 @@ final class DataSender implements Fiber {
             while ((bytesRead = inp.read(tmp)) != -1) {
                 if (LOG.isDebugEnabled()) {
                     if (bytesRead > 0)
-                        LOG.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
+                        LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
                 }
             }
 
@@ -282,16 +282,16 @@ final class DataSender implements Fiber {
 
             LOG.debug("DataSender: posted data for category: {}", catlabel);
         } catch (IOException ioE) {
-            LOG.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", ioE);
+            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, ioE);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (java.lang.OutOfMemoryError oe) {
-            LOG.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", oe);
+            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, oe);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (RuntimeException e) {
-            LOG.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", e);
+            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, e);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } catch (Throwable t) {
-            LOG.warn("DataSender:  Unable to send category \'" + catlabel + "\' to URL \'" + url + "\': ", t);
+            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } finally {
             IOUtils.closeQuietly(inp);
@@ -348,18 +348,18 @@ final class DataSender implements Fiber {
             // get label
             String catlabel = cat.getLabel();
 
-            LOG.debug("DataSender:sendData(): Category \'", catlabel);
+            LOG.debug("DataSender:sendData(): Category '{}'", catlabel);
 
             // get the post info for this category
             Set<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
             if (urlList == null || urlList.size() <= 0) {
                 // a category that no one is listening for?
-                LOG.debug("DataSender: category \'" + catlabel + "\' has no listeners");
+                LOG.debug("DataSender: category '{}' has no listeners", catlabel);
 
                 continue;
             }
 
-            LOG.debug("DataSender: category \'" + catlabel + "\' has listeners - converting to xml...");
+            LOG.debug("DataSender: category '{}' has listeners - converting to xml...", catlabel);
 
             // Run at a higher than normal priority since we do have to send
             // the update on time
@@ -369,11 +369,11 @@ final class DataSender implements Fiber {
             try {
                 euidata = m_euiMapper.convertToEuiLevelXML(cat);
             } catch (java.lang.OutOfMemoryError oe) {
-                LOG.warn("DataSender: unable to convert data to xml for category: " + catlabel, oe);
+                LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, oe);
                 setCurrentThreadPriority(Thread.NORM_PRIORITY);
                 continue;
             } catch (Throwable t) {
-                LOG.warn("DataSender: unable to convert data to xml for category: " + catlabel, t);
+                LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
                 setCurrentThreadPriority(Thread.NORM_PRIORITY);
             }
 
@@ -400,24 +400,24 @@ final class DataSender implements Fiber {
                         while ((bytesRead = inp.read(tmp)) != -1) {
                             if (LOG.isDebugEnabled()) {
                                 if (bytesRead > 0)
-                                    LOG.debug("DataSender: post response: " + new String(tmp, 0, bytesRead));
+                                    LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
                             }
                         }
 
                         postInfo.clearErrors();
 
                     } catch (IOException e) {
-                        LOG.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, e.getClass().getName(), e.getMessage(), e);
                         postInfo.incrementErrors();
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (java.lang.OutOfMemoryError e) {
-                        LOG.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, e.getClass().getName(), e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (RuntimeException e) {
-                        LOG.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
+                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, e.getClass().getName(), e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (Throwable t) {
-                        LOG.warn("DataSender: unable to send data for category: " + catlabel + " due to " + t.getClass().getName() + ": " + t.getMessage(), t);
+                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, t.getClass().getName(), t.getMessage(), t);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {
                         IOUtils.closeQuietly(inp);
@@ -429,7 +429,7 @@ final class DataSender implements Fiber {
                         // unsubscribe the URL
                         urlIter.remove();
 
-                        LOG.warn("URL " + postInfo.getURLString() + " UNSUBSCRIBED due to reaching error limit " + postInfo.getErrors());
+                        LOG.warn("URL {} UNSUBSCRIBED due to reaching error limit {}", postInfo.getURLString(), postInfo.getErrors());
                     }
                 }
             }

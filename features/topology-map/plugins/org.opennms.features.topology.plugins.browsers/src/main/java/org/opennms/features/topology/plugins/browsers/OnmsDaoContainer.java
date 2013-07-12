@@ -28,21 +28,32 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.apache.commons.lang.UnhandledException;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
-import java.util.*;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, SelectionNotifier, SelectionListener {
 
@@ -243,7 +254,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	}
 
 	@Override
-	public Property getContainerProperty(Object itemId, Object propertyId) {
+	public Property<?> getContainerProperty(Object itemId, Object propertyId) {
 		Item item = getItem(itemId);
 		if (item == null) {
 			return null;
@@ -396,11 +407,21 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
-		m_itemSetChangeListeners.add(listener);
+		addItemSetChangeListener(listener);
 	}
 
 	@Override
 	public void removeListener(ItemSetChangeListener listener) {
+		removeItemSetChangeListener(listener);
+	}
+
+	@Override
+	public void addItemSetChangeListener(ItemSetChangeListener listener) {
+		m_itemSetChangeListeners.add(listener);
+	}
+
+	@Override
+	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
 		m_itemSetChangeListeners.remove(listener);
 	}
 
@@ -450,10 +471,17 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     @Override
     public Collection<?> getItemIds() {
-        int overallSize = size();
+        return getItemIds(0, size());
+    }
+
+    @Override
+    public List<?> getItemIds(int startIndex, int numberOfItems) {
+        int endIndex = startIndex + numberOfItems;
+        if (endIndex >= size()) endIndex = size() - 1;
         Page page = new Page(1000, size);  // only get 10000 items at once
+        page.offset = startIndex;
         List<K> itemIds = new ArrayList<K>();
-        for (int i=0; i<overallSize; i+=page.length) {
+        for (int i=startIndex; i<endIndex; i+=page.length) {
             List<T> tmpItems = m_dao.findMatching(getCriteria(page, false));
             for (T eachItem : tmpItems) {
                 itemIds.add(getId(eachItem));

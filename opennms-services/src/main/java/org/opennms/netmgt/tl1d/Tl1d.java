@@ -39,7 +39,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.Tl1ConfigurationDao;
+import org.opennms.netmgt.dao.api.Tl1ConfigurationDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -108,7 +108,7 @@ public class Tl1d extends AbstractServiceDaemon {
 
                 startClients();
 
-                LOG.debug("handleReloadConfigurationEvent: "+m_tl1Clients.size()+" defined.");
+                LOG.debug("handleReloadConfigurationEvent: {} defined.", m_tl1Clients.size());
                 LOG.info("handleReloadConfigurationEvent: completed.");
                 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
@@ -332,7 +332,7 @@ public class Tl1d extends AbstractServiceDaemon {
     /**
      * <p>setConfigurationDao</p>
      *
-     * @param configurationDao a {@link org.opennms.netmgt.dao.Tl1ConfigurationDao} object.
+     * @param configurationDao a {@link org.opennms.netmgt.dao.api.Tl1ConfigurationDao} object.
      */
     public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
         m_configurationDao = configurationDao;

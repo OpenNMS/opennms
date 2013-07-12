@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -102,6 +102,10 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                nodeId, ipAddr, ifIndex, serviceId);
     }
 
+    public List<OnmsMonitoredService> findByNodeIdAndIpAddr(long nodeId, String ipAddr) {
+        return find("from OnmsMonitoredService as svc where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ?", nodeId, ipAddr);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public List<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
@@ -138,11 +142,6 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         return application.getMonitoredServices();
     }
     
-    public int getCountOfServicesOnOtherInterfaces(long nodeId, String ipAddr) {
-        String query = "select COUNT(*) from OnmsMonitoredService as svc where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress != ? and svc.status != 'D'";
-        return queryInt(query, nodeId, ipAddr);
-    }
-    
     public int markServiceDeleted(long nodeId, String ipAddr, String service) {
         //        "UPDATE ifservices SET status='D' "
         //                + "FROM service "
@@ -150,17 +149,16 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         //                + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
         String query = "update svc set svc.status = 'D' " +
         		"from OnmsMonitoredService as svc, OnmsServiceType as svcType " +
-        		"where svcType.id = svc.serviceType and  svc.ipInterface.node.id = ? and svc.ipInterface.ipAddres = ? and svcType.name = ?";
+        		"where svcType.id = svc.serviceType and  svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svcType.name = ?";
         return queryInt(query, nodeId, ipAddr, service);
     }
     
     public List<OnmsMonitoredService> getServiceStatus(String ipAddr, String service) {
-        // SELECT nodeid FROM ifservices, service 
+        // SELECT * FROM ifservices, service 
         // WHERE ifservices.serviceid = service.serviceid 
         // AND ipaddr = ? AND servicename = ? AND status !='D'
-        String query = "select svc.ipInterface.node.id " +
-                "from OnmsMonitoredService as svc, OnmsServiceType as svcType " +
-                "where svcType.id = svc.serviceType and svc.ipInterface.ipAddres = ? and svcType.name = ? and svc.status != 'D'";
+        String query = "from OnmsMonitoredService as svc, OnmsServiceType as svcType " +
+                "where svcType.id = svc.serviceType and svc.ipInterface.ipAddress = ? and svcType.name = ? and svc.status != 'D'";
         return find(query, ipAddr, service);
     }
 }

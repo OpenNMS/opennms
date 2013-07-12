@@ -476,7 +476,7 @@ public final class EventUtil {
 					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
-					LOG.info("ifAlias Unavailable for {}:" + event.getInterface(), sqlE, event.getNodeid());
+					LOG.info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), sqlE);
 				}
 			}
 			if (ifAlias != null)

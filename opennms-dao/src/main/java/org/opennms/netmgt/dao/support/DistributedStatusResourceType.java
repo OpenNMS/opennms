@@ -38,8 +38,8 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -63,8 +63,8 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for DistributedStatusResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public DistributedStatusResourceType(ResourceDao resourceDao, LocationMonitorDao locationMonitorDao) {
         m_resourceDao = resourceDao;
@@ -301,7 +301,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
 
         @Override
         public Set<OnmsAttribute> load() {
-            LOG.debug("lazy-loading attributes for distributed status resource " + (m_definitionName + "-" + m_locationMonitorId + "/" + m_intf));
+            LOG.debug("lazy-loading attributes for distributed status resource {}-{}/{}", m_definitionName, m_locationMonitorId, m_intf);
             
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_locationMonitorId, m_intf));
         }

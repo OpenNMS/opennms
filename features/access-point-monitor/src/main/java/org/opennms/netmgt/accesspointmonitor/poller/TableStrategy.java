@@ -82,22 +82,22 @@ public class TableStrategy implements AccessPointPoller {
 
                 String physAddr = getPhysAddrFromValue(value);
 
-                LOG.debug("AP at value '" + value.toHexString() + "' with MAC '" + physAddr + "' is considered to be ONLINE on controller '" + m_iface.getIpAddress() + "'");
-                OnmsAccessPoint ap = m_accessPointDao.findByPhysAddr(physAddr);
+                LOG.debug("AP at value '{}' with MAC '{}' is considered to be ONLINE on controller '{}'", value.toHexString(), physAddr, m_iface.getIpAddress());
+                OnmsAccessPoint ap = m_accessPointDao.get(physAddr);
                 if (ap != null) {
                     if (ap.getPollingPackage().compareToIgnoreCase(getPackage().getName()) == 0) {
                         // Save the controller's IP address
                         ap.setControllerIpAddress(ipaddr);
                         apsUp.add(ap);
                     } else {
-                        LOG.info("AP with MAC '" + physAddr + "' is in a different package.");
+                        LOG.info("AP with MAC '{}' is in a different package.", physAddr);
                     }
                 } else {
-                    LOG.info("No matching AP in database for value '" + value.toHexString() + "'.");
+                    LOG.info("No matching AP in database for value '{}'.", value.toHexString());
                 }
             }
         } catch (InterruptedException e) {
-            LOG.error("Interrupted while polling " + hostAddress, e);
+            LOG.error("Interrupted while polling {}", hostAddress, e);
         }
 
         return apsUp;

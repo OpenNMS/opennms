@@ -199,7 +199,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
         } catch (Throwable exception) {
-            LOG.error("onEvent: reload config failed:"+e, exception);
+            LOG.error("onEvent: reload config failed: {}", e, exception);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
             ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -208,7 +208,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             m_eventMgr.sendNow(ebldr.getEvent());
         }
         
-        LOG.info("onEvent: reload configuration: reload configuration contains "+m_config.getUEIList().size()+" UEI specs.");
+        LOG.info("onEvent: reload configuration: reload configuration contains {} UEI specs.", m_config.getUEIList().size());
     }
 
     private boolean isReloadConfigEvent(Event event) {

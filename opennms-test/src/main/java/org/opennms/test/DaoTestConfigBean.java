@@ -36,7 +36,6 @@ import java.util.Properties;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * Support class to help with configuration that needs to happen in
@@ -85,7 +84,7 @@ public class DaoTestConfigBean implements InitializingBean {
         Properties substitutions = new Properties();
         substitutions.setProperty("install.database.driver", "org.postgres.Driver");
         substitutions.setProperty("install.share.dir", "target/test/share");
-        substitutions.setProperty("install.webapplogs.dir", "target/test/logs/webapp");
+        substitutions.setProperty("install.logs.dir", "target/test/logs");
         for (Map.Entry<Object, Object> entry : opennmsProperties.entrySet()) {
             //System.err.println((String)entry.getKey() + " -> " + PropertiesUtils.substitute((String)entry.getValue(), substitutions));
             System.setProperty((String)entry.getKey(), PropertiesUtils.substitute((String)entry.getValue(), substitutions));

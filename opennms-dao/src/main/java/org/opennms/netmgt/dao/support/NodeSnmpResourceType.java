@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -48,7 +48,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for NodeSnmpResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public NodeSnmpResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;

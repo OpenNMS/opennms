@@ -159,11 +159,11 @@ public abstract class ChartUtils {
             }
             plot.setDomainAxis(subLabels);
         } catch (InstantiationException e) {
-            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         } catch (IllegalAccessException e) {
-            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         } catch (ClassNotFoundException e) {
-            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         }
     }
 
@@ -184,11 +184,11 @@ public abstract class ChartUtils {
             try {
                 seriesColors = (CustomSeriesColors) Class.forName(chartConfig.getSeriesColorClass()).newInstance();
             } catch (InstantiationException e) {
-                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             } catch (IllegalAccessException e) {
-                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             } catch (ClassNotFoundException e) {
-                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             }
         }
 

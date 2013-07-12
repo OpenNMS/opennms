@@ -45,9 +45,9 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -125,7 +125,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(final NodeDao nodeDao) {
         m_writeLock.lock();
@@ -139,7 +139,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(final CategoryDao categoryDao) {
         m_writeLock.lock();
@@ -153,7 +153,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;

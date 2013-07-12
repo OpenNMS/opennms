@@ -139,7 +139,7 @@ public class DefaultQueryManager implements QueryManager {
                 return rs.getInt(1) > 0;
             }
 
-            LOG.debug(whichEvent + nodeId + "/" + ipAddr + "/" + serviceName + " active");
+            LOG.debug("{} {}/{}/{} active", whichEvent, nodeId, ipAddr, serviceName);
         } catch (SQLException sqlE) {
             LOG.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
         } finally {
@@ -196,7 +196,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeid = rs.getInt(1);
-                LOG.debug("getNodeLabel: ipaddr=" + ipaddr + " nodeid=" + nodeid);
+                LOG.debug("getNodeLabel: ipaddr={} nodeid={}", ipaddr, nodeid);
             }
         } finally {
             d.cleanUp();
@@ -225,7 +225,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeLabel = (String) rs.getString("nodelabel");
-                LOG.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
+                LOG.debug("getNodeLabel: nodeid={} nodelabel={}", nodeId, nodeLabel);
             }
         } finally {
             d.cleanUp();
@@ -274,7 +274,7 @@ public class DefaultQueryManager implements QueryManager {
         java.sql.Connection dbConn = getConnection();
         d.watch(dbConn);
 
-        LOG.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
+        LOG.debug("scheduleExistingInterfaces: dbConn = {}, svcName = {}", dbConn, svcName);
 
         PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_INTERFACES);
         d.watch(stmt);
@@ -301,13 +301,13 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
-        LOG.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
+        LOG.debug("getting last known status for address: {} service: {}", ipAddr, svcName);
 
         Date svcLostDate = null;
         // Convert service name to service identifier
         //
         if (serviceId < 0) {
-            LOG.warn("Failed to retrieve service identifier for interface " + ipAddr + " and service '" + svcName + "'");
+            LOG.warn("Failed to retrieve service identifier for interface {} and service '{}'", ipAddr, svcName);
             return svcLostDate;
         }
 
@@ -352,7 +352,7 @@ public class DefaultQueryManager implements QueryManager {
                 lostDate = new Timestamp(currentDate.getTime());
             }
         } catch (SQLException sqlE) {
-            LOG.error("SQL exception while retrieving last known service status for " + ipAddr + "/" + svcName);
+            LOG.error("SQL exception while retrieving last known service status for {}/{}", ipAddr, svcName);
         } finally {
             d.cleanUp();
         }
@@ -401,7 +401,7 @@ public class DefaultQueryManager implements QueryManager {
         
         while (attempt < 2 && notUpdated) {
             try {
-                LOG.info("openOutage: opening outage for "+nodeId+":"+ipAddr+":"+svcName+" with cause "+dbId+":"+time);
+                LOG.info("openOutage: opening outage for {}:{}:{} with cause {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 
                 SingleResultQuerier srq = new SingleResultQuerier(getDataSource(), outageIdSQL);
                 srq.execute();
@@ -426,9 +426,9 @@ public class DefaultQueryManager implements QueryManager {
                 notUpdated = false;
             } catch (Throwable e) {
                 if (attempt > 1) {
-                    LOG.error("openOutage: Second and final attempt failed opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.error("openOutage: Second and final attempt failed opening outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 } else {
-                    LOG.info("openOutage: First attempt failed opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.info("openOutage: First attempt failed opening outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 }
             }
             attempt++;
@@ -443,7 +443,7 @@ public class DefaultQueryManager implements QueryManager {
         
         while (attempt < 2 && notUpdated) {
             try {
-                LOG.info("resolving outage for "+nodeId+":"+ipAddr+":"+svcName+" with resolution "+dbId+":"+time);
+                LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 int serviceId = getServiceID(svcName);
                 
                 String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
@@ -461,9 +461,9 @@ public class DefaultQueryManager implements QueryManager {
                 notUpdated = false;
             } catch (Throwable e) {
                 if (attempt > 1) {
-                    LOG.error("resolveOutage: Second and final attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.error("resolveOutage: Second and final attempt failed resolving outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 } else {
-                    LOG.info("resolveOutage: first attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.info("resolveOutage: first attempt failed resolving outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 }
             }
             attempt++;
@@ -474,7 +474,7 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
-            LOG.info("reparenting outages for "+oldNodeId+":"+ipAddr+" to new node "+newNodeId);
+            LOG.info("reparenting outages for {}:{} to new node {}", oldNodeId, ipAddr, newNodeId);
             String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
             
             Object[] values = {
@@ -486,7 +486,7 @@ public class DefaultQueryManager implements QueryManager {
             Updater updater = new Updater(getDataSource(), sql);
             updater.execute(values);
         } catch (Throwable e) {
-            LOG.error(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
+            LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
         }
         
     }

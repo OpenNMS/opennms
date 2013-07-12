@@ -37,8 +37,8 @@ import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.RrdRepository;
@@ -116,7 +116,7 @@ final class CollectableService implements ReadyRunnable {
      * @param iface The interface on which to collect data
      * @param spec
      *            The package containing parms for this collectable service.
-     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
@@ -204,7 +204,7 @@ final class CollectableService implements ReadyRunnable {
 	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
 	 * Should be called when the collect config has been reloaded.
 	 *
-	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
 	 */
 	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);
@@ -267,9 +267,9 @@ final class CollectableService implements ReadyRunnable {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(builder.getEvent());
 
-            LOG.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
+            LOG.debug("sendEvent: Sent event {} for {}/{}/{}", uei, m_nodeId, getHostAddress(), getServiceName());
         } catch (Throwable e) {
-            LOG.error("Failed to send the event " + uei + " for interface " + getHostAddress(), e);
+            LOG.error("Failed to send the event {} for interface {}", uei, getHostAddress(), e);
         }
     }
 
@@ -362,7 +362,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+		LOG.info("run: starting new collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -382,7 +382,7 @@ final class CollectableService implements ReadyRunnable {
                          */
                         if (m_thresholdVisitor != null) {
                             if (m_thresholdVisitor.isNodeInOutage()) {
-                                LOG.info("run: the threshold processing will be skipped because the node " + m_nodeId + " is on a scheduled outage.");
+                                LOG.info("run: the threshold processing will be skipped because the node {} is on a scheduled outage.", m_nodeId);
                             } else if (m_thresholdVisitor.hasThresholds()) {
                                 result.visit(m_thresholdVisitor);
                             }
@@ -393,13 +393,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
                     throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
 		}
-		LOG.info("run: finished collection for " + getHostAddress() + "/" + m_spec.getServiceName() + "/" + m_spec.getPackageName());
+		LOG.info("run: finished collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 	}
 
 	/**
@@ -422,7 +422,7 @@ final class CollectableService implements ReadyRunnable {
                 // Deletion flag is set, simply return without polling
                 // or rescheduling this collector.
                 //
-                LOG.debug("Collector for  " + getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
+                LOG.debug("Collector for  {} is marked for deletion...skipping collection, will not reschedule.", getHostAddress());
 
                 return ABORT_COLLECTION;
             }
@@ -438,11 +438,11 @@ final class CollectableService implements ReadyRunnable {
 
                 try {
                     reinitialize(newIface);
-                    LOG.debug("Completed reinitializing "+this.getServiceName()+" collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing {} collector for {}/{}", this.getServiceName(), getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to intialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    LOG.error("Uncaught exception, failed to intialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 
@@ -484,7 +484,7 @@ final class CollectableService implements ReadyRunnable {
 
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
-                        LOG.debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
+                        LOG.debug("Attempting to rename {} to {}", oldNodeDir, newNodeDir);
                         oldNodeDir.renameTo(newNodeDir);
                         LOG.debug("Rename successful!!");
                     } catch (SecurityException se) {
@@ -508,13 +508,13 @@ final class CollectableService implements ReadyRunnable {
                             File srcFile = new File(oldNodeDir.toString() + File.separator + filesToMove[i]);
                             File destFile = new File(newNodeDir.toString() + File.separator + filesToMove[i]);
                             try {
-                                LOG.debug("Attempting to move " + srcFile + " to " + destFile);
+                                LOG.debug("Attempting to move {} to {}", srcFile, destFile);
                                 srcFile.renameTo(destFile);
                             } catch (SecurityException se) {
                                 LOG.error("Insufficient authority to move RRD files.", se);
                                 break;
                             } catch (Throwable t) {
-                                LOG.warn("Unexpected exception while attempting to move " + srcFile + " to " + destFile, t);
+                                LOG.warn("Unexpected exception while attempting to move {} to {}", srcFile, destFile, t);
                             }
                         }
                     }
@@ -537,13 +537,13 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    LOG.debug("Reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    LOG.debug("Completed reinitializing collector for " + getHostAddress() +"/"+ m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to initialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    LOG.error("Uncaught exception, failed to initialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 

@@ -31,7 +31,8 @@ package org.opennms.netmgt.eventd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.EventdServiceManager;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +76,15 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            LOG.debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
             OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
             if (serviceType == null) {
-                LOG.debug("Did not find entry for '" + serviceName + "' in database.");
+                LOG.debug("Did not find entry for '{}' in database.", serviceName);
                 return -1;
             }
             
-            LOG.debug("Found entry for '" + serviceName + "' (ID " + serviceType.getId() + " in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceType.getId());
 
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
             
@@ -119,7 +120,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>getServiceTypeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
@@ -128,7 +129,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;

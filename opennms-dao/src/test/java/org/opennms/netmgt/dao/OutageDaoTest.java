@@ -45,6 +45,13 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -62,6 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -74,7 +82,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -110,8 +119,13 @@ public class OutageDaoTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                OnmsServiceType t = new OnmsServiceType("ICMP");
+                m_serviceTypeDao.save(t);
+            }
+        });
     }
 
     @Test
@@ -146,14 +160,13 @@ public class OutageDaoTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetMatchingOutages() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-                return null;
             }
         });
 
@@ -163,14 +176,13 @@ public class OutageDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 String[] svcs = new String[] { "ICMP" };
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(svcs));
                 Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
                 assertEquals("outage count", 1, outages.size());
-                return null;
             }
         });
     }
@@ -178,14 +190,13 @@ public class OutageDaoTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetMatchingOutagesWithEmptyServiceList() {
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-                return null;
             }
         });
 
@@ -195,13 +206,12 @@ public class OutageDaoTest implements InitializingBean {
          * otherwise.
          */
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
-            public Object doInTransaction(TransactionStatus status) {
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
                 Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
                 assertEquals(1, outages.size());
-                return null;
             }
         });
     }

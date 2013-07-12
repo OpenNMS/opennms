@@ -44,7 +44,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Fragment-Host>com.vaadin;bundle-version=${vaadinVersion}</Fragment-Host>
+                        <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>

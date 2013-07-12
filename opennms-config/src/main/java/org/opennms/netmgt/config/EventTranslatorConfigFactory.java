@@ -747,7 +747,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			Pattern p = Pattern.compile(m_val.getMatches());
 			Matcher m = p.matcher(attributeValue);
 
-			LOG.debug("AttributeValueSpec.matches: Event attributeValue: " + attributeValue + " " + (m.matches()? "matches" : "doesn't match") + " pattern: " + m_val.getMatches());
+			LOG.debug("AttributeValueSpec.matches: Event attributeValue: {} {} pattern: {}", attributeValue, (m.matches()? "matches" : "doesn't match"), m_val.getMatches());
             if (m.matches()) {
                 return true;
             } else {

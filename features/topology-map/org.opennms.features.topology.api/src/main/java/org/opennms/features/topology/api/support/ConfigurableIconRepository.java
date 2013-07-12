@@ -64,21 +64,19 @@ public class ConfigurableIconRepository implements IconRepository, ManagedServic
     }
     
 	@Override
-	@SuppressWarnings("unchecked")
-	public void updated(Dictionary properties) throws ConfigurationException {
+	public void updated(Dictionary<String,?> properties) throws ConfigurationException {
 		
 		while(true) {
 			Map<String, String> oldMap = m_iconMap.get();
 			
 			// create the new map using the old as defaults
 			Map<String, String> newMap = new HashMap<String, String>(oldMap);
-			for(Object key : Collections.list(properties.keys())) {
-				String k = (String)key;
+			for(String key : Collections.list(properties.keys())) {
 				String v = ((String)properties.get(key));
 				if (v == null || v.trim().isEmpty()) {
-					newMap.remove(k);
+					newMap.remove(key);
 				} else {
-					newMap.put(k, v.trim());
+					newMap.put(key, v.trim());
 				}
 			}
 

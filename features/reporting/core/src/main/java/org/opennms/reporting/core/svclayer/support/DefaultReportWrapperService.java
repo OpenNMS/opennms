@@ -170,7 +170,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                                                         deliveryOptions.getFormat(),
                                                         bout);
             } catch (ReportException reportException) {
-                LOG.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
             mailReport(deliveryOptions, out);
         } else {
@@ -196,7 +196,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                     mailReport(deliveryOptions, out);
                 }
             } catch (ReportException reportException) {
-                LOG.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
         }
 
@@ -224,6 +224,10 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             case SVG:
                 jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".pdf");
                 jm.setInputStreamContentType("application/pdf");
+                break;
+            case CSV:
+                jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".csv");
+                jm.setInputStreamContentType("text/csv");
                 break;
             default:
                 jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");

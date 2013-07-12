@@ -103,7 +103,9 @@
     <module>opennms-ackd</module>
     <module>opennms-alarms</module>
     <module>opennms-config-tester</module>
+    <module>opennms-dao-api</module>
     <module>opennms-dao</module>
+    <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -474,6 +476,44 @@
       						<ignore/>
       					</action>
       				</pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.codehaus.mojo</groupId>
+                      <artifactId>build-helper-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <goal>add-source</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.opennms.maven.plugins</groupId>
+                      <artifactId>castor-maven-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <!--
+                        <goal>add-test-source</goal>
+                        <goal>add-resource</goal>
+                        <goal>add-test-resource</goal>
+                        -->
+                        <goal>add-source</goal>
+                        <goal>generate</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
       			</pluginExecutions>
       		</lifecycleMappingMetadata>
       	</configuration>
@@ -839,8 +879,13 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
+    <!--
     <vaadinVersion>6.8.2</vaadinVersion>
-    <paxVaadinVersion>0.1.0-ONMS-20121218</paxVaadinVersion>
+    <vaadinVersion>7.0.0.rc2</vaadinVersion>
+    -->
+    <vaadinVersion>7.1.0</vaadinVersion>
+    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
+    <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 
@@ -1594,6 +1639,16 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-mock</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-base-assembly</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1997,6 +2052,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp4j-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>snmp4j-agent-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2226,6 +2287,11 @@
         <version>${commonsIoVersion}</version>
       </dependency>
       <dependency>
+        <groupId>commons-jxpath</groupId>
+        <artifactId>commons-jxpath</artifactId>
+        <version>1.3</version>
+      </dependency>
+      <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commonsLangVersion}</version>
@@ -2324,11 +2390,28 @@
         <artifactId>gwt-dev</artifactId>
         <version>${gwtVersion}</version>
       </dependency>
+      <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin</artifactId>
-        <version>${vaadinVersion}</version>
+	<artifactId>vaadin-server</artifactId>
+	<version>${vaadinVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client-compiled</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-themes</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.ops4j.pax.vaadin</groupId>
         <artifactId>service</artifactId>
@@ -2703,10 +2786,9 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
-        <groupId>org.opennms.smslib</groupId>
+        <groupId>org.smslib</groupId>
         <artifactId>smslib</artifactId>
-        <version>3.4.3-20100302</version>
+        <version>3.5.3</version>
       </dependency>
       <dependency>
         <groupId>org.rxtx</groupId>
@@ -2807,6 +2889,11 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+		<repository>
+      <id>smslib-snapshots</id>
+      <name>SMSLib Repository</name>
+      <url>http://smslib.org/maven2/v3/</url>
+		</repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

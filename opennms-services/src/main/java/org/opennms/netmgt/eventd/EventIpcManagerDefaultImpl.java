@@ -43,8 +43,8 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.netmgt.model.events.EventIpcBroadcaster;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventIpcManagerProxy;
@@ -160,7 +160,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     new RejectedExecutionHandler() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                            LOG.warn("Listener " + m_listener.getName() + "'s event queue is full, discarding event");
+                            LOG.warn("Listener {}'s event queue is full, discarding event", m_listener.getName());
                         }
                     }
             );
@@ -171,7 +171,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        LOG.info("run: calling onEvent on " + m_listener.getName() + " for event " + event.getUei() + " dbid " + event.getDbid() + " with time " + event.getTime());
+                        LOG.info("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(), event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map mdc = Logging.getCopyOfContextMap();
@@ -181,7 +181,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                             Logging.setContextMap(mdc);
                         }
                     } catch (Throwable t) {
-                        LOG.warn("run: an unexpected error occured during ListenerThread " + m_listener.getName() + " run: " + t, t);
+                        LOG.warn("run: an unexpected error occured during ListenerThread {}", m_listener.getName(), t);
                     }
                 }
             });
@@ -247,6 +247,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     public void sendNow(Log eventLog) {
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
+        LOG.debug("sending: {}", eventLog);
+
         try {
             m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
         } catch (RejectedExecutionException e) {
@@ -261,7 +263,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /** {@inheritDoc} */
     @Override
     public void broadcastNow(Event event) {
-        LOG.debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
+        LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
 
         if (m_listeners.isEmpty()) {
             LOG.debug("No listeners interested in all events");
@@ -273,7 +275,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
 
         if (event.getUei() == null) {
-            LOG.debug("Event ID " + event.getDbid() + " does not have a UEI, so skipping UEI matching");
+            LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
             return;
         }
 
@@ -304,7 +306,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
         
         if (sentToListeners.isEmpty()) {
-            LOG.debug("No listener interested in event ID " + event.getDbid() + ": " + event.getUei());
+            LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
         }
     }
 
@@ -343,11 +345,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         Assert.notNull(ueis, "ueilist argument cannot be null");
 
         if (ueis.isEmpty()) {
-            LOG.warn("Not adding event listener " + listener.getName() + " because the ueilist argument contains no entries");
+            LOG.warn("Not adding event listener {} because the ueilist argument contains no entries", listener.getName());
             return;
         }
 
-        LOG.debug("Adding event listener " + listener.getName() + " for UEIs: " + StringUtils.collectionToCommaDelimitedString(ueis));
+        LOG.debug("Adding event listener {} for UEIs: {}", listener.getName(), StringUtils.collectionToCommaDelimitedString(ueis));
 
         createListenerThread(listener);
 

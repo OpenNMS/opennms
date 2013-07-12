@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.surveillanceViews.Category;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
 import org.opennms.netmgt.config.surveillanceViews.RowDef;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -150,7 +150,7 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
