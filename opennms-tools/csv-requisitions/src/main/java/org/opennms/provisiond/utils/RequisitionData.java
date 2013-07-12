@@ -31,6 +31,8 @@
  */
 package org.opennms.provisiond.utils;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 
 class RequisitionData {
@@ -38,6 +40,7 @@ class RequisitionData {
 	private String m_primaryIp = null;
 	private String m_foreignSource = null;
 	private String m_foreignId = null;
+	private List<String> m_categories;
 
 	/**
 	 * @deprecated
@@ -106,6 +109,14 @@ class RequisitionData {
 
 	public String getForeignId() {
 		return m_foreignId;
+	}
+
+	public List<String> getCategories() {
+		return m_categories;
+	}
+	
+	public void setCategories(List<String> categories) {
+		m_categories = categories;
 	}
 	
 }

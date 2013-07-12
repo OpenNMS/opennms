@@ -169,8 +169,6 @@ public class CsvRequisitionParser {
 		pool = new PoolingConnection(connection);
 		distinctNodesStatement = pool.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
-
-		System.out.println("Executing query: "+distinctNodesQueryStr);
 		ResultSet distinctNodesResultSet = null;
 		int rowsFound = 0;
 		distinctNodesResultSet = distinctNodesStatement.executeQuery(distinctNodesQueryStr);
@@ -249,9 +247,29 @@ public class CsvRequisitionParser {
 			distinctNodesResultSet.updateRow();
 			System.out.println("Node updated.");
 
+			
+			String categoriesQueryString = "" +
+					"SELECT c.categoryname as \"categoryname\" " +
+					"  FROM categories c " +
+					"  JOIN category_node cn " +
+					"    ON cn.categoryid = c.categoryid " +
+					"  JOIN node n on n.nodeid = cn.nodeid " +
+					" WHERE n.nodeid = "+nodeId;
+			Statement categoriesStatement = pool.createStatement();
+			
+			ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
+			
+			List<String> categories = new ArrayList<String>();
+			while(crs.next()) {
+				categories.add(crs.getString("categoryname"));
+			}
+			
+			crs.close();
+			categoriesStatement.close();
 
 			RequisitionData rd = new RequisitionData(label, primaryIp, m_foreignSource, foreignId);
-
+			rd.setCategories(categories);
+			
 			System.out.println("Updating requistion...");
 			createOrUpdateRequistion(rd);
 			System.out.println("Requistion updated!  Next...\n");
@@ -469,13 +487,18 @@ public class CsvRequisitionParser {
 		RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
 		ric.add(iface);
 				
-		//add categories
+		//add categories requisition level categories
 		RequisitionCategoryCollection rcc = null;
 		if (m_categoryList != null && m_categoryList.size() > 0) {
 			rcc = new RequisitionCategoryCollection();
 			for (String cat : m_categoryList) {
 				rcc.add(new RequisitionCategory(cat));
 			}
+		}
+		
+		//add categories already on the node to the requisition
+		for (String cat : rd.getCategories()) {
+			rcc.add(new RequisitionCategory(cat));
 		}
 		
 		rn.setBuilding(foreignSource);
