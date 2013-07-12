@@ -51,6 +51,7 @@
        <feature>dashlet-alarms</feature>
        <feature>dashlet-summary</feature>
        <feature>dashlet-map</feature>
+       <feature>dashlet-image</feature>
    </feature>
 
 </features>

@@ -72,6 +72,7 @@ public class CsvRequisitionParser {
     private static final String PROPERTY_DB_PW = "db.password";
     private static final String PROPERTY_USE_NODE_ID = "use.nodeid";
     private static final String PROPERTY_CATEGORY_LIST = "category.list";
+    private static final String PROPERTY_CATEGORY_ADD_EXISTING = "category.add.existing";
     private static final String PROPERTY_SERVICE_LIST = "service.list";
     private static final String PROPERTY_ADD_ONLY = "add.only";
 	
@@ -88,6 +89,7 @@ public class CsvRequisitionParser {
     private static String m_dbPass = "opennms";
 	private static Boolean m_useNodeId = false;
 	private static List<String> m_categoryList = null;
+	private static Boolean m_categoryAddExisting = true;
 	private static List<String> m_serviceList = null;
 	private static Boolean m_addOnly = true;
 
@@ -249,28 +251,29 @@ public class CsvRequisitionParser {
 			distinctNodesResultSet.updateRow();
 			System.out.println("Node updated.");
 
-			
-			String categoriesQueryString = "" +
-					"SELECT c.categoryname as \"categoryname\" " +
-					"  FROM categories c " +
-					"  JOIN category_node cn " +
-					"    ON cn.categoryid = c.categoryid " +
-					"  JOIN node n on n.nodeid = cn.nodeid " +
-					" WHERE n.nodeid = "+nodeId;
-			Statement categoriesStatement = pool.createStatement();
-			
-			ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
-			
-			Set<String> categories = new LinkedHashSet<String>();
-			while(crs.next()) {
-				categories.add(crs.getString("categoryname"));
-			}
-			
-			crs.close();
-			categoriesStatement.close();
-
 			RequisitionData rd = new RequisitionData(label, primaryIp, m_foreignSource, foreignId);
-			rd.setCategories(categories);
+			
+			if (m_categoryAddExisting) {
+				String categoriesQueryString = "" +
+						"SELECT c.categoryname as \"categoryname\" " +
+						"  FROM categories c " +
+						"  JOIN category_node cn " +
+						"    ON cn.categoryid = c.categoryid " +
+						"  JOIN node n on n.nodeid = cn.nodeid " +
+						" WHERE n.nodeid = "+nodeId;
+				Statement categoriesStatement = pool.createStatement();
+
+				ResultSet crs = categoriesStatement.executeQuery(categoriesQueryString);
+
+				Set<String> categories = new LinkedHashSet<String>();
+				while(crs.next()) {
+					categories.add(crs.getString("categoryname"));
+				}
+
+				crs.close();
+				categoriesStatement.close();
+				rd.setCategories(categories);
+			}
 			
 			System.out.println("Updating requistion...");
 			createOrUpdateRequistion(rd);
@@ -344,6 +347,9 @@ public class CsvRequisitionParser {
 			m_addOnly = Boolean.valueOf(System.getProperty(PROPERTY_ADD_ONLY, m_addOnly.toString()));
 			System.out.println("\t"+PROPERTY_ADD_ONLY+":"+m_addOnly);
 			
+			m_categoryAddExisting = Boolean.valueOf(System.getProperty(PROPERTY_CATEGORY_ADD_EXISTING, m_categoryAddExisting.toString()));
+			System.out.println("\t"+PROPERTY_CATEGORY_ADD_EXISTING+":"+m_categoryAddExisting);
+			
 		}
 		
 		String fsRepo = System.getProperty(PROPERTY_FS_REPO_PATH, m_repoPath.getCanonicalPath());
@@ -401,6 +407,7 @@ public class CsvRequisitionParser {
 				"\t"+PROPERTY_IPLIKE_QUERY+": default:"+m_iplikeQuery+"\n" +
 				"\t"+PROPERTY_USE_NODE_ID+": default:"+m_useNodeId+"\n" +
 				"\t"+PROPERTY_CATEGORY_LIST+": default:null"+"\n" +
+				"\t"+PROPERTY_CATEGORY_ADD_EXISTING+":default:"+m_categoryAddExisting+"\n" +
 				"\t"+PROPERTY_SERVICE_LIST+": default:null"+"\n" +
 				"\t"+PROPERTY_ADD_ONLY+": default:"+m_addOnly+"\n" +
 				"\n" +
@@ -418,6 +425,7 @@ public class CsvRequisitionParser {
 				"\t\t-D"+PROPERTY_IPLIKE_QUERY+"=\"*.*.*.*\" \\\n" +
 				"\t\t-D"+PROPERTY_USE_NODE_ID+"=false \\\n" +
 				"\t\t-D"+PROPERTY_CATEGORY_LIST+"=Production,Router \\\n" +
+				"\t\t-D"+PROPERTY_CATEGORY_ADD_EXISTING+"=true \\\n" +
 				"\t\t-D"+PROPERTY_SERVICE_LIST+"=ICMP,SNMP \\\n" +
 				"\t\t-D"+PROPERTY_ADD_ONLY+"=false \\\n" +
 				"\t\t-jar opennms-csv-requisition-1.13.0-SNAPSHOT-jar-with-dependencies.jar" +
@@ -499,8 +507,10 @@ public class CsvRequisitionParser {
 		}
 		
 		//add categories already on the node to the requisition
-		for (String cat : rd.getCategories()) {
-			rcc.add(new RequisitionCategory(cat));
+		if (rd.getCategories() != null) {
+			for (String cat : rd.getCategories()) {
+				rcc.add(new RequisitionCategory(cat));
+			}
 		}
 		
 		rn.setBuilding(foreignSource);

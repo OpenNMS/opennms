@@ -36,7 +36,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  *
  * @author Christian Pape
  */
-public class UlfDashletFactory extends AbstractDashletFactory {
+public class ImageDashletFactory extends AbstractDashletFactory {
 
     /**
      * Method for instatiating a new {@link Dashlet} instance.
@@ -45,7 +45,7 @@ public class UlfDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new UlfDashlet(getName(), dashletSpec);
+        return new ImageDashlet(getName(), dashletSpec);
     }
 
     /**
@@ -55,6 +55,6 @@ public class UlfDashletFactory extends AbstractDashletFactory {
      */
     @Override
     public String getHelpContentHTML() {
-        return "This Dashlet isn't configurable at all. It just displays an image of Ulf";
+        return "This simple Dashlet is used for displaying a single image. It is configurable by the &quot;imageUrl&quot; parameter.";
     }
 }

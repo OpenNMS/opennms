@@ -81,8 +81,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void mapPhysicalBounds(int width, int height) {
-            System.out.println("Received physical bounds "+width+"x"+height);
-          getViewManager().setViewPort(width, height);
+            getViewManager().setViewPort(width, height);
         }
 
         @Override
