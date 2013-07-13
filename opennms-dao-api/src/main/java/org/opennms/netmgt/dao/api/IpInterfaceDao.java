@@ -114,6 +114,4 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     Map<InetAddress, Integer> getInterfacesForNodes();
 
     OnmsIpInterface findPrimaryInterfaceByNodeId(Integer nodeId);
-    
-    Date findLastPollTimeByNodeId(final Integer nodeId);
 }

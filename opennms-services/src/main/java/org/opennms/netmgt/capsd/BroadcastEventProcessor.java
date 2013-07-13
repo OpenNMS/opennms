@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServerMapDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceMapDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServerMap;
 import org.opennms.netmgt.model.OnmsServiceMap;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -131,6 +133,9 @@ public class BroadcastEventProcessor implements InitializingBean {
     private ServiceMapDaoHibernate m_serviceMapDao;
 
     private ServerMapDaoHibernate m_serverMapDao;
+    
+    private SnmpInterfaceDaoHibernate m_snmpInterfaceDao;
+
     /**
      * Helper method used to create add an interface to a node.
      * 
@@ -524,8 +529,10 @@ public class BroadcastEventProcessor implements InitializingBean {
             
             // Delete the interface on interface/server mapping
             LOG.debug("updateServer: delete interface: " + ipaddr + " on NMS server: " + hostName);
-            OnmsServerMap serverMap = m_serverMapDao.findByIpAddrAndServerName(ipaddr, hostName);
-            m_serverMapDao.delete(serverMap.getId());
+            List<OnmsServerMap> serverMapList = m_serverMapDao.findByIpAddrAndServerName(ipaddr, hostName);
+            for(OnmsServerMap serverMap : serverMapList) {
+                m_serverMapDao.delete(serverMap.getId());
+            }
 
             // Now mark the interface as deleted (and its services as well)
             long[] nodeIds = findNodeIdsForInterfaceAndLabel(dbConn, nodeLabel, ipaddr);
@@ -761,32 +768,14 @@ public class BroadcastEventProcessor implements InitializingBean {
      * @throws SQLException
      */
     private boolean existsInServerMap(Connection dbConn, String hostName, String ipaddr) throws SQLException {
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            /**
-             * SQL statement used to query if an interface/server mapping
-             * already exists in the database.
-             */
-            final String SQL_QUERY_INTERFACE_ON_SERVER = "SELECT count(*)  FROM serverMap WHERE ipaddr = ? AND servername = ?";
+        /**
+         * SQL statement used to query if an interface/server mapping
+         * already exists in the database.
+         */
+        List<OnmsServerMap> serverMapList = m_serverMapDao.findByIpAddrAndServerName(ipaddr, hostName);
+        int count = serverMapList.size();
 
-            // Verify if the interface already exists on the NMS server
-            stmt = dbConn.prepareStatement(SQL_QUERY_INTERFACE_ON_SERVER);
-            d.watch(stmt);
-
-            stmt.setString(1, ipaddr);
-            stmt.setString(2, hostName);
-
-            ResultSet rs = stmt.executeQuery();
-            int count = 0;
-            while (rs.next()) {
-                count = rs.getInt(1);
-            }
-
-            return count > 0;
-        } finally {
-            d.cleanUp();
-        }        
+        return count > 0;
     }
 
     /**
@@ -1602,46 +1591,40 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if a database error occurs
      */
     private List<Event> markInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, int ifIndex, long txNo) throws SQLException {
-        final String DB_FIND_SNMPINTERFACE = "UPDATE snmpinterface SET snmpcollect = 'D' WHERE nodeid = ? and snmpifindex = ? and snmpcollect != 'D'";
-        PreparedStatement stmt = null;
-        final DBUtils d = new DBUtils(getClass());
         int countip = 0;
         int countsnmp = 0;
-        try {
-
-            if(!EventUtils.isNonIpInterface(ipAddr)) {
-                List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByIpAddress(ipAddr);
-                for(OnmsIpInterface ipInterface : ipInterfaceList) {
-                    if(ipInterface.getNode().getId() == nodeId && ipInterface.getIsManaged() != "D") {
-                        ipInterface.setIsManaged("D");
-                        m_ipInterfaceDao.update(ipInterface);
-                        countip++;
-                    }
+        if(!EventUtils.isNonIpInterface(ipAddr)) {
+            List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByIpAddress(ipAddr);
+            for(OnmsIpInterface ipInterface : ipInterfaceList) {
+                if(ipInterface.getNode().getId() == nodeId && ipInterface.getIsManaged() != "D") {
+                    ipInterface.setIsManaged("D");
+                    m_ipInterfaceDao.update(ipInterface);
+                    countip++;
                 }
             }
-            if (ifIndex > -1) {
-                stmt = dbConn.prepareStatement(DB_FIND_SNMPINTERFACE);
-                d.watch(stmt);
-                stmt.setLong(1, nodeId);
-                stmt.setInt(2, ifIndex);
-                countsnmp = stmt.executeUpdate();
+        }
+        if (ifIndex > -1) {
+            List<OnmsSnmpInterface> snmpInterfaceList =  m_snmpInterfaceDao.findListByNodeIdAndIfIndex((int)nodeId, ifIndex);
+            for(OnmsSnmpInterface snmpInterface : snmpInterfaceList) {
+                if(snmpInterface.getCollect() != "D") {
+                    snmpInterface.setCollect("D");
+                    countsnmp++;
+                }
             }
+        }
 
-            if (countip > 0) {
-                LOG.debug("markInterfaceDeleted: marked ip interface deleted: node = {}, IP address = {}", nodeId, ipAddr);
-            }
-            if (countsnmp > 0) {
-                LOG.debug("markInterfaceDeleted: marked snmp interface deleted: node = {}, ifIndex = {}", nodeId, ifIndex);
-            }
-            if (countip > 0 || countsnmp > 0) {
-                return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, ifIndex, txNo));
-            } else {
-                LOG.debug("markInterfaceDeleted: Interface not found: node = {}, with ip address {}, and ifIndex {}", nodeId, (ipAddr != null ? ipAddr : "null"),  (ifIndex > -1 ? ifIndex : "N/A"));
-                return Collections.emptyList();
-            }
-        } finally {
-            d.cleanUp();
-        }        
+        if (countip > 0) {
+            LOG.debug("markInterfaceDeleted: marked ip interface deleted: node = {}, IP address = {}", nodeId, ipAddr);
+        }
+        if (countsnmp > 0) {
+            LOG.debug("markInterfaceDeleted: marked snmp interface deleted: node = {}, ifIndex = {}", nodeId, ifIndex);
+        }
+        if (countip > 0 || countsnmp > 0) {
+            return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, ifIndex, txNo));
+        } else {
+            LOG.debug("markInterfaceDeleted: Interface not found: node = {}, with ip address {}, and ifIndex {}", nodeId, (ipAddr != null ? ipAddr : "null"),  (ifIndex > -1 ? ifIndex : "N/A"));
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -1913,5 +1896,9 @@ public class BroadcastEventProcessor implements InitializingBean {
     public void setServiceMapDao(ServiceMapDaoHibernate serviceMapDao) {
         m_serviceMapDao = serviceMapDao;
     }
-
+    
+    @Autowired
+    public void setSnmpInterfaceDao(SnmpInterfaceDaoHibernate snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
 }

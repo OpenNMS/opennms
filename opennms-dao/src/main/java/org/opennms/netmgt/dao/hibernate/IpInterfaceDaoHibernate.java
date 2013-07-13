@@ -194,7 +194,6 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         }
     }
 
-    @Override
     public Date findLastPollTimeByNodeId(final Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         // SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')
