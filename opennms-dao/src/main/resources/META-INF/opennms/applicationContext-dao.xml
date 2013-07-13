@@ -145,6 +145,18 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
+  <bean id="serverMapDao" class="org.opennms.netmgt.dao.hibernate.ServerMapDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ServerMapDao" ref="serverMapDao" />
+
+  <bean id="serviceMapDao" class="org.opennms.netmgt.dao.hibernate.ServiceMapDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceMapDao" ref="serviceMapDao" />
+
   <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

@@ -2,9 +2,10 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.List;
 
+import org.opennms.netmgt.dao.api.ServiceMapDao;
 import org.opennms.netmgt.model.OnmsServiceMap;
 
-public class ServiceMapDaoHibernate extends AbstractDaoHibernate<OnmsServiceMap, Integer> {
+public class ServiceMapDaoHibernate extends AbstractDaoHibernate<OnmsServiceMap, Integer> implements ServiceMapDao{
 
     public ServiceMapDaoHibernate() {
         super(OnmsServiceMap.class);
