@@ -89,11 +89,26 @@ public class ImageDashlet extends VerticalLayout implements Dashlet {
     public void update() {
         String newImage = m_dashletSpec.getParameters().get("imageUrl");
 
+        String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
+        String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
+
+        boolean maximizeHeight = ("true".equals(maximizeHeightString) || "yes".equals(maximizeHeightString) || "1".equals(maximizeHeightString));
+        boolean maximizeWidth = ("true".equals(maximizeWidthString) || "yes".equals(maximizeWidthString) || "1".equals(maximizeWidthString));
+
         if (!newImage.equals(m_imageUrl)) {
             m_imageUrl = newImage;
             removeAllComponents();
             Image image = new Image(null, new ExternalResource(m_imageUrl));
-            image.setHeight(100,Unit.PERCENTAGE);
+            if (maximizeHeight && maximizeWidth) {
+                image.setSizeFull();
+            } else {
+                if (maximizeHeight) {
+                    image.setHeight(100, Unit.PERCENTAGE);
+                }
+                if (maximizeWidth) {
+                    image.setWidth(100, Unit.PERCENTAGE);
+                }
+            }
             addComponent(image);
             setComponentAlignment(image, Alignment.MIDDLE_CENTER);
         }
