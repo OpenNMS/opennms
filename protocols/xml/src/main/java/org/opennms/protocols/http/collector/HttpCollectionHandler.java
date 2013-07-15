@@ -64,12 +64,16 @@ import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class HTTP Collection Handler.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(HttpCollectionHandler.class);
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
@@ -112,12 +116,12 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      */
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws ParseException {
         for (XmlGroup group : source.getXmlGroups()) {
-            log().debug("fillCollectionSet: getting resources for XML group " + group.getName() + " using selector " + group.getResourceXpath());
+            LOG.debug("fillCollectionSet: getting resources for XML group {} using selector {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, group);
             Elements elements = doc.select(group.getResourceXpath());
-            log().debug("fillCollectionSet: " + group.getResourceXpath() + " => " + elements);
+            LOG.debug("fillCollectionSet: {} => {}", group.getResourceXpath(), elements);
             String resourceName = getResourceName(elements, group);
-            log().debug("fillCollectionSet: processing XML resource " + resourceName);
+            LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
             XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
             AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
             for (XmlObject object : group.getXmlObjects()) {
@@ -142,7 +146,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
         if (group.hasMultipleResourceKey()) {
             List<String> keys = new ArrayList<String>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
-                log().debug("getResourceName: getting key for resource's name using selector " + key);
+                LOG.debug("getResourceName: getting key for resource's name using selector {}", key);
                 Elements el = elements.select(key);
                 if (el != null) {
                     keys.add(el.html());
@@ -155,7 +159,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             return "node";
         }
         // Processing single-key resource name.
-        log().debug("getResourceName: getting key for resource's name using selector " + group.getKeyXpath());
+        LOG.debug("getResourceName: getting key for resource's name using selector {}", group.getKeyXpath());
         Elements el = elements.select(group.getKeyXpath());
         return el == null ? null : el.html();
     }
@@ -172,7 +176,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             return null;
         }
         String pattern = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
-        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using selector " + group.getTimestampXpath() + " and pattern " + pattern);
+        LOG.debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using selector {} and pattern {}", group.getTimestampXpath(), pattern);
         Elements el = doc.select(group.getTimestampXpath());
         if (el == null) {
             return null;
@@ -184,7 +188,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             DateTime dateTime = dtf.parseDateTime(value);
             date = dateTime.toDate();
         } catch (Exception e) {
-            log().warn("getTimeStamp: can't convert custom timetime " + value + " using pattern " + pattern);
+            LOG.warn("getTimeStamp: can't convert custom timetime {} using pattern {}", value, pattern);
         }
         return date;
     }
