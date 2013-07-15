@@ -28,14 +28,16 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.ui.mbeans;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree;
-import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.features.jmxconfiggenerator.webui.data.MetaMBeanItem;
 import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
+import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
+
+import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.shared.ui.MultiSelectMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Tree;
 
 /**
  *
@@ -66,8 +68,8 @@ class MBeansTree extends Tree implements ModelChangeListener<UiModel>, ViewState
 		setSelectable(true);
 		setMultiSelect(false);
 		setNullSelectionAllowed(true);
-		setMultiselectMode(AbstractSelect.MultiSelectMode.SIMPLE);
-		addListener(new ItemClickEvent.ItemClickListener() {
+		setMultiselectMode(MultiSelectMode.SIMPLE);
+		addItemClickListener(new ItemClickListener() {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				controller.updateView(event);

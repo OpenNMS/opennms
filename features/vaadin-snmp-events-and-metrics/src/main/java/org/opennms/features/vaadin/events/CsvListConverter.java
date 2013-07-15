@@ -27,10 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.ArrayList;
-
+import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
-import org.vaadin.addon.customfield.PropertyConverter;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * The CSV List Converter.
@@ -38,40 +39,40 @@ import org.vaadin.addon.customfield.PropertyConverter;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class CsvListConverter extends PropertyConverter<ArrayList<String>, String> {
+public class CsvListConverter implements Converter<String, CsvListConverter.StringList> {
 
     /**
      * The Class StringList.
      */
-    public class StringList extends ArrayList<String> {}
+    public static class StringList extends ArrayList<String> {}
 
-    /**
-     * Instantiates a new CSV list converter.
-     */
-    public CsvListConverter() {
-        super(StringList.class);
-    }
-
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.PropertyConverter#format(java.lang.Object)
-     */
     @Override
-    public String format(ArrayList<String> propertyValue) {
-        return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
-    }
-
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.PropertyConverter#parse(java.lang.Object)
-     */
-    @Override
-    public ArrayList<String> parse(String fieldValue) {
-        ArrayList<String> list = new ArrayList<String>();
+    public StringList convertToModel(String fieldValue, Class<? extends StringList> targetType, Locale locale) throws ConversionException {
+        StringList list = new StringList();
         if (fieldValue != null) {
             for (String s : fieldValue.split(",")) {
-                list.add(s);
+                if (s == null || "".equals(s.trim())) {
+                    // Blank value, skip it
+                } else {
+                    list.add(s.trim());
+                }
             }
         }
         return list;
     }
 
+    @Override
+    public String convertToPresentation(StringList propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+        return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
+    }
+
+    @Override
+	public Class<StringList> getModelType() {
+		return StringList.class;
+	}
+
+	@Override
+	public Class<String> getPresentationType() {
+		return String.class;
+	}
 }

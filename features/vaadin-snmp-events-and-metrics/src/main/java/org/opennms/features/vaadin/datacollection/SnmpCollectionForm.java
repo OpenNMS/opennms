@@ -32,11 +32,11 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
 
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -77,7 +77,7 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
      */
     public SnmpCollectionForm(final DataCollectionConfigDao dataCollectionConfigDao) {
         setCaption("SNMP Collection Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
         setFormFieldFactory(new SnmpCollectionFieldFactory(dataCollectionConfigDao));
         initToolbar();
@@ -87,10 +87,10 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -147,7 +147,7 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
             setReadOnly(false);
         }
         if (source == delete) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the selected SNMP Collection?<br/>This action cannot be undone.",

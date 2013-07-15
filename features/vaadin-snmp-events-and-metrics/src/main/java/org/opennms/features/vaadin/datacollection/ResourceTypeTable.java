@@ -67,7 +67,7 @@ public abstract class ResourceTypeTable extends Table {
         setColumnHeaders(COLUMN_LABELS);
         setWidth("100%");
         setHeight("250px");
-        addListener(new Property.ValueChangeListener() {
+        addValueChangeListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
             @Override
             public void valueChange(Property.ValueChangeEvent event) {

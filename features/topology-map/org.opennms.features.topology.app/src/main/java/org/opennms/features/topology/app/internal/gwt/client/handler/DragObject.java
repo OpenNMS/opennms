@@ -113,11 +113,7 @@ public class DragObject{
 	    
 	    final int deltaX = getCurrentX() - getStartX();
 	    final int deltaY = getCurrentY() - getStartY();
-	    //consoleLog("deltaX: " + deltaX);
-	    //consoleLog("deltaY: " + deltaY);
-	    
-	    //consoleLog("m_selection: ");
-	    //consoleLog(m_selection);
+
 	    m_selection.each(new Handler<GWTVertex>() {
 
             @Override

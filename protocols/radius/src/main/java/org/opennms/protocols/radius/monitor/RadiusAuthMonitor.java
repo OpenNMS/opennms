@@ -201,7 +201,7 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                     auth = new EAPMSCHAPv2Authenticator();
                 } else {
                     String reason = "Unknown authenticator type '" + authType + "'";
-                    this.LOG.debug(reason);
+                    RadiusAuthMonitor.LOG.debug(reason);
                     return PollStatus.unavailable(reason);
                 }
 
@@ -219,12 +219,12 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                     LOG.debug("response returned, but request was not accepted: {}", reply);
                 }
                 String reason = "Invalid RADIUS reply: " + reply;
-                this.LOG.debug(reason);
+                RadiusAuthMonitor.LOG.debug(reason);
                 status = PollStatus.unavailable(reason);
             }
         } catch (final Throwable e) {
             String reason = "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName();
-            this.LOG.debug(reason, e);
+            RadiusAuthMonitor.LOG.debug(reason, e);
             status = PollStatus.unavailable(reason);
         }
 

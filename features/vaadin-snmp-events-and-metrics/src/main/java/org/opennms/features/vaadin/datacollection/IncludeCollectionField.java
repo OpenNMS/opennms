@@ -32,16 +32,19 @@ import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;
@@ -54,7 +57,11 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField {
+public class IncludeCollectionField extends CustomField<IncludeCollectionField.IncludeCollectionArrayList> {
+
+	public static class IncludeCollectionArrayList extends ArrayList<IncludeCollection> {}
+
+    private static final long serialVersionUID = 3677540981240383672L;
 
     /** The Include Field Table. */
     private final Table table = new Table();
@@ -100,7 +107,7 @@ public class IncludeCollectionField extends CustomField {
                         table.select(obj);
                     }
                 };
-                getApplication().getMainWindow().addWindow(w);
+                getUI().addWindow(w);
             }
         });
         edit = new Button("Edit", new Button.ClickListener() {
@@ -108,7 +115,7 @@ public class IncludeCollectionField extends CustomField {
             public void buttonClick(ClickEvent event) {
                 final Object value = table.getValue();
                 if (value == null) {
-                    getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
+                    Notification.show("Please select a IncludeCollection from the table.");
                     return;
                 }
                 IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
@@ -117,7 +124,7 @@ public class IncludeCollectionField extends CustomField {
                         table.refreshRowCache();
                     }
                 };
-                getApplication().getMainWindow().addWindow(w);
+                getUI().addWindow(w);
             }
         });
         delete = new Button("Delete", new Button.ClickListener() {
@@ -132,26 +139,23 @@ public class IncludeCollectionField extends CustomField {
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
+        setBuffered(true);
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-
-        setWriteThrough(false);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<?> getType() {
-        return ArrayList.class;
+    public Class<IncludeCollectionArrayList> getType() {
+        return IncludeCollectionArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -171,12 +175,9 @@ public class IncludeCollectionField extends CustomField {
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
-    public Object getValue() {
-        List<IncludeCollection> list = new ArrayList<IncludeCollection>();
+    public IncludeCollectionArrayList getValue() {
+        IncludeCollectionArrayList list = new IncludeCollectionArrayList();
         for (Object itemId: container.getItemIds()) {
             IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
             list.add(obj.createIncludeCollection());
@@ -199,10 +200,10 @@ public class IncludeCollectionField extends CustomField {
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
+            Notification.show("Please select a IncludeCollection from the table.");
             return;
         }
-        MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+        MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                        "Are you sure?",
                                        MessageBox.Icon.QUESTION,
                                        "Do you really want to remove the selected Include Collection field<br/>This action cannot be undone.",

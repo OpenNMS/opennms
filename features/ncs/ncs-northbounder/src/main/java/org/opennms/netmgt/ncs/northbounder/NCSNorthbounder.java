@@ -29,6 +29,7 @@
 package org.opennms.netmgt.ncs.northbounder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,9 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -62,6 +60,8 @@ import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -96,16 +96,10 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 	private static final String COMPONENT_FOREIGN_SOURCE = "componentForeignSource";
 	private static final String COMPONENT_TYPE = "componentType";
 	private NCSNorthbounderConfig m_config;
-	private JAXBContext m_context;
-	private Marshaller m_marshaller;
 
-    public NCSNorthbounder(NCSNorthbounderConfig config) throws JAXBException {
+    public NCSNorthbounder(NCSNorthbounderConfig config) {
         super("NCSNorthbounder");
         
-		m_context = JAXBContext.newInstance(ServiceAlarmNotification.class);
-		m_marshaller = m_context.createMarshaller();
-		m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		
 		m_config = config;
 		
 		setNaglesDelay(m_config.getNaglesDelay());
@@ -270,7 +264,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 			// marshall the output
-			m_marshaller.marshal(toServiceAlarms(alarms), out);
+			JaxbUtils.marshal(toServiceAlarms(alarms), new OutputStreamWriter(out));
 
 			// verify its matches the expected results
 			byte[] utf8 = out.toByteArray();
@@ -279,7 +273,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 			entity.setContentType("application/xml");
             return entity;
 
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new NorthbounderException("failed to convert alarms to xml", e);
 		}
 	}

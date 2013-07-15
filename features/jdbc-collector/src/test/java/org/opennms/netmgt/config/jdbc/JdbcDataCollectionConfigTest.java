@@ -35,15 +35,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -53,14 +50,12 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
 public class JdbcDataCollectionConfigTest {
-    private Marshaller m;
-    private Unmarshaller um;
     private FileAnticipator fa;
-    private JAXBContext c;
     
     private JdbcDataCollectionConfig jdcc;
     
@@ -80,9 +75,6 @@ public class JdbcDataCollectionConfigTest {
     @Before
     public void setUp() throws Exception {
         fa = new FileAnticipator();
-        c = JAXBContext.newInstance(JdbcDataCollectionConfig.class);
-        m = c.createMarshaller();
-        um = c.createUnmarshaller();
         
         // Mock up a JdbcDataCollectionConfig class.      
         JdbcRrd jdbcRrd = new JdbcRrd();
@@ -137,6 +129,7 @@ public class JdbcDataCollectionConfigTest {
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = fa.expecting("jdbc-datacollection-config.xsd");
+        JAXBContext c = JAXBContext.newInstance(JdbcDataCollectionConfig.class);
         c.generateSchema(new TestOutputResolver(schemaFile));
         if (fa.isInitialized()) {
             fa.deleteExpected();
@@ -147,7 +140,7 @@ public class JdbcDataCollectionConfigTest {
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
-        m.marshal(jdcc, objectXML);
+        JaxbUtils.marshal(jdcc, objectXML);
 
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
@@ -181,14 +174,9 @@ public class JdbcDataCollectionConfigTest {
         File jdbcCollectionConfig = new File(ClassLoader.getSystemResource("jdbc-datacollection-config.xml").getFile());
         assertTrue("jdbc-datacollection-config.xml is readable", jdbcCollectionConfig.canRead());
         
-        InputStream reader = new FileInputStream(jdbcCollectionConfig);
-        
-        um.setSchema(null);
-        JdbcDataCollectionConfig exampleJdcc = (JdbcDataCollectionConfig)um.unmarshal(reader);
+        JdbcDataCollectionConfig exampleJdcc = JaxbUtils.unmarshal(JdbcDataCollectionConfig.class, jdbcCollectionConfig);
 
         assertTrue("Compare JDBC Data Collection Config objects.", jdcc.equals(exampleJdcc));
-        
-        reader.close();
     }
     
     @SuppressWarnings("unchecked")

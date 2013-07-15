@@ -37,6 +37,8 @@ import org.opennms.features.topology.app.internal.Command;
 import org.opennms.features.topology.app.internal.CommandManager;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class HistoryOperation implements Operation {
@@ -50,15 +52,17 @@ public class HistoryOperation implements Operation {
     @Override
     public Undoer execute(List<VertexRef> targets,
             OperationContext operationContext) {
-        Window mainWindow = operationContext.getMainWindow();
+        UI mainWindow = operationContext.getMainWindow();
         CommandManager commandManager = m_commandManager;
         
         Window window = new Window();
         window.setModal(true);
         
+        VerticalLayout layout = new VerticalLayout();
         for(Command command : commandManager.getHistoryList()) {
-            window.addComponent(new Label(command.toString()));
+            layout.addComponent(new Label(command.toString()));
         }
+        window.setContent(layout);
         
         mainWindow.addWindow(window);
         return null;

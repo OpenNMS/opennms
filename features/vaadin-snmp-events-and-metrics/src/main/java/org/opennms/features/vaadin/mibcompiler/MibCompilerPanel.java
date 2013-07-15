@@ -42,13 +42,14 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.event.Action;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;
@@ -165,23 +166,28 @@ public class MibCompilerPanel extends Panel {
                 addTreeItem(filename, PENDING);
             }
         };
-        addComponent(upload);
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(upload);
 
         // Initialize MIB Tree
 
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
         final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>");
-        label.setContentMode(Label.CONTENT_XHTML);
-        addComponent(label);
-        addComponent(mibsTree);
+        label.setContentMode(ContentMode.HTML);
+
+
+        layout.addComponent(label);
+        layout.addComponent(mibsTree);
 
         // Panel Setup
-
         setSizeFull();
         addStyleName(Runo.PANEL_LIGHT);
-        ((VerticalLayout) getContent()).setComponentAlignment(upload, Alignment.TOP_RIGHT);
-        ((VerticalLayout) getContent()).setExpandRatio(mibsTree, 1);
+        layout.setComponentAlignment(upload, Alignment.TOP_RIGHT);
+        layout.setExpandRatio(mibsTree, 1);
+
+        setContent(layout);
     }
 
     /**
@@ -227,7 +233,7 @@ public class MibCompilerPanel extends Panel {
             public void handleAction(Action action, Object sender, Object target) {
                 final String fileName = (String) target;
                 if (action == ACTION_DELETE) {
-                    MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                                    "Are you sure?",
                                                    MessageBox.Icon.QUESTION,
                                                    "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",
@@ -244,7 +250,7 @@ public class MibCompilerPanel extends Panel {
                                     mibsTree.removeItem(fileName);
                                     logger.info("MIB " + file + " has been successfully removed.");
                                 } else {
-                                    getApplication().getMainWindow().showNotification("Can't delete " + file);
+                                    Notification.show("Can't delete " + file);
                                 }
                             }
                         }
@@ -252,11 +258,11 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_EDIT) {
                     Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger, false);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 }
                 if (action == ACTION_VIEW) {
                     Window w = new FileEditorWindow(new File(MIBS_COMPILED_DIR, fileName), logger, true);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
@@ -337,7 +343,7 @@ public class MibCompilerPanel extends Panel {
                     showEventsWindow(logger, fileName, ueiBase);
                 }
             };
-            getApplication().getMainWindow().addWindow(w);
+            getUI().addWindow(w);
         }
     }
 
@@ -351,19 +357,19 @@ public class MibCompilerPanel extends Panel {
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
         if (events == null) {
-            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);                
+            Notification.show("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);                
         } else {
             if (events.getEventCount() > 0) {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
                     final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 } catch (Throwable t) {
-                    getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                 }
             } else {
-                getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+                Notification.show("The MIB doesn't contain any notification/trap", Notification.Type.WARNING_MESSAGE);
             }
         }
     }
@@ -378,18 +384,18 @@ public class MibCompilerPanel extends Panel {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
             final DatacollectionGroup dcGroup = mibParser.getDataCollection();
             if (dcGroup == null) {
-                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);
+                Notification.show("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
                         final String dataFileName = fileName.replaceFirst("\\..*$", ".xml");
                         final DataCollectionWindow w = new DataCollectionWindow(mibParser, dataCollectionDao, dataFileName, dcGroup, logger);
-                        getApplication().getMainWindow().addWindow(w);
+                        getUI().addWindow(w);
                     } catch (Throwable t) {
-                        getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.TYPE_WARNING_MESSAGE);
+                    Notification.show("The MIB doesn't contain any metric for data collection.", Notification.Type.WARNING_MESSAGE);
                 }
             }
         }

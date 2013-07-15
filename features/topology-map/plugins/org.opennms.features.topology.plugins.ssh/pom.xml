@@ -31,36 +31,10 @@
         
   </build>
 
-  <repositories>
-    <repository>
-      <id>vaadin-snapshots</id>
-      <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>vaadin-addons</id>
-      <url>http://maven.vaadin.com/vaadin-addons</url>
-    </repository>
-  </repositories>
-
-  
 <!-- NECESSARY DEPENDENCIES -->
 
   <dependencies>  
   
-  	<dependency>
-  	  <groupId>com.google.gwt</groupId>
-  	  <artifactId>gwt-dev</artifactId>
-  	  <version>${gwtVersion}</version>
-  	  <scope>test</scope>
-	</dependency>
-      
-      
     <dependency>
 	  <groupId>junit</groupId>
 	  <artifactId>junit</artifactId>
@@ -72,14 +46,8 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+
     <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
     <dependency>
  		<groupId>org.apache.sshd</groupId>
  		<artifactId>sshd-core</artifactId>
@@ -99,8 +67,6 @@
       <version>${project.version}</version>
        <scope>provided</scope> 
     </dependency>
-    
-    
   </dependencies>
 
 </project>

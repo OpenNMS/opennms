@@ -49,17 +49,20 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.terminal.UserError;
+import com.vaadin.server.UserError;
+import com.vaadin.server.AbstractErrorMessage.ContentMode;
+import com.vaadin.server.ErrorMessage.ErrorLevel;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Select;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class AddVertexToGroupOperation implements Constants, Operation {
 	
@@ -125,7 +128,8 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getRootGroup();
 		final Collection<Vertex> groupIds = findGroups(graphContainer.getBaseTopology(), vertexIds);
 
-		final Window window = operationContext.getMainWindow();
+		final UI window = operationContext.getMainWindow();
+
 		final Window groupNamePrompt = new GroupWindow("Add This Item To a Group", "300px", "210px");
 
 		// Define the fields for the form
@@ -136,12 +140,11 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
 			private static final long serialVersionUID = 2963683658636386720L;
 
-			@Override
-			public Field createField(Item item, Object propertyId, Component uiContext) {
+			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
-				    final Select select = new Select("Group");
+					final Select select = new Select("Group");
 					for (Vertex childId : groupIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());
@@ -164,8 +167,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 			             * Ensures that if only one element is selected that this element cannot be added to itself.
 			             * If there are more than one elements selected, we assume as valid. 
 			             */
-					    @Override
-			            public boolean isValid(Object value) {
+			            private boolean isValid(Object value) {
 			                if (vertices.size() > 1) return true; // more than 1 -> assume valid
 			                final String groupId = (String)select.getValue();
 			                // only one, check if we want to assign to ourself
@@ -205,14 +207,17 @@ public class AddVertexToGroupOperation implements Constants, Operation {
                 graphContainer.redoLayout();
             }
 		};
-		promptForm.setWriteThrough(false);
+		// Buffer changes to the datasource
+		promptForm.setBuffered(true);
+		// You must set the FormFieldFactory before you set the data source
 		promptForm.setFormFieldFactory(fieldFactory);
 		promptForm.setItemDataSource(item);
 		promptForm.setDescription("Please select a group.");
 
 		// Footer
 		Button ok = new Button("OK");
-		ok.addListener(new ClickListener() {
+		ok.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = 7388841001913090428L;
 
 			@Override
@@ -222,13 +227,14 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 			        promptForm.commit();
 			        window.removeWindow(groupNamePrompt);   // Close the prompt window
 			    } catch (InvalidValueException exception) {
-			        promptForm.setComponentError(new UserError(exception.getMessage(), UserError.CONTENT_TEXT, exception.getErrorLevel()));
+			        promptForm.setComponentError(new UserError(exception.getMessage(), ContentMode.TEXT, ErrorLevel.WARNING));
 			    }
 			}
 		});
 
 		Button cancel = new Button("Cancel");
-		cancel.addListener(new ClickListener() {
+		cancel.addClickListener(new ClickListener() {
+
 			private static final long serialVersionUID = 8780989646038333243L;
 
 			@Override
@@ -240,7 +246,9 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		promptForm.setFooter(new HorizontalLayout());
 		promptForm.getFooter().addComponent(ok);
 		promptForm.getFooter().addComponent(cancel);
-		groupNamePrompt.addComponent(promptForm);
+
+		groupNamePrompt.setContent(promptForm);
+
 		window.addWindow(groupNamePrompt);
 		return null;
 	}

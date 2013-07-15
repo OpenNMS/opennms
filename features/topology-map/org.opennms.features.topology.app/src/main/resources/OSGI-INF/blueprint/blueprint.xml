@@ -15,7 +15,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </cm:property-placeholder>
     
     <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
-
+    
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
@@ -24,9 +24,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument>
             <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
         </argument>
-        <property name="theme" value="${theme}"/>
+        <!-- <property name="theme" value="${theme}"/> -->
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
+        <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
     </bean>
     
@@ -38,13 +39,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
-    
+
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
         <argument value="topologyApplication"/>
-        <property name="headerProvider" ref="onmsHeaderProvider" />
     </bean>
 
     <bean id="graphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer">

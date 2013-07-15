@@ -35,14 +35,14 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 /**
- * This class wraps a {@link TextField} so it is layed out correctly inside a
+ * This class wraps a {@link TextField} so it is laid out correctly inside a
  * editable Table. Because by default a {@link TextField} inside an editable
  * table does not show any error indicator on a failed validation. The Vertical-
  * or HorizontalLayout does show an error indicator, so we wrap the layout
  * around the text field.
  * 
  */
-public class TableTextFieldWrapper extends HorizontalLayout implements Field {
+public class TableTextFieldWrapper extends HorizontalLayout implements Field<String> {
 
 	private TextField textField;
 
@@ -72,23 +72,13 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field {
 	}
 
 	@Override
-	public boolean isWriteThrough() {
-		return this.textField.isWriteThrough();
+	public boolean isBuffered() {
+		return this.textField.isBuffered();
 	}
 
 	@Override
-	public void setWriteThrough(final boolean writeThrough) throws SourceException, InvalidValueException {
-		this.textField.setWriteThrough(writeThrough);
-	}
-
-	@Override
-	public boolean isReadThrough() {
-		return this.textField.isReadThrough();
-	}
-
-	@Override
-	public void setReadThrough(final boolean readThrough) throws SourceException {
-		this.textField.setReadThrough(readThrough);
+	public void setBuffered(final boolean readThrough) throws SourceException {
+		this.textField.setBuffered(readThrough);
 	}
 
 	@Override
@@ -104,6 +94,11 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field {
 	@Override
 	public void removeValidator(final Validator validator) {
 		this.textField.removeValidator(validator);
+	}
+
+	@Override
+	public void removeAllValidators() {
+		this.textField.removeAllValidators();
 	}
 
 	@Override
@@ -132,28 +127,38 @@ public class TableTextFieldWrapper extends HorizontalLayout implements Field {
 	}
 
 	@Override
-	public Object getValue() {
+	public String getValue() {
 		return this.textField.getValue();
 	}
 
 	@Override
-	public void setValue(final Object newValue) throws ReadOnlyException, ConversionException {
+	public void setValue(final String newValue) throws ReadOnlyException {
 		this.textField.setValue(newValue);
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<String> getType() {
 		return this.textField.getType();
 	}
 
 	@Override
 	public void addListener(final ValueChangeListener listener) {
-		this.textField.addListener(listener);
+		addValueChangeListener(listener);
+	}
+
+	@Override
+	public void addValueChangeListener(final ValueChangeListener listener) {
+		this.textField.addValueChangeListener(listener);
 	}
 
 	@Override
 	public void removeListener(final ValueChangeListener listener) {
-		this.textField.removeListener(listener);
+		removeValueChangeListener(listener);
+	}
+
+	@Override
+	public void removeValueChangeListener(final ValueChangeListener listener) {
+		this.textField.removeValueChangeListener(listener);
 	}
 
 	@Override

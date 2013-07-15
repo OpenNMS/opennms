@@ -33,12 +33,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.xml.JaxbUtils;
+import org.xml.sax.InputSource;
 
 public class JdbcDataCollectionConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcDataCollectionConfigFactory.class);
@@ -59,13 +58,8 @@ public class JdbcDataCollectionConfigFactory {
     
     public JdbcDataCollectionConfig unmarshall(InputStream configFile) {
         try {
-            InputStream jdccStream = configFile;
-            JAXBContext context = JAXBContext.newInstance(JdbcDataCollectionConfig.class);
-            Unmarshaller um = context.createUnmarshaller();
-            um.setSchema(null);
-            JdbcDataCollectionConfig jdcc = (JdbcDataCollectionConfig) um.unmarshal(jdccStream);
-            m_jdbcDataCollectionConfig = jdcc;
-            return jdcc;
+            m_jdbcDataCollectionConfig = JaxbUtils.unmarshal(JdbcDataCollectionConfig.class, new InputSource(configFile));
+            return m_jdbcDataCollectionConfig;
         } catch (Throwable e) {
             // TODO!!
             //throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);

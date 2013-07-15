@@ -35,15 +35,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -53,6 +50,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
@@ -63,17 +61,8 @@ import org.xml.sax.SAXException;
  */
 public class XmlDataCollectionConfigTest {
 
-    /** The marshaller. */
-    private Marshaller marshaller;
-
-    /** The unmarshaller. */
-    private Unmarshaller unmarshaller;
-
     /** The file anticipator. */
     private FileAnticipator fileAnticipator;
-
-    /** The JAXB context. */
-    private JAXBContext context;
 
     /** The XML data collection configuration. */
     private XmlDataCollectionConfig xmldcc;
@@ -112,9 +101,6 @@ public class XmlDataCollectionConfigTest {
     @Before
     public void setUp() throws Exception {
         fileAnticipator = new FileAnticipator();
-        context = JAXBContext.newInstance(XmlDataCollectionConfig.class);
-        marshaller = context.createMarshaller();
-        unmarshaller = context.createUnmarshaller();
 
         // Mock up a XmlDataCollectionConfig class.      
         XmlRrd xmlRrd = new XmlRrd();
@@ -175,7 +161,6 @@ public class XmlDataCollectionConfigTest {
      */
     @After
     public void tearDown() throws Exception {
-
     }
 
     /**
@@ -186,6 +171,7 @@ public class XmlDataCollectionConfigTest {
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = fileAnticipator.expecting("xml-datacollection-config.xsd");
+        JAXBContext context = JAXBContext.newInstance(XmlDataCollectionConfig.class);
         context.generateSchema(new TestOutputResolver(schemaFile));
         if (fileAnticipator.isInitialized()) {
             fileAnticipator.deleteExpected();
@@ -201,7 +187,7 @@ public class XmlDataCollectionConfigTest {
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
-        marshaller.marshal(xmldcc, objectXML);
+        JaxbUtils.marshal(xmldcc, objectXML);
 
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
@@ -239,14 +225,9 @@ public class XmlDataCollectionConfigTest {
         File xmlCollectionConfig = getSourceFile();
         assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
 
-        InputStream reader = new FileInputStream(xmlCollectionConfig);
-
-        unmarshaller.setSchema(null);
-        XmlDataCollectionConfig exampleXmldcc = (XmlDataCollectionConfig)unmarshaller.unmarshal(reader);
+        XmlDataCollectionConfig exampleXmldcc = JaxbUtils.unmarshal(XmlDataCollectionConfig.class, xmlCollectionConfig);
 
         assertTrue("Compare XML Data Collection Config objects.", xmldcc.equals(exampleXmldcc));
-
-        reader.close();
     }
 
     /**

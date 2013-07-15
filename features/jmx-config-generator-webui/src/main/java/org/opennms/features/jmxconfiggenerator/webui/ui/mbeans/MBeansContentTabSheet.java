@@ -172,7 +172,7 @@ public class MBeansContentTabSheet extends TabSheet implements ModelChangeListen
 							formButtonHandler.handleSave();
 							tableButtonHandler.handleSave();
 						} else {
-							UIHelper.showValidationError(getWindow(),  "There are some errors on this view. Please fix them first");
+							UIHelper.showValidationError("There are some errors on this view. Please fix them first");
 						}
 					}
 
@@ -205,12 +205,22 @@ public class MBeansContentTabSheet extends TabSheet implements ModelChangeListen
 
 			@Override
 			public void addListener(ReadOnlyStatusChangeListener listener) {
+				addReadOnlyStatusChangeListener(listener);
+			}
+
+			@Override
+			public void addReadOnlyStatusChangeListener(ReadOnlyStatusChangeListener listener) {
 				compositeForm.addListener(listener);
 				compositeTable.addListener(listener);
 			}
 
 			@Override
 			public void removeListener(ReadOnlyStatusChangeListener listener) {
+				removeReadOnlyStatusChangeListener(listener);
+			}
+
+			@Override
+			public void removeReadOnlyStatusChangeListener(ReadOnlyStatusChangeListener listener) {
 				compositeForm.removeListener(listener);
 				compositeTable.removeListener(listener);
 			}
@@ -296,7 +306,7 @@ public class MBeansContentTabSheet extends TabSheet implements ModelChangeListen
 					outer.commit();
 					controller.fireViewStateChanged(ViewState.LeafSelected, outer);
 				} else {
-					UIHelper.showValidationError(getWindow(),
+					UIHelper.showValidationError(
 							"There are errors in this view. Please fix them first or cancel.");
 				}
 			}

@@ -1,0 +1,1 @@
+CFInstall.check({ mode: "overlay" });
