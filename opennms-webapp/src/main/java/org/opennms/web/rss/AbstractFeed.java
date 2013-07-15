@@ -172,7 +172,6 @@ public class AbstractFeed implements Feed {
      * @return a {@link java.lang.String} object.
      */
     protected String sanitizeTitle(String title) {
-        title.replaceAll("<.*?>", "");
-        return title;
+        return title.replaceAll("<.*?>", "");
     }
 }
