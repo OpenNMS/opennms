@@ -85,9 +85,6 @@
 	<variable name="transmitted_RATE_BITS" class="java.lang.Double">
 		<variableExpression><![CDATA[$V{transmitted_RATE_BYTES} * 8.0]]></variableExpression>
 	</variable>
-	<variable name="file" class="java.lang.String">
-		<variableExpression><![CDATA[new File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb") == null ? "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb" : "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifInOctets.jrb"]]></variableExpression>
-	</variable>
 	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
