@@ -96,6 +96,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.11">
+		<title>Release 1.10.11</title>
+
+		<para>
+			Release 1.10.11 is the latest in the stable series of OpenNMS releases.
+			It contains a few bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.11 is <emphasis>Nadaswaram</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.10.10">
 		<title>Release 1.10.10</title>
 
