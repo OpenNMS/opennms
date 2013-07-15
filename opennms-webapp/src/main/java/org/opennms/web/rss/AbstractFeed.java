@@ -175,12 +175,4 @@ public class AbstractFeed implements Feed {
         title.replaceAll("<.*?>", "");
         return title;
     }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    
-
 }

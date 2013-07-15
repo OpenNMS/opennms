@@ -517,12 +517,6 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_categories = categoryCache;
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-
 	/**
 	 * <p>nullSafeEquals</p>
 	 *
