@@ -6,6 +6,25 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.11">
+		<title>Changes in OpenNMS 1.10.11</title>
+
+		<section id="opennms-1.10.11-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Release notes says Gentoo is not maintained (Issue <ulink url='http://issues.opennms.org/browse/NMS-4338'>NMS-4338</ulink>)</para></listitem>
+				<listitem><para>Javamail file type overrides Database Report file type for CSV files (Issue <ulink url='http://issues.opennms.org/browse/NMS-5020'>NMS-5020</ulink>)</para></listitem>
+				<listitem><para>Events shows interface 127.0.0.1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5232'>NMS-5232</ulink>)</para></listitem>
+				<listitem><para>Serial Interface Report has Incorrect Title (Issue <ulink url='http://issues.opennms.org/browse/NMS-5616'>NMS-5616</ulink>)</para></listitem>
+				<listitem><para>Duty schedule editor defaults to identical start and end time  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5741'>NMS-5741</ulink>)</para></listitem>
+				<listitem><para>The SnmpPoller is sending the interfaceOperDown events every time a requisition is synched or a single node is rescanned. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5841'>NMS-5841</ulink>)</para></listitem>
+				<listitem><para>Provisiond fails with java.lang.NullPointerException (Issue <ulink url='http://issues.opennms.org/browse/NMS-5922'>NMS-5922</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in webapp when viewing non-existent alarm: &quot;Missing alarm request attribute&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5930'>NMS-5930</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.10">
 		<title>Changes in OpenNMS 1.10.10</title>
 
