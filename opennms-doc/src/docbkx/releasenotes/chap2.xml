@@ -6,6 +6,48 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.93">
+		<title>Changes in OpenNMS 1.11.93</title>
+
+		<section id="opennms-1.11.93-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Java compiler warnings (Issue <ulink url='http://issues.opennms.org/browse/NMS-2340'>NMS-2340</ulink>)</para></listitem>
+				<listitem><para>Ensure that each newly created thread has an uncaught exception handler (Issue <ulink url='http://issues.opennms.org/browse/NMS-2636'>NMS-2636</ulink>)</para></listitem>
+				<listitem><para>Foundry switches do not get identified as having multiple VLANs (Issue <ulink url='http://issues.opennms.org/browse/NMS-3303'>NMS-3303</ulink>)</para></listitem>
+				<listitem><para>Javamail file type overrides Database Report file type for CSV files (Issue <ulink url='http://issues.opennms.org/browse/NMS-5020'>NMS-5020</ulink>)</para></listitem>
+				<listitem><para>no 404 handler found (Issue <ulink url='http://issues.opennms.org/browse/NMS-5374'>NMS-5374</ulink>)</para></listitem>
+				<listitem><para>Searching for interface that returns exactly 1 match does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-5388'>NMS-5388</ulink>)</para></listitem>
+				<listitem><para>reclassify a collectd.log entry severity (Issue <ulink url='http://issues.opennms.org/browse/NMS-5454'>NMS-5454</ulink>)</para></listitem>
+				<listitem><para>Need to change log level for provisiond node scan completion (Issue <ulink url='http://issues.opennms.org/browse/NMS-5629'>NMS-5629</ulink>)</para></listitem>
+				<listitem><para>liebert.sitenet.bypass43* reports reference column names over rrd datasource name limit (Issue <ulink url='http://issues.opennms.org/browse/NMS-5651'>NMS-5651</ulink>)</para></listitem>
+				<listitem><para>Duty schedule editor defaults to identical start and end time  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5741'>NMS-5741</ulink>)</para></listitem>
+				<listitem><para>Karaf deadlock during features:uninstall, features:install (Issue <ulink url='http://issues.opennms.org/browse/NMS-5786'>NMS-5786</ulink>)</para></listitem>
+				<listitem><para>too terse log message in JDBCMonitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5825'>NMS-5825</ulink>)</para></listitem>
+				<listitem><para>The SnmpPoller is sending the interfaceOperDown events every time a requisition is synched or a single node is rescanned. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5841'>NMS-5841</ulink>)</para></listitem>
+				<listitem><para>incorrect null tests in DefaultAdminCategoryService.java (Issue <ulink url='http://issues.opennms.org/browse/NMS-5897'>NMS-5897</ulink>)</para></listitem>
+				<listitem><para>Primary interface is not used for VMware CIM service polling and data collection (Issue <ulink url='http://issues.opennms.org/browse/NMS-5938'>NMS-5938</ulink>)</para></listitem>
+				<listitem><para>Several plugins not being built as RPMS (Issue <ulink url='http://issues.opennms.org/browse/NMS-5939'>NMS-5939</ulink>)</para></listitem>
+				<listitem><para>AsteriskGateway daemon should not start by default (Issue <ulink url='http://issues.opennms.org/browse/NMS-5940'>NMS-5940</ulink>)</para></listitem>
+				<listitem><para>maclike search fails for non-ip interfaces (Issue <ulink url='http://issues.opennms.org/browse/NMS-5949'>NMS-5949</ulink>)</para></listitem>
+				<listitem><para>Provsioning does not synchronize to database (Issue <ulink url='http://issues.opennms.org/browse/NMS-5965'>NMS-5965</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.93-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SNMP GET HEX Values from SAN switch (Issue <ulink url='http://issues.opennms.org/browse/NMS-5423'>NMS-5423</ulink>)</para></listitem>
+				<listitem><para>implement a json collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5435'>NMS-5435</ulink>)</para></listitem>
+				<listitem><para>XmlCollector enhancements (Issue <ulink url='http://issues.opennms.org/browse/NMS-5466'>NMS-5466</ulink>)</para></listitem>
+				<listitem><para>Detection for VMware CIM service only if the communication is possible (Issue <ulink url='http://issues.opennms.org/browse/NMS-5941'>NMS-5941</ulink>)</para></listitem>
+				<listitem><para>Fix non-well formatted HTML in order to process it with the XML Collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5962'>NMS-5962</ulink>)</para></listitem>
+				<listitem><para>Apply a XSLT transformation to source XML/HTML/TEXT page before processing it with the XML Collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-5963'>NMS-5963</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.92">
 		<title>Changes in OpenNMS 1.11.92</title>
 
