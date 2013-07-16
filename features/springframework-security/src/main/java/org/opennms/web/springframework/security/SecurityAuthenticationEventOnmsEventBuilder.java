@@ -32,7 +32,8 @@ import java.net.ConnectException;
 import java.util.Date;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -55,6 +56,7 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
  * <p>SecurityAuthenticationEventOnmsEventBuilder class.</p>
  */
 public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener<ApplicationEvent>, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityAuthenticationEventOnmsEventBuilder.class);
     /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
@@ -63,8 +65,9 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     private EventProxy m_eventProxy;
     
     /** {@inheritDoc} */
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        log().debug("Received ApplicationEvent " + event.getClass().toString());
+        LOG.debug("Received ApplicationEvent {}", event.getClass());
         if (event instanceof AuthenticationSuccessEvent) {
             AuthenticationSuccessEvent authEvent = (AuthenticationSuccessEvent) event;
 
@@ -77,7 +80,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         if (event instanceof AbstractAuthenticationFailureEvent) {
             AbstractAuthenticationFailureEvent authEvent = (AbstractAuthenticationFailureEvent) event;
             
-            log().debug("AbstractAuthenticationFailureEvent was received, exception message - " + authEvent.getException().getMessage());
+            LOG.debug("AbstractAuthenticationFailureEvent was received, exception message - {}", authEvent.getException().getMessage());
             EventBuilder builder = createEvent(FAILURE_UEI, authEvent);
             builder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
             builder.addParam("exceptionMessage", authEvent.getException().getMessage());
@@ -86,25 +89,21 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         
         if (event instanceof AuthorizedEvent) {
             AuthorizedEvent authEvent = (AuthorizedEvent) event;
-            log().debug("AuthorizedEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " + 
-                        authEvent.getAuthentication().getPrincipal());
+            LOG.debug("AuthorizedEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
         }
         if (event instanceof AuthorizationFailureEvent) {
             AuthorizationFailureEvent authEvent = (AuthorizationFailureEvent) event;
-            log().debug("AuthorizationFailureEvent received  -\n   Details - " + authEvent.getAuthentication().getDetails() + "\n  Principal - " + 
-                        authEvent.getAuthentication().getPrincipal());
+            LOG.debug("AuthorizationFailureEvent received  -\n   Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
         }
         if (event instanceof InteractiveAuthenticationSuccessEvent) {
             InteractiveAuthenticationSuccessEvent authEvent = (InteractiveAuthenticationSuccessEvent) event;
-            log().debug("InteractiveAuthenticationSuccessEvent received - \n  Details - " + authEvent.getAuthentication().getDetails() + 
-                        "\n  Principal -  " + authEvent.getAuthentication().getPrincipal());
+            LOG.debug("InteractiveAuthenticationSuccessEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
             
         }
         if (event instanceof ServletRequestHandledEvent) {
             ServletRequestHandledEvent authEvent = (ServletRequestHandledEvent) event;
-            log().debug("ServletRequestHandledEvent received - " + authEvent.getDescription() + "\n  Servlet - " + authEvent.getServletName() +
-                        "\n  URL - " + authEvent.getRequestUrl());
-            log().info(authEvent.getRequestUrl() + " requested from " + authEvent.getClientAddress() + " by user " + authEvent.getUserName());
+            LOG.debug("ServletRequestHandledEvent received - {}\n  Servlet - {}\n  URL - {}", authEvent.getDescription(), authEvent.getServletName(), authEvent.getRequestUrl());
+            LOG.info("{} requested from {} by user {}", authEvent.getRequestUrl(), authEvent.getClientAddress(), authEvent.getUserName());
         }
         
     }
@@ -130,9 +129,9 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             m_eventProxy.send(onmsEvent);
         } catch (EventProxyException e) {
             if (ExceptionUtils.getRootCause(e) instanceof ConnectException) {
-                log().error("Failed to send OpenNMS event to event proxy (" + m_eventProxy + "): " + e);
+                LOG.error("Failed to send OpenNMS event to event proxy ( {} )", m_eventProxy, e);
             } else {
-                log().error("Failed to send OpenNMS event to event proxy (" + m_eventProxy + "): " + e, e);
+                LOG.error("Failed to send OpenNMS event to event proxy ( {} )", m_eventProxy, e);
             }
         }
     }
@@ -153,9 +152,4 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     public void afterPropertiesSet() {
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

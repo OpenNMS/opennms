@@ -48,6 +48,7 @@ public class MockDestinationPathManager extends DestinationPathManager {
         parseXML(reader);
     }
 
+    @Override
     protected void saveXML(String writerString) throws IOException {
 
     }
@@ -55,6 +56,7 @@ public class MockDestinationPathManager extends DestinationPathManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.DestinationPathManager#update()
      */
+    @Override
     public void update() throws IOException, MarshalException,
             ValidationException, FileNotFoundException {
         // TODO Auto-generated method stub

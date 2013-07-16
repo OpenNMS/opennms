@@ -39,7 +39,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ThrowableAnticipator;
@@ -57,6 +57,7 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     private LocationMonitorDao m_locationMonitorDao;
     private DefaultDistributedPollerService m_distributedPollerService;
     
+    @Override
     protected void setUp() {
         m_mocks = new LinkedList<Object>();
         

@@ -32,10 +32,12 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates the execution context for processing events received
@@ -47,6 +49,9 @@ import org.opennms.netmgt.xml.event.Event;
  * 
  */
 final class UdpProcessor implements Runnable {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(UdpProcessor.class);
+    
     /**
      * The UDP receiver thread.
      */
@@ -99,32 +104,30 @@ final class UdpProcessor implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            ThreadCategory log = log();
-            if (log.isDebugEnabled())
-                log.debug("Stopping and joining thread context " + m_context.getName());
+            LOG.debug("Stopping and joining thread context {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            if (log.isDebugEnabled())
-                log.debug("Thread context stopped and joined");
+            LOG.debug("Thread context stopped and joined");
         }
     }
 
     /**
      * The event processing execution context.
      */
+    @Override
     public void run() {
         // The runnable context
         m_context = Thread.currentThread();
 
         // get a logger
-        ThreadCategory.setPrefix(m_logPrefix);
+        Logging.putPrefix(m_logPrefix);
         if (m_stop) {
-            log().debug("Stop flag set before thread started, exiting");
+            LOG.debug("Stop flag set before thread started, exiting");
             return;
         } else {
-            log().debug("Thread context started");
+            LOG.debug("Thread context started");
         }
 
         /*
@@ -132,7 +135,7 @@ final class UdpProcessor implements Runnable {
          * exited quickly when the thread is interrupted
          */
         RunLoop: while (!m_stop) {
-            log().debug("Waiting on a new datagram to arrive");
+            LOG.debug("Waiting on a new datagram to arrive");
 
             UdpReceivedEvent re = null;
             synchronized (m_eventsIn) {
@@ -141,41 +144,39 @@ final class UdpProcessor implements Runnable {
                     try {
                         m_eventsIn.wait(500);
                     } catch (InterruptedException ie) {
-                        log().debug("Thread interrupted");
+                        LOG.debug("Thread interrupted");
                         break RunLoop;
                     }
 
                     if (m_stop) {
-                        log().debug("Stop flag is set");
+                        LOG.debug("Stop flag is set");
                         break RunLoop;
                     }
                 }
                 re = m_eventsIn.remove(0);
             }
 
-            log().debug("A new request has arrived");
+            LOG.debug("A new request has arrived");
 
             // Convert the Event
             Event[] events = null;
             try {
-                if (log().isDebugEnabled()) {
-                    log().debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
-                    log().debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
-                }
+                LOG.debug("Event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
+                LOG.debug("Unmarshalling Event text \\{{}{}{}}", System.getProperty("line.separator"), re.getXmlData(), System.getProperty("line.separator"));
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {
-                log().warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                LOG.warn("Failed to unmarshal the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 continue;
             } catch (ValidationException e) {
-                log().warn("Failed to validate the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                LOG.warn("Failed to validate the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 continue;
             }
 
             if (events == null || events.length == 0) {
-                log().debug("The event log record contained no events");
+                LOG.debug("The event log record contained no events");
                 continue;
-            } else if (log().isDebugEnabled()) {
-                log().debug("Processing " + events.length + " events");
+            } else {
+                LOG.debug("Processing {} events", events.length);
             }
 
             // process the event
@@ -197,13 +198,13 @@ final class UdpProcessor implements Runnable {
                                 re.ackEvent(events[ndx]);
                             }
                         } catch (Throwable t) {
-                            log().warn("Failed to process received UDP event, exception follows", t);
+                            LOG.warn("Failed to process received UDP event, exception follows", t);
                         }
                     }
                 }
             }
 
-            log().debug("event processing complete, forwarding to receipt generator");
+            LOG.debug("event processing complete, forwarding to receipt generator");
 
             synchronized (m_eventUuidsOut) {
                 m_eventUuidsOut.add(re);
@@ -211,15 +212,11 @@ final class UdpProcessor implements Runnable {
             }
         }
 
-        log().debug("Context finished, returning");
+        LOG.debug("Context finished, returning");
     }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }
 

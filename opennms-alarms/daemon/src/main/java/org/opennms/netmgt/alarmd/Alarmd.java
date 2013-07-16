@@ -31,7 +31,6 @@ package org.opennms.netmgt.alarmd;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -54,8 +55,9 @@ import org.springframework.beans.factory.DisposableBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-@EventListener(name=Alarmd.NAME)
+@EventListener(name=Alarmd.NAME, logPrefix="alarmd")
 public class Alarmd implements SpringServiceDaemon, DisposableBean {
+    private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
     /** Constant <code>NAME="Alarmd"</code> */
     public static final String NAME = "Alarmd";
@@ -96,7 +98,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
 
     @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
     private void handleReloadEvent(Event e) {
-    	LogUtils.infof(this, "Received reload configuration event: %s", e);
+    	LOG.info("Received reload configuration event: {}", e);
 
     	//Currently, Alarmd has no configuration... I'm sure this will change soon.
 
@@ -107,15 +109,15 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     		String parmName = parm.getParmName();
     		if("daemonName".equals(parmName)) {
     			if (parm.getValue() == null || parm.getValue().getContent() == null) {
-    				LogUtils.warnf(this, "The daemonName parameter has no value, ignoring.");
+    				LOG.warn("The daemonName parameter has no value, ignoring.");
     				return;
     			}
 
     			List<Northbounder> nbis = getNorthboundInterfaces();
     			for (Northbounder nbi : nbis) {
     				if (parm.getValue().getContent().contains(nbi.getName())) {
-    					LogUtils.debugf(this, "Handling reload event for NBI: %s", nbi.getName());
-    					LogUtils.debugf(this, "Reloading NBI configuration not yet implemented.", nbi.getName());
+    					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
+    					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
     					return;
     				}
     			}
@@ -182,6 +184,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
     }
 
@@ -199,6 +202,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void start() throws Exception {
     }
 

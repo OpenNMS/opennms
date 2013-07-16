@@ -67,12 +67,6 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
 
     /** {@inheritDoc} */
     @Override
-    protected String createLoadedLogMessage(final Outages config, final long diffTime) {
-        return "Loaded " + getDescription() + " with " + config.getOutageCount() + " outages in " + diffTime + "ms";
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
          * It sucks to duplicate this first test from AbstractCastorConfigDao,
@@ -84,6 +78,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
         super.afterPropertiesSet();
     }
 
+    @Override
     protected Outages translateConfig(final Outages outages) {
         return outages;
     }
@@ -182,6 +177,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * Return if interfaces is part of specified outage.
      */
+    @Override
     public boolean isInterfaceInOutage(final String linterface, final String outName) {
         final Outage out = getOutage(outName);
         if (out == null) return false;
@@ -226,6 +222,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * Return if time is part of specified outage.
      */
+    @Override
     public boolean isTimeInOutage(final long time, final String outName) {
         final Outage out = getOutage(outName);
         if (out == null) return false;
@@ -254,6 +251,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * Return if current time is part of specified outage.
      */
+    @Override
     public boolean isCurTimeInOutage(final String outName) {
         return isTimeInOutage(new GregorianCalendar(), outName);
     }
@@ -338,6 +336,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      * Return if nodeid is part of specified outage
      * </p>
      */
+    @Override
     public boolean isNodeIdInOutage(final long lnodeid, final String outName) {
         final Outage out = getOutage(outName);
         if (out == null) return false;

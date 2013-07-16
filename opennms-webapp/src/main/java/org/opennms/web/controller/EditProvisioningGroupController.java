@@ -39,10 +39,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -51,6 +52,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * <p>EditProvisioningGroupController class.</p>
  */
 public class EditProvisioningGroupController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EditProvisioningGroupController.class);
+
 
     public static class TreeCommand {
         private String m_formPath;
@@ -98,6 +102,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
             m_formPath = "nodeEditForm.formData."+path;
         }
         
+        @Override
         public String toString() {
         	return new ToStringBuilder(this)
         		.append("action", getAction())
@@ -232,7 +237,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
     	try {
-    		LogUtils.debugf(this, "treeCmd = %s", treeCmd);
+    		LOG.debug("treeCmd = {}", treeCmd);
         	treeCmd.getFormData().validate();
         	final Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
             treeCmd.setFormData(formData);

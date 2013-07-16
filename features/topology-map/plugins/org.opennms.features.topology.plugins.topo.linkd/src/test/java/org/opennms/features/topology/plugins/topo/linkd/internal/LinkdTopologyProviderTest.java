@@ -33,21 +33,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.bind.JAXBException;
+
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
@@ -62,8 +64,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -147,7 +150,7 @@ public class LinkdTopologyProviderTest {
 		Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
 	}
 
-	@Test
+    @Test
 	public void test() throws Exception {
 		new File("target/test-classes/test.xml").delete();
 		m_topologyProvider.setConfigurationFile("target/test-classes/test.xml");
@@ -163,11 +166,12 @@ public class LinkdTopologyProviderTest {
 		assertTrue(m_topologyProvider.containsVertexId(vertexA));
 		assertTrue(m_topologyProvider.containsVertexId("v0"));
 		assertFalse(m_topologyProvider.containsVertexId("v1"));
+		
 		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
 		// Search by VertexRef
-		VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-		VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+		@SuppressWarnings("deprecation") VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+		@SuppressWarnings("deprecation") VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
 		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
@@ -419,33 +423,6 @@ public class LinkdTopologyProviderTest {
         
 	}
     
-    /**
-     * TODO Refactor this test into the app bundle.
-     */
-    @Test
-    @Ignore("Since this operation is now interactive, we need to change this unit test")
-    public void testCreateGroupOperation() {
-        VertexRef vertexId = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
-        
-        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
-        EasyMock.replay(graphContainer);
-        
-        /*
-        CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
-        groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
-        
-        Item vertexItem1 = m_topologyProvider.getVertexContainer().getItem(vertexId);
-        SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
-        assertEquals(2, parent.getMembers().size());
-        
-        m_topologyProvider.addGroup("Test Group", Constants.GROUP_ICON_KEY);
-        
-        EasyMock.verify(graphContainer);
-        */
-    }
-    
     @Test
     public void testTopoProviderSetParent() {
         VertexRef vertexId1 = addVertexToTopr();
@@ -478,4 +455,62 @@ public class LinkdTopologyProviderTest {
         
         assertEquals(2, eventsReceived.get());
     }
+    
+    /**
+     * Tests that the Linkdprovider does load the information stored in the xml file 
+     * correctly. So that all groups are loaded as expected and all groups have the expected
+     * children as well.
+     * @throws MalformedURLException
+     * @throws JAXBException
+     */
+    @Test
+    public void testAssignChildrenToParentsCorrectly() throws MalformedURLException, JAXBException {
+        LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider();
+
+        DataLinkInterfaceDao datalinkIfDaoMock = EasyMock.createNiceMock(DataLinkInterfaceDao.class);
+        EasyMock.expect(datalinkIfDaoMock.findAll()).andReturn(new ArrayList<DataLinkInterface>()).anyTimes();
+        EasyMock.replay(datalinkIfDaoMock);
+        
+        topologyProvider.setDataLinkInterfaceDao(datalinkIfDaoMock);
+        topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
+        topologyProvider.setIpInterfaceDao(m_databasePopulator.getIpInterfaceDao());
+        topologyProvider.setSnmpInterfaceDao(m_databasePopulator.getSnmpInterfaceDao());
+        topologyProvider.setConfigurationFile(getClass().getResource("/saved-linkd-graph2.xml").getFile());
+        topologyProvider.setAddNodeWithoutLink(true);
+        topologyProvider.load(null); // simulate refresh
+        
+        // test if topology is loaded correctly results
+        for (int i=0; i<topologyProvider.getGroups().size(); i++)  Assert.assertTrue(topologyProvider.containsVertexId("g" + i));
+        Assert.assertFalse(topologyProvider.containsVertexId("g" + topologyProvider.getGroups().size()));
+        for (int i=0; i<topologyProvider.getVerticesWithoutGroups().size(); i++) Assert.assertTrue(topologyProvider.containsVertexId("" + (i+1)));
+        Assert.assertFalse(topologyProvider.containsVertexId("" + (topologyProvider.getVerticesWithoutGroups().size()+1)));
+       
+        // now check the parent stuff        
+        final String namespace = topologyProvider.getVertexNamespace();
+        check(topologyProvider.getVertex(namespace, "1"), m_databasePopulator.getNode1(), topologyProvider.getVertex(namespace, "g2"));
+        check(topologyProvider.getVertex(namespace, "2"), m_databasePopulator.getNode2(), null);
+        check(topologyProvider.getVertex(namespace, "3"), m_databasePopulator.getNode3(), topologyProvider.getVertex(namespace, "g2"));
+        check(topologyProvider.getVertex(namespace, "4"), m_databasePopulator.getNode4(), null);
+
+        // now we need to check the groups as well
+        Assert.assertEquals(topologyProvider.getVertex(namespace, "g0").getParent(), null);
+        Assert.assertEquals(topologyProvider.getVertex(namespace, "g1").getParent(), null);
+        Assert.assertEquals(topologyProvider.getVertex(namespace, "g2").getParent(), topologyProvider.getVertex(namespace, "g1"));
+        
+    }
+    
+    // checks that the vertex and the node are equal
+    private void check(Vertex child, OnmsNode node, Vertex parent) {
+        Assert.assertNotNull(child);
+        Assert.assertNotNull(child.getTooltipText());
+        Assert.assertTrue(child.getTooltipText().length() > 0);
+        Assert.assertEquals(child.getNodeID(), node.getId());
+        Assert.assertEquals(child.getLabel(), node.getLabel());
+        Assert.assertEquals(child.getIpAddress(), InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()));
+        Assert.assertNotNull(child.getIconKey());
+        Assert.assertEquals(child.isLocked(), false);
+        Assert.assertEquals(child.isSelected(), false);
+        Assert.assertEquals(child.getParent(), parent);
+    }
 }
+

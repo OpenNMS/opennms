@@ -3,9 +3,9 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
 
-    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
 
     <bean id="vmwareTopologyProvider" init-method="refresh"
           class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
@@ -30,16 +30,4 @@
             <entry key="label" value="VMware"/>
         </service-properties>
     </service>
-
-    <!--
-    <service interface="org.opennms.features.topology.api.Operation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Refresh"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareRefreshOperation">
-            <argument ref="vmwareTopologyProvider"/>
-        </bean>
-    </service>
-    -->
 </blueprint>

@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.snmp;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnTracker extends CollectionTracker {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
@@ -60,6 +62,7 @@ public class ColumnTracker extends CollectionTracker {
         return m_base;
     }
 
+        @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("base", m_base)
@@ -68,24 +71,26 @@ public class ColumnTracker extends CollectionTracker {
             .append("finished?", isFinished())
             .toString();
     }
+        @Override
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        log().debug("Requesting oid following: "+m_last);
+        LOG.debug("Requesting oid following: {}", m_last);
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
         ResponseProcessor rp = new ResponseProcessor() {
 
+            @Override
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
                 if (val.isEndOfMib()) {
                     receivedEndOfMib();
                     return;
                 }
-                log().debug("Processing varBind: "+responseObjId+" = "+val);
+                LOG.debug("Processing varBind: {} = {}", responseObjId, val);
 
 
                 m_last = responseObjId;
@@ -102,6 +107,7 @@ public class ColumnTracker extends CollectionTracker {
                 
             }
 
+            @Override
             public boolean processErrors(int errorStatus, int errorIndex) {
                 if (errorStatus == NO_ERR) {
                     return false;
@@ -149,8 +155,4 @@ public class ColumnTracker extends CollectionTracker {
         }
     }
     
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

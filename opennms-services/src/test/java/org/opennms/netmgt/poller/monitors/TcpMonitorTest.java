@@ -56,9 +56,6 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
 public class TcpMonitorTest {
-
-    private boolean m_runTests = true;
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -69,9 +66,6 @@ public class TcpMonitorTest {
      */
     @Test
     public void testExternalServerConnection() throws UnknownHostException {
-
-        if (m_runTests == false) return;
-
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
@@ -100,9 +94,6 @@ public class TcpMonitorTest {
     @Test
     @JUnitHttpServer(port=10342)
     public void testLocalhostConnection() throws UnknownHostException {
-
-        if (m_runTests == false) return;
-
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
@@ -130,8 +121,7 @@ public class TcpMonitorTest {
     @Test
     @JUnitHttpServer(port=10342)
     public void testLocalhostIPv6Connection() throws UnknownHostException {
-
-        if (m_runTests == false) return;
+        if (Boolean.getBoolean("skipIpv6Tests")) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();

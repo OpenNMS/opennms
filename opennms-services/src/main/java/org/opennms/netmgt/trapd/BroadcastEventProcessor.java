@@ -31,11 +31,12 @@ package org.opennms.netmgt.trapd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -47,6 +48,9 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+	
     private final EventIpcManager m_eventMgr;
     private final TrapdIpMgr m_trapdIpMgr;
     
@@ -111,6 +115,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         close();
     }
@@ -122,46 +127,36 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         String eventUei = event.getUei();
         if (eventUei == null) {
-            log.warn("Received an unexpected event with a null UEI");
+            LOG.warn("Received an unexpected event with a null UEI");
             return;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Received event: " + eventUei);
-        }
+        LOG.debug("Received event: {}", eventUei);
 
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
             || eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             String action = eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI) ?
                 "reparent" : "add";
             if (Long.toString(event.getNodeid()) == null) {
-                log.warn("Not " + action + "ing interface to known node list: "
-                    + "nodeId is null");
+                LOG.warn("Not {}ing interface to known node list: nodeId is null", action);
             } else if (event.getInterface() == null) {
-                log.warn("Not " + action + "ing interface to known node list: "
-                    + "interface is null");
+                LOG.warn("Not {}ing interface to known node list: interface is null", action);
             } else {
                 m_trapdIpMgr.setNodeId(event.getInterface(), event.getNodeid());
-                if (log.isDebugEnabled()) {
-                    log.debug("Successfully " + action + "ed "
-                              + event.getInterface() + " to known node list");
-                }
+                LOG.debug("Successfully {}ed {} to known node list", action, event.getInterface());
             }
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             if (event.getInterface() != null) {
                 m_trapdIpMgr.removeNodeId(event.getInterface());
-                if (log.isDebugEnabled()) {
-                    log.debug("Removed " + event.getInterface() + " from known node list");
-                }
+                LOG.debug("Removed {} from known node list", event.getInterface());
             }
         } else {
-            log.warn("Received an unexpected event with UEI of \""
-                     + eventUei + "\"");
+            LOG.warn("Received an unexpected event with UEI of \"{}\"" , eventUei);
         }
     }
 
@@ -170,6 +165,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Trapd:BroadcastEventProcessor";
     }

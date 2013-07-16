@@ -32,14 +32,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.KscReportService;
-import org.opennms.web.svclayer.support.DefaultKscReportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,6 +53,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class FormProcViewController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FormProcViewController.class);
+
 
     public enum Parameters {
         action,
@@ -108,7 +111,7 @@ public class FormProcViewController extends AbstractController implements Initia
              // Fetch the KscReportEditor or create one if there isn't one already
                 KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
-                log().debug("handleRequestInternal: build report for reportType " + reportType);
+                LOG.debug("handleRequestInternal: build report for reportType {}", reportType);
                 if (reportType.equals("node")) {
                     editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId));
                 } else if (reportType.equals("nodeSource")) {
@@ -209,8 +212,6 @@ public class FormProcViewController extends AbstractController implements Initia
         m_kscReportService = kscReportService;
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(FormProcViewController.class);
-    }
+    
 
 }

@@ -86,6 +86,7 @@ public class DestinationWizardServlet extends HttpServlet {
 //    private String SOURCE_PAGE_ESCALATE_ADD = "addEscalation.jsp";
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             DestinationPathFactory.init();

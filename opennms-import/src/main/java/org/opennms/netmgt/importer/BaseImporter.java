@@ -35,14 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
 import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
@@ -61,6 +60,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -74,6 +75,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version $Id: $
  */
 public class BaseImporter implements ImportOperationFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(BaseImporter.class);
+
 
     protected TransactionTemplate m_transTemplate;
     protected DistPollerDao m_distPollerDao;
@@ -101,7 +105,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getDistPollerDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
@@ -110,7 +114,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setDistPollerDao</p>
      *
-     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
@@ -119,7 +123,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -128,7 +132,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -137,7 +141,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getIpInterfaceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
@@ -146,7 +150,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setIpInterfaceDao</p>
      *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
@@ -155,7 +159,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getMonitoredServiceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
@@ -164,7 +168,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
@@ -173,7 +177,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getServiceTypeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
@@ -182,7 +186,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
@@ -191,7 +195,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getAssetRecordDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
      */
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
@@ -200,7 +204,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setAssetRecordDao</p>
      *
-     * @param assetRecordDao a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     * @param assetRecordDao a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
      */
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
@@ -225,6 +229,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         InsertOperation insertOperation = new InsertOperation(foreignSource, foreignId, nodeLabel, building, city);
         insertOperation.setNodeDao(m_nodeDao);
@@ -238,6 +243,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city);
         updateOperation.setNodeDao(m_nodeDao);
@@ -250,6 +256,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
         return new DeleteOperation(nodeId, foreignSource, foreignId, m_nodeDao);
     }
@@ -332,12 +339,12 @@ public class BaseImporter implements ImportOperationFactory {
 	}
 
     private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
-    	m_transTemplate.execute(new TransactionCallback<Object>() {
+    	m_transTemplate.execute(new TransactionCallbackWithoutResult() {
     
-            public Object doInTransaction(TransactionStatus status) {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 ImportAccountant accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
-                return null;
             }
             
         });
@@ -350,13 +357,15 @@ public class BaseImporter implements ImportOperationFactory {
 			m_foreignSource = foreignSource;
 		}
 
+                @Override
         public void visitNode(final Node node) {
 			m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                                @Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					
 					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
 					if (dbNode == null) {
-					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
+					    LOG.error("Error setting parent on node: {} node not in database", node.getForeignId());
 					    return;
 					}
 					OnmsNode parent = findParent(node);
@@ -366,9 +375,9 @@ public class BaseImporter implements ImportOperationFactory {
 						critIface = getCriticalInterface(parent);
 					}
 					
-					log().info("Setting parent of node: "+dbNode+" to: "+parent);
+					LOG.info("Setting parent of node: {} to: {}", dbNode, parent);
 					dbNode.setParent(parent);
-					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
+					LOG.info("Setting criticalInterface of node: {} to: {}", dbNode, critIface);
 					if (critIface == null) {
 						dbNode.setPathElement(null);
 					} else {
@@ -408,7 +417,7 @@ public class BaseImporter implements ImportOperationFactory {
                 return nodes.iterator().next();
             }
 			
-			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
+			LOG.error("Unable to locate a unique node using label {}{} nodes found.  Ignoring relationship.", label, nodes.size());
 			return null;
 		}
 
@@ -422,17 +431,10 @@ public class BaseImporter implements ImportOperationFactory {
 		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-    	return ThreadCategory.getInstance(getClass());
-	}
 
 	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            @Override
             public Map<String,Integer> doInTransaction(TransactionStatus status) {
                 return Collections.unmodifiableMap(getNodeDao().getForeignIdToNodeIdMap(foreignSource));
             }
@@ -443,6 +445,7 @@ public class BaseImporter implements ImportOperationFactory {
     private OnmsDistPoller createDistPollerIfNecessary() {
         return m_transTemplate.execute(new TransactionCallback<OnmsDistPoller>() {
     
+            @Override
             public OnmsDistPoller doInTransaction(TransactionStatus status) {
                 OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
                 if (distPoller == null) {
@@ -459,7 +462,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -468,7 +471,7 @@ public class BaseImporter implements ImportOperationFactory {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;

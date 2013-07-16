@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -64,6 +63,7 @@ public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
         super(address, "cdpCacheTable", CdpCacheTableEntry.cdpCache_elemList);
 	}
     /** {@inheritDoc} */
+    @Override
     protected CdpCacheTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CdpCacheTableEntry();
     }

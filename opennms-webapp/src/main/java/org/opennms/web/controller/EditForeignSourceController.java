@@ -41,9 +41,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.PropertyPath;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
@@ -54,6 +52,8 @@ import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Controller;
@@ -72,6 +72,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class EditForeignSourceController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EditForeignSourceController.class);
+
 
     private ForeignSourceService m_foreignSourceService;
     private static final Map<String,Set<String>> m_pluginParameters = new HashMap<String,Set<String>>();
@@ -132,6 +135,7 @@ public class EditForeignSourceController extends SimpleFormController {
             m_formPath = "foreignSourceEditForm.formData."+path;
         }
         
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("foreign source", m_foreignSourceName)
@@ -159,7 +163,7 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
-        LogUtils.debugf(this, "treeCmd = %s", treeCmd);
+        LOG.debug("treeCmd = {}", treeCmd);
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);
@@ -307,13 +311,11 @@ public class EditForeignSourceController extends SimpleFormController {
             m_pluginParameters.put(clazz, parameters);
             return parameters;
         } catch (ClassNotFoundException e) {
-            log().warn("unable to wrap class " + clazz, e);
+            LOG.warn("unable to wrap class {}", clazz, e);
         }
         return null;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(EditForeignSourceController.class);
-    }
+    
     
 }

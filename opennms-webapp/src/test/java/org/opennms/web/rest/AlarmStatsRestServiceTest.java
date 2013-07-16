@@ -41,18 +41,20 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceTest.class);
     private DatabasePopulator m_databasePopulator;
     private WebApplicationContext m_context;
     private int count = 0;
@@ -191,7 +193,7 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
-        LogUtils.debugf(this, "CreateAlarm: %s", alarm);
+        LOG.debug("CreateAlarm: {}", alarm);
 
         return alarm;
     }

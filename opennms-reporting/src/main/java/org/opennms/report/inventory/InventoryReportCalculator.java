@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -55,6 +54,8 @@ import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.opennms.rancid.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -64,6 +65,9 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Id: $
  */
 public class InventoryReportCalculator implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(InventoryReportCalculator.class);
+
     String m_baseDir;
     // output file name
 
@@ -206,9 +210,6 @@ public class InventoryReportCalculator implements InitializingBean {
         m_baseDir = baseDir;
     }
 
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 
     /**
      * <p>afterPropertiesSet</p>
@@ -226,7 +227,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceGroupsList(m_cp).getResource();
         } catch (RancidApiException e) {
-            log().error("getGroups: has given exception "+ e.getMessage() + ". Skipped");
+            LOG.error("getGroups: has given exception {}. Skipped", e.getMessage());
         }
         return new ArrayList<String>();
     }
@@ -235,7 +236,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceDeviceList(m_cp, groupName).getResource();
         } catch (RancidApiException e) {
-            log().error("getDeviceListOnGroup: group [" + groupName + "]. Skipped"); 
+            LOG.error("getDeviceListOnGroup: group [{}]. Skipped", groupName); 
         }
         return new ArrayList<String>();
     }
@@ -244,7 +245,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSResourceConfigList(m_cp, groupName, deviceName).getResource();
         } catch (RancidApiException e) {
-            log().error("getVersionListOnDevice:  device has no inventory ["+deviceName+ "]. " + e.getLocalizedMessage()); 
+            LOG.error("getVersionListOnDevice:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
 
         return new ArrayList<String>();
@@ -254,7 +255,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             return RWSClientApi.getRWSRancidNodeInventory(m_cp ,groupName, deviceName);
         } catch (RancidApiException e) {
-            log().error("getFullNode:  device has no inventory ["+deviceName+ "]. " + e.getLocalizedMessage()); 
+            LOG.error("getFullNode:  device has no inventory [{}]. {}", deviceName, e.getLocalizedMessage()); 
         }
         return null;
     }
@@ -283,7 +284,7 @@ public class InventoryReportCalculator implements InitializingBean {
         catch (ParseException pe){
             tmp_date = Calendar.getInstance().getTime();
         }
-        log().debug("calculate:report date[" + tmp_date.toString() + "]"); 
+        LOG.debug("calculate:report date[{}]", tmp_date.toString()); 
         rnbi.setReportDate(tmp_date.toString());
 
 
@@ -294,7 +295,7 @@ public class InventoryReportCalculator implements InitializingBean {
         int groupsWithNodesWithoutinventoryAtReportDate = 0;
   
         for(String groupName : getGroups()) {
-            log().debug("calculate:report group [" + groupName + "]"); 
+            LOG.debug("calculate:report group [{}]", groupName); 
             totalGroups++;
             GroupSet gs = new GroupSet(); 
             gs.setGroupSetName(groupName);
@@ -308,7 +309,7 @@ public class InventoryReportCalculator implements InitializingBean {
 
             for (String deviceName: getDeviceListOnGroup(groupName)) {
                 totalNodes++;
-                log().debug("calculate:report device [" + deviceName + "]");
+                LOG.debug("calculate:report device [{}]", deviceName);
 
                 RancidNode rancidNode = getFullNode(groupName, deviceName);
                 if ( rancidNode == null ) {
@@ -325,16 +326,16 @@ public class InventoryReportCalculator implements InitializingBean {
 
                     invNode = (InventoryNode)rancidNode.getNodeVersions().get(versionMatch);
 
-                    log().debug("calculate:report parsing InventoryNode version[" + invNode.getVersionId() + "] date ["+invNode.getCreationDate()+"]"); 
+                    LOG.debug("calculate:report parsing InventoryNode version[{}] date [{}]", invNode.getVersionId(), invNode.getCreationDate()); 
                     
                     if (tmp_date.compareTo(invNode.getCreationDate()) >  0 ) {
                         found = true;
-                        log().debug("calculate:report Date found is ["+invNode.getCreationDate()+"] version is [" + versionMatch + "]");
+                        LOG.debug("calculate:report Date found is [{}] version is [{}]", invNode.getCreationDate(), versionMatch);
                         break;
                     }
                 }  //end for on version
                 if (found == false) {
-                    log().debug("calculate: device has no configuration at this date["+deviceName+ "]"); 
+                    LOG.debug("calculate: device has no configuration at this date[{}]", deviceName); 
                     groupHasNodesWithoutinventoryAtrequestDate = true;
                     nodesWithoutinventoryAtReportDate++;
                     continue;
@@ -455,7 +456,7 @@ public class InventoryReportCalculator implements InitializingBean {
     public NodeBaseInventory getNodeBaseInventory(String node, String group, String version) {
         // get the latest version from the given date        
         
-        log().debug("getNodeBaseInventory " + node +" "+group + " "+version);
+        LOG.debug("getNodeBaseInventory {} {} {}", node, group, version);
         NodeBaseInventory nbi = new NodeBaseInventory();
 
         
@@ -463,7 +464,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             rn = RWSClientApi.getRWSRancidNodeInventory(m_cp, group, node);
         } catch (RancidApiException e) {
-            log().debug("getNodeBaseInventory: inventory not found. Skipping");
+            LOG.debug("getNodeBaseInventory: inventory not found. Skipping");
             return nbi;
         }
         
@@ -480,7 +481,7 @@ public class InventoryReportCalculator implements InitializingBean {
         try {
             nbi.setIe( RWSClientApi.getRWSRancidNodeInventoryElement2(m_cp, rn, version));
         } catch (RancidApiException e) {
-            log().debug("getNodeBaseInventory: inventory not found for version: " + version + ". Skipping");
+            LOG.debug("getNodeBaseInventory: inventory not found for version: {}. Skipping", version);
         }
         
         return nbi;
@@ -494,19 +495,19 @@ public class InventoryReportCalculator implements InitializingBean {
      */
     public void writeXML() throws InventoryCalculationException {
         try {
-            log().debug("Writing the XML");
+            LOG.debug("Writing the XML");
             SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss");
             String datestamp = fmt.format(reportRequestDate);
             m_outputFileName = "/NODEINVENTORY" + datestamp + ".xml";
 
 
             // Create a file name of type Category-monthFormat-startDate.xml
-            log().debug("Report Store XML file: " + m_outputFileName);
+            LOG.debug("Report Store XML file: {}", m_outputFileName);
             File reportFile = new File(m_baseDir, m_outputFileName);
             // marshal the XML into the file.
             marshal(reportFile);
         } catch (InventoryCalculationException e) {
-            log().fatal("Unable to marshal report as XML");
+            LOG.error("Unable to marshal report as XML");
             throw new InventoryCalculationException(e);
         }
     }
@@ -525,17 +526,16 @@ public class InventoryReportCalculator implements InitializingBean {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rnbi);
-            log().debug("The xml marshalled from the castor classes is saved in "
-                    + outputFile.getAbsoluteFile());
+            LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
             fileWriter.close();
         } catch (MarshalException me) {
-            log().fatal("MarshalException ", me);
+            LOG.error("MarshalException ", me);
             throw new InventoryCalculationException(me);
         } catch (ValidationException ve) {
-            log().fatal("Validation Exception ", ve);
+            LOG.error("Validation Exception ", ve);
             throw new InventoryCalculationException(ve);
         } catch (IOException ioe) {
-            log().fatal("IO Exception ", ioe);
+            LOG.error("IO Exception ", ioe);
             throw new InventoryCalculationException(ioe);
         }
 

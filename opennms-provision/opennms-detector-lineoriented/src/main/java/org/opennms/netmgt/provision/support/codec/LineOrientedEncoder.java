@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,8 +36,9 @@ import org.apache.mina.core.session.AttributeKey;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>LineOrientedEncoder class.</p>
@@ -46,6 +47,8 @@ import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
  * @version $Id: $
  */
 public class LineOrientedEncoder extends ProtocolEncoderAdapter {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(LineOrientedEncoder.class);
     private final AttributeKey ENCODER = new AttributeKey(getClass(), "encoder");
     private final Charset m_charset;
     
@@ -59,6 +62,7 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
         final LineOrientedRequest request = (LineOrientedRequest) message;
 
@@ -80,7 +84,7 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
             buffer.putString(request.getRequest(), encoder);
 
             buffer.flip();
-            LogUtils.debugf(this, "Client sending: %s", value.trim());
+            LOG.debug("Client sending: {}", value.trim());
             out.write(buffer);
         } finally {
             if (buffer != null) {

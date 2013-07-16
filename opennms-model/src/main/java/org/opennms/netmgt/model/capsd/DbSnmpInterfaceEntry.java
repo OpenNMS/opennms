@@ -38,7 +38,8 @@ import java.sql.Types;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -61,6 +62,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class DbSnmpInterfaceEntry {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DbSnmpInterfaceEntry.class);
+
     /**
      * The SQL statement used to read a node from the database. This record is
      * keyed by the node identifier and the ifIndex.
@@ -149,7 +153,6 @@ public final class DbSnmpInterfaceEntry {
             throw new IllegalStateException("The record already exists in the database");
         }
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex");
@@ -206,8 +209,7 @@ public final class DbSnmpInterfaceEntry {
         }
 
         names.append(") VALUES (").append(values).append(')');
-        log.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = "
-                  + names.toString());
+        LOG.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = {}", names.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
@@ -263,12 +265,12 @@ public final class DbSnmpInterfaceEntry {
 
             // Run the insert
             int rc = stmt.executeUpdate();
-            log.debug("DbSnmpInterfaceEntry.insert: SQL update result = " + rc);
+            LOG.debug("DbSnmpInterfaceEntry.insert: SQL update result = {}", rc);
         } catch (SQLException e) {
-            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            LOG.error("Insertion of snmpinterface entry failed: nodeid = {}, ifIndex = {}", m_nodeId, m_ifIndex);
             throw e;
         } catch (RuntimeException e) {
-            log.error(String.format("Insertion of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            LOG.error("Insertion of snmpinterface entry failed: nodeid = {}, ifIndex = {}", m_nodeId, m_ifIndex);
             throw e;
         } finally {
             d.cleanUp();
@@ -293,7 +295,6 @@ public final class DbSnmpInterfaceEntry {
             throw new IllegalStateException("The record does not exists in the database");
         }
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         StringBuffer sqlText = new StringBuffer("UPDATE snmpInterface SET ");
@@ -352,8 +353,7 @@ public final class DbSnmpInterfaceEntry {
 
         sqlText.append(" WHERE nodeID = ? AND snmpIfIndex = ? ");
 
-        log.debug("DbSnmpInterfaceEntry.update: SQL update statment = "
-                  + sqlText.toString());
+        LOG.debug("DbSnmpInterfaceEntry.update: SQL update statment = {}", sqlText.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
@@ -456,12 +456,12 @@ public final class DbSnmpInterfaceEntry {
 
             // Run the update
             int rc = stmt.executeUpdate();
-            log.debug("DbSnmpInterfaceEntry.update: update result = " + rc);
+            LOG.debug("DbSnmpInterfaceEntry.update: update result = {}", rc);
         } catch (SQLException e) {
-            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            LOG.error("Update of snmpinterface entry failed: nodeid = {}, ifIndex = {}", m_nodeId, m_ifIndex);
             throw e;
         } catch (RuntimeException e) {
-            log.error(String.format("Update of snmpinterface entry failed: nodeid = %s, ifIndex = %s", m_nodeId, m_ifIndex));
+            LOG.error("Update of snmpinterface entry failed: nodeid = {}, ifIndex = {}", m_nodeId, m_ifIndex);
             throw e;
         } finally {
             d.cleanUp();
@@ -930,8 +930,7 @@ public final class DbSnmpInterfaceEntry {
                         db.close();
                     }
                 } catch (SQLException e) {
-                    ThreadCategory.getInstance(getClass()).warn("Exception "
-                                + "closing JDBC connection", e);
+                    LOG.warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -996,7 +995,7 @@ public final class DbSnmpInterfaceEntry {
                     db.close();
                 }
             } catch (SQLException e) {
-                ThreadCategory.getInstance(DbSnmpInterfaceEntry.class).warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
     }
@@ -1031,6 +1030,7 @@ public final class DbSnmpInterfaceEntry {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         String sep = System.getProperty("line.separator");
         StringBuffer buf = new StringBuffer();

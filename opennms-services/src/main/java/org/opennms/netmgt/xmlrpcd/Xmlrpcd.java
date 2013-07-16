@@ -37,7 +37,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -45,6 +44,8 @@ import org.opennms.netmgt.xml.event.Event;
 
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * <p>
  * The Xmlrpcd receives events selectively and sends notification to an external
@@ -57,6 +58,9 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  */
 public class Xmlrpcd extends AbstractServiceDaemon {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(Xmlrpcd.class);
+    
     /**
      * The singleton instance.
      */
@@ -89,20 +93,21 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      * XMLRPC server via XMLRPC protocol.
      */
     public Xmlrpcd() {
-    	super("OpenNMS.Xmlrpcd");
+    	super("xmlrpcd");
     }
 
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
 
 
-        LogUtils.debugf(this, "start: Creating the xmlrpc event queue processor");
+        LOG.debug("start: Creating the xmlrpc event queue processor");
 
         // set up the event queue processor
         try {
-            LogUtils.debugf(this, "start: Initializing the xmlrpcd config factory");
+            LOG.debug("start: Initializing the xmlrpcd config factory");
 
             final boolean verifyServer = getServerConfig().verifyServer();
             String localServer = null;
@@ -126,17 +131,8 @@ public class Xmlrpcd extends AbstractServiceDaemon {
                 i++;
             }
 
-        } catch (final MarshalException e) {
-            LogUtils.errorf(this, e, "Failed to load configuration");
-            throw new UndeclaredThrowableException(e);
-        } catch (final ValidationException e) {
-            LogUtils.errorf(this, e, "Failed to load configuration");
-            throw new UndeclaredThrowableException(e);
-        } catch (final IOException e) {
-            LogUtils.errorf(this, e, "Failed to load configuration");
-            throw new UndeclaredThrowableException(e);
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "Failed to load configuration");
+            LOG.error("Failed to load configuration", t);
             throw new UndeclaredThrowableException(t);
         }
     }
@@ -216,57 +212,61 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
-        LogUtils.debugf(this, "start: Initializing the xmlrpcd config factory");
+        LOG.debug("start: Initializing the xmlrpcd config factory");
         
         for (final EventQueueProcessor proc : m_processors) {
         	proc.start();
         }
 
-        LogUtils.debugf(this, "start: xmlrpcd ready to process events");
+        LOG.debug("start: xmlrpcd ready to process events");
     }
 
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
-        LogUtils.debugf(this, "pause: Calling pause on processor");
+        LOG.debug("pause: Calling pause on processor");
 
         for (final EventQueueProcessor proc : m_processors) {
             proc.pause();
         }
 
-        LogUtils.debugf(this, "pause: Processor paused");
+        LOG.debug("pause: Processor paused");
     }
     
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
-        LogUtils.debugf(this, "resume: Calling resume on processor");
+        LOG.debug("resume: Calling resume on processor");
 
         for (final EventQueueProcessor proc : m_processors) {
             proc.resume();
         }
 
-        LogUtils.debugf(this, "resume: Processor resumed");
+        LOG.debug("resume: Processor resumed");
     }
 
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
     	// LogUtils.debugf(this, "exit: closing communication paths.");
 
-        LogUtils.debugf(this, "stop: Calling stop on processor");
+        LOG.debug("stop: Calling stop on processor");
 
         // interrupt the processor daemon thread
         for (final EventQueueProcessor proc : m_processors) {
             proc.stop();
         }
         
-        LogUtils.debugf(this, "stop: Processor stopped");
+        LOG.debug("stop: Processor stopped");
     }
 
     /**

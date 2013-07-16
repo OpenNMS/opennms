@@ -48,6 +48,7 @@ public class CreateTypeChange extends AbstractChange implements ChangeWithColumn
 		super("createType", "Create a new column type.", ChangeMetaData.PRIORITY_DEFAULT);
 	}
 
+        @Override
     public boolean supports(final Database database) {
     	return database instanceof PostgresDatabase;
     }
@@ -60,14 +61,17 @@ public class CreateTypeChange extends AbstractChange implements ChangeWithColumn
 		m_typeName = name;
 	}
 
+        @Override
 	public void addColumn(final ColumnConfig column) {
 		m_columns.add(column);
 	}
 
+        @Override
 	public List<ColumnConfig> getColumns() {
 		return m_columns;
 	}
 
+        @Override
 	public SqlStatement[] generateStatements(final Database database) {
 		final CreateTypeStatement statement = new CreateTypeStatement(m_typeName);
 		for (final ColumnConfig column : m_columns) {
@@ -78,6 +82,7 @@ public class CreateTypeChange extends AbstractChange implements ChangeWithColumn
 		};
 	}
 
+        @Override
     public String getConfirmationMessage() {
         return "Type " + getName() + " created";
     }

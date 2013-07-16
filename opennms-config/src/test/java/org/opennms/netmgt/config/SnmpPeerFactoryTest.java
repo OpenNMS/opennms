@@ -42,6 +42,7 @@ public class SnmpPeerFactoryTest extends TestCase {
 
     private int m_version;
 
+    @Override
 	protected void setUp() throws Exception {
         setVersion(SnmpAgentConfig.VERSION2C);
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
@@ -166,6 +167,7 @@ public class SnmpPeerFactoryTest extends TestCase {
 
 
 
+    @Override
 	protected void tearDown() {
         
     }

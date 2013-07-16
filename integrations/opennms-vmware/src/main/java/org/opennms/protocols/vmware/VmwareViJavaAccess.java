@@ -215,6 +215,7 @@ public class VmwareViJavaAccess {
     protected void relax() {
 
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            @Override
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -229,12 +230,14 @@ public class VmwareViJavaAccess {
                 return true;
             }
 
+            @Override
             public void checkServerTrusted(
                     java.security.cert.X509Certificate[] certs, String authType)
                     throws java.security.cert.CertificateException {
                 return;
             }
 
+            @Override
             public void checkClientTrusted(
                     java.security.cert.X509Certificate[] certs, String authType)
                     throws java.security.cert.CertificateException {
@@ -251,6 +254,7 @@ public class VmwareViJavaAccess {
         }
 
         HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
             public boolean verify(String s, SSLSession sslSession) {
                 return true;
             }

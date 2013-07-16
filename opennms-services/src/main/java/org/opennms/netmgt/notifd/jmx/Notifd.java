@@ -41,6 +41,8 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Notifd class.</p>
@@ -49,10 +51,13 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @version $Id: $
  */
 public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Notifd.class);
+    
     /**
      * Logging category for log4j
      */
-    private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
+    private static String LOG4J_CATEGORY = "notifd";
 
     /**
      * <p>Constructor for Notifd.</p>
@@ -64,62 +69,63 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         EventIpcManagerFactory.init();
 
         try {
             NotifdConfigFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init NotifdConfigFactory.", t);
+            LOG.error("start: Failed to init NotifdConfigFactory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init NotificationFactory.", t);
+            LOG.error("start: Failed to init NotificationFactory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             DataSourceFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init database connection factory.", t);
+            LOG.error("start: Failed to init database connection factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             GroupFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init group factory.", t);
+            LOG.error("start: Failed to init group factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             UserFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init user factory.", t);
+            LOG.error("start: Failed to init user factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             DestinationPathFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init destination path factory.", t);
+            LOG.error("start: Failed to init destination path factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationCommandFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init notification command factory.", t);
+            LOG.error("start: Failed to init notification command factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             PollOutagesConfigFactory.init();
         } catch (Throwable t) {
-            log().error("start: Failed to init poll outage config factory.", t);
+            LOG.error("start: Failed to init poll outage config factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
@@ -145,6 +151,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getNotifd().start();
     }
@@ -152,6 +159,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getNotifd().stop();
     }
@@ -162,6 +170,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getNotifd().getStatus();
     }

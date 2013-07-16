@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.container</groupId>
   <artifactId>standalone</artifactId>
@@ -17,6 +17,13 @@
       <artifactId>apache-karaf</artifactId>
       <version>${karafVersion}</version>
       <type>tar.gz</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.assemblies.features</groupId>

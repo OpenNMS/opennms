@@ -63,6 +63,7 @@ public class OnmsWbemPropertySetImpl implements OnmsWbemPropertySet {
      * @return a {@link java.lang.Integer} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public Integer count() throws WmiException {
         try {
             final JIVariant Count = wbemPropertySetDispatch.get("Count");
@@ -73,6 +74,7 @@ public class OnmsWbemPropertySetImpl implements OnmsWbemPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemProperty get(final Integer idx) throws WmiException {
         try {
             final IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();
@@ -96,6 +98,7 @@ public class OnmsWbemPropertySetImpl implements OnmsWbemPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemProperty getByName(final String name) throws WmiException {
         try {
             final IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();

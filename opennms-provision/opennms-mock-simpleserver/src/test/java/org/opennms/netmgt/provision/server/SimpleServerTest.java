@@ -64,6 +64,7 @@ public class SimpleServerTest {
     @Test
     public void testServerTimeout() throws Exception {
         SimpleServer server = new SimpleServer() {
+            @Override
             public void onInit() {
                 setTimeout(500);
                 setBanner("+OK");
@@ -83,6 +84,7 @@ public class SimpleServerTest {
     @Test
     public void testServerWithCustomErrors() throws Exception {
         SimpleServer server = new SimpleServer() {
+            @Override
             public void onInit() {
                 setTimeout(1000);
                 setBanner("+OK");
@@ -126,6 +128,7 @@ public class SimpleServerTest {
     @Test
     public void testMultipleRequestAndCloseServer() throws Exception {
         SimpleServer server = new SimpleServer() {
+            @Override
             public void onInit() {
                 setTimeout(1000);
                 setBanner("+OK");
@@ -161,6 +164,7 @@ public class SimpleServerTest {
     public void testServerQuitAndClose() throws Exception{
         //TODO
         SimpleServer server = new SimpleServer() {
+            @Override
             public void onInit() {
                 setTimeout(500);
                 setBanner("+OK");
@@ -186,6 +190,7 @@ public class SimpleServerTest {
     @Test
     public void testServerNoBannerTimeout() throws Exception{
         SimpleServer server = new SimpleServer() {
+            @Override
             public void onInit() {
                 setTimeout(500);
             }

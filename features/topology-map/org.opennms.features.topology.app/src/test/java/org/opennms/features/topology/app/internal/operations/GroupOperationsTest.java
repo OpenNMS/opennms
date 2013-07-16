@@ -45,20 +45,24 @@ import javax.xml.bind.JAXBException;
 
 import org.easymock.EasyMock;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class GroupOperationsTest {
@@ -66,15 +70,18 @@ public class GroupOperationsTest {
 	private static class TestOperationContext implements OperationContext {
 
 		private final GraphContainer m_graphContainer;
-		private final Window m_window;
+		private final UI m_window;
 
 		public TestOperationContext(GraphContainer graphContainer) {
 			m_graphContainer = graphContainer;
-			m_window = new Window();
+			m_window = new UI() {
+				@Override
+				protected void init(VaadinRequest request) {
+				}};
 		}
 
 		@Override
-		public Window getMainWindow() {
+		public UI getMainWindow() {
 			return m_window;
 		}
 
@@ -85,7 +92,6 @@ public class GroupOperationsTest {
 
 		@Override
 		public boolean isChecked() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
@@ -99,7 +105,24 @@ public class GroupOperationsTest {
 	private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
 		return new TestOperationContext(mockedContainer);
 	}
+	
+	private static Form getForm(final Window prompt) {
+	    for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
+            Component component = itr.next();
+            if (component instanceof Form) return (Form)component;
+            LoggerFactory.getLogger(GroupOperationsTest.class).info("Not a Form: " + component.getClass());
+        }
+	    throw new IllegalArgumentException("prompt does not have a form");
+	}
 
+	private static Window getPrompt(final OperationContext context) {
+	    UI window = context.getMainWindow();
+        assertEquals(1, window.getWindows().size());
+        Window prompt = window.getWindows().iterator().next();
+        assertNotNull(prompt);
+        return prompt;
+	}
+	
 	private SimpleGraphProvider m_topologyProvider;
 
 	@Before
@@ -132,10 +155,14 @@ public class GroupOperationsTest {
 		GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 
 		EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+		SelectionManager selectionManager = EasyMock.createNiceMock(SelectionManager.class);
+		EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(false).anyTimes();
+		EasyMock.expect(graphContainer.getSelectionManager()).andReturn(selectionManager).anyTimes();
 		graphContainer.redoLayout();
 		EasyMock.expectLastCall().anyTimes();
 
 		EasyMock.replay(graphContainer);
+		EasyMock.replay(selectionManager);
 
 		Collection<Vertex> vertices = m_topologyProvider.getVertices();
 		assertEquals(2, vertices.size());
@@ -159,11 +186,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -219,11 +246,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -303,11 +330,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -355,11 +382,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -409,11 +436,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -445,7 +472,7 @@ public class GroupOperationsTest {
 			assertNull(m_topologyProvider.getParent(vertex1));
 		}
 
-		EasyMock.verify(graphContainer);
+		EasyMock.verify(graphContainer, selectionManager);
 	}
 
 	private static void renameGroup(GraphContainer graphContainer, Vertex group, String newLabel) {
@@ -456,11 +483,11 @@ public class GroupOperationsTest {
 
 		// Grab the window, put a value into the form field, and commit the form to complete
 		// the operation.
-		Window window = context.getMainWindow();
-		assertEquals(1, window.getChildWindows().size());
-		Window prompt = window.getChildWindows().iterator().next();
+		UI window = context.getMainWindow();
+		assertEquals(1, window.getWindows().size());
+		Window prompt = window.getWindows().iterator().next();
 
-		for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+		for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 			Component component = itr.next();
 			try {
 				Form form = (Form)component;
@@ -476,6 +503,87 @@ public class GroupOperationsTest {
 		}
 	}
 
+	@Test
+	// We try to add a group to its own. This should fail!
+	public void testAddGroupToItself() {
+	    m_topologyProvider.resetContainer();
+	    Vertex vertex1 = m_topologyProvider.addVertex(0, 0);
+	    Vertex vertex2 = m_topologyProvider.addVertex(0, 0);
+	    Vertex group1 = m_topologyProvider.addGroup("group1",  "group");
+	    m_topologyProvider.setParent(vertex1,  group1);
+        
+	    // we try to add the group to itself. There is no selection
+	    {
+	        GraphContainer graphContainer = EasyMock.createNiceMock(GraphContainer.class);
+    	    EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+    	    EasyMock.expect(graphContainer.getSelectionManager()).andReturn(EasyMock.createNiceMock(SelectionManager.class)).anyTimes();
+            graphContainer.redoLayout();
+            EasyMock.expectLastCall().anyTimes();
+            EasyMock.replay(graphContainer);
+    	    
+            AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+            OperationContext context = getOperationContext(graphContainer);
+            operation.execute(Arrays.asList((VertexRef)group1), context);
+    
+            // Grab the window, put a value into the form field, and commit the form to complete
+            // the operation.
+            Form form = getForm(getPrompt(context));
+            
+            
+            Field field = form.getField("Group");
+            field.setValue(group1.getId());
+            Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
+            try {
+                form.commit();
+                fail("An " + InvalidValueException.class + " should have been thrown.");
+            } catch (InvalidValueException ex) {
+                LoggerFactory.getLogger(getClass()).info("Exception occured as expected.", ex);
+            }
+            EasyMock.verify(graphContainer);
+	    }
+        
+    
+        // we try to add the group to itself. There are multiple selections
+	    {
+            GraphContainer graphContainer = EasyMock.createNiceMock(GraphContainer.class);
+            EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+            SelectionManager selectionManager = EasyMock.createNiceMock(SelectionManager.class);
+            EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(true).anyTimes();
+            EasyMock.expect(selectionManager.getSelectedVertexRefs()).andReturn(Arrays.asList((VertexRef)vertex1, vertex2, group1)).anyTimes();
+            EasyMock.expect(graphContainer.getSelectionManager()).andReturn(selectionManager).anyTimes();
+            graphContainer.redoLayout();
+            EasyMock.expectLastCall().anyTimes();
+            EasyMock.replay(graphContainer);
+            EasyMock.replay(selectionManager);
+            
+            AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+            OperationContext context = getOperationContext(graphContainer);
+            operation.execute(Arrays.asList((VertexRef)group1), context);
+    
+            // Grab the window, put a value into the form field, and commit the form to complete
+            // the operation.
+            Form form = getForm(getPrompt(context));
+            
+            // we try to add the group to itself. There is no selection
+            Field field = form.getField("Group");
+            field.setValue(group1.getId());
+            Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
+            form.commit();
+            
+            // v0 and v1 should be children of g0
+            Assert.assertEquals(group1, vertex1.getParent()); //v0
+            Assert.assertEquals(group1, vertex2.getParent()); //v1
+            
+            // g0 should not be a children of g0
+            Assert.assertNull(group1.getParent());
+            
+            EasyMock.verify(graphContainer, selectionManager);
+	    }
+	
+	}
+	
+	
+	
 	@Test
 	public void testCreateGroupOperation() {
 		m_topologyProvider.resetContainer();
@@ -507,11 +615,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -526,7 +634,7 @@ public class GroupOperationsTest {
 			}
 
 			// Store the newly created group
-			group1 = m_topologyProvider.getParent(vertex1);vertex1.getParent();
+			group1 = m_topologyProvider.getParent(vertex1);
 
 			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
 			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
@@ -547,11 +655,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -594,11 +702,11 @@ public class GroupOperationsTest {
 
 			// Grab the window, put a value into the form field, and commit the form to complete
 			// the operation.
-			Window window = context.getMainWindow();
-			assertEquals(1, window.getChildWindows().size());
-			Window prompt = window.getChildWindows().iterator().next();
+			UI window = context.getMainWindow();
+			assertEquals(1, window.getWindows().size());
+			Window prompt = window.getWindows().iterator().next();
 
-			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			for (Iterator<Component> itr = prompt.iterator(); itr.hasNext();) {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
@@ -656,7 +764,63 @@ public class GroupOperationsTest {
 			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
 			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex2));
 		}
-
 		EasyMock.verify(graphContainer);
+	}
+	
+	/**
+	 * This test creates two groups:
+	 * <ol>
+	 * 	<li>an empty group 'group1'</li>
+	 * <li>a group 'group2' with two nodes ('node1' and 'node2')
+	 * </ol>
+	 * We add group2 to group1 and the nodes of group2 should not be added to group1. 
+	 * They should still be assigned to group2
+	 * 
+	 */
+	@Test
+	public void testAddGroupWithNodesToAnotherGroup() {
+		 m_topologyProvider.resetContainer();
+		 Vertex node1 = m_topologyProvider.addVertex(0, 0);
+		 Vertex node2 = m_topologyProvider.addVertex(0, 0);
+		 Vertex group1 = m_topologyProvider.addGroup("group1",  "group");
+		 Vertex group2 = m_topologyProvider.addGroup("group1",  "group");
+		 m_topologyProvider.setParent(node1, group2);
+		 m_topologyProvider.setParent(node2, group2);
+	        
+		 // we try to add group2 to group1
+		 {
+			 GraphContainer graphContainer = EasyMock.createNiceMock(GraphContainer.class);
+	         EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+	         SelectionManager selectionManager = EasyMock.createNiceMock(SelectionManager.class);
+	         EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(true).anyTimes();
+	         EasyMock.expect(selectionManager.getSelectedVertexRefs()).andReturn(Arrays.asList((VertexRef)node1, node2, group2)).anyTimes();
+	         EasyMock.expect(graphContainer.getSelectionManager()).andReturn(selectionManager).anyTimes();
+	         graphContainer.redoLayout();
+	         EasyMock.expectLastCall().anyTimes();
+	         EasyMock.replay(graphContainer);
+	         EasyMock.replay(selectionManager);
+	            
+	         AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+	         OperationContext context = getOperationContext(graphContainer);
+	         operation.execute(Arrays.asList((VertexRef)group2), context);
+	    
+	         // Grab the window, put a value into the form field, and commit the form to complete
+	         // the operation.
+	         Form form = getForm(getPrompt(context));
+	            
+	         // we try to add the group to itself. There is no selection
+	         Field field = form.getField("Group");
+	         field.setValue(group1.getId());
+	         Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
+	         form.commit();
+	            
+	         // verify
+	         Assert.assertEquals(group1, group2.getParent()); // group2 should be child of group1
+	         Assert.assertEquals(group2, node1.getParent()); // node1 is still child of group2
+	         Assert.assertEquals(group2, node2.getParent()); // node 2 is still child of group2
+	         Assert.assertNull(group1.getParent()); 	         // group 1 has no parent
+	            
+	         EasyMock.verify(graphContainer, selectionManager);
+		 }
 	}
 }

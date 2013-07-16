@@ -82,6 +82,7 @@ public class NSClientAgentConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
         buff.append("Address: "+m_address);

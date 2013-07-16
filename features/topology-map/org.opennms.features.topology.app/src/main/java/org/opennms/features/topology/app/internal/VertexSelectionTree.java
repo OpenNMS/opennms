@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings({"serial"})
@@ -15,16 +15,14 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
 
 	private final String m_title;
     private final GraphContainer m_graphContainer;
-    private final SelectionManager m_selectionManager;
 
-    public VertexSelectionTree(String title, GraphContainer graphContainer, SelectionManager selectionManager) {
+    public VertexSelectionTree(String title, GraphContainer graphContainer) {
         super(null, new GCFilterableContainer(graphContainer));
         m_title = title;
         
         m_graphContainer = graphContainer;
-        m_selectionManager = selectionManager;
         
-        this.addListener(new ValueChangeListener() {
+        this.addValueChangeListener(new ValueChangeListener() {
             
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
@@ -33,9 +31,8 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
 				Collection<VertexRef> refs = (Collection<VertexRef>)event.getProperty().getValue();
             	
             	Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
-            	m_selectionManager.setSelectedVertexRefs(vertices);
+            	m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
             	
-            	getContainerDataSource().fireItemSetChange();
             }
         });
 
@@ -56,4 +53,13 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
 
     public String getTitle() { return m_title; }
 
+    @Override
+    public String toString() {
+        Object value = getValue();
+        if (value == null) {
+            return null;
+        } else {
+            return value.toString();
+        }
+    }
 }

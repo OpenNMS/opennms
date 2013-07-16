@@ -31,29 +31,24 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.regex.MatchResult;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.discovery.IPAddressRange;
 import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -277,6 +272,100 @@ public class SnmpEventInfoTest {
 
     }
 
+    @Test
+    public void testCreateDefForSnmpV1() {
+    	SnmpEventInfo snmpEventInfo = new SnmpEventInfo();
+    	snmpEventInfo.setAuthPassPhrase("authPassPhrase");
+    	snmpEventInfo.setAuthProtocol("authProtocol");
+    	snmpEventInfo.setReadCommunityString("readCommunityString");
+    	snmpEventInfo.setWriteCommunityString("writeCommunityString");
+    	snmpEventInfo.setContextEngineId("contextEngineId");
+    	snmpEventInfo.setContextName("contextName");
+    	snmpEventInfo.setEngineId("engineId");
+    	snmpEventInfo.setEnterpriseId("enterpriseId");
+    	snmpEventInfo.setMaxRepetitions(1000);
+    	snmpEventInfo.setMaxVarsPerPdu(2000);
+    	snmpEventInfo.setMaxRequestSize(7000);
+    	snmpEventInfo.setPort(3000);
+    	snmpEventInfo.setPrivPassPhrase("privPassPhrase");
+    	snmpEventInfo.setPrivProtocol("privProtocol");
+    	snmpEventInfo.setProxyHost("127.0.0.1");
+    	snmpEventInfo.setRetryCount(4000);
+    	snmpEventInfo.setSecurityLevel(5000);
+    	snmpEventInfo.setTimeout(6000);
+    	snmpEventInfo.setVersion("v1");
+    	
+    	// check v1/commons properties
+    	Definition def = snmpEventInfo.createDef();
+    	assertEquals(snmpEventInfo.getReadCommunityString(), def.getReadCommunity());
+    	assertEquals(snmpEventInfo.getMaxRepetitions(), def.getMaxRepetitions().intValue());
+    	assertEquals(snmpEventInfo.getMaxVarsPerPdu(), def.getMaxVarsPerPdu().intValue());
+    	assertEquals(snmpEventInfo.getPort(), def.getPort().intValue());
+    	assertEquals(snmpEventInfo.getProxyHost(), def.getProxyHost());
+    	assertEquals(snmpEventInfo.getRetryCount(), def.getRetry().intValue());
+    	assertEquals(snmpEventInfo.getTimeout(), def.getTimeout().intValue());
+    	assertEquals(snmpEventInfo.getVersion(), def.getVersion());
+    	assertEquals(snmpEventInfo.getMaxRequestSize(), def.getMaxRequestSize().intValue());
+    	assertEquals(snmpEventInfo.getWriteCommunityString(), def.getWriteCommunity());
+    	    	
+    	// v3 properties must not be set
+    	assertNull(def.getAuthPassphrase());
+    	assertNull(def.getAuthProtocol());
+    	assertNull(def.getContextEngineId());
+    	assertNull(def.getContextName());
+    	assertNull(def.getEngineId());
+    	assertNull(def.getEnterpriseId());
+    	assertNull(def.getPrivacyPassphrase());
+    	assertNull(def.getPrivacyProtocol());
+    }
+    
+    @Test
+    public void testCreateDefForSnmpV3() {
+    	SnmpEventInfo snmpEventInfo = new SnmpEventInfo();
+    	snmpEventInfo.setAuthPassPhrase("authPassPhrase");
+    	snmpEventInfo.setAuthProtocol("authProtocol");
+    	snmpEventInfo.setReadCommunityString("communityString");
+    	snmpEventInfo.setWriteCommunityString("writeCommunityString");
+    	snmpEventInfo.setContextEngineId("contextEngineId");
+    	snmpEventInfo.setContextName("contextName");
+    	snmpEventInfo.setEngineId("engineId");
+    	snmpEventInfo.setEnterpriseId("enterpriseId");
+    	snmpEventInfo.setMaxRepetitions(1000);
+    	snmpEventInfo.setMaxVarsPerPdu(2000);
+    	snmpEventInfo.setMaxRequestSize(7000);
+    	snmpEventInfo.setPort(3000);
+    	snmpEventInfo.setProxyHost("127.0.0.1");
+    	snmpEventInfo.setPrivPassPhrase("privPassPhrase");
+    	snmpEventInfo.setPrivProtocol("privProtocol");
+    	snmpEventInfo.setRetryCount(4000);
+    	snmpEventInfo.setSecurityLevel(5000);
+    	snmpEventInfo.setTimeout(6000);
+    	snmpEventInfo.setVersion("v3");
+    	
+    	// check v3/commons propertiess
+    	Definition def = snmpEventInfo.createDef();
+    	assertEquals(snmpEventInfo.getAuthPassphrase(), def.getAuthPassphrase());
+    	assertEquals(snmpEventInfo.getAuthProtocol(), def.getAuthProtocol());
+    	assertEquals(snmpEventInfo.getContextEngineId(), def.getContextEngineId());
+    	assertEquals(snmpEventInfo.getContextName(), def.getContextName());
+    	assertEquals(snmpEventInfo.getEngineId(), def.getEngineId());
+    	assertEquals(snmpEventInfo.getEnterpriseId(), def.getEnterpriseId());
+    	assertEquals(snmpEventInfo.getPrivPassPhrase(), def.getPrivacyPassphrase());
+    	assertEquals(snmpEventInfo.getPrivProtocol(), def.getPrivacyProtocol());
+    	assertEquals(snmpEventInfo.getMaxRepetitions(), def.getMaxRepetitions().intValue());
+    	assertEquals(snmpEventInfo.getMaxVarsPerPdu(), def.getMaxVarsPerPdu().intValue());
+    	assertEquals(snmpEventInfo.getMaxRequestSize(), def.getMaxRequestSize().intValue());
+    	assertEquals(snmpEventInfo.getPort(), def.getPort().intValue());
+    	assertEquals(snmpEventInfo.getProxyHost(), def.getProxyHost());
+    	assertEquals(snmpEventInfo.getRetryCount(), def.getRetry().intValue());
+    	assertEquals(snmpEventInfo.getTimeout(), def.getTimeout().intValue());
+    	assertEquals(snmpEventInfo.getVersion(), def.getVersion());
+    	
+    	// v1/v2 properties must not be set
+    	assertNull(def.getReadCommunity());
+    	assertNull(def.getWriteCommunity());
+    }
+    
 
     /**
      * This tests the ability of a configureSNMP event to change the community
@@ -307,7 +396,7 @@ public class SnmpEventInfoTest {
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
         
         SnmpEventInfo info = new SnmpEventInfo();
-        info.setCommunityString("abc");
+        info.setReadCommunityString("abc");
         info.setFirstIPAddress("192.168.0.5");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -346,7 +435,7 @@ public class SnmpEventInfoTest {
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
         
         SnmpEventInfo info = new SnmpEventInfo();
-        info.setCommunityString("abc");
+        info.setReadCommunityString("abc");
         info.setFirstIPAddress("2001:db8::10");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -892,9 +981,6 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
         
-//        String config = SnmpPeerFactory.marshallConfig();
-//        System.err.println(config);
-        
         String actualConfig = SnmpPeerFactory.marshallConfig();
         assertXmlEquals(expectedConfig, actualConfig);
 
@@ -1201,214 +1287,174 @@ public class SnmpEventInfoTest {
 
 
     }
-
+    
     /**
-     * Test method for {@link org.opennms.netmgt.config.SnmpEventInfo#optimizeAllDefs()}.
-     * @throws IOException 
+     * Tests that the new definition set by the SnmpEventInfo matches the defaults.
+     * Therefore a new defintion should NOT BE added.
+     * @throws Exception 
      */
     @Test
-    @Ignore("This is no longer really valid since we don't have to optimize in a separate pass")
-    public final void testOptimizeAllDefs() throws IOException {
-        
-        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
-        "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"opennmsrules\">\n" + 
-        "        <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
-        "        <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
-        "        <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
-        "        <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
-        "        <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
-        "        <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
-        "        <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
-        "        <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" + 
-        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"opennmsrules2\">\n" + 
-        "        <range begin=\"192.168.100.0\" end=\"192.168.100.255\"/>\n" + 
-        "        <range begin=\"192.168.101.0\" end=\"192.168.101.255\"/>\n" + 
-        "        <range begin=\"192.168.102.0\" end=\"192.168.102.255\"/>\n" + 
-        "        <range begin=\"192.168.103.0\" end=\"192.168.103.255\"/>\n" + 
-        "        <range begin=\"192.168.104.0\" end=\"192.168.104.255\"/>\n" + 
-        "        <range begin=\"192.168.105.0\" end=\"192.168.105.255\"/>\n" + 
-        "        <range begin=\"192.168.106.0\" end=\"192.168.106.255\"/>\n" + 
-        "        <range begin=\"192.168.107.0\" end=\"192.168.107.255\"/>\n" + 
-        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice-test\" version=\"v2c\">\n" + 
-        "        <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
-        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-        "        <specific>10.1.1.1</specific>\n" + 
-        "        <specific>10.1.1.2</specific>\n" + 
-        "        <specific>10.1.1.3</specific>\n" + 
-        "        <specific>10.1.1.5</specific>\n" + 
-        "        <specific>10.1.1.6</specific>\n" + 
-        "        <specific>10.1.1.10</specific>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice2-test\">\n" + 
-        "        <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-        "        <specific>10.1.1.10</specific>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice3-test\">\n" + 
-        "        <range begin=\"10.1.1.11\" end=\"10.1.1.100\"/>\n" + 
-        "        <range begin=\"11.1.2.1\" end=\"11.1.2.1\"/>\n" + 
-        "        <range begin=\"12.1.2.1\" end=\"12.1.2.1\"/>\n" + 
-        "        <specific>10.1.1.10</specific>\n" + 
-        "        <specific>10.1.1.12</specific>\n" + 
-        "    </definition>\n" + 
-        "</snmp-config>\n" + 
-        "";
-        
- 
-        String expectedConfig = 
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?> standalone=\"yes\"\n" + 
-        "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
-        "    <definition version=\"v2c\">\n" + 
-        "        <specific>192.168.0.5</specific>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"opennmsrules\">\n" + 
-        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-        "        <range begin=\"192.168.100.1\" end=\"192.168.100.254\"/>\n" + 
-        "        <range begin=\"192.168.101.1\" end=\"192.168.101.254\"/>\n" + 
-        "        <range begin=\"192.168.102.1\" end=\"192.168.102.254\"/>\n" + 
-        "        <range begin=\"192.168.103.1\" end=\"192.168.103.254\"/>\n" + 
-        "        <range begin=\"192.168.104.1\" end=\"192.168.104.254\"/>\n" + 
-        "        <range begin=\"192.168.105.1\" end=\"192.168.105.254\"/>\n" + 
-        "        <range begin=\"192.168.106.1\" end=\"192.168.106.254\"/>\n" + 
-        "        <range begin=\"192.168.107.1\" end=\"192.168.107.254\"/>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"opennmsrules2\">\n" + 
-        "        <range begin=\"192.168.0.1\" end=\"192.168.0.10\"/>\n" + 
-        "        <range begin=\"192.168.100.0\" end=\"192.168.107.255\"/>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice-test\" version=\"v2c\">\n" + 
-        "        <range begin=\"10.1.1.1\" end=\"10.1.1.3\"/>\n" + 
-        "        <range begin=\"10.1.1.5\" end=\"10.1.1.6\"/>\n" + 
-        "        <range begin=\"10.1.2.1\" end=\"10.1.2.100\"/>\n" + 
-        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-        "        <specific>10.1.1.10</specific>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice2-test\">\n" + 
-        "        <range begin=\"10.1.1.10\" end=\"10.1.1.100\"/>\n" + 
-        "        <range begin=\"11.1.2.1\" end=\"11.1.2.100\"/>\n" + 
-        "        <range begin=\"12.1.2.1\" end=\"12.1.2.100\"/>\n" + 
-        "    </definition>\n" + 
-        "    <definition read-community=\"splice3-test\">\n" + 
-        "        <range begin=\"10.1.1.10\" end=\"10.1.1.100\"/>\n" + 
-        "        <specific>11.1.2.1</specific>\n" + 
-        "        <specific>12.1.2.1</specific>\n" + 
-        "    </definition>\n" + 
-        "</snmp-config>\n" + 
-        "";
+    public void testEmptySnmpConfigAddDefinitionWhichMatchesDefaults() throws Exception {
+    	final String snmpConfigXml = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
+    	final String expectedConfig = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
+    	
+    	  SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+          SnmpEventInfo info = new SnmpEventInfo();
+          info.setVersion("v2c");
+          info.setTimeout(800);
+          info.setFirstIPAddress("192.168.0.8");
+          
+          SnmpPeerFactory.getInstance().define(info);
+          
+          String actualConfig = SnmpPeerFactory.marshallConfig();
+          assertXmlEquals(expectedConfig, actualConfig);
+    }
+    
+    
+    /**
+     * In earlier Versions of OpenNMS max-repetitions and max-vars-per-pdu weren't considered in the optimization.
+     * So this test checks if it is now considered.
+     */
+    @Test
+    public void testMaxRepetitionsAndMaxVarsPerPdu() throws Exception {
+    	final String snmpConfigXml = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
+    	
+    	final String expectedConfig = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"+
+		"    <definition version=\"v2c\" max-repetitions=\"5\">\n" + 
+		"        <specific>192.168.0.8</specific>\n" + 
+		"    </definition>\n" + 
+		"</snmp-config>\n";
+    	
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
-        
-        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
         SnmpEventInfo info = new SnmpEventInfo();
-        
-        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
-        assertEquals(6, config.getDefinitionCount());
-        
-        info.setCommunityString("opennmsrules2");
-        
-        //do bunch more...
-        
-        new SnmpConfigManager(config).optimizeAllDefs();
-//      String config = SnmpPeerFactory.marshallConfig();
-//      System.err.println(config);
-        
-        String actualConfig = SnmpPeerFactory.marshallConfig();
-        assertEquals(expectedConfig, actualConfig);
-        
-
-    }
-    
-    @Test
-    @Ignore
-    public void testAddSpecificToBigFile() throws Exception {
-        Resource res = new FileSystemResource("/Users/brozow/big-snmp-config.xml");
-        
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(res));
-
-        
-        SnmpEventInfo info = new SnmpEventInfo();
-        info.setCommunityString("th3l04n3r");
-        info.setFirstIPAddress("192.168.1.15");
-        info.setLastIPAddress("192.168.1.35");
+        info.setVersion("v2c");
+        info.setMaxVarsPerPdu(13);
+        info.setMaxRepetitions(5);
+        info.setFirstIPAddress("192.168.0.8");
         
         SnmpPeerFactory.getInstance().define(info);
-
+        
         String actualConfig = SnmpPeerFactory.marshallConfig();
-        System.err.println(actualConfig);
-        //assertEquals(expectedConfig, actualConfig);
-        
-
-    }
-
-    @Test
-    @Ignore
-    public void testConfigTheHeckOutOfIt() throws Exception {
-        Resource configResource = new FileSystemResource("/Users/brozow/big-snmp-config.xml");
-        Resource events = new FileSystemResource("/Users/brozow/support/NEN/palin/wave-events.txt");
-        File configDir = new File("/Users/brozow/support/NEN/palin/configs");
-        configDir.mkdirs();
-        
-        SnmpEventInfo[] updates = readEventInfo(events.getInputStream());
-        assertNotNull(updates);
-
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(configResource));
-
-        
-        int index = 0;
-        for (SnmpEventInfo update : updates) {
-            try {
-                File dir = new File(configDir, String.format("%03d", index));
-                dir.mkdirs();
-                SnmpPeerFactory.saveToFile(new File(dir, "pre-config.xml"));
-                SnmpPeerFactory.getInstance().define(update);
-                File saveUpdate = new File(dir, "update");
-                FileUtils.writeStringToFile(saveUpdate, String.format("%s %s %s\n", update.getFirstIPAddress(), update.getLastIPAddress(), update.getCommunityString()));
-                SnmpPeerFactory.saveToFile(new File(dir, "post-config.xml"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                fail(String.format("Applying update with index %d change community string for %s  to %s failed.", index, update.getFirstIPAddress(), update.getCommunityString()));
-            }
-            index++;
-        }
-
-        String actualConfig = SnmpPeerFactory.marshallConfig();
-        System.err.println(actualConfig);
-        //assertEquals(expectedConfig, actualConfig);
-        
-
+        assertXmlEquals(expectedConfig, actualConfig);
     }
     
-    private SnmpEventInfo[] readEventInfo(InputStream in) throws UnknownHostException {
-        List<SnmpEventInfo> updates = new ArrayList<SnmpEventInfo>(500);
-        Scanner s = new Scanner(in);
-        int lineCount = 0;
-        while(s.hasNextLine()) {
-            lineCount++;
-            s.findInLine("\\s*firstIPAddress=([0-9.]+) communityString=([^ ]*) lastIPAddress=([0-9.]+)\\s*");
-            MatchResult result = s.match();
-            System.out.printf("%d: %s - %s: %s\n", lineCount, result.group(1), result.group(3), result.group(2));
-            SnmpEventInfo info = new SnmpEventInfo();
-            info.setFirstIPAddress(result.group(1));
-            info.setLastIPAddress(result.group(3));
-            info.setCommunityString(result.group(2));
-            updates.add(info);
-            s.nextLine();
-        }
-        s.close();
-        return updates.toArray(new SnmpEventInfo[0]);
+    /**
+     * Tests if the proxy host is considered in the optimization code.
+     */
+    @Test
+    public void testProxyHost() throws Exception {
+    	final String snmpConfigXml = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
+    	
+    	final String expectedConfig = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"+
+		"    <definition proxy-host=\"127.0.0.1\">\n" + 
+		"        <specific>192.168.0.8</specific>\n" + 
+		"    </definition>\n" + 
+		"</snmp-config>\n";
+    	
 
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setProxyHost("127.0.0.1");
+        info.setFirstIPAddress("192.168.0.8");
+        
+        SnmpPeerFactory.getInstance().define(info);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertXmlEquals(expectedConfig, actualConfig);
     }
+    
+	/**
+	 * Tests that a SnmpEventInfo creates an event with all parameters. It also
+	 * tests that from a given event a SnmpEventInfo object can be created.
+	 * @throws UnknownHostException 
+	 */
+    @Test
+	public void testCreateFromEvent() throws UnknownHostException {
+		// create an input event. Each attribute must have a different value!
+		SnmpEventInfo initial = new SnmpEventInfo();
+		initial.setAuthPassPhrase("authPassPhrase");
+		initial.setAuthProtocol("authProtocol");
+		initial.setContextEngineId("contextEngineId");
+		initial.setContextName("contextName");
+		initial.setEngineId("engineId");
+		initial.setEnterpriseId("enterpriseId");
+		initial.setFirstIPAddress("1.1.1.1");
+		initial.setLastIPAddress("1.1.1.9");
+		initial.setMaxRepetitions(1000);
+		initial.setMaxRequestSize(2000);
+		initial.setMaxVarsPerPdu(3000);
+		initial.setPort(4000);
+		initial.setPrivPassPhrase("privPassPhrase");
+		initial.setPrivProtocol("privProtocol");
+		initial.setProxyHost("proxyHost");
+		initial.setReadCommunityString("readCommunityString");
+		initial.setRetryCount(5000);
+		initial.setSecurityLevel(6000);
+		initial.setSecurityName("securityName");
+		initial.setTimeout(7000);
+		initial.setVersion("version");
+		initial.setWriteCommunityString("writeCommunityString");
 
+		// create an event from object and test mapping
+		Event event = initial.createEvent("anySource");
+		assertEquals(EventConstants.CONFIGURE_SNMP_EVENT_UEI, event.getUei());
+		assertEquals(initial.getFirstIPAddress(), event.getInterface());
+		assertTrue("Service is not set", event.getService() != null);
+		
+		// expected values
+		Map<String, String> expectedParmMap = new HashMap<String, String>();
+		expectedParmMap.put(EventConstants.PARM_FIRST_IP_ADDRESS, initial.getFirstIPAddress());
+		expectedParmMap.put(EventConstants.PARM_LAST_IP_ADDRESS, initial.getLastIPAddress());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_AUTH_PASSPHRASE, initial.getAuthPassphrase());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_AUTH_PROTOCOL, initial.getAuthProtocol());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID, initial.getContextEngineId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_CONTEXT_NAME, initial.getContextName());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_ENGINE_ID, initial.getEngineId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_ENTERPRISE_ID, initial.getEnterpriseId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_REPETITIONS, Integer.toString(initial.getMaxRepetitions()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE, Integer.toString(initial.getMaxRequestSize()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU, Integer.toString(initial.getMaxVarsPerPdu()));
+	    expectedParmMap.put(EventConstants.PARM_PORT, Integer.toString(initial.getPort()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE, initial.getPrivPassPhrase());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL, initial.getPrivProtocol());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PROXY_HOST, initial.getProxyHost());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, initial.getReadCommunityString());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_SECURITY_NAME, initial.getSecurityName());
+	    expectedParmMap.put(EventConstants.PARM_RETRY_COUNT, Integer.toString(initial.getRetryCount()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_SECURITY_LEVEL, Integer.toString(initial.getSecurityLevel()));
+	    expectedParmMap.put(EventConstants.PARM_TIMEOUT, Integer.toString(initial.getTimeout()));
+	    expectedParmMap.put(EventConstants.PARM_VERSION, initial.getVersion());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, initial.getWriteCommunityString());
+	    
+		// ... check each event param, it must be equal to initial
+		for (Parm eachParm : event.getParmCollection()) {
+			Object expectedValue = expectedParmMap.get(eachParm.getParmName());
+			if (expectedValue == null) fail("expectedValue must not be null. Mapping is not implemented correctly");
+			assertEquals(expectedValue, eachParm.getValue().getContent());
+		}
+
+		// now map the event back to an SnmpEventInfo-object ...
+		// ... and check that second is equally to initial
+		SnmpEventInfo second = new SnmpEventInfo(event);
+		assertEquals(initial, second);
+	}
 }

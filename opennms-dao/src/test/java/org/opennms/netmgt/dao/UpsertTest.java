@@ -39,6 +39,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -60,7 +62,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:upsertTest-context.xml"
+        "classpath:upsertTest-context.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -164,6 +167,7 @@ public class UpsertTest implements InitializingBean {
             m_ifName = ifName;
         }
         
+        @Override
         public void run() {
             try {
                 OnmsSnmpInterface snmpIface = new OnmsSnmpInterface();

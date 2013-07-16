@@ -30,7 +30,8 @@ package org.opennms.netmgt.scheduler;
 
 import java.util.Random;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -40,6 +41,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class Schedule {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
 	/** Constant <code>random</code> */
 	public static final Random random = new Random();
@@ -65,13 +69,15 @@ public class Schedule {
             return m_expirationCode < m_currentExpirationCode;
         }
         
+        @Override
         public boolean isReady() {
             return isExpired() || m_schedulable.isReady();
         }
 
+        @Override
         public void run() {
             if (isExpired()) {
-                ThreadCategory.getInstance(getClass()).debug("Schedule "+this+" expired.  No need to run.");
+                LOG.debug("Schedule {} expired.  No need to run.", this);
                 return;
             }
             
@@ -88,7 +94,7 @@ public class Schedule {
 
             // if it is expired by the current run then don't reschedule
             if (isExpired()) {
-                ThreadCategory.getInstance(getClass()).debug("Schedule "+this+" expired.  No need to reschedule.");
+                LOG.debug("Schedule {} expired.  No need to reschedule.", this);
                 return;
             }
             
@@ -98,6 +104,7 @@ public class Schedule {
 
         }
         
+        @Override
         public String toString() { return "ScheduleEntry[expCode="+m_expirationCode+"] for "+m_schedulable; }
     }
 

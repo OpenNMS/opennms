@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.eventd.processor;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.events.EventIpcBroadcaster;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
@@ -44,6 +45,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class EventIpcBroadcastProcessor implements EventProcessor, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(EventIpcBroadcastProcessor.class);
     private EventIpcBroadcaster m_eventIpcBroadcaster;
     
     /**
@@ -57,9 +59,10 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(Header eventHeader, Event event) {
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
-            LogUtils.debugf(this, "process: skip sending event %s to other daemons because is marked as suppress", event.getUei());
+            LOG.debug("process: skip sending event {} to other daemons because is marked as suppress", event.getUei());
         } else {
             m_eventIpcBroadcaster.broadcastNow(event);
         }

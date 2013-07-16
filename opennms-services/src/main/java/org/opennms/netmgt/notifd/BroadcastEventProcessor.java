@@ -43,7 +43,6 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.RowProcessor;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -70,6 +69,8 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>BroadcastEventProcessor class.</p>
@@ -78,6 +79,9 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class BroadcastEventProcessor implements EventListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+    
     /**
      */
     private volatile Map<String, NoticeQueue> m_noticeQueues;
@@ -153,11 +157,12 @@ public final class BroadcastEventProcessor implements EventListener {
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing.
      */
+    @Override
     public void onEvent(Event event) {
         if (event == null) return;
 
         if (isReloadConfigEvent(event)) {
-            log().info("onEvent: handling reload configuration event...");
+            LOG.info("onEvent: handling reload configuration event...");
             EventBuilder ebldr = null;
             try {
                 m_userManager.update();
@@ -168,13 +173,13 @@ public final class BroadcastEventProcessor implements EventListener {
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
             } catch (Throwable e) {
-                log().debug("onEvent: could not reload notifd configuration: "+e, e);
+                LOG.debug("onEvent: could not reload notifd configuration", e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
                 ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
             }
             m_eventManager.sendNow(ebldr.getEvent());
-            log().info("onEvent: reload configuration event handled.");
+            LOG.info("onEvent: reload configuration event handled.");
             return;
         }
 
@@ -183,9 +188,7 @@ public final class BroadcastEventProcessor implements EventListener {
         if (notifsOn && (checkCriticalPath(event, notifsOn))) {
             scheduleNoticesForEvent(event);
         } else if (!notifsOn) {
-            if (log().isDebugEnabled()) {
-                log().debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
-            }
+            LOG.debug("discarding event {}, notifd status on = {}", event.getUei(), notifsOn);
         }
         automaticAcknowledge(event, notifsOn);
     }
@@ -203,7 +206,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
 
-            log().debug("isReloadConfigEventTarget: Notifd was target of reload event: "+isTarget);
+            LOG.debug("isReloadConfigEventTarget: Notifd was target of reload event: {}", isTarget);
         }
         return isTarget;
     }
@@ -219,11 +222,11 @@ public final class BroadcastEventProcessor implements EventListener {
         try {
             notificationStatus = getNotifdConfigManager().getNotificationStatus();
         } catch (MarshalException e) {
-            log().error("onEvent: problem marshalling configuration", e);
+            LOG.error("onEvent: problem marshalling configuration", e);
         } catch (ValidationException e) {
-            log().error("onEvent: problem validating marsharled configuraion", e);
+            LOG.error("onEvent: problem validating marsharled configuraion", e);
         } catch (IOException e) {
-            log().error("onEvent: IO problem marshalling configuration", e);
+            LOG.error("onEvent: IO problem marshalling configuration", e);
         }
 
         return "on".equalsIgnoreCase(notificationStatus);
@@ -247,9 +250,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     isPathOk = false;
                     String cip = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_IP);
                     String csvc = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_SVC);
-                    if (log().isDebugEnabled()) {
-                        log().debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
-                    }
+                    LOG.debug("Critical Path {} {} for nodeId {} did not respond. Checking to see if notice would have been sent...", cip, csvc, nodeid);
                     boolean mapsToNotice = false;
                     boolean noticeSupressed = false;
                     Notification[] notifications = null;
@@ -263,17 +264,13 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
         } catch (MarshalException e) {
-            log().error("onEvent: problem marshalling configuration", e);
+            LOG.error("onEvent: problem marshalling configuration", e);
         } catch (ValidationException e) {
-            log().error("onEvent: problem validating marshalled configuration", e);
+            LOG.error("onEvent: problem validating marshalled configuration", e);
         } catch (IOException e) {
-            log().error("onEvent: IO problem marshalling configuration", e);
+            LOG.error("onEvent: IO problem marshalling configuration", e);
         }
         return isPathOk;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private void automaticAcknowledge(Event event, boolean notifsOn) {
@@ -284,9 +281,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (AutoAcknowledge curAck : autoAcks) {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
-                        if (log().isDebugEnabled()) {
-                            log().debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        }
+                        LOG.debug("Acknowledging event {} {}:{}:{}", curAck.getAcknowledge(), event.getNodeid(), event.getInterface(), event.getService());
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
@@ -295,16 +290,16 @@ public final class BroadcastEventProcessor implements EventListener {
                                 sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
                             }
                         } catch (Throwable e) {
-                            log().error("Failed to send resolution notifications.", e);
+                            LOG.error("Failed to send resolution notifications.", e);
                         }
                     } catch (SQLException e) {
-                        log().error("Failed to auto acknowledge notice.", e);
+                        LOG.error("Failed to auto acknowledge notice.", e);
                     }
                 }
 
             }
         } catch (Throwable e) {
-            log().error("Unable to auto acknowledge notice due to exception.", e);
+            LOG.error("Unable to auto acknowledge notice due to exception.", e);
         }
     }
 
@@ -315,9 +310,7 @@ public final class BroadcastEventProcessor implements EventListener {
             if(notifId < 0) {
                 notifId *= -1;
                 wa = true;
-                if (log().isDebugEnabled()) {
-                    log().debug("Conditional autoNotify for notifId " + notifId);
-                }
+                LOG.debug("Conditional autoNotify for notifId {}", notifId);
             }
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
@@ -329,6 +322,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
             final Map<String, List<String>> userNotifications = new HashMap<String, List<String>>();
             RowProcessor ackNotifProcessor = new RowProcessor() {
+                @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
                     String contactInfo = rs.getString("contactinfo");
@@ -355,9 +349,7 @@ public final class BroadcastEventProcessor implements EventListener {
             for (String userID : userNotifications.keySet()) {
                 List<String> cmdList = userNotifications.get(userID);
                 String[] cmds = cmdList.toArray(new String[cmdList.size()]);
-                if (log().isDebugEnabled()) {
-                    log().debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
-                }
+                LOG.debug("Sending {} notification to userID = {} for notice ID {}", resolutionPrefix, userID, notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
 
@@ -398,7 +390,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
         } else {
-            log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+            LOG.warn("Unrecognized target '{}' contained in destinationPaths.xml. Please check the configuration.", targetName);
         }
     }
 
@@ -416,9 +408,7 @@ public final class BroadcastEventProcessor implements EventListener {
         // can't check the database if any of these are null, so let the notice
         // continue
         if (nodeID == null || ipAddr == null || service == null || ipAddr.equals("0.0.0.0")) {
-            if (log().isDebugEnabled()) {
-                log().debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
-            }
+            LOG.debug("nodeID={} ipAddr={} service={}. Not checking DB, continuing...", nodeID, ipAddr, service);
             return true;
         }
 
@@ -428,17 +418,13 @@ public final class BroadcastEventProcessor implements EventListener {
             String notify = getNotificationManager().getServiceNoticeStatus(nodeID, ipAddr, service);
             if ("Y".equals(notify)) {
                 continueNotice = true;
-                if (log().isDebugEnabled()) {
-                    log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
-                }
+                LOG.debug("notify status for service {} on interface/node {}/{} is 'Y', continuing...", service, ipAddr, nodeID);
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
-                }
+                LOG.debug("notify status for service {} on interface/node {}/{} is {}, not continuing...", service, ipAddr, nodeID, notify);
             }
         } catch (Throwable e) {
             continueNotice = true;
-            log().error("Not able to get notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + ". Continuing notice... " + e.getMessage());
+            LOG.error("Not able to get notify status for service {} on interface/node {}/{}. Continuing notice... {}", service, ipAddr, nodeID, e.getMessage());
         }
 
         // in case of a error we will return false
@@ -463,7 +449,7 @@ public final class BroadcastEventProcessor implements EventListener {
             }
             return false;
         } catch (Throwable e) {
-            log().error("Unable to find if an auto acknowledge exists for event " + eventUei + " due to exception.", e);
+            LOG.error("Unable to find if an auto acknowledge exists for event {} due to exception.", eventUei, e);
             return false;
         }
     }
@@ -477,7 +463,7 @@ public final class BroadcastEventProcessor implements EventListener {
         try {
             mapsToNotice = getNotificationManager().hasUei(event.getUei());
         } catch (Throwable e) {
-            log().error("Couldn't map uei " + event.getUei() + " to a notification entry, not scheduling notice.", e);
+            LOG.error("Couldn't map uei {} to a notification entry, not scheduling notice.", event.getUei(), e);
             return;
         }
 
@@ -490,7 +476,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 try {
                     notifications = getNotificationManager().getNotifForEvent(event);
                 } catch (Throwable e) {
-                    log().error("Couldn't get notification mapping for event " + event.getUei() + ", not scheduling notice.", e);
+                    LOG.error("Couldn't get notification mapping for event {}, not scheduling notice.", event.getUei(), e);
                     return;
                 }
 
@@ -503,21 +489,21 @@ public final class BroadcastEventProcessor implements EventListener {
                         try {
                             noticeId = getNotificationManager().getNoticeId();
                         } catch (Throwable e) {
-                            log().error("Failed to get a unique id # for notification, exiting this notification", e);
+                            LOG.error("Failed to get a unique id # for notification, exiting this notification", e);
                             continue;
                         }
 
                         Map<String, String> paramMap = buildParameterMap(notification, event, noticeId);
                         String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
 
-                        if (log().isDebugEnabled()) {
-                            log().debug("destination : " + notification.getDestinationPath());
-                            log().debug("text message: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
-                            log().debug("num message : " + paramMap.get(NotificationManager.PARAM_NUM_MSG));
-                            log().debug("subject     : " + paramMap.get(NotificationManager.PARAM_SUBJECT));
-                            log().debug("node        : " + paramMap.get(NotificationManager.PARAM_NODE));
-                            log().debug("interface   : " + paramMap.get(NotificationManager.PARAM_INTERFACE));
-                            log().debug("service     : " + paramMap.get(NotificationManager.PARAM_SERVICE));
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("destination : {}", notification.getDestinationPath());
+                            LOG.debug("text message: {}", paramMap.get(NotificationManager.PARAM_TEXT_MSG));
+                            LOG.debug("num message : {}", paramMap.get(NotificationManager.PARAM_NUM_MSG));
+                            LOG.debug("subject     : {}", paramMap.get(NotificationManager.PARAM_SUBJECT));
+                            LOG.debug("node        : {}", paramMap.get(NotificationManager.PARAM_NODE));
+                            LOG.debug("interface   : {}", paramMap.get(NotificationManager.PARAM_INTERFACE));
+                            LOG.debug("service     : {}", paramMap.get(NotificationManager.PARAM_SERVICE));
                         }
 
                         // get the target and escalation information
@@ -525,14 +511,14 @@ public final class BroadcastEventProcessor implements EventListener {
                         try {
                             path = getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
-                                log().warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notifications.xml file.");
+                                LOG.warn("Unknown destination path {}. Please check the <destinationPath> tag for the notification {} in the notifications.xml file.", notification.getDestinationPath(), notification.getName());
 
                                 // changing posted by Wiktor Wodecki
                                 // return;
                                 continue;
                             }
                         } catch (Throwable e) {
-                            log().error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
+                            LOG.error("Could not get destination path for {}, please check the destinationPath.xml for errors.", notification.getDestinationPath(), e);
                             return;
                         }
                         String initialDelay = (path.getInitialDelay() == null ? "0s" : path.getInitialDelay());
@@ -543,20 +529,20 @@ public final class BroadcastEventProcessor implements EventListener {
                         // notification, if none then generate an event a exit
                         try {
                             if (getUserCount(targets, escalations) == 0) {
-                                log().warn("The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified, not sending notice.");
+                                LOG.warn("The path {} assigned to notification {} has no targets or escalations specified, not sending notice.", notification.getDestinationPath(), notification.getName());
                                 sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
                                 return;
                             }
                         } catch (Throwable e) {
-                            log().error("Failed to get count of users in destination path " + notification.getDestinationPath() + ", exiting notification.", e);
+                            LOG.error("Failed to get count of users in destination path {}, exiting notification.", notification.getDestinationPath(), e);
                             return;
                         }
 
                         try {
-                            log().info(String.format("Inserting notification #%d into database: %s", noticeId, paramMap.get(NotificationManager.PARAM_SUBJECT)));
+                            LOG.info(String.format("Inserting notification #{} into database: {}", noticeId, paramMap.get(NotificationManager.PARAM_SUBJECT)));
                             getNotificationManager().insertNotice(noticeId, paramMap, queueID, notification);
                         } catch (SQLException e) {
-                            log().error("Failed to enter notification into database, exiting this notification", e);
+                            LOG.error("Failed to enter notification into database, exiting this notification", e);
                             return;
                         }
 
@@ -592,20 +578,16 @@ public final class BroadcastEventProcessor implements EventListener {
                                 processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
                             }
                         } catch (Throwable e) {
-                            log().error("notice not scheduled due to error: ", e);
+                            LOG.error("notice not scheduled due to error: ", e);
                         }
 
                     }
                 } else {
-                    if (log().isDebugEnabled()) {
-                        log().debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
-                    }
+                    LOG.debug("Event doesn't match a notice: {} : {} : {} : {}", event.getUei(), nodeid, ipaddr, event.getService());
                 }
             }
         } else {
-            if (log().isDebugEnabled()) {
-                log().debug("No notice match for uei: " + event.getUei());
-            }
+            LOG.debug("No notice match for uei: {}", event.getUei());
         }
     }
 
@@ -674,7 +656,7 @@ public final class BroadcastEventProcessor implements EventListener {
             
             getEventManager().sendNow(bldr.getEvent());
         } catch (Throwable t) {
-            log().error("Could not send event " + uei, t);
+            LOG.error("Could not send event {}", uei, t);
         }
     }
 
@@ -749,9 +731,7 @@ public final class BroadcastEventProcessor implements EventListener {
             } else {
                 autoNotify = "C";
             }
-            if (log().isDebugEnabled()) {
-                log().debug("Processing target " + targetName + ":" + interval);
-            }
+            LOG.debug("Processing target {}:{}", targetName, interval);
             
             NotificationTask[] tasks = null;
             
@@ -780,7 +760,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     }
                 }
             } else {
-                log().warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+                LOG.warn("Unrecognized target '{}' contained in destinationPaths.xml. Please check the configuration.", targetName);
             }
         }
     }
@@ -794,22 +774,16 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // it the group is not on duty
         if (next < 0) {
-            if (log().isDebugEnabled()) {
-                log().debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
-            }
+            LOG.debug("The group {} is not scheduled to come back on duty. No notification will be sent to this group.", group.getName());
             return null;
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
-        }
+        LOG.debug("The group {} is on duty in {} millisec.", group.getName(), next);
         String[] users = group.getUser();
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            if (log().isDebugEnabled()) {
-                log().debug("Not sending notice, no users specified for group " + group.getName());
-            }
+            LOG.debug("Not sending notice, no users specified for group {}", group.getName());
             return null;
         }
 
@@ -836,9 +810,7 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            if (log().isDebugEnabled()) {
-                log().debug("Not sending notice, no users scheduled for role  " + targetName);
-            }
+            LOG.debug("Not sending notice, no users scheduled for role {}", targetName);
             return null;
         }
         
@@ -877,7 +849,7 @@ public final class BroadcastEventProcessor implements EventListener {
         // if either piece of information is missing don't add the task to
         // the notifier
         if (user == null) {
-            log().error("user " + targetName + " is not a valid user, not adding this user to escalation thread");
+            LOG.error("user {} is not a valid user, not adding this user to escalation thread", targetName);
             return null;
         }
 
@@ -901,9 +873,7 @@ public final class BroadcastEventProcessor implements EventListener {
         user.setUserId(address);
         Contact contact = new Contact();
         contact.setType("email");
-        if (log().isDebugEnabled()) {
-            log().debug("email address = " + address + ", using contact type " + contact.getType());
-        }
+        LOG.debug("email address = {}, using contact type {}", address, contact.getType());
         contact.setInfo(address);
         user.addContact(contact);
 
@@ -925,6 +895,7 @@ public final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Notifd:BroadcastEventProcessor";
     }
@@ -977,15 +948,13 @@ public final class BroadcastEventProcessor implements EventListener {
                     // Does the outage apply to this interface or node?
 
                     if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
-                        }
+                        LOG.debug("scheduledOutage: configured outage '{}' applies, notification for interface {} on node {} will not be sent", outageName, theInterface, nodeId);
                         return outageName;
                     }
                 }
             }
         } catch (Throwable e) {
-            log().error("Error determining current outages", e);
+            LOG.error("Error determining current outages", e);
         }
 
         return null;
@@ -998,9 +967,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param nodeEntry Entry of node which was rescanned
      */
     private void createPathOutageEvent(int nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
-        if (log().isDebugEnabled()) {
-            log().debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
-        }
+        LOG.debug("nodeid = {}, nodeLabel = {}, noticeSupressed = {}", nodeid, nodeLabel, noticeSupressed);
         
         EventBuilder bldr = new EventBuilder(EventConstants.PATH_OUTAGE_EVENT_UEI, "OpenNMS.notifd");
         bldr.setNodeid(nodeid);
@@ -1010,14 +977,12 @@ public final class BroadcastEventProcessor implements EventListener {
         bldr.addParam(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED, noticeSupressed);
 
         // Send the event
-        if (log().isDebugEnabled()) {
-            log().debug("Creating pathOutageEvent for nodeid: " + nodeid);
-        }
+        LOG.debug("Creating pathOutageEvent for nodeid: {}", nodeid);
         
 	try {
             EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
         } catch (Throwable t) {
-            log().warn("run: unexpected throwable exception caught during event send", t);
+            LOG.warn("run: unexpected throwable exception caught during event send", t);
         }
     }
 

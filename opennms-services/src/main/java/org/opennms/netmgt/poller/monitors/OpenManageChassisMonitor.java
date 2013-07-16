@@ -33,7 +33,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -46,6 +45,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -61,6 +62,10 @@ import org.opennms.core.utils.ParameterMap;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(OpenManageChassisMonitor.class);
+    
     /**
      * Name of monitored service.
      */
@@ -129,13 +134,14 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String,Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-            log().fatal("initialize: Failed to load SNMP configuration", ex);
+            LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -154,6 +160,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      *                the interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -169,6 +176,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -190,7 +198,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         if (agentConfig == null)
             throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // set timeout and retries on SNMP peer object
         //
@@ -201,9 +209,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         // Establish SNMP session with interface
         //
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("poll: SnmpAgentConfig address: " + agentConfig);
-            }
+            LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
 
             // Get the chassis status
             SnmpObjId chassisStatusSnmpObject = SnmpObjId.get(CHASSIS_STATUS_OID);
@@ -212,12 +218,10 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             // If no chassis status is received or SNMP is not possible,
             // service is down
             if (chassisStatus == null) {
-                log().warn("No chassis status received!");
+                LOG.warn("No chassis status received!");
                 return status;
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: chassis status: " + chassisStatus);
-                }
+                LOG.debug("poll: chassis status: {}", chassisStatus);
             }
 
             /*
@@ -225,14 +229,10 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
              * return with service available and go away.
              */
             if (chassisStatus.toInt() == DELL_STATUS.OK.value()) {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: chassis status: " + chassisStatus.toInt());
-                }
+                LOG.debug("poll: chassis status: {}", chassisStatus.toInt());
                 return PollStatus.available();
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: chassis status: " + chassisStatus.toInt());
-                }
+                LOG.debug("poll: chassis status: {}", chassisStatus.toInt());
                 chassisStatusTxt = resolveDellStatus(chassisStatus.toInt());
             }
 
@@ -241,11 +241,9 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             SnmpValue eventLogStatus = SnmpUtils.get(agentConfig, eventLogStatusSnmpObject);
             // Check correct MIB-Support
             if (eventLogStatus == null) {
-                log().warn("Cannot receive eventLogStatus.");
+                LOG.warn("Cannot receive eventLogStatus.");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: eventLogStatus: " + eventLogStatus);
-                }
+                LOG.debug("poll: eventLogStatus: {}", eventLogStatus);
                 eventLogStatusTxt = resolveDellStatus(eventLogStatus.toInt());
             }
 
@@ -253,11 +251,9 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             SnmpValue manufacturer = SnmpUtils.get(agentConfig, manufacturerSnmpObject);
             // Check correct MIB-Support
             if (manufacturer == null) {
-                log().warn("Cannot receive manufacturer.");
+                LOG.warn("Cannot receive manufacturer.");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: manufacturer: " + manufacturer);
-                }
+                LOG.debug("poll: manufacturer: {}", manufacturer);
                 manufacturerName = manufacturer.toString();
             }
 
@@ -265,11 +261,9 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             SnmpValue model = SnmpUtils.get(agentConfig, modelSnmpObject);
             // Check correct MIB-Support
             if (model == null) {
-                log().warn("Cannot receive model name.");
+                LOG.warn("Cannot receive model name.");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: model name: " + model);
-                }
+                LOG.debug("poll: model name: {}", model);
                 modelName = model.toString();
             }
 
@@ -277,11 +271,9 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             SnmpValue serviceTag = SnmpUtils.get(agentConfig, serviceTagSnmpObject);
             // Check correct MIB-Support
             if (serviceTag == null) {
-                log().warn("Cannot receive service tag");
+                LOG.warn("Cannot receive service tag");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: service tag: " + serviceTag);
-                }
+                LOG.debug("poll: service tag: {}", serviceTag);
                 serviceTagTxt = serviceTag.toString();
             }
 
@@ -291,13 +283,21 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             status = PollStatus.unavailable(returnValue);
 
         } catch (NullPointerException e) {
-            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + hostAddress, e);
+            String reason = "Unexpected error during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, e);
+            status = PollStatus.unavailable(reason);
         } catch (NumberFormatException e) {
-            status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         // If matchAll is set to true, then the status is set to available

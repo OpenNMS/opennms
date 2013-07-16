@@ -28,9 +28,9 @@
 
 package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
 
 /**
  * The VTerminal class is associated with the GwtTerminal widget and handles all of the communication 
@@ -73,6 +73,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	 * The updateFromUIDL method handles all communication from the server and passes
 	 * the data along to the GwtTerminal widget which updates the client side view.
 	 */
+        @Override
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 
 		// This call should be made first. Ensure correct implementation,

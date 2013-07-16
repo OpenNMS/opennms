@@ -36,9 +36,11 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Rfc5424SyslogParser extends SyslogParser {
+    private static final Logger LOG = LoggerFactory.getLogger(Rfc5424SyslogParser.class);
     //                                                                <PRI>VERSION            TIMESTAMP    HOST   APP    PROC     MSGID  STRUCTURED   MSG
     private static final Pattern m_rfc5424Pattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}?) (\\S+T\\S+) (\\S*) (\\S*) (\\d+|-) (\\S*) ((?:\\[.*?\\])*|-)(?: (?:BOM)?(.*?))?$", Pattern.MULTILINE);
 
@@ -52,14 +54,16 @@ public class Rfc5424SyslogParser extends SyslogParser {
         return new Rfc5424SyslogParser(text);
     }
 
+    @Override
     protected Pattern getPattern() {
         return m_rfc5424Pattern;
     }
 
+    @Override
     public SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
-                LogUtils.tracef(this, "'%s' did not match '%s'", m_rfc5424Pattern, getText());
+                LOG.trace("'{}' did not match '{}'", m_rfc5424Pattern, getText());
             }
             return null;
         }
@@ -71,14 +75,14 @@ public class Rfc5424SyslogParser extends SyslogParser {
             message.setFacility(SyslogFacility.getFacilityForCode(priorityField));
             message.setSeverity(SyslogSeverity.getSeverityForCode(priorityField));
         } catch (final NumberFormatException e) {
-            LogUtils.debugf(this, e, "Unable to parse priority field '%s'", matcher.group(1));
+            LOG.debug("Unable to parse priority field '{}'", matcher.group(1), e);
         }
         if (matcher.group(2).length() != 0) {
             try {
                 int version = Integer.parseInt(matcher.group(2));
                 message.setVersion(version);
             } catch (NumberFormatException e) {
-                LogUtils.debugf(this, e, "Unable to parse version (%s) as a number.", matcher.group(2));
+                LOG.debug("Unable to parse version ({}) as a number.", matcher.group(2), e);
             }
         }
         if (!matcher.group(3).equals("-")) {
@@ -94,7 +98,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
             try {
                 message.setProcessId(Integer.parseInt(matcher.group(6)));
             } catch (final NumberFormatException e) {
-                LogUtils.debugf(this, e, "Unable to parse process ID '%s' as a number.", matcher.group(6));
+                LOG.debug("Unable to parse process ID '{}' as a number.", matcher.group(6), e);
             }
         }
         if (!matcher.group(7).equals("-")) {
@@ -122,7 +126,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
                     df.setTimeZone(TimeZone.getTimeZone("GMT"));
                     return df.parse(dateString);
                 } catch (final Exception pe) {
-                    LogUtils.debugf(this, pe, "Unable to parse date string '%s'.", dateString);
+                    LOG.debug("Unable to parse date string '{}'.", dateString, pe);
                 }
             }
         } else {
@@ -145,7 +149,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
                     df.setLenient(true);
                     return df.parse(newString);
                 } catch (final Exception pe) {
-                    LogUtils.debugf(this, pe, "Unable to parse date string '%s'.", newString);
+                    LOG.debug("Unable to parse date string '{}'.", newString, pe);
                 }
             }
         }

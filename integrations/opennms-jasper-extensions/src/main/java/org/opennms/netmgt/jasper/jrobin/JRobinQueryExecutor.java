@@ -43,14 +43,17 @@ public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
         parseQuery();
     }
 
+    @Override
     public boolean cancelQuery() throws JRException {
         return false;
     }
 
+    @Override
     public void close() {
         
     }
 
+    @Override
     public JRDataSource createDatasource() throws JRException {
         try {
             return new RrdXportCmd().executeCommand(getQueryString());

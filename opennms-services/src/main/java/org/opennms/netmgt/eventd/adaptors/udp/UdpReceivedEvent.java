@@ -198,6 +198,7 @@ final class UdpReceivedEvent {
      * agent's address &amp; port. If the passed instance is from the same agent
      * then it is considered equal.
      */
+    @Override
     public boolean equals(Object o) {
         if (o != null && o instanceof UdpReceivedEvent) {
             UdpReceivedEvent e = (UdpReceivedEvent) o;
@@ -213,6 +214,7 @@ final class UdpReceivedEvent {
      *
      * @return The 32-bit has code for the instance.
      */
+    @Override
     public int hashCode() {
         return (m_port ^ m_sender.hashCode());
     }

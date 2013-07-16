@@ -31,11 +31,12 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * This class uses the Java 5 isReachable method to determine up/down and is
  * currently considered "experimental".  Please give it a try and let us
@@ -48,11 +49,13 @@ import org.opennms.netmgt.poller.MonitoredService;
 public class AvailabilityMonitor extends AbstractServiceMonitor {
     
     
+    public static final Logger LOG = LoggerFactory.getLogger(AvailabilityMonitor.class);
 
     private static final int DEFAULT_RETRY = 3;
     private static final int DEFAULT_TIMEOUT = 3000;
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(Map<String, Object> parameters) {
     }
 
@@ -61,10 +64,12 @@ public class AvailabilityMonitor extends AbstractServiceMonitor {
      *
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -76,20 +81,24 @@ public class AvailabilityMonitor extends AbstractServiceMonitor {
                     return PollStatus.available(timeoutTracker.elapsedTimeInMillis());
                 }
             } catch (IOException e) {
-                logDown(Level.INFO, "Unable to contact "+svc.getIpAddr(), e);
+                LOG.debug("Unable to contact {}", svc.getIpAddr(), e);
             }
         }
+        String reason = svc+" failed to respond";
         
-        return logDown(Level.INFO, svc+" failed to respond");
+        LOG.debug(reason);
+        return PollStatus.unavailable(reason);
     }
 
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(MonitoredService svc) {
     }
 

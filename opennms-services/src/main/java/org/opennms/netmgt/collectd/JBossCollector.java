@@ -63,6 +63,7 @@ public class JBossCollector  extends JMXCollector {
      * @see org.opennms.netmgt.collectd.JMXCollector#getMBeanServer(java.util.Map)
      */
     /** {@inheritDoc} */
+    @Override
     public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }

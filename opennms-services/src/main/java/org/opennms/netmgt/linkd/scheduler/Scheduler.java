@@ -38,7 +38,8 @@ import java.util.concurrent.Executors;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a simple scheduler to ensure the polling occurs at the
@@ -46,6 +47,7 @@ import org.opennms.core.utils.LogUtils;
  * to the load until a maximum thread count is reached.
  */
 public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
+    private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
 	/**
 	 * The map of queue that contain {@link ReadyRunnable ready runnable}
@@ -158,23 +160,23 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *             Thrown if an error occurs adding the element to the queue.
 	 */
 	public synchronized void schedule(ReadyRunnable runnable, long interval) {
-	    LogUtils.debugf(this, "schedule: Adding ready runnable at interval %d", interval);
+	    LOG.debug("schedule: Adding ready runnable at interval {}", interval);
 
 		if (!m_queues.containsKey(interval)) {
-		    LogUtils.debugf(this, "schedule: interval queue did not exist, a new one has been created");
+		    LOG.debug("schedule: interval queue did not exist, a new one has been created");
 			m_queues.put(interval, new PeekableFifoQueue<ReadyRunnable>());
 		}
 
 		try {
 			(m_queues.get(interval)).add(runnable);
 			if (m_scheduled++ == 0) {
-			    LogUtils.debugf(this, "schedule: queue element added, calling notify all since none were scheduled");
+			    LOG.debug("schedule: queue element added, calling notify all since none were scheduled");
 				notifyAll();
 			} else {
-			    LogUtils.debugf(this, "schedule: queue element added, notification not performed");
+			    LOG.debug("schedule: queue element added, notification not performed");
 			}
 		} catch (InterruptedException ie) {
-		    LogUtils.infof(this, ie, "schedule: failed to add new ready runnable instance %s to scheduler", runnable);
+		    LOG.info("schedule: failed to add new ready runnable instance {} to scheduler", runnable, ie);
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -186,56 +188,69 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
 	 */
+        @Override
 	public synchronized void schedule(long interval,
 			final ReadyRunnable runnable) {
 
 		final long timeToRun = getCurrentTime() + interval;
 		ReadyRunnable timeKeeper = new ReadyRunnable() {
+                        @Override
 			public boolean isReady() {
 				return getCurrentTime() >= timeToRun && runnable.isReady();
 			}
 			
+                        @Override
 			public String getInfo() {
 				return runnable.getInfo();
 			}
 
+                        @Override
 			public void run() {
 				runnable.run();
 			}
 
+                        @Override
 			public void schedule() {
 				runnable.schedule();
 			}
 			
+                        @Override
 			public void suspend() {
 				runnable.suspend();
 			}
 
+                        @Override
 			public void wakeUp() {
 				runnable.wakeUp();
 			}
 
+                        @Override
 			public boolean isSuspended() {
 				return runnable.isSuspended();
 			}
 			
-			public boolean equals(ReadyRunnable r) {
+                        @Override
+			public boolean equals(Object r) {
 				return runnable.equals(r);
 			}
 			
+                        @Override
 			public void unschedule() {
 				runnable.unschedule();
 			}
 
+                        @Override
 			public String toString() {
 				return runnable.toString() + " (ready in "
 						+ Math.max(0, timeToRun - getCurrentTime()) + "ms)";
 			}
 			
+                        @Override
 			public String getPackageName() {
 				return runnable.getPackageName();
 			}
 			
+                        @Override
 			public void setPackageName(String pkg) {
 				runnable.setPackageName(pkg);
 			}
@@ -251,7 +266,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *            The element to remove from queue intervals.
 	 */
 	public synchronized void unschedule(ReadyRunnable runnable) {
-	    LogUtils.debugf(this, "unschedule: Removing all %s", runnable.getInfo());
+	    LOG.debug("unschedule: Removing all {}", runnable.getInfo());
 		
 		boolean done = false;
 		synchronized(m_queues) {
@@ -275,16 +290,16 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *            The element to remove.
 	 */
 	public synchronized void unschedule(ReadyRunnable runnable, long interval) {
-	    LogUtils.debugf(this, "unschedule: Removing %s at interval %d", runnable.getInfo(), interval);
+	    LOG.debug("unschedule: Removing {} at interval {}", runnable.getInfo(), interval);
 		synchronized(m_queues) {
 			if (!m_queues.containsKey(interval)) {
-			    LogUtils.debugf(this, "unschedule: interval queue did not exist, exit");
+			    LOG.debug("unschedule: interval queue did not exist, exit");
 				return;
 			}
 			
 			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(interval);
 			if (in.isEmpty()) {
-			    LogUtils.debugf(this, "unschedule: interval queue is empty, exit");
+			    LOG.debug("unschedule: interval queue is empty, exit");
 				return;
 			}
 			
@@ -299,7 +314,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					}
 					first = false;
 					if (readyRun != null && readyRun.equals(runnable)) {
-					    LogUtils.debugf(this, "unschedule: removing found %s", readyRun.getInfo());
+					    LOG.debug("unschedule: removing found {}", readyRun.getInfo());
 			
 						// Pop the interface/readyRunnable from the
 						// queue for execution.
@@ -309,7 +324,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 						in.add(readyRun);
 					}
 				} catch (InterruptedException ie) {
-				    LogUtils.infof(this, ie, "unschedule: failed to remove instance %s from scheduler", runnable.getInfo());
+				    LOG.info("unschedule: failed to remove instance {} from scheduler", runnable.getInfo(), ie);
 					Thread.currentThread().interrupt();
 				}
 			} while ( --maxLoops > 0) ; 
@@ -324,7 +339,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @return a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
 	 */
 	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
-		LogUtils.debugf(this, "getReadyRunnable: Retrieving %s", runnable.getInfo());
+		LOG.debug("getReadyRunnable: Retrieving {}", runnable.getInfo());
 
 		ReadyRunnable rr = null;
 		synchronized (m_queues) {
@@ -339,7 +354,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		}
 
 		if (rr == null) {
-		    LogUtils.infof(this, "getReadyRunnable: instance %s not found on scheduler", runnable.getInfo());
+		    LOG.info("getReadyRunnable: instance {} not found on scheduler", runnable.getInfo());
 		}
 		return rr;
 	}
@@ -352,10 +367,10 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @return a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
 	 */
 	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable, long interval) {
-	    LogUtils.debugf(this, "getReadyRunnable: Retrieving %s at interval %d", runnable.getInfo(), interval);
+	    LOG.debug("getReadyRunnable: Retrieving {} at interval {}", runnable.getInfo(), interval);
 
 		if (!m_queues.containsKey(interval)) {
-		    LogUtils.debugf(this, "getReadyRunnable: interval queue did not exist, exit");
+		    LOG.debug("getReadyRunnable: interval queue did not exist, exit");
 			return null;
 		}
 
@@ -363,7 +378,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		synchronized (m_queues) {
 			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(interval);
 			if (in.isEmpty()) {
-			    LogUtils.warnf(this, "getReadyRunnable: queue is Empty");
+			    LOG.warn("getReadyRunnable: queue is Empty");
 				return null;
 			}
 			
@@ -378,12 +393,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					}
 					first = false;
 					if (readyRun != null && readyRun.equals(runnable)) {
-					    LogUtils.debugf(this, "getReadyRunnable: found ready runnable %s", readyRun);
+					    LOG.debug("getReadyRunnable: found ready runnable {}", readyRun);
 						rr = readyRun;
 					}
 					in.add(readyRun);
 				} catch (InterruptedException ie) {
-				    LogUtils.infof(this, ie, "getReadyRunnable: failed to get instance %s from scheduler", readyRun.getInfo());
+				    LOG.info("getReadyRunnable: failed to get instance {} from scheduler", readyRun.getInfo(), ie);
 					Thread.currentThread().interrupt();
 				} 
 
@@ -391,7 +406,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		}
 
 		if (rr == null) {
-		    LogUtils.infof(this, "getReadyRunnable: instance %s not found on scheduler", runnable.getInfo());
+		    LOG.info("getReadyRunnable: instance {} not found on scheduler", runnable.getInfo());
 		}
 		return rr;
 	}
@@ -401,6 +416,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return a long.
 	 */
+        @Override
 	public long getCurrentTime() {
 		return System.currentTimeMillis();
 	}
@@ -411,6 +427,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the fiber is already running.
 	 */
+        @Override
 	public synchronized void start() {
 		if (m_worker != null)
 			throw new IllegalStateException(
@@ -420,7 +437,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_worker.start();
 		m_status = STARTING;
 
-		LogUtils.debugf(this, "start: scheduler started");
+		LOG.debug("start: scheduler started");
 	}
 
 	/**
@@ -430,6 +447,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the fiber has never been started.
 	 */
+        @Override
 	public synchronized void stop() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -438,7 +456,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		m_worker.interrupt();
 		m_runner.shutdown();
 
-		LogUtils.debugf(this, "stop: scheduler stopped");
+		LOG.debug("stop: scheduler stopped");
 	}
 
 	/**
@@ -449,6 +467,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
 	 */
+        @Override
 	public synchronized void pause() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -472,6 +491,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
 	 */
+        @Override
 	public synchronized void resume() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -492,6 +512,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return The current status.
 	 */
+        @Override
 	public synchronized int getStatus() {
 		if (m_worker != null && m_worker.isAlive() == false)
 			m_status = STOPPED;
@@ -503,6 +524,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return m_runner.toString();
 	}
@@ -512,13 +534,14 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * the runnable queues for ready objects and then enqueuing them into the
 	 * thread pool for execution.
 	 */
+        @Override
 	public void run() {
 
 		synchronized (this) {
 			m_status = RUNNING;
 		}
 
-		LogUtils.debugf(this, "run: scheduler running");
+		LOG.debug("run: scheduler running");
 
 		// Loop until a fatal exception occurs or until
 		// the thread is interrupted.
@@ -532,13 +555,13 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 				if (m_status != RUNNING && m_status != PAUSED
 						&& m_status != PAUSE_PENDING
 						&& m_status != RESUME_PENDING) {
-				    LogUtils.debugf(this, "run: status = %s, time to exit", m_status);
+				    LOG.debug("run: status = {}, time to exit", m_status);
 					break;
 				}
 
 				if (m_scheduled == 0) {
 					try {
-					    LogUtils.debugf(this, "run: no interfaces scheduled, waiting...");
+					    LOG.debug("run: no interfaces scheduled, waiting...");
 						wait();
 					} catch (InterruptedException ex) {
 						break;
@@ -576,7 +599,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 						try {
 							readyRun = in.peek();
 							if (readyRun != null && readyRun.isReady()) {
-							    LogUtils.debugf(this, "run: found ready runnable %s", readyRun.getInfo());
+							    LOG.debug("run: found ready runnable {}", readyRun.getInfo());
 
 								// Pop the interface/readyRunnable from the
 								// queue for execution.
@@ -614,7 +637,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 		} // end for(;;)
 
-		LogUtils.debugf(this, "run: scheduler exiting, state = STOPPED");
+		LOG.debug("run: scheduler exiting, state = STOPPED");
 		synchronized (this) {
 			m_status = STOPPED;
 		}

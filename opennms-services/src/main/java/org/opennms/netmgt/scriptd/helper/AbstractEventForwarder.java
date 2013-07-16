@@ -33,6 +33,7 @@ import org.opennms.netmgt.xml.event.Event;
 public abstract class AbstractEventForwarder implements EventForwarder {
 
 	EventPolicyRule m_filter;
+        @Override
 	public void setEventPolicyRule(EventPolicyRule filter) {
 		m_filter = filter;
 	}

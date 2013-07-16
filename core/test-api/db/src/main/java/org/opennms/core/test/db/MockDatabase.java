@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
@@ -54,14 +53,18 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventWriter;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class provides additional utility methods on top of the basic {@link TemporaryDatabase}
+ * This class provides additional utility methods on top of the basic {@link TemporaryDatabasePostgreSQL}
  * class. For instance, it can be populated from a {@link MockNetwork}.
  * 
  * @author brozow
  */
-public class MockDatabase extends TemporaryDatabase implements EventWriter {
+public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
+	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);
     }
@@ -89,14 +92,17 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public void populate(MockNetwork network) {
 
         MockVisitor dbCreater = new MockVisitorAdapter() {
+            @Override
             public void visitNode(MockNode node) {
                 writeNode(node);
             }
             
+            @Override
             public void visitInterface(MockInterface iface) {
                 writeInterface(iface);
             }
             
+            @Override
             public void visitService(MockService svc) {
                 writeService(svc);
             }
@@ -133,7 +139,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
             svc.setId(getNextServiceId());
             Object[] svcValues = { svc.getId(), svcName };
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
-            LogUtils.infof(this, "Inserting service \"%s\" into database with ID %d", svcName, svc.getId());
+            LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getId());
         } else {
             svc.setId(serviceId);
         }
@@ -347,6 +353,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         String critSql = (criteria == null ? "" : " where "+criteria);
         final List<Outage> outages = new LinkedList<Outage>();
         Querier loadExisting = new Querier(this, "select * from outages "+critSql) {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
                 outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
@@ -361,6 +368,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         loadExisting.execute(values);
         
         Querier setServiceNames = new Querier(this, "select * from service") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int serviceId = rs.getInt("serviceId");
                 String serviceName = rs.getString("serviceName");
@@ -438,6 +446,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public Collection<Integer> findNoticesForEvent(Event event) {
         final List<Integer> notifyIds = new LinkedList<Integer>();
         Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 notifyIds.add(rs.getInt(1));
             }

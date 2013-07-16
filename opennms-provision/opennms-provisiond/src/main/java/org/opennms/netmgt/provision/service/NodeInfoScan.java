@@ -31,8 +31,9 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import static org.opennms.core.utils.LogUtils.debugf;
-import static org.opennms.core.utils.LogUtils.infof;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.net.InetAddress;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
 final class NodeInfoScan implements RunInBatch {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeInfoScan.class);
 
     private final SnmpAgentConfigFactory m_agentConfigFactory;
     private final InetAddress m_agentAddress;
@@ -71,15 +73,18 @@ final class NodeInfoScan implements RunInBatch {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void run(BatchTask phase) {
         
         phase.getBuilder().addSequence(
                 new RunInBatch() {
+                    @Override
                     public void run(BatchTask batch) {
                         collectNodeInfo();
                     }
                 },
                 new RunInBatch() {
+                    @Override
                     public void run(BatchTask phase) {
                         doPersistNodeInfo();
                     }
@@ -153,14 +158,14 @@ final class NodeInfoScan implements RunInBatch {
                 if (getNodeId() != null && nodePolicies.size() > 0) {
                     restoreCategories = true;
                     node = m_provisionService.getDbNodeInitCat(getNodeId());
-                    debugf(this, "collectNodeInfo: checking %d node policies for restoration of categories", nodePolicies.size());
+                    LOG.debug("collectNodeInfo: checking {} node policies for restoration of categories", nodePolicies.size());
                 }
             } else {
                 node = getNode();
             }
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
-                    infof(this, "Applying NodePolicy %s(%s) to %s", policy.getClass(), policy, node.getLabel());
+                    LOG.info("Applying NodePolicy {}({}) to {}", policy.getClass(), policy, node.getLabel());
                     node = policy.apply(node);
                 }
             }
@@ -187,7 +192,7 @@ final class NodeInfoScan implements RunInBatch {
 
     private void doPersistNodeInfo() {
         if (restoreCategories) {
-            debugf(this, "doPersistNodeInfo: Restoring %d categories to DB", getNode().getCategories().size());
+            LOG.debug("doPersistNodeInfo: Restoring {} categories to DB", getNode().getCategories().size());
         }
         if (!isAborted() || restoreCategories) {
             getProvisionService().updateNodeAttributes(getNode());

@@ -51,6 +51,7 @@ public class StatisticsReportModel {
         private Double m_value;
         private OnmsResource m_resource;
     
+        @Override
         public int compareTo(Datum o) {
             return m_value.compareTo(o.getValue());
         }

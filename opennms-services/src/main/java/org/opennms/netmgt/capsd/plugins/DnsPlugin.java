@@ -36,7 +36,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.protocols.dns.DNSAddressRequest;
 
@@ -58,6 +59,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * @version $Id: $
  */
 public final class DnsPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsPlugin.class);
     /**
      * </P>
      * The protocol name that is tested by this plugin.
@@ -102,7 +104,6 @@ public final class DnsPlugin extends AbstractPlugin {
      */
     private boolean isServer(InetAddress nserver, int port, int retries, int timeout, String lookup) {
         boolean isAServer = false;
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Allocate a communication socket
         //
@@ -142,7 +143,7 @@ public final class DnsPlugin extends AbstractPlugin {
                             request.verifyResponse(inpkt.getData(), inpkt.getLength());
                             isAServer = true;
                         } catch (IOException ex) {
-                            log.debug("Failed to match response to request, an IOException occured", ex);
+                            LOG.debug("Failed to match response to request, an IOException occured", ex);
                         }
                     }
                 } catch (InterruptedIOException ex) {
@@ -151,7 +152,7 @@ public final class DnsPlugin extends AbstractPlugin {
                 }
             }
         } catch (IOException ex) {
-            log.warn("isServer: An I/O exception during DNS resolution test.", ex);
+            LOG.warn("isServer: An I/O exception during DNS resolution test.", ex);
         } finally {
             if (socket != null)
                 socket.close();
@@ -166,6 +167,7 @@ public final class DnsPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -176,6 +178,7 @@ public final class DnsPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_LOOKUP);
     }
@@ -198,6 +201,7 @@ public final class DnsPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;

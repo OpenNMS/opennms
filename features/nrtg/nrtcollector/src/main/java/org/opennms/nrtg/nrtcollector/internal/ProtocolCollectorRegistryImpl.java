@@ -42,6 +42,7 @@ public class ProtocolCollectorRegistryImpl implements ProtocolCollectorRegistry 
 
     private List<ProtocolCollector> protocolCollectors = new ArrayList<ProtocolCollector>();
 
+    @Override
     public ProtocolCollector getProtocolCollector(String protocol) {
         for (ProtocolCollector pc : protocolCollectors) {
             if (pc.getProtcol().equals(protocol))

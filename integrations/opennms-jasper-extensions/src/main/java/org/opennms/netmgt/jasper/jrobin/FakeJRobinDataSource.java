@@ -51,6 +51,7 @@ public class FakeJRobinDataSource implements JRDataSource {
         m_end = ((System.currentTimeMillis() / INCREMENT) * INCREMENT);
     }
 
+    @Override
     public Object getFieldValue(JRField field) throws JRException {
         if ("Timestamp".equals(field.getName())) {
             long millis = m_end - (m_rows - m_currentRow)*INCREMENT;
@@ -69,6 +70,7 @@ public class FakeJRobinDataSource implements JRDataSource {
         return null;
     }
     
+    @Override
     public boolean next() throws JRException {
         m_currentRow++;
         return m_currentRow <= m_rows;

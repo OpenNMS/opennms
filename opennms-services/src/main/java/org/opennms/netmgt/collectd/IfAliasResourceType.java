@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>IfAliasResourceType class.</p>
@@ -42,7 +44,9 @@ import org.opennms.netmgt.snmp.SnmpInstId;
  * @version $Id: $
  */
 public class IfAliasResourceType extends ResourceType {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IfAliasResourceType.class);
+    
     private IfResourceType m_ifResourceType;
     private Map<Integer, AliasedResource> m_aliasedIfs = new HashMap<Integer, AliasedResource>();
     private ServiceParameters m_params;
@@ -62,13 +66,15 @@ public class IfAliasResourceType extends ResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         // This is here for completeness but it should not get called here.
         // findAliasedResource should be called instead
-        log().debug("findResource: Should not get called from IfAliasResourceType");
+        LOG.debug("findResource: Should not get called from IfAliasResourceType");
         return null;
     }
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         Integer key = inst.toInt();
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
@@ -76,9 +82,9 @@ public class IfAliasResourceType extends ResourceType {
             IfInfo ifInfo = (IfInfo)m_ifResourceType.findResource(inst);
             
             if(ifInfo == null) {
-            	log().info("Not creating an aliased resource for ifInfo = null");
+            	LOG.info("Not creating an aliased resource for ifInfo = null");
             } else {
-                log().info("Creating an aliased resource for "+ifInfo);
+                LOG.info("Creating an aliased resource for {}", ifInfo);
             
                 resource = new AliasedResource(this, m_params.getDomain(), ifInfo, m_params.getIfAliasComment(), ifAlias);
             
@@ -99,6 +105,7 @@ public class IfAliasResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getAliasAttributeTypes(getAgent());
    }
@@ -108,6 +115,7 @@ public class IfAliasResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<AliasedResource> getResources() {
         return m_aliasedIfs.values();
     }

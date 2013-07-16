@@ -15,6 +15,7 @@ import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -27,6 +28,11 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +40,10 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener {
+public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
     
     @SuppressWarnings("serial")
-    public class ScaleProperty implements Property, Property.ValueChangeNotifier{
+    public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
         private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
         
@@ -56,20 +62,26 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Object getValue() {
+        public void addValueChangeListener(ValueChangeListener listener) {
+            m_listeners.add(listener);
+        }
+
+        @Override
+        public void removeValueChangeListener(ValueChangeListener listener) {
+            m_listeners.remove(listener);
+        }
+
+        @Override
+        public Double getValue() {
             return m_scale;
         }
 
         @Override
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-            if(newValue instanceof Number) {
-                double oldScale = m_scale;
-                m_scale = ((Number) newValue).doubleValue();
-                if(oldScale != m_scale) {
-                    fireValueChange();
-                }
-            } else {
-                throw new ConversionException("Scale must be number");
+        public void setValue(Double newValue) {
+            double oldScale = m_scale;
+            m_scale = ((Number) newValue).doubleValue();
+            if(oldScale != m_scale) {
+                fireValueChange();
             }
         }
 
@@ -77,7 +89,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             ValueChangeEvent event = new ValueChangeEvent() {
 
                 @Override
-                public Property getProperty() {
+                public Property<Double> getProperty() {
                     return ScaleProperty.this;
                 }
             };
@@ -87,7 +99,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Class<?> getType() {
+        public Class<Double> getType() {
             return Double.class;
         }
 
@@ -188,16 +200,20 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
     }
-
+    
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
     private int m_semanticZoomLevel = 0;
-    private Property m_scaleProperty = new ScaleProperty(0.0);
+    private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
+    private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
-
+    private String m_userName;
+    private String m_sessionId;
+    private BundleContext m_bundleContext;
+    
     private final Layout m_layout;
     private VEGraph m_graph;
     
@@ -206,8 +222,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
-    
-	private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
     public int getSemanticZoomLevel() {
@@ -227,11 +243,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public double getScale() {
-        return (Double) m_scaleProperty.getValue();
+        return m_scaleProperty.getValue();
     }
     
     @Override
-    public Property getScaleProperty() {
+    public Property<Double> getScaleProperty() {
         return m_scaleProperty;
     }
     
@@ -281,7 +297,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         rebuildGraph();
     }
 
-    
+    @Override
+    public SelectionManager getSelectionManager() {
+        return m_selectionManager;
+    }
+
+    @Override
+    public void setSelectionManager(SelectionManager selectionManager) {
+        m_selectionManager = selectionManager;
+    }
+
     public void addVertexProvider(VertexProvider vertexProvider) {
         m_mergedGraphProvider.addVertexProvider(vertexProvider);
         rebuildGraph();
@@ -374,7 +399,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public Criteria getCriteria(String namespace) {
     	return m_mergedGraphProvider.getCriteria(namespace);
     }
-
+    
+    public void setBundleContext(final BundleContext bundleContext) {
+        m_bundleContext = bundleContext;
+    }
+    
+    public void removeCriteria(Criteria criteria) {
+        m_mergedGraphProvider.removeCriteria(criteria);
+        rebuildGraph();
+    }
+    
     @Override
     public void setCriteria(Criteria criteria) {
     	m_mergedGraphProvider.setCriteria(criteria);
@@ -448,5 +482,51 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public StatusProvider getStatusProvider() {
         return m_statusProvider;
+    }
+
+	@Override
+	public String getUserName() {
+		return m_userName;
+	}
+
+	@Override
+	public void setUserName(String userName) {
+		m_userName = userName;
+	}
+
+    @Override
+    public String getSessionId() {
+        return m_sessionId;
+    }
+    
+    public void setSessionId(String sessionId) {
+        m_sessionId = sessionId;
+        
+        try {
+            m_bundleContext.removeServiceListener(this);
+            m_bundleContext.addServiceListener(this, "(&(objectClass=org.opennms.features.topology.api.topo.Criteria)(sessionId=" + m_sessionId + "))");
+        } catch (InvalidSyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void serviceChanged(ServiceEvent event) {
+        ServiceReference<Criteria> serviceReference;
+        Criteria criteria;
+        switch(event.getType()) {
+            case ServiceEvent.REGISTERED:
+            serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
+            criteria = m_bundleContext.getService(serviceReference);
+            setCriteria(criteria);
+            break;
+            
+            case ServiceEvent.UNREGISTERING:
+            serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
+            criteria = m_bundleContext.getService(serviceReference);
+            removeCriteria(criteria);
+            break;                        
+        }
     }
 }

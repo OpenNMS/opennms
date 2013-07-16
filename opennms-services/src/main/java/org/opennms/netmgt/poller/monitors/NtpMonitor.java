@@ -37,9 +37,9 @@ import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -62,6 +62,7 @@ import org.opennms.protocols.ntp.NtpMessage;
 
 @Distributable
 final public class NtpMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(NtpMonitor.class);
     /**
      * Default NTP port.
      */
@@ -93,6 +94,7 @@ final public class NtpMonitor extends AbstractServiceMonitor {
      * the method returns.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -104,7 +106,6 @@ final public class NtpMonitor extends AbstractServiceMonitor {
 
         // get the log
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // get the parameters
         //
@@ -148,9 +149,9 @@ final public class NtpMonitor extends AbstractServiceMonitor {
                     NtpMessage msg = new NtpMessage(incoming.getData());
                     double localClockOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - destinationTimestamp)) / 2;
 
-                    if (log.isDebugEnabled())
-                        log.debug("poll: valid NTP request received the local clock offset is " + localClockOffset + ", responseTime= " + responseTime + "ms");
-                    log.debug("poll: NTP message : " + msg.toString());
+
+                    LOG.debug("poll: valid NTP request received the local clock offset is {}, responseTime= {}ms", localClockOffset, responseTime);
+                    LOG.debug("poll: NTP message : {}", msg);
                     serviceStatus = PollStatus.available(responseTime);
                 } catch (InterruptedIOException ex) {
                     // Ignore, no response received.
@@ -158,15 +159,21 @@ final public class NtpMonitor extends AbstractServiceMonitor {
             }
         } catch (NoRouteToHostException e) {
         	
-        	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
+        	String reason = "No route to host exception for address: " + ipv4Addr;
+            LOG.debug(reason, e);
+            serviceStatus = PollStatus.unavailable(reason);
         	
         } catch (ConnectException e) {
         	
-        	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+        	String reason = "Connection exception for address: " + ipv4Addr;
+            LOG.debug(reason, e);
+            serviceStatus = PollStatus.unavailable(reason);
         	
         } catch (IOException ex) {
         	
-        	serviceStatus = logDown(Level.INFO, "IOException while polling address: " + ipv4Addr, ex);
+        	String reason = "IOException while polling address: " + ipv4Addr;
+            LOG.debug(reason, ex);
+            serviceStatus = PollStatus.unavailable(reason);
         	
         } finally {
             if (socket != null)

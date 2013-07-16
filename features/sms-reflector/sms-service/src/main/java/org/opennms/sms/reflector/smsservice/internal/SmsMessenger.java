@@ -32,7 +32,6 @@ package org.opennms.sms.reflector.smsservice.internal;
 import java.io.IOException;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Messenger;
 import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
@@ -42,6 +41,8 @@ import org.opennms.sms.reflector.smsservice.SmsResponse;
 import org.opennms.sms.reflector.smsservice.SmsService;
 import org.opennms.sms.reflector.smsservice.UssdRequest;
 import org.opennms.sms.reflector.smsservice.UssdResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.IUSSDNotification;
 import org.smslib.InboundMessage;
@@ -59,7 +60,7 @@ import org.springframework.util.Assert;
  */
 public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgResponse>, OnmsInboundMessageNotification, IUSSDNotification, InitializingBean {
     
-    Logger log = Logger.getLogger(getClass());
+    Logger log = LoggerFactory.getLogger(getClass());
     
     private SmsService m_smsService;
     
@@ -90,6 +91,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
      * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void sendRequest(MobileMsgRequest request) throws Exception {
     	request.setSendTimestamp(System.currentTimeMillis());
     	
@@ -115,12 +117,14 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(Queue<MobileMsgResponse> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         long receiveTime = System.currentTimeMillis();
         
@@ -131,25 +135,22 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
         }
     }
 
-    /** {@inheritDoc} */
-    public void process(String gatewayId, USSDResponse ussdResponse) {
+    @Override
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
         long receiveTime = System.currentTimeMillis();
-        
+
         debugf("SmsMessenger.processUSSDResponse");
-        
+
         if (m_replyQueue != null) {
-            m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse, receiveTime));
+            m_replyQueue.add(new UssdResponse(gateway.getGatewayId(), ussdResponse, receiveTime));
         }
     }
-
 
     private void debugf(String fmt, Object... args) {
         if (log.isDebugEnabled()) {
             log.debug(String.format(fmt, args));
         }
     }
-
-
 
 
 }

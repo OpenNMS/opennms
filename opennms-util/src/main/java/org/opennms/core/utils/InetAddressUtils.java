@@ -36,6 +36,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
@@ -50,6 +52,8 @@ import org.xbill.DNS.Type;
  * @version $Id: $
  */
 abstract public class InetAddressUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
 
     private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
@@ -92,7 +96,7 @@ abstract public class InetAddressUtils {
 		try {
 			return InetAddress.getLocalHost();
 		} catch (final UnknownHostException e) {
-            LogUtils.warnf(InetAddressUtils.class, e, "getLocalHostAddress: Could not lookup the host address for the local host machine, address set to '127.0.0.1'.");
+			LOG.warn("getLocalHostAddress: Could not lookup the host address for the local host machine, address set to '127.0.0.1'.", e);
 			return addr("127.0.0.1");
 		}
 	}
@@ -105,7 +109,7 @@ abstract public class InetAddressUtils {
 	public static String getLocalHostName() {
         final InetAddress localHostAddress = getLocalHostAddress();
         if (localHostAddress == null) {
-            LogUtils.warnf(InetAddressUtils.class, "getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost'.");
+        	LOG.warn("getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost'.");
             return "localhost";
         }
         return localHostAddress.getHostName();
@@ -572,7 +576,7 @@ abstract public class InetAddressUtils {
 			}
 			return sb.toString();
 		} else {
-			LogUtils.debugf(InetAddressUtils.class, "don't know how to handle %s", addr);
+			LOG.debug("don't know how to handle {}", addr);
 			return null;
 		}
 	}

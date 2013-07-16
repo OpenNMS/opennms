@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -44,15 +46,17 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorAbsoluteChange.class);
     private static final String TYPE = "absoluteChange";
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateAbsoluteChange(threshold);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }
@@ -89,10 +93,12 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             setChange(thresholdConfig.getValue());
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
+        @Override
         public Status evaluate(double dsValue) {
             if(!Double.isNaN(getLastSample())) {
                 double threshold = getLastSample()+getChange();
@@ -102,7 +108,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
                     if (dsValue <= threshold) {
                         setPreviousTriggeringSample(getLastSample());
                         setLastSample(dsValue);
-                        log().debug("evaluate: absolute negative change threshold triggered");
+                        LOG.debug("evaluate: absolute negative change threshold triggered");
                         return Status.TRIGGERED;
                     }
                 } else {
@@ -110,7 +116,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
                     if (dsValue >= threshold) {
                         setPreviousTriggeringSample(getLastSample());
                         setLastSample(dsValue);
-                        log().debug("evaluate: absolute positive change threshold triggered");
+                        LOG.debug("evaluate: absolute positive change threshold triggered");
                         return Status.TRIGGERED;
                     }
                 }
@@ -127,6 +133,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
@@ -163,16 +170,19 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_change = change;
         }
 
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateAbsoluteChange(m_thresholdConfig);
         }
 
         // FIXME This must be implemented correctly
+        @Override
         public boolean isTriggered() {
             return false;
         }
 
         // FIXME This must be implemented correctly
+        @Override
         public void clearState() {
         }
     }

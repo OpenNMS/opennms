@@ -41,15 +41,14 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.NotificationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -78,9 +77,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
     
     @Autowired
     private NotificationDao m_notificationDao;
-    
-    @Autowired
-    private AckService m_ackSvc;
     
     @Context 
     UriInfo m_uriInfo;
@@ -199,7 +195,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
 	            "Must supply the 'action' parameter, set to either 'ack, 'unack', 'clear', or 'esc'");
 	        }
 
-	        m_ackSvc.processAck(ack);
+	        m_ackDao.processAck(ack);
 	        return ack;
     	} finally {
     		writeUnlock();

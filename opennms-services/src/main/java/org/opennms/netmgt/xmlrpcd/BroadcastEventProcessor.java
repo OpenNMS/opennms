@@ -34,7 +34,8 @@ import java.util.List;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
     /**
      * The location where incoming events of interest are enqueued
@@ -106,34 +108,35 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(final Event event) {
     	final String eventUei = event.getUei();
         if (eventUei == null) {
             return;
         }
 
-        LogUtils.debugf(this, "Received event: %s", eventUei);
+        LOG.debug("Received event: {}", eventUei);
 
         try {
             if (m_events.contains(eventUei)) {
                 if (m_eventQ.size() >= m_maxQSize) {
                     m_eventQ.remove(1000);
 
-                    LogUtils.debugf(this, "Event %s removed from event queue", eventUei);
+                    LOG.debug("Event {} removed from event queue", eventUei);
                 }
 
                 m_eventQ.add(event);
 
-                LogUtils.debugf(this, "Event %s added to event queue", eventUei);
+                LOG.debug("Event {} added to event queue", eventUei);
             }
         } catch (final InterruptedException ex) {
-        	LogUtils.errorf(this, ex, "Failed to process event");
+		LOG.error("Failed to process event", ex);
             return;
         } catch (final FifoQueueException ex) {
-            LogUtils.errorf(this, ex, "Failed to process event");
+            LOG.error("Failed to process event", ex);
             return;
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "Failed to process event");
+            LOG.error("Failed to process event", t);
             return;
         }
     }
@@ -143,6 +146,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Xmlrpcd:BroadcastEventProcessor_" + m_nameSuffix;
     }

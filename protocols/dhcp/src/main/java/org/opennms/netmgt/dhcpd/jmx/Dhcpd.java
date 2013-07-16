@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.dhcpd.jmx;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>Dhcpd class.</p>
@@ -37,9 +39,13 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class Dhcpd implements DhcpdMBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Dhcpd.class);
+
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         // No initialization necessary
     }
@@ -47,6 +53,7 @@ public class Dhcpd implements DhcpdMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
         dhcpd.start();
@@ -55,6 +62,7 @@ public class Dhcpd implements DhcpdMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
         dhcpd.stop();
@@ -65,6 +73,7 @@ public class Dhcpd implements DhcpdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
         return dhcpd.getStatus();
@@ -75,6 +84,7 @@ public class Dhcpd implements DhcpdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -84,10 +94,11 @@ public class Dhcpd implements DhcpdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         int status = getStatus();
         String statusText = org.opennms.core.fiber.Fiber.STATUS_NAMES[status];
-        ThreadCategory.getInstance(getClass()).debug("getStatusText: status = "+status+", statusText = "+statusText);
+        LOG.debug("getStatusText: status = {}, statusText = {}", status, statusText);
         return statusText;
     }
 }

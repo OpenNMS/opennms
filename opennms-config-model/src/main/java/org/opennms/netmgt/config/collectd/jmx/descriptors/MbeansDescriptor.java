@@ -120,6 +120,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbeans;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mbeans target = (Mbeans) object;
@@ -242,6 +243,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbeans;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

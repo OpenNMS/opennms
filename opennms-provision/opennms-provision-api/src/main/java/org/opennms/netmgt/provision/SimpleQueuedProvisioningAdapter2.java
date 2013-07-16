@@ -93,6 +93,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getName();
     
     /**
@@ -126,15 +127,18 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
     /** {@inheritDoc} */
-    public final void addNode(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> addNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.ADD));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
 
     /*
@@ -142,15 +146,18 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
     /** {@inheritDoc} */
-    public final void updateNode(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> updateNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
     
     /*
@@ -158,15 +165,18 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
     /** {@inheritDoc} */
-    public final void deleteNode(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> deleteNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.DELETE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
     
     /*
@@ -174,15 +184,18 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#nodeConfigChanged(int)
      */
     /** {@inheritDoc} */
-    public final void nodeConfigChanged(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> nodeConfigChanged(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
         
     /**
@@ -251,6 +264,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
             return "Operation: "+m_type+" on Node: "+m_nodeId;
         }
         
+        @Override
         public void run() {
             
             if (isNodeReady(m_nodeId)) {

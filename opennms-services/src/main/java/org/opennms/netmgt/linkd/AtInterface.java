@@ -65,7 +65,13 @@ public class AtInterface {
         m_ipAddress = ipAddress;
     }
     
-    
+    public boolean equals(AtInterface a) {
+    	if (a.getNodeid() != m_nodeid) return false;
+    	if (!a.getIpAddress().equals(m_ipAddress)) return false;
+    	if (!a.getMacAddress().equals(m_macAddress)) return false;
+    	if (!a.getIfIndex().equals(m_ifIndex)) return false;
+    	return true;
+    }
     
     public AtInterface(Integer nodeid, String macAddress, InetAddress ipAddress) {
         super();

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-install</artifactId>
@@ -33,7 +33,6 @@
             <manifest>
               <mainClass>org.opennms.install.Installer</mainClass>
               <packageName>org.opennms.install</packageName>
-              <addClasspath>true</addClasspath>
             </manifest>
           </archive>
         </configuration>
@@ -110,6 +109,10 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db.install</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

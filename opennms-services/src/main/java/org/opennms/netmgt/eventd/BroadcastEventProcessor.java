@@ -30,7 +30,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -47,6 +48,10 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class BroadcastEventProcessor implements EventListener {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+    
     private final EventIpcManager m_eventIpcManager;
     private final EventConfDao m_eventConfDao;
     
@@ -91,6 +96,7 @@ public class BroadcastEventProcessor implements EventListener {
      *
      * @throws java.lang.Throwable if any.
      */
+    @Override
     protected void finalize() throws Throwable {
         close();
     }
@@ -100,6 +106,7 @@ public class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Eventd:BroadcastEventProcessor";
     }
@@ -111,9 +118,10 @@ public class BroadcastEventProcessor implements EventListener {
      * available for processing.  Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(Event event) {
         
-        log().debug("onEvent: received event, UEI = " + event.getUei());
+        LOG.debug("onEvent: received event, UEI = {}", event.getUei());
         EventBuilder ebldr = null;
         
         if (isReloadConfigEvent(event)) {
@@ -123,7 +131,7 @@ public class BroadcastEventProcessor implements EventListener {
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
                 
             } catch (Throwable e) {
-                log().error("onEvent: Could not reload events config: " + e, e);
+                LOG.error("onEvent: Could not reload events config", e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
                 ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
@@ -154,10 +162,6 @@ public class BroadcastEventProcessor implements EventListener {
         }
         
         return isTarget;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }
 

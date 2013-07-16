@@ -37,6 +37,7 @@
 <%@page import="java.util.List" %>
 
 <%@page import="org.opennms.web.api.Util"%>
+<%@page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 <%@page import="org.opennms.web.springframework.security.Authentication" %>
@@ -44,8 +45,9 @@
 <%@page import="org.opennms.web.controller.alarm.AcknowledgeAlarmController" %>
 <%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
 
+<%@page import="org.opennms.netmgt.model.OnmsAlarm"%>
+
 <%@page import="org.opennms.web.filter.Filter" %>
-<%@page import="org.opennms.web.alarm.Alarm" %>
 <%@page import="org.opennms.web.alarm.AlarmQueryParms" %>
 <%@page import="org.opennms.web.alarm.SortStyle" %>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
@@ -86,7 +88,7 @@
     XssRequestWrapper req = new XssRequestWrapper(request);
 
     //required attributes
-    Alarm[] alarms = (Alarm[])req.getAttribute( "alarms" );
+    OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
     int alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Integer)req.getAttribute("alarmCount");
     AlarmQueryParms parms = (AlarmQueryParms)req.getAttribute( "parms" );
 
@@ -336,7 +338,7 @@
     </thead>
 
       <% for( int i=0; i < alarms.length; i++ ) { 
-        Alarm alarm = alarms[i];
+        OnmsAlarm alarm = alarms[i];
         pageContext.setAttribute("alarm", alarm);
       %> 
 
@@ -386,7 +388,7 @@
           </td>
           
           <td class="divider" valign="middle" rowspan="1">
-          <%String componentType = getParm(alarms[i].getParms(), "componentType"); %>
+          <%String componentType = getParm(alarms[i].getEventParms(), "componentType"); %>
           <%if(componentType != null){ %>
             <%=componentType%>
             <nobr>
@@ -397,9 +399,9 @@
           </td>
           <!-- Start Cause Column -->
           <td class="divider">
-          <%String componentName = getParm(alarms[i].getParms(), "componentName"); %>
+          <%String componentName = getParm(alarms[i].getEventParms(), "componentName"); %>
           <%if(componentName != null){ %>
-            <a href="ncs/ncs-type.htm?type=<%=componentType%>&foreignSource=<%=getParm(alarms[i].getParms(), "foreignSource")%>&foreignId=<%=getParm(alarms[i].getParms(), "foreignId")%>"><%=componentName %></a>
+            <a href="ncs/ncs-type.htm?type=<%=componentType%>&foreignSource=<%=getParm(alarms[i].getEventParms(), "foreignSource")%>&foreignId=<%=getParm(alarms[i].getEventParms(), "foreignId")%>"><%=componentName %></a>
             <nobr>
                   <a href="<%=this.makeLink( parms, new EventParmLikeFilter("componentName=" + componentName), true)%>" class="filterLink" title="Show only alarms with componentName">${addPositiveFilter}</a>
                   <a href="<%=this.makeLink( parms, new NegativeEventParmLikeFilter("componentName=" + componentName), true)%>" class="filterLink" title="Do not show alarms with componentName">${addNegativeFilter}</a>
@@ -408,7 +410,7 @@
           </td>
           <!-- Cause Column Start -->          
           <td class="divider" valign="middle" rowspan="1" >
-          <%String related = getParm(alarms[i].getParms(), "cause"); %>
+          <%String related = getParm(alarms[i].getEventParms(), "cause"); %>
           <%if(related != null){%>
             <nobr>
                 <a href="alarm/ncs-alarms.htm?sortby=id&amp;acktype=unack&amp;filter=parmmatchany%3dcause%3d<%=related%>"><%=related%></a>
@@ -439,50 +441,50 @@
             <% } %>
           <c:if test="${param.display == 'long'}">
         <br />
-            <% if(alarms[i].getIpAddress() != null ) { %>
-              <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddress()); %>
+            <% if(alarms[i].getIpAddr() != null ) { %>
+              <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddr()); %>
               <% if( alarms[i].getNodeId() != 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
-                  <c:param name="intf" value="<%=alarms[i].getIpAddress()%>"/>
+                  <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
                 </c:url>
-                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=alarms[i].getIpAddress()%></a>
+                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=InetAddressUtils.str(alarms[i].getIpAddr())%></a>
               <% } else { %>
-                <%=alarms[i].getIpAddress()%>
+                <%=InetAddressUtils.str(alarms[i].getIpAddr())%>
               <% } %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only alarms on this IP address">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddress()), true)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeInterfaceFilter(alarms[i].getIpAddr()), true)%>" class="filterLink" title="Do not show alarms for this interface">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>
               &nbsp;
             <% } %>
           <br />
-            <% if(alarms[i].getServiceName() != null && alarms[i].getServiceName() != "") { %>
-              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
-              <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
+            <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
+              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId()); %>
+              <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddr() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
-                  <c:param name="intf" value="<%=alarms[i].getIpAddress()%>"/>
-                  <c:param name="service" value="<%=String.valueOf(alarms[i].getServiceId())%>"/>
+                  <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
+                  <c:param name="service" value="<%=String.valueOf(alarms[i].getServiceType().getId())%>"/>
                 </c:url>
-                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=alarms[i].getServiceName()%>"/></a>
+                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=alarms[i].getServiceType().getName()%>"/></a>
               <% } else { %>
-                <c:out value="<%=alarms[i].getServiceName()%>"/>
+                <c:out value="<%=alarms[i].getServiceType().getName()%>"/>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceType().getId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } %>
             </c:if>
           </td>
           <td class="divider">
-            <nobr><span title="Event <%= alarms[i].getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEventID() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
+            <nobr><span title="Event <%= alarms[i].getLastEvent().getId() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEvent().getId() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
@@ -496,7 +498,7 @@
             </nobr>
           </c:if>
           </td>
-          <td class="divider"><%=alarms[i].getLogMessage()%></td>
+          <td class="divider"><%=alarms[i].getLogMsg()%></td>
        
       <% } /*end for*/%>
 

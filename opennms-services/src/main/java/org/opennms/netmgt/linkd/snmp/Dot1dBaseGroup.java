@@ -30,10 +30,12 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
+
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 
@@ -47,8 +49,12 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1dBaseGroup extends AggregateTracker
-{
+public final class Dot1dBaseGroup extends AggregateTracker {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Dot1dBaseGroup.class);
+    /**
+     * the bridge type
+     */
 	//
 	// Lookup strings for specific table entries
 	//
@@ -127,18 +133,21 @@ public final class Dot1dBaseGroup extends AggregateTracker
 	}
 
     /** {@inheritDoc} */
+        @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
     /** {@inheritDoc} */
+        @Override
     protected void reportGenErr(final String msg) {
-        LogUtils.warnf(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
+        LOG.warn("Error retrieving systemGroup from {}: {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
+        @Override
     protected void reportNoSuchNameErr(final String msg) {
-        LogUtils.infof(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
+        LOG.info("Error retrieving systemGroup from {}: {}", m_address, msg);
     }
 
     /**
@@ -155,12 +164,8 @@ public final class Dot1dBaseGroup extends AggregateTracker
      *
      * @return a int.
      */
-    public int getNumberOfPorts() {
-    	Integer nop = m_store.getInt32(BASE_NUM_PORTS);
-    	if (nop == null) {
-            return -1;
-        }
-    	return nop;
+    public Integer getNumberOfPorts() {
+    	return m_store.getInt32(BASE_NUM_PORTS);
     }
 
     /**
@@ -168,11 +173,19 @@ public final class Dot1dBaseGroup extends AggregateTracker
      *
      * @return a int.
      */
-    public int getBridgeType() {
-    	Integer type = m_store.getInt32(BASE_NUM_TYPE);
-    	if (type == null) {
-            return DbStpNodeEntry.BASE_TYPE_UNKNOWN;
-        }
-    	return type;
+    public Integer getBridgeType() {
+    	return m_store.getInt32(BASE_NUM_TYPE);
+    }
+    
+    public OnmsStpNode getOnmsStpNode(OnmsStpNode node) {
+    	if (getBridgeAddress() == null) 
+    		return node;
+    	node.setBaseBridgeAddress(getBridgeAddress());
+    	if (getBridgeType() == null)
+    		node.setBaseType(BridgeBaseType.UNKNOWN);
+    	else
+    		node.setBaseType(BridgeBaseType.get(getBridgeType()));
+    	node.setBaseNumPorts(getNumberOfPorts());
+    	return node;
     }
 }

@@ -30,10 +30,14 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +75,8 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -87,6 +93,9 @@ import org.springframework.core.style.ToStringCreator;
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 public class OnmsNode extends OnmsEntity implements Serializable,
         Comparable<OnmsNode> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
+
 
     private static final long serialVersionUID = -5736397583719151493L;
 
@@ -638,10 +647,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="node")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="node",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -671,10 +678,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="node")
-    @org.hibernate.annotations.Cascade( {
-         org.hibernate.annotations.CascadeType.ALL,
-         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="node",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsSnmpInterface> getSnmpInterfaces() {
         return m_snmpInterfaces;
     }
@@ -694,10 +699,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="sourceNode")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="sourceNode",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<OnmsArpInterface> getArpInterfacesBySource() {
         return m_arpInterfacesBySource;
     }
@@ -812,6 +815,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
@@ -830,6 +834,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
 
 	/** {@inheritDoc} */
+    @Override
 	public void visit(EntityVisitor visitor) {
 		visitor.visitNode(this);
 		
@@ -917,6 +922,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @param o a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsNode o) {
         String compareLabel = "";
         Integer compareId = 0;
@@ -936,19 +942,64 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     /**
      * <p>getPrimaryInterface</p>
+     * 
+     * This function should be kept similar to {@link IpInterfaceDao#findPrimaryInterfaceByNodeId()}.
      *
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transient
-	public OnmsIpInterface getPrimaryInterface() {
-		for(OnmsIpInterface iface : getIpInterfaces()) {
-			if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
-				return iface;
-			}
-		}
-		return null;
-	}
-    
+    public OnmsIpInterface getPrimaryInterface() {
+        List<OnmsIpInterface> primaryInterfaces = new ArrayList<OnmsIpInterface>();
+        for(OnmsIpInterface iface : getIpInterfaces()) {
+            if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
+                primaryInterfaces.add(iface);
+            }
+        }
+        if (primaryInterfaces.size() < 1) {
+            return null;
+        } else {
+            if (primaryInterfaces.size() > 1) {
+                // Sort the list by the last capabilities scan time so that we return the most recent value
+                Collections.sort(primaryInterfaces, new Comparator<OnmsIpInterface>() {
+                    @Override
+                    public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
+                        if (o1 == null) {
+                            if (o2 == null) {
+                                return 0;
+                            } else {
+                                return -1; // Put nulls at the end of the list
+                            }
+                        } else {
+                            if (o2 == null) {
+                                return 1; // Put nulls at the end of the list
+                            } else {
+                                if (o1.getIpLastCapsdPoll() == null) {
+                                    if (o2.getIpLastCapsdPoll() == null) {
+                                        return 0;
+                                    } else {
+                                        return 1; // Descending order
+                                    }
+                                } else {
+                                    if (o2.getIpLastCapsdPoll() == null) {
+                                        return -1; // Descending order
+                                    } else {
+                                        // Reverse the comparison so that we get a descending order
+                                        return o2.getIpLastCapsdPoll().compareTo(o1.getIpLastCapsdPoll());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                OnmsIpInterface retval = primaryInterfaces.iterator().next();
+                LOG.warn("Multiple primary SNMP interfaces for node {}, returning most recently scanned interface: {}", m_id, retval.getInterfaceId());
+                return retval;
+            } else {
+                return primaryInterfaces.iterator().next();
+            }
+        }
+    }
+
     /**
      * <p>getInterfaceWithService</p>
      *

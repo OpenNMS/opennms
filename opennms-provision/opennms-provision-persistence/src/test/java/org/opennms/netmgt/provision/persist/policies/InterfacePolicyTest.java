@@ -35,15 +35,15 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,12 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class InterfacePolicyTest implements InitializingBean {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
@@ -81,6 +79,11 @@ public class InterfacePolicyTest implements InitializingBean {
         m_interfaces = m_ipInterfaceDao.findAll();
     }
     
+    @After
+    public void tearDown() {
+        m_populator.resetDatabase();
+    }
+
     @Test
     @Transactional
     public void testMatchingPolicy() {

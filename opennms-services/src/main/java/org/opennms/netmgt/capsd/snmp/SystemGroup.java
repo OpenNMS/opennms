@@ -31,9 +31,10 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -55,6 +56,9 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * @version $Id: $
  */
 public final class SystemGroup extends AggregateTracker {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SystemGroup.class);
 
     //
     // Lookup strings for specific table entries
@@ -265,22 +269,21 @@ public final class SystemGroup extends AggregateTracker {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportGenErr(String msg) {
-        log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
+        LOG.warn("Error retrieving systemGroup from {}. {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
-        log().info("Error retrieving systemGroup from "+m_address+". "+msg);
-    }
-
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        LOG.info("Error retrieving systemGroup from {}. {}", m_address, msg);
     }
 
 }

@@ -136,6 +136,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
      * @param o a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
     }

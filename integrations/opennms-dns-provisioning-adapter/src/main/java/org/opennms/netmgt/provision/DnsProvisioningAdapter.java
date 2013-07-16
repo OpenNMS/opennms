@@ -34,16 +34,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.xbill.DNS.Name;
@@ -61,6 +62,7 @@ import org.xbill.DNS.Update;
  * @version $Id: $
  */
 public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsProvisioningAdapter.class);
     
     /**
      * A read-only DAO will be set by the Provisioning Daemon.
@@ -87,16 +89,16 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
         
         //load current nodes into the map
-        m_template.execute(new TransactionCallback<Object>() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        m_template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 createDnsRecordMap();
-                return null;
             }
         });
 
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
-            log().info("DNS property found: "+dnsServer);
+            LOG.info("DNS property found: {}", dnsServer);
             if (dnsServer.contains(":")) {
                 final String[] serverAddress = dnsServer.split(":");
                 m_resolver = new SimpleResolver(serverAddress[0]);
@@ -112,7 +114,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 m_resolver.setTSIGKey(TSIG.fromString(m_signature));
             }
         } else {
-            log().warn("no DNS server configured, DnsProvisioningAdapter will not do anything!");
+            LOG.warn("no DNS server configured, DnsProvisioningAdapter will not do anything!");
         }
     }
     
@@ -130,7 +132,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -138,7 +140,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setNodeDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
@@ -167,6 +169,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -183,35 +186,35 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         if (m_resolver == null) {
             return;
         }
-        log().info("processPendingOperationForNode: Handling Operation: "+op);
+        LOG.info("processPendingOperationForNode: Handling Operation: {}", op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction(TransactionStatus arg0) {
+            m_template.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doUpdate(op);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction(TransactionStatus arg0) {
+            m_template.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus arg0) {
                     doDelete(op);
-                    return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             //do nothing in this adapter
         } else {
-            log().warn("unknown operation: " + op.getType());
+            LOG.warn("unknown operation: {}", op.getType());
         }
     }
 
     private void doUpdate(AdapterOperation op) {
         OnmsNode node = null;
-        log().debug("doUpdate: operation: " + op.getType().name());
+        LOG.debug("doUpdate: operation: {}", op.getType().name());
         try {
             node = m_nodeDao.get(op.getNodeId());
             DnsRecord record = new DnsRecord(node);
-            log().debug("doUpdate: DnsRecord: hostname: " + record.getHostname() + " zone: " + record.getZone() + " ip address " + record.getIp().getHostAddress());
+            LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getIp().getHostAddress(), record.getHostname(), record.getZone());
             DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
 
             Update update = new Update(Name.fromString(record.getZone()));
@@ -224,7 +227,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
             m_nodeDnsRecordMap.put(Integer.valueOf(op.getNodeId()), record);
         } catch (Throwable e) {
-            log().error("addNode: Error handling node added event.", e);
+            LOG.error("addNode: Error handling node added event.", e);
             sendAndThrow(op.getNodeId(), e);
         }
     }
@@ -241,7 +244,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                 m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
             }
         } catch (Throwable e) {
-            log().error("deleteNode: Error handling node deleted event.", e);
+            LOG.error("deleteNode: Error handling node deleted event.", e);
             sendAndThrow(op.getNodeId(), e);
         }
     }
@@ -263,10 +266,6 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         EventBuilder builder = new EventBuilder(uei, "Provisioner", new Date());
         builder.setNodeid(nodeId);
         return builder;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
     }
 
     /**

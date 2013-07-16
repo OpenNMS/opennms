@@ -33,7 +33,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -56,6 +57,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 @Distributable
 final public class IcmpMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
     /**
      * Constructs a new monitor.
      *
@@ -78,6 +80,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -86,7 +89,6 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
         if (iface.getType() != NetworkInterface.TYPE_INET)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         Number rtt = null;
         InetAddress host = (InetAddress) iface.getAddress();
 
@@ -100,7 +102,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             
             rtt = PingerFactory.getInstance().ping(host, timeout, retries,packetSize);
         } catch (Throwable e) {
-            log.debug("failed to ping " + host, e);
+            LOG.debug("failed to ping {}", host, e);
         }
         
         if (rtt != null) {

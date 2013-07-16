@@ -116,8 +116,8 @@
 			</td>
 
 		    <td class="standard">
-		    <% if (linkInterface.getStatusString() != null ) { %>
-             	<%=linkInterface.getStatusString()%>
+		    <% if (linkInterface.getStatus() != null ) { %>
+             	<%=linkInterface.getStatus()%>
             <% } else { %>
      			&nbsp;
 		    <% } %>

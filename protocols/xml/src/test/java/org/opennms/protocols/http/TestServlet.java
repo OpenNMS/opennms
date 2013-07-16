@@ -39,9 +39,11 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.xml.config.Person;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class TestServlet.
@@ -51,13 +53,15 @@ import org.opennms.protocols.xml.config.Person;
 @SuppressWarnings("serial")
 public class TestServlet extends HttpServlet {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TestServlet.class);
+
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LogUtils.infof(this, "JUnit Test Request: %s", req.getRequestURI());
-        LogUtils.infof(this, "JUnit Test Content Type: %s", req.getContentType());
+        LOG.info("JUnit Test Request: %s", req.getRequestURI());
+        LOG.info("JUnit Test Content Type: %s", req.getContentType());
         String requestContent = IOUtils.toString(req.getReader());
         if (req.getRequestURI().equals("/junit/test/sample")) {
             resp.getWriter().write("OK!");

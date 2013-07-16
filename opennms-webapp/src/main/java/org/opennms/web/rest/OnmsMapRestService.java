@@ -42,10 +42,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("maps")
 @Transactional
 public class OnmsMapRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsMapRestService.class);
+
     @Autowired
     private OnmsMapDao m_mapDao;
 
@@ -127,7 +131,7 @@ public class OnmsMapRestService extends OnmsRestService {
     public Response addMap(final OnmsMap map) {
         writeLock();
         try {
-            LogUtils.debugf(this, "addMap: Adding map %s", map);
+            LOG.debug("addMap: Adding map {}", map);
             m_mapDao.save(map);
             return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(map.getId())).build();
             // return Response.ok(map).build();
@@ -149,7 +153,7 @@ public class OnmsMapRestService extends OnmsRestService {
         try {
             final OnmsMap map = m_mapDao.get(mapId);
             if (map == null) throw getException(Response.Status.BAD_REQUEST, "deleteMap: Can't find map with id " + mapId);
-            LogUtils.debugf(this, "deleteMap: deleting map %d", mapId);
+            LOG.debug("deleteMap: deleting map {}", mapId);
             m_mapDao.delete(map);
             return Response.ok().build();
         } finally {
@@ -174,7 +178,7 @@ public class OnmsMapRestService extends OnmsRestService {
             final OnmsMap map = m_mapDao.get(mapId);
             if (map == null) throw getException(Response.Status.BAD_REQUEST, "updateMap: Can't find map with id " + mapId);
     
-            LogUtils.debugf(this, "updateMap: updating map %s", map);
+            LOG.debug("updateMap: updating map {}", map);
     
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(map);
             for(final String key : params.keySet()) {
@@ -185,7 +189,7 @@ public class OnmsMapRestService extends OnmsRestService {
                 }
             }
     
-            LogUtils.debugf(this, "updateMap: map %s updated", map);
+            LOG.debug("updateMap: map {} updated", map);
             m_mapDao.saveOrUpdate(map);
             return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(mapId)).build();
             // return Response.ok(map).build();

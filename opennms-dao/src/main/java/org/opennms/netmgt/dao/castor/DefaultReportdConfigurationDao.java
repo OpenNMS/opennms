@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
-import org.opennms.netmgt.dao.ReportdConfigurationDao;
+import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -55,6 +55,7 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      *
      * @return a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
      */
+    @Override
     public ReportdConfiguration getConfig() {
         return getContainer().getObject();
     }
@@ -66,6 +67,7 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      * @param castorConfig a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
      * @return a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
      */
+    @Override
     public ReportdConfiguration translateConfig(ReportdConfiguration castorConfig) {
         return castorConfig;
     }
@@ -76,11 +78,13 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
     
     /** {@inheritDoc} */
+    @Override
     public Report getReport(String reportName) {
         for (Report report : getReports()) {
             if (report.getReportName().equals(reportName)) {
@@ -95,6 +99,7 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Report> getReports() {
         return getConfig().getReportCollection();
     }
@@ -104,6 +109,7 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      *
      * @return a boolean.
      */
+    @Override
     public boolean getPersistFlag() {
         
         //return  getConfig().getPersistReports();
@@ -125,11 +131,13 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStorageDirectory() {
         return getConfig().getStorageLocation();
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean deleteReport(String report){
         return getConfig().removeReport(getReport(report));
     }

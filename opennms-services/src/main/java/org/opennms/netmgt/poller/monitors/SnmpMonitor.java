@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
@@ -49,6 +48,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -67,6 +68,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 @Distributable(DistributionContext.DAEMON)
 public class SnmpMonitor extends SnmpMonitorStrategy {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(SnmpMonitor.class);
+    
     /**
      * Name of monitored service.
      */
@@ -103,13 +107,14 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+        	LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -128,6 +133,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -143,6 +149,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any unrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -154,7 +161,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -191,14 +198,12 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
         svcParams.setProperty("hex", hexstr);
 
-        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
             // This if block will count the number of matches within a walk and mark the service
@@ -213,18 +218,20 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
 
                     if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                        LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                         if (meetsCriteria(result, operator, operand)) {
                             matchCount++;
                         }
                     }
                 }
                 svcParams.setProperty("matchCount", String.valueOf(matchCount));
-                log().debug("poll: SNMPwalk count succeeded, total=" + matchCount + " min=" + countMin + " max=" + countMax);
+                LOG.debug("poll: SNMPwalk count succeeded, total={} min={} max={}", matchCount, countMin, countMax);
                 if ((countMin <= matchCount) && (matchCount <= countMax)) {
                     status = PollStatus.available();
                 } else {
-                    status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
+                    String reason = PropertiesUtils.substitute(reasonTemplate, svcParams);
+                    LOG.debug(reason);
+                    status = PollStatus.unavailable(reason);
                     return status;
                 }
             } else if ("true".equals(walkstr)) {
@@ -235,14 +242,16 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
                     if (result != null) {
                         svcParams.setProperty("observedValue", getStringValue(result));
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                        LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
                             if ("false".equals(matchstr)) {
                                 return status;
                             }
                         } else if ("true".equals(matchstr)) {
-                            status = logDown(Level.DEBUG, PropertiesUtils.substitute(reasonTemplate, svcParams));
+                            String reason = PropertiesUtils.substitute(reasonTemplate, svcParams);
+                            LOG.debug(reason);
+                            status = PollStatus.unavailable(reason);
                             return status;
                         }
                     }
@@ -261,7 +270,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
                 if (result != null) {
                     svcParams.setProperty("observedValue", getStringValue(result));
-                    log().debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
+                    LOG.debug("poll: SNMP poll succeeded, addr={} oid={} value={}", hostAddress, oid, result);
                     
                     if (meetsCriteria(result, operator, operand)) {
                         status = PollStatus.available();
@@ -269,16 +278,24 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         status = PollStatus.unavailable(PropertiesUtils.substitute(reasonTemplate, svcParams));
                     }
                 } else {
-                    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + hostAddress + " oid=" + oid);
+                    String reason = "SNMP poll failed, addr=" + hostAddress + " oid=" + oid;
+                    LOG.debug(reason);
+                    status = PollStatus.unavailable(reason);
                 }
             }
 
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;

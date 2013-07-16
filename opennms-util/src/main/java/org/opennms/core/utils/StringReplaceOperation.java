@@ -79,6 +79,7 @@ public abstract class StringReplaceOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "Class: " + getClass().getName() + "; Pattern: " + m_pattern + "; Replacement: " + m_replacement;
     }
@@ -91,12 +92,4 @@ public abstract class StringReplaceOperation {
      */
     public abstract String replace(String input);
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.linkd;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class LldpRemInterface {
 	
     private final Integer m_lldpRemChassidSubtype;
@@ -73,6 +74,7 @@ public class LldpRemInterface {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
 	    .append("lldpRemChassidSubtype", m_lldpRemChassidSubtype)

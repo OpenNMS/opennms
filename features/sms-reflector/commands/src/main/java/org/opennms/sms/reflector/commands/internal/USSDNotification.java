@@ -34,22 +34,17 @@
  */
 package org.opennms.sms.reflector.commands.internal;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smslib.AGateway;
 import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;
 public class USSDNotification implements IUSSDNotification {
+    private static final Logger LOG = LoggerFactory.getLogger(USSDNotification.class);
     /** {@inheritDoc} */
-    public void process(String gatewayId, USSDResponse ussdResponse) {
-        debugf(">>> Inbound USSD detected from gateway %s : %s",  gatewayId, ussdResponse.getContent());
-        debugf(">>> USSD session status: %s", ussdResponse.getSessionStatus());
+    @Override
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
+        LOG.debug(">>> Inbound USSD detected from gateway {} : {}",  gateway.getGatewayId(), ussdResponse.getContent());
+        LOG.debug(">>> USSD session status: {}", ussdResponse.getSessionStatus());
     }
-    
-    private void debugf(String format, Object ...args){
-        ThreadCategory log = ThreadCategory.getInstance(USSDNotification.class);
-        
-        if(log.isDebugEnabled()){
-            log.debug(String.format(format, args));
-        }
-    }
-    
 }

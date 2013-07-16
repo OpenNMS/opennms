@@ -40,16 +40,17 @@ import javax.oss.fm.monitor.AlarmType;
 import javax.oss.fm.monitor.AlarmValue;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -59,13 +60,7 @@ import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
  * @version $Id: $
  */
 public class OnmsAlarmOssjMapper {
-
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsAlarmOssjMapper.class);
 
 	// pattern for recognising simple <HTML> tags ; 
 	// used to strip HTML characters from log messages etc
@@ -87,7 +82,7 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 *
-	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
 	 */
 	public void setDistPollerDao(DistPollerDao _distPollerDao) {
 		distPollerDao =  _distPollerDao;
@@ -95,7 +90,7 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private AssetRecordDao _assetRecordDao;
@@ -103,7 +98,7 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 *
-	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param ar a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -111,7 +106,7 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private NodeDao _nodeDao;
@@ -119,7 +114,7 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 *
-	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodedao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -189,25 +184,21 @@ public class OnmsAlarmOssjMapper {
 	 * @throws javax.oss.UnsupportedAttributeException if any.
 	 */
 	public OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
-		ThreadCategory log = getLog();
-		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOnmsAlarmFromOssjAlarm():";
+		String logheader=this.getClass().getSimpleName()+"populateOnmsAlarmFromOssjAlarm():";
 
 		try{
 			String ossPrimaryKey=alarmValue.getAlarmKey().getAlarmPrimaryKey();
 			String applicationDN=alarmValue.getAlarmKey().getApplicationDN();
-			if (log.isDebugEnabled()) 
-				log.debug(logheader+" - AlarmPrimaryKey: "
-						+ ossPrimaryKey +" ApplictionDN: " + applicationDN +" alarmRaisedTime: " + alarmValue.getAlarmRaisedTime());
+			LOG.debug("{} AlarmPrimaryKey: {} ApplictionDN: {} alarmRaisedTime: {}", logheader, ossPrimaryKey, applicationDN, alarmValue.getAlarmRaisedTime());
 			if ((applicationDN==null)||(applicationDN.equals("")) 
 					|| (ossPrimaryKey==null)||(ossPrimaryKey.equals(""))) {
-				log.error(logheader+" ApplicatioDN or PrimaryKey not set");
+				LOG.error("{} ApplicatioDN or PrimaryKey not set", logheader);
 			} else {
-				if (log.isDebugEnabled()) 
-					log.debug(logheader+": trying to find existing alarm using getCurrentAlarmForUniqueKey");
+				LOG.debug("{} trying to find existing alarm using getCurrentAlarmForUniqueKey", logheader);
 
 				onmsAlarm = ossDao.getCurrentAlarmForUniqueKey(applicationDN, ossPrimaryKey);
 				if (onmsAlarm!=null) { // already an alarm with this unique id - log error
-					log.error(logheader+" Alarm Already exists with this Unique ID");
+					LOG.error("{} Alarm Already exists with this Unique ID", logheader);
 				} else {
 					onmsAlarm=new OnmsAlarm();
 
@@ -226,7 +217,7 @@ public class OnmsAlarmOssjMapper {
 					try{
 						onmsseverity= ossjSeveritytoOnmsSeverity(alarmValue.getPerceivedSeverity());
 					} catch (IllegalArgumentException iae){
-						log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
+						LOG.error("{} problem setting severity used default:'WARNING'.", logheader, iae);
 						onmsseverity=OnmsSeverity.WARNING;
 					}
 					onmsAlarm.setSeverity(onmsseverity); 
@@ -250,40 +241,35 @@ public class OnmsAlarmOssjMapper {
 					onmsAlarm.setNode(node); // 
 
 					if (almUpdateBehaviour==null) {
-						log.error(logheader+": This receiver's alarmUpdateBehaviour is not set: defaulting to update nodeID:1");
+						LOG.error("{} This receiver's alarmUpdateBehaviour is not set: defaulting to update nodeID:1", logheader);
 					}
 					else {
-						if (log.isDebugEnabled()) 
-							log.debug(logheader+" alarmUpdateBehaviour:"+almUpdateBehaviour+" "+getAlarmUpdateBehaviourForInt(almUpdateBehaviour));
+						LOG.debug("{} alarmUpdateBehaviour:{} {}", logheader, almUpdateBehaviour, getAlarmUpdateBehaviourForInt(almUpdateBehaviour));
 
 						if (almUpdateBehaviour.equals(SPECIFY_OUTSTATION)) {
 							// this will look for first match of node label to callingAer.getName()
 							// and set node id to this value.
 
-							if (log.isDebugEnabled()) 
-								log.debug(logheader+" SPECIFY_OUTSTATION looking for node with nodelabel:"+defaultUpdateNodeLabel);
+							LOG.debug("{} SPECIFY_OUTSTATION looking for node with nodelabel:{}", logheader, defaultUpdateNodeLabel);
 							try {
 								// TODO temp remove ?
 								try {
 									node =ossDao.findNodeByLabel(defaultUpdateNodeLabel);
 								} catch (Throwable ex){
-									log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node "+ex);
+									LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node", logheader, ex);
 								}
 
 								if (node!=null) {
-									if (log.isDebugEnabled()) 
-										log.debug(logheader+" alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):"
-												+"NODE FOUND for this name:"+defaultUpdateNodeLabel+" setting node id to NodeLabel:"+node.getLabel()+" NodeID:"+node.getId());
+									LOG.debug("{} alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION): NODE FOUND for this name:{} setting node id to NodeLabel:{} NodeID:{}", logheader, defaultUpdateNodeLabel, node.getLabel(), node.getId());
 									onmsAlarm.setNode(node); // maps into FIRST instance of node with the same managedObjectInstance and managedObjectType
 								} else {
-									log.error(logheader+" alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):"
-											+"NODE NOT FOUND for this name:"+defaultUpdateNodeLabel+" setting node id to default NodeID: 1");
+									LOG.error("{} alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION): NODE NOT FOUND for this name:{} setting node id to default NodeID: 1", logheader, defaultUpdateNodeLabel);
 									node=new OnmsNode() ; // TODO remove ossDao.makeExtendedOnmsNode(); 
 									node.setId(new Integer(1));  // node id cannot be null
 									onmsAlarm.setNode(node); // 
 								}
 							} catch (Throwable ex){
-								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
+								LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1", logheader, ex);
 							}
 
 						} 
@@ -293,29 +279,25 @@ public class OnmsAlarmOssjMapper {
 							String managedObjectType=alarmValue.getManagedObjectClass();
 							String managedObjectInstance=alarmValue.getManagedObjectInstance();
 
-							if (log.isDebugEnabled()) 
-								log.debug(logheader+" USE_TYPE_INSTANCE looking for node with managedObjectType:"+managedObjectType+" managedObjectInstance:"+managedObjectInstance);
+							LOG.debug("{} USE_TYPE_INSTANCE looking for node with managedObjectType:{} managedObjectInstance:{}", logheader, managedObjectType, managedObjectInstance);
 							try {
 								node =ossDao.findNodeByInstanceAndType(managedObjectInstance, managedObjectType);
 
 								if (node!=null) {
-									if (log.isDebugEnabled()) 
-										log.debug(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):"
-												+"NODE FOUND for this RX Name:"+defaultUpdateNodeLabel+" setting node id to NodeLabel:"+node.getLabel()+" NodeID:"+node.getId());
+									LOG.debug("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE): NODE FOUND for this RX Name:{} setting node id to NodeLabel:{} NodeID:{}", logheader, defaultUpdateNodeLabel, node.getLabel(), node.getId());
 									onmsAlarm.setNode(node); // maps into FIRST instance of node with the same managedObjectInstance and managedObjectType
 								} else {
-									log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):"
-											+"NODE NOT FOUND for this managedObjectType:"+managedObjectType+" managedObjectInstance:"+managedObjectInstance+" setting node id to default NodeID: 1");
+									LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE): NODE NOT FOUND for this managedObjectType:{} managedObjectInstance:{} setting node id to default NodeID: 1", logheader, managedObjectType, managedObjectInstance);
 									node=new OnmsNode() ; // TODO remove ossDao.makeExtendedOnmsNode();
 									node.setId(new Integer(1));  // node id cannot be null
 									onmsAlarm.setNode(node); // 
 								}
 							} catch (Throwable ex){
-								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
+								LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1", logheader, ex);
 							}
 						}		
 						else {
-							log.error(logheader+" Invalid value for alarmUpdateBehaviour:"+almUpdateBehaviour+" "+getAlarmUpdateBehaviourForInt(almUpdateBehaviour)+" defaulting to update nodeID:1");
+							LOG.error("{} Invalid value for alarmUpdateBehaviour:{} {} defaulting to update nodeID:1", logheader, almUpdateBehaviour, getAlarmUpdateBehaviourForInt(almUpdateBehaviour));
 						}
 					}
 
@@ -350,13 +332,12 @@ public class OnmsAlarmOssjMapper {
 					//alarm.setAlarmAckUser(arg0);
 					//alarm.setAlarmAckTime(arg0);
 
-					if (log.isDebugEnabled()) log.debug(logheader+": Creating Alarm: " );
-
+					LOG.debug("{} Creating Alarm", logheader);
 				}
 			}
 		}
 		catch(Throwable e){
-			log.error(logheader+" Error : ", e);
+			LOG.error("{} Error : ", logheader, e);
 		}
 		return onmsAlarm;
 
@@ -373,8 +354,7 @@ public class OnmsAlarmOssjMapper {
 	 * @throws javax.oss.UnsupportedAttributeException if any.
 	 */
 	public AlarmValue populateOssjAlarmFromOpenNMSAlarm(AlarmValue alarmValueSpecification, OnmsAlarm _openNMSalarm) throws IllegalArgumentException, UnsupportedAttributeException {
-		ThreadCategory log = getLog();
-		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOssjAlarmFromOpenNMSAlarm():";
+		String logheader=this.getClass().getSimpleName()+"populateOssjAlarmFromOpenNMSAlarm():";
 
 		//Node node = null;
 		OnmsNode node = null;
@@ -385,17 +365,17 @@ public class OnmsAlarmOssjMapper {
 		boolean isQoSDrxAlarm=false; // true if alarm is received from Qosdrx
 
 
-		if (log.isDebugEnabled()) log.debug(logheader+": Populating alarm");
+		LOG.debug("{} Populating alarm", logheader);
 
 		// test to see if opennms alarm already has type and instance information set. If yes then it has most likely
 		// come from Qosdrx. 
 		if ((_openNMSalarm.getManagedObjectInstance()!=null) && (_openNMSalarm.getManagedObjectType()!=null)
 				&& (!_openNMSalarm.getManagedObjectInstance().equals("")) && (!_openNMSalarm.getManagedObjectType().equals(""))){
 			isQoSDrxAlarm=true;			
-			if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm TRUE - because OpenNMS alarm has ManagedObjectInstance and ManagedObjectType");
+			LOG.debug("{} isQoSDrxAlarm TRUE - because OpenNMS alarm has ManagedObjectInstance and ManagedObjectType", logheader);
 		} else {
 			isQoSDrxAlarm=false;
-			if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm FALSE - because OpenNMS alarm NOT POPULATED ManagedObjectInstance and ManagedObjectType");
+			LOG.debug("{} isQoSDrxAlarm FALSE - because OpenNMS alarm NOT POPULATED ManagedObjectInstance and ManagedObjectType", logheader);
 		}
 
 
@@ -438,7 +418,7 @@ public class OnmsAlarmOssjMapper {
 
 
 		} catch (Throwable e ){
-			log.error(logheader+": Problem getting ACK time information", e);
+			LOG.error("{} Problem getting ACK time information", logheader, e);
 		}
 
 
@@ -452,7 +432,7 @@ public class OnmsAlarmOssjMapper {
 			}
 			alarmValueSpecification.setAlarmType((_openNMSalarm.getX733AlarmType()==null) ? javax.oss.fm.monitor.AlarmType.EQUIPMENT_ALARM :  _openNMSalarm.getX733AlarmType());
 		} catch (Throwable e) {
-			log.error(logheader+": Problem getting  X733AlarmType or Uei", e);
+			LOG.error("{} Problem getting  X733AlarmType or Uei", logheader, e);
 		}
 
 		// Get some local node information as to where the alarm came from
@@ -498,32 +478,30 @@ public class OnmsAlarmOssjMapper {
 					managedObjectInstance= assetManagedObjectInstance;
 					managedObjectType = assetManagedObjectType;
 
-					if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm=FALSE  OpenNMS type and instance not set. Using from Node Asset record: ManagedObjectInstance: "
-							+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
+					LOG.debug("{} isQoSDrxAlarm=FALSE  OpenNMS type and instance not set. Using from Node Asset record: ManagedObjectInstance: {} ManagedObjectType:{}", logheader, managedObjectInstance, managedObjectType);
 				}
 			}
 			catch(Throwable ex) {
-				log.error(logheader+": Problem getting node and asset information", ex);
+				LOG.error("{} Problem getting node and asset information", logheader, ex);
 			}
 		} else { // is a received alarm
 			try {
 				managedObjectInstance= _openNMSalarm.getManagedObjectInstance();
 				managedObjectType =_openNMSalarm.getManagedObjectType();
 
-				if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm=TRUE  OpenNMS type and instance set. Using from OnmsAlarm: ManagedObjectInstance: "
-						+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
+				LOG.debug("{} isQoSDrxAlarm=FALSE  OpenNMS type and instance not set. Using from Node Asset record: ManagedObjectInstance: {} ManagedObjectType:{}", logheader, managedObjectInstance, managedObjectType);
 			} 
 			catch(Throwable ex)	{
-				log.error(logheader+": Problem managedObjectInstance or managedObjectType", ex);
+				LOG.error("{} Problem managedObjectInstance or managedObjectType", logheader, ex);
 			}
 
 		}
 
 		alarmValueSpecification.setManagedObjectClass(managedObjectType);
-		if (log.isDebugEnabled()) log.debug(logheader+": _av.setManagedObjectClass set to: "+ managedObjectType);
+		LOG.debug("{} _av.setManagedObjectClass set to: ", logheader, managedObjectType);
 
 		alarmValueSpecification.setManagedObjectInstance(managedObjectInstance);
-		if (log.isDebugEnabled()) log.debug(logheader+": _av.setManagedObjectInstance set to: "+ managedObjectInstance);
+		LOG.debug("{} _av.setManagedObjectInstance set to: ", logheader, managedObjectInstance);
 
 		// set severity and probable cause
 		try {			
@@ -534,7 +512,7 @@ public class OnmsAlarmOssjMapper {
 
 		}
 		catch (Throwable e) {
-			log.error(logheader+": Problem getting severity or probable cause: ", e );
+			LOG.error("{} Problem getting severity or probable cause: ", logheader, e);
 		}
 
 		if (!isQoSDrxAlarm ) { // if is a locally generated alarm
@@ -603,7 +581,7 @@ public class OnmsAlarmOssjMapper {
 						"<asset.description>" + assetDescription + "</asset.description>" + "\n");    //TODO - was used for object instancetype
 
 			} catch (Throwable e){
-				log.error(logheader+": Problem setting description, logmessage or operator instrctions: ", e );
+				LOG.error("{} Problem setting description, logmessage or operator instrctions: ", logheader, e);
 			}
 
 		} else { // is a received alarm 
@@ -622,7 +600,7 @@ public class OnmsAlarmOssjMapper {
 				alarmValueSpecification.setAdditionalText(_description);
 
 			} catch (Throwable e){
-				log.error(logheader+": Problem setting description, logmessage or operator instrctions: ", e );
+				LOG.error("{} Problem setting description, logmessage or operator instrctions: ", logheader, e);
 			}
 		}
 
@@ -635,10 +613,10 @@ public class OnmsAlarmOssjMapper {
 			ak.setPrimaryKey(ak.getAlarmPrimaryKey());
 		}
 		catch (Throwable e) {
-			log.error(logheader+": Problem setting AlarmKey: ", e );
+			LOG.error("{} Problem setting AlarmKey: ", logheader, e);
 		}
 
-		if (log.isDebugEnabled()) log.debug(logheader+": Alarm Populated");
+		LOG.debug("{} Alarm Populated", logheader);
 
 		return alarmValueSpecification;
 	} // end populateAlarm()

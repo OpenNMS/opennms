@@ -54,6 +54,7 @@ public class OpenNMSConfigurationExecutionListener extends AbstractTestExecution
         return anno;
     }
 
+    @Override
     public void prepareTestInstance(TestContext testContext) throws Exception {
         final JUnitConfigurationEnvironment anno = findAnnotation(testContext);
         if (anno != null) {

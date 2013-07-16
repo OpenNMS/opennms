@@ -31,7 +31,8 @@ package org.opennms.netmgt.correlation;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -45,6 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
+    private static final Logger LOG = LoggerFactory.getLogger(Correlator.class);
 
 	private EventIpcManager m_eventIpcManager;
 	private List<CorrelationEngine> m_engines;
@@ -63,10 +65,12 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
 		}
 
+                @Override
 		public String getName() {
 			return m_name;
 		}
 
+                @Override
 		public void onEvent(final Event e) {
 			m_engine.correlate(e);
 		}
@@ -77,7 +81,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	 * <p>Constructor for Correlator.</p>
 	 */
 	protected Correlator() {
-		super("OpenNMS.Correlator");
+		super("correlator");
 	}
 
 	/** {@inheritDoc} */
@@ -87,7 +91,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		Assert.notNull(m_engines, "property engines must be set");
         
 		for(final CorrelationEngine engine : m_engines) {
-			LogUtils.infof(this, "Registering correlation engine: %s", engine);
+			LOG.info("Registering correlation engine: {}", engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
         
@@ -117,6 +121,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
      */
     /** {@inheritDoc} */
+        @Override
     public void addCorrelationEngine(final CorrelationEngine engine) {
         m_engines.add(engine);
         if (m_initialized) {
@@ -134,6 +139,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	}
 
 	/** {@inheritDoc} */
+        @Override
     public CorrelationEngine findEngineByName(final String name) {
     	for (final CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
@@ -148,6 +154,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      *
      * @return a {@link java.util.List} object.
      */
+        @Override
     public List<CorrelationEngine> getEngines() {
         return m_engines;
     }

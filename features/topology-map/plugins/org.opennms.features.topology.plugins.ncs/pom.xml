@@ -5,7 +5,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -140,6 +140,12 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf</groupId>
@@ -147,6 +153,24 @@
       <version>${karafVersion}</version>
       <type>tar.gz</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.client</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -164,6 +188,12 @@
       <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
       <version>2.3.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.tooling.exam</groupId>
@@ -183,18 +213,36 @@
     	<groupId>org.apache.karaf.jaas</groupId>
     	<artifactId>org.apache.karaf.jaas.boot</artifactId>
     	<version>${karafVersion}</version>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam</artifactId>
       <version>2.4.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-junit4</artifactId>
       <version>2.4.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -207,12 +255,24 @@
       <artifactId>tinybundles</artifactId>
       <version>1.0.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.url</groupId>
       <artifactId>pax-url-aether</artifactId>
       <version>1.4.0</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
@@ -221,15 +281,34 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.0.4</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jersey-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.4</version>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-test-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

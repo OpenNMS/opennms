@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>protocol-collectors</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-snmp</artifactId>
   <packaging>bundle</packaging>
-  <name>NRTG ProtocolCollector SNMP</name>
+  <name>OpenNMS Features NRTG ProtocolCollector SNMP</name>
   <properties>
     <bundle.symbolicName>org.opennms.nrtg.protocolcollector.snmp</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.protocolcollector.snmp</bundle.namespace>

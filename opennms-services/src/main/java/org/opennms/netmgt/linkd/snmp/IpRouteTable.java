@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -62,6 +61,7 @@ public class IpRouteTable extends SnmpTable<IpRouteTableEntry>
 	}
 	
     /** {@inheritDoc} */
+        @Override
     protected IpRouteTableEntry createTableEntry(final SnmpObjId base, final SnmpInstId inst, final Object val) {
         return new IpRouteTableEntry();
     }

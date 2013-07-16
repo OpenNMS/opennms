@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -68,6 +68,7 @@ import org.xbill.DNS.Type;
  */
 @Distributable
 final public class DnsMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsMonitor.class);
     /**
      * Default DNS port.
      */
@@ -106,6 +107,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
      * the service status is set to SERVICE_AVAILABLE and the method returns.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -146,7 +148,9 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         serviceStatus = pollDNS(timeoutTracker, port, addr, lookup, fatalCodes);
 
         if (serviceStatus == null) {
-            serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
+            String reason = "Never received valid DNS response for address: " + addr;
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         }
         
         // 
@@ -174,26 +178,37 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 double responseTime = timeoutTracker.elapsedTimeInMillis();
 
                 final Integer rcode = response.getHeader().getRcode();
-                LogUtils.debugf(this, "received response code: %s", rcode);
+                LOG.debug("received response code: {}", rcode);
 
                 if (fatalCodes.contains(rcode)) {
-                    return logDown(Level.DEBUG, "Received an invalid DNS response for address: " + addr);
+                    String reason = "Received an invalid DNS response for address: " + addr;
+                    LOG.debug(reason);
+                    return PollStatus.unavailable(reason);
                 } else {
-                    return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
+                    LOG.debug("valid DNS request received, responseTime= {}ms", responseTime);
+                    return PollStatus.available(responseTime);
                 }
             } catch (final InterruptedIOException e) {
                 // No response received, retry without marking the poll failed. If we get this condition over and over until 
                 // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
             } catch (final NoRouteToHostException e) {
-                return logDown(Level.WARN, "No route to host exception for address: " + addr, e);
+                String reason1 = "No route to host exception for address: " + addr;
+                LOG.debug(reason1, e);
+                return PollStatus.unavailable(reason1);
             } catch (final ConnectException e) {
-                return logDown(Level.WARN, "Connection exception for address: " + addr, e);
+                String reason1 = "Connection exception for address: " + addr;
+                LOG.debug(reason1, e);
+                return PollStatus.unavailable(reason1);
             } catch (final IOException e) {
-                return logDown(Level.WARN, "IOException while polling address: " + addr + " " + e.getMessage(), e);
+                String reason1 = "IOException while polling address: " + addr + " " + e.getMessage();
+                LOG.debug(reason1, e);
+                return PollStatus.unavailable(reason1);
             }
         }
+        String reason = "Never received valid DNS response for address: " + addr;
        
-        return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
+        LOG.debug(reason);
+        return PollStatus.unavailable(reason);
     }
 
     

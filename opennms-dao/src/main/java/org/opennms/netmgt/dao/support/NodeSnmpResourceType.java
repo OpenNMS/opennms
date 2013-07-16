@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -48,7 +48,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for NodeSnmpResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public NodeSnmpResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -59,6 +59,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "nodeSnmp";
     }
@@ -68,11 +69,13 @@ public class NodeSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "SNMP Node Data";
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return getResourceDirectory(nodeId, false).isDirectory();
     }
@@ -96,6 +99,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
@@ -116,22 +120,26 @@ public class NodeSnmpResourceType implements OnmsResourceType {
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         List<OnmsResource> empty = Collections.emptyList();
         return empty;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         File nodeSnmpDir = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY + File.separator
                        + ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
@@ -142,6 +150,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
         File relPath = new File(DefaultResourceDao.SNMP_DIRECTORY, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());

@@ -34,12 +34,13 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
-import org.opennms.netmgt.dao.MicroblogConfigurationDao;
+import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -54,6 +55,9 @@ import twitter4j.TwitterException;
  * @author <a href="mailto:http://www.opennms.org">OpenNMS</a>
  */
 public class MicroblogNotificationStrategy implements NotificationStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(MicroblogNotificationStrategy.class);
+    
     private static final String UBLOG_PROFILE_NAME = "notifd";
     protected MicroblogConfigurationDao m_microblogConfigurationDao;
     protected MicroblogConfigurationDao m_configDao;
@@ -80,23 +84,22 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         Twitter svc = buildUblogService(arguments);
         String messageBody = buildMessageBody(arguments);
         Status response;
         
-        if (log().isDebugEnabled()) {
-            log().debug("Dispatching microblog notification for user '" + svc.getUserId() + "' at base URL '" + svc.getBaseURL() + "' with message '" + messageBody + "'");
-        }
+        LOG.debug("Dispatching microblog notification for user '{}' at base URL '{}' with message '{}'", svc.getUserId(), svc.getBaseURL(), messageBody);
         try {
             response = svc.updateStatus(messageBody);
         } catch (TwitterException e) {
-            log().error("Microblog notification failed");
-            log().info("Failed to update status for user '" + svc.getUserId() + "' at service URL '" + svc.getBaseURL() + "', caught exception: " + e.getMessage());
+            LOG.error("Microblog notification failed");
+            LOG.info("Failed to update status for user '{}' at service URL '{}', caught exception: {}", svc.getUserId(), svc.getBaseURL(), e.getMessage());
             return 1;
         }
         
-        log().info("Microblog notification succeeded: update posted with ID " + response.getId());
+        LOG.info("Microblog notification succeeded: update posted with ID {}", response.getId());
         return 0;
     }
     
@@ -118,20 +121,20 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
             profile = m_microblogConfigurationDao.getDefaultProfile();
 
         if (profile == null) {
-            log().fatal("Unable to find a microblog profile called '" + UBLOG_PROFILE_NAME + "', and default profile does not exist; we cannot send microblog notifications!");
+            LOG.error("Unable to find a microblog profile called '{}', and default profile does not exist; we cannot send microblog notifications!", UBLOG_PROFILE_NAME);
             throw new RuntimeException("Could not find a usable microblog profile.");
         }
         
-        log().info("Using microblog profile with name '" + profile.getName() + "'");
+        LOG.info("Using microblog profile with name '{}'", profile.getName());
         
         serviceUrl = profile.getServiceUrl();
         authenUser = profile.getAuthenUsername();
         authenPass = profile.getAuthenPassword();
 
         if (authenUser == null || "".equals(authenUser))
-            log().warn("Working with a blank username, perhaps you forgot to set this in the microblog configuration?");
+            LOG.warn("Working with a blank username, perhaps you forgot to set this in the microblog configuration?");
         if (authenPass == null || "".equals(authenPass))
-            log().warn("Working with a blank password, perhaps you forgot to set this in the microblog configuration?");
+            LOG.warn("Working with a blank password, perhaps you forgot to set this in the microblog configuration?");
         if (serviceUrl == null || "".equals(serviceUrl))
             throw new IllegalArgumentException("Cannot use a blank microblog service URL, perhaps you forgot to set this in the microblog configuration?");
         
@@ -168,22 +171,11 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         
         // Collapse whitespace in final message
         messageBody = messageBody.replaceAll("\\s+", " ");
-        if (log().isDebugEnabled()) {
-            log().debug("Final message body after collapsing whitespace is: '" + messageBody + "'");
-        }
+        LOG.debug("Final message body after collapsing whitespace is: '{}'", messageBody);
 
         return messageBody;
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     /**
      * <p>findDestName</p>
      *
@@ -193,11 +185,11 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     protected String findDestName(List<Argument> arguments) {
         for (Argument arg : arguments) {
             if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) {
-                log().debug("Found destination microblog name: " + arg.getSwitch());
+                LOG.debug("Found destination microblog name: {}", arg.getSwitch());
                 return arg.getValue();
             }
         }
-        log().debug("No destination microblog name found");
+        LOG.debug("No destination microblog name found");
         return null;
     }
     
@@ -215,7 +207,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     /**
      * <p>setMicroblogConfigurationDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.MicroblogConfigurationDao} object.
      */
     public void setMicroblogConfigurationDao(MicroblogConfigurationDao dao) {
         m_microblogConfigurationDao = dao;
@@ -224,7 +216,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     /**
      * <p>getMicroblogConfigurationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MicroblogConfigurationDao} object.
      */
     public MicroblogConfigurationDao getMicroblogConfigurationDao() {
         return m_microblogConfigurationDao;

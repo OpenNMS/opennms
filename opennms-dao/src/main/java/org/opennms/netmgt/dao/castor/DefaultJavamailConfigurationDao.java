@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -73,12 +73,14 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      */
+    @Override
     public ReadmailConfig getDefaultReadmailConfig() {
         String name = getContainer().getObject().getDefaultReadConfigName();
         return getReadMailConfig(name);
     }
     
     /** {@inheritDoc} */
+    @Override
     public ReadmailConfig getReadMailConfig(String name) {
         ReadmailConfig config = null;
         List<ReadmailConfig> configs = getReadmailConfigs();
@@ -96,6 +98,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<ReadmailConfig> getReadmailConfigs() {
         return getContainer().getObject().getReadmailConfigCollection();
     }
@@ -105,12 +108,14 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
+    @Override
     public SendmailConfig getDefaultSendmailConfig() {
         String name = getContainer().getObject().getDefaultSendConfigName();
         return getSendMailConfig(name);
     }
 
     /** {@inheritDoc} */
+    @Override
     public SendmailConfig getSendMailConfig(String name) {
         SendmailConfig config = null;
         List<SendmailConfig> configs = getSendmailConfigs();
@@ -128,11 +133,13 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<SendmailConfig> getSendmailConfigs() {
         return getContainer().getObject().getSendmailConfigCollection();
     }
 
     /** {@inheritDoc} */
+    @Override
     public End2endMailConfig getEnd2EndConfig(String name) {
         End2endMailConfig config = null;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
@@ -150,6 +157,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<End2endMailConfig> getEnd2EndConfigs() {
         return getContainer().getObject().getEnd2endMailConfigCollection();
     }
@@ -159,6 +167,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public void verifyMarshaledConfiguration() throws IllegalStateException {
         // TODO verify that the default config names match as specified in javamail configuration element
         // TODO verify that the config names match as specified in all the end2end configuration elements
@@ -170,6 +179,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
         this.verifyMarshaledConfiguration();

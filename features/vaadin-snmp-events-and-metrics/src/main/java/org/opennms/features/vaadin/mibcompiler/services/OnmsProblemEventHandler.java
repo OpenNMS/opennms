@@ -45,7 +45,8 @@ import org.jsmiparser.util.problem.ProblemEvent;
 import org.jsmiparser.util.problem.ProblemEventHandler;
 import org.jsmiparser.util.problem.ProblemReporterFactory;
 import org.jsmiparser.util.problem.annotations.ProblemSeverity;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Implementation of the ProblemEventHandler interface for OpenNMS.
@@ -53,6 +54,7 @@ import org.opennms.core.utils.LogUtils;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class OnmsProblemEventHandler implements ProblemEventHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsProblemEventHandler.class);
 
     /** The Constant FILE_PREFIX. */
     private static final String FILE_PREFIX = "file://";
@@ -86,6 +88,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#handle(org.jsmiparser.util.problem.ProblemEvent)
      */
+    @Override
     public void handle(ProblemEvent event) {
         m_severityCounters[event.getSeverity().ordinal()]++;
         m_totalCounter++;
@@ -95,6 +98,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#isOk()
      */
+    @Override
     public boolean isOk() {
         for (int i = 0; i < m_severityCounters.length; i++) {
             if (i >= ProblemSeverity.ERROR.ordinal()) {
@@ -110,6 +114,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#isNotOk()
      */
+    @Override
     public boolean isNotOk() {
         return !isOk();
     }
@@ -117,6 +122,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#getSeverityCount(org.jsmiparser.util.problem.annotations.ProblemSeverity)
      */
+    @Override
     public int getSeverityCount(ProblemSeverity severity) {
         return m_severityCounters[severity.ordinal()];
     }
@@ -124,6 +130,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#getTotalCount()
      */
+    @Override
     public int getTotalCount() {
         return m_totalCounter;
     }
@@ -137,7 +144,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @param localizedMessage the localized message
      */
     private void print(PrintStream stream, String sev, Location location, String localizedMessage) {
-        LogUtils.debugf(this, "[%s] Location: %s, Message: %s", sev, location, localizedMessage);
+        LOG.debug("[{}] Location: {}, Message: {}", sev, location, localizedMessage);
         int n = localizedMessage.indexOf(FILE_PREFIX);
         if (n > 0) {
             String source = localizedMessage.substring(n).replaceAll(FILE_PREFIX, "");
@@ -169,7 +176,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
         stream.println(sev + ": " + message + ", Source: " + file.getName() + ", Row: " + data[1] + ", Col: " + data[2]);
         try {
             if (!file.exists()) {
-                LogUtils.warnf(this, "File %s doesn't exist", file);
+                LOG.warn("File {} doesn't exist", file);
                 return;
             }
             FileInputStream fs= new FileInputStream(file);
@@ -181,7 +188,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
             br.close();
             stream.println(String.format("%" + data[2] + "s", "^"));
         } catch (Exception e) {
-            LogUtils.warnf(this, "Can't retrieve line %s from file %", data[1], file);
+            LOG.warn("Can't retrieve line {} from file {}", data[1], file);
         }
     }
 

@@ -158,6 +158,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sendNow(Event event) {
         Log eventLog = new Log();
         Events events = new Events();
@@ -171,6 +172,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
+    @Override
     public void sendNow(Log eventLog) {
         List<Log> pendingEvents = requestPendingEventsList();
 

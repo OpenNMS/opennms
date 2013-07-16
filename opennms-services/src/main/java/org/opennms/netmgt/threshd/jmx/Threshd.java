@@ -37,6 +37,8 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -46,7 +48,9 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  * @version $Id: $
  */
 public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Threshd.class);
+    
     /**
      * <p>Constructor for Threshd.</p>
      */
@@ -57,11 +61,12 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * Log4j category
      */
-    private final static String NAME = "OpenNMS.Threshd";
+    private final static String NAME = "threshd";
 
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         // Load threshd configuration file
         //
@@ -69,13 +74,13 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
             ThreshdConfigFactory.reload();
             ThresholdingConfigFactory.reload();
         } catch (MarshalException ex) {
-            log().fatal("start: Failed to load threshd configuration", ex);
+            LOG.error("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log().fatal("start: Failed to load threshd configuration", ex);
+            LOG.error("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log().fatal("start: Failed to load threshd configuration", ex);
+            LOG.error("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
         
@@ -84,13 +89,13 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
         try {
             PollOutagesConfigFactory.reload();
         } catch (MarshalException ex) {
-            log().fatal("start: Failed to load poll-outage configuration", ex);
+            LOG.error("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log().fatal("start: Failed to load poll-outage configuration", ex);
+            LOG.error("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log().fatal("start: Failed to load poll-outage configuration", ex);
+            LOG.error("start: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -108,6 +113,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getInstance().start();
     }
@@ -115,6 +121,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getInstance().stop();
     }
@@ -124,6 +131,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getInstance().getStatus();
     }

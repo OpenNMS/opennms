@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -101,7 +101,7 @@
         <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.opennms.jmxconfiggenerator.Starter</mainClass>
+          <mainClass>org.opennms.features.jmxconfiggenerator.Starter</mainClass>
         </configuration>
       </plugin>
       <plugin>
@@ -129,7 +129,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>jmxconfiggenerator</artifactId>
       <version>${project.version}</version>
     </dependency>

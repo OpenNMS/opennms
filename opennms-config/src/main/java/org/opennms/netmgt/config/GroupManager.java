@@ -49,7 +49,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.groups.Group;
@@ -73,6 +74,7 @@ import org.opennms.netmgt.model.OnmsGroupList;
  * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  */
 public abstract class GroupManager {
+    private static final Logger LOG = LoggerFactory.getLogger(GroupManager.class);
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -328,7 +330,6 @@ public abstract class GroupManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         long next = -1;
         update();
         //if the group has no duty schedules then it is on duty
@@ -340,9 +341,7 @@ public abstract class GroupManager {
             DutySchedule curSchedule = dutySchedules.get(i);
             long tempnext =  curSchedule.nextInSchedule(time);
             if( tempnext < next || next == -1 ) {
-                if (log.isDebugEnabled()) {
-                    log.debug("isGroupOnDuty: On duty in " + tempnext + " millisec from schedule " + i);
-                }
+                LOG.debug("isGroupOnDuty: On duty in {} millisec from schedule {}", i, tempnext);
                 next = tempnext;
             }
         }

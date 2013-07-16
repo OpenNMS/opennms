@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -27,8 +27,11 @@
     <module>ticketing</module>
     <module>geocoder</module>
     <module>name-cutter</module>
-    <module>opennms-jmx-tools</module>
 
+    <!-- Jmx config generator -->
+    <module>jmx-config-generator</module>
+    <module>jmx-config-generator-webui</module>   
+ 
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>
 
@@ -64,5 +67,8 @@
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
+
+      <module>vaadin-dashboard</module>
+      <module>vaadin-dashlets</module>
   </modules>
 </project>

@@ -35,9 +35,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -48,14 +49,19 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultThresholdsDao.class);
+    
     private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
     /** {@inheritDoc} */
+    @Override
     public ThresholdGroup get(String name) {
         return get(name, null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdGroup merge(ThresholdGroup group) {
         return get(group.getName(), group);
     }
@@ -78,7 +84,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
                 ThresholdResourceType genericType = merge ? mergeType(name, id, group.getGenericResourceTypeMap().get(id)) : createType(name, id);
                 if (genericType.getThresholdMap().size() > 0) {
-                    log().info("Adding " + name + "::" + id + " with " + genericType.getThresholdMap().size() + " elements");
+                    LOG.info("Adding {}::{} with {} elements", name, id, genericType.getThresholdMap().size());
                     newGroup.getGenericResourceTypeMap().put(id, genericType);
                 }
             }
@@ -131,17 +137,17 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                             thresholdEntitySet.add(thresholdEntity);
                         }
                     } catch (IllegalStateException e) {
-                        log().warn("fillThresholdStateMap: Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        LOG.warn("fillThresholdStateMap: Encountered duplicate {} for datasource {}", thresh.getType(), wrapper.getDatasourceExpression(), e);
                     } 
                 }
                 catch (ThresholdExpressionException e) {
-                    log().warn("fillThresholdStateMap: Could not parse threshold expression: "+e.getMessage(), e);
+                    LOG.warn("fillThresholdStateMap: Could not parse threshold expression", e);
                 }
             }
         }
         // Search for deleted configuration
         if (merge) {
-            log().debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group " + groupName + " using type " + typeName);
+            LOG.debug("fillThresholdStateMap(merge): checking if definitions that are no longer exist for group {} using type {}", groupName, typeName);
             for (String expression : thresholdMap.keySet()) {
                 for (Iterator<ThresholdEntity> i = thresholdMap.get(expression).iterator(); i.hasNext();) {
                     ThresholdEntity entity = i.next();
@@ -151,7 +157,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
                         } catch (ThresholdExpressionException e) {
-                            log().warn("fillThresholdStateMap: Could not parse threshold expression: " + e.getMessage(), e);
+                            LOG.warn("fillThresholdStateMap: Could not parse threshold expression", e);
                         }
                         if (newConfig.equals(entity.getThresholdConfig())) {
                             found = true;
@@ -159,7 +165,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         }
                     }
                     if (!found) {
-                        log().info("fillThresholdStateMap(merge): deleting entity " + entity);
+                        LOG.info("fillThresholdStateMap(merge): deleting entity {}", entity);
                         entity.delete();
                         i.remove();
                     }
@@ -182,15 +188,12 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return resourceType;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>getThresholdingConfigFactory</p>
      *
      * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
      */
+    @Override
     public ThresholdingConfigFactory getThresholdingConfigFactory() {
         return m_thresholdingConfigFactory;
     }

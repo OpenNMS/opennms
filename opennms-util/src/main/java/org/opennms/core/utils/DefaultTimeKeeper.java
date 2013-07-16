@@ -41,6 +41,7 @@ public class DefaultTimeKeeper implements TimeKeeper {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getCurrentDate() {
         return new Date();
     }
@@ -50,6 +51,7 @@ public class DefaultTimeKeeper implements TimeKeeper {
      *
      * @return a long.
      */
+    @Override
     public long getCurrentTime() {
         return System.currentTimeMillis();
     }

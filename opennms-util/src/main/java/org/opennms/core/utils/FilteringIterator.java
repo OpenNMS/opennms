@@ -48,10 +48,12 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
             m_it = it;
         }
 
+        @Override
         public boolean hasNext() {
             return (m_peeked != null || m_it.hasNext());
         }
 
+        @Override
         public T next() {
             if (m_peeked != null) {
                 T next = m_peeked;
@@ -70,6 +72,7 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
             return m_peeked;
         }
 
+        @Override
         public void remove() {
             m_it.remove();
         }
@@ -101,6 +104,7 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a boolean.
      */
+    @Override
     public boolean hasNext() {
         skipNonMatching();
         return m_it.hasNext();
@@ -128,6 +132,7 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a T object.
      */
+    @Override
     public T next() {
         skipNonMatching();
         return m_it.next();
@@ -136,6 +141,7 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
     /**
      * <p>remove</p>
      */
+    @Override
     public void remove() {
         m_it.remove();
     }
@@ -145,6 +151,7 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<T> iterator() {
         return this;
     }

@@ -43,7 +43,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -52,6 +51,8 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -65,6 +66,9 @@ import org.opennms.netmgt.xml.event.Log;
  * 
  */
 final class LatencyThresholder implements ServiceThresholder {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(LatencyThresholder.class);
+    
     /**
      * SQL statement to retrieve interface's 'ipinterface' table information.
      */
@@ -130,13 +134,13 @@ final class LatencyThresholder implements ServiceThresholder {
         // Service name
         //
         m_svcName = (String) parameters.get("svcName");
-        if (log().isDebugEnabled())
-            log().debug("initialize: latency thresholder for service '" + m_svcName + "'");
+        LOG.debug("initialize: latency thresholder for service '{}'", m_svcName);
     }
-
+    
     /**
      * <p>reinitialize</p>
      */
+    @Override
     public void reinitialize() {
         //Nothing to do 
     }
@@ -144,6 +148,7 @@ final class LatencyThresholder implements ServiceThresholder {
     /**
      * Responsible for freeing up any resources held by the thresholder.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -154,6 +159,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
+    @Override
     public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         //
@@ -185,8 +191,7 @@ final class LatencyThresholder implements ServiceThresholder {
             dbConn = DataSourceFactory.getInstance().getConnection();
             d.watch(dbConn);
         } catch (SQLException sqlE) {
-            if (log().isEnabledFor(ThreadCategory.Level.ERROR))
-                log().error("initialize: Failed getting connection to the database.", sqlE);
+            LOG.error("initialize: Failed getting connection to the database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         }
 
@@ -216,13 +221,11 @@ final class LatencyThresholder implements ServiceThresholder {
                         nodeId = -1;
                 }
             } catch (SQLException sqle) {
-                if (log().isDebugEnabled())
-                    log().debug("initialize: SQL exception!!", sqle);
+                LOG.debug("initialize: SQL exception!!", sqle);
                 throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress);
             }
 
-            if (log().isDebugEnabled())
-                log().debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + hostAddress);
+            LOG.debug("initialize: db retrieval info: nodeid = {}, address = {}", nodeId, hostAddress);
 
             if (nodeId == -1)
                 throw new RuntimeException("Unable to retrieve node id for interface " + hostAddress);
@@ -262,7 +265,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 // the datasource type is set to "if"
                 //
                 if (!thresh.getDsType().equals("if") && !thresh.getDsType().equals("expr")) {
-                    log().warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
+                    LOG.warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
                     continue; // continue with the next threshold...
                 }
                 try {
@@ -280,7 +283,7 @@ final class LatencyThresholder implements ServiceThresholder {
                     try {
                         thresholdEntity.addThreshold(wrapper);
                     } catch (IllegalStateException e) {
-                        log().warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        LOG.warn("Encountered duplicate {} for datasource {}", thresh.getType(), wrapper.getDatasourceExpression(), e);
                     }
 
                     // Add new entity to the map
@@ -288,7 +291,7 @@ final class LatencyThresholder implements ServiceThresholder {
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
                     }
                 } catch (ThresholdExpressionException e) {
-                    log().warn("Could not parse threshold expression: "+e.getMessage(), e);
+                    LOG.warn("Could not parse threshold expression", e);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -301,15 +304,14 @@ final class LatencyThresholder implements ServiceThresholder {
 
         // Debug
         //
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: dumping interface thresholds defined for " + hostAddress + "/" + groupName + ":");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("initialize: dumping interface thresholds defined for {}/{}:", hostAddress, groupName);
             Iterator<ThresholdEntity> iter = thresholdMap.values().iterator();
             while (iter.hasNext())
-                log().debug(iter.next().toString());
+                LOG.debug(iter.next().toString());
         }
 
-        if (log().isDebugEnabled())
-            log().debug("initialize: initialization completed for " + hostAddress);
+        LOG.debug("initialize: initialization completed for {}", hostAddress);
         return;
     }
 
@@ -319,6 +321,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
@@ -328,6 +331,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
+    @Override
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
 		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);
@@ -337,8 +341,7 @@ final class LatencyThresholder implements ServiceThresholder {
             // Get configuration parameters
             //
             // NodeId attribute
-            if (log().isDebugEnabled())
-                log().debug("check: service= " + m_svcName + " interface= " + latIface.getHostAddress() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
+            LOG.debug("check: service={} interface={} nodeId={} thresholding-group={} interval={}ms", m_svcName, latIface.getHostAddress(), latIface.getNodeId(), latParms.getGroupName(), latParms.getInterval());
             
             // RRD Repository attribute
             //
@@ -355,10 +358,10 @@ final class LatencyThresholder implements ServiceThresholder {
             return THRESHOLDING_SUCCEEDED;
             
         } catch(ThresholdingException e) {
-            log().error(e.getMessage());
+            LOG.error(e.getMessage());
             return e.getFailureCode();
         } catch (EventProxyException e) {
-            log().error("check: Failed sending threshold events via event proxy...", e);
+            LOG.error("check: Failed sending threshold events via event proxy...", e);
             return THRESHOLDING_FAILED;
         }
     }
@@ -443,14 +446,5 @@ final class LatencyThresholder implements ServiceThresholder {
 
             events.addEvent(event);
         }
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public final ThreadCategory log() {
-        return ThreadCategory.getInstance(LatencyThresholder.class);
     }
 }

@@ -36,7 +36,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.*;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.GenericIndexResourceType;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -738,7 +738,7 @@ public class ThresholdController extends AbstractController implements Initializ
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;

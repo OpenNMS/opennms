@@ -34,10 +34,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public class EventTableReader {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(EventTableReader.class);
+
     private Resource m_resource;
     private Reader m_reader;
     private StreamTokenizer m_tokenizer;
@@ -93,7 +97,7 @@ public class EventTableReader {
         
         while (m_tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
             if (justHitEol && m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(keyExpr)) {
-                LogUtils.tracef(this, "Found a key [%s] on line %d, creating a new event-table entry", m_tokenizer.sval, m_tokenizer.lineno());
+                LOG.trace("Found a key [{}] on line {}, creating a new event-table entry", m_tokenizer.sval, m_tokenizer.lineno());
                 thisKey = m_tokenizer.sval;
                 justHitEol = false;
                 gotKey = true;
@@ -102,15 +106,15 @@ public class EventTableReader {
             }
 
             if (m_tokenizer.ttype == StreamTokenizer.TT_EOL) {
-                LogUtils.tracef(this, "Hit EOL on line %d", m_tokenizer.lineno());
+                LOG.trace("Hit EOL on line {}", m_tokenizer.lineno());
                 if (gotKey) {
-                    LogUtils.tracef(this, "At EOL for key [%s]", thisKey);
+                    LOG.trace("At EOL for key [{}]", thisKey);
                 }
                 if (! gotValue) {
-                    LogUtils.warnf(this, "No value for key [%s] in table [%s] read from [%s]; setting it to literal string [null]", thisKey, tableName, m_resource);
+                    LOG.warn("No value for key [{}] in table [{}] read from [{}]; setting it to literal string [null]", thisKey, tableName, m_resource);
                     thisValueBuilder = new StringBuilder("[null]");
                 }
-                LogUtils.tracef(this, "Setting key [%s] to value [%s]", thisKey, thisValueBuilder.toString());
+                LOG.trace("Setting key [{}] to value [{}]", thisKey, thisValueBuilder.toString());
                 eventTable.put(thisKey, thisValueBuilder.toString());
                 justHitEol = true;
                 gotKey = false;
@@ -119,17 +123,17 @@ public class EventTableReader {
             
             if (gotKey && m_tokenizer.ttype == StreamTokenizer.TT_WORD) {
                 if (!gotValue) {
-                    LogUtils.tracef(this, "Found first post-key token [%s] on line %d; initializing string builder with it", m_tokenizer.sval, m_tokenizer.lineno());
+                    LOG.trace("Found first post-key token [{}] on line {}; initializing string builder with it", m_tokenizer.sval, m_tokenizer.lineno());
                     thisValueBuilder = new StringBuilder(m_tokenizer.sval);
                     gotValue = true;
                 } else {
-                    LogUtils.tracef(this, "Found subsequent value token [%s] on line %d; appending it to the string builder", m_tokenizer.sval, m_tokenizer.lineno());
+                    LOG.trace("Found subsequent value token [{}] on line {}; appending it to the string builder", m_tokenizer.sval, m_tokenizer.lineno());
                     thisValueBuilder.append(" ").append(m_tokenizer.sval);
                 }
             }
         }
         
-        LogUtils.debugf(this, "Loaded %d entries for table [%s] from [%s]", eventTable.keySet().size(), tableName, m_resource);
+        LOG.debug("Loaded {} entries for table [{}] from [{}]", eventTable.keySet().size(), tableName, m_resource);
         return eventTable;
     }
     

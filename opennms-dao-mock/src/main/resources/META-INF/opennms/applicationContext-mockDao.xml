@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+    ">
+
+    <context:annotation-config />
+
+    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <property name="location" value="file:${opennms.home}/etc/model-importer.properties" />
+    </bean>
+
+    <bean id="dataSource" class="org.opennms.netmgt.dao.mock.MockDataSource" />
+    <!-- <onmsgi:service interface="javax.sql.DataSource" ref="dataSource" /> -->
+    <bean id="dataSourceFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod">
+            <value>org.opennms.core.db.DataSourceFactory.setInstance</value>
+        </property>
+        <property name="arguments">
+            <list>
+                <ref bean="dataSource" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.opennms.netmgt.dao.mock.MockTransactionManager" />
+    <onmsgi:service interface="org.springframework.transaction.PlatformTransactionManager" ref="transactionManager" />
+
+    <bean id="transactionTemplate" class="org.opennms.netmgt.dao.mock.MockTransactionTemplate">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
+    <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />
+
+    <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.mock.MockAcknowledgmentDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" ref="acknowledgmentDao" />
+
+    <bean id="alarmDao" class="org.opennms.netmgt.dao.mock.MockAlarmDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmDao" ref="alarmDao" />
+
+    <bean id="applicationDao" class="org.opennms.netmgt.dao.mock.MockApplicationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ApplicationDao" ref="applicationDao" />
+
+    <bean id="assetRecordDao" class="org.opennms.netmgt.dao.mock.MockAssetRecordDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AssetRecordDao" ref="assetRecordDao" />
+
+    <bean id="atInterfaceDao" class="org.opennms.netmgt.dao.mock.MockAtInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AtInterfaceDao" ref="atInterfaceDao" />
+
+    <bean id="categoryDao" class="org.opennms.netmgt.dao.mock.MockCategoryDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryDao" ref="categoryDao" />
+
+    <bean id="dataLinkInterfaceDao" class="org.opennms.netmgt.dao.mock.MockDataLinkInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+
+    <bean id="demandPollDao" class="org.opennms.netmgt.dao.mock.MockDemandPollDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.DemandPollDao" ref="demandPollDao" />
+
+    <bean id="distPollerDao" class="org.opennms.netmgt.dao.mock.MockDistPollerDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
+
+    <bean id="eventConfDao" class="org.opennms.netmgt.dao.mock.MockEventConfDao">
+        <property name="resource" value="classpath:minimal-eventconf.xml" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.config.EventConfDao" ref="eventConfDao" />
+
+    <bean id="eventDao" class="org.opennms.netmgt.dao.mock.MockEventDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventCountDao" ref="eventDao" />
+    
+    <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.mock.MockIpInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.IpInterfaceDao" ref="ipInterfaceDao" />
+
+    <bean id="ipRouteInterfaceDao" class="org.opennms.netmgt.dao.mock.MockIpRouteInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.IpRouteInterfaceDao" ref="ipRouteInterfaceDao" />
+
+    <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.mock.MockJavaMailConfigurationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
+
+    <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.mock.MockLocationMonitorDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />
+
+    <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" ref="monitoredServiceDao" />
+
+    <bean id="memoDao" class="org.opennms.netmgt.dao.mock.MockMemoDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.MemoDao" ref="memoDao" />
+
+    <bean id="notificationDao" class="org.opennms.netmgt.dao.mock.MockNotificationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.NotificationDao" ref="notificationDao" />
+
+    <bean id="onmsMapDao" class="org.opennms.netmgt.dao.mock.MockOnmsMapDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsMapDao" ref="onmsMapDao" />
+
+    <bean id="onmsMapElementDao" class="org.opennms.netmgt.dao.mock.MockOnmsMapElementDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsMapElementDao" ref="onmsMapElementDao" />
+
+    <bean id="outageDao" class="org.opennms.netmgt.dao.mock.MockOutageDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
+
+    <bean id="resourceDao" class="org.opennms.netmgt.dao.mock.MockResourceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao"/>
+    
+    <bean id="resourceReferenceDao" class="org.opennms.netmgt.dao.mock.MockResourceReferenceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceReferenceDao" ref="resourceReferenceDao"/>
+    
+    <bean id="rrdDao" class="org.opennms.netmgt.dao.mock.MockRrdDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao"/>
+    
+    <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.mock.MockServiceTypeDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTypeDao" ref="serviceTypeDao" />
+
+    <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" ref="snmpInterfaceDao" />
+
+    <bean id="statsdConfigResourceLocation" class="java.lang.String">
+        <constructor-arg value="classpath:/statsd-configuration.xml" />
+    </bean>
+
+    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
+        <property name="configResource" ref="statsdConfigResourceLocation" />
+        <property name="reloadCheckInterval" value="-1" />
+    </bean>
+
+    <bean id="stpInterfaceDao" class="org.opennms.netmgt.dao.mock.MockStpInterfaceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.StpInterfaceDao" ref="stpInterfaceDao" />
+
+    <bean id="stpNodeDao" class="org.opennms.netmgt.dao.mock.MockStpNodeDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.StpNodeDao" ref="stpNodeDao" />
+
+    <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+    </bean>
+    <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
+    <onmsgi:service interface="org.opennms.netmgt.config.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
+
+    <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.mock.MockStatisticsReportDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsReportDao" ref="statisticsReportDao"/>
+    
+    <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
+        <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
+    </bean>
+    <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+        <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.SurveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
+
+    <bean id="userNotificationDao" class="org.opennms.netmgt.dao.mock.MockUserNotificationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.UserNotificationDao" ref="userNotificationDao" />
+
+    <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
+
+    <bean id="vlanDao" class="org.opennms.netmgt.dao.mock.MockVlanDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.VlanDao" ref="vlanDao" />
+
+    <!-- 
+    <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="locationMonitorDao" ref="locationMonitorDao" />
+        <property name="collectdConfig" ref="collectdConfig" />
+        <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
+        <property name="rrdDirectory" value="${rrd.base.dir}" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
+
+    <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
+    </bean>
+    <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfig-init" factory-method="getInstance"/>
+    -->
+
+    <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao" />
+    <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod">
+            <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
+        </property>
+        <property name="arguments">
+            <list>
+                <ref bean="dataCollectionConfigDao" />
+            </list>
+        </property>
+    </bean>
+    <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
+    <onmsgi:service interface="org.opennms.netmgt.config.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
+
+    <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
+        <property name="arguments">
+            <bean id="mockFilterDao" class="org.opennms.netmgt.dao.mock.MockFilterDao">
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+            </bean>
+        </property>
+    </bean>
+    <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+
+    <bean id="databasePopulator" class="org.opennms.netmgt.dao.DatabasePopulator">
+        <property name="populateInSeparateTransaction" value="true" />
+        <property name="transactionTemplate" ref="transactionTemplate" />
+        <property name="distPollerDao" ref="distPollerDao" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+        <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+        <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+        <property name="assetRecordDao" ref="assetRecordDao" />
+        <property name="categoryDao" ref="categoryDao" />
+        <property name="outageDao" ref="outageDao" />
+        <property name="eventDao" ref="eventDao" />
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="notificationDao" ref="notificationDao" />
+        <property name="userNotificationDao" ref="userNotificationDao" />
+        <property name="locationMonitorDao" ref="locationMonitorDao" />
+        <property name="acknowledgmentDao" ref="acknowledgmentDao" />
+        <property name="serviceTypeDao" ref="serviceTypeDao" />
+        <property name="onmsMapDao" ref="onmsMapDao" />
+        <property name="onmsMapElementDao" ref="onmsMapElementDao" />
+        <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+    </bean>
+
+    <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+
+</beans>

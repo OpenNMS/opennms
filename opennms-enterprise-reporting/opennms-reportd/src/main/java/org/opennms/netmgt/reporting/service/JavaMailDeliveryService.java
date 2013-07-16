@@ -32,11 +32,12 @@ import java.io.File;
 
 import javax.mail.MessagingException;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.config.reportd.Report;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -47,17 +48,22 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  * @version $Id: $
  */
 public class JavaMailDeliveryService implements ReportDeliveryService {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(JavaMailDeliveryService.class);
 
     JavaMailConfigurationDao m_JavamailConfigDao;
 
     /** {@inheritDoc} 
      * @throws ReportDeliveryException */
+    @Override
     public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
 
             JavaSendMailer sm = null;
             String mailer = report.getMailer();
-            LogUtils.debugf(this, "deliverReport with mailer=%s", mailer);
+            LOG.debug("deliverReport with mailer={}", mailer);
             if (mailer != null && mailer.length() > 0) {
                 sm = new JavaSendMailer(m_JavamailConfigDao.getSendMailConfig(mailer));
             } else {
@@ -75,13 +81,13 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
             sm.send();
 
         } catch (JavaMailerException e) {
-            LogUtils.errorf(this, e, "Problem with JavaMailer %s", e.getMessage());
+            LOG.error("Problem with JavaMailer {}", e.getMessage(), e);
             throw new ReportDeliveryException("Caught JavaMailerException: " + e.getMessage());
         } catch (MessagingException e) {
-            LogUtils.errorf(this, e, "Problem with Messaging %s", e.getMessage());
+            LOG.error("Problem with Messaging {}", e.getMessage(), e);
             throw new ReportDeliveryException("Caught MessagingException: " + e.getMessage());
         } catch (Throwable e) {
-            LogUtils.errorf(this, e, "Unexpected exception: %s",e.getMessage());
+            LOG.error("Unexpected exception: {}",e.getMessage(), e);
             throw new ReportDeliveryException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }
         
@@ -91,7 +97,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     /**
      * <p>getJavamailConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     public JavaMailConfigurationDao getJavamailConfigDao() {
         return m_JavamailConfigDao;
@@ -101,7 +107,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     /**
      * <p>setJavamailConfigDao</p>
      *
-     * @param javamailConfigDao a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     * @param javamailConfigDao a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
      */
     public void setJavamailConfigDao(JavaMailConfigurationDao javamailConfigDao) {
         m_JavamailConfigDao = javamailConfigDao;

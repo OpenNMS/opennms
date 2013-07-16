@@ -1,20 +1,5 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
-
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -33,9 +18,25 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
-import com.vaadin.terminal.gwt.client.VConsole;
+import org.discotools.gwt.leaflet.client.controls.Control;
+import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SearchControl extends Control {
+    Logger logger = Logger.getLogger(getClass().getName());
     private static final HashMap<String, String> m_labels;
     static {
         m_labels = new HashMap<String,String>();
@@ -69,7 +70,7 @@ public class SearchControl extends Control {
     public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer, final SearchOptions options) {
         super(JSObject.createJSObject());
         setJSObject(SearchControlImpl.create(this, options.getJSObject()));
-        VConsole.log("new SearchControl()");
+        logger.log(Level.INFO, "new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
         m_selectionModel = new SingleSelectionModel<NodeMarker>();
@@ -88,7 +89,7 @@ public class SearchControl extends Control {
     }
 
     public Element doOnAdd(final JavaScriptObject map) {
-        VConsole.log("onAdd() called");
+        logger.log(Level.INFO, "onAdd() called");
         
         m_container.add(m_inputBox);
         m_container.add(m_submitIcon);
@@ -98,7 +99,7 @@ public class SearchControl extends Control {
     }
 
     public SearchControl doOnRemove(final JavaScriptObject map) {
-        VConsole.log("onRemove() called");
+        logger.log(Level.INFO, "onRemove() called");
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
         return this;
     }
@@ -196,7 +197,7 @@ public class SearchControl extends Control {
     }
 
     private void initializeContainerWidget() {
-        m_container = HTMLPanel.wrap(SearchControlImpl.createElement("leaflet-control-search"));
+        m_container = new HTMLPanel("<div class\"leaflet-control-search\"></div>");
         m_container.addStyleName("leaflet-control");
     }
 
@@ -247,7 +248,7 @@ public class SearchControl extends Control {
                 String additionalSearchInfo = null;
                 if (searchString.contains(":") || searchString.contains("=")) {
                     final String searchKey = searchString.replaceAll("[\\:\\=].*$", "").toLowerCase();
-                    VConsole.log("searchKey = " + searchKey);
+                    logger.log(Level.INFO, "searchKey = " + searchKey);
 
                     if ("category".equals(searchKey) || "categories".equals(searchKey)) {
                         final String categoryString = marker.getCategoriesAsString();

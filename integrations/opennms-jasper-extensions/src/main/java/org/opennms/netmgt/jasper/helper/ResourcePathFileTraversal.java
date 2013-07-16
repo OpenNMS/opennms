@@ -114,6 +114,7 @@ public class ResourcePathFileTraversal{
     private boolean validateDataSource(File f) throws IOException {
         FilenameFilter dsFilenameFilter = new FilenameFilter() {
 
+            @Override
             public boolean accept(File dir, String name) {
                 return name.equals("ds.properties");
             }
@@ -155,6 +156,7 @@ public class ResourcePathFileTraversal{
         for(final String dsName : m_dataSourceFilterList) {
             filters.add(new FilenameFilter() {
 
+                @Override
                 public boolean accept(File dir, String name) {
                     
                     return name.contains(dsName);

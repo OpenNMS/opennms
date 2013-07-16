@@ -36,11 +36,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.config.scriptd.Engine;
@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 import org.opennms.netmgt.config.scriptd.Uei;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -64,6 +64,7 @@ import org.opennms.netmgt.xml.event.Script;
  * 
  */
 final class Executor implements Runnable, PausableFiber {
+    private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
     /**
      * The input queue of events.
      */
@@ -178,8 +179,8 @@ final class Executor implements Runnable, PausableFiber {
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
      */
+    @Override
     public void run() {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;
@@ -224,7 +225,7 @@ final class Executor implements Runnable, PausableFiber {
             } catch (InterruptedException ex) {
                 break;
             } catch (FifoQueueException ex) {
-                log.warn("The input event queue has errors, exiting...", ex);
+                LOG.warn("The input event queue has errors, exiting...", ex);
                 break;
             }
 
@@ -243,15 +244,15 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            log.error("Reload script[" + i + "] failed.", ex);
+                            LOG.error("Reload script[{}] failed.", i, ex);
                         }
                     }
 
-                    log.debug("Script configuration reloaded");
+                    LOG.debug("Script configuration reloaded");
                 }
 
                 catch (Throwable ex) {
-                    log.error("Unable to reload ScriptD configuration: ", ex);
+                    LOG.error("Unable to reload ScriptD configuration: ", ex);
                 }
             }
 
@@ -267,7 +268,7 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             if (attachedScripts.length > 0 || mapScripts != null || m_eventScripts.size() > 0) {
-                log.debug("Executing scripts for: " + event.getUei());
+                LOG.debug("Executing scripts for: {}", event.getUei());
 
                 m_mgr.registerBean("event", event);
 
@@ -283,7 +284,7 @@ final class Executor implements Runnable, PausableFiber {
 
                 // execute the scripts attached to the event
 
-                log.debug("Executing attached scripts");
+                LOG.debug("Executing attached scripts");
                 if (attachedScripts.length > 0) {
                     for (int i = 0; i < attachedScripts.length; i++) {
                         try {
@@ -292,14 +293,14 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            log.error("Attached script [" + i + "] execution failed", ex);
+                            LOG.error("Attached script [{}] execution failed", i, ex);
                         }
                     }
                 }
 
                 // execute the scripts mapped to the UEI
 
-                log.debug("Executing mapped scripts");
+                LOG.debug("Executing mapped scripts");
                 if (mapScripts != null) {
                     for (int i = 0; i < mapScripts.size(); i++) {
                         try {
@@ -308,14 +309,14 @@ final class Executor implements Runnable, PausableFiber {
                         }
 
                         catch (BSFException ex) {
-                            log.error("UEI-specific event handler script execution failed: " + event.getUei(), ex);
+                            LOG.error("UEI-specific event handler script execution failed: {}", event.getUei(), ex);
                         }
                     }
                 }
 
                 // execute the scripts that are not mapped to any UEI
 
-                log.debug("Executing global scripts");
+                LOG.debug("Executing global scripts");
                 for (int i = 0; i < m_eventScripts.size(); i++) {
                     try {
                         EventScript script = (EventScript) m_eventScripts.get(i);
@@ -323,7 +324,7 @@ final class Executor implements Runnable, PausableFiber {
                     }
 
                     catch (BSFException ex) {
-                        log.error("Non-UEI-specific event handler script [" + i + "] execution failed", ex);
+                        LOG.error("Non-UEI-specific event handler script [{}] execution failed", i, ex);
                     }
                 }
 
@@ -332,7 +333,7 @@ final class Executor implements Runnable, PausableFiber {
 		
                 m_mgr.unregisterBean("event");
 
-                log.debug("Finished executing scripts for: " + event.getUei());
+                LOG.debug("Finished executing scripts for: {}", event.getUei());
 
             }
         } // end infinite loop
@@ -375,8 +376,8 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void start() {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         if (m_worker != null) {
             throw new IllegalStateException("The fiber has already been run");
@@ -389,7 +390,7 @@ final class Executor implements Runnable, PausableFiber {
         for (int i = 0; i < engines.length; i++) {
             Engine engine = engines[i];
 
-            log.debug("Registering engine: " + engine.getLanguage());
+            LOG.debug("Registering engine: {}", engine.getLanguage());
 
             String[] extensions = null;
 
@@ -411,7 +412,7 @@ final class Executor implements Runnable, PausableFiber {
         }
 
         m_mgr = new BSFManager();
-        m_mgr.registerBean("log", ThreadCategory.getInstance(Executor.class));
+        m_mgr.registerBean("log", LOG);
 
         StartScript[] startScripts = m_config.getStartScripts();
 
@@ -421,7 +422,7 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             catch (BSFException ex) {
-                log.error("Start script[" + i + "] failed.", ex);
+                LOG.error("Start script[{}] failed.", i, ex);
             }
         }
 
@@ -437,8 +438,9 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
      */
+    @Override
     public synchronized void stop() {
-        Category log = (Category) m_mgr.lookupBean("log");
+        Logger log = (Logger) m_mgr.lookupBean("log");
 
         if (m_worker == null) {
             throw new IllegalStateException("The fiber has never been run");
@@ -462,11 +464,11 @@ final class Executor implements Runnable, PausableFiber {
             }
 
             catch (BSFException ex) {
-                log.error("Stop script[" + i + "] failed.", ex);
+                LOG.error("Stop script[{}] failed.", i, ex);
             }
         }
 
-        log.debug("Stopped");
+        LOG.debug("Stopped");
     }
 
     /**
@@ -477,6 +479,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void pause() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -496,6 +499,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void resume() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -512,6 +516,7 @@ final class Executor implements Runnable, PausableFiber {
      *
      * @return The name of the fiber.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -523,6 +528,7 @@ final class Executor implements Runnable, PausableFiber {
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;

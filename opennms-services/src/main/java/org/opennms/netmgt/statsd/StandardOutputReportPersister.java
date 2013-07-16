@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.AttributeStatistic;
  */
 public class StandardOutputReportPersister implements ReportPersister {
     /** {@inheritDoc} */
+    @Override
     public void persist(ReportInstance report) {
         System.out.println("Top " + report.getCount() + " " + report.getAttributeMatch() + " data sources on resources of type " + report.getResourceTypeMatch() + " from " + new Date(report.getStartTime()) + " to " + new Date(report.getEndTime()));
         SortedSet<AttributeStatistic> top = report.getResults();

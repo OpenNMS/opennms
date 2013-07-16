@@ -73,8 +73,9 @@ public abstract class GroupTable extends Table {
                 return item.getBean().getMibObjCount();
             }
         });
-        addListener(new Property.ValueChangeListener() {
+        addValueChangeListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
                     BeanItem<Group> item = (BeanItem<Group>) getContainerDataSource().getItem(getValue());

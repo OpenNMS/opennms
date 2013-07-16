@@ -122,6 +122,7 @@ public class SnmpTableResult implements RowResultFactory {
         handleCompleteRows();
     }
 
+    @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
         return new SnmpRowResult(columnCount, instance);
     }

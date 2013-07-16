@@ -33,10 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.ServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DaemonManagerDefault implements DaemonManager {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DaemonManagerDefault.class);
 	
 	private List<ServiceDaemon> m_serviceDaemons;
 	
@@ -52,6 +55,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>pause</p>
 	 */
+        @Override
 	public void pause() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.pause();
@@ -61,6 +65,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>resume</p>
 	 */
+        @Override
 	public void resume() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.resume();
@@ -70,6 +75,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>start</p>
 	 */
+        @Override
 	public void start() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.start();
@@ -81,6 +87,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
+        @Override
 	public Map<String, String> status() {
         Map<String, String> stati = new HashMap<String, String>();
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
@@ -92,6 +99,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>stop</p>
 	 */
+        @Override
 	public void stop() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stopService(serviceDaemon);
@@ -104,7 +112,7 @@ public class DaemonManagerDefault implements DaemonManager {
 		try {
 			serviceDaemon.stop();
 		} catch (final Exception e) {
-		    LogUtils.warnf(this, e, "an error occurred while stopping service: %s", serviceDaemon.getName());
+			LOG.warn("an error occurred while stopping service: {}", serviceDaemon.getName(), e);
 		}
 	}
 

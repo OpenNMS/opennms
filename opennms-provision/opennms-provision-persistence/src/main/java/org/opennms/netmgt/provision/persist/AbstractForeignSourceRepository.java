@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,15 +36,19 @@ import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractForeignSourceRepository.class);
+    
     /**
      * <p>Constructor for AbstractForeignSourceRepository.</p>
      */
@@ -52,10 +56,11 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
  
-        LogUtils.debugf(this, "importing requisition from %s", resource);
+        LOG.debug("importing requisition from {}", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         requisition.setResource(resource);
         save(requisition);
@@ -68,6 +73,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
         Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml");
         if (!defaultForeignSource.exists()) {
@@ -79,6 +85,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public void putDefaultForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("foreign source was null");
@@ -107,22 +114,25 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      *
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
     	final File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         if (!deleteFile.exists()) {
             return;
         }
         if (!deleteFile.delete()) {
-            LogUtils.warnf(this, "unable to remove %s", deleteFile.getPath());
+            LOG.warn("unable to remove {}", deleteFile.getPath());
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
     
+    @Override
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
     	/*
     	final String name = foreignSource.getName();
@@ -132,6 +142,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     	*/
     }
     
+    @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
     	/*
     	final String foreignSource = requisition.getForeignSource();

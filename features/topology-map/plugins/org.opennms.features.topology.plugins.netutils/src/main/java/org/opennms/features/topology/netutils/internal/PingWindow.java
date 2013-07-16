@@ -31,19 +31,22 @@ package org.opennms.features.topology.netutils.internal;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.vaadin.terminal.ExternalResource;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * The PingWindow class creates a Vaadin Sub-window with a form and results section
@@ -71,7 +74,7 @@ public class PingWindow extends Window{
 	private int splitHeight = 240; //Height from top of the window to the split location in pixels
 	private int topHeight = 280; //Set height size for everything above the split
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
-	private String baseAddress;
+	private String pingUrl;
 	
 	/**
 	 * The PingWindow method constructs a PingWindow component with a size proportionate to the 
@@ -80,9 +83,9 @@ public class PingWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public PingWindow(final Node node, final String baseAddress){
+	public PingWindow(final Node node, final String pingUrl){
 
-		this.baseAddress = baseAddress;
+		this.pingUrl = pingUrl;
 
 		String label = "";
 		String ipAddress = "";
@@ -99,16 +102,20 @@ public class PingWindow extends Window{
 		setCaption("Ping" + caption);
 		setImmediate(true);
 		setResizable(false);
+        setSizeFull();
 
 		/*Initialize the header of the Sub-window with the name of the selected Node*/
 		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
 		nodeLabel = new Label(nodeName);
-		nodeLabel.setContentMode(Label.CONTENT_XHTML);
+		nodeLabel.setContentMode(ContentMode.HTML);
 
 		/*Creating various layouts to encapsulate all of the components*/
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setSizeFull();
 		vSplit = new VerticalSplitPanel();
+        vSplit.setWidth(800, Unit.PIXELS);
+        vSplit.setHeight(800, Unit.PIXELS);
+
 		topLayout = new VerticalLayout();
 		bottomLayout = new VerticalLayout();
 		VerticalLayout form = new VerticalLayout();
@@ -167,7 +174,8 @@ public class PingWindow extends Window{
 
 		/*Creates the Ping button and sets up the listener*/
 		pingButton = new Button("Ping"); 
-		pingButton.addListener(new Button.ClickListener() {
+		pingButton.addClickListener(new Button.ClickListener() {
+			@Override
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}
@@ -185,7 +193,7 @@ public class PingWindow extends Window{
 		topLayout.setComponentAlignment(nodeLabel, Alignment.MIDDLE_CENTER);
 		topLayout.addComponent(form);
 		topLayout.setSizeFull();
-		topLayout.setMargin(true, true, false, true);
+		topLayout.setMargin(new MarginInfo(true, true, false, true));
 
 		/*Sets attributes for bottom layout component*/
 		bottomLayout.setSizeFull();
@@ -197,7 +205,7 @@ public class PingWindow extends Window{
 		/*Setting first and second components for the split panel and setting the panel divider position*/
 		vSplit.setFirstComponent(topLayout);
 		vSplit.setSecondComponent(bottomLayout);
-		vSplit.setSplitPosition(splitHeight, UNITS_PIXELS);
+		vSplit.setSplitPosition(splitHeight, Unit.PIXELS);
 		vSplit.setLocked(true);
 
 		/*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/
@@ -211,8 +219,8 @@ public class PingWindow extends Window{
 	public void attach() {
 		super.attach();
 
-		int width = (int)getApplication().getMainWindow().getWidth();
-		int height = (int)getApplication().getMainWindow().getHeight();
+		int width = (int)getUI().getPage().getBrowserWindowWidth();
+		int height = (int)getUI().getPage().getBrowserWindowHeight();
 
 		int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
 		setWidth("" + windowWidth + "px");
@@ -253,29 +261,31 @@ public class PingWindow extends Window{
         try {
             validInput = validateInput();
         } catch (NumberFormatException e) {
-            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.TYPE_WARNING_MESSAGE);
+            Notification.show("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
             return null;
         }
         if (validInput) {
-            final URL baseUrl = getApplication().getURL();
-            
-            final StringBuilder options = new StringBuilder(baseAddress);
-
-            options.append("&address=").append(ipDropdown.getValue())
-                .append("&timeout=").append(timeoutField.getValue())
-                .append("&numberOfRequests=").append(requestsField.getValue())
-                .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
-            if (numericalDataCheckBox.getValue().equals(true)) {
-                options.append("&numericOutput=true");
-            }
+            final StringBuilder options = new StringBuilder(pingUrl);
             try {
+                URL baseUrl = getUI().getPage().getLocation().toURL();
+
+                options.append(pingUrl.contains("?") ? "&" : "?");
+
+                options.append("address=").append(ipDropdown.getValue())
+                    .append("&timeout=").append(timeoutField.getValue())
+                    .append("&numberOfRequests=").append(requestsField.getValue())
+                    .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
+                if (numericalDataCheckBox.getValue().equals(true)) {
+                    options.append("&numericOutput=true");
+                }
+
                 return new URL(baseUrl, options.toString());
             } catch (final MalformedURLException e) {
-                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
+                Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
                 return null;
             }
         } else {
-            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.TYPE_WARNING_MESSAGE);
+            Notification.show("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
             return null;
         }
     }

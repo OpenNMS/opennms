@@ -35,25 +35,24 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.NotificationDao;
-import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.dao.OnmsMapElementDao;
-import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.UserNotificationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapElementDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -62,6 +61,8 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Populates a test database with some entities (nodes, interfaces, services). Example usage:</p>
@@ -92,6 +93,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class AvailabilityDatabasePopulator {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityDatabasePopulator.class);
     private DistPollerDao m_distPollerDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
@@ -260,7 +262,7 @@ public class AvailabilityDatabasePopulator {
             getOutageDao().flush();
             
         } catch (final ParseException e) {
-            LogUtils.warnf(this, e, "populating database failed");
+            LOG.warn("populating database failed", e);
         }
         
   

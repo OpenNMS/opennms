@@ -29,7 +29,6 @@
 package org.opennms.web.svclayer;
 
 import java.io.InputStream;
-
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,7 +50,7 @@ public interface RrdGraphService {
      * @return a {@link java.io.InputStream} object.
      */
     public InputStream getPrefabGraph(String resourceId,
-            String report, long start, long end);
+            String report, long start, long end, Integer width, Integer height);
     
     /**
      * <p>getAdhocGraph</p>

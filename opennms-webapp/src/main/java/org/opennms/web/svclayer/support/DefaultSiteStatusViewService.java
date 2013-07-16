@@ -39,9 +39,9 @@ import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -92,6 +92,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * accepts the AggregateStatusView model object.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusView(java.lang.String)
      */
+    @Override
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
         AggregateStatusView statusView = new AggregateStatusView();
         statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
@@ -154,6 +155,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * with the asset record for the given nodeid.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
      */
+    @Override
     public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
 
         OnmsNode node = m_nodeDao.load(nodeId);
@@ -171,6 +173,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * for the requested view.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
      */
+    @Override
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView, String statusSite) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
@@ -252,7 +255,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -261,7 +264,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -270,7 +273,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
@@ -279,7 +282,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setSiteStatusViewConfigDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.SiteStatusViewConfigDao} object.
      */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
         m_siteStatusViewConfigDao = dao;
@@ -287,6 +290,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /** {@inheritDoc} */
+    @Override
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
         if (! "assets".equalsIgnoreCase("assets")) {
             throw new IllegalArgumentException("statusView only currently supports asset table columns");
@@ -295,6 +299,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel) {
         
         AggregateStatusView statusView = createAggregateStatusView(statusViewName);
@@ -310,6 +315,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsNode> getNodes(String statusViewName, String statusSite, String rowLabel) {
         if (statusViewName == null) {
             statusViewName = m_siteStatusViewConfigDao.getDefaultView().getName();

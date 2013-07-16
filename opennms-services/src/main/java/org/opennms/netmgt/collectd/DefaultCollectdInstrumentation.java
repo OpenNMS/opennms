@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>DefaultCollectdInstrumentation class.</p>
@@ -37,127 +39,144 @@ import org.apache.log4j.Logger;
  * @version $Id: $
  */
 public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
-
-    private Logger log() {
-        return Logger.getLogger("Instrumentation.Collectd");
-    }
+    
+    public static final Logger LOG = LoggerFactory.getLogger("Instrumentation.Collectd");
 
     /**
      * <p>beginScheduleExistingInterfaces</p>
      */
+    @Override
     public void beginScheduleExistingInterfaces() {
-        log().debug("scheduleExistingInterfaces: begin");
+        LOG.debug("scheduleExistingInterfaces: begin");
     }
 
     /**
      * <p>endScheduleExistingInterfaces</p>
      */
+    @Override
     public void endScheduleExistingInterfaces() {
-        log().debug("scheduleExistingInterfaces: end");
+        LOG.debug("scheduleExistingInterfaces: end");
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginScheduleInterfacesWithService(String svcName) {
-        log().debug("scheduleInterfacesWithService: begin: "+svcName);
+        LOG.debug("scheduleInterfacesWithService: begin: {}", svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endScheduleInterfacesWithService(String svcName) {
-        log().debug("scheduleInterfacesWithService: end: "+svcName);
+        LOG.debug("scheduleInterfacesWithService: end: {}", svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginFindInterfacesWithService(String svcName) {
-        log().debug("scheduleFindInterfacesWithService: begin: "+svcName);
+        LOG.debug("scheduleFindInterfacesWithService: begin: {}", svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endFindInterfacesWithService(String svcName, int count) {
-        log().debug("scheduleFindInterfacesWithService: end: "+svcName+". found "+count+" interfaces.");
+        LOG.debug("scheduleFindInterfacesWithService: end: {}. found {} interfaces.", svcName, count);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginCollectingServiceData(int nodeId, String ipAddress, String svcName) {
-        log().debug("collector.collect: collectData: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: collectData: begin: {}/{}/{}", nodeId, ipAddress, svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCollectingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.collect: collectData: end: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: collectData: end: {}/{}/{}", nodeId, ipAddress, svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginCollectorCollect(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.collect: begin:"+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: begin:{}/{}/{}", nodeId, ipAddress, svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCollectorCollect(int nodeId, String ipAddress, String svcName) {
-        log().debug("collector.collect: end:"+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: end:{}/{}/{}", nodeId, ipAddress, svcName);
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginCollectorRelease(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.release: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.release: begin: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCollectorRelease(int nodeId, String ipAddress, String svcName) {
-        log().debug("collector.release: end: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.release: end: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginPersistingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.collect: persistDataQueueing: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: persistDataQueueing: begin: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPersistingServiceData(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.collect: persistDataQueueing: end: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.collect: persistDataQueueing: end: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginCollectorInitialize(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.initialize: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.initialize: begin: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCollectorInitialize(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("collector.initialize: end: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("collector.initialize: end: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void beginScheduleInterface(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("scheduleInterfaceWithService: begin: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("scheduleInterfaceWithService: begin: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endScheduleInterface(int nodeId, String ipAddress,
             String svcName) {
-        log().debug("scheduleInterfaceWithService: end: "+nodeId+"/"+ipAddress+"/"+svcName);
+        LOG.debug("scheduleInterfaceWithService: end: {}/{}/{}", nodeId, ipAddress, svcName);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reportCollectionException(int nodeId, String ipAddress,
             String svcName, CollectionException e) {
-        log().debug("collector.collect: error: "+nodeId+"/"+ipAddress+"/"+svcName+": "+e);
+        LOG.debug("collector.collect: error: {}/{}/{}", nodeId, ipAddress, svcName, e);
     }
 
 }

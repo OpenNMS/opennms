@@ -28,7 +28,7 @@
 
 package org.opennms.web.validator;
 
-import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.web.command.LocationMonitorIdCommand;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,11 +48,13 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
 
     /** {@inheritDoc} */
+    @Override
     public boolean supports(Class<?> clazz) {
         return clazz.equals(LocationMonitorIdCommand.class);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object obj, Errors errors) {
         LocationMonitorIdCommand cmd = (LocationMonitorIdCommand) obj;
         
@@ -89,7 +91,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     /**
      * <p>getLocationMonitorDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
@@ -98,7 +100,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;

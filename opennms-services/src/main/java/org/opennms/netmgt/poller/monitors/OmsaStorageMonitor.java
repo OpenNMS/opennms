@@ -41,7 +41,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -55,6 +54,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>OmsaStorageMonitor class.</p>
@@ -67,6 +68,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(OmsaStorageMonitor.class);
+    
     private static final String m_serviceName = "OMSAStorage";
     
     private static final String virtualDiskRollUpStatus = ".1.3.6.1.4.1.674.10893.1.20.140.1.1.19";
@@ -85,11 +89,12 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+        	LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -102,12 +107,14 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
      *
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         
@@ -120,18 +127,16 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
         Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
-        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
         
         final String hostAddress = InetAddressUtils.str(ipaddr);
 		try {
-            if (log().isDebugEnabled()) {
-                log().debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId virtualDiskRollUpStatusSnmpObject = SnmpObjId.get(virtualDiskRollUpStatus + "." + virtualDiskNumber);
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
             if(virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                log().debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + virtualDiskRollUpStatusSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, virtualDiskRollUpStatusSnmpObject);
                 return PollStatus.unavailable();
             }
 
@@ -153,18 +158,18 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
             		
             		
-					log().debug("OMSAStorageMonitor :: arrayDiskNembers=" + disk.getValue());
+					LOG.debug("OMSAStorageMonitor :: arrayDiskNembers=", disk.getValue());
             		if(disk.getValue().toInt()==virtualDiskNumber){
-            			log().debug("OMSAStorageMonitor :: Disk Found! ");
+            			LOG.debug("OMSAStorageMonitor :: Disk Found! ");
             			          					
             			
-            			log().debug("OMSAStorageMonitor :: Found This Array Disk Value " + disk.getKey());
+				LOG.debug("OMSAStorageMonitor :: Found This Array Disk Value {}", disk.getKey());
             			
             			SnmpObjId arrayDiskStateSnmpObject = SnmpObjId.get(arrayDiskState + "." + arrayDiskConnectionNumber.get(disk.getKey()));
             			
             			SnmpValue diskValue = SnmpUtils.get(agentConfig,arrayDiskStateSnmpObject);
             			
-            			log().debug("OmsaStorageMonitor :: Disk State=" + diskValue );
+				LOG.debug("OmsaStorageMonitor :: Disk State=", diskValue);
             			if(diskValue.toInt() != 3) {
             				
             			String arrayDiskState = getArrayDiskStatus(diskValue);
@@ -183,11 +188,17 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             }
             
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;
@@ -198,7 +209,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + InetAddressUtils.str(ipaddr));
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", InetAddressUtils.str(ipaddr));
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));

@@ -38,10 +38,13 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.NodeInfoWindow;
 
+import com.vaadin.server.Page;
+
 public class NodeInfoOperation extends AbstractOperation {
     private String m_nodePageURL;
     private String m_nodeListURL;
 
+    @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String label = "";
         int nodeID = -1;
@@ -61,7 +64,7 @@ public class NodeInfoOperation extends AbstractOperation {
 
             final Node node = new Node(nodeID, null, label);
 
-            final URL baseURL = operationContext.getMainWindow().getURL();
+            final URL baseURL = Page.getCurrent().getLocation().toURL();
 
             final URL nodeURL;
             if (node.getNodeID() >= 0) {
@@ -90,6 +93,7 @@ public class NodeInfoOperation extends AbstractOperation {
         
     }
 
+    @Override
     public String getId() {
         return "contextNodeInfo";
     }

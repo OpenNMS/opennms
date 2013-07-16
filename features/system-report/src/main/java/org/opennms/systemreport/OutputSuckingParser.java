@@ -33,9 +33,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutputSuckingParser extends Thread {
+    private static final Logger LOG = LoggerFactory.getLogger(OutputSuckingParser.class);
     private StringBuffer m_buffer = new StringBuffer();
     private DataInputStream m_input;
 
@@ -43,6 +45,7 @@ public class OutputSuckingParser extends Thread {
         m_input = input;
     }
     
+    @Override
     public void run() {
         final InputStreamReader isr = new InputStreamReader(m_input);
         final BufferedReader reader = new BufferedReader(isr);
@@ -52,7 +55,7 @@ public class OutputSuckingParser extends Thread {
             while ((line = reader.readLine()) != null) {
                 m_buffer.append(line.replace("\\s*$", "")).append("\n");
                 if (this.isInterrupted()) {
-                    LogUtils.infof(this, "interrupted");
+                    LOG.info("interrupted");
                     break;
                 }
             }
@@ -60,10 +63,10 @@ public class OutputSuckingParser extends Thread {
             if (e.getMessage().contains("Write end dead")) {
                 // ignore this, the stream is finished
             } else {
-                LogUtils.debugf(this, e, "An error occurred extracting top output.");
+                LOG.debug("An error occurred extracting top output.", e);
             }
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "An error occurred extracting top output.");
+            LOG.debug("An error occurred extracting top output.", e);
         }
     }
 

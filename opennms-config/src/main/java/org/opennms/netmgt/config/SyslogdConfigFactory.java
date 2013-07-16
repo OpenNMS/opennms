@@ -35,7 +35,8 @@ import java.io.InputStream;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -57,6 +58,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -170,6 +172,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return the port on which SNMP traps should be received
      */
+    @Override
     public synchronized int getSyslogPort() {
         return m_config.getConfiguration().getSyslogPort();
     }
@@ -180,6 +183,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @return a {@link java.lang.String} object.
      * @since 1.8.1
      */
+    @Override
     public synchronized String getListenAddress() {
         return m_config.getConfiguration().getListenAddress();
     }
@@ -190,6 +194,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return whether to generate newSuspect events on traps.
      */
+    @Override
     public synchronized boolean getNewSuspectOnMessage() {
         return m_config.getConfiguration().getNewSuspectOnMessage();
     }
@@ -199,6 +204,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public synchronized String getForwardingRegexp() {
         return m_config.getConfiguration().getForwardingRegexp();
     }
@@ -208,6 +214,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getMatchingGroupHost() {
         return m_config.getConfiguration().getMatchingGroupHost();
 
@@ -218,6 +225,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getMatchingGroupMessage() {
         return m_config.getConfiguration().getMatchingGroupMessage();
 
@@ -228,6 +236,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return the parser class to use when parsing syslog messages, as a string.
      */
+    @Override
     public synchronized String getParser() {
         return m_config.getConfiguration().getParser();
     }
@@ -237,6 +246,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
      */
+    @Override
     public synchronized UeiList getUeiList() {
         return m_config.getUeiList();
     }
@@ -246,6 +256,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      */
+    @Override
     public synchronized HideMessage getHideMessages() {
         return m_config.getHideMessage();
     }
@@ -255,6 +266,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
     }
@@ -271,7 +283,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         try {
             configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
         } catch (final Throwable t) {
-            LogUtils.warnf(this, "Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
+            LOG.warn("Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
             return;
         }
         for (final String fileName : m_config.getImportFileCollection()) {

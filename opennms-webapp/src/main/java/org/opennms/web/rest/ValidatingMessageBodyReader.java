@@ -46,12 +46,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 @Provider
 public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
+	private static final Logger LOG = LoggerFactory.getLogger(ValidatingMessageBodyReader.class);
+
 
 	@Context
 	protected Providers providers;
@@ -60,12 +63,14 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 	 * @return true if the class is a JAXB-marshallable class that has 
 	 * an {@link javax.xml.bind.annotation.XmlRootElement} annotation.
 	 */
+        @Override
 	public boolean isReadable(final Class<?> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType) {
 		return (clazz.getAnnotation(XmlRootElement.class) != null);
 	}
 
+        @Override
 	public T readFrom(final Class<T> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> parameters, final InputStream stream) throws IOException, WebApplicationException {
-		LogUtils.debugf(this, "readFrom: %s/%s/%s", clazz.getSimpleName(), type, mediaType);
+		LOG.debug("readFrom: {}/{}/{}", clazz.getSimpleName(), type, mediaType);
 
 		JAXBContext jaxbContext = null;
 		final ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
@@ -83,7 +88,7 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 			return JaxbUtils.unmarshal(clazz, new InputSource(stream), jaxbContext);
 
 		} catch (final JAXBException e) {
-			LogUtils.warnf(this, e, "An error occurred while unmarshaling a %s object", clazz.getSimpleName());
+			LOG.warn("An error occurred while unmarshaling a {} object", clazz.getSimpleName(), e);
 			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}
 	}

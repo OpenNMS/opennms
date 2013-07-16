@@ -37,11 +37,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.mock.EventWrapper;
+import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -50,6 +51,7 @@ import org.opennms.test.mock.MockUtil;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
 public class OutageAnticipator implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(OutageAnticipator.class);
     
     private final MockDatabase m_db;
     private int m_expectedOpenCount;
@@ -81,6 +83,7 @@ public class OutageAnticipator implements EventListener {
      */
     public synchronized void anticipateOutageOpened(MockElement element, final Event lostService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if (!m_db.hasOpenOutage(svc) || anticipatesClose(svc)) {
                     m_expectedOpenCount++;
@@ -142,6 +145,7 @@ public class OutageAnticipator implements EventListener {
     
     public synchronized void deanticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if (anticipatesClose(svc)) {
                     // Decrease the open ones.. leave the total the same
@@ -161,6 +165,7 @@ public class OutageAnticipator implements EventListener {
 
     public synchronized void anticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if ((m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) && !anticipatesClose(svc)) {
                     // Decrease the open ones.. leave the total the same
@@ -219,11 +224,11 @@ public class OutageAnticipator implements EventListener {
                 if (currentOutages.contains(expectedOutage)) {
                     currentOutages.remove(expectedOutage);
                 } else {
-                    log().warn("Expected outage " + expectedOutage.toDetailedString() + " not in current Set");
+                    LOG.warn("Expected outage {} not in current Set", expectedOutage.toDetailedString());
                 }
             }
             for (Outage unexpectedOutage : currentOutages) {
-                log().warn("Unexpected outage "+unexpectedOutage.toDetailedString()+" in database");
+                LOG.warn("Unexpected outage {} in database", unexpectedOutage.toDetailedString());
             }
             return false;
         }
@@ -233,6 +238,7 @@ public class OutageAnticipator implements EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#getName()
      */
+    @Override
     public String getName() {
         return "OutageAnticipator";
     }
@@ -240,6 +246,7 @@ public class OutageAnticipator implements EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
+    @Override
     public synchronized void onEvent(Event e) {
         for (Outage outage : getOutageList(m_pendingOpens, e)) {
             outage.setLostEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
@@ -291,10 +298,4 @@ public class OutageAnticipator implements EventListener {
     public void anticipateReparent(String ipAddr, int nodeId, int nodeId2) {
         
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(OutageAnticipator.class);
-    }
-
-    
 }

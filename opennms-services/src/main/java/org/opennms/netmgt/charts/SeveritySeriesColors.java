@@ -31,7 +31,8 @@ package org.opennms.netmgt.charts;
 import java.awt.Color;
 import java.awt.Paint;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SeveritySeriesColors class.</p>
@@ -40,6 +41,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class SeveritySeriesColors implements CustomSeriesColors {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SeveritySeriesColors.class);
 
     /**
      * <p>Constructor for SeveritySeriesColors.</p>
@@ -52,6 +55,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
      * @see org.opennms.netmgt.charts.CustomSeriesColors#getPaint(java.lang.Comparable)
      */
     /** {@inheritDoc} */
+    @Override
     public Paint getPaint(Comparable<?> cat) {
         
         int sev = 0;
@@ -61,7 +65,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
         try {
             sev = Integer.parseInt(severity);
         } catch (NumberFormatException e) {
-            log().warn("Problem converting severity: "+severity+" to an int value.");
+            LOG.warn("Problem converting severity: {} to an int value.", severity);
         }
 
         switch (sev) {
@@ -90,14 +94,6 @@ public class SeveritySeriesColors implements CustomSeriesColors {
             break;
         }
         return converted;
-    }
-    /**
-     * Logging helper method.
-     * 
-     * @return A log4j <code>Category</code>.
-     */
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(SeveritySeriesColors.class);
     }
 
 }

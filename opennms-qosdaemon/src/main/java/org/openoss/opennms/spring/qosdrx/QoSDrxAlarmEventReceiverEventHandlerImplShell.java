@@ -35,12 +35,14 @@ import javax.oss.fm.monitor.NotifyChangedAlarmEvent;
 import javax.oss.fm.monitor.NotifyClearedAlarmEvent;
 import javax.oss.fm.monitor.NotifyNewAlarmEvent;
 import javax.oss.util.IRPEvent;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
+
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
+import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -51,16 +53,10 @@ import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
  * @version $Id: $
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEventReceiverEventHandler{
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDrxAlarmEventReceiverEventHandlerImplShell.class);
 
 	private static boolean initialised=false; // true if init() has initialised class
 
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(QoSDrx.class);	
-	}
-	
 	// ************************
 	// Spring DAO setters
 	// ************************
@@ -68,7 +64,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private static AssetRecordDao _assetRecordDao;
@@ -77,7 +73,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 *
-	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param ar a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -85,7 +81,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private static NodeDao _nodeDao;
@@ -93,7 +89,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 *
-	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodedao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -101,7 +97,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	@SuppressWarnings("unused")
 	private static AlarmDao _alarmDao;
@@ -109,7 +105,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	/**
 	 * Used by Spring Application context to pass in alarmDao
 	 *
-	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
 	 */
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
@@ -119,6 +115,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	 * called to initialise the AlarmEventReceiverEventHandler
 	 * must be called before all other classes
 	 */
+        @Override
 	public void init(){
 		initialised=true;
 		// TODO add initialisation code if needed
@@ -129,28 +126,28 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	// ************************
 	
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -158,56 +155,56 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAckStateChangedEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		        LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmListRebuiltEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -215,28 +212,28 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+		    LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC

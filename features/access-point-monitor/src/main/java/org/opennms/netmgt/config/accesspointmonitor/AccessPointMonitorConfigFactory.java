@@ -36,7 +36,8 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 /**
@@ -47,6 +48,8 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
 public class AccessPointMonitorConfigFactory {
+	private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitorConfigFactory.class);
+
     private static final String ACCESS_POINT_MONITOR_CONFIG_FILE_NAME = "access-point-monitor-configuration.xml";
 
     /**
@@ -86,7 +89,7 @@ public class AccessPointMonitorConfigFactory {
         }
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
-        log().debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream is = null;
         try {
@@ -108,7 +111,7 @@ public class AccessPointMonitorConfigFactory {
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
-            log().debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream is = null;
             try {
                 is = new FileInputStream(cfgFile);
@@ -118,7 +121,7 @@ public class AccessPointMonitorConfigFactory {
                     IOUtils.closeQuietly(is);
                 }
             }
-            log().debug("init: finished loading config file: " + cfgFile.getPath());
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }
     }
 
@@ -129,10 +132,6 @@ public class AccessPointMonitorConfigFactory {
 
     private static AccessPointMonitorConfig unmarshall(InputStream is) {
         return JaxbUtils.unmarshal(AccessPointMonitorConfig.class, new InputSource(is));
-    }
-
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(AccessPointMonitorConfigFactory.class);
     }
 
     public AccessPointMonitorConfig getConfig() {

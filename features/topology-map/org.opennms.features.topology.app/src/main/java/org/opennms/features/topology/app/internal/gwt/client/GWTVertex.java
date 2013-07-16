@@ -46,7 +46,7 @@ public class GWTVertex extends JavaScriptObject {
     protected GWTVertex() {};
     
     public static native GWTVertex create(String id, int x, int y) /*-{
-    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null, "status":""};
+    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null, "status":"", "statusCount":""};
 	}-*/;
 
     public final native String getId()/*-{
@@ -75,6 +75,14 @@ public class GWTVertex extends JavaScriptObject {
     
     public final native String getStatus()/*-{
         return this.status;
+    }-*/;
+    
+    public final native void setStatusCount(String count) /*-{
+        this.statusCount = count;
+    }-*/;
+    
+    public final native String getStatusCount() /*-{
+        return this.statusCount;
     }-*/;
     
     public final native void setIpAddr(String ipAddr) /*-{
@@ -141,6 +149,7 @@ public class GWTVertex extends JavaScriptObject {
     static Func<String, GWTVertex> selectedFill() {
     	return new Func<String, GWTVertex>(){
     
+                    @Override
     		public String call(GWTVertex vertex, int index) {
     			return vertex.isSelected() ? "blue" : "black";
     		}
@@ -150,6 +159,7 @@ public class GWTVertex extends JavaScriptObject {
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
 
+            @Override
             public String call(GWTVertex vertex, int index) {
                 return vertex.isSelected() ? "1" : "0";
             }
@@ -182,6 +192,27 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    protected static Func<String, GWTVertex> getStatusCountText(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.getStatusCount();
+            }
+            
+        };
+    }
+    
+    protected static Func<String, GWTVertex> showStatusCount(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return !vertex.getStatusCount().equals("") && !vertex.getStatusCount().equals("0") ? "1" : "0";
+            }
+        };
+    }
+    
     protected static Func<String, GWTVertex> getClassName() {
         return new Func<String, GWTVertex>(){
 
@@ -194,6 +225,7 @@ public class GWTVertex extends JavaScriptObject {
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
     
+                    @Override
     		public String call(GWTVertex vertex, int index) {
     			return "translate( " + vertex.getX() + "," + vertex.getY() + ")";
     		}
@@ -229,6 +261,7 @@ public class GWTVertex extends JavaScriptObject {
             @Override
             public D3 run(D3 selection) {
                 selection.select(".status").attr("class", getStatusClass());
+                selection.select(".status-counter").style("opacity", showStatusCount()).text(getStatusCountText());
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text").text(label());
             }
         };
@@ -258,6 +291,7 @@ public class GWTVertex extends JavaScriptObject {
                 D3 bgImage = vertex.append("svg:image");
                 bgImage.attr("xlink:href", getBackgroundImage());
                 D3 imageSelection = vertex.append("svg:image");
+                D3 statusCounter = vertex.append("foreignObject");
                 D3 textSelection = vertex.append("text");
                 
                 
@@ -286,6 +320,13 @@ public class GWTVertex extends JavaScriptObject {
                     .attr("r", circleRadius + "px")
                     .attr("opacity", "0");
                     
+                statusCounter.attr("class", "node-status-counter")
+                    .attr("x", 10)
+                    .attr("y", -40)
+                    .attr("height", 24)
+                    .attr("width", 24).append("xhtml:span")
+                        .attr("class", "status-counter").text("2");
+                
                 
                 textSelection.text(label())
                     .attr("class", "vertex-label")

@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -65,6 +65,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 	private CategoryConfigDao categoryDao;
 	private OutageDao outageDao;
 	
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		viewDisplayDao = createMock(ViewDisplayDao.class);

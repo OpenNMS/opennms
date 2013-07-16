@@ -30,7 +30,8 @@ package org.opennms.netmgt.utils;
 
 import java.util.StringTokenizer;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class containing a method to determine if a string represents
@@ -40,6 +41,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class IpValidator extends Object {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(IpValidator.class);
+	
     /**
      * <p>isIpValid</p>
      *
@@ -47,11 +51,10 @@ public class IpValidator extends Object {
      * @return a boolean.
      */
     public static boolean isIpValid(String ipAddr) {
-        ThreadCategory log = ThreadCategory.getInstance(IpValidator.class);
+
         StringTokenizer token = new StringTokenizer(ipAddr, ".");
         if(token.countTokens() != 4) {
-            if (log.isDebugEnabled())
-                log.debug("Invalid format for IpAddress " + ipAddr);
+        	LOG.debug("Invalid format for IpAddress {}", ipAddr);
             return false;
         }
         int temp;
@@ -60,14 +63,12 @@ public class IpValidator extends Object {
             try{
                 temp = Integer.parseInt(token.nextToken(), 10);
                 if (temp < 0 || temp > 255) {
-                    if (log.isDebugEnabled())
-                        log.debug("Invalid value " + temp + " in IpAddress");
+                	LOG.debug("Invalid value {}  in IpAddress", temp);
                     return false;
                 }
                 i++;
             } catch (NumberFormatException ex) {
-                if (log.isDebugEnabled())
-                    log.debug("Invalid format for IpAddress, " + ex);
+            	LOG.debug("Invalid format for IpAddress, {}", ex);
                 return false;
             }
         }

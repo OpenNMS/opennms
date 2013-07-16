@@ -43,12 +43,12 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -67,7 +67,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     private AlarmDao m_alarmDao;
 
     @Autowired
-    private AckService m_ackService;
+    private AcknowledgmentDao m_ackDao;
 
     @Context
     UriInfo m_uriInfo;
@@ -203,7 +203,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             } else {
                 throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
-            m_ackService.processAck(acknowledgement);
+            m_ackDao.processAck(acknowledgement);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
@@ -262,7 +262,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 } else {
                     throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
                 }
-                m_ackService.processAck(acknowledgement);
+                m_ackDao.processAck(acknowledgement);
             }
             
             if (alarms.size() == 1) {

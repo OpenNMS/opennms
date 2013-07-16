@@ -40,7 +40,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -59,6 +60,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class ThreshdConfigFactory extends ThreshdConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(ThreshdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -112,7 +114,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
 
-        ThreadCategory.getInstance(ThreshdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream stream = null;
         try {
@@ -153,6 +155,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
           * @throws org.exolab.castor.xml.MarshalException if any.
           * @throws org.exolab.castor.xml.ValidationException if any.
           */
+    @Override
          public void reloadXML() throws IOException, MarshalException, ValidationException {
              /* FIXME: THIS IS WAY WRONG! Should only reload the xml not recreate the instance
               otherwise references to the old instance will still linger */
@@ -160,6 +163,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         }
 
         /** {@inheritDoc} */
+    @Override
         protected void saveXML(String xmlString) throws IOException {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");

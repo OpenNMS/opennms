@@ -41,8 +41,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.web.context.WebApplicationContext;

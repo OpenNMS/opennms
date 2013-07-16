@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.ResourceReferenceDao;
+import org.opennms.netmgt.dao.api.ResourceReferenceDao;
 import org.opennms.netmgt.model.ResourceReference;
 
 /**
@@ -48,6 +48,7 @@ public class ResourceReferenceDaoHibernate extends AbstractDaoHibernate<Resource
 	}
 
     /** {@inheritDoc} */
+        @Override
     public ResourceReference getByResourceId(String resourceId) {
         return findUnique("from ResourceReference where resourceId = ?", resourceId);
     }

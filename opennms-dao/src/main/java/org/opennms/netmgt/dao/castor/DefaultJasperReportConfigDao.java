@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
 import org.opennms.netmgt.config.reporting.jasperReports.Report;
-import org.opennms.netmgt.dao.JasperReportConfigDao;
+import org.opennms.netmgt.dao.api.JasperReportConfigDao;
 
 public class DefaultJasperReportConfigDao extends
         AbstractCastorConfigDao<JasperReports, List<Report>> implements
@@ -47,6 +47,7 @@ public class DefaultJasperReportConfigDao extends
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEngine(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -56,6 +57,7 @@ public class DefaultJasperReportConfigDao extends
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTemplateLocation(String id) {
         Report report = getReport(id);
         if (report != null) {

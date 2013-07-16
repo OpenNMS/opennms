@@ -31,13 +31,14 @@ package org.opennms.netmgt.threshd;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ThresholdingEventProxy class.</p>
@@ -46,6 +47,8 @@ import org.opennms.netmgt.xml.event.Log;
  * @version $Id: $
  */
 public class ThresholdingEventProxy implements EventProxy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingEventProxy.class);
 
     private List<Event> m_events;
     
@@ -57,6 +60,7 @@ public class ThresholdingEventProxy implements EventProxy {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void send(Event event) throws EventProxyException {
         add(event);
     }
@@ -67,6 +71,7 @@ public class ThresholdingEventProxy implements EventProxy {
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
+    @Override
     public void send(Log eventLog) throws EventProxyException {
         for (Event e : eventLog.getEvents().getEventCollection()) {
             add(e);
@@ -112,14 +117,10 @@ public class ThresholdingEventProxy implements EventProxy {
                 log.setEvents(events);
                 EventIpcManagerFactory.getIpcManager().sendNow(log);
             } catch (Throwable e) {
-                log().info("sendAllEvents: Failed sending threshold events: " + e, e);
+                LOG.info("sendAllEvents: Failed sending threshold events", e);
             }
             removeAllEvents();
         }
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

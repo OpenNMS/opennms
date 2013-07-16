@@ -34,7 +34,8 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.protocols.ssh.Ssh;
 
 @Distributable
 final public class SshMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(SshMonitor.class);
 
     private static final int DEFAULT_RETRY = 0;
     /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
@@ -102,15 +104,15 @@ final public class SshMonitor extends AbstractServiceMonitor {
 	        }
         } catch (final RESyntaxException e) {
         	final String matchString = match == null? banner : match;
-        	LogUtils.infof(this, "Invalid regular expression for SSH banner match /%s/: %s", matchString, e.getMessage());
-        	LogUtils.debugf(this, e, "Invalid Regular expression for SSH banner match /%s/", matchString);
+		LOG.info("Invalid regular expression for SSH banner match /{}/: {}", matchString, e.getMessage());
+		LOG.debug("Invalid Regular expression for SSH banner match /{}/", matchString, e);
         }
 
         for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
             try {
                 ps = ssh.poll(tracker);
             } catch (final InsufficientParametersException e) {
-                LogUtils.errorf(this, e, "An error occurred polling host '%s'", address);
+                LOG.error("An error occurred polling host '{}'", address, e);
                 break;
             }
 
@@ -132,12 +134,12 @@ final public class SshMonitor extends AbstractServiceMonitor {
                 }
 
                 if (regex.match(response)) {
-                    LogUtils.debugf(this, "isServer: matching response=%s", response);
+                    LOG.debug("isServer: matching response={}", response);
                     return ps;
                 } else {
                     // Got a response but it didn't match... no need to attempt
                     // retries
-                    LogUtils.debugf(this, "isServer: NON-matching response=%s", response);
+                    LOG.debug("isServer: NON-matching response={}", response);
                     return PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
                 }
             }
@@ -151,6 +153,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
      * Poll the specified address for service availability.
      * @see #poll(InetAddress, Map)
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         if (iface.getType() != NetworkInterface.TYPE_INET)

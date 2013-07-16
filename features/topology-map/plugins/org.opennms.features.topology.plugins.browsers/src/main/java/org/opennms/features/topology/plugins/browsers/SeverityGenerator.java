@@ -41,11 +41,11 @@ public class SeverityGenerator implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property property = source.getContainerProperty(itemId, columnId);
+		Property<OnmsSeverity> property = source.getContainerProperty(itemId, columnId);
 		if (property == null || property.getValue() == null) {
 			return null;
 		} else {
-			OnmsSeverity severity = (OnmsSeverity)property.getValue();
+			OnmsSeverity severity = property.getValue();
 			String label = severity.getLabel();
 			label = label.toLowerCase();
 			label = new String(label.substring(0, 1)).toUpperCase() + label.substring(1);
@@ -56,7 +56,8 @@ public class SeverityGenerator implements ColumnGenerator {
 	private String escapeHtml(String html) {
 		if (html == null) {
 			return null;
+		} else {
+			return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
 }

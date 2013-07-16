@@ -47,8 +47,9 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -73,6 +74,7 @@ import org.xbill.DNS.ZoneTransferIn;
  * @version $Id: $
  */
 public class DnsRequisitionUrlConnection extends URLConnection {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsRequisitionUrlConnection.class);
 
     private static final String EXPRESSION_ARG = "expression";
     
@@ -211,11 +213,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
             Requisition r = buildRequisitionFromZoneTransfer();
             stream = new ByteArrayInputStream(jaxBMarshal(r).getBytes());
         } catch (IOException e) {
-            log().warn("getInputStream: Problem getting input stream: "+e, e);
+            LOG.warn("getInputStream: Problem getting input stream", e);
             throw e;
         } catch (Throwable e) {
             String message = "Problem getting input stream: "+e;
-            log().warn(message, e);
+            LOG.warn(message, e);
             throw new IOExceptionWithCause(message,e );
         }
         
@@ -237,7 +239,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 	ZoneTransferIn xfer = null;
         List<Record> records = null;
         
-        LogUtils.debugf(this, "connecting to host %s:%d", m_url.getHost(), m_port);
+        LOG.debug("connecting to host {}:{}", m_url.getHost(), m_port);
         try { 
             xfer = ZoneTransferIn.newIXFR(new Name(m_zone), 
                                         m_serial.longValue(), 
@@ -249,7 +251,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
        } catch (ZoneTransferException e) // Fallbacking to AXFR
        {
              String message = "IXFR not supported trying AXFR: "+e;
-             log().warn(message, e);
+             LOG.warn(message, e);
              xfer = ZoneTransferIn.newAXFR(new Name(m_zone), m_url.getHost(), m_key);
              records = getRecords(xfer);
        }
@@ -307,19 +309,19 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         switch(m_foreignIdHashSource) {
             case 1:
                 n.setForeignId(computeHashCode(nodeLabel));
-                log().debug("Generating foreignId from hash of nodelabel " + nodeLabel);
+                LOG.debug("Generating foreignId from hash of nodelabel {}", nodeLabel);
                 break;
             case 2:
                 n.setForeignId(computeHashCode(addr));
-                log().debug("Generating foreignId from hash of ipAddress " + addr);
+                LOG.debug("Generating foreignId from hash of ipAddress {}", addr);
                 break;
             case 3:
                 n.setForeignId(computeHashCode(nodeLabel+addr));
-                log().debug("Generating foreignId from hash of nodelabel+ipAddress " + nodeLabel + addr);
+                LOG.debug("Generating foreignId from hash of nodelabel+ipAddress {}{}", nodeLabel, addr);
                 break;
             default:
                 n.setForeignId(computeHashCode(nodeLabel));
-                log().debug("Default case: Generating foreignId from hash of nodelabel " + nodeLabel);
+                LOG.debug("Default case: Generating foreignId from hash of nodelabel {}", nodeLabel);
                 break;
         }
         n.setNodeLabel(nodeLabel);
@@ -334,7 +336,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         for (String service : m_services) {
             service = service.trim();
             i.insertMonitoredService(new RequisitionMonitoredService(service));
-            log().debug("Adding provisioned service " + service);
+            LOG.debug("Adding provisioned service {}", service);
             }
         
         n.putInterface(i);
@@ -351,11 +353,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     private boolean matchingRecord(Record rec) {
         
-        log().info("matchingRecord: checking rec: "+rec+" to see if it should be imported...");
+        LOG.info("matchingRecord: checking rec: {} to see if it should be imported...", rec);
 
         boolean matches = false;
         if ("A".equals(Type.string(rec.getType())) || "AAAA".equals(Type.string(rec.getType()))) {
-            log().debug("matchingRecord: record is an " + Type.string(rec.getType()) + " record, continuing...");
+            LOG.debug("matchingRecord: record is an {} record, continuing...", Type.string(rec.getType()));
             
             String expression = determineExpressionFromUrl(getUrl());
             
@@ -365,31 +367,30 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                 Matcher m = p.matcher(rec.getName().toString());
 
                 // Try matching on host name only for backwards compatibility
-                log().debug("matchingRecord: attempting to match hostname: ["+rec.getName().toString()+"] with expression: ["+expression+"]");
+                LOG.debug("matchingRecord: attempting to match hostname: [{}] with expression: [ {} ]", rec.getName(), expression);
                 if (m.matches()) {
                     matches = true;
                 } else {
                     // include the IP address and try again
-                    log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()
-                                +" "+rec.rdataToString()+"] with expression: ["+expression+"]");
+                    LOG.debug("matchingRecord: attempting to match record: [{} {}] with expression: [{}]", rec.getName(), rec.rdataToString(), expression);
                     m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
                     if (m.matches()) {
                         matches = true;
                     }
                 }
                 
-                log().debug("matchingRecord: record matches expression: "+matches);
+                LOG.debug("matchingRecord: record matches expression: {}", matches);
                 
             } else {
                 
-                log().debug("matchingRecord: no expression for this zone, returning valid match for this " + Type.string(rec.getType()) + " record...");
+                LOG.debug("matchingRecord: no expression for this zone, returning valid match for this {} record...", Type.string(rec.getType()));
                 
                 matches = true;
             }
 
         }
         
-        log().info("matchingRecord: record: "+rec+" matches: "+matches);
+        LOG.info("matchingRecord: record: {} matches: {}", matches, rec);
         
         return matches;
     }
@@ -495,6 +496,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getDescription();
     }
@@ -519,7 +521,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @return a {@link java.lang.String} object.
      */
     protected static String determineExpressionFromUrl(URL url) {
-        log().info("determineExpressionFromUrl: finding regex as parameter in query string of URL: "+url);
+        LOG.info("determineExpressionFromUrl: finding regex as parameter in query string of URL: {}", url);
         if(getUrlArgs(url) == null) {
             return null;
         } else {
@@ -553,7 +555,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         try {
             query = URLDecoder.decode(url.getQuery(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            log().error("decodeQueryString: "+e, e);
+            LOG.error("decodeQueryString", e);
         }
         
         return query;
@@ -656,9 +658,9 @@ public class DnsRequisitionUrlConnection extends URLConnection {
             String[] argTokens = StringUtils.split(queryArg, '='); 
 
             if (argTokens.length < 2) {
-                log().warn("getUrlArgs: syntax error in URL query string, missing '=' in query argument: "+queryArg);
+                LOG.warn("getUrlArgs: syntax error in URL query string, missing '=' in query argument: {}", queryArg);
             } else {
-                log().debug("adding arg tokens " + argTokens[0].toLowerCase() + ", " + argTokens[1]);
+                LOG.debug("adding arg tokens {}, {}", argTokens[1], argTokens[0].toLowerCase());
                 args.put(argTokens[0].toLowerCase(), argTokens[1]);
             }
         }
@@ -666,11 +668,6 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return args;
     }  
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
-    }
-
-
     /**
      * <p>setForeignSource</p>
      *

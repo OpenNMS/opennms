@@ -36,11 +36,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -61,6 +62,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @since 1.8.1
  */
 public class JdbcWebNotificationRepository implements WebNotificationRepository, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JdbcWebNotificationRepository.class);
+
     
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
@@ -86,21 +90,25 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
                 }
             }
 
+            @Override
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
                 and(buf);
                 buf.append(ackType.getAcknowledgeTypeClause());
             }
 
+            @Override
             public void visitFilter(org.opennms.web.filter.Filter filter) throws RuntimeException {
                 and(buf);
                 buf.append(filter.getParamSql());
             }
 
+            @Override
              public void visitLimit(int limit, int offset) throws RuntimeException {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
                 
             }
 
+            @Override
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 buf.append(" ");
                 buf.append(sortStyle.getOrderByClause());
@@ -114,6 +122,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     private PreparedStatementSetter paramSetter(final NotificationCriteria criteria, final Object...args){
         return new PreparedStatementSetter(){
             int paramIndex = 1;
+            @Override
             public void setValues(final PreparedStatement ps) throws SQLException {
                 for(Object arg : args){
                     ps.setObject(paramIndex, arg);
@@ -122,7 +131,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
                 criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
                     @Override
                     public void visitFilter(org.opennms.web.filter.Filter filter) throws SQLException{
-                        LogUtils.infof(this, "filter sql: " + filter.getSql());
+                        LOG.info("filter sql: {}", filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
@@ -133,6 +142,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     
     private static class NotificationMapper implements ParameterizedRowMapper<Notification>{
 
+        @Override
         public Notification mapRow(ResultSet rs, int rowNum) throws SQLException {
             Notification notice = new Notification();
             
@@ -162,12 +172,14 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     }
     
     /** {@inheritDoc} */
+    @Override
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         String sql = getSql("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?", criteria);
         jdbc().update(sql, paramSetter(criteria, new Timestamp(timestamp.getTime()), user));
     }
 
     /** {@inheritDoc} */
+    @Override
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT NOTIFICATIONS.*, SERVICE.SERVICENAME FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
         return getNotifications(sql, paramSetter(criteria));
@@ -179,6 +191,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     }
 
     /** {@inheritDoc} */
+    @Override
     public Notification getNotification(int noticeId) {
         Notification[] notifications = getMatchingNotifications(new NotificationCriteria(new NotificationIdFilter(noticeId)));
         if (notifications.length < 1) {
@@ -189,6 +202,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS", criteria);
         return queryForInt(sql, paramSetter(criteria));

@@ -62,8 +62,8 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -85,7 +85,8 @@ import de.novanic.eventservice.service.EventExecutorService;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
-        "classpath:/locationDataManagerTest.xml"
+        "classpath:/locationDataManagerTest.xml",
+        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(useExistingDatabase="opennms")
@@ -306,10 +307,12 @@ public class LocationDataManagerTest implements InitializingBean {
     public static LocationUpdatedRemoteEvent hasStatus(final Status status) {
         reportMatcher(new IArgumentMatcher() {
 
+            @Override
             public void appendTo(StringBuffer buffer) {
                 buffer.append("hasStatus(\"" + status + "\")");
             }
 
+            @Override
             public boolean matches(Object argument) {
                 if (argument instanceof LocationUpdatedRemoteEvent) {
                     LocationUpdatedRemoteEvent e = (LocationUpdatedRemoteEvent)argument;

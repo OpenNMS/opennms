@@ -97,6 +97,7 @@ public class DispatcherFilter implements Filter {
             this.requestAttributeListener = requestAttributeListener;
         }
 
+        @Override
         public void setAttribute(String name, Object value) {
             if (value == null) {
                 this.removeAttribute(name);
@@ -112,6 +113,7 @@ public class DispatcherFilter implements Filter {
             }
         }
 
+        @Override
         public void removeAttribute(String name) {
             Object oldValue = this.getAttribute(name);
             super.removeAttribute(name);

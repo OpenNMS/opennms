@@ -52,6 +52,7 @@ public class TestMessenger implements Messenger<MobileMsgRequest, MobileMsgRespo
     /* (non-Javadoc)
      * @see org.opennms.protocols.rt.Messenger#sendRequest(java.lang.Object)
      */
+    @Override
     public void sendRequest(MobileMsgRequest request) throws Exception {
         // fake send this
         request.setSendTimestamp(System.currentTimeMillis());
@@ -60,6 +61,7 @@ public class TestMessenger implements Messenger<MobileMsgRequest, MobileMsgRespo
     /* (non-Javadoc)
      * @see org.opennms.protocols.rt.Messenger#start(java.util.Queue)
      */
+    @Override
     public void start(Queue<MobileMsgResponse> q) {
         m_q = q;
     }

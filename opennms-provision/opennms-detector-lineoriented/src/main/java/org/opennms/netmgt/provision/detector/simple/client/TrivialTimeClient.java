@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,13 +37,15 @@ import java.net.Socket;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.simple.request.TrivialTimeRequest;
 import org.opennms.netmgt.provision.detector.simple.response.TrivialTimeResponse;
 import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTimeResponse> {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TrivialTimeClient.class);
     /**
      * Seconds to subtract from a 1970-01-01 00:00:00-based UNIX timestamp
      * to make it comparable to a 1900-01-01 00:00:00-based timestamp from
@@ -71,7 +73,7 @@ public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTime
         if (!isTcp() && !isUdp()) {
             throw new  IllegalArgumentException("Unsupported protocol, only TCP and UDP currently supported");
         } else if (isUdp()) {
-            log().warn("UDP support is largely untested");
+            LOG.warn("UDP support is largely untested");
         }
         // Initialize Socket
         if (isTcp()) {
@@ -83,7 +85,7 @@ public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTime
             udpSocket.setSoTimeout(timeout);
             udpPacket = new DatagramPacket(new byte[]{}, 0, address, port); // Empty datagram per RFC868
         }
-        log().debug("Connected to host: " + address + " on " + protocol.toUpperCase() + " port: " + port);
+        LOG.debug("Connected to host: {} on {} port: {}", address, protocol.toUpperCase(), port);
     }
 
     @Override
@@ -96,7 +98,7 @@ public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTime
                 udpSocket.close();
             }
         } catch (Exception e) {
-            log().error("Can't close detector sockets.", e);
+            LOG.error("Can't close detector sockets.", e);
         }
     }
 
@@ -129,16 +131,15 @@ public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTime
                 bytesRead = timePacket.getLength();
             }
 
-            if (bytesRead != 4)
+            if (bytesRead != 4) {
                 continue;
-            if (log().isDebugEnabled()) {
-                log().debug("sendRequest: " + protocol + " bytes read = " + bytesRead);
             }
+            LOG.debug("sendRequest: {} bytes read = {}", protocol, bytesRead);
 
             try {
                 remoteTime = timeByteBuffer.getInt();
             } catch (BufferUnderflowException bue) {
-                log().error("Encountered buffer underflow while reading time from remote socket.");
+                LOG.error("Encountered buffer underflow while reading time from remote socket.");
                 remoteTime = 0;
                 continue; // to next iteration of for() loop
             }
@@ -159,10 +160,6 @@ public class TrivialTimeClient implements Client<TrivialTimeRequest, TrivialTime
 
     private boolean isUdp() {
         return protocol.equalsIgnoreCase("udp");
-    }
-
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

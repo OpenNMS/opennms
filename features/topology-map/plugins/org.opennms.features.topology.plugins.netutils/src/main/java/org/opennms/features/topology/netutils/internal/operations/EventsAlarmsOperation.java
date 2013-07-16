@@ -39,12 +39,15 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.EventsAlarmsWindow;
 import org.opennms.features.topology.netutils.internal.Node;
 
+import com.vaadin.server.Page;
+
 public class EventsAlarmsOperation extends AbstractOperation implements Operation {
 
     private String m_eventsURL;
 
     private String m_alarmsURL;
 
+    @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String label = "";
         int nodeID = -1;
@@ -64,7 +67,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
 
             final Node node = new Node(nodeID, null, label);
 
-            final URL baseURL = operationContext.getMainWindow().getURL();
+            final URL baseURL = Page.getCurrent().getLocation().toURL();
 
             final URL eventsURL;
             final URL alarmsURL;
@@ -93,6 +96,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
         
     }
 
+    @Override
     public String getId() {
         return "EventsAlarms";
     }

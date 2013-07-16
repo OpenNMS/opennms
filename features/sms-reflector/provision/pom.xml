@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>sms-reflector</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector.build</groupId>
@@ -29,6 +29,12 @@
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
       <version>1.6.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
@@ -46,9 +52,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
+      <groupId>org.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-20100302</version>
+      <version>3.5.3</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -108,9 +114,9 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>com.springsource.javax.persistence</artifactId>
-      <version>1.0.0</version>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>1.0.0.Final</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>

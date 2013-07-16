@@ -38,12 +38,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -57,6 +59,9 @@ import org.springframework.dao.DataAccessException;
  * 
  */
 final class UdpUuidSender implements Runnable {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(UdpUuidSender.class);
+    
     /**
      * The list of outgoing event-receipts by UUID.
      */
@@ -105,14 +110,12 @@ final class UdpUuidSender implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            if (log().isDebugEnabled()) {
-                log().debug("Stopping and joining thread context " + m_context.getName());
-            }
+            LOG.debug("Stopping and joining thread context {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            log().debug("Thread context stopped and joined");
+            LOG.debug("Thread context stopped and joined");
         }
     }
 
@@ -126,19 +129,18 @@ final class UdpUuidSender implements Runnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         // get the context
         m_context = Thread.currentThread();
 
-        // get a logger
-        ThreadCategory.setPrefix(m_logPrefix);
-        boolean isTracing = log().isDebugEnabled();
+        Logging.putPrefix(m_logPrefix);
 
         if (m_stop) {
-            log().debug("Stop flag set before thread started, exiting");
+            LOG.debug("Stop flag set before thread started, exiting");
             return;
         } else {
-            log().debug("Thread context started");
+            LOG.debug("Thread context started");
         }
 
         /*
@@ -149,7 +151,7 @@ final class UdpUuidSender implements Runnable {
         Map<UdpReceivedEvent, EventReceipt> receipts = new HashMap<UdpReceivedEvent, EventReceipt>();
 
         RunLoop: while (!m_stop) {
-            log().debug("Waiting on event receipts to be generated");
+            LOG.debug("Waiting on event receipts to be generated");
 
             synchronized (m_eventUuidsOut) {
                 // wait for an event to show up.  wait in 1 second intervals
@@ -158,7 +160,7 @@ final class UdpUuidSender implements Runnable {
                         // use wait instead of sleep to release the lock!
                         m_eventUuidsOut.wait(1000);
                     } catch (InterruptedException ie) {
-                        log().debug("Thread context interrupted");
+                        LOG.debug("Thread context interrupted");
                         break RunLoop;
                     }
                 }
@@ -167,10 +169,8 @@ final class UdpUuidSender implements Runnable {
                 m_eventUuidsOut.clear();
             }
 
-            if (isTracing) {
-                log().debug("Received " + eventHold.size() + " event receipts to process");
-                log().debug("Processing receipts");
-            }
+            LOG.debug("Received {} event receipts to process", eventHold.size());
+            LOG.debug("Processing receipts");
 
             // build an event-receipt
             for (UdpReceivedEvent re : eventHold) {
@@ -187,7 +187,7 @@ final class UdpUuidSender implements Runnable {
             }
             eventHold.clear();
 
-            log().debug("Event receipts sorted, transmitting receipts");
+            LOG.debug("Event receipts sorted, transmitting receipts");
 
             // turn them into XML and send it out the socket
             for (Map.Entry<UdpReceivedEvent, EventReceipt> entry : receipts.entrySet()) {
@@ -198,7 +198,7 @@ final class UdpUuidSender implements Runnable {
                 try {
                     JaxbUtils.marshal(receipt, writer);
                 } catch (DataAccessException e) {
-                    log().warn("Failed to build event receipt for agent " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                    LOG.warn("Failed to build event receipt for agent {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 }
 
                 String xml = writer.getBuffer().toString();
@@ -206,9 +206,7 @@ final class UdpUuidSender implements Runnable {
                     byte[] xml_bytes = xml.getBytes("US-ASCII");
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
-                    if (isTracing) {
-                        log().debug("Transmitting receipt to destination " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
-                    }
+                    LOG.debug("Transmitting receipt to destination {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
 
                     m_dgSock.send(pkt);
                     
@@ -217,35 +215,31 @@ final class UdpUuidSender implements Runnable {
                             try {
                                 handler.receiptSent(receipt);
                             } catch (Throwable t) {
-                                log().warn("Error processing event receipt: "+ t, t);
+                                LOG.warn("Error processing event receipt", t);
                             }
                         }
                     }
 
-                    if (isTracing) {
-                        log().debug("Receipt transmitted OK {");
-                        log().debug(xml);
-                        log().debug("}");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Receipt transmitted OK {");
+                        LOG.debug(xml);
+                        LOG.debug("}");
                     }
                 } catch (UnsupportedEncodingException e) {
-                    log().warn("Failed to convert XML to byte array: " + e, e);
+                    LOG.warn("Failed to convert XML to byte array", e);
                 } catch (IOException e) {
-                    log().warn("Failed to send packet to host" + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                    LOG.warn("Failed to send packet to host {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 }
             }
             
             receipts.clear();
         }
 
-        log().debug("Context finished, returning");
+        LOG.debug("Context finished, returning");
     }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }
 

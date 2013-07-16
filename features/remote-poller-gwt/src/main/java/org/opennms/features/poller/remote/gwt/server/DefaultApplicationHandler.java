@@ -32,7 +32,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationRemovedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
@@ -50,6 +51,7 @@ import de.novanic.eventservice.service.EventExecutorService;
  * @since 1.8.1
  */
 public class DefaultApplicationHandler implements ApplicationHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultApplicationHandler.class);
     private LocationDataService m_locationDataService;
 
     private EventExecutorService m_eventService;
@@ -88,6 +90,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(final int size) {
     }
 
@@ -96,6 +99,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
      *
      * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.
      */
+    @Override
     public void handle(final OnmsApplication application) {
         final ApplicationInfo applicationInfo = getLocationDataService().getApplicationInfo(application);
         final ApplicationUpdatedRemoteEvent event = new ApplicationUpdatedRemoteEvent(applicationInfo);
@@ -109,6 +113,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     /**
      * <p>finish</p>
      */
+    @Override
     public void finish() {
         if (m_oldApplicationNames != null) {
             for (final String appName : m_oldApplicationNames) {
@@ -132,7 +137,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
      * @param event a {@link org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent} object.
      */
     protected void sendEvent(final MapRemoteEvent event) {
-        LogUtils.debugf(this, "sending event: %s", event);
+        LOG.debug("sending event: {}", event);
         getEventService().addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, event);
     }
 

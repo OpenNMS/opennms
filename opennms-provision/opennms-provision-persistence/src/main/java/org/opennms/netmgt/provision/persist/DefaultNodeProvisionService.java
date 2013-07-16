@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,11 @@ package org.opennms.netmgt.provision.persist;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -50,6 +49,8 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,9 @@ import org.springframework.web.servlet.ModelAndView;
  * @version $Id: $
  */
 public class DefaultNodeProvisionService implements NodeProvisionService, InitializingBean {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultNodeProvisionService.class);
+    
     private EventForwarder m_eventForwarder;
     
     @Autowired
@@ -79,6 +82,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelAndView getModelAndView(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("foreignSources", m_foreignSourceRepository.getForeignSources());
@@ -91,14 +95,13 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
             String deviceUsername, String devicePassword, String enablePassword,
             String accessMethod, String autoEnable, String noSNMP) throws NodeProvisionException {
 
-        if (log().isDebugEnabled()) {
-            log().debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
-        }
+        LOG.debug("adding SNMP community {} ({})", snmpCommunity, snmpVersion);
         // Set the SNMP community name (if necessary)
         if (noSNMP == null &&  snmpCommunity != null && !snmpCommunity.equals("") && snmpVersion != null && !snmpVersion.equals("")) {
             try {
@@ -113,7 +116,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             }
         }
 
-        log().debug("creating requisition node");
+        LOG.debug("creating requisition node");
         // Create a requisition node based on the form input
         RequisitionInterface reqIface = new RequisitionInterface();
         reqIface.setIpAddr(ipAddress);
@@ -157,7 +160,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
         try {
             Requisition req = m_foreignSourceRepository.getRequisition(foreignSource);
             req.putNode(reqNode);
-            log().debug("saving requisition node");
+            LOG.debug("saving requisition node");
             m_foreignSourceRepository.save(req);
         } catch (ForeignSourceRepositoryException e) {
             throw new RuntimeException("unable to retrieve foreign source '" + foreignSource + "'", e);
@@ -168,7 +171,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             .getEvent();
         m_eventForwarder.sendNow(e);
 
-        log().warn("about to return (" + System.currentTimeMillis() + ")");
+        LOG.warn("about to return ({})", System.currentTimeMillis());
         return true;
     }
     
@@ -189,6 +192,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
      */
     public void setEventProxy(final EventProxy proxy) throws Exception {
         EventForwarder proxyForwarder = new EventForwarder() {
+            @Override
             public void sendNow(Event event) {
                 try {
                     proxy.send(event);
@@ -197,6 +201,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
                 }
             }
 
+            @Override
             public void sendNow(Log eventLog) {
                 try {
                     proxy.send(eventLog);
@@ -207,14 +212,5 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             
         };
         m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

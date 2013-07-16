@@ -37,6 +37,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class ExampleOperation implements Operation {
 
 
+    @Override
     public String getId() {
         return null;
     }

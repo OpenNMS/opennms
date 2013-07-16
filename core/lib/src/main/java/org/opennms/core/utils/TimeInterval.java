@@ -99,11 +99,13 @@ public class TimeInterval implements Comparable<TimeInterval> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "["+m_start+" - "+m_end+']';
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof TimeInterval) {
             TimeInterval t = (TimeInterval)o;
@@ -117,6 +119,7 @@ public class TimeInterval implements Comparable<TimeInterval> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_start.hashCode() ^ m_end.hashCode();
     }
@@ -128,6 +131,7 @@ public class TimeInterval implements Comparable<TimeInterval> {
      * @param t a {@link org.opennms.core.utils.TimeInterval} object.
      * @return a int.
      */
+    @Override
     public int compareTo(TimeInterval t) {
         if (t.m_end.before(m_start) || t.m_end.equals(m_start))
             return 1;

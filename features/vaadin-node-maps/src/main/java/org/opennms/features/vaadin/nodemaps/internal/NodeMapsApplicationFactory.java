@@ -28,97 +28,36 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.core.utils.LogUtils;
-import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
-import org.springframework.transaction.support.TransactionOperations;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 /**
  * A factory for creating NodeMapsApplication objects.
  * 
+ * TODO: Refactor into a common class
+ * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
-    private NodeDao m_nodeDao;
-    private AssetRecordDao m_assetDao;
-    private AlarmDao m_alarmDao;
-    private GeocoderService m_geocoder;
-    private TransactionOperations m_transaction;
-    private OnmsHeaderProvider m_headerProvider;
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet
-     * .http.HttpServletRequest)
-     */
-    @Override
-    public Application createApplication(final HttpServletRequest request) throws ServletException {
-        if (m_nodeDao == null) {
-            throw new RuntimeException("m_nodeDao cannot be null.");
-        }
-        final NodeMapsApplication app = new NodeMapsApplication();
-        app.setNodeDao(m_nodeDao);
-        app.setAssetRecordDao(m_assetDao);
-        app.setAlarmDao(m_alarmDao);
-        app.setGeocoderService(m_geocoder);
-        app.setTransactionOperations(m_transaction);
-        
-        if (m_headerProvider != null) {
-            try {
-                app.setHeaderHtml(m_headerProvider.getHeaderHtml(request));
-            } catch (final Exception e) {
-                LogUtils.warnf(this, e, "failed to get header HTML for request " + request.getPathInfo());
-            }
-        }
-        return app;
-    }
+	private final BlueprintContainer m_blueprintContainer;
+	private final String m_beanName;
+	
+	public NodeMapsApplicationFactory(BlueprintContainer container, String beanName) {
+		m_blueprintContainer = container;
+		m_beanName = beanName;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
-     */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getUIClass() {
         return NodeMapsApplication.class;
     }
 
-    /**
-     * Sets the OpenNMS Node DAO.
-     * 
-     * @param m_nodeDao
-     *            the new OpenNMS Node DAO
-     */
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public void setAssetDao(final AssetRecordDao assetDao) {
-        m_assetDao = assetDao;
-    }
-
-    public void setAlarmDao(final AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
-
-    public void setGeocoderService(final GeocoderService geocoderService) {
-        m_geocoder = geocoderService;
-    }
-    
-    public void setTransactionOperations(final TransactionOperations tx) {
-        m_transaction = tx;
-    }
-    
-    public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
+    @Override
+    public UI getUI() {
+        NodeMapsApplication application = (NodeMapsApplication) m_blueprintContainer.getComponentInstance(m_beanName);
+        return application;
     }
 }

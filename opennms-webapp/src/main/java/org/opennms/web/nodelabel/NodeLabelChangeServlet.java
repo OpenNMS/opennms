@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -75,6 +75,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
@@ -84,6 +85,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeIdString = request.getParameter("node");
         String labelType = request.getParameter("labeltype");
@@ -120,6 +122,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
             final String newNodeLabel = newLabel.getLabel();
             String foreignSource = transactionTemplate.execute(new TransactionCallback<String>() {
+                @Override
                 public String doInTransaction(TransactionStatus status) {
                     OnmsNode node = nodeDao.get(nodeId);
                     if (node.getForeignSource() != null && node.getForeignId() != null) {

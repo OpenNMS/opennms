@@ -41,7 +41,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.adapters.link.EndPoint;
 import org.opennms.netmgt.provision.adapters.link.EndPointStatusException;
 import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.provision.adapters.link.EndPointValidationExpression;
 @XmlRootElement(name="endpoint-type")
 @XmlAccessorType(value=XmlAccessType.FIELD)
 public class EndPointType {
+    private static final Logger LOG = LoggerFactory.getLogger(EndPointType.class);
     @XmlAttribute(name="name")
     private String m_name;
     
@@ -141,11 +143,11 @@ public class EndPointType {
      */
     public boolean matches(EndPoint ep) {
         if (ep == null) {
-            LogUtils.debugf(this, "EndPoint is null!");
+            LOG.debug("EndPoint is null!");
             return false;
         }
         if (ep.getSysOid() == null) {
-            LogUtils.debugf(this, "sysObjectId for endpoint %s is null", ep);
+            LOG.debug("sysObjectId for endpoint {} is null", ep);
             return false;
         }
         if (ep.getSysOid().startsWith(getSysOid())) {

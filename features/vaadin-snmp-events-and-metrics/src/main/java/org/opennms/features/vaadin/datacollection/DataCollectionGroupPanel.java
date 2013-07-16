@@ -41,13 +41,15 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;
@@ -101,11 +103,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Data Collection File", new Button.ClickListener() {
+            @Override
             public void buttonClick(ClickEvent event) {
                 processDataCollection(dataCollectionConfigDao, logger);
             }
         }));
         toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 cancel();
                 logger.info("Data collection processing has been canceled");
@@ -136,11 +140,12 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /* (non-Javadoc)
      * @see com.vaadin.ui.TabSheet.SelectedTabChangeListener#selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent)
      */
+    @Override
     public void selectedTabChange(SelectedTabChangeEvent event) {
         TabSheet tabsheet = event.getTabSheet();
         Tab tab = tabsheet.getTab(tabsheet.getSelectedTab());
         if (tab != null) {
-            getWindow().showNotification("Selected tab: " + tab.getCaption());
+            Notification.show("Selected tab: " + tab.getCaption());
         }
     }    
 
@@ -184,7 +189,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to override the existig file?<br/>All current information will be lost.",
@@ -192,6 +197,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         saveFile(file, dcGroup, logger);
@@ -200,7 +206,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             });
         } else {
             if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
-                getApplication().getMainWindow().showNotification("There is a group with the same name, please pick another one.");
+                Notification.show("There is a group with the same name, please pick another one.");
             } else {
                 saveFile(file, dcGroup, logger);
             }

@@ -35,8 +35,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A test network configuration
@@ -45,12 +47,16 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockNetwork.class);
+
 
     /**
      * <p>createDownEvent</p>
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDownEvent() {
         throw new UnsupportedOperationException("Cannot generate down event for the network");
     }
@@ -59,6 +65,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createUpEvent() {
         throw new UnsupportedOperationException("Cannot generate up event for the network");
     }
@@ -67,6 +74,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createNewEvent() {
         throw new UnsupportedOperationException("Cannot generate new event for the network");
     }
@@ -75,6 +83,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDeleteEvent() {
         throw new UnsupportedOperationException("Cannot generate delete event for the network");
     }
@@ -236,6 +245,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     }
 
     // impl
+    @Override
     Object getKey() {
         return this;
     }
@@ -276,6 +286,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
                 return node;
             }
 
+            @Override
             public void visitInterface(MockInterface iface) {
                 if (iface.getIpAddr().equals(ipAddr)) {
                     node = iface.getNode();
@@ -300,7 +311,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService getService(int nodeid, String ipAddr, String svcName) {
     	final MockInterface iface = getInterface(nodeid, ipAddr);
-        LogUtils.debugf(this, "getService(%d, %s, %s) = %s", nodeid, ipAddr, svcName, iface);
+        LOG.debug("getService({}, {}, {}) = {}", nodeid, ipAddr, svcName, iface);
         return (iface == null ? null : iface.getService(svcName));
     }
 
@@ -405,6 +416,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getNodeCount() {
         class NodeCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitNode(MockNode node) {
                 count++;
             }
@@ -425,6 +437,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getInterfaceCount() {
         class InterfaceCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitInterface(MockInterface iface) {
                 count++;
             }
@@ -445,6 +458,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getServiceCount() {
         class ServiceCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitService(MockService svc) {
                 count++;
             }
@@ -457,6 +471,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         return counter.getCount();
     }
 
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("critical-service", m_criticalService)

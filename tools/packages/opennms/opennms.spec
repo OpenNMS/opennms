@@ -533,9 +533,8 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 %endif
 
 install -d -m 755 $RPM_BUILD_ROOT%{logdir}
-mv $RPM_BUILD_ROOT%{instprefix}/logs/* $RPM_BUILD_ROOT%{logdir}/
+mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
-install -d -m 755 $RPM_BUILD_ROOT%{logdir}/{controller,daemon,webapp}
 
 install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
 mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
@@ -679,9 +678,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root) %{logdir}
-			%{logdir}/controller
-			%{logdir}/daemon
-			%{logdir}/webapp
 			%{instprefix}/data
 			%{instprefix}/deploy
 			%{instprefix}/system
@@ -859,16 +855,6 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 		echo "done"
 	fi
 fi
-
-for dir in controller daemon webapp; do
-	if [ -f "$RPM_INSTALL_PREFIX2/$dir" ]; then
-		printf -- "ERROR: not sure what to do... $RPM_INSTALL_PREFIX2/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
-	else
-		if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
-			mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
-		fi
-	fi
-done
 
 if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "

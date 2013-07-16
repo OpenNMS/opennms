@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
@@ -43,6 +43,7 @@ public class DefaultNodeService implements NodeService {
     private NodeDao m_nodeDao;
 
     /** {@inheritDoc} */
+    @Override
     public Long getParentNode(final Long nodeid) {
     	final OnmsNode node = m_nodeDao.get(nodeid.intValue());
         Assert.notNull(node, "Unable to find node with id "+nodeid);
@@ -54,7 +55,7 @@ public class DefaultNodeService implements NodeService {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;

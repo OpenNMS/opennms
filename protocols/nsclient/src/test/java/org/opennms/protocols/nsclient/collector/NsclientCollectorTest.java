@@ -44,7 +44,7 @@ import org.opennms.netmgt.collectd.DefaultCollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
@@ -87,6 +87,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     }
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         startServer("None&8&", "10");
@@ -115,6 +116,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     }
 
     @After
+    @Override
     public void tearDown() throws Exception {
         stopServer();
         EasyMock.verify(m_ipInterfaceDao, m_eventProxy);

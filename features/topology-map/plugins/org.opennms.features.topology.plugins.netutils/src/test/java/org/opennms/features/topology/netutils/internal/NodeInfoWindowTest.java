@@ -35,16 +35,18 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.support.InfoWindow;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class NodeInfoWindowTest {
 
-	NodeInfoWindow window;
-	NodeInfoWindow window2;
+	InfoWindow window;
+	InfoWindow window2;
 	Window mainWindow;
-	Application app;
+	UI app;
 	@Before
 	public void setUp() throws Exception {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
@@ -52,19 +54,21 @@ public class NodeInfoWindowTest {
         window = new NodeInfoWindow(null, url);
 		window2 = new NodeInfoWindow(testNode1, url);
 		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		app = new UI() { //Empty Application
+
+			private static final long serialVersionUID = -6798973775063082899L;
+
 			@Override
-			public void init() {}
+			public void init(VaadinRequest request) {}
 		};
 	}
 
 	@Test
 	public void testAttach() {
-		app.setMainWindow(mainWindow);
-		app.getMainWindow().addWindow(window);
-		assertTrue(app.getMainWindow().getChildWindows().contains(window));
-		app.getMainWindow().removeWindow(window);
-		assertFalse(app.getMainWindow().getChildWindows().contains(window));
+		app.addWindow(window);
+		assertTrue(app.getWindows().contains(window));
+		app.removeWindow(window);
+		assertFalse(app.getWindows().contains(window));
 	}
 
 }

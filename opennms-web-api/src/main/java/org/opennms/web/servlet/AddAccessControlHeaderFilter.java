@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AddAccessControlHeaderFilter implements Filter {
 	private String m_origin = null;
 
+        @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
     	final HttpServletResponse httpResponse = (HttpServletResponse) response;
     	if (m_origin != null && !httpResponse.containsHeader("Access-Control-Allow-Origin")) {
@@ -55,6 +56,7 @@ public class AddAccessControlHeaderFilter implements Filter {
     }
 
     /** {@inheritDoc} */
+        @Override
     public void init(final FilterConfig config) {
     	m_origin = config.getInitParameter("origin");
     }
@@ -62,6 +64,7 @@ public class AddAccessControlHeaderFilter implements Filter {
     /**
      * <p>destroy</p>
      */
+        @Override
     public void destroy() {
     }
 

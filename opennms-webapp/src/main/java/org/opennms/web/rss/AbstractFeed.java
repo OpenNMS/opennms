@@ -32,7 +32,9 @@ import java.io.StringWriter;
 
 import javax.servlet.ServletRequest;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -46,6 +48,9 @@ import com.sun.syndication.io.SyndFeedOutput;
  * @since 1.8.1
  */
 public class AbstractFeed implements Feed {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeed.class);
+
     protected int m_maxEntries = 20;
     protected String m_feedType = "rss_2.0";
     protected String m_urlBase = "";
@@ -71,11 +76,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getUrlBase() {
         return m_urlBase;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setUrlBase(String urlBase) {
         m_urlBase = urlBase;
     }
@@ -85,11 +92,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getFeedType() {
         return m_feedType;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setFeedType(String feedType) {
         m_feedType = feedType;
     }
@@ -99,11 +108,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a int.
      */
+    @Override
     public int getMaxEntries() {
         return m_maxEntries;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setMaxEntries(int maxEntries) {
         m_maxEntries = maxEntries;
     }
@@ -113,11 +124,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link javax.servlet.ServletRequest} object.
      */
+    @Override
     public ServletRequest getRequest() {
         return m_servletRequest;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setRequest(ServletRequest request) {
         m_servletRequest = request;
     }
@@ -136,6 +149,7 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String render() {
         SyndFeed feed = this.getFeed();
         feed.setFeedType(this.getFeedType());
@@ -146,7 +160,7 @@ public class AbstractFeed implements Feed {
             output.output(feed, writer);
             return writer.toString();
         } catch (Throwable e) {
-            log().warn("unable to render feed", e);
+            LOG.warn("unable to render feed", e);
             return "";
         }
     }
@@ -158,17 +172,6 @@ public class AbstractFeed implements Feed {
      * @return a {@link java.lang.String} object.
      */
     protected String sanitizeTitle(String title) {
-        title.replaceAll("<.*?>", "");
-        return title;
+        return title.replaceAll("<.*?>", "");
     }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
-
 }

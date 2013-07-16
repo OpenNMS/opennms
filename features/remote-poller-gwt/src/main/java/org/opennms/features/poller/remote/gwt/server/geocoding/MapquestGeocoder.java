@@ -39,7 +39,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 /**
@@ -50,6 +51,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
  * @since 1.8.1
  */
 public class MapquestGeocoder implements Geocoder {
+    private static final Logger LOG = LoggerFactory.getLogger(MapquestGeocoder.class);
 
 	public enum Quality {
 		COUNTRY,
@@ -94,6 +96,7 @@ public class MapquestGeocoder implements Geocoder {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
 		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
 		method.addHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");
@@ -118,7 +121,7 @@ public class MapquestGeocoder implements Geocoder {
 
 			final List<ElementTree> locations = tree.findAll("//location");
 			if (locations.size() > 1) {
-				LogUtils.warnf(this, "more than one location returned for query: %s", geolocation);
+				LOG.warn("more than one location returned for query: {}", geolocation);
 			} else if (locations.size() == 0) {
 				throw new GeocoderException("MapQuest returned an OK status code, but no locations");
 			}

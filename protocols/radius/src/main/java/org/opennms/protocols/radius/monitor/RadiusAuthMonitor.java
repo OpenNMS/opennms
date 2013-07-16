@@ -48,8 +48,6 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.apache.log4j.Level;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -57,6 +55,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -72,6 +72,9 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 
 @Distributable
 final public class RadiusAuthMonitor extends AbstractServiceMonitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);
+
     /**
      * Number of milliseconds to wait before timing out a radius AUTH request
      */
@@ -126,7 +129,7 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
      * @throws java.lang.IllegalAccessException if any.
      */
     public RadiusAuthMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        LogUtils.infof(this, "RadiusAuthMonitor class loaded");
+        LOG.info("RadiusAuthMonitor class loaded");
     }
 
 
@@ -149,6 +152,7 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
     	final NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -196,7 +200,9 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
                 } else {
-                    return logDown(Level.ERROR, "Unknown authenticator type '" + authType + "'");
+                    String reason = "Unknown authenticator type '" + authType + "'";
+                    RadiusAuthMonitor.LOG.debug(reason);
+                    return PollStatus.unavailable(reason);
                 }
 
                 tracker.startAttempt();
@@ -206,16 +212,20 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                 if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
-                    LogUtils.debugf(this, "Radius service is AVAILABLE on: %s", addr.getCanonicalHostName());
-                    LogUtils.debugf(this, "poll: responseTime= %fms", responseTime);
+                    LOG.debug("Radius service is AVAILABLE on: {}", addr.getCanonicalHostName());
+                    LOG.debug("poll: responseTime= {}", responseTime);
                     break;
                 } else if (reply != null) {
-                    LogUtils.debugf(this, "response returned, but request was not accepted: %s", reply);
+                    LOG.debug("response returned, but request was not accepted: {}", reply);
                 }
-                status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
+                String reason = "Invalid RADIUS reply: " + reply;
+                RadiusAuthMonitor.LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             }
         } catch (final Throwable e) {
-            status = logDown(Level.ERROR, "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName(), e);
+            String reason = "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName();
+            RadiusAuthMonitor.LOG.debug(reason, e);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;

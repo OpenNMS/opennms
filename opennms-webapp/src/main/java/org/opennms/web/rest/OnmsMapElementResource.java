@@ -35,9 +35,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElementList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -58,6 +60,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Transactional
 public class OnmsMapElementResource extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsMapElementResource.class);
+
     @Autowired
     private OnmsMapDao m_mapDao;
 
@@ -75,7 +80,7 @@ public class OnmsMapElementResource extends OnmsRestService {
     public OnmsMapElementList getMapElements(@PathParam("mapId") final int mapId) {
         readLock();
         try {
-            if (log().isDebugEnabled()) log().debug("getMapElements: reading elements for map " + mapId);
+            LOG.debug("getMapElements: reading elements for map {}", mapId);
             final OnmsMap map = m_mapDao.get(mapId);
             if (map == null) throw getException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
             return new OnmsMapElementList(map.getMapElements());

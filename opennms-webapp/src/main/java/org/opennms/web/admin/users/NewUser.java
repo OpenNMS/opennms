@@ -308,6 +308,7 @@ public class NewUser {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer str = new StringBuffer("Full Name : " + fullname + " \n");
         str.append("User Id " + user + " \n");

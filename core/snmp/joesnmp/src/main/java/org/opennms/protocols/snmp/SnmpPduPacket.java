@@ -500,6 +500,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      * 
      * @return The pdu command
      */
+    @Override
     public byte typeId() {
         return (byte) (m_command & 0xff);
     }
@@ -521,6 +522,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         int begin = offset;
 
@@ -596,6 +598,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseHeader(buf, offset);
 
@@ -673,6 +676,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      * not defined.
      * 
      */
+    @Override
     public abstract SnmpSyntax duplicate();
 
     /**
@@ -680,5 +684,6 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
      * not defined.
      * 
      */
+    @Override
     public abstract Object clone();
 }

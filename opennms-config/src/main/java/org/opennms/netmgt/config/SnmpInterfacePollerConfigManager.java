@@ -49,7 +49,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @version $Id: $
  */
 abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfacePollerConfigManager.class);
 
     /**
      * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
@@ -93,6 +95,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
@@ -268,6 +271,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return the name of the configured critical service, or null if none is
      *         present
      */
+    @Override
     public synchronized String[] getCriticalServiceIds() {
         CriticalService[] cs = m_config.getNodeOutage().getCriticalService();
         String[] criticalServiceNames = new String[cs.length];
@@ -298,16 +302,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             //
             try {
                 List<InetAddress> ipList = getIpList(pkg);
-                if (log().isDebugEnabled())
-                    log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
+                LOG.debug("createPackageIpMap: package {}: ipList size = {}", ipList.size(), pkg.getName());
     
                 if (ipList.size() > 0) {
-                    if (log().isDebugEnabled())
-                        log().debug("createPackageIpMap: package " + pkg.getName() + ". IpList size is " + ipList.size());
+                    LOG.debug("createPackageIpMap: package {}. IpList size is {}", ipList.size(), pkg.getName());
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                log().error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List: " + t, t);
+                LOG.error("createPackageIpMap: failed to map package: {} to an IP List", pkg.getName(), t);
             }
 
         }
@@ -328,14 +330,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             filterRules.append('\"');
             filterRules.append(")");
         }
-        if (log().isDebugEnabled())
-            log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
+        LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
         List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         return ipList;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
     }
 
     /**
@@ -345,6 +342,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * newly added one, the package IP list should be rebuilt so that poller
      * could know which package this IP/service pair is in.
      */
+    @Override
     public synchronized void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }
@@ -367,7 +365,6 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
         final InetAddress ifaceAddr = addr(iface);
-        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -377,8 +374,8 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 			filterPassed = ipList.contains(ifaceAddr);
         }
     
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
+
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", filterPassed, iface, pkg.getName());
     
         if (!filterPassed)
             return false;
@@ -457,6 +454,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      */
+    @Override
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
         List<String> matchingPkgs = new ArrayList<String>();
@@ -474,6 +472,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized String getPackageName(String ipaddr) {
         for(Package pkg : packages()) {
             
@@ -485,6 +484,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized Set<String> getInterfaceOnPackage(String pkgName) {
         if (m_pkgIntMap.containsKey(pkgName))
             return Collections.unmodifiableSet(m_pkgIntMap.get(pkgName).keySet());
@@ -493,48 +493,59 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized boolean getStatus(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getStatus().equals("on");
     }
     
     /** {@inheritDoc} */
+    @Override
     public synchronized long getInterval(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getInterval();
         
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized String getCriteria(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getCriteria();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized boolean hasPort(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasPort();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized int getPort(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getPort();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized boolean hasTimeout(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasTimeout();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized int getTimeout(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getTimeout();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized boolean hasRetries(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasRetry();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized int getRetries(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getRetry();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized boolean hasMaxVarsPerPdu(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasMaxVarsPerPdu();
     }
     /** {@inheritDoc} */
+    @Override
     public synchronized int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getMaxVarsPerPdu();        
     }
@@ -573,6 +584,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *
      * @return a int.
      */
+    @Override
     public int getThreads() {
         return getConfiguration().getThreads();
     }
@@ -582,6 +594,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *
      * @return a long.
      */
+    @Override
     public long getInterval() {
         return getConfiguration().getInterval();
     }
@@ -591,6 +604,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getService() {
         return getConfiguration().getService();
     }
@@ -600,6 +614,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *
      * @return a boolean.
      */
+    @Override
     public boolean useCriteriaFilters() {
         return Boolean.parseBoolean(getConfiguration().getUseCriteriaFilters());
     }

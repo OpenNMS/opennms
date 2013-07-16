@@ -95,6 +95,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		m_criteria.put(criteria.getNamespace(), criteria);
 	}
 	
+	public void removeCriteria(Criteria criteria) {
+        String namespace = criteria.getNamespace();
+        m_criteria.remove(namespace);
+    }
+	
 	@Override
 	public String getVertexNamespace() {
 		return m_baseGraphProvider.getVertexNamespace();

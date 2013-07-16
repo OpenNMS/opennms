@@ -84,6 +84,7 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
     protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
         return new ResponseValidator<LineOrientedResponse>() {
 
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.startsWith(prefix);
             }
@@ -96,6 +97,7 @@ public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetec
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.find(regex);
             }

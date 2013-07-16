@@ -175,7 +175,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         m_hashCode = 1;
 
         org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
-        if ((mask == null) || (mask != null && mask.getMaskelementCount() == 0)) {
+        if ((mask == null) || mask.getMaskelementCount() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, new EventMaskValueList(uei));
@@ -221,7 +221,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         m_hashCode = 1;
 
         org.opennms.netmgt.xml.event.Mask mask = event.getMask();
-        if ((mask == null) || (mask != null && mask.getMaskelementCount() == 0)) {
+        if ((mask == null) || mask.getMaskelementCount() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, uei);
@@ -245,6 +245,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      *
      * @see java.util.HashMap#clear()
      */
+    @Override
     public void clear() {
         super.clear();
         evaluateHashCode();
@@ -256,6 +257,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * Override to re-evaluate hashcode
      * @see java.util.HashMap#put(Object, Object)
      */
+    @Override
     public Object put(String key, Object value) {
         Object ret = super.put(key, value);
         evaluateHashCode();
@@ -268,6 +270,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * Override to re-evaluate hashcode
      * @see java.util.HashMap#putAll(Map)
      */
+    @Override
     public void putAll(Map<? extends String, ? extends Object> m) {
         super.putAll(m);
         evaluateHashCode();
@@ -279,6 +282,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * Override to re-evaluate hashcode
      * @see java.util.HashMap#remove(Object)
      */
+    @Override
     public Object remove(Object key) {
         Object ret = super.remove(key);
         evaluateHashCode();
@@ -327,6 +331,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * @param obj a {@link org.opennms.netmgt.eventd.datablock.EventKey} object.
      * @return a int.
      */
+    @Override
     public int compareTo(EventKey obj) {
         return (hashCode() - obj.hashCode());
     }
@@ -336,6 +341,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      *
      * @return a hash code for this object
      */
+    @Override
     public int hashCode() {
         if (m_hashCode != -1111) {
             return m_hashCode;
@@ -349,6 +355,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      *
      * @return a String equivalent of this object
      */
+    @Override
     public String toString() {
         StringBuffer s = new StringBuffer("EventKey\n[\n\t");
 

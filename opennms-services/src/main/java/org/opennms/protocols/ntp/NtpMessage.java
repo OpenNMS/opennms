@@ -335,6 +335,7 @@ public class NtpMessage {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         String precisionStr = new DecimalFormat("0.#E0").format(Math.pow(2, precision));
         return "Leap indicator: " + leapIndicator + "\n" + "Version: " + version + "\n" + "Mode: " + mode + "\n" + "Stratum: " + stratum + "\n" + "Poll: " + pollInterval + "\n" + "Precision: " + precision + " (" + precisionStr + " seconds)\n" + "Root delay: " + new DecimalFormat("0.00").format(rootDelay * 1000) + " ms\n" + "Root dispersion: " + new DecimalFormat("0.00").format(rootDispersion * 1000) + " ms\n" + "Reference identifier: " + referenceIdentifierToString(referenceIdentifier, stratum, version) + "\n" + "Reference timestamp: " + timestampToString(referenceTimestamp) + "\n" + "Originate timestamp: " + timestampToString(originateTimestamp) + "\n" + "Receive timestamp:   " + timestampToString(receiveTimestamp) + "\n" + "Transmit timestamp:  " + timestampToString(transmitTimestamp);

@@ -66,6 +66,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     /**
      * <p>onModuleLoad</p>
      */
+    @Override
     public void onModuleLoad() {
         
         
@@ -110,14 +111,17 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         
         SurveillanceListener listener = new SurveillanceListener() {
 
+            @Override
             public void onAllClicked(Dashlet viewer) {
                 setSurveillanceSet(SurveillanceSet.DEFAULT);
             }
 
+            @Override
             public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
                 setSurveillanceSet(intersection);
             }
 
+            @Override
             public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
                 setSurveillanceSet(group);
             }
@@ -169,6 +173,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void error(Throwable e) {
         error(e.toString());
     }
@@ -198,6 +203,7 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         
         ok.addClickHandler(new ClickHandler() {
 
+            @Override
             public void onClick(ClickEvent arg0) {
                 dialog.hide();
             }

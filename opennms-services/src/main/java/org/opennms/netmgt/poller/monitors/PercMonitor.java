@@ -33,7 +33,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -64,6 +65,10 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class PercMonitor extends SnmpMonitorStrategy {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(PercMonitor.class);
+    
     /**
      * Name of monitored service.
      */
@@ -102,13 +107,14 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+        	LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -127,6 +133,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -142,6 +149,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -155,7 +163,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -167,14 +175,12 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         
         String arrayNumber = ParameterMap.getKeyedString(parameters,"array","0.0");
 
-        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("PercMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + "." + arrayNumber);
 
             // First walk the physical OID Tree and check the returned values 
@@ -184,7 +190,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             SnmpValue value = SnmpUtils.get(agentConfig,snmpObjectId);
             
             if (value.toInt()!=2){
-            	log().debug("PercMonitor.poll: Bad Disk Found");
+            	LOG.debug("PercMonitor.poll: Bad Disk Found");
             	returnValue = "log vol(" + arrayNumber + ") degraded"; // XXX should degraded be the virtualDiskState ?
             	// array is bad
             	// lets find out which disks are bad in the array
@@ -220,11 +226,17 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             
 
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;

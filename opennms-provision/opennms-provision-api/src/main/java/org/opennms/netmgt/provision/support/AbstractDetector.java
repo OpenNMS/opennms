@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.provision.support;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.ServiceDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>AbstractDetector class.</p>
@@ -37,6 +38,8 @@ import org.opennms.netmgt.provision.ServiceDetector;
  * @author ranger
  */
 public abstract class AbstractDetector implements ServiceDetector {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDetector.class);
     
     private static final int DEFAULT_TIMEOUT = 2000;
     private static final int DEFAULT_RETRIES = 1;
@@ -164,15 +167,6 @@ public abstract class AbstractDetector implements ServiceDetector {
     @Override
     public final String getServiceName() {
         return m_serviceName;
-    }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

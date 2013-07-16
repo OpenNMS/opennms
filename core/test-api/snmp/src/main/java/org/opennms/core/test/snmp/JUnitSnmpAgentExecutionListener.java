@@ -42,12 +42,13 @@ import java.util.Map;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -60,6 +61,9 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
  */
 public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListener {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JUnitSnmpAgentExecutionListener.class);
+	
     private static final Boolean useMockSnmpStrategyDefault = false;
 
     private static final String USE_STRATEGY_PROPERTY = "org.opennms.core.test-api.snmp.useMockSnmpStrategy";
@@ -82,7 +86,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         }
 
         final String strategy = System.getProperty(STRATEGY_CLASS_PROPERTY);
-        LogUtils.debugf(this, "Initializing JUnit SNMP Agent with strategy: %s", strategy);
+        LOG.debug("Initializing JUnit SNMP Agent with strategy: {}", strategy);
 
         testContext.setAttribute(STRATEGY_CLASS_KEY, strategy);
         final HashMap<SnmpAgentAddress,MockSnmpAgent> mockAgents = new HashMap<SnmpAgentAddress,MockSnmpAgent>();
@@ -108,7 +112,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         handleSnmpAgent(testContext, findAgentAnnotation(testContext), provider);
 
         if (testContext.getTestInstance() instanceof MockSnmpDataProviderAware) {
-            LogUtils.debugf(this, "injecting data provider into MockSnmpDataProviderAware test: %s", testContext.getTestInstance());
+        	LOG.debug("injecting data provider into MockSnmpDataProviderAware test: {}", testContext.getTestInstance());
             ((MockSnmpDataProviderAware)testContext.getTestInstance()).setMockSnmpDataProvider(provider);
         }
     }
@@ -119,7 +123,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
         final MockSnmpDataProvider provider = (MockSnmpDataProvider)testContext.getAttribute(PROVIDER_KEY);
         if (provider != null) {
-            LogUtils.debugf(this, "Tearing down JUnit SNMP Agent provider: %s", provider);
+        	LOG.debug("Tearing down JUnit SNMP Agent provider: {}", provider);
         	provider.resetData();
         }
 
@@ -140,11 +144,11 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             // ignore
         }
         if (!factoryClassName.contains("ProxySnmpAgentConfigFactory")) {
-            LogUtils.warnf(this, "SNMP Peer Factory (%s) is not the ProxySnmpAgentConfigFactory -- did you forget to include applicationContext-proxy-snmp.xml?", factoryClassName);
+        	LOG.warn("SNMP Peer Factory ({}) is not the ProxySnmpAgentConfigFactory -- did you forget to include applicationContext-proxy-snmp.xml?", factoryClassName);
         }
 
         final String useMockSnmpStrategy = System.getProperty(USE_STRATEGY_PROPERTY, useMockSnmpStrategyDefault.toString());
-        LogUtils.debugf(this, "handleSnmpAgent(testContext, %s, %s)", config, useMockSnmpStrategy);
+        LOG.debug("handleSnmpAgent(testContext, {}, {})", config, useMockSnmpStrategy);
 
         String host = config.host();
         if (host == null || "".equals(host)) {
@@ -210,7 +214,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
 
     	    mapper.addProxy(hostAddress, listenAddress);
 
-    	    LogUtils.debugf(this, "using MockSnmpAgent on %s for 'real' address %s", listenAddress, agentAddress);
+    	    LOG.debug("using MockSnmpAgent on {} for 'real' address {}", listenAddress, agentAddress);
 
     	    @SuppressWarnings("unchecked")
     	    final Map<SnmpAgentAddress,MockSnmpAgent> agents = (Map<SnmpAgentAddress,MockSnmpAgent>)testContext.getAttribute(AGENT_KEY);
@@ -250,7 +254,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
             try {
                 MockSnmpStrategy.setDataForAddress(address, resource);
             } catch (final Throwable t) {
-                LogUtils.warnf(this, t, "Unable to set mock SNMP data for %s", address);
+            	LOG.warn("Unable to set mock SNMP data for {}", address, t);
             }
         }
         @Override
@@ -275,7 +279,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) throws IOException {
             final MockSnmpAgent agent = m_agents.get(address);
             if (agent == null) {
-                LogUtils.warnf(this, "Unable to set mock SNMP data for %s: no such agent", address);
+            	LOG.warn("Unable to set mock SNMP data for {}: no such agent", address);
                 return;
             }
             agent.updateValuesFromResource(resource.getURL());
@@ -285,10 +289,10 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void resetData() {
             for (final MockSnmpAgent agent : m_agents.values()) {
                 try {
-                    LogUtils.debugf(this, "Shutting down agent: %s", agent);
+                	LOG.debug("Shutting down agent: {}", agent);
                     agent.shutDownAndWait();
                 } catch (final InterruptedException e) {
-                    LogUtils.debugf(this, e, "Unable to shut down agent %s", agent);
+                	LOG.debug("Unable to shut down agent {}", agent, e);
                     // Thread.currentThread().interrupt();
                 }
             }

@@ -57,12 +57,13 @@ import javax.oss.fm.monitor.AlarmValue;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -125,21 +126,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, QoSD {
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDimpl2.class);
 
 	/**
 	 * <p>Constructor for QoSDimpl2.</p>
 	 */
 	public QoSDimpl2() {
 		super(NAME);
-	}
-
-	/**
-	 *  Method to get the QosD's logger from OpenNMS
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	public static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(QoSDimpl2.class);	
 	}
 
 	// ---------------SPRING DAO DECLARATIONS----------------
@@ -151,6 +144,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * provides an interface to OpenNMS which provides a unified api
 	 */
+        @Override
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
@@ -163,6 +157,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
 	 * The OnmsAlarmOssjMapper class maps OpenNMS alarms to OSS/J alarms and events
 	 */
+        @Override
 	public void setOnmsAlarmOssjMapper(
 			OnmsAlarmOssjMapper _onmsAlarmOssjMapper) {
 		onmsAlarmOssjMapper = _onmsAlarmOssjMapper;
@@ -170,7 +165,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private AssetRecordDao assetRecordDao;
@@ -180,13 +175,14 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 */
+        @Override
 	public void setAssetRecordDao(AssetRecordDao ar){
 		assetRecordDao = ar;
 	}
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private NodeDao nodeDao;
@@ -196,6 +192,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in NodeDaof
 	 */
+        @Override
 	public void setNodeDao( NodeDao nodedao){
 		nodeDao = nodedao;
 	}
@@ -211,13 +208,14 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in EventIpcManager
 	 */
+        @Override
 	public void setEventIpcManager( EventIpcManager evtIpcManager){
 		eventIpcManager = evtIpcManager;
 	}
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	@SuppressWarnings("unused")
 	private AlarmDao alarmDao;
@@ -227,6 +225,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in alarmDao
 	 */
+        @Override
 	public void setAlarmDao( AlarmDao almDao){
 		alarmDao = almDao;
 	}
@@ -243,6 +242,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
 	 */
+        @Override
 	public void setAlarmListConnectionManager( AlarmListConnectionManager alcm) {
 		alarmListConnectionManager =alcm;
 	}
@@ -257,6 +257,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 */
+        @Override
 	public void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
@@ -275,8 +276,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	private Hashtable<String,String> triggerUeiList;
 
 
-	/** Constant <code>NAME="OpenOSS.QoSD"</code> */
-	public static final String NAME = "OpenOSS.QoSD";
+	public static final String NAME = "oss-qosd";
 	private String m_stats=null;  //not used but needed for initialisation	
 
 	// TODO - need to make this a configuration option
@@ -289,23 +289,24 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Method to set up the fiber
 	 *  Note - not used in Spring activation
 	 */
+        @Override
 	protected void onInit(){
-		ThreadCategory log = getLog();	
-		log.info("Initialising QoSD");
+		LOG.info("Initialising QoSD");
 	}
 
 	/**
 	 * The start() method loads the configuration for the QosD daemon and registers for events
 	 */
+        @Override
 	protected void onStart() {
 		String jnp_host;
-		ThreadCategory log = getLog();		//Get a reference to the QosD logger instance assigned by OpenNMS
+		//Get a reference to the QosD logger instance assigned by OpenNMS
 
-		log.info("Qosd.start(): Preparing to load configuration");
+		LOG.info("Qosd.start(): Preparing to load configuration");
 
 		// set application context for AlarmListConnectionManager
 		try {
-			if (log.isDebugEnabled()) log.debug("Qosd.start():setting application context for alarmListConnectionManager: m.context.toString:"+m_context.toString());                           
+			LOG.debug("Qosd.start():setting application context for alarmListConnectionManager: m.context.toString:{}", m_context.toString());                           
 			alarmListConnectionManager.setApplicationContext(m_context);
 		}catch ( Exception ex){
 			throw new IllegalArgumentException("Qosd.start(): Error setting spring application context: "+ex);
@@ -316,7 +317,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		//all the UEIs that will be sent as alarms if useUeiList = true.
 		try {
 			config = QoSDConfigFactory.getConfig();
-			log.info("QoSD QoSD-configuration.xml - Configuration Loaded Successfully");
+			LOG.info("QoSD QoSD-configuration.xml - Configuration Loaded Successfully");
 			
 			// loading list of UEI's which trigger this daemon
 			triggerUeiList = new Hashtable<String,String>();
@@ -326,12 +327,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 						
 		} catch(MarshalException mrshl_ex) {
 			//write an error message to the log file
-			log.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n" +
-					"\t\t\t\tEnsure tags have correct names", mrshl_ex);
+			LOG.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n\t\t\t\tEnsure tags have correct names", mrshl_ex);
 			throw new UndeclaredThrowableException(mrshl_ex);
 		} catch(ValidationException vldtn_ex){
-			log.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n" +
-					"\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml", vldtn_ex);
+			LOG.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml", vldtn_ex);
 			throw new UndeclaredThrowableException(vldtn_ex);
 		} catch(IOException io_ex){
 			//Get the OpenNMS home directory
@@ -342,12 +341,11 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 				configFile = configFile.substring(0, configFile.length() - 1);
 			}
 			configFile += java.io.File.separator + "etc" + java.io.File.separator + "QoSD-configuration.xml";
-			log.error("Qosd.start(): Failed to load configuration file: " + configFile +
-					"\n\t\t\t\tMake sure that it exists", io_ex);
+			LOG.error("Qosd.start(): Failed to load configuration file: {}\n\t\t\t\tMake sure that it exists", configFile, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 
-		if (useUeiList) log.info("Qosd.start(): useUeiList = true = using QoSD QoSD-configuration.xml UEI list selects which alarms are sent");
+		if (useUeiList) LOG.info("Qosd.start(): useUeiList = true = using QoSD QoSD-configuration.xml UEI list selects which alarms are sent");
 		
 
 		try {
@@ -357,18 +355,17 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		catch(FileNotFoundException fnf_ex) {
 			//record in log that the properties file could not be found
 			String propertiesFilename = System.getProperty("propertiesFile");
-			log.error("Qosd.start(): Could not find properties file: " + propertiesFilename, fnf_ex);
+			LOG.error("Qosd.start(): Could not find properties file: {}", propertiesFilename, fnf_ex);
 			throw new UndeclaredThrowableException(fnf_ex);
 		}
 		catch(IOException io_ex) {
 			//record in log that the properties file could not be read
 			String propertiesFilename = System.getProperty("propertiesFile");
-			log.error("Qosd.start(): Could not read from properties file: " + propertiesFilename + 
-					"\n\t\t\t\tPlease check the file permissions", io_ex);
+			LOG.error("Qosd.start(): Could not read from properties file: {}\n\t\t\t\tPlease check the file permissions", propertiesFilename, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 
-		log.info("Qosd.start(): QosD Properties File Loaded");
+		LOG.info("Qosd.start(): QosD Properties File Loaded");
 
 		if(System.getSecurityManager() == null)
 			System.setSecurityManager(new RMISecurityManager());
@@ -380,10 +377,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		 */
 		if(props.getProperty("org.openoss.opennms.spring.qosd.naming.provider") != null){
 			jnp_host = (String)props.getProperty("org.openoss.opennms.spring.qosd.naming.provider");
-			log.info("Using JNP: " + jnp_host);
+			LOG.info("Using JNP: {}", jnp_host);
 		}
 		else {
-			log.warn("Qosd.start(): Naming provider property not set, Using default: jnp://jbossjmsserver1:1099");
+			LOG.warn("Qosd.start(): Naming provider property not set, Using default: jnp://jbossjmsserver1:1099");
 			jnp_host = "jnp://jbossjmsserver1:1099";
 		}
 
@@ -400,65 +397,65 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 			alarmListConnectionManager.init(props, env);
 			alarmListConnectionManager.start();
 			//wait until the AlarmListConnectionManager has connected to bean		
-			log.info("Qosd.start(): Waiting Connection Manager Thread to get JMS connection");
+			LOG.info("Qosd.start(): Waiting Connection Manager Thread to get JMS connection");
 			while(alarmListConnectionManager.getStatus() != AlarmListConnectionManager.CONNECTED);
-			log.info("Qosd.start(): Connection Manager Thread JMS connection successfully registered");
+			LOG.info("Qosd.start(): Connection Manager Thread JMS connection successfully registered");
 
-			log.info("Qosd.start(): openNMS just restarted - sending alarm list rebuilt event");
+			LOG.info("Qosd.start(): openNMS just restarted - sending alarm list rebuilt event");
 			//send alarm list rebuilt event to EJB via the connection manager thread.
 			alarmListConnectionManager.reset_list("openNMS just restarted - alarm list rebuilt. Time:"+new Date()); // send an alarm list rebuilt event
 		}
 		catch(Throwable iae) {
-			log.error("Qosd.start(): Exception caught starting alarmListConnectionManager", iae);
+			LOG.error("Qosd.start(): Exception caught starting alarmListConnectionManager", iae);
 			throw new UndeclaredThrowableException(iae);
 		}
 		
 		// setting up ossDao to access the OpenNMS database
 		try {
-			if (log.isDebugEnabled()) log.debug("Qosd.start(): Using ossDao instance:"+ (ossDao == null ? "IS NULL" : ossDao.toString()));
-			log.info("Qosd.start(): Initialising the Node and alarm Caches");
+			LOG.debug("Qosd.start(): Using ossDao instance: {}", (ossDao == null ? "IS NULL" : ossDao.toString()));
+			LOG.info("Qosd.start(): Initialising the Node and alarm Caches");
 			ossDao.init();
 //	TODO REMOVE
 //			ossDao.updateNodeCaches();
-			log.info("Qosd.start(): Set up ossDao call back interface to QoSD for forwarding changes to alarm list");
+			LOG.info("Qosd.start(): Set up ossDao call back interface to QoSD for forwarding changes to alarm list");
 			ossDao.setQoSD(this);
 		} catch (Throwable ex) {
-			log.error("Qosd.start(): Exception caught setting callback interface from ossDao", ex);
+			LOG.error("Qosd.start(): Exception caught setting callback interface from ossDao", ex);
 			throw new UndeclaredThrowableException(ex);
 		}
 
 		// set up thread to handle incoming OpenNMS events
-		log.info("Qosd.start(): initialising OpenNMSEventHandlerThread");
+		LOG.info("Qosd.start(): initialising OpenNMSEventHandlerThread");
 		try {
 			openNMSEventHandlerThread= new OpenNMSEventHandlerThread();
 			openNMSEventHandlerThread.setOssDao(ossDao);
 			openNMSEventHandlerThread.init();
 			openNMSEventHandlerThread.start();
 		} catch (Throwable ex) {
-			log.error("Qosd.start(): Exception caught initialising OpenNMSEventHandlerThread", ex);
+			LOG.error("Qosd.start(): Exception caught initialising OpenNMSEventHandlerThread", ex);
 			throw new UndeclaredThrowableException(ex);
 		}
 
 		//send all the alarmList to EJB via the connection manager thread.
-		log.info("Qosd.start(): openNMS just restarted - sending all alarms in rebuilt alarm list");
+		LOG.info("Qosd.start(): openNMS just restarted - sending all alarms in rebuilt alarm list");
 		try {
 			//this.sendAlarms(); // interface has just started up. Send all alarms
 			openNMSEventHandlerThread.sendAlarmList();
 		} catch ( Exception e) {
-			log.error("Qosd.start(): problem sending initial alarm list Error:", e);
+			LOG.error("Qosd.start(): problem sending initial alarm list Error:", e);
 		}
 
 		// register listener for OpenNMS events
-		log.info("Qosd.start(): Starting OpenNMS event listener");
+		LOG.info("Qosd.start(): Starting OpenNMS event listener");
 		try {
 			registerListener();
 		} catch ( Exception e) {
-			log.error("Qosd.start(): problem registering event listener Error:", e);
+			LOG.error("Qosd.start(): problem registering event listener Error:", e);
 		}
 				
 		// TODO - replace ack handler code with QoSDrx receiver code
 
-		log.info("QoSD Started");
+		LOG.info("QoSD Started");
 	}
 
 
@@ -467,31 +464,32 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
 	 * database connections, before the fiber's execution is ended.
 	 */
+        @Override
 	protected void onStop() {
-		ThreadCategory log = getLog();		//Get a reference to the QoSD logger
+		//Get a reference to the QoSD logger
 
-		log.info("Stopping QosD");
+		LOG.info("Stopping QosD");
 
 		try {
 			unregisterListener();	//unregister the OpenNMS event listener
 		} catch(Throwable ex) {
-			log.error("stop() Error unregistering the OpenNMS event listener. Error:", ex);
+			LOG.error("stop() Error unregistering the OpenNMS event listener. Error:", ex);
 		}
 
 
 		try {
 			openNMSEventHandlerThread.kill();
 		} catch(Throwable ex) {
-			log.error("stop() Error killing openNMSEventHandlerThread. Error:", ex);
+			LOG.error("stop() Error killing openNMSEventHandlerThread. Error:", ex);
 		}
 
 		try {
 			alarmListConnectionManager.kill();	//kill the connection thread
 		} catch(Throwable ex) {
-			log.error("stop() Error killing alarmListConnectionManager. Error:", ex);
+			LOG.error("stop() Error killing alarmListConnectionManager. Error:", ex);
 		}
 
-		log.info("QosD Stopped");
+		LOG.info("QosD Stopped");
 	}
 
 
@@ -499,12 +497,13 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Resume method of fiber, called by OpenNMS to start the fiber up from
 	 * a paused state.
 	 */
+        @Override
 	protected void onResume() {
-		ThreadCategory log = getLog();		//Get a reference to the QosD logger
+		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
-		log.info("Resuming QosD");
+		LOG.info("Resuming QosD");
 		registerListener();		//start responding to OpenNMS events
-		log.info("QosD Resumed");
+		LOG.info("QosD Resumed");
 	}
 
 
@@ -512,12 +511,13 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Pause method of fiber, called by OpenNMS to put the fiber in a
 	 * suspended state until it can be later resumed.
 	 */
+        @Override
 	protected void onPause() {
-		ThreadCategory log = getLog();		//Get a reference to the QosD logger
+		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
-		log.info("Pausing QosD");
+		LOG.info("Pausing QosD");
 		unregisterListener();		//stop responding to OpenNMS events
-		log.info("QosD Paused");
+		LOG.info("QosD Paused");
 	}
 
 	/**
@@ -525,14 +525,14 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * When an event occurs, OpenNMS will call the onEvent()
 	 * method of this object.
 	 */
+        @Override
 	public void registerListener() 	{
-		ThreadCategory log =getLog();
 		List<String> ueiList = new ArrayList<String>();
 		String[] temp = config.getEventlist().getUei();
 		for(int i=0; i<temp.length; i++)
 			ueiList.add(temp[i]);
 
-		log.info("QosD Registering for " + temp.length + " types of event");
+		LOG.info("QosD Registering for {} types of event", temp.length);
 		eventIpcManager.addEventListener(this, ueiList);
 
 	}
@@ -541,10 +541,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Stops OpenNMS calling the onEvent method of this object when
 	 * an event occurs.
 	 */
+        @Override
 	public void unregisterListener() {
-		ThreadCategory log = getLog();
-
-		log.info("QosD Unregistering for events");
+		LOG.info("QosD Unregistering for events");
 		eventIpcManager.removeEventListener(this);
 	}
 
@@ -555,10 +554,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * new event is detected. This can be run on any event but only needs to run on
 	 * uei.opennms.org/vacuumd/alarmListChanged
 	 */
+        @Override
 	public void onEvent(Event event) {
-
-		ThreadCategory log = getLog();
-		if (log.isDebugEnabled()) log.debug("Qosd.onEvent: OpenNMS Event Detected by QosD. uei '"+ event.getUei()+"' Dbid(): "+event.getDbid()+"  event.getTime(): " + event.getTime());
+		LOG.debug("Qosd.onEvent: OpenNMS Event Detected by QosD. uei '{}' Dbid(): {}  event.getTime(): {}", event.getUei(), event.getDbid(), event.getTime());
 
 		String s = event.getUei();
 		if (s==null) return;
@@ -568,17 +566,17 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 				EventConstants.NODE_DELETED_EVENT_UEI.equals(s) ||
 				EventConstants.ASSET_INFO_CHANGED_EVENT_UEI.equals(s) ) {
 			try {
-				if (log.isDebugEnabled()) log.debug("QosD.onEvent Event causing update to node list");
+				LOG.debug("QosD.onEvent Event causing update to node list");
 				openNMSEventHandlerThread.updateNodeCache();
 				return;
 			} catch ( Exception ex){
-				log.error("Qosd.onEvent. Problem calling openNMSEventHandlerThread.updateNodeCache(). Error:"+ ex);
+				LOG.error("Qosd.onEvent. Problem calling openNMSEventHandlerThread.updateNodeCache(). Error:", ex);
 				return;
 			}
 		} 
 
 		if (event.getUei().equals("uei.opennms.org/vacuumd/alarmListChanged")) {
-			if (log.isDebugEnabled()) log.debug("QosD.onEvent received 'uei.opennms.org/vacuumd/alarmListChanged' event; Updating alarm list");
+			LOG.debug("QosD.onEvent received 'uei.opennms.org/vacuumd/alarmListChanged' event; Updating alarm list");
 		} else { 
 			// used code from AlarmWriter.java Check value of <logmsg> attribute 'dest', if set to
 			// "donotpersist" then simply return, the uei is not to be persisted to the database		
@@ -590,17 +588,17 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 				// this section prints out events received which are not uei.opennms.org/vacuumd/alarmListChanged
 				// return if a donotpersist event
 				if (event.getLogmsg().getDest().equals("donotpersist")) {
-					if (log.isDebugEnabled()) log.debug("QosD.onEvent Ignoring event marked as 'doNotPersist'. Event Uei:"+event.getUei());
+					LOG.debug("QosD.onEvent Ignoring event marked as 'doNotPersist'. Event Uei:{}", event.getUei());
 					return;
 				}				
 				// AlarmData should not be null if QoSD-configuration.xml is set up only to receive raise 
 				// and not clearing alarms
 				if (event.getAlarmData().getAlarmType() == 2){
-					if (log.isDebugEnabled()) log.debug("Qosd.onEvent: uei '"+ event.getUei()+"' Dbid(): "+event.getDbid()+" alarm type = 2 (clearing alarm) so ignoring.");
+					LOG.debug("Qosd.onEvent: uei '{}' Dbid(): {} alarm type = 2 (clearing alarm) so ignoring.", event.getUei(), event.getDbid());
 					return; 
 				}
 			} catch (NullPointerException e) {
-				log.error("Qosd.onEvent: uei '" + event.getUei() +"' Dbid(): "+event.getDbid()+"' problem dealing with event. Check QoSD-configuration.xml.");
+				LOG.error("Qosd.onEvent: uei '{}' Dbid(): {}' problem dealing with event. Check QoSD-configuration.xml.", event.getUei(), event.getDbid());
 				return;
 			} 
 		}
@@ -608,11 +606,11 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		// This forces the ossDao to update it's list on this event and call back to sendAlarms() to send the
 		// updated alarm list.
 		try {
-			if (log.isDebugEnabled()) log.debug("QosD.onEvent calling openNMSEventHandlerThread.sendAlarmList() to update list.");
+			LOG.debug("QosD.onEvent calling openNMSEventHandlerThread.sendAlarmList() to update list.");
 			//ossDao.updateAlarmCacheAndSendAlarms();
 			openNMSEventHandlerThread.sendAlarmList();
 		} catch ( Exception ex){
-			log.error("Qosd.onEvent. Problem calling openNMSEventHandlerThread.sendAlarmList(). Error:"+ ex);
+			LOG.error("Qosd.onEvent. Problem calling openNMSEventHandlerThread.sendAlarmList(). Error:", ex);
 		}
 	}
 
@@ -623,63 +621,62 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * using the alarm list connection manager (alcm) to  update the the AlarmMonitor bean.
 	 * This is called from ossDao every time there is an update to the database.
 	 */
+        @Override
 	public void sendAlarms() {
-		ThreadCategory log = getLog();	
-
 		Hashtable<AlarmKey,AlarmValue> ossjAlarmUpdateList = new Hashtable<AlarmKey,AlarmValue>();
 		OnmsAlarm[] onmsAlarmUpdateList = null;
 		AlarmValue ossjAlarm;
 
 		try {
-			if (log.isDebugEnabled()) log.debug("sendAlarms() using ossDao to get current alarm list");
+			LOG.debug("sendAlarms() using ossDao to get current alarm list");
 			onmsAlarmUpdateList=ossDao.getAlarmCache();
 		} catch(Throwable ex) {
 			//problems contacting the PostgreSQL database
-			log.error("sendAlarms() Cannot retrieve alarms from ossDao.getAlarmCache()", ex);
+			LOG.error("sendAlarms() Cannot retrieve alarms from ossDao.getAlarmCache()", ex);
 			throw new UndeclaredThrowableException(ex, "sendAlarms() Cannot retrieve alarms from ossDao.getAlarmCache()");
 		}
 
-		if (log.isDebugEnabled()) log.debug("sendAlarms() Alarms fetched. Processing each alarm in list.");
+		LOG.debug("sendAlarms() Alarms fetched. Processing each alarm in list.");
 		// Convert the OnmsAlarm array alarmBuf to a hashtable using the alarmid as the key.
 		try {
 			for(int i = 0; i < onmsAlarmUpdateList.length; i++) {
-				if (log.isDebugEnabled()) log.debug("sendAlarms() processing an OpenNMS alarm:");
+				LOG.debug("sendAlarms() processing an OpenNMS alarm:");
 
 				// if useUeiList is true only the alarms whose UEI's are listed in the 
 				// QosD-configuration.xml file will be included in the list. 
 				if (useUeiList) {
-					if (log.isDebugEnabled()) log.debug("sendAlarms() useUeiList= true: using UeiList to determine alarms to send");
+					LOG.debug("sendAlarms() useUeiList= true: using UeiList to determine alarms to send");
 					if( null == triggerUeiList.get(onmsAlarmUpdateList[i].getUei()) ) {
-						if (log.isDebugEnabled()) log.debug("sendAlarms() alarm UEI not in QosD-configuration.xml. Not sending. alarmID:"+ onmsAlarmUpdateList[i].getId()+" alarmUEI:"+onmsAlarmUpdateList[i].getUei() );
+						LOG.debug("sendAlarms() alarm UEI not in QosD-configuration.xml. Not sending. alarmID:{} alarmUEI:{}", onmsAlarmUpdateList[i].getId(), onmsAlarmUpdateList[i].getUei() );
 						continue; // ignore this event and return
 					}
-					if (log.isDebugEnabled()) log.debug("sendAlarms() alarm UEI is in QosD-configuration.xml. Trying to send alarmID:"+ onmsAlarmUpdateList[i].getId()+" alarmUEI:"+onmsAlarmUpdateList[i].getUei() );
+					LOG.debug("sendAlarms() alarm UEI is in QosD-configuration.xml. Trying to send alarmID:{} alarmUEI:{}", onmsAlarmUpdateList[i].getId(), onmsAlarmUpdateList[i].getUei());
 				}
 
 				if (onmsAlarmUpdateList[i].getAlarmType()!= 1)	{
-					if (log.isDebugEnabled()) log.debug("sendAlarms() Alarm AlarmType !=1 ( not raise alarm ) Not sending alarmID:"+ onmsAlarmUpdateList[i].getId()+" :alarmBuf[i].getQosAlarmState()=: "+ onmsAlarmUpdateList[i].getQosAlarmState());
+					LOG.debug("sendAlarms() Alarm AlarmType !=1 ( not raise alarm ) Not sending alarmID:{} :alarmBuf[i].getQosAlarmState()=: {}", onmsAlarmUpdateList[i].getId(), onmsAlarmUpdateList[i].getQosAlarmState());
 					continue;
 				} else {
-					if (log.isDebugEnabled()) log.debug("sendAlarms() Alarm AlarmType==1 ( raise alarm ) Sending alarmID:"+ onmsAlarmUpdateList[i].getId()+" :alarmBuf[i].getQosAlarmState()=: "+ onmsAlarmUpdateList[i].getQosAlarmState());
+					LOG.debug("sendAlarms() Alarm AlarmType==1 ( raise alarm ) Sending alarmID:{} :alarmBuf[i].getQosAlarmState()=: {}", onmsAlarmUpdateList[i].getId(), onmsAlarmUpdateList[i].getQosAlarmState());
 					try {
 
 						// Code which creates the OSSJ AlarmValue from the Spring OSS?J AlarmValue Specification
-						if (log.isDebugEnabled()) log.debug("sendAlarms(): generating the OSS/J alarm specification:");
+						LOG.debug("sendAlarms(): generating the OSS/J alarm specification:");
 						ossjAlarm = alarmListConnectionManager.makeAlarmValueFromSpec();
-						if (log.isDebugEnabled()) log.debug("sendAlarms(): OSS/J alarm specification:"+	OOSSAlarmValue.converttoString(ossjAlarm));
+						LOG.debug("sendAlarms(): OSS/J alarm specification:{}", OOSSAlarmValue.converttoString(ossjAlarm));
 
 						// Code which creates the OSSJ AlarmValue from the Spring OSS/J AlarmValue Specification
-						if (log.isDebugEnabled()) log.debug("sendAlarms(): onmsAlarmOssjMapper.populateOssjAlarmFromOpenNMSAlarm:");
+						LOG.debug("sendAlarms(): onmsAlarmOssjMapper.populateOssjAlarmFromOpenNMSAlarm:");
 						ossjAlarm = onmsAlarmOssjMapper.populateOssjAlarmFromOpenNMSAlarm(ossjAlarm, onmsAlarmUpdateList[i]);
-						if (log.isDebugEnabled()) log.debug("buildList(): alarm specifcation:"+	OOSSAlarmValue.converttoString(ossjAlarm));
+						LOG.debug("buildList(): alarm specifcation: {}", OOSSAlarmValue.converttoString(ossjAlarm));
 
 						// TODO selector on ACKNOWLEDGED and CLEARED - currently always sends all alarms in list
 						if (true) try {
 							// alarms which are ACKNOWLEDGED and CLEARED are included in this current alarm list
-							if (log.isDebugEnabled()) log.debug("sendAlarms() including ACKNOWLEDGED and CLEARED alarms in alarm in list");
+							LOG.debug("sendAlarms() including ACKNOWLEDGED and CLEARED alarms in alarm in list");
 							ossjAlarmUpdateList.put(ossjAlarm.getAlarmKey(), ossjAlarm); 
 						} catch (Throwable e) {
-							log.error("sendAlarms() error putting alarm in alarmList", e);
+							LOG.error("sendAlarms() error putting alarm in alarmList", e);
 						}
 
 						//TODO - THIS CODE NEVER RUN
@@ -696,32 +693,32 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 							log.error("sendAlarms() error in alarmACKState or PercievedSeverity - check alarm definitons", e);
 						}*/
 					} catch (Throwable ex) {
-						log.error("sendAlarms() error trying to populate alarm - alarm disguarded - check alarm definitons", ex);
+						LOG.error("sendAlarms() error trying to populate alarm - alarm disguarded - check alarm definitons", ex);
 					}
 				}
 			}
 		}
 		catch (Throwable ex){
-			log.error("Qosd.sendAlarms(): Problem when building alarm list:", ex);
+			LOG.error("Qosd.sendAlarms(): Problem when building alarm list:", ex);
 			throw new UndeclaredThrowableException(ex, "Qosd.sendAlarms(): Problem when building alarm list");
 		}
 		try{
 			// debug code prints out alarm list to be sent if enabled
-			if (log.isDebugEnabled()) {
-				log.debug("QosD sendAlarms() - Alarm list built:");
-				log.debug("QosD sendAlarms() - ******* Alarm List to be sent : primary keys");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("QosD sendAlarms() - Alarm list built:");
+				LOG.debug("QosD sendAlarms() - ******* Alarm List to be sent : primary keys");
 				for (Entry<AlarmKey, AlarmValue> entry : ossjAlarmUpdateList.entrySet()) {
-					log.debug("QosD sendAlarms() key : " + entry.getKey().getPrimaryKey() +"  AlarmValue.getAlarmChangedTime: " + entry.getValue().getAlarmChangedTime()); 
+					LOG.debug("QosD sendAlarms() key:{}  AlarmValue.getAlarmChangedTime: {}", entry.getKey().getPrimaryKey(), entry.getValue().getAlarmChangedTime()); 
 				}
-				log.debug("QosD sendAlarms() - ******* END OF LIST");
-				log.debug("QosD sendAlarms() Sending alarm list to bean");
+				LOG.debug("QosD sendAlarms() - ******* END OF LIST");
+				LOG.debug("QosD sendAlarms() Sending alarm list to bean");
 			}		
 			//send the alarmList to Ossbeans EJB or local runner via the connection manager thread.
 
 			alarmListConnectionManager.send(ossjAlarmUpdateList);
 		}
 		catch (Throwable ex){
-			log.error("Qosd.sendAlarms(): Problem when sending alarm list:", ex);
+			LOG.error("Qosd.sendAlarms(): Problem when sending alarm list:", ex);
 			throw new UndeclaredThrowableException(ex,"Qosd.sendAlarms(): Problem when sending alarm list");
 		}
 	}
@@ -732,6 +729,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * @return stats
 	 */
+        @Override
 	public String getStats() { 
 		return (m_stats == null ? "No Stats Available" : m_stats.toString()); 
 	}

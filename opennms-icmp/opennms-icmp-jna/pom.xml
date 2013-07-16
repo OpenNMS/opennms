@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-icmp</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-icmp-jna</artifactId>
@@ -32,8 +32,8 @@
       <artifactId>opennms-icmp-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

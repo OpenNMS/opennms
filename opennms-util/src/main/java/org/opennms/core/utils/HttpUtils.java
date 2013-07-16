@@ -36,7 +36,8 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides convenience methods for use the HTTP POST method.
@@ -44,6 +45,7 @@ import org.apache.log4j.Logger;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public abstract class HttpUtils extends Object {
+	private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 
     /** Default buffer size for reading data. (Default is one kilobyte.) */
     public final static int DEFAULT_POST_BUFFER_SIZE = 1024;
@@ -219,27 +221,23 @@ public abstract class HttpUtils extends Object {
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
 
         // log data
-        Logger log = Logger.getLogger("POSTDATALOG");
-        if (log.isDebugEnabled()) {
-            String nl = System.getProperty("line.separator");
-            log.debug(nl + "HTTP Post: Current time: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
-            log.debug(nl + "Data posted:" + nl);
-        }
+        LOG.debug("HTTP Post: Current time: {}", new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
+        LOG.debug("Data posted:");
 
         // initialize a buffer to use to read and write
         char[] b = new char[bufSize];
 
         // write the given data stream over the out-going HTTP connection
         int bytesRead = dataReader.read(b, 0, bufSize);
-        if (bytesRead > 0 && log.isDebugEnabled())
-            log.debug(new String(b, 0, bytesRead));
+        if (bytesRead > 0 && LOG.isDebugEnabled())
+            LOG.debug(new String(b, 0, bytesRead));
 
         while (bytesRead > 0) {
             ostream.write(b, 0, bytesRead);
             bytesRead = dataReader.read(b, 0, bufSize);
 
-            if (bytesRead > 0 && log.isDebugEnabled())
-                log.debug(new String(b, 0, bytesRead));
+            if (bytesRead > 0 && LOG.isDebugEnabled())
+                LOG.debug(new String(b, 0, bytesRead));
         }
 
         // close the out-going HTTP connection

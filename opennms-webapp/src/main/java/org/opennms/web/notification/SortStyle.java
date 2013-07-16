@@ -80,6 +80,7 @@ public enum SortStyle {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("SortStyle." + getName());
     }

@@ -48,11 +48,13 @@ public final class ByNameComparator implements Comparator<AttributeDefinition>, 
      * @param type1 a {@link org.opennms.netmgt.config.collector.AttributeDefinition} object.
      * @return a int.
      */
+    @Override
     public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
         return type0.getName().compareTo(type1.getName());
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(final Object o) {
         return o instanceof ByNameComparator;
     }
@@ -62,6 +64,7 @@ public final class ByNameComparator implements Comparator<AttributeDefinition>, 
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return 0;
     }

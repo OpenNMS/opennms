@@ -35,11 +35,16 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ProcessExec class.</p>
  */
 public class ProcessExec {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ProcessExec.class);
+	
     PrintStream m_out = null;
 
     PrintStream m_err = null;
@@ -93,6 +98,7 @@ public class ProcessExec {
             m_printStream = printStream;
         }
 
+        @Override
         public void run() {
             InputStreamReader isr = null;
             BufferedReader in = null;
@@ -106,7 +112,7 @@ public class ProcessExec {
                     m_printStream.println(line);
                 }
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "an error occurred while reading the input stream");
+            	LOG.warn("an error occurred while reading the input stream", e);
             } finally {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(isr);

@@ -34,6 +34,8 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.ActiondConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to represent the auto action execution service. When an
@@ -46,8 +48,10 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
 public final class Actiond extends AbstractServiceDaemon {
-
-	/**
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Actiond.class);
+    
+    /**
      * The singleton instance.
      */
     private static final Actiond m_singleton = new Actiond();
@@ -68,7 +72,7 @@ public final class Actiond extends AbstractServiceDaemon {
      * Constructs a new Action execution daemon.
      */
     private Actiond() {
-    	super("OpenNMS.Actiond");
+    	super("actiond");
         m_executor = null;
         m_eventReader = null;
     }
@@ -76,6 +80,7 @@ public final class Actiond extends AbstractServiceDaemon {
 	/**
 	 * <p>onInit</p>
 	 */
+    @Override
 	protected void onInit() {
 		// A queue for execution
         //
@@ -86,7 +91,7 @@ public final class Actiond extends AbstractServiceDaemon {
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
         } catch (Throwable ex) {
-            log().error("Failed to setup event reader", ex);
+            LOG.error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -96,6 +101,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
 		if (m_executor == null) {
 		    init();
@@ -107,6 +113,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
 		try {
             if (m_executor != null) {
@@ -127,6 +134,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
 		m_executor.pause();
 	}
@@ -134,6 +142,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
 		m_executor.resume();
 	}
@@ -201,4 +210,6 @@ public final class Actiond extends AbstractServiceDaemon {
     public void setActiondConfig(ActiondConfigFactory actiondConfig) {
         m_actiondConfig = actiondConfig;
     }
+    
+
 }

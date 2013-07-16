@@ -355,6 +355,7 @@ public class Constraint {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer b = new StringBuffer();
 
@@ -482,6 +483,7 @@ public class Constraint {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object other_o) {
         return equals(other_o, false);
     }
@@ -563,6 +565,7 @@ public class Constraint {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_name.hashCode() + Integer.valueOf(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
     }

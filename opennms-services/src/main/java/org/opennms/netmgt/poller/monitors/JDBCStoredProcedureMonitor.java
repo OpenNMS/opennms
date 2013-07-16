@@ -33,7 +33,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 
@@ -65,6 +64,7 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
    }
 
    /** {@inheritDoc} */
+   @Override
    public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters)
    {
 	   
@@ -82,13 +82,13 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
          String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
          cs = con.prepareCall( procedureCall );
          
-         log().debug("Calling stored procedure: " + procedureCall );
+         LOG.debug("Calling stored procedure: {}", procedureCall);
          
          cs.registerOutParameter(1, java.sql.Types.BIT );
          cs.executeUpdate();
          bPass = cs.getBoolean( 1 );
 
-         log().debug("Stored procedure returned: " + bPass );
+         LOG.debug("Stored procedure returned: {}", bPass);
 
          // If the query worked, assume than the server is ok
          if (bPass)
@@ -98,7 +98,9 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
       }
       catch (SQLException sqlEx)
       {
-            status = logDown(Level.DEBUG, "JDBC stored procedure call not functional: " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+            String reason = "JDBC stored procedure call not functional: " + sqlEx.getSQLState() + ", " + sqlEx.toString();
+        LOG.debug(reason, sqlEx);
+            status = PollStatus.unavailable(reason);
       }
       finally
       {

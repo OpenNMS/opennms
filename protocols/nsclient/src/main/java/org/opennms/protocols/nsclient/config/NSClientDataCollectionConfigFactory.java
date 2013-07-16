@@ -53,11 +53,12 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NSClientDataCollectionConfigFactory class.</p>
@@ -65,6 +66,9 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class NSClientDataCollectionConfigFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NSClientDataCollectionConfigFactory.class);
+
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -107,7 +111,7 @@ public class NSClientDataCollectionConfigFactory {
      }
 
      private void initialize(final InputStream stream) throws MarshalException, ValidationException {
-         LogUtils.debugf(this, "initialize: initializing NSCLient collection config factory.");
+         LOG.debug("initialize: initializing NSCLient collection config factory.");
          m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
      }
 

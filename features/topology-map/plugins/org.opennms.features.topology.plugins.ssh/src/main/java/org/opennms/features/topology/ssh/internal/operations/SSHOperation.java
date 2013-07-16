@@ -41,6 +41,7 @@ import com.vaadin.data.Property;
 
 public class SSHOperation implements Operation {
 
+        @Override
 	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
 	    String ipAddr = "";
 	    int port = 22;
@@ -49,7 +50,7 @@ public class SSHOperation implements Operation {
 	        for(final VertexRef target : targets) {
 	            final Item vertexItem = operationContext.getGraphContainer().getBaseTopology().getVertex(target).getItem();
 	            if (vertexItem != null) {
-	                final Property ipAddrProperty = vertexItem.getItemProperty("ipAddr");
+	                final Property<String> ipAddrProperty = vertexItem.getItemProperty("ipAddr");
 	                ipAddr = ipAddrProperty == null ? "" : (String) ipAddrProperty.getValue();
 	                //Property portProperty = operationContext.getGraphContainer().getVertexItem(target).getItemProperty("port");
 	                port = 22; //portProperty == null ? -1 : (Integer) portProperty.getValue();
@@ -60,6 +61,7 @@ public class SSHOperation implements Operation {
 	    return null;
 	}
 
+        @Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
 	    if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
 	    	return true;
@@ -71,11 +73,13 @@ public class SSHOperation implements Operation {
 	    
 	}
 
+        @Override
 	public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
 	    if (targets == null || targets.size() < 2) return true;
 	    return false;
 	}
 
+        @Override
 	public String getId() {
 	    return "SSH";
 	}

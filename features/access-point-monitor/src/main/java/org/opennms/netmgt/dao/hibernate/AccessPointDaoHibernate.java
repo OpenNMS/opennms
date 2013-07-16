@@ -46,7 +46,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
-public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoint, Integer> implements AccessPointDao {
+public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoint, String> implements AccessPointDao {
 
     /**
      * <p>
@@ -58,12 +58,7 @@ public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoin
     }
 
     /** {@inheritDoc} */
-    public OnmsAccessPoint findByPhysAddr(final String physaddr) {
-        // Case insensitive search
-        return findUnique("from OnmsAccessPoint as aps where upper(aps.physAddr) = ?", physaddr.toUpperCase());
-    }
-
-    /** {@inheritDoc} */
+    @Override
     public OnmsAccessPointCollection findByPackage(final String pkg) {
         String hql = "from OnmsAccessPoint as aps where aps.pollingPackage = ?";
         OnmsAccessPointCollection aps = new OnmsAccessPointCollection();
@@ -73,8 +68,10 @@ public class AccessPointDaoHibernate extends AbstractDaoHibernate<OnmsAccessPoin
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<String> findDistinctPackagesLike(final String pkg) {
         final HibernateCallback<List<String>> callback = new HibernateCallback<List<String>>() {
+            @Override
             public List<String> doInHibernate(final Session session) throws SQLException {
                 return session.createCriteria(OnmsAccessPoint.class).setProjection(Projections.groupProperty("pollingPackage")).add(Restrictions.like("pollingPackage", pkg)).list();
             }

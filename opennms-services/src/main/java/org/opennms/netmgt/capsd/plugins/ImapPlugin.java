@@ -100,6 +100,7 @@ public final class ImapPlugin extends AbstractTcpPlugin {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
 
         boolean isAServer = false;

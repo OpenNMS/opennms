@@ -41,7 +41,8 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -65,6 +66,7 @@ import org.opennms.netmgt.poller.nrpe.NrpePacket;
 
 @Distributable
 final public class NrpeMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(NrpeMonitor.class);
 
     /**
      * Default port.
@@ -105,6 +107,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
      * to Provided that the interface's response is valid we set the service
      * status to SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 		
@@ -142,9 +145,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log().isDebugEnabled()) {
-            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
-        }
+        LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
 
         // Give it a whirl
         //
@@ -162,7 +163,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("NrpeMonitor: connected to host: {} on port: {}", port, ipv4Addr);
                 
             	reason = "Perhaps check the value of 'usessl' for this monitor against the NRPE daemon configuration";
                 socket = wrapSocket(socket, useSsl);
@@ -187,7 +188,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                         try {
                             this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                         } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:" + rex);
+                            LOG.debug("There was a problem writing the RRD: {}", rex);
                         }
                     }
                     break;
@@ -204,10 +205,8 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 
                 if (response == null)
                     continue;
-                if (log.isDebugEnabled()) {
-                    log.debug("poll: banner = " + response);
-                    log.debug("poll: responseTime= " + responseTime + "ms");
-                }
+                LOG.debug("poll: banner = {}", response);
+                LOG.debug("poll: responseTime= {}ms", responseTime);
 
                 if (response.indexOf(strBannerMatch) > -1) {
                 */
@@ -223,34 +222,31 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 						" and message: " + response.getBuffer();
                 }
             } catch (NoRouteToHostException e) {
-				reason = "No route to host exception for address " + hostAddress;
-                if (log().isEnabledFor(ThreadCategory.Level.WARN)) {
-	                e.fillInStackTrace();
-                    log().warn("poll: " + reason, e);
-                }
+                   reason = "No route to host exception for address " + hostAddress;
+                   LOG.warn("poll: {}", reason, e);
             } catch (InterruptedIOException e) {
                 reason = "did not connect to host within " + tracker;
-                log().debug("NrpeMonitor: did not connect to host within " + tracker);
+                LOG.debug("NrpeMonitor: did not connect to host within {}", tracker);
             } catch (ConnectException e) {
 				reason = "Connection exception for address: " + ipv4Addr;
                 // Connection refused. Continue to retry.
                 //
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log().debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } catch (NrpeException e) {
 				reason = "NrpeException while polling address: " + ipv4Addr;
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log().debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } catch (IOException e) {
                 // Ignore
 				reason = "IOException while polling address: " + ipv4Addr;
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
-                    log().debug("poll: " + reason, e);
+                    LOG.debug("poll: {}", reason, e);
                 }
             } finally {
                 try {
@@ -259,9 +255,9 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    if (log().isDebugEnabled()) {
+                    if (LOG.isDebugEnabled()) {
 	                    e.fillInStackTrace();
-                        log().debug("poll: Error closing socket.", e);
+                        LOG.debug("poll: Error closing socket.", e);
                     }
                 }
             }

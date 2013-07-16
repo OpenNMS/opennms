@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>AtInterface class.</p>
@@ -70,7 +71,7 @@ public class OnmsAtInterface {
 	private OnmsNode m_node;
 	private InetAddress m_ipAddress;
 	private String m_macAddress;
-	private Character m_status;
+	private StatusType m_status = StatusType.UNKNOWN;
 	private Integer m_sourceNodeId;
 	private Integer m_ifIndex;
 	private Date m_lastPollTime;
@@ -108,6 +109,7 @@ public class OnmsAtInterface {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("node", m_node)
@@ -191,11 +193,11 @@ public class OnmsAtInterface {
 
 	@XmlAttribute
 	@Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character status) {
+	public void setStatus(final StatusType status) {
 		m_status = status;
 	}
 

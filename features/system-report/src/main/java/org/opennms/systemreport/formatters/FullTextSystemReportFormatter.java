@@ -32,12 +32,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(FullTextSystemReportFormatter.class);
+    @Override
     public String getName() {
         return "full";
     }
@@ -47,14 +50,17 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         return "Human-readable text (full output)";
     }
 
+    @Override
     public String getContentType() {
         return "text/plain";
     }
 
+    @Override
     public String getExtension() {
         return "txt";
     }
 
+    @Override
     public boolean canStdout() {
         return true;
     }
@@ -84,7 +90,7 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
             }
 
         } catch (final Exception e) {
-            LogUtils.infof(this, e, "unable to write");
+            LOG.info("unable to write", e);
         }
     }
 

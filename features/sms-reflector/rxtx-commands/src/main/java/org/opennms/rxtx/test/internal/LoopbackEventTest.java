@@ -179,6 +179,7 @@ public class LoopbackEventTest {
             return new String(readBuffer);
         }
 
+        @Override
         public void serialEvent(SerialPortEvent event) {
             switch (event.getEventType()) {
                 case SerialPortEvent.DATA_AVAILABLE:

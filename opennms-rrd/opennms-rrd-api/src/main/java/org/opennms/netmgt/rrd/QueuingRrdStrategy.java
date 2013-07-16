@@ -42,7 +42,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides queuing implementation of RrdStrategy.
@@ -110,6 +111,8 @@ import org.apache.log4j.Logger;
  */
 public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.CreateOperation,String>, Runnable {
 
+    private Logger m_log = LoggerFactory.getLogger(QueuingRrdStrategy.class);
+
     private Properties m_configurationProperties;
 
     /**
@@ -122,6 +125,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         this.m_configurationProperties = configurationParameters;
     }
@@ -297,6 +301,8 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      */
     public void setCategory(String category) {
         m_category = category;
+
+        m_log = LoggerFactory.getLogger(m_category);
     }
 
     /**
@@ -469,10 +475,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
 			this.attributeMappings = attributeMappings;
 		}
 
+            @Override
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
             if (rrd != null) {
-                log().debug("WHAT! rrd open but not created?");
+                m_log.debug("WHAT! rrd open but not created?");
                 m_delegate.closeFile(rrd);
                 rrd = null;
             }
@@ -503,6 +510,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             super(fileName, UPDATE, data, significant);
         }
 
+        @Override
         Object process(Object rrd) throws Exception {
             // open the file if we need to
             if (rrd == null) rrd = m_delegate.openFile(getFileName());
@@ -514,9 +522,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
                 m_delegate.updateFile(rrd, "", update);
             } catch (final Throwable e) {
                 final String error = String.format("Error processing update for file %s: %s", getFileName(), update);
-                if (log().isDebugEnabled()) {
-                    log().debug(error, e);
-                }
+                m_log.debug(error, e);
                 throw new Exception(error, e);
             }
 
@@ -550,6 +556,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             count = 1;
         }
 
+        @Override
         Object process(Object rrd) throws Exception {
             long ts = getFirstTimeStamp();
             for (int i = 0; i < count; i++) {
@@ -575,6 +582,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             return rrd;
         }
 
+        @Override
         public int getCount() {
             return count;
         }
@@ -622,13 +630,14 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
 
         }
 
+        @Override
         void addToPendingList(LinkedList<Operation> pendingOperations) {
             if (pendingOperations.size() > 0 && pendingOperations.getLast() instanceof ZeroUpdateOperation) {
                 ZeroUpdateOperation zeroOp = (ZeroUpdateOperation) pendingOperations.getLast();
                 try {
                     zeroOp.mergeUpdates(this);
                 } catch (IllegalArgumentException e) {
-                    log().debug(e.getMessage());
+                    m_log.debug("Unable to mergeUpdates {}", e.getMessage());
                     super.addToPendingList(pendingOperations);
                 }
             } else {
@@ -662,7 +671,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             if ((colon >= 0) && (Double.parseDouble(update.substring(colon + 1)) == 0.0)) {
                 long initialTimeStamp = Long.parseLong(update.substring(0, colon));
                 if (initialTimeStamp == 0)
-                    log().debug("ZERO ERROR: created a zero update with ts=0 for file: " + fileName + " data: " + update);
+                    m_log.debug("ZERO ERROR: created a zero update with ts=0 for file: {}, data: {}", fileName, update);
 
                 return new ZeroUpdateOperation(fileName, initialTimeStamp);
             }
@@ -686,17 +695,17 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     public void addOperation(Operation op) {
         synchronized (this) {
             if (queueIsFull()) {
-                log().error("RRD Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Data Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
             if (op.isSignificant() && sigQueueIsFull()) {
-                log().error("RRD Data Significant Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Data Significant Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
             if (!op.isSignificant() && inSigQueueIsFull()) {
-                log().error("RRD Insignificant Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                m_log.error("RRD Insignificant Data Queue is Full!! Discarding operation for file {}", op.getFileName());
                 return;
             }
             
@@ -712,10 +721,6 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     
-    private Logger log() {
-        return Logger.getLogger(m_category);
-    }
-
     private boolean queueIsFull() {
         if (m_queueHighWaterMark <= 0)
             return false;
@@ -865,6 +870,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
     
     /** {@inheritDoc} */
+    @Override
     public synchronized void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         filesWithSignificantWork.addAll(0, rrdFiles);
         m_delegate.promoteEnqueuedFiles(rrdFiles);
@@ -965,6 +971,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @param rrd a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void closeFile(String rrd) throws Exception {
         // no need to do anything here
     }
@@ -994,6 +1001,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
     
     /** {@inheritDoc} */
+    @Override
     public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
@@ -1012,6 +1020,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @param op a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void createFile(CreateOperation op, Map<String, String> attributeMappings) throws Exception {
         if (m_queueCreates) {
         	op.setAttributeMappings(attributeMappings);
@@ -1027,6 +1036,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @see RrdStrategy#openFile(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public String openFile(String fileName) throws Exception {
         return fileName;
     }
@@ -1037,11 +1047,13 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * @see RrdStrategy#updateFile(java.lang.Object, java.lang.String, java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void updateFile(String rrdFile, String owner, String data) throws Exception {
         addOperation(makeUpdateOperation((String) rrdFile, owner, data));
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -1050,6 +1062,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
     
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -1058,6 +1071,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
     
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -1066,6 +1080,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraph(command, workDir);
     }
@@ -1077,6 +1092,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         try {
 
@@ -1136,7 +1152,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
         } catch (Throwable e) {
             setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            log().debug("Error updating file " + fileName + ": " + e.getMessage(), e);
+            m_log.debug("Error updating file {}: {}", fileName, e.getMessage(), e);
         } finally {
             processClose(rrd);
         }
@@ -1160,6 +1176,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStats() {
         long now = System.currentTimeMillis();
 
@@ -1237,11 +1254,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     void logLapTime(String message) {
-        log().debug(message + " " + getLapTime());
+        m_log.debug("{} {}", message, getLapTime());
     }
     
     void logLapTime(String message, Throwable t) {
-        log().debug(message + " " + getLapTime(), t);
+        m_log.debug("{} {}", message, getLapTime(), t);
     }
 
     /**
@@ -1261,6 +1278,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a int.
      */
+    @Override
     public int getGraphLeftOffset() {
         return m_delegate.getGraphLeftOffset();
     }
@@ -1270,6 +1288,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a int.
      */
+    @Override
     public int getGraphRightOffset() {
         return m_delegate.getGraphRightOffset();
     }
@@ -1279,6 +1298,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a int.
      */
+    @Override
     public int getGraphTopOffsetWithText() {
         return m_delegate.getGraphTopOffsetWithText();
     }
@@ -1288,11 +1308,13 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDefaultFileExtension() {
         return m_delegate.getDefaultFileExtension();
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }

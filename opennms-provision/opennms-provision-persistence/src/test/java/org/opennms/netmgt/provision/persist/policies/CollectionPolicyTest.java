@@ -38,16 +38,16 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -61,12 +61,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class CollectionPolicyTest implements InitializingBean {
     
     @Autowired
@@ -92,6 +89,11 @@ public class CollectionPolicyTest implements InitializingBean {
         m_interfaces = m_snmpInterfaceDao.findAll();
     }
     
+    @After
+    public void tearDown() {
+        m_populator.resetDatabase();
+    }
+
     @Test
     @Transactional
     public void testMatchingIfDescr() {

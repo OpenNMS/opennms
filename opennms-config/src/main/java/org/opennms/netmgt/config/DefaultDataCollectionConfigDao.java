@@ -40,7 +40,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.FileReloadContainer;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -52,6 +51,8 @@ import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**
@@ -64,7 +65,9 @@ import org.springframework.core.io.Resource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfigDao {
-
+    
+    public static final Logger LOG = LoggerFactory.getLogger(DefaultDataCollectionConfigDao.class);
+    
     private String m_configDirectory;
 
     // have we validated the config since last reloading?
@@ -132,10 +135,10 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public List<MibObject> getMibObjectList(final String cName, final String aSysoid, final String anAddress, final int ifType) {
-        if (log().isDebugEnabled()) log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
+        LOG.debug("getMibObjectList: collection: {} sysoid: {} address: {} ifType: {}", cName, aSysoid, anAddress, ifType);
 
         if (aSysoid == null) {
-            if (log().isDebugEnabled()) log().debug("getMibObjectList: aSysoid parameter is NULL...");
+            LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
             return new ArrayList<MibObject>();
         }
 
@@ -202,14 +205,14 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     // SystemDef's sysoid is a mask, 'aSysoid' need only
                     // start with the sysoid mask in order to match
                     if (aSysoid.startsWith(currSysoid)) {
-                        if (log().isDebugEnabled()) log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
                         bMatchSysoid = true;
                     }
                 } else {
                     // System's sysoid is not a mask, 'aSysoid' must
                     // match the sysoid exactly.
                     if (aSysoid.equals(currSysoid)) {
-                        if (log().isDebugEnabled()) log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        LOG.debug("getMibObjectList: includes sysoid {} for system <name>: {}", aSysoid, system.getName());
                         bMatchSysoid = true;
                     }
                 }
@@ -235,7 +238,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                     // First see if address is in list of specific addresses
                     if (addrList != null && addrList.size() > 0) {
                         if (addrList.contains(anAddress)) {
-                            if (log().isDebugEnabled()) log().debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
+                            LOG.debug("getMibObjectList: addrList exists and does include IP address {} for system <name>: {}", anAddress, system.getName());
                             bMatchIPAddress = true;
                         }
                     }
@@ -246,7 +249,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
                         if (maskList != null && maskList.size() > 0) {
                             for (final String currMask : maskList) {
                                 if (anAddress.indexOf(currMask) == 0) {
-                                    if (log().isDebugEnabled()) log().debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
+                                    LOG.debug("getMibObjectList: anAddress '{}' matches mask '{}'", anAddress, currMask);
                                     bMatchIPAddress = true;
                                     break;
                                 }
@@ -257,7 +260,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
 
             if (bMatchSysoid && bMatchIPAddress) {
-                if (log().isDebugEnabled()) log().debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
+                LOG.debug("getMibObjectList: MATCH!! adding system '{}'", system.getName());
                 systemList.add(system);
             }
         }
@@ -370,8 +373,6 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
      *            List of MibObject objects being built.
      */
     private void processGroupName(final String cName, final String groupName, final int ifType, final List<MibObject> mibObjectList) {
-        ThreadCategory log = log();
-
         // Using the collector name retrieve the group map
         final Map<String, Group> groupMap = getCollectionGroupMap(getContainer()).get(cName);
 
@@ -381,13 +382,11 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         // Verify that we have a valid Group object...generate
         // warning message if not...
         if (group == null) {
-            log.warn("DataCollectionConfigFactory.processGroupName: unable to retrieve group information for group name '" + groupName + "': check DataCollection.xml file.");
+            LOG.warn("DataCollectionConfigFactory.processGroupName: unable to retrieve group information for group name '{}': check DataCollection.xml file.", groupName);
             return;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("processGroupName:  processing group: " + groupName + " groupIfType: " + group.getIfType() + " ifType: " + ifType);
-        }
+        LOG.debug("processGroupName:  processing group: {} groupIfType: {} ifType: {}", groupName, group.getIfType(), ifType);
 
         // Process any sub-groups contained within this group
         for (final String includeGroup : group.getIncludeGroupCollection()) {
@@ -481,12 +480,10 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         if (addGroupObjects) {
-            if (log.isDebugEnabled()) {
-                log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
-            }
+            LOG.debug("processGroupName: OIDs from group '{}:{}' are included for ifType: {}", group.getName(), group.getIfType(), ifType);
             processObjectList(groupName, groupIfType, group.getMibObjCollection(), mibObjectList);
         } else {
-            if (log.isDebugEnabled()) log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
+            LOG.debug("processGroupName: OIDs from group '{}:{}' are excluded for ifType: {}", group.getName(), group.getIfType(), ifType);
         }
     }
 

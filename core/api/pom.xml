@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -29,8 +29,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
+	<groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
     </dependency>
   </dependencies>
 </project>

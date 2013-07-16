@@ -76,13 +76,16 @@ public class TopoContextMenu extends ContextMenu {
 		}
 
 		public String getName() {
-			return m_item.getName();
+			// TODO: Figure out how to support this with the new ContextMenu API
+			//return m_item.getName();
+			return "Menu Item";
 		}
 
-        public void setSeparatorVisible(boolean b) {
+		public void setSeparatorVisible(boolean b) {
+			// TODO: Figure out how to support this with the new ContextMenu API
             m_item.setSeparatorVisible(b);
-        }
-		
+		}
+
 	}
 
 	private List<TopoContextMenuItem> m_items = new ArrayList<TopoContextMenuItem>();

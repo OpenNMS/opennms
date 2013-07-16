@@ -60,11 +60,13 @@ public class AuthorityValidator implements Validator {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public boolean supports(Class clazz) {
         return AuthorityDTO.class.isAssignableFrom(clazz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object command, Errors err) {
         // AuthorityDTO authority = (AuthorityDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "name", "name.required.value", "name is required.");

@@ -43,9 +43,10 @@ import javax.naming.NamingException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.jmx.MBeanServerProxy;
 import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * The JBossConnectionFactory class handles the creation of a connection to the 
@@ -67,7 +68,8 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
  */
 public class JBossConnectionFactory {
     
-    static ThreadCategory log = ThreadCategory.getInstance(JBossConnectionFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
+
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)
@@ -93,7 +95,7 @@ public class JBossConnectionFactory {
         String port           = ParameterMap.getKeyedString(propertiesMap, "port",    "1099");
 
         if (connectionType == null) {
-            log.error("factory property is not set, check the configuration files.");
+            LOG.error("factory property is not set, check the configuration files.");
             return null;
         }
         
@@ -106,13 +108,14 @@ public class JBossConnectionFactory {
                         true);
                        
             } catch (MalformedURLException e) {
-                log.error("JBossConnectionWrapper MalformedURLException" ,e);
+                LOG.error("JBossConnectionWrapper MalformedURLException" ,e);
             } catch (InvalidContextClassLoaderException e) {
-                log.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
+                LOG.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
             }
         } else if (jbossVersion.startsWith("3")){
                 PrivilegedAction<IsolatingClassLoader> action = new PrivilegedAction<IsolatingClassLoader>() {
 
+                    @Override
                     public IsolatingClassLoader run() {
                         try {
                             return new IsolatingClassLoader(
@@ -123,9 +126,9 @@ public class JBossConnectionFactory {
                                 true
                             );
                         } catch (MalformedURLException e) {
-                            log.error("JBossConnectionWrapper MalformedURLException" ,e);
+                            LOG.error("JBossConnectionWrapper MalformedURLException" ,e);
                         } catch (InvalidContextClassLoaderException e) {
-                            log.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
+                            LOG.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
                         }
                         return null;
                     }
@@ -158,14 +161,14 @@ public class JBossConnectionFactory {
                 wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
      
             } catch (Throwable e) {
-                 log.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on " + hostAddress + ":" + port);
+                 LOG.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on {}:{}", hostAddress, port);
             } finally {
                 try {
                     if (ctx != null) {
                        ctx.close();
                     }
                 } catch (Throwable e1) {
-                    log.debug("JBossConnectionFactory error closing initial context");
+                    LOG.debug("JBossConnectionFactory error closing initial context");
                 }
             }
         }
@@ -187,13 +190,13 @@ public class JBossConnectionFactory {
                 wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
                 
             } catch (Throwable e) {
-                log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + hostAddress + invokerSuffix);
+                LOG.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on {}{}", hostAddress, invokerSuffix);
            } finally {
                 try {
                     if (ctx != null)
                        ctx.close();
                 } catch (NamingException e1) {
-                    log.debug("JBossConnectionFactory error closing initial context");
+                    LOG.debug("JBossConnectionFactory error closing initial context");
                 }
             }
         }

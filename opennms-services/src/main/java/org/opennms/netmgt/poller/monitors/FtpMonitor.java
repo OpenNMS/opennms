@@ -39,7 +39,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -49,6 +48,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -61,6 +62,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 @Distributable
 final public class FtpMonitor extends AbstractServiceMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(FtpMonitor.class);
 
     /**
      * Default FTP port.
@@ -91,6 +95,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
      * FTP 'QUIT' command is sent. Provided that the interface's response is
      * valid we set the service status to SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -111,9 +116,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            if (log().isDebugEnabled()) {
-                log().debug("FtpMonitor.poll: Polling interface: " + InetAddressUtils.str(ipv4Addr) + tracker);
-            }
+            LOG.debug("FtpMonitor.poll: Polling interface: {} {}", InetAddressUtils.str(ipv4Addr), tracker);
 
             Socket socket = null;
             try {
@@ -123,7 +126,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("FtpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -135,7 +138,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                 if (bannerResponse.isSuccess()) {
                     // Attempt to login if userid and password available
                     boolean loggedInSuccessfully = false;
-                    log().debug("FtpMonitor: Banner response successful.");
+                    LOG.debug("FtpMonitor: Banner response successful.");
                     if (userid == null || userid.length() == 0 || password == null || password.length() == 0) {
                         loggedInSuccessfully = true;
                     } else {
@@ -144,19 +147,15 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                         FtpResponse userResponse = FtpResponse.readResponse(lineRdr);
 
                         if (userResponse.isSuccess() || userResponse.isIntermediate()) {
-                            log().debug("FtpMonitor: User response successful.");
+                            LOG.debug("FtpMonitor: User response successful.");
                             FtpResponse.sendCommand(socket, "PASS " + password);
                             
                             FtpResponse passResponse = FtpResponse.readResponse(lineRdr);
                             if (passResponse.isSuccess()) {
-                                if (log().isDebugEnabled()) {
-                                    log().debug("FtpMonitor.poll: Login successful, parsed return code: " + passResponse.getCode());
-                                }
+                                LOG.debug("FtpMonitor.poll: Login successful, parsed return code: {}", passResponse.getCode());
                                 loggedInSuccessfully = true;
                             } else {
-                                if (log().isDebugEnabled()) {
-                                    log().debug("FtpMonitor.poll: Login failed, parsed return code: " + passResponse.getCode() + ", full response: " + passResponse.toString());
-                                }
+                                LOG.debug("FtpMonitor.poll: Login failed, parsed return code: {}, full response: {}", passResponse.getCode(), passResponse);
                                 loggedInSuccessfully = false;
                             }
                         }
@@ -203,15 +202,25 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address: " + ipv4Addr, e);
+            	String reason = "NumberFormatException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
+            	String reason = "No route to host exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+            	String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+            	String reason = "Connection exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+            	String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -219,7 +228,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    log().debug("FtpMonitor.poll: Error closing socket: " + e, e);
+                    LOG.debug("FtpMonitor.poll: Error closing socket", e);
                 }
             }
         }

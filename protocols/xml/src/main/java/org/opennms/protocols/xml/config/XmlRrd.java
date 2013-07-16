@@ -125,6 +125,7 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(XmlRrd obj) {
         return new CompareToBuilder()
         .append(getStep(), obj.getStep())

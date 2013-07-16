@@ -32,9 +32,9 @@ import java.util.HashMap;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.test.mock.EasyMockUtils;
@@ -155,6 +155,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         m_alarmDao.saveOrUpdate(m_alarm);
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 OnmsAlarm alarm = (OnmsAlarm) EasyMock.getCurrentArguments()[0];
                 assertEquals(state, alarm.getTTicketState());
@@ -176,6 +177,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         }
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
                 assertEquals(state, ticket.getState());
@@ -199,6 +201,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         }
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
                 assertNull(ticket.getId());
@@ -367,6 +370,7 @@ public class DefaultTicketerServiceLayerTest extends TestCase {
         }
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
                 assertEquals(Ticket.State.OPEN, ticket.getState());

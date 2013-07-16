@@ -39,11 +39,11 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
-import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.opennms.netmgt.model.ncs.NCSComponent.NodeIdentification;
+import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
@@ -56,7 +56,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
-
+		
 		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
 			super("ncs", source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
@@ -238,7 +238,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 			return ElementType.EDGE;
 		}
 	}
-
+	
 	public static Criteria createCriteria(Collection<Long> selectedIds) {
 		return new NCSServiceCriteria(selectedIds);
 	}
@@ -248,4 +248,5 @@ public class NCSEdgeProvider implements EdgeProvider {
 	public void clearEdges() {
 		throw new UnsupportedOperationException("Not implemented");
 	}
+
 }

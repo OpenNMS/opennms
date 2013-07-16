@@ -46,12 +46,14 @@ import org.jinterop.dcom.core.JIString;
 import org.jinterop.dcom.core.JIVariant;
 import org.jinterop.dcom.impls.JIObjectFactory;
 import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.protocols.wmi.wbem.OnmsWbemFlagReturnEnum;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectImpl;
 import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectSetImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -64,6 +66,9 @@ import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectSetImpl;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiClient implements IWmiClient {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(WmiClient.class);
+
 
     private JIComServer m_ComStub = null;
     private IJIComObject m_ComObject = null;
@@ -88,6 +93,7 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performInstanceOf(final String wmiClass) throws WmiException {
         try {
             // Execute the InstancesOf method on the remote SWbemServices object.
@@ -102,11 +108,13 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performExecQuery(final String strQuery) throws WmiException {
         return performExecQuery(strQuery, "WQL", OnmsWbemFlagReturnEnum.wbemFlagReturnImmediately.getReturnFlagValue());
     }
     
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performExecQuery (final String strQuery, final String strQueryLanguage, final Integer flags) throws WmiException {
         try {
             final JIVariant results[] = m_WbemServices.callMethodA("ExecQuery", new Object[]{new JIString(strQuery), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(),JIVariant.OPTIONAL_PARAM()});
@@ -217,6 +225,7 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final String domain, final String username, final String password) throws WmiException {
         try {
 
@@ -252,7 +261,7 @@ public class WmiClient implements IWmiClient {
                 try {
                     JISession.destroySession(m_Session);
                 } catch (JIException e1) {
-                    LogUtils.errorf(this, e1, "Failed to destroy session after incomplete connect with host '%s'.", m_Address);
+                    LOG.error("Failed to destroy session after incomplete connect with host '{}'.", m_Address, e1);
                 }
             }
             throw new WmiException("Failed to establish COM session with host '" + m_Address + "': " + e.getMessage(), e);
@@ -261,7 +270,7 @@ public class WmiClient implements IWmiClient {
                 try {
                     JISession.destroySession(m_Session);
                 } catch (JIException e1) {
-                    LogUtils.errorf(this, e1, "Failed to destroy session after unknown host '%s'.", m_Address);
+                    LOG.error("Failed to destroy session after unknown host '{}'.", m_Address, e1);
                 }
             }
             throw new WmiException("Unknown host '" + m_Address + "'. Failed to connect to WMI agent.", e);
@@ -273,6 +282,7 @@ public class WmiClient implements IWmiClient {
      *
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public void disconnect() throws WmiException {
         try {
             JISession.destroySession(m_Session);

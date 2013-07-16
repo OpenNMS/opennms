@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,9 @@ package org.opennms.netmgt.provision.server;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.LineConversation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SimpleServerHandler class.</p>
@@ -41,6 +42,8 @@ import org.opennms.netmgt.provision.server.exchange.LineConversation;
  * @version $Id: $
  */
 public class SimpleServerHandler extends IoHandlerAdapter {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleServerHandler.class);
     
     private LineConversation m_conversation;
     
@@ -56,15 +59,15 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     /** {@inheritDoc} */
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        LogUtils.warnf(this, cause, "An error was caught in session %s", session);
+        LOG.warn("An error was caught in session {}", session, cause);
     }
     
     /** {@inheritDoc} */
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        LogUtils.infof(this, "Session opened");
+        LOG.info("Session opened");
         if(m_conversation != null && m_conversation.hasBanner()) {
-            LogUtils.infof(this, "Sending Banner: %s \n", m_conversation.getBanner());
+            LOG.info("Sending Banner: {} \n", m_conversation.getBanner());
             session.write(m_conversation.getBanner());
         }
     }
@@ -72,14 +75,14 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     /** {@inheritDoc} */
     @Override
     public void messageReceived (IoSession session, Object message) throws Exception {
-        LogUtils.infof(this, "Server received: %s\n", message.toString().trim());
+        LOG.info("Server received: {}\n", message.toString().trim());
         String str = message.toString();
         if(str.trim().equalsIgnoreCase(m_conversation.getExpectedClose())) {
             if(m_conversation.getExpectedCloseResponse() != null) {
                 session.write(m_conversation.getExpectedCloseResponse());
             }
             if (!session.close(false).await(500)) { 
-                LogUtils.warnf(this, "Conversation did not complete promptly in 500ms");
+                LOG.warn("Conversation did not complete promptly in 500ms");
             }
             return;
         }
@@ -87,8 +90,9 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        LogUtils.infof(this, "IDLE " + session.getIdleCount(status));
+        LOG.info("IDLE {}", session.getIdleCount(status));
     }
 
 }

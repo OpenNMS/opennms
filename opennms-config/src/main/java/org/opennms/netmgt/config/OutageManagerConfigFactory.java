@@ -145,6 +145,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      *
      * @return the number of writer threads to be started
      */
+    @Override
     public synchronized int getWriters() {
         return m_config.getWriters();
     }
@@ -154,6 +155,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      *
      * @return the SQL statemet to get the next outage ID
      */
+    @Override
     public synchronized String getGetNextOutageID() {
         return m_config.getGetNextOutageID();
     }
@@ -164,6 +166,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      *
      * @return true for delete propagation otherwise false.
      */
+    @Override
     public synchronized boolean deletePropagation() {
         boolean propagation = true;
 

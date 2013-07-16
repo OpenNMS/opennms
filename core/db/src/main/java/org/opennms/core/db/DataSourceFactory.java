@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -49,10 +48,11 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 /**
@@ -71,6 +71,9 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
 public final class DataSourceFactory implements DataSource {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
+	
 	private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
 
 	/**
@@ -147,23 +150,24 @@ public final class DataSourceFactory implements DataSource {
     		final Constructor<?> constructor = clazz.getConstructor(new Class<?>[] { String.class, String.class });
     		dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { configPath, dsName });
     	} catch (final Throwable t) {
-    		LogUtils.debugf(DataSourceFactory.class, t, "Unable to load %s, falling back to the default dataSource (%s)", factoryClass, defaultClassName);
+    		LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, t);
     		try {
 				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(new Class<?>[] { String.class, String.class });
 				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { configPath, dsName });
 			} catch (final Throwable cause) {
-				LogUtils.errorf(DataSourceFactory.class, cause, "Unable to load %s.", DEFAULT_FACTORY_CLASS.getName());
+				LOG.error("Unable to load {}.", DEFAULT_FACTORY_CLASS.getName(), cause);
 				throw new SQLException("Unable to load " + defaultClassName + ".", cause);
 			}
     	}
 
     	final ClosableDataSource runnableDs = dataSource;
         m_closers.add(new Runnable() {
+            @Override
             public void run() {
                 try {
                     runnableDs.close();
                 } catch (final Throwable cause) {
-                	LogUtils.infof(DataSourceFactory.class, cause, "Unable to close datasource %s.", dsName);
+                	LOG.info("Unable to close datasource {}.", dsName, cause);
                 }
             }
         });
@@ -370,7 +374,7 @@ public final class DataSourceFactory implements DataSource {
     }
 
     /** {@inheritDoc} */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 

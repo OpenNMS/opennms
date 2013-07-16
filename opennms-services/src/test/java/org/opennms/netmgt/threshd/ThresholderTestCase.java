@@ -50,8 +50,8 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -231,6 +231,7 @@ public class ThresholderTestCase extends TestCase {
             m_nodeId = nodeId;
         }
         
+        @Override
         public int getNodeId() {
             return m_nodeId;
         }

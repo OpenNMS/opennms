@@ -36,7 +36,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.WebEventRepository;
@@ -44,6 +43,8 @@ import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,6 +61,9 @@ import org.springframework.web.servlet.view.RedirectView;
  * @since 1.8.1
  */
 public class AcknowledgeEventController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AcknowledgeEventController.class);
+
     private WebEventRepository m_webEventRepository;
     
     private String m_redirectView;
@@ -99,6 +103,7 @@ public class AcknowledgeEventController extends AbstractController implements In
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // required parameter
@@ -117,7 +122,7 @@ public class AcknowledgeEventController extends AbstractController implements In
         filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
-        LogUtils.debugf(this, "criteria = %s, action = %s", criteria, action);
+        LOG.debug("criteria = {}, action = {}", criteria, action);
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {

@@ -50,7 +50,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(MapsAdapterConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -136,10 +138,12 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      public MapsAdapterConfigManager() {
      }
     
+    @Override
      public Lock getReadLock() {
          return m_readLock;
      }
      
+    @Override
      public Lock getWriteLock() {
          return m_writeLock;
      }
@@ -182,7 +186,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         if (hasCmaps()) {
             for (final Cmap cmap : m_config.getCmaps().getCmapCollection()) {
                 m_mapNameCmapMap.put(cmap.getMapName(), cmap);
-                LogUtils.debugf(this, "createmapNameCmapMap: Added map: %s", cmap.getMapName());
+                LOG.debug("createmapNameCmapMap: Added map: {}", cmap.getMapName());
             }
         }
     }
@@ -206,7 +210,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                     }
                     containermaps.add(cmap.getMapName());
                     m_submapNameMapNameMap.put(subMapName, containermaps);
-                    LogUtils.debugf(this, "createSubMapMapMap: added container map: %s to submap: %s", cmap.getMapName(), subMapName);
+                    LOG.debug("createSubMapMapMap: added container map: {} to submap: {}", cmap.getMapName(), subMapName);
                 }
             }
         }        
@@ -298,13 +302,13 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                 //
                 try {
                     final List<InetAddress> ipList = getIpList(pkg);
-                    LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+                    LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
                         m_pkgIpMap.put(pkg, ipList);
                     }
                 } catch (final Throwable t) {
-                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List with filter \"%s\"", pkg.getName(), pkg.getFilter().getContent());
+                    LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
                 }
     
             }
@@ -323,7 +327,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             filterRules.append(")");
         }
         final String rules = filterRules.toString();
-        LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), rules);
+        LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), rules);
         return FilterDaoFactory.getInstance().getActiveIPAddressList(rules);
     }
     
@@ -353,7 +357,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             filterPassed = ipList.contains(addr(iface));
         }
     
-        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), String.valueOf(filterPassed));
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", iface, pkg.getName(), String.valueOf(filterPassed));
     
         if (!filterPassed)
             return false;
@@ -522,6 +526,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Cmap> getAllMaps() {
         getReadLock().lock();
         try {
@@ -535,6 +540,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<String, Celement> getElementByAddress(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -565,6 +571,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Csubmap> getSubMaps(final String mapName) {
         getReadLock().lock();
         try {
@@ -584,6 +591,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a int.
      */
+    @Override
     public int getMapElementDimension() {
         getReadLock().lock();
         try {
@@ -594,6 +602,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<String,Csubmap> getContainerMaps(final String submapName) {
         getReadLock().lock();
         try {
@@ -620,6 +629,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, List<Csubmap>> getsubMaps() {
         getReadLock().lock();
         try {
@@ -642,6 +652,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String,List<Celement>> getCelements() {
         getReadLock().lock();
         try {
@@ -666,6 +677,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * newly added one, the package IP list should be rebuilt so that poller
      * could know which package this IP/service pair is in.
      */
+    @Override
     public void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }

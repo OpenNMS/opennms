@@ -31,7 +31,7 @@ package org.opennms.reporting.svclayer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.OnmsReportConfigDao;
+import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 import org.opennms.reporting.availability.AvailabilityCalculator;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
 import org.springframework.beans.factory.InitializingBean;

@@ -33,8 +33,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,7 +49,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class AlarmBoxController extends AbstractController implements InitializingBean {
     public static final int ROWS = 16;
 
-    private WebAlarmRepository m_webAlarmRepository;
+    private AlarmRepository m_webAlarmRepository;
     private String m_successView;
 
     /** {@inheritDoc} */
@@ -95,15 +95,16 @@ public class AlarmBoxController extends AbstractController implements Initializi
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository} object.
      */
-    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
 
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");

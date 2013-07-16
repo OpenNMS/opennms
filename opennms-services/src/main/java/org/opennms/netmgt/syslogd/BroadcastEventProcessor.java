@@ -31,7 +31,8 @@ package org.opennms.netmgt.syslogd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
     /**
      * Create message selector to set to the subscription
      */
@@ -78,40 +80,34 @@ final class BroadcastEventProcessor implements EventListener {
      * Event Identifier and the appropriate action is taking based on each
      * UEI.
      */
+    @Override
     public void onEvent(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         String eventUei = event.getUei();
         if (eventUei == null)
             return;
 
-        if (log.isDebugEnabled())
-            log.debug("Received event: " + eventUei);
+
+        LOG.debug("Received event: {}", eventUei);
 
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
                 SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Added " + event.getInterface() + " to known node list");
-            }
+            LOG.debug("Added {} to known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
                 SyslogdIPMgr.removeNodeId(event.getInterface());
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Removed " + event.getInterface() + " from known node list");
-            }
+            LOG.debug("Removed {} from known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
                 SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Reparented " + event.getInterface() + " to known node list");
-            }
+            LOG.debug("Reparented {} to known node list", event.getInterface());
         }
     }
 
@@ -120,6 +116,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Syslogd:BroadcastEventProcessor";
     }

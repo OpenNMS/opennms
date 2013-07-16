@@ -54,11 +54,12 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Parameter;
 import org.opennms.netmgt.config.reportd.Report;
-import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -69,6 +70,10 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultReportService implements ReportService,InitializingBean {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(DefaultReportService.class);
     
     private enum Format { pdf,html,xml,xls,csv };
 
@@ -76,6 +81,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
 
     /** {@inheritDoc} 
      * @throws ReportRunException */
+    @Override
     public synchronized String runReport(Report report,String reportDirectory) throws ReportRunException {
 
         String outputFile = null;
@@ -85,10 +91,10 @@ public class DefaultReportService implements ReportService,InitializingBean {
             outputFile = saveReport(print,report,outputFile);    
             
         } catch (JRException e) {
-            LogUtils.errorf(this, e, "Error running report: %s", e.getMessage());
+            LOG.error("Error running report: {}", e.getMessage(), e);
             throw new ReportRunException("Caught JRException: " + e.getMessage());
         }  catch (Throwable e){
-            LogUtils.errorf(this, e, "Unexpected exception: %s", e.getMessage());
+            LOG.error("Unexpected exception: {}", e.getMessage(), e);
             throw new ReportRunException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }        
  
@@ -99,7 +105,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
     /**
      * <p>getReportCatalogDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ReportCatalogDao} object.
      */
     public ReportCatalogDao getReportCatalogDao() {
         return m_reportCatalogDao;
@@ -108,7 +114,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
     /**
      * <p>setReportCatalogDao</p>
      *
-     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.api.ReportCatalogDao} object.
      */
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
         this.m_reportCatalogDao = reportCatalogDao;
@@ -163,7 +169,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
             reportName = destFileName;
             break;
         default:
-            LogUtils.errorf(this, "Error Running Report: Unknown Format: %s", report.getReportFormat());
+            LOG.error("Error Running Report: Unknown Format: {}", report.getReportFormat());
         }    
         
         return reportName;
@@ -190,11 +196,11 @@ public class DefaultReportService implements ReportService,InitializingBean {
  
 
         else if(report.getReportEngine().equals("opennms")){
-            LogUtils.errorf(this, "Sorry the OpenNMS Data source engine is not yet available");
+            LOG.error("Sorry the OpenNMS Data source engine is not yet available");
             jasperPrint = null;
         }
         else{
-            LogUtils.errorf(this,"Unknown report engine: %s ", report.getReportEngine());
+            LOG.error("Unknown report engine: {} ", report.getReportEngine());
             jasperPrint = null;
         }
         
@@ -221,7 +227,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
                 reportArchive.close();
             }
             catch (final Exception e) {
-                LogUtils.warnf(this, e, "unable to create %s", zipFile);
+                LOG.warn("unable to create {}", zipFile, e);
             }
 
         }

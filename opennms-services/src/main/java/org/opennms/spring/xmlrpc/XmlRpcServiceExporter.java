@@ -38,7 +38,8 @@ import java.util.Vector;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
@@ -52,6 +53,8 @@ import org.springframework.util.MethodInvoker;
  * @version $Id: $
  */
 public class XmlRpcServiceExporter extends RemoteExporter implements InitializingBean, DisposableBean, XmlRpcHandler {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(XmlRpcServiceExporter.class);
     
     private WebServer webServer;
     private Object proxy;
@@ -119,6 +122,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         if (serviceName == null || "".equals(serviceName)) {
             this.webServer.removeHandler("$default");
@@ -138,6 +142,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             super(code, message);
         }
         
+        @Override
         public String toString() {
             return getMessage();
         }
@@ -145,9 +150,10 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object execute(String method, @SuppressWarnings("unchecked") Vector params) throws Exception {
         
-        log().debug("calling: "+method+'('+toArgList(params)+')');
+        LOG.debug("calling: {}({})", method, toArgList(params));
         
         MethodInvoker invoker = new ArgumentConvertingMethodInvoker();
         invoker.setTargetObject(this.proxy);
@@ -170,7 +176,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             returnValue = new Vector<Object>((Collection<?>)returnValue);
         }
         
-        log().debug("returning from: "+method+'('+toArgList(params)+") result = "+returnValue);
+        LOG.debug("returning from: {}({}) result = {}", method, toArgList(params), returnValue);
         return returnValue;
         
         } catch (InvocationTargetException e) {
@@ -202,10 +208,6 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             sb.append(params.get(i));
         }
         return sb.toString();
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass()); 
     }
 
     private String getMethodName(String method) {

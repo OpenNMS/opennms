@@ -45,6 +45,7 @@ public class ImportJobFactory implements JobFactory {
     private Provisioner m_provisioner;
 
     /** {@inheritDoc} */
+    @Override
     public Job newJob(TriggerFiredBundle bundle) throws SchedulerException {
 
         JobDetail jobDetail = bundle.getJobDetail();

@@ -56,8 +56,9 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>WebPlugin class.</p>
@@ -66,6 +67,9 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @version $Id: $
  */
 public class WebPlugin extends AbstractPlugin {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(WebPlugin.class);
 
     static Integer DEFAULT_TIMEOUT = 3000;
     static Integer DEFAULT_PORT = 80;
@@ -131,6 +135,7 @@ public class WebPlugin extends AbstractPlugin {
                      */
                     HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
 
+                        @Override
                         public void process(final HttpRequest request, final HttpContext context) throws IOException {
 
                             AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
@@ -187,10 +192,10 @@ public class WebPlugin extends AbstractPlugin {
             }
 
         } catch (IOException e) {
-            log().info(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
             retval = false;
         } catch (URISyntaxException e) {
-            log().info(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
             retval = false;
         } finally{
             if (httpClient != null) {
@@ -199,10 +204,6 @@ public class WebPlugin extends AbstractPlugin {
         }
 
         return retval;
-    }
-
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(WebPlugin.class);
     }
 
     private boolean inRange(String range,Integer val){

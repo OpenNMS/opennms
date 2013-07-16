@@ -40,11 +40,15 @@ import java.util.Observable;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
 final class Client extends Observable implements Runnable, Fiber {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Client.class);
+
     private final static short DHCP_TARGET_PORT = 67;
 
     private static InetAddress NULL_ADDR;
@@ -97,7 +101,7 @@ final class Client extends Observable implements Runnable, Fiber {
          */
         public UnicastListener(DatagramSocket incoming, Client client) {
             super("UnicastListener-UDP-" + incoming.getLocalPort());
-            ThreadCategory.getInstance(this.getClass()).debug("constructing UnicastListener-UDP-" + incoming.getLocalPort());
+            LOG.debug("constructing UnicastListener-UDP-{}", incoming.getLocalPort());
             m_incomingUdp = incoming;
             m_client = client;
         }
@@ -107,18 +111,17 @@ final class Client extends Observable implements Runnable, Fiber {
          * DHCP server. If a response is received it will be forwarded to the
          * client which requested that the DHCP request be generated.
          */
+        @Override
         public void run() {
-            ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
-            if (log.isDebugEnabled())
-                log.debug("thread " + this.getName() + " running...");
+                LOG.debug("thread {} running...", this.getName());
 
             // set socket timeout to 1 second so the value of m_keepListening
             // can be checked periodically
             try {
                 m_incomingUdp.setSoTimeout(1000);
             } catch (IOException ioE) {
-                log.error("UnicastListener.run: unable to set socket timeout, reason: " + ioE.getMessage());
+                LOG.error("UnicastListener.run: unable to set socket timeout, reason: {}", ioE.getMessage());
                 m_keepListening = true;
             }
 
@@ -144,26 +147,25 @@ final class Client extends Observable implements Runnable, Fiber {
                     try {
                         m_client.sendMessage(msg);
                     } catch (IOException ex) {
-                        log.warn("Error sending unicast response to client " + m_client.getName());
+                        LOG.warn("Error sending unicast response to client {}", m_client.getName());
                     }
                 } catch (InterruptedIOException ex) {
                     // Check exit flag
                     continue;
                 } catch (ArrayIndexOutOfBoundsException oobE) {
                     // Packet was too large for buffer...log and discard
-                    log.debug("UnicastListener.run: array out of bounds exception.", oobE);
-                    log.warn("UnicastListener.run: malformed DHCP packet, packet too large for buffer (buffer sz=" + dgbuf.length + "), discarding packet.");
+                    LOG.debug("UnicastListener.run: array out of bounds exception.", oobE);
+                    LOG.warn("UnicastListener.run: malformed DHCP packet, packet too large for buffer (buffer sz={}), discarding packet.", dgbuf.length);
                 } catch (IOException ioE) {
-                    log.error("UnicastListener.run: io exception receiving response", ioE);
+                    LOG.error("UnicastListener.run: io exception receiving response", ioE);
                     m_keepListening = false;
                 } catch (Throwable E) {
-                    log.error("UnicastListener.run: exception receiving response", E);
+                    LOG.error("UnicastListener.run: exception receiving response", E);
                     m_keepListening = false;
                 }
             }
 
-            if (log.isDebugEnabled())
-                log.debug("thread " + super.getName() + " exiting...");
+                LOG.debug("thread {} exiting...", super.getName());
         }
     }
 
@@ -178,7 +180,7 @@ final class Client extends Observable implements Runnable, Fiber {
         // DHCP response if the remote DHCP server unicasts the response
         // directly back over the outgoing Datagram Socket
         //
-        ThreadCategory.getInstance(this.getClass()).debug("Client.ctor: outgoing udp socket port: " + m_sender.getLocalPort());
+        LOG.debug("Client.ctor: outgoing udp socket port: {}", m_sender.getLocalPort());
         m_unicastListener = new UnicastListener(m_sender, this);
         m_keepListening = true;
 
@@ -195,6 +197,7 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already been started");
@@ -212,6 +215,7 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         m_status = STOP_PENDING;
         try {
@@ -229,6 +233,7 @@ final class Client extends Observable implements Runnable, Fiber {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }
@@ -238,6 +243,7 @@ final class Client extends Observable implements Runnable, Fiber {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -245,8 +251,8 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         boolean isOk = true;
 
         // get the input stream as a object stream
@@ -255,7 +261,7 @@ final class Client extends Observable implements Runnable, Fiber {
         try {
             input = new ObjectInputStream(m_client.getInputStream());
         } catch (IOException ex) {
-            log.warn("Failed to read client's input stream", ex);
+            LOG.warn("Failed to read client's input stream", ex);
             isOk = false;
         }
 
@@ -273,33 +279,30 @@ final class Client extends Observable implements Runnable, Fiber {
             try {
                 Message msg = (Message) input.readObject();
                 if (msg.getAddress().equals(NULL_ADDR)) {
-                    if (log.isDebugEnabled())
-                        log.debug("Got disconnect request from Poller corresponding to sending port " + m_sender.getLocalPort());
+                        LOG.debug("Got disconnect request from Poller corresponding to sending port {}", m_sender.getLocalPort());
                     isOk = false;
                 } else {
-                    if (log.isDebugEnabled())
-                        log.debug("Got request... adress = " + msg.getAddress());
+                        LOG.debug("Got request... adress = {}", msg.getAddress());
                     byte[] dhcp = msg.getMessage().externalize();
 
                     DatagramPacket pkt = new DatagramPacket(dhcp, dhcp.length, msg.getAddress(), DHCP_TARGET_PORT);
                     try {
-                        if (log.isDebugEnabled())
-                           log.debug("sending request on port: " + m_sender.getLocalPort());
+                           LOG.debug("sending request on port: {}", m_sender.getLocalPort());
                         m_sender.send(pkt);
                     } catch (IOException ex) {
                     } // discard
                 }
             } catch (ClassNotFoundException ex) {
-                log.warn("Failed to read message, no class found", ex);
+                LOG.warn("Failed to read message, no class found", ex);
                 isOk = false;
             } catch (IOException ex) {
-                log.warn("Failed to read message, I/O error", ex);
+                LOG.warn("Failed to read message, I/O error", ex);
                 isOk = false;
             } catch (ClassCastException ex) {
-                log.warn("Failed to read an appropriate message", ex);
+                LOG.warn("Failed to read an appropriate message", ex);
                 isOk = false;
             } catch (Throwable t) {
-                log.warn("Undeclared throwable caught", t);
+                LOG.warn("Undeclared throwable caught", t);
                 isOk = false;
             }
         }
@@ -311,15 +314,13 @@ final class Client extends Observable implements Runnable, Fiber {
         // stop the unicast listener thread and wait for it to exit
         //
         m_keepListening = false;
-        if (log.isDebugEnabled())
-            log.debug("run: waiting for UnicastListener thread " + this.getName() + " to die...");
+            LOG.debug("run: waiting for UnicastListener thread {} to die...", this.getName());
         try {
             m_unicastListener.join();
         } catch (InterruptedException e) {
-            log.debug("run: interrupted while waiting for UnicastListener thread " + this.getName() + " to die", e);
+            LOG.debug("run: interrupted while waiting for UnicastListener thread {} to die", this.getName(), e);
         }
-        if (log.isDebugEnabled())
-            log.debug("run: UnicastListener thread " + this.getName() + " is dead...");
+            LOG.debug("run: UnicastListener thread {} is dead...", this.getName());
 
         // close the datagram socket
         //

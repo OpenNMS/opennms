@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.dao;
 
-import static org.opennms.core.utils.LogUtils.debugf;
-import static org.opennms.core.utils.LogUtils.infof;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -45,6 +46,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author brozow
  */
 public class DefaultUpsertService implements UpsertService, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultUpsertService.class);
     
     @Autowired
     NodeDao m_nodeDao;
@@ -74,9 +77,9 @@ public class DefaultUpsertService implements UpsertService, InitializingBean {
             @Override
             public OnmsSnmpInterface doUpdate(OnmsSnmpInterface dbSnmpIface) {
                 // update the interface that was found
-                debugf(this, "nodeId = %d, ifIndex = %d, dbSnmpIface = %s", nodeId, snmpInterface.getIfIndex(), dbSnmpIface);
+                LOG.debug("nodeId = {}, ifIndex = {}, dbSnmpIface = {}", nodeId, snmpInterface.getIfIndex(), dbSnmpIface);
                 dbSnmpIface.mergeSnmpInterfaceAttributes(snmpInterface);
-                infof(this, "Updating SnmpInterface %s", dbSnmpIface);
+                LOG.info("Updating SnmpInterface {}", dbSnmpIface);
                 m_snmpInterfaceDao.update(dbSnmpIface);
                 m_snmpInterfaceDao.flush();
                 return dbSnmpIface;
@@ -89,7 +92,7 @@ public class DefaultUpsertService implements UpsertService, InitializingBean {
                 // for performance reasons we don't add the snmp interface to the node so we avoid loading all the interfaces
                 // setNode only sets the node in the interface
                 snmpInterface.setNode(dbNode);
-                infof(this, "Saving SnmpInterface %s", snmpInterface);
+                LOG.info("Saving SnmpInterface {}", snmpInterface);
                 m_snmpInterfaceDao.save(snmpInterface);
                 m_snmpInterfaceDao.flush();
                 return snmpInterface;

@@ -65,6 +65,7 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
      * @param providers a {@link java.lang.Object} object.
      * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
      */
+    @Override
     public LifeCycleInstance createNestedLifeCycleInstance(BatchTask containingPhase, String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         
@@ -79,6 +80,7 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
      * @param providers a {@link java.lang.Object} object.
      * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
      */
+    @Override
     public LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         

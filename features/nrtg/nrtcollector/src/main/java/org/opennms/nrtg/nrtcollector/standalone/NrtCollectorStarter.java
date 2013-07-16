@@ -29,7 +29,6 @@
 package org.opennms.nrtg.nrtcollector.standalone;
 
 import org.opennms.nrtg.nrtcollector.api.NrtCollector;
-import org.opennms.nrtg.nrtcollector.standalone.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

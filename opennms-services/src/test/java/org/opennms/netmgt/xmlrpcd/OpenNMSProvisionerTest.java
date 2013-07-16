@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -201,15 +201,18 @@ public class OpenNMSProvisionerTest {
         }
 
         @SuppressWarnings("deprecation")
+        @Override
         public void update() throws IOException, MarshalException, ValidationException {
             m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
             setUpInternalData();
         }
 
+        @Override
         protected void saveXml(String xml) throws IOException {
             m_xml = xml;
         }
 
+        @Override
         public List<InetAddress> getIpList(Package pkg) {
             return new ArrayList<InetAddress>(0);
         }

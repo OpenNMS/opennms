@@ -72,6 +72,7 @@ public class Duration implements Comparable<Duration>{
         
     }
     
+    @Override
     public String toString() {
         if (0 == millis()) return "0ms";
         
@@ -87,6 +88,7 @@ public class Duration implements Comparable<Duration>{
         return buf.toString();
     }
 
+    @Override
     public int compareTo(Duration o) {
         long diff = millis()-o.millis();
         return diff < 0 ? -1 : diff > 0 ? 1 : 0;

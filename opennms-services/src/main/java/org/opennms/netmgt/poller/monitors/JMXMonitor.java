@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * This class computes the response time of making a connection to 
@@ -59,6 +60,9 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  */
 public abstract class JMXMonitor extends AbstractServiceMonitor {
 
+    
+    public static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
+    
     /**
      * <p>getMBeanServerConnection</p>
      *
@@ -72,6 +76,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
 
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
@@ -100,12 +105,16 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                     }
                 }
                 catch(IOException e) {
-                    serviceStatus = logDown(Level.DEBUG, dsName+": IOException while polling address: " + ipv4Addr);
+                    String reason = dsName+": IOException while polling address: " + ipv4Addr;
+                    LOG.debug(reason);
+                    serviceStatus = PollStatus.unavailable(reason);
                     break;
                 }
             }
         } catch (Throwable e) {
-            serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + InetAddressUtils.str(ipv4Addr));
+            String reason = dsName+" Monitor - failed! " + InetAddressUtils.str(ipv4Addr);
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         } finally {
             if (connection != null) {
                 connection.close();

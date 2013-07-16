@@ -30,7 +30,8 @@ package org.opennms.netmgt.scriptd;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
     /**
      * The location where executable events are enqueued to be executed.
      */
@@ -83,25 +85,23 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each event is queued for handling by the
      * Executor.
      */
+    @Override
     public void onEvent(Event event) {
         if (event == null) {
             return;
         }
 
-        ThreadCategory log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
         try {
             m_execQ.add(event);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Added event \'" + event.getUei() + "\' to scriptd execution queue.");
-            }
+            LOG.debug("Added event \'{}\' to scriptd execution queue.", event.getUei());
         }
 
         catch (FifoQueueException ex) {
-            log.error("Failed to add event to scriptd execution queue", ex);
+            LOG.error("Failed to add event to scriptd execution queue", ex);
         } catch (InterruptedException ex) {
-            log.error("Failed to add event to scriptd execution queue", ex);
+            LOG.error("Failed to add event to scriptd execution queue", ex);
         }
 
     } // end onEvent()
@@ -111,6 +111,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return The ID of this event listener.
      */
+    @Override
     public String getName() {
         return "Scriptd:BroadcastEventProcessor";
     }

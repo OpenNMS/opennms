@@ -30,10 +30,11 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class XmlMultiInstanceCollectionResource.
@@ -41,6 +42,9 @@ import org.opennms.netmgt.model.RrdRepository;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(XmlMultiInstanceCollectionResource.class);
+
 
     /** The collection resource instance. */
     private String m_instance;
@@ -80,9 +84,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-        if (log().isDebugEnabled()) {
-            log().debug("getResourceDir: " + resourceDir);
-        }
+            LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
     }
 
@@ -113,6 +115,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
      */
+    @Override
     public String getLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);
@@ -125,8 +128,5 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
      *
      * @return the thread category
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

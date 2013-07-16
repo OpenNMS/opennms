@@ -32,26 +32,32 @@ import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 import org.opennms.protocols.wmi.WmiException;
 
 public class OnmsWbemPropBiosStub implements OnmsWbemProperty {
+    @Override
     public String getWmiName() throws WmiException {
         return "ReleaseDate";
     }
 
+    @Override
     public String getWmiOrigin() throws WmiException {
         return null;
     }
 
+    @Override
     public Boolean getWmiIsArray() throws WmiException {
         return false;
     }
 
+    @Override
     public Boolean getWmiIsLocal() throws WmiException {
         return null;
     }
 
+    @Override
     public Object getWmiValue() throws WmiException {
         return "2/12/2004 00:00:00";
     }
 
+    @Override
     public Integer getWmiCIMType() throws WmiException {
         return null;
     }

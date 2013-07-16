@@ -106,6 +106,7 @@ public class AspectJTestEventHandlerInteceptor implements Ordered {
         m_order = order;
     }
 
+    @Override
     public int getOrder() {
         return m_order;
     }

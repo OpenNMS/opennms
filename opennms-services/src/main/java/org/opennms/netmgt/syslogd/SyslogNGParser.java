@@ -32,9 +32,11 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyslogNGParser extends SyslogParser {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogNGParser.class);
     //                                                                <PRI>        IDENT               TIMESTAMP                                                                                 HOST   PROCESS/ID                            MESSAGE
     private static final Pattern m_syslogNGPattern = Pattern.compile("^<(\\d{1,3})>(?:(\\S*?)(?::? )?)((?:\\d\\d\\d\\d-\\d\\d-\\d\\d)|(?:\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)) (\\S+) (?:(\\S+?)(?:\\[(\\d+)\\])?:\\s+){0,1}(\\S.*?)$", Pattern.MULTILINE);
 
@@ -46,14 +48,16 @@ public class SyslogNGParser extends SyslogParser {
         return new SyslogNGParser(text);
     }
 
+    @Override
     protected Pattern getPattern() {
         return m_syslogNGPattern;
     }
 
+    @Override
     public SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
-                LogUtils.tracef(this, "'%s' did not match '%s'", m_syslogNGPattern, getText());
+                LOG.trace("'{}' did not match '{}'", m_syslogNGPattern, getText());
             }
             return null;
         }
@@ -65,7 +69,7 @@ public class SyslogNGParser extends SyslogParser {
             message.setFacility(SyslogFacility.getFacilityForCode(priorityField));
             message.setSeverity(SyslogSeverity.getSeverityForCode(priorityField));
         } catch (final NumberFormatException e) {
-            LogUtils.debugf(this, e, "Unable to parse priority field '%s'", matcher.group(1));
+            LOG.debug("Unable to parse priority field '{}'", matcher.group(1), e);
         }
         if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
             message.setMessageID(matcher.group(2));
@@ -82,7 +86,7 @@ public class SyslogNGParser extends SyslogParser {
                 final Integer pid = Integer.parseInt(matcher.group(6));
                 message.setProcessId(pid);
             } catch (final NumberFormatException nfe) {
-                LogUtils.debugf(this, nfe, "Unable to parse '%s' as a process ID.", matcher.group(6));
+                LOG.debug("Unable to parse '{}' as a process ID.", matcher.group(6), nfe);
             }
         }
         message.setMessage(matcher.group(7).trim());

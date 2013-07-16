@@ -137,8 +137,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
             LoggerFactory.getLogger(this.getClass()).info("Creating new edge provider with namespace {}", namespace);
             m_edgeProvider = new SimpleEdgeProvider(namespace);
         }
-
-        clearVertices();
+        resetContainer();
         for (WrappedVertex vertex : graph.m_vertices) {
             if (vertex.namespace == null) {
                 vertex.namespace = getVertexNamespace();
@@ -147,16 +146,6 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
             if (vertex.id == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
-            } else if (vertex.id.startsWith(SIMPLE_GROUP_ID_PREFIX)) {
-                try {
-                    // Find the highest index group number and start the index for new groups above it
-                    int groupNumber = Integer.parseInt(vertex.id.substring(SIMPLE_GROUP_ID_PREFIX.length()));
-                    if (m_groupCounter <= groupNumber) {
-                        m_groupCounter = groupNumber + 1;
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
-                }
             }
             AbstractVertex newVertex;
             if (vertex.group) {
@@ -178,7 +167,6 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
             addVertices(newVertex);
         }
         
-        clearEdges();
         for (WrappedEdge edge : graph.m_edges) {
             if (edge.namespace == null) {
                 edge.namespace = getEdgeNamespace();
@@ -217,6 +205,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         }
     }
 
+    @Override
     public void refresh() {
         try {
             load(getTopologyLocation());

@@ -4,24 +4,36 @@ xsi:schemaLocation="
     http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
 
-  <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
-  <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+  <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
   <!-- Wrap the DAO in a Vaadin container -->
   <bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
     <argument ref="alarmDao" />
   </bean>
   
-  <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+  <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
     <argument value="Alarms"/>
-    <argument ref="alarmDaoContainer" />
+    <argument ref="alarmDaoContainer"/>
+    <argument ref="alarmRepository"/>
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+
+    <!-- Sort by default by ID, descending -->
+    <property name="sortContainerPropertyId" value="id"/>
+    <property name="sortAscending" value="false"/>
+
     <property name="cellStyleGenerator">
       <bean class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator"/>
     </property>
     <property name="columnGenerators">
       <map>
+        <entry key="selection">
+          <bean class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
+            <argument value="id"/>
+          </bean>
+        </entry>
         <entry key="severity">
           <bean class="org.opennms.features.topology.plugins.browsers.SeverityGenerator"/>
         </entry>
@@ -29,6 +41,12 @@ xsi:schemaLocation="
           <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
             <argument value="nodeId"/>
           </bean>
+        </entry>
+        <entry key="id">
+        	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+        		<argument ref="alarmDao"/>
+        		<argument value="id"/>
+        	</bean>
         </entry>
         <!--
         <entry key="serviceType">
@@ -42,6 +60,7 @@ xsi:schemaLocation="
     </property>
     <property name="visibleColumns">
       <array>
+        <value>selection</value>
         <value>id</value>
         <value>severity</value>
         <value>nodeLabel</value>
@@ -53,6 +72,7 @@ xsi:schemaLocation="
     </property>
     <property name="columnHeaders">
       <array>
+        <value></value>
         <value>ID</value>
         <value>Severity</value>
         <value>Node</value>
@@ -61,6 +81,12 @@ xsi:schemaLocation="
         <value>Last Event Time</value>
         <value>Log Message</value>
       </array>
+    </property>
+    
+    <property name="nonCollapsibleColumns">
+    	<list>
+   			<value>selection</value>
+    	</list>
     </property>
   </bean>
   
@@ -82,11 +108,20 @@ xsi:schemaLocation="
     <argument ref="nodeDao" />
   </bean>
 
-  <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+  <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.NodeTable" scope="prototype">
     <argument value="Nodes"/>
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+	<property name="cellStyleGenerator">
+      <bean class="org.opennms.features.topology.plugins.browsers.NodeTableCellStyleGenerator">
+      	<property name="alarmDao" ref="alarmDao"/>
+      </bean>
+    </property>
+
+    <!-- Sort by default by label -->
+    <property name="sortContainerPropertyId" value="label"/>
+
     <property name="columnGenerators">
       <map>
         <entry key="id">

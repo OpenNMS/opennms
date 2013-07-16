@@ -54,6 +54,8 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -93,6 +95,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("sched-outages")
 public class ScheduledOutagesRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesRestService.class);
+
 
     private enum ConfigAction { ADD, REMOVE, REMOVE_FROM_ALL };
     
@@ -140,10 +145,10 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
             Outage oldOutage = m_configFactory.getOutage(newOutage.getName());
             if (oldOutage == null) {
-                log().debug("saveOrUpdateOutage: adding outage " + newOutage.getName());
+                LOG.debug("saveOrUpdateOutage: adding outage {}", newOutage.getName());
                 m_configFactory.addOutage(newOutage);
             } else {
-                log().debug("saveOrUpdateOutage: updating outage " + newOutage.getName());
+                LOG.debug("saveOrUpdateOutage: updating outage {}", newOutage.getName());
                 m_configFactory.replaceOutage(oldOutage, newOutage);
             }
             m_configFactory.saveCurrent();
@@ -161,7 +166,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public Response deleteOutage(@PathParam("outageName") String outageName) {
         writeLock();
         try {
-            log().debug("deleteOutage: deleting outage " + outageName);
+            LOG.debug("deleteOutage: deleting outage {}", outageName);
             updateCollectd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updatePollerd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);

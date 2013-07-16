@@ -35,11 +35,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * XmlRpcEventHandlerNotifier
@@ -50,6 +50,9 @@ import org.opennms.netmgt.xml.event.Event;
 
 @Aspect
 public class XmlRpcEventHandlerNotifier {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(XmlRpcEventHandlerNotifier.class);
 
     /**
      * <p>capsdMethod</p>
@@ -78,7 +81,7 @@ public class XmlRpcEventHandlerNotifier {
      */
     @Around("capsdEventHandler() && args(event)")
     public void onEvent(ProceedingJoinPoint pjp, Event event) throws Throwable {
-    	LogUtils.debugf(this, "onEvent(%s)", event);
+        LOG.debug("onEvent({})", event);
 
         notifyEventReceived(event);
         
@@ -100,7 +103,7 @@ public class XmlRpcEventHandlerNotifier {
      * <p>Constructor for XmlRpcEventHandlerNotifier.</p>
      */
     public XmlRpcEventHandlerNotifier() {
-    	LogUtils.debugf(this, "initialized XML-RPC event handler notifier");
+        LOG.debug("initialized XML-RPC event handler notifier");
     	
         m_notifySet = new HashSet<String>();
         
@@ -134,16 +137,12 @@ public class XmlRpcEventHandlerNotifier {
     
     
     private void handleFailedOperationException(Event event, FailedOperationException ex) {
-        log().error("BroadcastEventProcessor: operation failed for event: " + event.getUei() + ", exception: " + ex.getMessage());
+        LOG.error("BroadcastEventProcessor: operation failed for event: {}, exception: {}", event.getUei(), ex.getMessage());
         notifyEventError(event, "processing failed: ", ex);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     private void handleInsufficientInformationException(Event event, InsufficientInformationException ex) {
-        log().info("BroadcastEventProcessor: insufficient information in event, discarding it: " + ex.getMessage());
+        LOG.info("BroadcastEventProcessor: insufficient information in event, discarding it: {}", ex.getMessage());
         notifyEventError(event, "Invalid parameters: ", ex);
     }
 

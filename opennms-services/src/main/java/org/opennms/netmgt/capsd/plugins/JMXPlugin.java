@@ -32,9 +32,10 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /*
@@ -51,6 +52,9 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * @version $Id: $
  */
 public abstract class JMXPlugin extends AbstractPlugin {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(JMXPlugin.class);
     
     private String protocolName = null;
 
@@ -86,6 +90,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getProtocolName() {
         return protocolName.toUpperCase();
     }
@@ -95,13 +100,13 @@ public abstract class JMXPlugin extends AbstractPlugin {
      */
 
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
         
         if (protocolName == null) {
             protocolName = getProtocolName(map);
         }
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean res = false;
         ConnectionWrapper connection = null;
         try {
@@ -109,12 +114,12 @@ public abstract class JMXPlugin extends AbstractPlugin {
             connection = getMBeanServerConnection(map, address);
             
             Integer result = connection.getMBeanServer().getMBeanCount();
-            log.debug("isProtocolSupported? " + getProtocolName() + " " + result + " " + connection);
+            LOG.debug("isProtocolSupported? {} {} {}", getProtocolName(), result, connection);
             if (result != null) {
                 res = true;
             }
         } catch (Throwable e) {
-            log.debug(getProtocolName(map) + " - isProtocolSupported - failed! " + InetAddressUtils.str(address));
+            LOG.debug("{} - isProtocolSupported - failed! {}", getProtocolName(map), InetAddressUtils.str(address));
         } finally {
             if (connection != null) {
                 connection.close();

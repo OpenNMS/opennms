@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>SinglePingResponseCallback class.</p>
@@ -41,6 +43,10 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SinglePingResponseCallback.class);
 
     
     /**
@@ -64,6 +70,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
         try {
             info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
@@ -73,11 +80,9 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
-    }
 
     /** {@inheritDoc} */
+    @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
         try {
             assert(request != null);
@@ -88,6 +93,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
             m_error = t;
@@ -145,7 +151,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      * @param msg a {@link java.lang.String} object.
      */
     public void info(String msg) {
-        log().info(msg);
+        LOG.info(msg);
     }
     /**
      * <p>info</p>
@@ -154,7 +160,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      * @param t a {@link java.lang.Throwable} object.
      */
     public void info(String msg, Throwable t) {
-        log().info(msg, t);
+        LOG.info(msg, t);
     }
 
 

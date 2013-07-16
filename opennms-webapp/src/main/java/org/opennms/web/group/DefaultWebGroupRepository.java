@@ -35,7 +35,7 @@ import java.util.List;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
-import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +63,14 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public boolean groupExists(String groupName) {
         return m_groupDao.hasGroup(groupName);
     }
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public WebGroup getGroup(String groupName) {
         
         Group group = m_groupDao.getGroup(groupName);
@@ -80,6 +82,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void saveGroup(WebGroup webGroup) {
 
         Group group = m_groupDao.getGroup(webGroup.getName());
@@ -105,6 +108,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void deleteGroup(String groupName) {
         
         m_groupDao.deleteGroup(groupName);
@@ -115,6 +119,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void renameGroup(String oldName, String newName) {
         
         m_groupDao.renameGroup(oldName, newName);

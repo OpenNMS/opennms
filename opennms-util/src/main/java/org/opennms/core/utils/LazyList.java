@@ -56,6 +56,7 @@ public class LazyList<E> implements List<E> {
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<E> iterator() {
         load();
         return m_list.iterator();
@@ -66,18 +67,21 @@ public class LazyList<E> implements List<E> {
      *
      * @return a int.
      */
+    @Override
     public int size() {
         load();
         return m_list.size();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean removeAll(Collection<?> arg0) {
         load();
         return m_list.removeAll(arg0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean addAll(Collection<? extends E> arg0) {
         load();
         return m_list.addAll(arg0);
@@ -86,18 +90,21 @@ public class LazyList<E> implements List<E> {
     /**
      * <p>clear</p>
      */
+    @Override
     public void clear() {
         load();
         m_list.clear();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean contains(Object o) {
         load();
         return m_list.contains(o);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean containsAll(Collection<?> arg0) {
         load();
         return m_list.containsAll(arg0);
@@ -108,12 +115,14 @@ public class LazyList<E> implements List<E> {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isEmpty() {
         load();
         return m_list.isEmpty();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean remove(Object o) {
         load();
         return m_list.remove(o);
@@ -124,6 +133,7 @@ public class LazyList<E> implements List<E> {
      *
      * @return an array of {@link java.lang.Object} objects.
      */
+    @Override
     public Object[] toArray() {
         load();
         return m_list.toArray();
@@ -136,6 +146,7 @@ public class LazyList<E> implements List<E> {
      * @param <T> a T object.
      * @return an array of T objects.
      */
+    @Override
     public <T> T[] toArray(T[] arg0) {
         load();
         return m_list.toArray(arg0);
@@ -146,6 +157,7 @@ public class LazyList<E> implements List<E> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         load();
         return super.toString();
@@ -168,6 +180,7 @@ public class LazyList<E> implements List<E> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public E get(int arg0) {
         load();
         return m_list.get(arg0);
@@ -179,6 +192,7 @@ public class LazyList<E> implements List<E> {
      * @param o a E object.
      * @return a boolean.
      */
+    @Override
     public boolean add(E o) {
         load();
         return m_list.add(o);
@@ -190,24 +204,28 @@ public class LazyList<E> implements List<E> {
      * @param index a int.
      * @param element a E object.
      */
+    @Override
     public void add(int index, E element) {
         load();
         m_list.add(index, element);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         load();
         return m_list.addAll(index, c);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int indexOf(Object o) {
         load();
         return m_list.indexOf(o);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int lastIndexOf(Object o) {
         load();
         return m_list.lastIndexOf(o);
@@ -218,12 +236,14 @@ public class LazyList<E> implements List<E> {
      *
      * @return a {@link java.util.ListIterator} object.
      */
+    @Override
     public ListIterator<E> listIterator() {
         load();
         return m_list.listIterator();
     }
 
     /** {@inheritDoc} */
+    @Override
     public ListIterator<E> listIterator(int index) {
         load();
         return m_list.listIterator(index);
@@ -235,12 +255,14 @@ public class LazyList<E> implements List<E> {
      * @param index a int.
      * @return a E object.
      */
+    @Override
     public E remove(int index) {
         load();
         return m_list.remove(index);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean retainAll(Collection<?> c) {
         load();
         return m_list.retainAll(c);
@@ -253,12 +275,14 @@ public class LazyList<E> implements List<E> {
      * @param element a E object.
      * @return a E object.
      */
+    @Override
     public E set(int index, E element) {
         load();
         return m_list.set(index, element);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<E> subList(int fromIndex, int toIndex) {
         load();
         return m_list.subList(fromIndex, toIndex);

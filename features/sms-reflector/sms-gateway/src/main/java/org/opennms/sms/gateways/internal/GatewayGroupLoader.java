@@ -33,7 +33,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Id: $
  */
 public class GatewayGroupLoader implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(GatewayGroupLoader.class);
     
     private static Logger log = LoggerFactory.getLogger(GatewayGroupLoader.class); 
 
@@ -133,6 +135,7 @@ public class GatewayGroupLoader implements InitializingBean {
 
             GatewayGroup gatewayGroup = new GatewayGroup() {
 
+                @Override
                 public AGateway[] getGateways() {
                     return gateways;
                 }
@@ -153,13 +156,13 @@ public class GatewayGroupLoader implements InitializingBean {
             in = configURL.openStream();
             modemProperties.load(in);
         } catch (final IOException e) {
-            LogUtils.errorf(GatewayGroupLoader.class, e, "Unable to load properties.");
+            LOG.error("Unable to load properties.", e);
         }finally{
             if(in != null){
                 try {
                     in.close();
                 } catch (final IOException e) {
-                    LogUtils.warnf(GatewayGroupLoader.class, e, "unable to close config stream");
+                    LOG.warn("unable to close config stream", e);
                 }
             }
         }

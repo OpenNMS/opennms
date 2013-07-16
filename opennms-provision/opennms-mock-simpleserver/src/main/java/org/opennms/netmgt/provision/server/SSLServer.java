@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,7 +42,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SSLServer class.</p>
@@ -51,6 +52,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class SSLServer extends SimpleServer{
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SSLServer.class);
     
     /** Constant <code>DEFAULT_TESTING_PORT=7070</code> */
     public static final int DEFAULT_TESTING_PORT = 7070;
@@ -110,9 +113,11 @@ public class SSLServer extends SimpleServer{
      * @return a {@link java.lang.Runnable} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
+            @Override
             public void run(){
                 try{
                     OutputStream out = null;
@@ -141,7 +146,7 @@ public class SSLServer extends SimpleServer{
                     try {
                         stopServer();
                     } catch (final IOException e) {
-                        LogUtils.debugf(this, e, "unable to stop server");
+                        LOG.debug("unable to stop server", e);
                     }
                 }
             }

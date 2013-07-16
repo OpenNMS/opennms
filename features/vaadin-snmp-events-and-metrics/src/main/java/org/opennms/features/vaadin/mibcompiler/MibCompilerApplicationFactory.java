@@ -27,16 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 /**
  * A factory for creating MibCompilerApplication objects.
@@ -57,11 +54,8 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
     /** The MIB parser. */
     private MibParser mibParser;
 
-    /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
-     */
     @Override
-    public Application createApplication(HttpServletRequest request) throws ServletException {
+    public UI getUI() {
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
         if (eventConfDao == null)
@@ -78,11 +72,8 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
         return app;
     }
 
-    /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
-     */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getUIClass() {
         return MibCompilerApplication.class;
     }
 

@@ -3,11 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.icmp-jna</artifactId>
+	<name>OpenNMS Core ICMP JNA</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

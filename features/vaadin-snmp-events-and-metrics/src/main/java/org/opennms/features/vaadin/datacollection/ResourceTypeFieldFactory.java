@@ -44,7 +44,8 @@ public final class ResourceTypeFieldFactory implements FormFieldFactory {
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
-    public Field createField(Item item, Object propertyId, Component uiContext) {
+    @Override
+    public Field<?> createField(Item item, Object propertyId, Component uiContext) {
         if ("name".equals(propertyId)) {
             final TextField f = new TextField("Resource Type Name");
             f.setRequired(true);

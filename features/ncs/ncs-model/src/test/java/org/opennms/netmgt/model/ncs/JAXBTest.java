@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.model.ncs;
 
-import static org.junit.Assert.*;
-import static org.opennms.core.test.xml.XmlTest.*;
+import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
@@ -46,10 +44,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.Test;
-import org.opennms.netmgt.model.ncs.NCSBuilder;
-import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
-import org.xml.sax.SAXException;
 
 public class JAXBTest {
 	

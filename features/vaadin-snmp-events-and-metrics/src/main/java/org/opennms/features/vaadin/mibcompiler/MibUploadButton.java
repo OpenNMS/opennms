@@ -58,6 +58,7 @@ public abstract class MibUploadButton extends Upload {
         setButtonCaption("Upload MIB");
 
         setReceiver(new Receiver() {
+            @Override
             public OutputStream receiveUpload(String filename, String mimeType) {
                 File file = new File(pendingDir, filename);
                 try {
@@ -69,7 +70,8 @@ public abstract class MibUploadButton extends Upload {
             }
         });
 
-        addListener(new Upload.StartedListener() {
+        addStartedListener(new Upload.StartedListener() {
+            @Override
             public void uploadStarted(StartedEvent event) {
                 File pending = new File(pendingDir, event.getFilename());
                 File compiled = new File(compiledDir, event.getFilename());
@@ -83,13 +85,15 @@ public abstract class MibUploadButton extends Upload {
             }
         });
 
-        addListener(new Upload.FailedListener() {
+        addFailedListener(new Upload.FailedListener() {
+            @Override
             public void uploadFailed(FailedEvent event) {
                 logger.warn("An error has been found: " + event.getReason() == null? "unknown error" : event.getReason().getLocalizedMessage());
             }
         });
 
-        addListener(new Upload.SucceededListener() {
+        addSucceededListener(new Upload.SucceededListener() {
+            @Override
             public void uploadSucceeded(SucceededEvent event) {
                 String mibFilename = event.getFilename();
                 logger.info("File " + mibFilename + " successfuly uploaded");

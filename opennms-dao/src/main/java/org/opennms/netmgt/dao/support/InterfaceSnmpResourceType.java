@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,10 +42,8 @@ import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -53,6 +51,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -61,6 +61,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * values.  See bug #1703.
  */
 public class InterfaceSnmpResourceType implements OnmsResourceType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(InterfaceSnmpResourceType.class);
 
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
@@ -68,8 +70,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for InterfaceSnmpResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public InterfaceSnmpResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
@@ -81,6 +83,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "interfaceSnmp";
     }
@@ -90,11 +93,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "SNMP Interface Data";
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return isResourceTypeOnParentResource(Integer.toString(nodeId));
     }
@@ -120,6 +125,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -263,9 +269,9 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
                 resource.setEntity(snmpInterface);
             } else {
-                log().debug("populateResourceList: snmpInterface is null");
+                LOG.debug("populateResourceList: snmpInterface is null");
             }
-            log().debug("populateResourceList: adding resource toString " + resource.toString());
+            LOG.debug("populateResourceList: adding resource toString {}", resource.toString());
             resources.add(resource);
         }
         
@@ -295,6 +301,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             m_ifSpeedFriendly = ifSpeedFriendly;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_parent, m_resource));
             if (m_ifSpeed != null) {
@@ -320,11 +327,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return getQueryableInterfacesForDomain(domain).size() > 0;
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         ArrayList<OnmsResource> resources =
             new ArrayList<OnmsResource>();
@@ -374,17 +383,20 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         File parent = ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource);
         return isResourceTypeOnParentResource(parent.toString());
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         String[] ident = nodeSource.split(":");
         OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
@@ -394,10 +406,6 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         File relPath = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, ident[0] + File.separator + ident[1]);
         File parent = getParentResourceDirectory(relPath.toString(), true);
         return OnmsResource.sortIntoResourceList(populateResourceList(parent, relPath, node, true));
-    }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(InterfaceSnmpResourceType.class);
     }
 
 }

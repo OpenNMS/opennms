@@ -61,6 +61,7 @@ public class XmlRpcProxyFactoryBean<T> extends XmlRpcClientInterceptor implement
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public T getObject() throws Exception {
         return this.serviceProxy;
     }
@@ -71,6 +72,7 @@ public class XmlRpcProxyFactoryBean<T> extends XmlRpcClientInterceptor implement
      *
      * @return a {@link java.lang.Class} object.
      */
+    @Override
     public Class<?> getObjectType() {
         return (this.serviceProxy != null) ? this.serviceProxy.getClass() : getServiceInterface();
     }
@@ -80,6 +82,7 @@ public class XmlRpcProxyFactoryBean<T> extends XmlRpcClientInterceptor implement
      *
      * @return a boolean.
      */
+    @Override
     public boolean isSingleton() {
         return true;
     }

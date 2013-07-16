@@ -38,6 +38,7 @@ import org.opennms.netmgt.provision.IpInterfacePolicy;
  */
 public class IpInterfacePolicyImpl implements IpInterfacePolicy {
 
+    @Override
     public OnmsIpInterface apply(OnmsIpInterface entity) {
         return entity;
     }

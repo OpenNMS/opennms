@@ -34,7 +34,8 @@ import geo.google.datamodel.GeoCoordinate;
 
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 /**
@@ -45,6 +46,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
  * @since 1.8.1
  */
 public class GoogleMapsGeocoder implements Geocoder {
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleMapsGeocoder.class);
 	private static final long DEFAULT_RATE = 10;
 	private final GeoAddressStandardizer m_standardizer;
 
@@ -63,18 +65,19 @@ public class GoogleMapsGeocoder implements Geocoder {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public GWTLatLng geocode(String geolocation) throws GeocoderException {
 		try {
 			List<GeoAddress> addresses = m_standardizer.standardizeToGeoAddresses(geolocation);
 			if (addresses.size() > 0) {
 				if (addresses.size() > 1) {
-					LogUtils.warnf(this, "received more than one address for geolocation '%s', returning the first", geolocation);
+					LOG.warn("received more than one address for geolocation '{}', returning the first", geolocation);
 				}
 				return getLatLng(addresses.get(0).getCoordinate());
 			}
 			throw new GeocoderException("unable to find latitude/longitude for geolocation '" + geolocation + "'");
 		} catch (Throwable e) {
-			LogUtils.infof(this, e, "unable to convert geolocation '%s'", geolocation);
+			LOG.info("unable to convert geolocation '{}'", geolocation, e);
 			throw new GeocoderException(e);
 		}
 	}

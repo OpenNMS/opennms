@@ -44,7 +44,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
@@ -52,8 +53,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -84,6 +85,7 @@ import org.springframework.util.Assert;
  */
 @Transactional
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerBackEnd.class);
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
@@ -106,14 +108,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             this(pollerConfiguration.getConfigurationTimestamp(), pollerConfiguration.getPolledServices());
         }
 
+        @Override
         public Date getConfigurationTimestamp() {
             return m_timestamp;
         }
 
+        @Override
         public PolledService[] getPolledServices() {
             return m_polledServices;
         }
 
+        @Override
         public long getServerTime() {
             return m_serverTime;
         }
@@ -173,31 +178,31 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     @Override
     public void checkForDisconnectedMonitors() {
 
-        LogUtils.debugf(this, "Checking for disconnected monitors: disconnectedTimeout = %d", m_disconnectedTimeout);
+        LOG.debug("Checking for disconnected monitors: disconnectedTimeout = {}", m_disconnectedTimeout);
 
         try {
 	        final Date now = m_timeKeeper.getCurrentDate();
 	        final Date earliestAcceptable = new Date(now.getTime() - m_disconnectedTimeout);
 	
 	        final Collection<OnmsLocationMonitor> monitors = m_locMonDao.findAll();
-	        LogUtils.debugf(this, "Found %d monitors", monitors.size());
+	        LOG.debug("Found {} monitors", monitors.size());
 	
 	        for (final OnmsLocationMonitor monitor : monitors) {
 	            if (monitor.getStatus() == MonitorStatus.STARTED 
 	                    && monitor.getLastCheckInTime() != null 
 	                    && monitor.getLastCheckInTime().before(earliestAcceptable))
 	            {
-	                LogUtils.debugf(this, "Monitor %s has stopped responding", monitor.getName());
+	                LOG.debug("Monitor {} has stopped responding", monitor.getName());
 	                monitor.setStatus(MonitorStatus.DISCONNECTED);
 	                m_locMonDao.update(monitor);
 	
 	                sendDisconnectedEvent(monitor);
 	            } else {
-	                LogUtils.debugf(this, "Monitor %s (%s) last responded at %s", monitor.getName(), monitor.getStatus(), monitor.getLastCheckInTime());
+	                LOG.debug("Monitor {} ({}) last responded at {}", monitor.getName(), monitor.getStatus(), monitor.getLastCheckInTime());
 	            }
 	        }
         } catch (final Exception e) {
-        	LogUtils.warnf(this, e, "An error occurred checking for disconnected monitors.");
+		LOG.warn("An error occurred checking for disconnected monitors.", e);
         }
     }
 
@@ -297,13 +302,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
             if (pollerConfiguration == null) {
                 pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
-                cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+                SimplePollerConfiguration configInCache = cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+                // Make sure that we get the up-to-date value out of the ConcurrentHashMap
+                if (configInCache != null) {
+                    pollerConfiguration = configInCache;
+                }
             }
             
             // construct a copy so the serverTime gets updated (and avoid threading issues)
             return new SimplePollerConfiguration(pollerConfiguration);
 		} catch (final Exception e) {
-			LogUtils.warnf(this, e, "An error occurred retrieving the poller configuration for location monitor ID %d", locationMonitorId);
+			LOG.warn("An error occurred retrieving the poller configuration for location monitor ID {}", locationMonitorId, e);
 			return new EmptyPollerConfiguration();
 		}
     }
@@ -316,7 +325,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
         final List<PolledService> configs = new ArrayList<PolledService>(services.size());
 
-        LogUtils.debugf(this, "found %d services", services.size());
+        LOG.debug("found {} services", services.size());
 
         for (final OnmsMonitoredService monSvc : services) {
             final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
@@ -369,10 +378,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
                 }
             }
             
-            LogUtils.debugf(this, "getServiceMonitorLocators: Returning %d locators", locators.size());
+            LOG.debug("getServiceMonitorLocators: Returning {} locators", locators.size());
             return locators;
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "An error occurred getting the service monitor locators for distribution context: %s", context);
+            LOG.warn("An error occurred getting the service monitor locators for distribution context: {}", context, e);
             return Collections.emptyList();
         }
     }
@@ -388,13 +397,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
 			if (mon == null) {
-			    LogUtils.debugf(this, "Deleted monitor checked in with ID %d", locationMonitorId);
+			    LOG.debug("Deleted monitor checked in with ID {}", locationMonitorId);
 			    return MonitorStatus.DELETED;
 			}
 
 			return updateMonitorState(mon, currentConfigurationVersion);
 		} catch (final Exception e) {
-			LogUtils.warnf(this, e, "An error occurred while checking in.");
+			LOG.warn("An error occurred while checking in.", e);
 			return MonitorStatus.DISCONNECTED;
 		}
     }
@@ -421,7 +430,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     public void pollerStopping(final int locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            LogUtils.infof(this, "pollerStopping was called for location monitor ID %d which does not exist", locationMonitorId);
+            LOG.info("pollerStopping was called for location monitor ID {} which does not exist", locationMonitorId);
             return;
         }
 
@@ -472,11 +481,11 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
         	locationMonitor = m_locMonDao.get(locationMonitorId);
         } catch (final Exception e) {
-            LogUtils.infof(this, e, "Unable to report result for location monitor ID %d: Location monitor does not exist.", locationMonitorId);
+            LOG.info("Unable to report result for location monitor ID {}: Location monitor does not exist.", locationMonitorId, e);
             return;
         }
         if (locationMonitor == null) {
-            LogUtils.infof(this, "Unable to report result for location monitor ID %d: Location monitor does not exist.", locationMonitorId);
+            LOG.info("Unable to report result for location monitor ID {}: Location monitor does not exist.", locationMonitorId);
             return;
         }
 
@@ -484,15 +493,15 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
         	monSvc = m_monSvcDao.get(serviceId);
         } catch (final Exception e) {
-        	LogUtils.warnf(this, e, "Unable to report result for location monitor ID %d, monitored service ID %d: Monitored service does not exist.", locationMonitorId, serviceId); 
+		LOG.warn("Unable to report result for location monitor ID {}, monitored service ID {}: Monitored service does not exist.", locationMonitorId, serviceId, e);
         	return;
         }
         if (monSvc == null) {
-        	LogUtils.warnf(this, "Unable to report result for location monitor ID %d, monitored service ID %d: Monitored service does not exist.", locationMonitorId, serviceId); 
+		LOG.warn("Unable to report result for location monitor ID {}, monitored service ID {}: Monitored service does not exist.", locationMonitorId, serviceId);
             return;
         }
         if (pollResult == null) {
-        	LogUtils.warnf(this, "Unable to report result for location monitor ID %d, monitored service ID %d: Poll result is null!", locationMonitorId, serviceId);
+		LOG.warn("Unable to report result for location monitor ID {}, monitored service ID {}: Poll result is null!", locationMonitorId, serviceId);
         	return;
         }
 
@@ -504,14 +513,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 			    saveResponseTimeData(Integer.toString(locationMonitorId), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
 			}
 		} catch (final Exception e) {
-			LogUtils.errorf(this, e, "Unable to save response time data for location monitor ID %d, monitored service ID %d.", locationMonitorId, serviceId);
+			LOG.error("Unable to save response time data for location monitor ID {}, monitored service ID {}.", locationMonitorId, serviceId, e);
 		}
 
 		try {
 	        final OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
 	        processStatusChange(currentStatus, newStatus);
 		} catch (final Exception e) {
-			LogUtils.errorf(this, e, "Unable to save result for location monitor ID %d, monitored service ID %d.", locationMonitorId, serviceId);
+			LOG.error("Unable to save result for location monitor ID {}, monitored service ID {}.", locationMonitorId, serviceId, e);
 		}
     }
 
@@ -624,7 +633,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locMonDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param locMonDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public void setLocationMonitorDao(final LocationMonitorDao locMonDao) {
         m_locMonDao = locMonDao;
@@ -633,7 +642,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monSvcDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monSvcDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(final MonitoredServiceDao monSvcDao) {
         m_monSvcDao = monSvcDao;
@@ -678,7 +687,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
                     return MonitorStatus.CONFIG_CHANGED;
 
                 default:
-                    LogUtils.errorf(this, "Unexpected monitor state for monitor: %s", mon);
+                    LOG.error("Unexpected monitor state for monitor: {}", mon);
                     throw new IllegalStateException("Unexpected monitor state for monitor: "+mon);
 
             }

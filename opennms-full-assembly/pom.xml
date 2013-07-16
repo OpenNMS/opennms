@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -314,7 +314,7 @@
       <artifactId>opennms-base-assembly</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
-      <classifier>log4j</classifier>
+      <classifier>log4j2</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

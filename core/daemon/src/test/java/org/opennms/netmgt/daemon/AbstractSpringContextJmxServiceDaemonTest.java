@@ -48,10 +48,12 @@ public class AbstractSpringContextJmxServiceDaemonTest {
     }
 
     public class MockDaemon<T extends SpringServiceDaemon> extends AbstractSpringContextJmxServiceDaemon<T> {
+        @Override
         public String getSpringContext() {
             return "thisIsABogusSpringContext";
         }
 
+        @Override
         public String getLoggingPrefix() {
             return "thisIsABogusLoggingPrefix";
         }
@@ -59,7 +61,7 @@ public class AbstractSpringContextJmxServiceDaemonTest {
 
     public class MockServiceDaemon extends AbstractServiceDaemon {
         public MockServiceDaemon() {
-            super("MockServiceDaemon");
+            super("mock-service-daemon");
         }
 
         @Override

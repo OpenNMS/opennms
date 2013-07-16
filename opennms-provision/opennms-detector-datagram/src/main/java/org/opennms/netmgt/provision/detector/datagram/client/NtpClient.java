@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,8 @@ import org.springframework.stereotype.Component;
  */
 @Scope("prototype")
 public class NtpClient implements Client<NtpMessage, DatagramPacket> {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NtpClient.class);
     private DatagramSocket m_socket;
     private int m_port;
     private InetAddress m_address;
@@ -56,13 +58,15 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         m_socket.close();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
-        LogUtils.debugf(this, "Address: %s, port: %d, timeout: %d", address, port, timeout);
+        LOG.debug("Address: {}, port: {}, timeout: {}", address, port, timeout);
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
         setAddress(address);
@@ -76,6 +80,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DatagramPacket receiveBanner() throws IOException, Exception {
         throw new UnsupportedOperationException("Client<NtpMessage,DatagramPacket>.receiveBanner is not yet implemented");
     }
@@ -88,6 +93,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DatagramPacket sendRequest(final NtpMessage request) throws IOException, Exception {
         
         final byte[] buf = new NtpMessage().toByteArray();

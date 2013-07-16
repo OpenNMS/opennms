@@ -38,7 +38,8 @@ import java.util.Set;
 
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.threshd.Expression;
 
 
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.threshd.Expression;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
+    private static final Logger LOG = LoggerFactory.getLogger(ExpressionConfigWrapper.class);
 
 	/**
 	 * This class is used to sniff all of the variable names that a script tries
@@ -63,26 +65,29 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		private final Set<String> m_sniffedKeys = new HashSet<String>();
 		private final String[] ignoreTheseKeys = new String[] { "math" };
 
+                @Override
 		public Object get(String key) {
-			LogUtils.tracef(this, "Bindings.get(%s)", key);
+			LOG.trace("Bindings.get({})", key);
 			m_sniffedKeys.add(((String)key).intern());
 			return super.get(key);
 		}
 
+                @Override
 		public boolean has(String key) {
-			LogUtils.tracef(this, "Bindings.containsKey(%s)", key);
+			LOG.trace("Bindings.containsKey({})", key);
 			m_sniffedKeys.add(((String)key).intern());
 			return super.containsKey(key);
 		}
 
+                @Override
 		public void set(String key, Object value) {
-			LogUtils.tracef(this, "Bindings.set(%s, %s)", key, value.toString());
+			LOG.trace("Bindings.set({}, {})", key, value);
 			m_sniffedKeys.add(((String)key).intern());
 			super.put(key, value);
 		}
 
 		public Set<String> getSniffedKeys() {
-			LogUtils.tracef(this, "Bindings.getSniffedKeys(%s)");
+			LOG.trace("Bindings.getSniffedKeys({})");
 			m_sniffedKeys.removeAll(Arrays.asList(ignoreTheseKeys));
 			return Collections.unmodifiableSet(m_sniffedKeys);
 		}

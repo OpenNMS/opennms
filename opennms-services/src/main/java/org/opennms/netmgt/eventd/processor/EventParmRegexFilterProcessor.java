@@ -28,19 +28,20 @@
 
 package org.opennms.netmgt.eventd.processor;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventExpander;
 import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -49,13 +50,13 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:tfalzone@doubleclick.com">Tim Falzone</a>
  */
 public final class EventParmRegexFilterProcessor implements EventProcessor, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(EventParmRegexFilterProcessor.class);
 
     private EventConfDao m_eventConfDao;
     private Map<String, org.opennms.netmgt.xml.eventconf.Filter> m_filterMap = new HashMap<String, org.opennms.netmgt.xml.eventconf.Filter>();
 
     @Override
-    public void process(Header eventHeader, Event event) throws SQLException {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+    public void process(Header eventHeader, Event event) throws EventProcessorException {
 
         org.opennms.netmgt.xml.eventconf.Event econf = EventExpander.lookup(m_eventConfDao, event);
         if (econf.getFilters() != null) {
@@ -63,9 +64,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
             for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters().getFilterCollection()) {
                 if (!m_filterMap.containsKey(fConf.getEventparm() + "|" + event.getUei())) {
                     m_filterMap.put(fConf.getEventparm() + "|" + event.getUei(), fConf);
-                    if (log.isDebugEnabled()) {
-                        log.debug("adding [" + fConf.getEventparm() + "|" + event.getUei() + "] to filter map");
-                    }
+                    LOG.debug("adding [{}|{}] to filter map", fConf.getEventparm(), event.getUei());
                 }
             }
 
@@ -75,9 +74,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
                         && (m_filterMap.containsKey(parm.getParmName() + "|" + event.getUei()))
                 ) {
                     org.opennms.netmgt.xml.eventconf.Filter f = m_filterMap.get(parm.getParmName() + "|" + event.getUei());
-                    if (log.isDebugEnabled()) {
-                        log.debug("filtering " + parm.getParmName() + " with " + f.getPattern());
-                    }
+                    LOG.debug("filtering {} with {}", f.getPattern(), parm.getParmName());
                     final Pattern pattern = Pattern.compile( f.getPattern() );
                     Matcher matcher = pattern.matcher( parm.getValue().getContent().trim() );
                     parm.getValue().setContent( matcher.replaceAll(f.getReplacement()) );

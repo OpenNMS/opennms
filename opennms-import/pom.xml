@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-import</artifactId>
@@ -53,14 +53,6 @@
               <mainClass>org.opennms.netmgt.importer.Main</mainClass>
             </manifest>
           </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <forkMode>pertest</forkMode>
-          <argLine>-Xmx256m</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -134,6 +126,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
@@ -168,11 +165,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

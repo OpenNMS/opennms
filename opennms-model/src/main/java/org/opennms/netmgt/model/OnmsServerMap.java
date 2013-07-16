@@ -142,6 +142,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("ipAddr", getIpAddress())
@@ -150,6 +151,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
     }
 
 	/** {@inheritDoc} */
+    @Override
 	public void visit(EntityVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");

@@ -34,15 +34,10 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.MobileMsgTrackerTest;
-import org.smslib.AGateway;
-import org.smslib.GatewayException;
-import org.smslib.InboundMessage;
-import org.smslib.OutboundMessage;
-import org.smslib.TimeoutException;
-import org.smslib.USSDRequest;
-import org.smslib.USSDResponse;
+import org.smslib.*;
 import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage.MessageStatuses;
 
@@ -50,8 +45,8 @@ import org.smslib.OutboundMessage.MessageStatuses;
  * TestGateway - virtual gateway to simulate sending and receiving messages to
  * make testing easier.
  */
-public class FakeTestGateway extends AGateway
-{
+public class FakeTestGateway extends AGateway {
+    private static final Logger LOG = LoggerFactory.getLogger(FakeTestGateway.class);
 	private int refCounter = 0;
 
 	private int counter = 0;
@@ -60,37 +55,44 @@ public class FakeTestGateway extends AGateway
 		InboundMessage m_message;
 		private USSDResponse m_response;
 		long m_expiration = 0;
-		
-		public QueueRunner(USSDResponse response, long milliseconds) {
+        private AGateway m_gateway;
+
+        public QueueRunner(USSDResponse response, long milliseconds, AGateway gateway) {
 			System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + response);
+            m_gateway = gateway;
 			m_response = response;
 			m_expiration = System.currentTimeMillis() + milliseconds;
 		}
 
-		public QueueRunner(InboundMessage message, long milliseconds) {
-			System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + message);
-			m_message = message;
-			m_expiration = System.currentTimeMillis() + milliseconds;
-		}
+        public QueueRunner(InboundMessage inbound, int milliseconds, AGateway gateway) {
+            m_gateway = gateway;
+            System.err.println("QueueRunner initialized with timeout " + milliseconds + " for message: " + inbound);
+            m_message = inbound;
+            m_expiration = System.currentTimeMillis() + milliseconds;
+        }
+
+        @Override
 		public void run() {
 			if (m_message != null) {
-				System.err.println("QueueRunner(run): " + getService().getInboundNotification());
-				if (getService().getInboundNotification() != null ) {
-					getService().getInboundNotification().process(getGatewayId(), MessageTypes.INBOUND, m_message);
+				System.err.println("QueueRunner(run): " + Service.getInstance().getInboundMessageNotification());
+				if (Service.getInstance().getInboundMessageNotification() != null ) {
+                    Service.getInstance().getInboundMessageNotification().process(m_gateway, MessageTypes.INBOUND, m_message);
 				}
 			} else if (m_response != null) {
-				System.err.println("QueueRunner(run): " + getService().getUSSDNotification());
-				if (getService().getUSSDNotification() != null ) {
-					getService().getUSSDNotification().process(getGatewayId(), m_response);
+				System.err.println("QueueRunner(run): " + Service.getInstance().getUSSDNotification());
+				if (Service.getInstance().getUSSDNotification() != null ) {
+                    Service.getInstance().getUSSDNotification().process(m_gateway, m_response);
 				}
 			}
 		}
 
+                @Override
 		public long getDelay(TimeUnit unit) {
 			long remainder = m_expiration - System.currentTimeMillis();
 			return unit.convert(remainder, TimeUnit.MILLISECONDS);
 		}
 
+                @Override
 		public int compareTo(Delayed o) {
 			long thisVal = this.getDelay(TimeUnit.NANOSECONDS);
 			long anotherVal = o.getDelay(TimeUnit.NANOSECONDS);
@@ -132,6 +134,7 @@ public class FakeTestGateway extends AGateway
 		this.incomingMessagesThread = new Thread(new Runnable()
 		{
 			// Run thread to fake incoming messages
+                        @Override
 			public void run()
 			{
 				while (!FakeTestGateway.this.incomingMessagesThread.isInterrupted())
@@ -141,7 +144,7 @@ public class FakeTestGateway extends AGateway
 						runner.run();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						LogUtils.warnf(this, e, "failed to run queue");
+						LOG.warn("failed to run queue", e);
 						break;
 					}
 				}
@@ -167,7 +170,7 @@ public class FakeTestGateway extends AGateway
 	public boolean sendMessage(OutboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException
 	{
 		// simulate delay
-		getService().getLogger().logInfo("Sending to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
+      LOG.info("Sending to: {} via: {}", msg.getRecipient(), msg.getGatewayId());
 		Thread.sleep(500);
 		this.counter++;
 
@@ -175,7 +178,7 @@ public class FakeTestGateway extends AGateway
 		msg.setMessageStatus(MessageStatuses.SENT);
 		msg.setRefNo(Integer.toString(++this.refCounter));
 		msg.setGatewayId(getGatewayId());
-		getService().getLogger().logInfo("Sent to: " + msg.getRecipient() + " via: " + msg.getGatewayId(), null, getGatewayId());
+      LOG.info("Sent to: {} via: {}", msg.getGatewayId());
 		
 		String msgText = msg.getText();
 		if (msgText != null) {
@@ -187,7 +190,7 @@ public class FakeTestGateway extends AGateway
 		}
 
 		InboundMessage inbound = new InboundMessage(msg.getDate(), msg.getRecipient(), msgText, 1, "DEADBEEF");
-		QueueRunner runner = new QueueRunner(inbound, 500);
+		QueueRunner runner = new QueueRunner(inbound, 500, this);
 		m_delayQueue.offer(runner);
 		return true;
 	}
@@ -195,7 +198,7 @@ public class FakeTestGateway extends AGateway
 	@Override
 	public boolean sendUSSDRequest(USSDRequest request) throws GatewayException, TimeoutException, IOException, InterruptedException
 	{
-		getService().getLogger().logInfo("Sending to: " + request.getContent() + " via: " + request.getGatewayId(), null, getGatewayId());
+      LOG.info("Sending to: {} via: {}", request.getContent(), request.getGatewayId());
 		Thread.sleep(500);
 		this.counter++;
 
@@ -207,7 +210,7 @@ public class FakeTestGateway extends AGateway
 		}
 
 		USSDResponse response  = new USSDResponse(content, getGatewayId());
-		QueueRunner runner = new QueueRunner(response, 500);
+		QueueRunner runner = new QueueRunner(response, 500, this);
 		m_delayQueue.offer(runner);
 		return true;
 	}

@@ -39,7 +39,6 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
@@ -65,6 +64,8 @@ import org.opennms.protocols.wmi.WmiResult;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -76,6 +77,9 @@ import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiCollector implements ServiceCollector {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(WmiCollector.class);
+
 
     // Don't make this static because each service will have its own
     // copy and the key won't require the service name as part of the key.
@@ -84,6 +88,7 @@ public class WmiCollector implements ServiceCollector {
     private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
 
     /** {@inheritDoc} */
+    @Override
     public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> parameters) {
 
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "wmi-collection", null));
@@ -160,13 +165,13 @@ public class WmiCollector implements ServiceCollector {
                         }
                     }
                 } catch (final WmiException e) {
-                    LogUtils.infof(this, e, "unable to collect params for wpm '%s'", wpm.getName());
+                    LOG.info("unable to collect params for wpm '{}'", wpm.getName(), e);
                 } finally {
                     if (client != null) {
                         try {
                             client.disconnect();
                         } catch (final WmiException e) {
-                            LogUtils.warnf(this, e, "An error occurred disconnecting while collecting from WMI.");
+                            LOG.warn("An error occurred disconnecting while collecting from WMI.", e);
                         }
                     }
                 }
@@ -194,7 +199,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     private boolean isGroupAvailable(final WmiAgentState agentState, final Wpm wpm) {
-        LogUtils.debugf(this, "Checking availability of group %s", wpm.getName());
+        LOG.debug("Checking availability of group {}", wpm.getName());
         WmiManager manager = null;
 
         /*
@@ -214,10 +219,10 @@ public class WmiCollector implements ServiceCollector {
             final boolean isAvailable = (result.getResultCode() == WmiResult.RES_STATE_OK);
 
             agentState.setGroupIsAvailable(wpm.getName(), isAvailable);
-            LogUtils.debugf(this, "Group %s is %s%s.", wpm.getName(), (isAvailable ? "" : "not "), "available");
+            LOG.debug("Group {} is {}{}.", wpm.getName(), (isAvailable ? "" : "not "), "available");
         } catch (final WmiException e) {
             // Log a warning signifying that this group is unavailable.
-            LogUtils.warnf(this, e, "Error checking group (%s) availability.", wpm.getName());
+            LOG.warn("Error checking group ({}) availability.", wpm.getName(), e);
             // Set the group as unavailable.
             agentState.setGroupIsAvailable(wpm.getName(), false);
             
@@ -228,7 +233,7 @@ public class WmiCollector implements ServiceCollector {
                 try {
                     manager.close();
                 } catch (WmiException e) {
-                    LogUtils.warnf(this, e, "An error occurred closing the WMI Manager");
+                    LOG.warn("An error occurred closing the WMI Manager", e);
                 }
             }
         }
@@ -236,8 +241,9 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(final Map<String, String> parameters) {
-        LogUtils.debugf(this, "initialize: Initializing WmiCollector.");
+        LOG.debug("initialize: Initializing WmiCollector.");
         m_scheduledNodes.clear();
         initWMIPeerFactory();
         initWMICollectionConfig();
@@ -246,42 +252,42 @@ public class WmiCollector implements ServiceCollector {
     }
 
     private void initWMIPeerFactory() {
-        LogUtils.debugf(this, "initialize: Initializing WmiPeerFactory");
+        LOG.debug("initialize: Initializing WmiPeerFactory");
         try {
             WmiPeerFactory.init();
         } catch (final MarshalException e) {
-            LogUtils.errorf(this, e, "initialize: Error marshalling configuration.");
+            LOG.error("initialize: Error marshalling configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (final ValidationException e) {
-            LogUtils.errorf(this, e, "initialize: Error validating configuration.");
+            LOG.error("initialize: Error validating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (final IOException e) {
-            LogUtils.errorf(this, e, "initialize: Error reading configuration.");
+            LOG.error("initialize: Error reading configuration.", e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
     private void initWMICollectionConfig() {
-        LogUtils.debugf(this, "initialize: Initializing collector: %s", getClass());
+        LOG.debug("initialize: Initializing collector: {}", getClass());
         try {
             WmiDataCollectionConfigFactory.init();
         } catch (final MarshalException e) {
-            LogUtils.errorf(this, e, "initialize: Error marshalling configuration.");
+            LOG.error("initialize: Error marshalling configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            LogUtils.errorf(this, e, "initialize: Error validating configuration.");
+            LOG.error("initialize: Error validating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
-            LogUtils.errorf(this, e, "initialize: Error locating configuration.");
+            LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            LogUtils.errorf(this, e, "initialize: Error reading configuration.");
+            LOG.error("initialize: Error reading configuration.", e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
     private void initializeRrdRepository() {
-        LogUtils.debugf(this, "initializeRrdRepository: Initializing RRD repo from WmiCollector...");
+        LOG.debug("initializeRrdRepository: Initializing RRD repo from WmiCollector...");
         initializeRrdDirs();
     }
 
@@ -302,30 +308,31 @@ public class WmiCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "initDatabaseConnectionFactory: Error initializing DataSourceFactory.");
+            LOG.error("initDatabaseConnectionFactory: Error initializing DataSourceFactory.", e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
-        LogUtils.debugf(this, "initialize: Initializing WMI collection for agent: %s", agent);
+        LOG.debug("initialize: Initializing WMI collection for agent: {}", agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
-            LogUtils.infof(this, "initialize: Not scheduling interface for WMI collection: %s", nodeState.getAddress());
+            LOG.info("initialize: Not scheduling interface for WMI collection: {}", nodeState.getAddress());
             final StringBuffer sb = new StringBuffer();
             sb.append("initialize service: ");
             sb.append(" for address: ");
             sb.append(nodeState.getAddress());
             sb.append(" already scheduled for collection on node: ");
             sb.append(agent);
-            LogUtils.debugf(this, sb.toString());
+            LOG.debug(sb.toString());
             throw new IllegalStateException(sb.toString());
         } else {
             nodeState = new WmiAgentState(agent.getInetAddress(), parameters);
-            LogUtils.infof(this, "initialize: Scheduling interface for collection: %s", nodeState.getAddress());
+            LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
             m_scheduledNodes.put(scheduledNodeKey, nodeState);
         }
     }
@@ -333,11 +340,13 @@ public class WmiCollector implements ServiceCollector {
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
         m_scheduledNodes.clear();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(final CollectionAgent agent) {
         final WmiAgentState nodeState = m_scheduledNodes.get((Integer) agent.getNodeId());
         if (nodeState != null) {
@@ -346,6 +355,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         return WmiDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

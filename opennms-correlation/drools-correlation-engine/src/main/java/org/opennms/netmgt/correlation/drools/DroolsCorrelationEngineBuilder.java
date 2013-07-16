@@ -33,7 +33,8 @@ import java.io.FileFilter;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
@@ -56,6 +57,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySupport implements InitializingBean, ApplicationListener<ApplicationEvent> {
+    private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngineBuilder.class);
 
 	public static final String PLUGIN_CONFIG_FILE_NAME = "drools-engine.xml";
 	
@@ -68,12 +70,12 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 		}
 		
 		public void readConfig() {
-			LogUtils.infof(this, "Parsing drools engine configuration at %s.", m_configResource);
+			LOG.info("Parsing drools engine configuration at {}.", m_configResource);
 			m_configuration = JaxbUtils.unmarshal(EngineConfiguration.class, m_configResource);
 		}
 
 		public CorrelationEngine[] constructEngines(ApplicationContext appContext, EventIpcManager eventIpcManager) {
-			LogUtils.infof(this, "Creating drools engins for configuration %s.", m_configResource);
+			LOG.info("Creating drools engins for configuration {}.", m_configResource);
 
 			return m_configuration.constructEngines(m_configResource, appContext, eventIpcManager);
 		}
@@ -181,7 +183,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 		
 		// first we see if the config is etc exists 
     	if (m_configResource != null && m_configResource.isReadable()) {
-			LogUtils.infof(this, "Found Drools Plugin config file %s.", m_configResource);
+			LOG.info("Found Drools Plugin config file {}.", m_configResource);
     		pluginConfigs.add(new PluginConfiguration(m_configResource));
     	}
 
@@ -191,9 +193,9 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     	for(File pluginDir : pluginDirs) {
     		File configFile = new File(pluginDir, PLUGIN_CONFIG_FILE_NAME);
     		if (!configFile.exists()) {
-    			LogUtils.errorf(this, "Drools Plugin directory %s does not contains a %s config file.  Ignoring plugin.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
+			LOG.error("Drools Plugin directory {} does not contains a {} config file.  Ignoring plugin.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
     		} else {
-    			LogUtils.infof(this, "Found Drools Plugin directory %s containing a %s config file.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
+			LOG.info("Found Drools Plugin directory {} containing a {} config file.", pluginDir, PLUGIN_CONFIG_FILE_NAME);
     			pluginConfigs.add(new PluginConfiguration(new FileSystemResource(configFile)));
     		}
     	}
@@ -203,11 +205,11 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 
 	private File[] getPluginDirs() throws Exception {
 
-    	LogUtils.debugf(this, "Checking %s for drools correlation plugins", m_configDirectory);
+	LOG.debug("Checking {} for drools correlation plugins", m_configDirectory);
     	
 
 		if (!m_configDirectory.exists()) {
-			LogUtils.debugf(this, "Plugin configuration directory does not exists.");
+			LOG.debug("Plugin configuration directory does not exists.");
 			return new File[0];
 		}
 
@@ -218,12 +220,13 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 				return file.isDirectory();
 			}
 		});
-    	LogUtils.debugf(this, "Found %d drools correlation plugin sub directories", pluginDirs.length);
+	LOG.debug("Found {} drools correlation plugin sub directories", pluginDirs.length);
     	
 		return pluginDirs;
 	}
 
 	/** {@inheritDoc} */
+        @Override
     public void onApplicationEvent(final ApplicationEvent appEvent) {
         if (appEvent instanceof ContextRefreshedEvent) {
             final ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();

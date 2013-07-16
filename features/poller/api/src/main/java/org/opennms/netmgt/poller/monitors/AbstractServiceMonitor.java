@@ -30,11 +30,11 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -50,6 +50,9 @@ import org.springframework.util.ClassUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 abstract public class AbstractServiceMonitor implements ServiceMonitor {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceMonitor.class);
+	
     /**
      * {@inheritDoc}
      *
@@ -70,6 +73,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
     }
 
@@ -91,6 +95,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      * @exception java.lang.RuntimeException
      *                Thrown if an error occurs during deallocation.
      */
+    @Override
     public void release() {
     }
 
@@ -113,6 +118,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {}
 
     /**
@@ -134,57 +140,11 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
+    @Override
     public void release(MonitoredService svc) {
     }
     
     /** {@inheritDoc} */
+    @Override
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
-
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
-	/**
-	 * <p>logDown</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param reason a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logDown(Level level, String reason) {
-		return logDown(level, reason, null);
-	}
-
-	/**
-	 * <p>logDown</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param reason a {@link java.lang.String} object.
-	 * @param e a {@link java.lang.Throwable} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logDown(Level level, String reason, Throwable e) {
-		String className = ClassUtils.getShortName(getClass());
-	    log().debug(className+": "+reason, e);
-	    return PollStatus.unavailable(reason);
-	}
-	
-	/**
-	 * <p>logUp</p>
-	 *
-	 * @param level a {@link org.apache.log4j.Level} object.
-	 * @param responseTime a double.
-	 * @param logMsg a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
-	 */
-	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
-		String className = ClassUtils.getShortName(getClass());
-	    log().debug(className+": "+logMsg);
-	    return PollStatus.available(responseTime);
-	}
 }

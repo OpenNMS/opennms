@@ -38,7 +38,8 @@ import java.util.List;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a thread for launching and executing actions as they
@@ -54,6 +55,7 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 final class Executor implements Runnable, PausableFiber {
+    private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
     /**
      * The input queue of runnable commands.
      */
@@ -158,6 +160,7 @@ final class Executor implements Runnable, PausableFiber {
         /**
          * Returns the command being run by the dated process.
          */
+        @Override
         public String toString() {
             return m_cmd;
         }
@@ -181,6 +184,7 @@ final class Executor implements Runnable, PausableFiber {
          * processes.
          * 
          */
+        @Override
         public void run() {
             // Wait for a maximum of 15 seconds between checks!
             //
@@ -189,7 +193,6 @@ final class Executor implements Runnable, PausableFiber {
                 waitPeriod = 15000;
             }
 
-            ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
             // Begin the checking process.
             //
@@ -208,9 +211,7 @@ final class Executor implements Runnable, PausableFiber {
                         try {
                             int rc = dp.getProcess().exitValue();
 
-                            if (log.isDebugEnabled()) {
-                                log.debug("Process " + dp + " completed, rc = " + rc);
-                            }
+                            LOG.debug("Process {} completed, rc = {}", rc, dp);
 
                             i.remove();
                             continue;
@@ -218,8 +219,8 @@ final class Executor implements Runnable, PausableFiber {
                         } // still running
 
                         if (dp.getRunTime() > m_maxWait) {
-                            if (log.isInfoEnabled())
-                                log.info("Process " + dp + " did not complete in the alloted time, terminating.");
+
+                            LOG.info("Process {} did not complete in the alloted time, terminating.", dp);
 
                             dp.getProcess().destroy();
                             i.remove();
@@ -276,7 +277,6 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     private static String[] getExecArguments(String cmd) {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         // make sure we get rid of excess white space.
         //
@@ -307,9 +307,7 @@ final class Executor implements Runnable, PausableFiber {
             } else if (chars[x] == ' ') {
                 String arg = buf.toString().trim();
 
-                if (log.isDebugEnabled()) {
-                    log.debug("getExecArgument: adding argument: " + arg);
-                }
+                LOG.debug("getExecArgument: adding argument: {}", arg);
 
                 args.add(arg);
                 buf.delete(0, buf.length());
@@ -367,8 +365,8 @@ final class Executor implements Runnable, PausableFiber {
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
      */
+    @Override
     public void run() {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;
@@ -405,8 +403,8 @@ final class Executor implements Runnable, PausableFiber {
             // processes. Block until we can.
             //
             if (m_maxProcCount == m_processes.size()) {
-                if (log.isDebugEnabled())
-                    log.debug("Number of processes at " + m_maxProcCount + " - being wait for a process to finish or be reaped!");
+
+                LOG.debug("Number of processes at {} - being wait for a process to finish or be reaped!", m_maxProcCount);
 
                 synchronized (m_reaperRun) {
                     m_reaperRun.notifyAll();
@@ -432,21 +430,19 @@ final class Executor implements Runnable, PausableFiber {
             } catch (InterruptedException ex) {
                 break;
             } catch (FifoQueueException ex) {
-                log.warn("The input execution queue has errors, exiting...", ex);
+                LOG.warn("The input execution queue has errors, exiting...", ex);
                 break;
             }
 
             // start a new process
             //
-            if (log.isDebugEnabled()) {
-                log.debug("Parsing cmd args: " + cmd);
-            }
+            LOG.debug("Parsing cmd args: {}", cmd);
 
             String[] execArgs = getExecArguments(cmd);
             if (execArgs != null && execArgs.length > 0) {
                 try {
-                    if (log.isDebugEnabled())
-                        log.debug("Getting ready to execute \'" + cmd + "\'");
+
+                    LOG.debug("Getting ready to execute \'{}\'", cmd);
 
                     Process px = Runtime.getRuntime().exec(execArgs);
                     // Added by Nick Wesselman to attempt to workaround
@@ -459,9 +455,9 @@ final class Executor implements Runnable, PausableFiber {
                     }
                     m_processes.add(new DatedProc(cmd, px));
                 } catch (IOException ex) {
-                    log.warn("Failed to execute command: " + cmd, ex);
+                    LOG.warn("Failed to execute command: {}", cmd, ex);
                 } catch (SecurityException ex) {
-                    log.warn("Application not authorized to exec commands!", ex);
+                    LOG.warn("Application not authorized to exec commands!", ex);
                     break;
                 }
             }
@@ -485,6 +481,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void start() {
         if (m_worker != null) {
             throw new IllegalStateException("The fiber has already be run");
@@ -509,6 +506,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
      */
+    @Override
     public synchronized void stop() {
         if (m_worker == null) {
             throw new IllegalStateException("The fiber has never been run");
@@ -537,6 +535,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void pause() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -556,6 +555,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void resume() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -572,6 +572,7 @@ final class Executor implements Runnable, PausableFiber {
      *
      * @return The name of the fiber.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -583,6 +584,7 @@ final class Executor implements Runnable, PausableFiber {
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
             if (m_reaper.isAlive())

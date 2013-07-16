@@ -34,9 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,6 +51,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class AdminRancidUpdateController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidUpdateController.class);
+
 
     InventoryService m_inventoryService;
         
@@ -72,19 +76,20 @@ public class AdminRancidUpdateController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidUpdateController ModelAndView onSubmit");
+        LOG.debug("AdminRancidUpdateController ModelAndView onSubmit");
 
         AdminRancidRouterDbCommClass bean = (AdminRancidRouterDbCommClass) command;
                        
-        log().debug("AdminRancidUpdateController ModelAndView onSubmit updating device["+ bean.getDeviceName() + "] group[" + bean.getGroupName() + "] status[" + bean.getStatusName()+"]");
+        LOG.debug("AdminRancidUpdateController ModelAndView onSubmit updating device[{}] group[{}] status[{}]", bean.getDeviceName(), bean.getGroupName(), bean.getStatusName());
 
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
         boolean done = m_inventoryService.updateNodeOnRouterDb(bean.getGroupName(), bean.getDeviceName(), bean.getDeviceTypeName(), bean.getStatusName(),bean.getComment());
         if (!done){
-            log().debug("AdminRancidUpdateController ModelAndView onSubmit error while updating status for"+ bean.getGroupName() + "/" + bean.getDeviceName());
+            LOG.debug("AdminRancidUpdateController ModelAndView onSubmit error while updating status for{}/{}", bean.getGroupName(), bean.getDeviceName());
         }
         }
         String redirectURL = request.getHeader("Referer");
@@ -93,12 +98,10 @@ public class AdminRancidUpdateController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
-        log().debug("AdminRancidUpdateController initBinder");
+        LOG.debug("AdminRancidUpdateController initBinder");
     }
     
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 }

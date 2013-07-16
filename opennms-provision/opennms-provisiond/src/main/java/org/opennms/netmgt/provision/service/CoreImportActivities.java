@@ -32,8 +32,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -56,6 +57,7 @@ import org.springframework.core.io.Resource;
  */
 @ActivityProvider
 public class CoreImportActivities {
+    private static final Logger LOG = LoggerFactory.getLogger(CoreImportActivities.class);
     
     ProvisionService m_provisionService;
     
@@ -174,14 +176,14 @@ public class CoreImportActivities {
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override
             public void visitNode(final OnmsNodeRequisition nodeReq) {
-                LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
+                LOG.debug("Scheduling relate of node {}", nodeReq);
                 currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));
             }
         };
         
         requisition.visit(visitor);
         
-        LogUtils.infof(this, "Finished Running relate phase");
+        LOG.info("Finished Running relate phase");
 
     }
     
@@ -215,23 +217,14 @@ public class CoreImportActivities {
     }
 
     protected void info(String format, Object... args) {
-    	LogUtils.infof(this, format, args);
+    	LOG.info(format, args);
     }
 
     protected void debug(String format, Object... args) {
-        LogUtils.debugf(this, format, args);
+        LOG.debug(format, args);
     }
 
     protected void warn(String format, Object... args) {
-        LogUtils.warnf(this, format, args);
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        LOG.warn(format, args);
     }
 }

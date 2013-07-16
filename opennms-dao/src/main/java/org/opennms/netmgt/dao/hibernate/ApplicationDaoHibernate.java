@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.ApplicationDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 
 public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplication, Integer> implements ApplicationDao {
@@ -41,6 +41,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public OnmsApplication findByName(final String name) {
 		return findUnique("from OnmsApplication as app where app.name = ?", name);
 	}

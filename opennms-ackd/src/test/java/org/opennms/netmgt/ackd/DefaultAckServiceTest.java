@@ -45,12 +45,12 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.NotificationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -59,7 +59,6 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +85,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultAckServiceTest implements InitializingBean {
 
-    @Autowired
-    AckService m_ackService;
-    
     @Autowired AcknowledgmentDao m_ackDao;
 
     @Autowired NotificationDao m_notifDao;
@@ -150,7 +146,7 @@ public class DefaultAckServiceTest implements InitializingBean {
         m_alarmDao.delete(alarm);
         m_alarmDao.flush();
 
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
     }
  
     @Test 
@@ -169,7 +165,7 @@ public class DefaultAckServiceTest implements InitializingBean {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setRefId(notif.getNotifyId());
         ack.setAckType(AckType.NOTIFICATION);
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         Assert.assertEquals(1, ackables.size());

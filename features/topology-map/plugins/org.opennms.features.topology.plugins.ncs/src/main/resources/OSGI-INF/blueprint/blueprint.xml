@@ -1,9 +1,46 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xsi:schemaLocation="
     http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
 ">
-
+    
+   <cm:property-placeholder id="ncsPlugin" persistent-id="org.opennms.features.topology.plugin.ncs" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="junoSpaceBaseUrl" value="http://localhost:8080/testing-webapp/" />
+            <cm:property name="username" value="admin" />
+            <cm:property name="password" value="admin" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+    
+    <bean id="customHttpClientConfigurer" class="org.opennms.features.topology.plugins.ncs.internal.CustomHttpClientConfigurer">
+        <property name="username" value="${username}" />
+        <property name="password" value="${password}" />
+    </bean>
+    
+    <camelContext id="camel1" xmlns="http://camel.apache.org/schema/blueprint">
+        <propertyPlaceholder id="properties" location="blueprint:ncsPlugin"
+                                prefixToken="[[" suffixToken="]]" />
+    
+        <route>
+            <from uri="direct:start" />
+            <setHeader headerName="CamelHttpUri">
+                <simple>[[junoSpaceBaseUrl]]api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}</simple>
+            </setHeader>
+            <to uri="https://dummyhost?httpClientConfigurer=customHttpClientConfigurer&amp;authUsername=[[username]]&amp;authPassword=[[password]]&amp;authMethod=Basic"/>
+            <to uri="log:org.opennms.features.topology.plugin.ncs?level=DEBUG&amp;showAll=true" />
+            <bean ref="ncsPathRouteUtil" method="getServiceName" />
+            <setHeader headerName="CamelHttpUri">
+                <simple>[[junoSpaceBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?httpClientConfigurer=customHttpClientConfigurer&amp;deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
+            </setHeader>
+            <to uri="https://dummyhost?httpClientConfigurer=customHttpClientConfigurer&amp;authUsername=[[username]]&amp;authPassword=[[password]]&amp;authMethod=Basic"/>
+            <to uri="log:org.opennms.features.topology.plugin.ncs?level=DEBUG&amp;showAll=true" />
+            <bean ref="ncsPathRouteUtil" method="createPath" />
+        </route>
+    </camelContext>
+    
 	<reference id="ncsComponentRepository" interface="org.opennms.netmgt.model.ncs.NCSComponentRepository" availability="mandatory" />
-	<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
 	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 		<command name="ncs/listcomponents">
@@ -11,11 +48,17 @@
 		</command>
 	</command-bundle>
 	
+	<bean id="ncsCriteriaServiceManager" class="org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager">
+	   <property name="bundleContext" ref="blueprintBundleContext" />
+	</bean>
+	
 	<bean id="viewContribution" class="org.opennms.features.topology.plugins.ncs.NCSViewContribution">
 		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="ncsEdgeProvider" ref="ncsEdgeProvider" />
+		<property name="ncsCriteriaServiceManager" ref="ncsCriteriaServiceManager" />
 	</bean>
 
-	<service interface="org.opennms.features.topology.api.IViewContribution" ref="viewContribution">
+	<service interface="org.opennms.features.topology.api.IViewContribution" ref="viewContribution" >
 		<description>Service Tree IViewContribution service.</description>
 		<service-properties>
 			<entry key="location" value="left"/>
@@ -27,7 +70,43 @@
 		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
 		<property name="nodeDao" ref="nodeDao" />
 	</bean>
+	
+	<bean id="ncsPathEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider"/>
 
 	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsPathEdgeProvider" />
+	
+	<bean id="ncsPathProviderService" class="org.opennms.features.topology.plugins.ncs.NCSPathProviderService">
+	   <argument ref="camel1" />
+	</bean>
+	
+	<bean id="ncsPathRouteUtil" class="org.opennms.features.topology.plugins.ncs.support.NCSPathRouteUtil">
+	   <argument ref="ncsComponentRepository"/>
+       <argument ref="nodeDao"/>
+	</bean>
+	
+	<service interface="org.opennms.features.topology.api.Operation">
+	   <service-properties>
+            <entry key="operation.label" value="Show NCS Path"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+	   <bean class="org.opennms.features.topology.plugins.ncs.ShowNCSPathOperation" >
+	       <property name="dao" ref="ncsComponentRepository"/>
+	       <property name="nodeDao" ref="nodeDao"/>
+	       <property name="ncsEdgeProvider" ref="ncsEdgeProvider"/>
+	       <property name="ncsPathProvider" ref="ncsPathProviderService"/>
+	       <property name="ncsCriteriaServiceManager" ref="ncsCriteriaServiceManager" />
+	   </bean>
+	</service>
+	
+	<service interface="org.opennms.features.topology.api.Operation">
+       <service-properties>
+            <entry key="operation.label" value="Hide NCS Path"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+       <bean class="org.opennms.features.topology.plugins.ncs.HideNCSPathOperation">
+            <property name="ncsCriteriaServiceManager" ref="ncsCriteriaServiceManager" />
+       </bean>
+    </service>
 
 </blueprint>

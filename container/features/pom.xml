@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi</groupId>
   <artifactId>all</artifactId>
   <packaging>pom</packaging>
-  <name>All OpenNMS OSGi Features</name>
+  <name>OpenNMS OSGi Container - All Features</name>
   <build>
     <plugins>
       <plugin>

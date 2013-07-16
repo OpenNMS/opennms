@@ -42,7 +42,7 @@ import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.config.StorageStrategy;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -68,7 +68,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for GenericIndexResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
      * @param resourceLabelExpression a {@link java.lang.String} object.
@@ -87,6 +87,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -96,6 +97,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return m_label;
     }
@@ -110,6 +112,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
       return getResourceTypeDirectory(nodeId, false).isDirectory();
     }
@@ -147,6 +150,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
@@ -248,6 +252,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
                 private int lastN;
                 private boolean lastNSet = false;
                 
+                @Override
                 public String getSymbolValue(String symbol) {
                     if (symbol.equals("index")) {
                         return index;
@@ -391,6 +396,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
             m_index = index;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_nodeId, m_index)); 
         }
@@ -406,6 +412,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
             m_index = index;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForNodeSourceResource(m_nodeSource, m_index));
         }
@@ -448,23 +455,27 @@ public class GenericIndexResourceType implements OnmsResourceType {
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
     
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         List<OnmsResource> empty = Collections.emptyList();
         return empty;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         File forSrc = new File(m_resourceDao.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
 
@@ -474,6 +485,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 

@@ -53,7 +53,7 @@ import org.opennms.netmgt.config.mock.MockNotificationStrategy;
 import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNotification;
 import org.opennms.netmgt.mock.MockPollerConfig;

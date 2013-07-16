@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -43,14 +45,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.server.UserError;
+import com.vaadin.server.AbstractErrorMessage.ContentMode;
+import com.vaadin.server.ErrorMessage.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Select;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -68,41 +77,74 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		}
 		return groups;
 	}
+	
+	/**
+	 * This method returns all vertices which should be considered as a target. 
+	 * 
+	 * The returned List is created as follows:
+	 * <ul>
+	 *     <li>If the target is selected, than all selected vertices including the target are ŕeturned.</li>
+	 *     <li>If the target is not selected, only the target is returned.</li>
+	 * </ul>
+	 * @param target The target.
+	 * @param selectoinManager The SelectionManager.
+	 * @return All vertices which should be considered as a target.
+	 */
+	private static Collection<VertexRef> determineTargets(final VertexRef target, final SelectionManager selectionManager) {
+	    if (!selectionManager.isVertexRefSelected(target)) return Arrays.asList(target);
+	    return new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
+	}
+	
+	/**
+	 * This method removes all children of the given selection. This is necessary, because if a group is selected, we only want
+	 * this group to be added to the group. We do not want the children of the group to be added to the target as well.
+	 * @param selectedVertices
+	 * @param provider
+	 * @return
+	 */
+	private static Collection<VertexRef> removeChildren(GraphProvider provider, Collection<VertexRef> selectedVertices) {
+		List<VertexRef> returnList = new ArrayList<VertexRef>();
+		List<VertexRef> removeFromList = new ArrayList<VertexRef>();
+		for (VertexRef eachVertexRef : selectedVertices) {
+			if (selectedVertices.contains(provider.getVertex(eachVertexRef).getParent())) {
+				removeFromList.add(eachVertexRef);
+			}
+		}
+		returnList.addAll(selectedVertices);
+		returnList.removeAll(removeFromList);
+		return returnList;
+	}
+
 
 	@Override
-	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty() || targets.size() != 1) {
-			return null;
-		}
-
+	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
+	    if (targets == null || targets.isEmpty()) return null;
+	    
 		final Logger log = LoggerFactory.getLogger(this.getClass());
-
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final VertexRef currentVertex = targets.get(0);
+		final Collection<VertexRef> vertices = removeChildren(operationContext.getGraphContainer().getBaseTopology(),
+				determineTargets(targets.get(0), operationContext.getGraphContainer().getSelectionManager()));
 		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getRootGroup();
 		final Collection<Vertex> groupIds = findGroups(graphContainer.getBaseTopology(), vertexIds);
 
-		final Window window = operationContext.getMainWindow();
+		final UI window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Add Item To Group");
-		groupNamePrompt.setModal(true);
-		groupNamePrompt.setResizable(false);
-		groupNamePrompt.setHeight("180px");
-		groupNamePrompt.setWidth("300px");
+		final Window groupNamePrompt = new GroupWindow("Add This Item To a Group", "300px", "210px");
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
 		item.addItemProperty("Group", new ObjectProperty<String>(null, String.class));
 
+		// field factory for the form
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
 			private static final long serialVersionUID = 2963683658636386720L;
 
-			public Field createField(Item item, Object propertyId, Component uiContext) {
+			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
-					Select select = new Select("Group");
+					final Select select = new Select("Group");
 					for (Vertex childId : groupIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());
@@ -110,74 +152,104 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 					}
 					select.setNewItemsAllowed(false);
 					select.setNullSelectionAllowed(false);
+					select.setRequired(true);
+					select.setRequiredError("You must select a group");
+					select.addValidator(new Validator() {
+                        private static final long serialVersionUID = -2466240291882827117L;
+
+                        @Override
+					    public void validate(Object value) throws InvalidValueException {
+					        if (isValid(value)) return;
+					        throw new InvalidValueException(String.format("You cannot add group '%s' to itself.", select.getItemCaption(value)));
+					    };
+					    
+			            /**
+			             * Ensures that if only one element is selected that this element cannot be added to itself.
+			             * If there are more than one elements selected, we assume as valid. 
+			             */
+			            private boolean isValid(Object value) {
+			                if (vertices.size() > 1) return true; // more than 1 -> assume valid
+			                final String groupId = (String)select.getValue();
+			                // only one, check if we want to assign to ourself
+			                for (VertexRef eachVertex : vertices) {
+			                    if (groupId.equals(eachVertex.getId())) {
+			                        return false;
+			                    }
+			                }
+			                return true;
+			            }
+			        });
 					return select;
 				}
-
 				return null; // Invalid field (property) name.
 			}
 		};
 
-		// TODO Add validator for name value
-
+		// create the form
 		final Form promptForm = new Form() {
+            private static final long serialVersionUID = 8310646938173207767L;
 
-			private static final long serialVersionUID = 2067414790743946906L;
-
-			@Override
-			public void commit() {
-				super.commit();
-
-				String parentId = (String)getField("Group").getValue();
-				log.debug("Field value: {}", parentId);
-
-				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
-
-				// Link the selected vertex to the parent group
-				graphContainer.getBaseTopology().setParent(currentVertex, graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), parentId));
-
-				// Save the topology
-				graphContainer.getBaseTopology().save();
-
-				graphContainer.redoLayout();
-			}
+            @Override
+            public void commit() throws SourceException, InvalidValueException {
+                super.commit();
+                String groupId = (String)getField("Group").getValue();
+                Vertex group = graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), groupId);
+                log.debug("Field value: {}", group.getId());
+                for (VertexRef eachChild : vertices) {
+                    if (eachChild == group) {
+                        log.warn("Ignoring group:(id={},label={}), because otherwise we should add it to itself.", eachChild.getId(), eachChild.getLabel());
+                        continue;
+                    }
+                    log.debug("Adding item:(id={},label={}) to group:(id={},label={})", eachChild.getId(), eachChild.getLabel(), group.getId(), group.getLabel());
+                    graphContainer.getBaseTopology().setParent(eachChild, group);
+                }
+                graphContainer.getBaseTopology().save();
+                graphContainer.redoLayout();
+            }
 		};
 		// Buffer changes to the datasource
-		promptForm.setWriteThrough(false);
+		promptForm.setBuffered(true);
 		// You must set the FormFieldFactory before you set the data source
 		promptForm.setFormFieldFactory(fieldFactory);
 		promptForm.setItemDataSource(item);
+		promptForm.setDescription("Please select a group.");
 
+		// Footer
 		Button ok = new Button("OK");
-		ok.addListener(new ClickListener() {
+		ok.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 7388841001913090428L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				promptForm.commit();
-				// Close the prompt window
-				window.removeWindow(groupNamePrompt);
+			    try {
+			        promptForm.validate();
+			        promptForm.commit();
+			        window.removeWindow(groupNamePrompt);   // Close the prompt window
+			    } catch (InvalidValueException exception) {
+			        promptForm.setComponentError(new UserError(exception.getMessage(), ContentMode.TEXT, ErrorLevel.WARNING));
+			    }
 			}
 		});
-		promptForm.getFooter().addComponent(ok);
 
 		Button cancel = new Button("Cancel");
-		cancel.addListener(new ClickListener() {
+		cancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 8780989646038333243L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Close the prompt window
-				window.removeWindow(groupNamePrompt);
+				window.removeWindow(groupNamePrompt); // Close the prompt window
 			}
 		});
+		
+		promptForm.setFooter(new HorizontalLayout());
+		promptForm.getFooter().addComponent(ok);
 		promptForm.getFooter().addComponent(cancel);
 
-		groupNamePrompt.addComponent(promptForm);
+		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
-
 		return null;
 	}
 

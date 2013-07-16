@@ -31,10 +31,11 @@ package org.opennms.sms.ping.internal;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Request;
 import org.opennms.sms.ping.PingRequestId;
 import org.opennms.sms.ping.PingResponseCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.InboundMessage;
 import org.smslib.OutboundMessage;
 
@@ -120,7 +121,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      * @param cb a {@link org.opennms.sms.ping.PingResponseCallback} object.
      */
     public PingRequest(PingRequestId id, long timeout, int retries, PingResponseCallback cb) {
-        this(id, timeout, retries, Logger.getLogger(PingRequest.class), cb);
+        this(id, timeout, retries, LoggerFactory.getLogger(PingRequest.class), cb);
     }
 
     /**
@@ -128,6 +129,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      *
      * @return a {@link org.opennms.sms.ping.PingRequestId} object.
      */
+    @Override
     public PingRequestId getId() {
         return m_id;
     }
@@ -188,6 +190,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      * @param reply a {@link org.opennms.sms.ping.internal.PingReply} object.
      * @return a boolean.
      */
+    @Override
     public boolean processResponse(PingReply reply) {
         try {
             setResponseTimestamp(reply.getReceiveTimestamp());
@@ -209,6 +212,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      *
      * @return a {@link org.opennms.sms.ping.internal.PingRequest} object.
      */
+    @Override
     public PingRequest processTimeout() {
         try {
             PingRequest returnval = null;
@@ -241,6 +245,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
@@ -255,6 +260,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(TimeUnit unit) {
         return unit.convert(getExpiration() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -265,6 +271,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
+    @Override
     public int compareTo(Delayed request) {
         long myDelay = getDelay(TimeUnit.MILLISECONDS);
         long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -274,6 +281,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processError(Throwable t) {
         try {
             m_callback.handleError(this, getRequest(), t);
@@ -314,6 +322,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      *
      * @return a boolean.
      */
+    @Override
     public boolean isProcessed() {
         return m_processed;
     }

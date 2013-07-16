@@ -59,6 +59,7 @@ public class RrdFileConstants extends Object {
 
     /** Convenience filter that matches only RRD files. */
     public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {
+        @Override
         public boolean accept(final File file, final String name) {
             return name.endsWith(getRrdSuffix());
         }
@@ -66,6 +67,7 @@ public class RrdFileConstants extends Object {
 
     /** Convenience filter that matches directories with RRD files in them. */
     public static final FileFilter INTERFACE_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(final File file) {
             return isValidRRDInterfaceDir(file);
         }
@@ -73,6 +75,7 @@ public class RrdFileConstants extends Object {
 
     /** Convenience filter that matches directories with RRD files in them. */
     public static final FileFilter DOMAIN_INTERFACE_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(final File file) {
             return isValidRRDDomainInterfaceDir(file);
         }
@@ -83,6 +86,7 @@ public class RrdFileConstants extends Object {
      * contain RRD files or directories that contain RRD files.
      */
     public static final FileFilter NODE_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(File file) {
             return isValidRRDNodeDir(file);
         }
@@ -127,6 +131,7 @@ public class RrdFileConstants extends Object {
      * contain RRD files or directories that contain RRD files.
      */
      public static final FileFilter NODESOURCE_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(File file) {
             return isValidRRDNodeSourceDir(file);
         }
@@ -165,12 +170,14 @@ public class RrdFileConstants extends Object {
      * contain directories that contain RRD files.
      */
     public static final FileFilter DOMAIN_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(final File file) {
             return isValidRRDDomainDir(file);
         }
     };
     
     public static final FileFilter SOURCE_DIRECTORY_FILTER = new FileFilter() {
+        @Override
         public boolean accept(final File file) {
             return isValidRRDSourceDir(file);
         }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,7 +39,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract AbstractSimpleServer class.</p>
@@ -48,6 +49,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 abstract public class AbstractSimpleServer {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSimpleServer.class);
     
     public static interface RequestMatcher{
         public boolean matches(String input);
@@ -65,8 +68,10 @@ abstract public class AbstractSimpleServer {
             m_banner = banner;
         }
         
+        @Override
         public boolean processRequest(BufferedReader in) throws IOException { return true; }
 
+        @Override
         public boolean sendReply(OutputStream out) throws IOException {
             out.write(String.format("%s\r\n", m_banner).getBytes());
             return true;
@@ -83,17 +88,19 @@ abstract public class AbstractSimpleServer {
             m_requestMatcher = requestMatcher;
         }
         
+        @Override
         public boolean processRequest(BufferedReader in) throws IOException {
             String line = in.readLine();
-            LogUtils.infof(this, "processing request: " + line);
+            LOG.info("processing request: {}", line);
             
             if(line == null)return false;
             
             return m_requestMatcher.matches(line);
         }
 
+        @Override
         public boolean sendReply(OutputStream out) throws IOException {
-            LogUtils.infof(this, "writing output: " + m_response);
+            LOG.info("writing output: {}", m_response);
             out.write(String.format("%s\r\n", m_response).getBytes());
             return false;
         }
@@ -180,6 +187,7 @@ abstract public class AbstractSimpleServer {
     public Runnable getRunnable() throws Exception{
         return new Runnable(){
             
+            @Override
             public void run(){
                 try{
                     m_serverSocket.setSoTimeout(getTimeout());
@@ -249,6 +257,7 @@ abstract public class AbstractSimpleServer {
     protected RequestMatcher regexpMatches(final String regex) {
         return new RequestMatcher() {
 
+            @Override
             public boolean matches(String input) {
                 return input.matches(regex);
             }

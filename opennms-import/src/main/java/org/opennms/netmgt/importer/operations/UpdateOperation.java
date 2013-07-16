@@ -44,6 +44,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>UpdateOperation class.</p>
@@ -52,6 +54,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateOperation.class);
+
     
     public class ServiceUpdater {
         
@@ -89,7 +94,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
         private void addNewServices(List<Event> events) {
             Collection<OnmsMonitoredService> newServices = getNewServices();
-            log().debug(getNode().getLabel()+" has "+newServices.size()+" new services.");
+            LOG.debug("{} has {} new services.", getNode().getLabel(), newServices.size());
             for (OnmsMonitoredService svc : newServices) {
                 svc.setIpInterface(m_iface);
                 m_iface.getMonitoredServices().add(svc);
@@ -341,6 +346,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
+    @Override
 	public List<Event> doPersist() {
 		OnmsNode imported = getNode();
 		OnmsNode db = getNodeDao().getHierarchy(imported.getId());
@@ -415,6 +421,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }

@@ -315,7 +315,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
          */
         Thread.sleep(100);
 
-        Connection adminConnection = getAdminDataSource().getConnection();
+        final DataSource dataSource = getAdminDataSource();
+        Connection adminConnection = dataSource.getConnection();
 
         try {
             for (int dropAttempt = 0; dropAttempt < MAX_DATABASE_DROP_ATTEMPTS; dropAttempt++) {
@@ -329,7 +330,9 @@ public class TemporaryDatabaseTestCase extends TestCase {
                     if ((dropAttempt + 1) >= MAX_DATABASE_DROP_ATTEMPTS) {
                         final String message = "Failed to drop test database on last attempt " + (dropAttempt + 1) + ": " + e;
                         System.err.println(new Date().toString() + ": " + message);
-                        TemporaryDatabase.dumpThreads();
+                        if (dataSource instanceof TemporaryDatabasePostgreSQL) {
+                            TemporaryDatabasePostgreSQL.dumpThreads();
+                        }
 
                         SQLException newException = new SQLException(message);
                         newException.initCause(e);
@@ -446,6 +449,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
             m_tearDownError = tearDownError;
         }
         
+        @Override
         public String toString() {
             return super.toString()
                 + "\nAlso received error on tearDown: "

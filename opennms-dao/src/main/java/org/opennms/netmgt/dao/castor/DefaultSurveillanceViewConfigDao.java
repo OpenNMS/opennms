@@ -34,7 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.config.surveillanceViews.Views;
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
+import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 
 /**
  * <p>DefaultSurveillanceViewConfigDao class.</p>
@@ -57,6 +57,7 @@ public class DefaultSurveillanceViewConfigDao extends AbstractCastorConfigDao<Su
     }
     
     /** {@inheritDoc} */
+    @Override
     public View getView(String viewName) {
         return getContainer().getObject().getViewsMap().get(viewName);
     }
@@ -66,6 +67,7 @@ public class DefaultSurveillanceViewConfigDao extends AbstractCastorConfigDao<Su
      *
      * @return a {@link org.opennms.netmgt.config.surveillanceViews.Views} object.
      */
+    @Override
     public Views getViews() {
         return getContainer().getObject().getConfig().getViews();
     }
@@ -85,6 +87,7 @@ public class DefaultSurveillanceViewConfigDao extends AbstractCastorConfigDao<Su
      *
      * @return a {@link org.opennms.netmgt.config.surveillanceViews.View} object.
      */
+    @Override
     public View getDefaultView() {
         String defaultView = getContainer().getObject().getConfig().getDefaultView();
         return getView(defaultView);

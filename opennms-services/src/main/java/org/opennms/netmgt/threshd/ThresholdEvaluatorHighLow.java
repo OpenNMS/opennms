@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -43,7 +45,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorHighLow.class);
     /**
      * <p>Constructor for ThresholdEvaluatorHighLow.</p>
      */
@@ -52,11 +54,13 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return "low".equals(type) || "high".equals(type);
     }
     
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateHighLow(threshold);
     }
@@ -110,6 +114,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             m_exceededCount = exceededCount;
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
@@ -129,17 +134,16 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getThresholdConfig().getType();
         }
         
+        @Override
         public Status evaluate(double dsValue) {
             if (isThresholdExceeded(dsValue)) {
                 if (isArmed()) {
                     setExceededCount(getExceededCount() + 1);
 
-                    if (log().isDebugEnabled()) {
-                        log().debug("evaluate: " + getType() + " threshold exceeded, count=" + getExceededCount());
-                    }
+                    LOG.debug("evaluate: {} threshold exceeded, count={}", getType(), getExceededCount());
 
                     if (isTriggerCountExceeded()) {
-                        log().debug("evaluate: " + getType() + " threshold triggered");
+                        LOG.debug("evaluate: {} threshold triggered", getType());
                         setExceededCount(1);
                         setArmed(false);
                         return Status.TRIGGERED;
@@ -147,17 +151,17 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                 }
             } else if (isRearmExceeded(dsValue)) {
                 if (!isArmed()) {
-                    log().debug("evaluate: " + getType() + " threshold rearmed");
+                    LOG.debug("evaluate: {} threshold rearmed", getType());
                     setArmed(true);
                     setExceededCount(0);
                     return Status.RE_ARMED;
                 }
                 if (getExceededCount() > 0) {
-                    log().debug("evaluate: resetting " + getType() + " threshold count to 0, because the current value indicates that the in-progress threshold has been rearmed, but it doesn't triggered yet.");
+                    LOG.debug("evaluate: resetting {} threshold count to 0, because the current value indicates that the in-progress threshold has been rearmed, but it doesn't triggered yet.", getType());
                     setExceededCount(0);
                 }
             } else {
-                log().debug("evaluate: resetting " + getType() + " threshold count to 0");
+                LOG.debug("evaluate: resetting {} threshold count to 0", getType());
                 setExceededCount(0);
             }
 
@@ -188,6 +192,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getExceededCount() >= getThresholdConfig().getTrigger();
         }
         
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             /*
              * If resource is null, we will use m_lastCollectionResourceUsed; else we will use provided resource.
@@ -248,14 +253,17 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
         
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateHighLow(m_thresholdConfig);
         }
 
+        @Override
         public boolean isTriggered() {
             return !isArmed();
         }
         
+        @Override
         public void clearState() {
             setArmed(true);
             setExceededCount(0);

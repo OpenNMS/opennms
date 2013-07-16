@@ -62,8 +62,8 @@ import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
@@ -117,6 +117,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
 
     private MockDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(MockDatabase database) {
         m_database = database;
     }
@@ -465,7 +466,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test
     public final void testGetName() {
-        assertEquals("OpenNMS.Vacuumd", m_vacuumd.getName());
+        assertEquals("vacuumd", m_vacuumd.getName());
     }
 
     /**

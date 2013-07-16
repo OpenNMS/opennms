@@ -31,7 +31,6 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -52,6 +53,8 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author <a href="mailto:brozow@opennms.org">brozow </a>
  */
 public final class IfSnmpCollector implements Runnable {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IfSnmpCollector.class);
 
     /**
      * The IP address to used to collect the SNMP information
@@ -109,7 +112,7 @@ public final class IfSnmpCollector implements Runnable {
      */
     public boolean hasSystemGroup() {
         if (m_sysGroup == null) {
-            log().debug("hasSystemGroup: No system group present.");
+            LOG.debug("hasSystemGroup: No system group present.");
         }
 
         return (m_sysGroup != null && !m_sysGroup.failed());
@@ -132,7 +135,7 @@ public final class IfSnmpCollector implements Runnable {
     public boolean hasIfTable() {
         // FIXME What should we do if the table had no error but was empty
 		if (m_ifTable == null) {
-			log().debug("hasIfTable: No interface table present.");
+			LOG.debug("hasIfTable: No interface table present.");
 		}
         return (m_ifTable != null && !m_ifTable.failed());
     }
@@ -154,7 +157,7 @@ public final class IfSnmpCollector implements Runnable {
     public boolean hasIpAddrTable() {
         // FIXME What should we do if the table had no error but was empty
 		if (m_ipAddrTable == null) {
-			log().debug("hasIpAddrTable: No IP interface address table present.");
+			LOG.debug("hasIpAddrTable: No IP interface address table present.");
 		}
         return (m_ipAddrTable != null && !m_ipAddrTable.failed());
     }
@@ -176,7 +179,7 @@ public final class IfSnmpCollector implements Runnable {
     public boolean hasIfXTable() {
         // FIXME What should we do if the table had no error but was empty
     		if (m_ifXTable == null) {
-    			log().debug("hasIfXTable: No interface extensions table present.");
+    			LOG.debug("hasIfXTable: No interface extensions table present.");
     		}
         return (m_ifXTable != null && !m_ifXTable.failed());
     }
@@ -267,9 +270,9 @@ public final class IfSnmpCollector implements Runnable {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        log().debug("getIfIndex: retrieving ifIndex for " + InetAddressUtils.str(address));
+        LOG.debug("getIfIndex: retrieving ifIndex for {}", InetAddressUtils.str(address));
         if (!hasIpAddrTable()) {
-            log().debug("getIfIndex: Illegal index, no table present.");
+            LOG.debug("getIfIndex: Illegal index, no table present.");
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
 
@@ -291,9 +294,9 @@ public final class IfSnmpCollector implements Runnable {
 
         // Debug
         if (snmpIfName != null) {
-            log().debug("getIfName: ifIndex " + ifIndex + " has ifName '" + snmpIfName);
+            LOG.debug("getIfName: ifIndex {} has ifName '{}'", ifIndex, snmpIfName);
         } else {
-            log().debug("getIfName: no ifName found for ifIndex " + ifIndex);
+            LOG.debug("getIfName: no ifName found for ifIndex {}", ifIndex);
         }
 
         return snmpIfName;
@@ -327,14 +330,14 @@ public final class IfSnmpCollector implements Runnable {
 
             if (hasIfXTable() && getIfXTable().getIfHighSpeed(ifIndex) != null && getIfXTable().getIfHighSpeed(ifIndex) > 4294) {
                 ifSpeed = getIfXTable().getIfHighSpeed(ifIndex)*1000000L;
-                log().debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+                LOG.debug("getInterfaceSpeed:  Using ifHighSpeed for ifIndex {}: {}", ifIndex, ifSpeed);
             } else if (hasIfTable()) {
                 ifSpeed = m_ifTable.getIfSpeed(ifIndex);
-                log().debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
+                LOG.debug("getInterfaceSpeed:  Using ifSpeed for ifIndex {}: {}", ifIndex, ifSpeed);
             }
             
         } catch(Throwable e) {
-            log().warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex " + ifIndex);
+            LOG.warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex {}", ifIndex);
         }
         return ifSpeed;
     }
@@ -366,17 +369,15 @@ public final class IfSnmpCollector implements Runnable {
         if (hasIfXTable()) {
             snmpIfAlias = m_ifXTable.getIfAlias(ifIndex);
 
-            if (log().isDebugEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 if (snmpIfAlias != null) {
-                    log().debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
+                    LOG.debug("getIfAlias: ifIndex {} has ifAlias '{}'", ifIndex, snmpIfAlias);
                 } else {
-                    log().debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+                    LOG.debug("getIfAlias: no ifAlias found for ifIndex {}", ifIndex);
                 }
             }
         } else {
-            if (log().isDebugEnabled()) {
-                log().debug("getIfAlias: no ifXTable retrieved from " + m_address);
-            }
+            LOG.debug("getIfAlias: no ifXTable retrieved from {}", m_address);
         }
 
         return snmpIfAlias;
@@ -394,6 +395,7 @@ public final class IfSnmpCollector implements Runnable {
      * context synchornization must be added.
      * </p>
      */
+    @Override
     public void run() {
 
         m_sysGroup = new SystemGroup(m_address);
@@ -403,8 +405,7 @@ public final class IfSnmpCollector implements Runnable {
         
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
         
-        if (log().isDebugEnabled())
-            log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
+        LOG.debug("run: collecting for: {} with agentConfig: {}", m_address, agentConfig);
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();
@@ -420,27 +421,23 @@ public final class IfSnmpCollector implements Runnable {
             m_ipAddrTable = null;
             m_ifXTable = null;
 
-            log().warn("IfSnmpCollector: collection interrupted, exiting", e);
+            LOG.warn("IfSnmpCollector: collection interrupted, exiting", e);
             return;
         }
 
         if (walker.failed()) {
-            log().info("IfSnmpCollector: walker failed with error message:" + walker.getErrorMessage());
+            LOG.info("IfSnmpCollector: walker failed with error message:", walker.getErrorMessage());
         }
 
         // Log any failures
         //
         if (!this.hasSystemGroup())
-            log().info("IfSnmpCollector: failed to collect System group for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect System group for {}", InetAddressUtils.str(m_address));
         if (!this.hasIfTable())
-            log().info("IfSnmpCollector: failed to collect ifTable for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect ifTable for {}", InetAddressUtils.str(m_address));
         if (!this.hasIpAddrTable())
-            log().info("IfSnmpCollector: failed to collect ipAddrTable for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect ipAddrTable for {}", InetAddressUtils.str(m_address));
         if (!this.hasIfXTable())
-            log().info("IfSnmpCollector: failed to collect ifXTable for " + InetAddressUtils.str(m_address));
-    }
-
-	private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass()+"."+m_address);
+            LOG.info("IfSnmpCollector: failed to collect ifXTable for {}", InetAddressUtils.str(m_address));
     }
 }

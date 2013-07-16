@@ -31,10 +31,10 @@ package org.opennms.netmgt.dao.castor;
 import java.util.List;
 
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
-import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
-import org.opennms.netmgt.dao.castor.statsd.Report;
-import org.opennms.netmgt.dao.castor.statsd.StatsdConfig;
-import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.config.statsd.model.Report;
+import org.opennms.netmgt.config.statsd.model.StatsdConfig;
+import org.opennms.netmgt.config.statsd.model.StatsdPackage;
+import org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -70,6 +70,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Report> getReports() {
         return getConfig().getReports();
     }
@@ -79,6 +80,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<StatsdPackage> getPackages() {
         return getConfig().getPackages();
     }
@@ -88,6 +90,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
         this.verifyMarshaledConfiguration();

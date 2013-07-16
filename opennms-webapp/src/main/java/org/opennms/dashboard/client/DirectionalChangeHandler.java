@@ -40,6 +40,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
  */
 public abstract class DirectionalChangeHandler implements ChangeHandler {
     /** {@inheritDoc} */
+    @Override
     public void onChange(ChangeEvent event) {
         onChange(event, 1);
     }

@@ -55,14 +55,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class XmpCollectionSet implements CollectionSet {
 
     /* class variables and methods *********************** */
+	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionSet.class);
+
 
     /* instance variables ******************************** */
     int status;
@@ -89,9 +93,7 @@ public class XmpCollectionSet implements CollectionSet {
     }
 
     /* private methods *********************************** */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     /* public methods ************************************ */
 
@@ -134,6 +136,7 @@ public class XmpCollectionSet implements CollectionSet {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() { return status; }
     /**
      * <p>Setter for the field <code>status</code>.</p>
@@ -160,6 +163,7 @@ public class XmpCollectionSet implements CollectionSet {
      *
      * @return a boolean.
      */
+    @Override
     public boolean ignorePersist() { return ignorePersistVar; }
 
     /**
@@ -179,9 +183,10 @@ public class XmpCollectionSet implements CollectionSet {
     //public XmpCollectionResource getResource() { return collectionResource; }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) 
     {
-        log().debug("XmpCollectionSet: visit starting for set "+agent);
+        LOG.debug("XmpCollectionSet: visit starting for set {}", agent);
 
         visitor.visitCollectionSet(this);
 
@@ -196,6 +201,7 @@ public class XmpCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
+    @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

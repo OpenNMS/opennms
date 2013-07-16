@@ -83,8 +83,9 @@ public abstract class SystemDefTable extends Table {
                 return value == null ? "N/A" : value;
             }
         });
-        addListener(new Property.ValueChangeListener() {
+        addValueChangeListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
                     BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(getValue());

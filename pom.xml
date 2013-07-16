@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.11.93-SNAPSHOT</version>
+  <version>1.13.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -103,7 +103,9 @@
     <module>opennms-ackd</module>
     <module>opennms-alarms</module>
     <module>opennms-config-tester</module>
+    <module>opennms-dao-api</module>
     <module>opennms-dao</module>
+    <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
     <module>opennms-rrd</module>
@@ -140,6 +142,11 @@
         <version>1.9</version>
       </plugin>
 -->
+      <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>depends-maven-plugin</artifactId>
+        <version>1.2</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -224,29 +231,6 @@
               <exclusion>
                 <groupId>xerces</groupId>
                 <artifactId>xerces</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4jVersion}</version>
-            <exclusions>
-              <exclusion>
-                <groupId>javax.jms</groupId>
-                <artifactId>jms</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jdmk</groupId>
-                <artifactId>jmxtools</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jmx</groupId>
-                <artifactId>jmxri</artifactId>
               </exclusion>
             </exclusions>
           </dependency>
@@ -353,7 +337,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.4</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -373,7 +357,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>2.3</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -492,6 +476,44 @@
       						<ignore/>
       					</action>
       				</pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.codehaus.mojo</groupId>
+                      <artifactId>build-helper-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <goal>add-source</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
+                  <pluginExecution>
+                    <pluginExecutionFilter>
+                      <groupId>org.opennms.maven.plugins</groupId>
+                      <artifactId>castor-maven-plugin</artifactId>
+                      <versionRange>[1.0,)</versionRange>
+                      <goals>
+                        <!--
+                        <goal>add-test-source</goal>
+                        <goal>add-resource</goal>
+                        <goal>add-test-resource</goal>
+                        -->
+                        <goal>add-source</goal>
+                        <goal>generate</goal>
+                      </goals>
+                    </pluginExecutionFilter>
+                    <action>
+                      <execute>
+                        <runOnConfiguration>true</runOnConfiguration>
+                        <runOnIncremental>true</runOnIncremental>
+                      </execute>
+                    </action>
+                  </pluginExecution>
       			</pluginExecutions>
       		</lifecycleMappingMetadata>
       	</configuration>
@@ -601,7 +623,8 @@
             <runPingTests>${runPingTests}</runPingTests>
             <proxy.port>${proxy.port}</proxy.port>
           </systemPropertyVariables>
-          <forkMode>pertest</forkMode>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
           <argLine>-Xmx1024m</argLine>
           <includes>
             <include>**/*Test.java</include>
@@ -735,8 +758,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.9</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>2.9</maven.surefire.report.plugin.version>
+    <maven.surefire.plugin.version>2.15</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.15</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <antlr.version>2.7.6</antlr.version>
@@ -756,7 +779,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.11.93.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>1.13.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -773,10 +796,7 @@
     <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
-    <install.daemonlogs.dir>${install.logs.dir}/daemon</install.daemonlogs.dir>
-    <install.controllerlogs.dir>${install.logs.dir}/controller</install.controllerlogs.dir>
-    <install.webapplogs.dir>${install.logs.dir}/webapp</install.webapplogs.dir>
-    <install.pid.file>${install.daemonlogs.dir}/opennms.pid</install.pid.file>
+    <install.pid.file>${install.logs.dir}/opennms.pid</install.pid.file>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
@@ -820,12 +840,13 @@
 
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
+    <camelVersion>2.10.4</camelVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
     <commonsIoVersion>2.0.1</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLoggingVersion>1.1.1</commonsLoggingVersion>
+    <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
@@ -836,7 +857,8 @@
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.1</liquibaseVersion>
-    <log4jVersion>1.2.16</log4jVersion>
+    <log4jVersion>99.99.99-use-log4j2</log4jVersion>
+    <log4j2Version>2.0-beta7</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -857,8 +879,13 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
+    <!--
     <vaadinVersion>6.8.2</vaadinVersion>
-    <paxVaadinVersion>0.1.0-ONMS-20121218</paxVaadinVersion>
+    <vaadinVersion>7.0.0.rc2</vaadinVersion>
+    -->
+    <vaadinVersion>7.1.0</vaadinVersion>
+    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
+    <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 
@@ -1045,6 +1072,16 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.logging</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.logging.log4j</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1396,6 +1433,19 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>camel-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>camel-test-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>karaf-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1586,6 +1636,16 @@
         <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-mock</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1992,6 +2052,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp4j-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>snmp4j-agent-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2103,6 +2169,12 @@
         <groupId>bsf</groupId>
         <artifactId>bsf</artifactId>
         <version>2.4.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>bsh</groupId>
@@ -2123,11 +2195,23 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commonsBeanutilsVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils-core</artifactId>
         <version>${commonsBeanutilsVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-chain</groupId>
@@ -2153,17 +2237,28 @@
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>1.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
-        <!-- anything higher than 1.2 causes weird weird errors! -->
-        <version>1.2</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -2179,6 +2274,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -2214,11 +2315,23 @@
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>${commonsValidatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator-core</artifactId>
         <version>${commonsValidatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.dbunit</groupId>
@@ -2277,11 +2390,28 @@
         <artifactId>gwt-dev</artifactId>
         <version>${gwtVersion}</version>
       </dependency>
+      <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin</artifactId>
-        <version>${vaadinVersion}</version>
+	<artifactId>vaadin-server</artifactId>
+	<version>${vaadinVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client-compiled</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-client</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	<artifactId>vaadin-themes</artifactId>
+	<version>${vaadinVersion}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.ops4j.pax.vaadin</groupId>
         <artifactId>service</artifactId>
@@ -2405,10 +2535,11 @@
         <artifactId>mail</artifactId>
         <version>1.4.5</version>
       </dependency>
+      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0</version>     
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>1.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.samples.jnlp</groupId>
@@ -2564,9 +2695,34 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j2Version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4jVersion}</version>
+        <scope>runtime</scope>
         <exclusions>
           <exclusion>
             <groupId>javax.jms</groupId>
@@ -2615,16 +2771,19 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4jVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4jVersion}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.tuckey</groupId>
@@ -2632,10 +2791,9 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
-        <groupId>org.opennms.smslib</groupId>
+        <groupId>org.smslib</groupId>
         <artifactId>smslib</artifactId>
-        <version>3.4.3-20100302</version>
+        <version>3.5.3</version>
       </dependency>
       <dependency>
         <groupId>org.rxtx</groupId>
@@ -2666,6 +2824,12 @@
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.2.9</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -2708,6 +2872,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>2.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
@@ -2724,6 +2894,11 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+		<repository>
+      <id>smslib-snapshots</id>
+      <name>SMSLib Repository</name>
+      <url>http://smslib.org/maven2/v3/</url>
+		</repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

@@ -42,6 +42,7 @@ public final class ExampleServiceImpl
 {
     // implementation methods go here...
 
+    @Override
     public String scramble( String text )
     {
         List<Character> charList = new ArrayList<Character>();

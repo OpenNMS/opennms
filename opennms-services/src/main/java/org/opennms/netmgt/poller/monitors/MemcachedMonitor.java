@@ -41,13 +41,14 @@ import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -59,6 +60,9 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 @Distributable
 final public class MemcachedMonitor extends AbstractServiceMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(MemcachedMonitor.class);
 
     /**
      * Default FTP port.
@@ -89,6 +93,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
      *
      * Poll the specified address for Memcached service availability.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -99,8 +104,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = svc.getAddress();
         String host = InetAddressUtils.str(ipv4Addr);
 
-        if (log().isDebugEnabled())
-            log().debug("polling interface: " + host + timeoutTracker);
+        LOG.debug("polling interface: {} {}", host, timeoutTracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -113,7 +117,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeoutTracker.getConnectionTimeout());
                 socket.setSoTimeout(timeoutTracker.getSoTimeout());
-                log().debug("connected to host: " + host + " on port: " + port);
+                LOG.debug("connected to host: {} on port: {}", host, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -166,16 +170,26 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                 serviceStatus.setResponseTime(timeoutTracker.elapsedTimeInMillis());
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
-            	serviceStatus = logDown(Level.DEBUG, "Connection refused by host "+host, e);
+            	String reason = "Connection refused by host "+host;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (NoRouteToHostException e) {
             	// No route to host!! Try retries anyway in case strict timeouts are enabled
-                serviceStatus = logDown(Level.INFO, "Unable to test host " + host + ", no route available", e);
+                String reason = "Unable to test host " + host + ", no route available";
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host " + host +" within timeout: " + timeoutTracker);
+            	String reason = "did not connect to host " + host +" within timeout: " + timeoutTracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.INFO, "Error communicating with host " + host, e);
+            	String reason = "Error communicating with host " + host;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (Throwable t) {
-                serviceStatus = logDown(Level.WARN, "Undeclared throwable exception caught contacting host " + host, t);
+                String reason = "Undeclared throwable exception caught contacting host " + host;
+                LOG.debug(reason, t);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     if (socket != null) {

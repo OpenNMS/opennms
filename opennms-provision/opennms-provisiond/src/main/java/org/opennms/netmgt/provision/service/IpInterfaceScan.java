@@ -29,7 +29,8 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.core.utils.LogUtils.infof;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.provision.SyncServiceDetector;
  * @version $Id: $
  */
 public class IpInterfaceScan implements RunInBatch {
+    private static final Logger LOG = LoggerFactory.getLogger(IpInterfaceScan.class);
 
     private ProvisionService m_provisionService;
     private InetAddress m_address;
@@ -113,6 +115,7 @@ public class IpInterfaceScan implements RunInBatch {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
         	.append("address", m_address)
@@ -130,13 +133,15 @@ public class IpInterfaceScan implements RunInBatch {
      */
     public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
         return new Callback<Boolean>() {
+            @Override
             public void complete(final Boolean serviceDetected) {
                 final String hostAddress = str(getAddress());
-				infof(this, "Attempted to detect service %s on address %s: %s", serviceName, hostAddress, serviceDetected);
+				LOG.info("Attempted to detect service {} on address {}: {}", serviceName, hostAddress, serviceDetected);
                 if (serviceDetected) {
 
                     currentPhase.getBuilder().addSequence(
                             new RunInBatch() {
+                                @Override
                                 public void run(final BatchTask batch) {
                                     if ("SNMP".equals(serviceName)) {
                                         setupAgentInfo(currentPhase);
@@ -144,6 +149,7 @@ public class IpInterfaceScan implements RunInBatch {
                                 }
                             }, 
                             new RunInBatch() {
+                                @Override
                                 public void run(final BatchTask batch) {
                                     getProvisionService().addMonitoredService(getNodeId(), hostAddress, serviceName);
                                 }
@@ -156,17 +162,19 @@ public class IpInterfaceScan implements RunInBatch {
                 getProvisionService().updateMonitoredServiceState(getNodeId(), hostAddress, serviceName); // NMS-3906
             }
 
+            @Override
             public void handleException(final Throwable t) {
-                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, str(getAddress()));
+                LOG.info("Exception occurred while trying to detect service {} on address {}", serviceName, str(getAddress()), t);
             }
         };
     }
 
     Runnable runDetector(final SyncServiceDetector detector, final Callback<Boolean> cb) {
         return new Runnable() {
+            @Override
             public void run() {
                 try {
-                    infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), str(getAddress()));
+                    LOG.info("Attemping to detect service {} on address {}", detector.getServiceName(), str(getAddress()));
                     cb.complete(detector.isServiceDetected(getAddress()));
                 } catch (final Throwable t) {
                     cb.handleException(t);
@@ -204,10 +212,11 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void run(final BatchTask currentPhase) {
     	final Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
-        infof(this, "Detecting services for node %d/%s on address %s: found %d detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
+        LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
 
         for (final ServiceDetector detector : detectors) {
             currentPhase.add(createDetectorTask(currentPhase, detector));

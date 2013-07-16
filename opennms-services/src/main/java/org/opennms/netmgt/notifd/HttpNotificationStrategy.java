@@ -49,9 +49,12 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -61,6 +64,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @version $Id: $
  */
 public class HttpNotificationStrategy implements NotificationStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(HttpNotificationStrategy.class);
 
     private List<Argument> m_arguments;
 
@@ -68,13 +72,14 @@ public class HttpNotificationStrategy implements NotificationStrategy {
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         
         m_arguments = arguments;
         
         String url = getUrl();
         if (url == null) {
-        		log().warn("send: url argument is null, HttpNotification requires a URL");
+			LOG.warn("send: url argument is null, HttpNotification requires a URL");
         		return 1;
         }
         
@@ -84,11 +89,11 @@ public class HttpNotificationStrategy implements NotificationStrategy {
                 
         if (posts == null) {
             method = new HttpGet(url);
-            log().info("send: No \"post-\" arguments..., continuing with an HTTP GET using URL: "+url);
+            LOG.info("send: No \"post-\" arguments..., continuing with an HTTP GET using URL: {}", url);
         } else {
-            log().info("send: Found \"post-\" arguments..., continuing with an HTTP POST using URL: "+url);
+            LOG.info("send: Found \"post-\" arguments..., continuing with an HTTP POST using URL: {}", url);
             for (final NameValuePair post : posts) {
-                log().debug("send: post argument: "+post.getName() +" = "+post.getValue());
+                LOG.debug("send: post argument: {} = {}", post.getValue(), post.getName());
             }
             method = new HttpPost(url);
             try {
@@ -105,9 +110,9 @@ public class HttpNotificationStrategy implements NotificationStrategy {
             HttpResponse response = client.execute(method);
             statusCode = response.getStatusLine().getStatusCode();
             contents = EntityUtils.toString(response.getEntity());
-            log().info("send: Contents is: "+contents);
+            LOG.info("send: Contents is: {}", contents);
         } catch (IOException e) {
-            log().error("send: IO problem with HTTP post/response: "+e);
+            LOG.error("send: IO problem with HTTP post/response: {}", e);
             throw new RuntimeException("Problem with HTTP post: "+e.getMessage());
         } finally {
             // Do we need to do any cleanup?
@@ -121,27 +126,27 @@ public class HttpNotificationStrategy implements NotificationStrategy {
 
     private void doSql(String contents) {
         if (getSql() == null) {
-            log().info("send: optional sql argument is null.");
+            LOG.info("send: optional sql argument is null.");
             return;
         }
 
         if (contents == null) {
-            log().info("doSql: HTTP reply is null");
+            LOG.info("doSql: HTTP reply is null");
             return;
         }
 
-        log().debug("send: compiling expression: "+getSwitchValue("result-match"));
+        LOG.debug("send: compiling expression: {}", getSwitchValue("result-match"));
         Pattern p = Pattern.compile(getSwitchValue("result-match"));
         Matcher m = p.matcher(contents);
         if (m.matches()) {
-            log().debug("send: compiled expression ready to run sql: "+getSql());
+            LOG.debug("send: compiled expression ready to run sql: {}", getSql());
             MatchTable matches = new MatchTable(m);
             String sqlString = PropertiesUtils.substitute(getSql(), matches);
-            log().debug("send: running sql: "+sqlString);
+            LOG.debug("send: running sql: {}", sqlString);
             JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
             template.execute(sqlString);
         } else {
-            log().info("send: result didn't match, not running sql");
+            LOG.info("send: result didn't match, not running sql");
         }
     }
 
@@ -208,7 +213,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
             if (arg.getSwitch().equals(notificationManagerParamString))
                 message = arg.getValue();
         }
-        log().debug("getNotificationValue: "+message);
+        LOG.debug("getNotificationValue: {}", message);
         return message;
     }
 
@@ -237,7 +242,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     private String getUrlAsPrefix() {
        	String url = null; 
     	for (Argument arg: getArgsByPrefix("url")) {
-    		log().debug("Found url switch: " + arg.getSwitch() + " with value: " + arg.getValue());
+		LOG.debug("Found url switch: {} with value: {}", arg.getValue(), arg.getSwitch());
     		url = arg.getValue();
     	}
     	return url;
@@ -261,9 +266,4 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         
         return value;
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
-    }
-
 }

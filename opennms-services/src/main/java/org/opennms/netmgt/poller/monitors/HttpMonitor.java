@@ -58,6 +58,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -71,6 +73,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 @Distributable
 public class HttpMonitor extends AbstractServiceMonitor {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(HttpMonitor.class);
+    
     private static final Pattern HEADER_PATTERN = Pattern.compile("header[0-9]+$");
 
     /**
@@ -118,6 +123,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
      * Provided that the interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
         final NetworkInterface<InetAddress> iface = svc.getNetInterface();
         final String nodeLabel = svc.getNodeLabel();
@@ -135,7 +141,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             currentPort = determinePorts(httpClient.getParameters())[portIndex];
 
             httpClient.setTimeoutTracker(new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT));
-            log().debug("Port = " + currentPort + ", Address = " + (iface.getAddress()) + ", " + httpClient.getTimeoutTracker());
+            LOG.debug("Port = {}, Address = {}, {}", currentPort, (iface.getAddress()), httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
 
@@ -146,7 +152,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 try {
                     httpClient.getTimeoutTracker().startAttempt();                    
                     httpClient.connect();
-                    log().debug("HttpMonitor: connected to host: " + (iface.getAddress()) + " on port: " + currentPort);
+                    LOG.debug("HttpMonitor: connected to host: {} on port: {}", (iface.getAddress()), currentPort);
 
                     httpClient.sendHttpCommand();
                     
@@ -169,29 +175,29 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
                         if (!httpClient.isResponseTextFound()) {
                             String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response";
-                            log().debug(message);
+                            LOG.debug(message);
                             httpClient.setReason("Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response");
                         }
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    log().warn("checkStatus: No route to host exception for address " + (iface.getAddress()), e);
+                    LOG.warn("checkStatus: No route to host exception for address {}", iface.getAddress(), e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (SocketTimeoutException e) {
-                    log().info("checkStatus: HTTP socket connection timed out with " + httpClient.getTimeoutTracker().toString());
+                    LOG.info("checkStatus: HTTP socket connection timed out with {}", httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    log().info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    LOG.info(String.format("checkStatus: HTTP connection interrupted after {} bytes transferred with {}", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
-                    log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
+                    LOG.warn("Connection exception for {}:{}", iface.getAddress(), determinePorts(httpClient.getParameters())[portIndex], e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    log().warn("IOException while polling address " + (iface.getAddress()), e);
+                    LOG.warn("IOException while polling address {}", iface.getAddress(), e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } catch (Throwable e) {
-                    log().warn("Unexpected exception while polling address " + (iface.getAddress()), e);
+                    LOG.warn("Unexpected exception while polling address {}", iface.getAddress(), e);
                     httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();
@@ -204,10 +210,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     private void logResponseTimes(Double responseTime, String line) {
-        if (log().isDebugEnabled()) {
-            log().debug("poll: response= " + line);
-            log().debug("poll: responseTime= " + responseTime + "ms");
-        }
+        LOG.debug("poll: response= {}", line);
+        LOG.debug("poll: responseTime= {}ms", responseTime);
     }
 
     /**
@@ -431,7 +435,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 }
             } catch (final IOException e) {
                 e.fillInStackTrace();
-                log().warn("Error closing socket connection", e);
+                HttpMonitor.LOG.warn("Error closing socket connection", e);
             }
         }
 
@@ -461,8 +465,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     serverResponseValue = parseHttpResponse();
 
                     if (IPLike.matchNumericListOrRange(String.valueOf(serverResponseValue), determineResponse(m_parameters))) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
+                        if (HttpMonitor.LOG.isDebugEnabled()) {
+                            HttpMonitor.LOG.debug("determineServerResponse: valid server response: "+serverResponseValue+" found.");
                         }
                         m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     } else {
@@ -491,8 +495,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 try {
                     serverResponse = Integer.parseInt(t.nextToken());
                 } catch (final NumberFormatException nfE) {
-                    if (log().isInfoEnabled()) {
-                        log().info("Error converting response code from host = " + (m_iface.getAddress()) + ", response = " + m_currentLine);
+                    if (HttpMonitor.LOG.isInfoEnabled()) {
+                        HttpMonitor.LOG.info("Error converting response code from host = {}, response = {}", (m_iface.getAddress()), m_currentLine);
                     }
                 }
             }
@@ -509,8 +513,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
         public String readLine() throws IOException {
             m_currentLine = m_lineRdr.readLine();
             
-            if (determineVerbosity(m_parameters) && log().isDebugEnabled()) {
-                log().debug("\t<<: "+m_currentLine);
+            if (determineVerbosity(m_parameters) && HttpMonitor.LOG.isDebugEnabled()) {
+                HttpMonitor.LOG.debug("\t<<: {}", m_currentLine);
             }
             
             m_html.append(m_currentLine);
@@ -522,8 +526,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
             
             if (m_responseText != null && m_currentLine != null && !m_responseTextFound) {
                 if (checkCurrentLineMatchesResponseText()) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("response-text: "+m_responseText+": found.");
+                    if (HttpMonitor.LOG.isDebugEnabled()) {
+                        HttpMonitor.LOG.debug("response-text: "+m_responseText+": found.");
                     }
                     m_serviceStatus = PollStatus.SERVICE_AVAILABLE;
                 }
@@ -532,14 +536,14 @@ public class HttpMonitor extends AbstractServiceMonitor {
         }
 
         public void sendHttpCommand() throws IOException {
-            if (determineVerbosity(m_parameters) && log().isDebugEnabled()) {
-                log().debug("Sending HTTP command: "+m_httpCmd);
+            if (determineVerbosity(m_parameters) && HttpMonitor.LOG.isDebugEnabled()) {
+                HttpMonitor.LOG.debug("Sending HTTP command: {}", m_httpCmd);
             }
             m_httpSocket.getOutputStream().write(m_httpCmd.getBytes());
             m_lineRdr = new BufferedReader(new InputStreamReader(m_httpSocket.getInputStream()));
             readLine();
             if (determineVerbosity(m_parameters)) {
-                log().debug("Server response: "+m_currentLine);
+                HttpMonitor.LOG.debug("Server response: {}", m_currentLine);
             }
             determineServerInitialResponse();
             m_headerFinished = false; // Clean header flag for each HTTP request.
@@ -568,8 +572,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
             sb.append("\r\n");
             final String cmd = sb.toString();
-            if (log().isDebugEnabled()) {
-                log().debug("checkStatus: cmd:\n" + cmd);
+            if (HttpMonitor.LOG.isDebugEnabled()) {
+                HttpMonitor.LOG.debug("checkStatus: cmd:\n", cmd);
             }
             m_httpCmd = cmd;
         }
@@ -615,8 +619,8 @@ public class HttpMonitor extends AbstractServiceMonitor {
                 getParameters().put("qualifier", testedPorts.toString());
                 setReason(getReason() + "/Ports: " + testedPorts.toString());
 
-                if (log().isDebugEnabled()) {
-                    log().debug("checkStatus: Reason: \""+getReason()+"\"");
+                if (HttpMonitor.LOG.isDebugEnabled()) {
+                    HttpMonitor.LOG.debug("checkStatus: Reason: \""+getReason()+"\"");
                 }
                 return PollStatus.unavailable(getReason());
         

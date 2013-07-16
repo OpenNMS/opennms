@@ -38,15 +38,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.MockUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract MockEventUtil class.</p>
@@ -58,6 +61,8 @@ import org.opennms.test.mock.MockUtil;
  * @version $Id: $
  */
 public abstract class MockEventUtil {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockEventUtil.class);
     /**
      * <p>createNodeLostServiceEvent</p>
      *
@@ -563,7 +568,7 @@ public abstract class MockEventUtil {
             Date date = EventConstants.parseToDate(eventTime);
             timestamp = new Timestamp(date.getTime());
         } catch (ParseException e) {
-            ThreadCategory.getInstance(MockEventUtil.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
+        	LOG.warn("Failed to convert event time {} to timestamp.", eventTime, e);
     
             timestamp = new Timestamp((new Date()).getTime());
         }
@@ -577,29 +582,10 @@ public abstract class MockEventUtil {
      * @param e1 a {@link org.opennms.netmgt.xml.event.Event} object.
      * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return a boolean.
+     * @deprecated Use {@link EventUtils#eventsMatch(Event,Event)} instead
      */
     public static boolean eventsMatch(final Event e1, final Event e2) {
-    	if (e1 == e2) {
-            return true;
-        }
-        if (e1 == null || e2 == null) {
-            return false;
-        }
-        if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
-			return false;
-        }
-
-        if (e1.getNodeid() != e2.getNodeid()) {
-            return false;
-        }
-        if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
-            return false;
-        }
-        if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
-            return false;
-        }
-
-        return true;
+        return EventUtils.eventsMatch(e1, e2);
     }
     
     /**
@@ -620,7 +606,7 @@ public abstract class MockEventUtil {
             }
         }
         
-        if (!eventsMatch(e1, e2)) {
+        if (!EventUtils.eventsMatch(e1, e2)) {
             return false;
         }
         
@@ -670,7 +656,7 @@ public abstract class MockEventUtil {
         if (prefix == null) {
             prefix = "Event";
         }
-        ThreadCategory.getInstance(MockEventUtil.class).info(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+        LOG.info("{}: {}/{}/{}/{}", prefix, event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
     }
 
     /**

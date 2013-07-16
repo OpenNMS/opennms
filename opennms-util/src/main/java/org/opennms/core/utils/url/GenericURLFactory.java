@@ -159,6 +159,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      * @return a {@java.net.URLStreamHandler} object.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public URLStreamHandler createURLStreamHandler(String protocol) {
         Class<? extends URLConnection> c = null;
         if (!urlConnections.containsKey(protocol)) {
@@ -169,7 +170,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
         try {
             c = (Class<? extends URLConnection>) Class.forName(urlConnections.get(protocol));
         } catch (ClassNotFoundException e) {
-            logger.error("Class not found for protocol '{}' and return null. Error message: '{}'", protocol, e.getMessage());
+            logger.warn("Class not found for protocol '{}' and return null. Error message: '{}'", protocol, e.getMessage());
             return null; // We couldn't load a class for the protocol
         }
         return new GenericURLStreamHandler(c, urlDefaultPorts.get(protocol)); // Return the stream handler for the customized protocol

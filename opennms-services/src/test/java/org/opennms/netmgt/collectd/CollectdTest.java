@@ -61,9 +61,9 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -335,19 +335,23 @@ public class CollectdTest extends TestCase {
         m_collector.initialize(isA(CollectionAgent.class), isAMap(String.class, Object.class));
         CollectionSet collectionSetResult=new CollectionSet() {
         	private Date m_timestamp = new Date();
+                @Override
             public int getStatus() {
                 return ServiceCollector.COLLECTION_SUCCEEDED;
             }
 
+                @Override
             public void visit(CollectionSetVisitor visitor) {
                 visitor.visitCollectionSet(this);   
                 visitor.completeCollectionSet(this);
             }
 
+                @Override
 			public boolean ignorePersist() {
 				return false;
 			}
 			
+                @Override
 			public Date getCollectionTimestamp() {
 				return m_timestamp;
 			}
@@ -438,26 +442,32 @@ public class CollectdTest extends TestCase {
             s_delegate = delegate;
         }
         
+        @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
+        @Override
         public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
             s_delegate.initialize(parameters);
         }
 
+        @Override
         public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
             s_delegate.initialize(agent, parameters);
         }
 
+        @Override
         public void release() {
             s_delegate.release();
         }
 
+        @Override
         public void release(CollectionAgent agent) {
             s_delegate.release(agent);
         }
 
+        @Override
         public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
             ArrayList<String> rras=new ArrayList<String>();

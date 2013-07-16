@@ -37,7 +37,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -53,6 +53,7 @@ public class ResourceTreeWalkerTest extends TestCase {
     private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
     private ResourceVisitor m_visitor = m_mocks.createMock(ResourceVisitor.class);
     
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }

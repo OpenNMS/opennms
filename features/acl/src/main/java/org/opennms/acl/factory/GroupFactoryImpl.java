@@ -62,6 +62,7 @@ import org.springframework.stereotype.Service;
 public class GroupFactoryImpl implements GroupFactory, InitializingBean {
 
     /** {@inheritDoc} */
+    @Override
     public Group getGroup(Integer id) {
         GroupDTO group = groupService.getGroup(id);
         return new Group(group, authorityService, groupService);

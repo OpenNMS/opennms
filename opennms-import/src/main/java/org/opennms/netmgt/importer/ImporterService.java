@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
@@ -44,6 +45,8 @@ import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -56,8 +59,10 @@ import org.springframework.core.io.UrlResource;
  */
 public class ImporterService extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(ImporterService.class);
+
 	/** Constant <code>NAME="ModelImporter"</code> */
-	public static final String NAME = "ModelImporter";
+	public static final String NAME = "model-importer";
 
 	private volatile Resource m_importResource;
 	private volatile EventIpcManager m_eventManager;
@@ -85,15 +90,15 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
             resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : m_importResource); 
             sendImportStarted(resource);
 			importModelFromResource(resource, m_stats, event);
-            log().info("Finished Importing: "+m_stats);
+            LOG.info("Finished Importing: {}", m_stats);
             sendImportSuccessful(m_stats, resource);
         } catch (IOException e) {
             String msg = "IOException importing "+resource;
-			log().error(msg, e);
+			LOG.error(msg, e);
             sendImportFailed(msg+": "+e.getMessage(), resource);
         } catch (ModelImportException e) {
             String msg = "Error parsing import data from "+resource;
-			log().error(msg, e);
+			LOG.error(msg, e);
             sendImportFailed(msg+": "+e.getMessage(), resource);
         }
     }
@@ -157,6 +162,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> assetNumbersToNodes, ImportStatistics stats) {
 		ImportOperationsManager opsMgr = super.createImportOperationsManager(assetNumbersToNodes, stats);
 		opsMgr.setEventMgr(m_eventManager);
@@ -178,6 +184,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+        @Override
 	public void destroy() throws Exception {
 		m_eventManager.removeEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 		
@@ -188,23 +195,27 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return NAME;
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onEvent(Event e) {
-		String oldPrefix = ThreadCategory.getPrefix();
-		try {
-			ThreadCategory.setPrefix(NAME);
-			if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
-				return;
-			}
-			doImport(e);
-		} finally {
-			ThreadCategory.setPrefix(oldPrefix);
-		}
-	}
+        	
+            Map mdc = Logging.getCopyOfContextMap();
+            try {
+                Logging.putPrefix(NAME);
+
+                if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
+                    return;
+                }
+                doImport(e);
+            } finally {
+                Logging.setContextMap(mdc);
+            }
+        }
 
 	public class ImporterStats implements ImportStatistics {
 
@@ -222,97 +233,119 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 		private int m_updateCount;
 		private int m_eventCount;
 
+                @Override
 		public void beginProcessingOps() {
 			m_processingDuration.start();
 		}
 
+                @Override
 		public void finishProcessingOps() {
 			m_processingDuration.end();
 		}
 
+                @Override
 		public void beginPreprocessingOps() {
 			m_preprocessingDuration.start();
 		}
 
+                @Override
 		public void finishPreprocessingOps() {
 			m_preprocessingDuration.end();
 		}
 
+                @Override
 		public void beginPreprocessing(ImportOperation oper) {
 			if (oper instanceof AbstractSaveOrUpdateOperation) {
 				m_preprocessingEffort.begin();
 			}
 		}
 
+                @Override
 		public void finishPreprocessing(ImportOperation oper) {
 			if (oper instanceof AbstractSaveOrUpdateOperation) {
 				m_preprocessingEffort.end();
 			}
 		}
 
+                @Override
 		public void beginPersisting(ImportOperation oper) {
 			m_processingEffort.begin();
 			
 		}
 
+                @Override
 		public void finishPersisting(ImportOperation oper) {
 			m_processingEffort.end();
 		}
 
+                @Override
 		public void beginSendingEvents(ImportOperation oper, List<Event> events) {
 			if (events != null) m_eventCount += events.size();
 			m_eventEffort.begin();
 		}
 
+                @Override
 		public void finishSendingEvents(ImportOperation oper, List<Event> events) {
 			m_eventEffort.end();
 		}
 
+                @Override
 		public void beginLoadingResource(Resource resource) {
 			m_loadingDuration.setName("Loading Resource: "+resource);
 			m_loadingDuration.start();
 		}
 
+                @Override
 		public void finishLoadingResource(Resource resource) {
 			m_loadingDuration.end();
 		}
 
+                @Override
 		public void beginImporting() {
 			m_importDuration.start();
 		}
 
+                @Override
 		public void finishImporting() {
 			m_importDuration.end();
 		}
 
+                @Override
 		public void beginAuditNodes() {
 			m_auditDuration.start();
 		}
 
+                @Override
 		public void finishAuditNodes() {
 			m_auditDuration.end();
 		}
 		
+                @Override
 		public void setDeleteCount(int deleteCount) {
 			m_deleteCount = deleteCount;
 		}
 
+                @Override
 		public void setInsertCount(int insertCount) {
 			m_insertCount = insertCount;
 		}
 
+                @Override
 		public void setUpdateCount(int updateCount) {
 			m_updateCount = updateCount;
 		}
 
+                @Override
 		public void beginRelateNodes() {
 			m_relateDuration.start();
 		}
 
+                @Override
 		public void finishRelateNodes() {
 			m_relateDuration.end();
 		}
 		
+                @Override
 		public String toString() {
 			StringBuffer stats = new StringBuffer();
 			stats.append("Deletes: ").append(m_deleteCount).append(' ');
@@ -368,6 +401,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 			return end - m_start;
 		}
 
+                @Override
 		public String toString() {
 			return (m_name == null ? "" : m_name+": ")+(m_start == -1L ? "has not begun": elapsedTime());
 		}
@@ -426,6 +460,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 			return m_totalTime;
 		}
 		
+                @Override
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("Total ").append(m_name).append(": ");
@@ -444,6 +479,7 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
      *
      * @throws java.lang.Exception if any.
      */
+        @Override
     public void start() throws Exception {
         // nothing to do -- we're event-driven
     }

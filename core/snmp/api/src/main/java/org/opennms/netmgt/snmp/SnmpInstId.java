@@ -50,6 +50,7 @@ public class SnmpInstId extends SnmpObjId {
         super(new int[] { instance }, false);
     }
     
+    @Override
     protected boolean addPrefixDotInToString() {
         return false;
     }

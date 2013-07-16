@@ -61,6 +61,7 @@ public class SingleResultQuerier extends Querier {
     public Object getResult() { return m_result; }
     
     /** {@inheritDoc} */
+    @Override
     public void processRow(ResultSet rs) throws SQLException {
         m_result = rs.getObject(1);
     }

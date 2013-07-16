@@ -120,6 +120,7 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     SnmpConfig target = (SnmpConfig) object;
@@ -244,6 +245,7 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

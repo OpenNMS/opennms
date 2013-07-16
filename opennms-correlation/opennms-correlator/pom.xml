@@ -34,22 +34,15 @@
   <parent>
     <artifactId>opennms-correlation</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-correlator</artifactId>
-  <name>OpenNMS Correlator</name>
+  <name>OpenNMS Correlation Correlator</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <forkMode>pertest</forkMode>
-          <argLine>-Xmx256m</argLine>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -106,6 +99,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

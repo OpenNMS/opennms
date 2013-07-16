@@ -31,7 +31,8 @@ package org.opennms.netmgt.xmlrpcd.jmx;
 import org.apache.xmlrpc.XmlRpc;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -42,6 +43,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class Provisioner implements ProvisionerMBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
 
     private ClassPathXmlApplicationContext m_context;
     int m_status = Fiber.START_PENDING;
@@ -54,6 +57,7 @@ public class Provisioner implements ProvisionerMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         XmlRpc.debug = "true".equalsIgnoreCase(System.getProperty("xmlrpc.debug", "false"));
     }
@@ -61,17 +65,19 @@ public class Provisioner implements ProvisionerMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         m_status = Fiber.STARTING;
-        ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
+        LOG.debug("SPRING: thread.classLoader=", Thread.currentThread().getContextClassLoader());
         m_context = BeanUtils.getFactory("provisionerContext", ClassPathXmlApplicationContext.class);
-        ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+        LOG.debug("SPRING: context.classLoader=", m_context.getClassLoader());
         m_status = Fiber.RUNNING;
     }
 
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_status = Fiber.STOP_PENDING;
         m_context.close();
@@ -85,6 +91,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -94,6 +101,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return Fiber.STATUS_NAMES[m_status];
     }
@@ -103,6 +111,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return getStatusText();
     }

@@ -48,10 +48,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ManageSnmpIntfServlet class.</p>
@@ -67,6 +68,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * @since 1.8.1
  */
 public final class ManageSnmpIntfServlet extends HttpServlet {
+	private static final Logger LOG = LoggerFactory.getLogger(ManageSnmpIntfServlet.class);
+
     /**
      * 
      */
@@ -83,6 +86,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
@@ -94,16 +98,17 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
         doPost(request, response);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
-		ThreadCategory log = ThreadCategory.getInstance();
 
 		HttpSession userSession = request.getSession(false);
         if (userSession == null)
@@ -127,7 +132,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         }
         int status = WebSecurityUtils.safeParseInt(statusString);
 
-        log.debug("ManageSnmpIntfServlet.doPost: parameters - node " + nodeId + " intf " + intfId + " status " + status);
+        LOG.debug("ManageSnmpIntfServlet.doPost: parameters - node {} intf {} status {}", nodeId, intfId, status);
         String snmpIp = null;
         Service[] snmpServices = null;
         try {
@@ -149,12 +154,12 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
             InetAddress[] inetAddress = InetAddress.getAllByName(snmpIp);
             SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(inetAddress[0]);
             
-            log.debug("ManageSnmpIntfServlet.doPost: agent SNMP version/write community " + agent.getVersion()+"/"+agent.getWriteCommunity());
+            LOG.debug("ManageSnmpIntfServlet.doPost: agent SNMP version/write community {}/{}", agent.getVersion(), agent.getWriteCommunity());
             SnmpIfAdmin snmpIfAdmin = new SnmpIfAdmin(nodeId, agent);
             if (snmpIfAdmin.setIfAdmin(intfId, status)) {
-                log.debug("ManageSnmpIntfServlet.doPost: snmpIAdmin return OK ");
+                LOG.debug("ManageSnmpIntfServlet.doPost: snmpIAdmin return OK ");
             } else {
-            	log.debug("ManageSnmpIntfServlet.doPost: snmpIAdmin return error ");
+            	LOG.debug("ManageSnmpIntfServlet.doPost: snmpIAdmin return error ");
             }
             redirect(request, response);
             

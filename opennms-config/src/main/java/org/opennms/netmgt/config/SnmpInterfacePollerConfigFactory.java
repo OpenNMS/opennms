@@ -40,7 +40,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -72,6 +73,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfacePollerConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -129,7 +131,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
 
-        logStatic().debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream stream = null;
         try {
@@ -141,10 +143,6 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
                 IOUtils.closeQuietly(stream);
             }
         }
-    }
-
-    private static ThreadCategory logStatic() {
-        return ThreadCategory.getInstance(SnmpInterfacePollerConfigFactory.class);
     }
 
     /**
@@ -166,16 +164,17 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
     }
 
     /** {@inheritDoc} */
+    @Override
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
-            logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
+            LOG.debug("saveXml: saving config file at {}: {}",timestamp, cfgFile.getPath());
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
-            logStatic().debug("saveXml: finished saving config file: " + cfgFile.getPath());
+            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
         }
     }
 
@@ -211,12 +210,13 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public synchronized void update() throws IOException, MarshalException, ValidationException {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
-            logStatic().debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream stream = null;
             try {
                 stream = new FileInputStream(cfgFile);
@@ -226,7 +226,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
                     IOUtils.closeQuietly(stream);
                 }
             }
-            logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }
     }
 

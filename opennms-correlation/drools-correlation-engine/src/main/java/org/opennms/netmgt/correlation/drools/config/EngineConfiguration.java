@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -61,7 +60,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.context.ApplicationContext;
@@ -80,6 +80,7 @@ import org.xml.sax.ContentHandler;
 @XmlRootElement(name="engine-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EngineConfiguration implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(EngineConfiguration.class);
 
 
       //--------------------------/
@@ -376,11 +377,11 @@ public class EngineConfiguration implements Serializable {
 
 	public CorrelationEngine[] constructEngines(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager) {
 		
-		LogUtils.infof(this, "Creating drools engins for configuration %s.", basePath);
+		LOG.info("Creating drools engins for configuration {}.", basePath);
 
 		List<CorrelationEngine> engineList = new ArrayList<CorrelationEngine>();
 		for (final RuleSet ruleSet : getRuleSet()) {
-			LogUtils.debugf(this, "Constucting engind for ruleset %s in configuration %s.", ruleSet.getName(), basePath);
+			LOG.debug("Constucting engind for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
 			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager));
 	    }
 	    

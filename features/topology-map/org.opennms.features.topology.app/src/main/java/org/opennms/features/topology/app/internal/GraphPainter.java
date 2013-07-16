@@ -1,5 +1,9 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -8,27 +12,29 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
+import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
+import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.server.PaintException;
 
 public class GraphPainter extends BaseGraphVisitor {
 
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;
-	private final SelectionManager m_selectionManager;
-	private final PaintTarget m_target;
 	private final Layout m_layout;
 	private final StatusProvider m_statusProvider;
+	private final TopologyComponentState m_componentState;
+    private final List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
+    private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
 
-	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, SelectionManager selectionManager, PaintTarget target, StatusProvider statusProvider) {
+	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
 		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
-		m_selectionManager = selectionManager;
-		m_target = target;
 		m_statusProvider = statusProvider;
+		m_componentState = componentState;
 	}
 	
 	public StatusProvider getStatusProvider() {
@@ -36,33 +42,34 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	@Override
-	public void visitGraph(Graph graph) throws PaintException {
-		m_target.startTag("graph");
-	}
-
-	@Override
 	public void visitVertex(Vertex vertex) throws PaintException {
 		Point initialLocation = m_layout.getInitialLocation(vertex);
 		Point location = m_layout.getLocation(vertex);
-		m_target.startTag("vertex");
-		m_target.addAttribute("key", vertex.getKey());
-		m_target.addAttribute("initialX", initialLocation.getX());
-		m_target.addAttribute("initialY", initialLocation.getY());
-		m_target.addAttribute("x", location.getX());
-		m_target.addAttribute("y", location.getY());
-		m_target.addAttribute("selected", isSelected(m_selectionManager, vertex));
-		if(m_graphContainer.getStatusProvider() != null) {
-		    m_target.addAttribute("status", getStatus(vertex) );
-		}
-
-		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
-		m_target.addAttribute("label", vertex.getLabel());
-		m_target.addAttribute("tooltipText", getTooltipText(vertex));
-		m_target.endTag("vertex");
+		SharedVertex v = new SharedVertex();
+		v.setKey(vertex.getKey());
+		v.setInitialX(initialLocation.getX());
+		v.setInitialY(initialLocation.getY());
+		v.setX(location.getX());
+		v.setY(location.getY());
+		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
+		if(m_graphContainer.getStatusProvider().getNamespace() != null) {
+            //TODO: This assumes Alarm status need to provide a better api
+            v.setStatus(getStatus(vertex));
+            v.setStatusCount(getStatusCount(vertex));
+        }
+        v.setIconUrl(m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
+		v.setLabel(vertex.getLabel());
+		v.setTooltipText(getTooltipText(vertex));
+		m_vertices.add(v);
 	}
 
+    private String getStatusCount(Vertex vertex) {
+        Map<String,String> statusProperties = m_graphContainer.getStatusProvider().getStatusForVertex(vertex).getStatusProperties();
+        return statusProperties.get("statusCount") == null ? "" : statusProperties.get("statusCount");
+    }
+
     private String getStatus(Vertex vertex) {
-        return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
+        return m_statusProvider != null && m_statusProvider.getStatusForVertex(vertex) != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
     }
 
     private static String getTooltipText(Vertex vertex) {
@@ -75,14 +82,14 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void visitEdge(Edge edge) throws PaintException {
-		m_target.startTag("edge");
-		m_target.addAttribute("key", edge.getKey());
-		m_target.addAttribute("source", getSourceKey(edge));
-		m_target.addAttribute("target", getTargetKey(edge));
-		m_target.addAttribute("selected", isSelected(m_selectionManager, edge));
-		m_target.addAttribute("cssClass", getStyleName(edge));
-		m_target.addAttribute("tooltipText", getTooltipText(edge));
-		m_target.endTag("edge");
+		SharedEdge e = new SharedEdge();
+		e.setKey(edge.getKey());
+		e.setSourceKey(getSourceKey(edge));
+		e.setTargetKey(getTargetKey(edge));
+		e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
+		e.setCssClass(getStyleName(edge));
+		e.setTooltipText(getTooltipText(edge));
+		m_edges.add(e);
 	}
 
 	/**
@@ -98,7 +105,8 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void completeGraph(Graph graph) throws PaintException {
-		m_target.endTag("graph");
+		m_componentState.setVertices(m_vertices);
+		m_componentState.setEdges(m_edges);
 	}
 
 	private String getSourceKey(Edge edge) {
@@ -117,7 +125,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		// If the style is null, use a blank string
 		styleName = (styleName == null ? "" : styleName);
 
-		return isSelected(m_selectionManager, edge) ? styleName + " selected" : styleName;
+		return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" : styleName;
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

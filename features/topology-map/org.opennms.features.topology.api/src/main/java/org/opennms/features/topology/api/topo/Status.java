@@ -28,8 +28,11 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.Map;
+
 public interface Status {
 
     String computeStatus();
+    Map<String, String> getStatusProperties();
 
 }

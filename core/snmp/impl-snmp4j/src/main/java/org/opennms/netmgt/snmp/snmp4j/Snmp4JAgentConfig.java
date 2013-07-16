@@ -136,6 +136,7 @@ public class Snmp4JAgentConfig {
         return m_config.getWriteCommunity();
     }
 
+    @Override
     public String toString() {
         return m_config.toString();
     }

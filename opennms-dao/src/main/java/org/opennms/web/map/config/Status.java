@@ -67,6 +67,7 @@ public class Status implements Comparable<Status> {
 	 *
 	 * Compares the Status to another in input by id.
 	 */
+        @Override
 	public int compareTo(Status otherStatus){
 		if(this.id == otherStatus.getId()) return 0;
 		else if(this.id < otherStatus.getId()) return -1;

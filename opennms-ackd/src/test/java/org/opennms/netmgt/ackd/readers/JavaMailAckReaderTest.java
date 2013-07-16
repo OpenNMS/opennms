@@ -72,8 +72,8 @@ import org.opennms.netmgt.config.javamail.SendmailHost;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.JavaMailConfigurationDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
@@ -95,7 +95,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-ackd.xml" 
+        "classpath:/META-INF/opennms/applicationContext-ackd.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -211,10 +212,8 @@ public class JavaMailAckReaderTest implements InitializingBean {
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
         
         m_processor.setJmConfigDao(m_jmDao);
-        
-        m_processor.setJmConfigDao(new JmCnfDao());
-//        m_processor.setAckService(m_ackService);
         m_processor.setAckdConfigDao(createAckdConfigDao());
+        //m_processor.setAcknowledgmentDao(ackDao);
         //Thread.sleep(20000);
         while (!f.isDone()) {
             Thread.sleep(10);
@@ -227,6 +226,7 @@ public class JavaMailAckReaderTest implements InitializingBean {
         
         class AckdConfigDao extends DefaultAckdConfigurationDao {
 
+            @Override
             public AckdConfiguration getConfig() {
                 AckdConfiguration config = new AckdConfiguration();
                 config.setAckExpression("~(?i)^AcK$");
@@ -253,6 +253,7 @@ public class JavaMailAckReaderTest implements InitializingBean {
         End2endMailConfig m_e2eConfig = createE2Ec();
         
 
+        @Override
         public ReadmailConfig getDefaultReadmailConfig() {
             return m_readConfig;
         }
@@ -272,43 +273,52 @@ public class JavaMailAckReaderTest implements InitializingBean {
             return new SendmailConfig();
         }
 
+        @Override
         public SendmailConfig getDefaultSendmailConfig() {
             return m_sendConfig;
         }
 
+        @Override
         public End2endMailConfig getEnd2EndConfig(String name) {
             return m_e2eConfig;
         }
 
+        @Override
         public List<End2endMailConfig> getEnd2EndConfigs() {
             List<End2endMailConfig> list = new ArrayList<End2endMailConfig>();
             list.add(m_e2eConfig);
             return list;
         }
 
+        @Override
         public ReadmailConfig getReadMailConfig(String name) {
             return m_readConfig;
         }
 
+        @Override
         public List<ReadmailConfig> getReadmailConfigs() {
             List<ReadmailConfig> list = new ArrayList<ReadmailConfig>();
             list.add(m_readConfig);
             return list;
         }
 
+        @Override
         public SendmailConfig getSendMailConfig(String name) {
             return m_sendConfig;
         }
 
+        @Override
         public List<SendmailConfig> getSendmailConfigs() {
             List<SendmailConfig> list = new ArrayList<SendmailConfig>();
             list.add(m_sendConfig);
             return list;
         }
 
+        @Override
         public void verifyMarshaledConfiguration() throws IllegalStateException {
         }
 
+        @Override
         public void reloadConfiguration()
                 throws DataAccessResourceFailureException {
             

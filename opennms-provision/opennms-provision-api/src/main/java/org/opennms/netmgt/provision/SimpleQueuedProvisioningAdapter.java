@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class takes the work out of scheduling and queuing calls from the provisioner.  Each provisioning
@@ -68,6 +69,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAdapter {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleQueuedProvisioningAdapter.class);
     
     private final AdapterOperationQueue m_operationQueue = new AdapterOperationQueue();
     
@@ -105,6 +108,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getName();
     
     /**
@@ -150,16 +154,19 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
-    /** {@inheritDoc} */
-    public final void addNode(int nodeId) {
+    /** {@inheritDoc} 
+     * @return */
+    @Override
+    public final ScheduledFuture<?> addNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.ADD));
         
         if (m_operationQueue.enqueOperation(nodeId, op)) {
-            op.schedule(m_executorService, true);
+            return op.schedule(m_executorService, true);
         } else {
             //TODO: log something
         }
+        return null;
     }
 
     /*
@@ -167,14 +174,16 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
     /** {@inheritDoc} */
-    public final void updateNode(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> updateNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
         if (m_operationQueue.enqueOperation(nodeId, op)) {
-            op.schedule(m_executorService, true);
+            return op.schedule(m_executorService, true);
         } else {
             //TODO: log something
         }
+        return null;
     }
     
     /*
@@ -182,7 +191,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
     /** {@inheritDoc} */
-    public final void deleteNode(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> deleteNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.DELETE));
         if (m_operationQueue.enqueOperation(nodeId, op)) {
@@ -190,6 +200,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         } else {
             //TODO: log something
         }
+        return null;
     }
     
     /*
@@ -197,7 +208,8 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#nodeConfigChanged(int)
      */
     /** {@inheritDoc} */
-    public final void nodeConfigChanged(int nodeId) {
+    @Override
+    public final ScheduledFuture<?> nodeConfigChanged(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
         if (m_operationQueue.enqueOperation(nodeId, op)) {
@@ -205,6 +217,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         } else {
             //TODO: log something
         }
+        return null;
     }
     
     /**
@@ -214,6 +227,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      *
      * Override this implementation if needed.
      */
+    @Override
     public void init() {
         
     }
@@ -397,6 +411,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
             return "Operation: "+m_type+" on Node: "+m_nodeId;
         }
         
+        @Override
         public void run() {
             try {
                 if (isNodeReady(this)) {
@@ -407,7 +422,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                         try {
                             processPendingOperationForNode(this);
                         } catch (ProvisioningAdapterException e) {
-                            log().warn("Exception thrown during adapter queuing, rescheduling: " + e.getMessage(), e);
+                            LOG.warn("Exception thrown during adapter queuing, rescheduling: {}", e.getMessage(), e);
                             //reschedule if the adapter throws a provisioning adapter exception
                             schedule(getExecutorService(), true);
                         } finally {
@@ -418,16 +433,12 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                     schedule(getExecutorService(), false);
                 }
             } catch (Throwable e) {
-                log().error("Unexpected exception during node operation: " + e.getMessage(), e);
+                LOG.error("Unexpected exception during node operation: {}", e.getMessage(), e);
             }
         }
     }
 
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(SimpleQueuedProvisioningAdapter.class);
-    }
-
     /**
      * Simple class for handling the scheduling bits for an AdapterOperation
      * 

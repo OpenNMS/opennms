@@ -32,7 +32,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A base (partial) implementation of CollectionResource, implementing common features (to reduce repeated code)
@@ -52,10 +53,8 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public abstract class AbstractCollectionResource implements CollectionResource {
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
     protected CollectionAgent m_agent;
     private Map<AttributeGroupType, AttributeGroup> m_attributeGroups;
@@ -75,10 +74,12 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOwnerName() {
         return m_agent.getHostAddress();    }
 
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository) {
         return new File(repository.getRrdBaseDir(), m_agent.getStorageDir().toString());
     }
@@ -90,8 +91,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      */
     protected void addAttribute(CollectionAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        log().debug("Adding attribute " + attr.getClass().getName() + ": "
-                     + attr + " to group " + group);
+        LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr, group);
         group.addAttribute(attr);
     }
 
@@ -111,6 +111,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         for (AttributeGroup group: m_attributeGroups.values()) {
@@ -124,6 +125,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a int.
      */
+    @Override
     public abstract int getType();
 
     /**
@@ -131,9 +133,11 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public abstract boolean rescanNeeded();
 
     /** {@inheritDoc} */
+    @Override
     public abstract boolean shouldPersist(ServiceParameters params);
 
     /**
@@ -141,10 +145,12 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return null;
     }
     
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

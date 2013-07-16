@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageException;
@@ -55,6 +56,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  * @author brozow
  */
 public class MockProxy implements CommandResponder {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(MockProxy.class);
 
     private TransportMapping m_transport;
     private Snmp m_snmp;
@@ -71,6 +74,7 @@ public class MockProxy implements CommandResponder {
         
     }
 
+    @Override
     public void processPdu(CommandResponderEvent e) {
         PDU command = e.getPDU();
         if (command == null) return;
@@ -81,7 +85,7 @@ public class MockProxy implements CommandResponder {
           StatusInformation statusInformation = new StatusInformation();
           StateReference ref = e.getStateReference();
           try {
-              Logger.getLogger(MockProxy.class).debug("Replying with: "+command);
+              LOG.debug("Replying with: {}", command);
               e.setProcessed(true);
               e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
                                                          e.getSecurityModel(),
@@ -93,8 +97,7 @@ public class MockProxy implements CommandResponder {
                                                          statusInformation);
           }
           catch (MessageException ex) {
-              System.err.println("Error while sending response: "+ex.getMessage());
-              Logger.getLogger(MockProxy.class).error(ex);
+              LOG.error("Error while sending response", ex);
           }
           
         

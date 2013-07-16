@@ -28,8 +28,8 @@
 
 package org.opennms.web.validator;
 
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
@@ -50,11 +50,13 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     private ApplicationDao m_applicationDao;
 
     /** {@inheritDoc} */
+    @Override
     public boolean supports(Class<?> clazz) {
         return clazz.equals(DistributedStatusDetailsCommand.class);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object obj, Errors errors) {
         DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) obj;
         
@@ -103,7 +105,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     /**
      * <p>getApplicationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ApplicationDao} object.
      */
     public ApplicationDao getApplicationDao() {
         return m_applicationDao;
@@ -112,7 +114,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     /**
      * <p>setApplicationDao</p>
      *
-     * @param applicationDao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     * @param applicationDao a {@link org.opennms.netmgt.dao.api.ApplicationDao} object.
      */
     public void setApplicationDao(ApplicationDao applicationDao) {
         m_applicationDao = applicationDao;
@@ -121,7 +123,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     /**
      * <p>getLocationMonitorDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
@@ -130,7 +132,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;

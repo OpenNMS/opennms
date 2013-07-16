@@ -31,11 +31,12 @@ package org.opennms.protocols.dhcp.detector.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -45,6 +46,9 @@ import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
  * @version $Id: $
  */
 public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DhcpClient.class);
+
     
     private int m_retries;
     private int m_timeout;
@@ -54,11 +58,13 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address;
         m_timeout = timeout;
@@ -72,9 +78,10 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DhcpResponse receiveBanner() throws IOException, Exception {
         m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
-        ThreadCategory.getInstance(DhcpClient.class).debug("got a response from the server: " + m_responseTime);
+        LOG.debug("got a response from the server: {}", m_responseTime);
         DhcpResponse response = new DhcpResponse(m_responseTime);
         return response;
     }
@@ -87,6 +94,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DhcpResponse sendRequest(DhcpRequest request) throws IOException, Exception {
         return null;
     }

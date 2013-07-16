@@ -47,6 +47,7 @@ public class DefaultLocationListener implements LocationListener {
 	private final MapRemoteEventHandler m_locationManager;
 
 	/** {@inheritDoc} */
+        @Override
 	public void apply(final Event event) {
 		if (event == null) return;
 		if (event instanceof MapRemoteEvent) {
@@ -66,6 +67,7 @@ public class DefaultLocationListener implements LocationListener {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onEvent(final Event event) {
 		if (event == null) {
 			return;

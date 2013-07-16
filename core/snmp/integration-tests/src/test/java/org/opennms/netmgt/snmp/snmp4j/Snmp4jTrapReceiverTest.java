@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -50,7 +52,8 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
@@ -64,135 +67,141 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements TrapProcessorFactory, CommandResponder {
-	
-	@Override
-	protected boolean usingMockStrategy() {
-		return false;
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(Snmp4jTrapReceiverTest.class);
 
-	private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
-
-    private int trapCount = 0;
+    private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 
     private InetAddress m_addr = InetAddressUtils.getLocalHostAddress();
 
-    private final class TestTrapListener implements TrapNotificationListener {
-        private boolean m_error = false;
-        private int m_receivedTrapCount = 0;
+    private int m_trapCount;
 
-        public void trapReceived(TrapNotification trapNotification) {
-            m_receivedTrapCount++;
-        }
-
-        public void trapError(int error, String msg) {
-            m_error = true;
-        }
-
-        public boolean hasError() {
-            return m_error;
-        }
-
-        public int getReceivedTrapCount() {
-            return m_receivedTrapCount;
-        }
-    }
-
-    private final class TestTrapProcessor implements TrapProcessor {
-        public void setCommunity(String community) {}
-        public void setTimeStamp(long timeStamp) {}
-        public void setVersion(String version) {}
-        public void setAgentAddress(InetAddress agentAddress) {}
-        public void setTrapAddress(InetAddress trapAddress) {}
-        public void processVarBind(SnmpObjId name, SnmpValue value) {}
-        public void setTrapIdentity(TrapIdentity trapIdentity) {}
+    @Before
+    public void resetTrapCount() {
+        m_trapCount = 0;
     }
 
     /*
      * IMPORTANT:
      *
-     * The sentence <code>snmp.getUSM().addUser(...)</code>, is the only requirement in order to properly process SNMPv3 traps.
-     * This is related with the credentials that should be created for Trapd in order to properly authenticate and/or decode SNMPv3 traps in OpennMS.
-     * This is a user that should be configured (or should be used) by the external  devices to send SNMPv3 Traps to OpenNMS.
+     * The sentence <code>snmp.getUSM().addUser(...)</code>, is the only requirement
+     * in order to properly process SNMPv3 traps.
+     * 
+     * This is related with the credentials that should be created for Trapd in order
+     * to properly authenticate and/or decode SNMPv3 traps in OpenNMS.
+     * 
+     * This is a user that should be configured (or should be used) by the external
+     * devices to send SNMPv3 Traps to OpenNMS.
+     * 
      * The SNMPv3 users should be configured in trapd-configuration.xml
-     *
      */
     @Test
-    public void testTrapReceiverWithoutOpenNMS() {
-        System.out.println("SNMP4J: Register for Traps");
-        trapCount = 0;
+    public void testTrapReceiverWithoutOpenNMS() throws Exception {
+        assertEquals(0, m_trapCount);
+        LOG.debug("SNMP4J: Register for Traps");
         DefaultUdpTransportMapping transportMapping = null;
         Snmp snmp = null;
 
         try {
             transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162));
             snmp = new Snmp(transportMapping);
-            
+
             snmp.addCommandResponder(this);
             snmp.getUSM().addUser(
+                new OctetString("opennmsUser"),
+                new UsmUser(
                     new OctetString("opennmsUser"),
-                    new UsmUser(new OctetString("opennmsUser"), AuthMD5.ID, new OctetString("0p3nNMSv3"), PrivDES.ID, new OctetString("0p3nNMSv3")));
-            snmp.listen();
+                    AuthMD5.ID,
+                    new OctetString("0p3nNMSv3"),
+                    PrivDES.ID,
+                    new OctetString("0p3nNMSv3")
+                )
+            );
 
+            long start = System.currentTimeMillis();
+            snmp.listen();
             sendTraps();
-        } catch (final IOException e) {
-            LogUtils.debugf(this, e, "Failed to grab UDP port.");
-        } catch (final InterruptedException e) {
-            LogUtils.debugf(this, e, "Interrupted while sending traps.");
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            long waitUntil = System.currentTimeMillis() + 30000L;
+            do {
+                Thread.sleep(200);
+                System.err.print(".");
+                if (m_trapCount == 2) break;
+            } while (System.currentTimeMillis() < waitUntil);
+            System.err.println("");
+            LOG.debug("waited for {} milliseconds", System.currentTimeMillis() - start);
         } finally {
-            System.out.println("SNMP4J: Unregister for Traps");
+            LOG.debug("SNMP4J: Unregister for Traps");
             if (snmp != null) {
                 try {
                     snmp.close();
                 } catch (final IOException e) {
-                    LogUtils.debugf(this, e, "Failed to close Snmp object: " + snmp);
+                    LOG.debug("Failed to close Snmp object: {}", snmp, e);
                 }
             }
             if (transportMapping != null) {
                 try {
                     transportMapping.close();
                 } catch (final IOException e) {
-                    LogUtils.debugf(this, e, "Failed to close transport mapping: " + transportMapping);
+                    LOG.debug("Failed to close transport mapping: {}", transportMapping, e);
                 }
             }
         }
 
-        System.out.println("SNMP4J: Checking Trap status");
-        assertEquals(2, trapCount);
+        LOG.debug("SNMP4J: Checking Trap status");
+        assertEquals(2, m_trapCount);
     }
 
     @Test
     public void testTrapReceiverWithOpenNMS() {
-        System.out.println("ONMS: Register for Traps");
-        TestTrapListener trapListener = new TestTrapListener();
+        assertEquals(0, m_trapCount);
+        LOG.debug("ONMS: Register for Traps");
+        final TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("agalue", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
+            long start = System.currentTimeMillis();
+
             m_strategy.registerForTraps(trapListener, this, m_addr, 9162, Collections.singletonList(user));
             sendTraps();
+
+            long waitUntil = System.currentTimeMillis() + 30000L;
+            do {
+                Thread.sleep(200);
+                System.err.print(".");
+                if (m_trapCount == 2) break;
+            } while (System.currentTimeMillis() < waitUntil);
+            System.err.println("");
+            LOG.debug("waited for {} milliseconds", System.currentTimeMillis() - start);
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "Failed to register for traps.");
+            LOG.debug("Failed to register for traps.", e);
         } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Failed to send traps.");
+            LOG.debug("Failed to send traps.", e);
         } finally {
-            System.out.println("ONMS: Unregister for Traps");
+            LOG.debug("ONMS: Unregister for Traps");
             try {
                 m_strategy.unregisterForTraps(trapListener, 9162);
             } catch (final IOException e) {
-                LogUtils.debugf(this, e, "Failed to unregister for traps.");
+                LOG.debug("Failed to unregister for traps.", e);
             }
         }
 
-        System.out.println("ONMS: Checking Trap status");
+        LOG.debug("ONMS: Checking Trap status");
         assertFalse(trapListener.hasError());
         assertEquals(2, trapListener.getReceivedTrapCount());
     }
 
-    private void sendTraps() throws Exception, UnknownHostException, InterruptedException {
+    @Override
+    public TrapProcessor createTrapProcessor() {
+        return new TestTrapProcessor();
+    }
+
+    @Override
+    protected boolean usingMockStrategy() {
+        return false;
+    }
+
+    private void sendTraps() throws Exception {
         final String hostAddress = InetAddressUtils.str(m_addr);
 
-        System.out.println("Sending V2 Trap");
+        LOG.debug("Sending V2 Trap");
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
         SnmpTrapBuilder pdu = m_strategy.getV2TrapBuilder();
@@ -200,34 +209,71 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pdu.send(hostAddress, 9162, "public");
-        Thread.sleep(1000);
 
-        System.out.println("Sending V3 Trap");
+        LOG.debug("Sending V3 Trap");
         SnmpV3TrapBuilder pduv3 = m_strategy.getV3TrapBuilder();
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), m_strategy.getValueFactory().getTimeTicks(0));
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pduv3.send(hostAddress, 9162, SnmpConfiguration.AUTH_PRIV, "opennmsUser", "0p3nNMSv3", SnmpConfiguration.DEFAULT_AUTH_PROTOCOL, "0p3nNMSv3", SnmpConfiguration.DEFAULT_PRIV_PROTOCOL);
-        Thread.sleep(1000);
     }
 
-    public TrapProcessor createTrapProcessor() {
-        return new TestTrapProcessor();
-    }
+    @Override
+    public synchronized void processPdu(final CommandResponderEvent cmdRespEvent) {
+        final PDU pdu = cmdRespEvent.getPDU();
+        LOG.debug("Received PDU... " + pdu);
 
-    public synchronized void processPdu(CommandResponderEvent cmdRespEvent) {
-        PDU pdu = cmdRespEvent.getPDU();
-        System.out.println("Received PDU... " + pdu);
         if (pdu != null) {
-            System.out.println(pdu.getClass().getName());
-            System.out.println("trapType = " + pdu.getType());
-            System.out.println("isPDUv1 = " + (pdu instanceof PDUv1));
-            System.out.println("isTrap = " + (pdu.getType() == PDU.TRAP));
-            System.out.println("isInform = " + (pdu.getType() == PDU.INFORM));
-            System.out.println("variableBindings = " + pdu.getVariableBindings());
-            trapCount++;
+            LOG.debug(pdu.getClass().getName());
+            LOG.debug("trapType = " + pdu.getType());
+            LOG.debug("isPDUv1 = " + (pdu instanceof PDUv1));
+            LOG.debug("isTrap = " + (pdu.getType() == PDU.TRAP));
+            LOG.debug("isInform = " + (pdu.getType() == PDU.INFORM));
+            LOG.debug("variableBindings = " + pdu.getVariableBindings());
+            m_trapCount++;
         } else {
-            System.err.println("ERROR: Can't create PDU");
+            LOG.debug("ERROR: Can't create PDU");
         }
+    }
+
+    private final class TestTrapListener implements TrapNotificationListener {
+        private List<TrapNotification> m_traps = new ArrayList<TrapNotification>();
+        private List<String> m_errors = new ArrayList<String>();
+
+        @Override
+        public void trapReceived(final TrapNotification trapNotification) {
+            m_traps.add(trapNotification);
+            m_trapCount++;
+        }
+
+        @Override
+        public void trapError(final int error, final String msg) {
+            m_errors.add(msg);
+        }
+
+        public boolean hasError() {
+            return m_errors.size() > 0;
+        }
+
+        public int getReceivedTrapCount() {
+            return m_traps.size();
+        }
+    }
+
+    private final class TestTrapProcessor implements TrapProcessor {
+        @Override
+        public void setCommunity(String community) {}
+        @Override
+        public void setTimeStamp(long timeStamp) {}
+        @Override
+        public void setVersion(String version) {}
+        @Override
+        public void setAgentAddress(InetAddress agentAddress) {}
+        @Override
+        public void setTrapAddress(InetAddress trapAddress) {}
+        @Override
+        public void processVarBind(SnmpObjId name, SnmpValue value) {}
+        @Override
+        public void setTrapIdentity(TrapIdentity trapIdentity) {}
     }
 }

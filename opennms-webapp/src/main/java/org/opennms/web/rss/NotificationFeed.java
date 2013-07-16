@@ -33,6 +33,8 @@ import java.util.ArrayList;
 
 import org.opennms.web.notification.Notification;
 import org.opennms.web.notification.NotificationModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
@@ -47,12 +49,16 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  * @since 1.8.1
  */
 public class NotificationFeed extends AbstractFeed {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NotificationFeed.class);
+
 
     /**
      * <p>getFeed</p>
      *
      * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
+    @Override
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 
@@ -87,7 +93,7 @@ public class NotificationFeed extends AbstractFeed {
                 entries.add(entry);
             }
         } catch (SQLException e) {
-            log().warn("unable to get outstanding notifications", e);
+            LOG.warn("unable to get outstanding notifications", e);
         }
         
         feed.setEntries(entries);

@@ -33,10 +33,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class ImportScheduler implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ImportScheduler.class);
     
     /** Constant <code>JOB_GROUP="Provisiond"</code> */
     protected static final String JOB_GROUP = "Provisiond";
@@ -91,7 +93,7 @@ public class ImportScheduler implements InitializingBean {
         try {
             getScheduler().setJobFactory(getImportJobFactory());
         } catch (SchedulerException e) {
-            log().fatal("afterPropertiesSet: couldn't set proper JobFactory for scheduler: "+e, e);
+            LOG.error("afterPropertiesSet: couldn't set proper JobFactory for scheduler", e);
         }
 
         GenericURLFactory.initialize();
@@ -153,34 +155,34 @@ public class ImportScheduler implements InitializingBean {
      */
     protected void rebuildImportSchedule() throws Exception {
         
-        log().info("rebuildImportSchedule: acquiring lock...");
+        LOG.info("rebuildImportSchedule: acquiring lock...");
 
         synchronized (m_lock) {
-            log().debug("rebuildImportSchedule: lock acquired.  reloading configuration.");
+            LOG.debug("rebuildImportSchedule: lock acquired.  reloading configuration.");
             
             try {
                 m_configDao.reloadConfiguration();
                 
-                log().debug("rebuildImportSchedule: removing current import jobs from schedule...");
+                LOG.debug("rebuildImportSchedule: removing current import jobs from schedule...");
                 removeCurrentJobsFromSchedule();
                 
-                log().debug("rebuildImportSchedule: recreating import schedule based on configuration...");
+                LOG.debug("rebuildImportSchedule: recreating import schedule based on configuration...");
                 buildImportSchedule();
                 
                 printCurrentSchedule();
                 
             } catch (DataAccessResourceFailureException e) {
-                log().error("rebuildImportSchedule: "+e.getLocalizedMessage(),e);
+                LOG.error("rebuildImportSchedule: {}", e.getLocalizedMessage(),e);
                 throw new IllegalStateException(e);
                 
             } catch (SchedulerException e) {
-                log().error("rebuildImportSchedule: "+e.getLocalizedMessage(),e);
+                LOG.error("rebuildImportSchedule: {}", e.getLocalizedMessage(),e);
                 throw e;
             }
             
         }
         
-        log().info("rebuildImportSchedule: schedule rebuilt and lock released.");
+        LOG.info("rebuildImportSchedule: schedule rebuilt and lock released.");
     }
 
     /**
@@ -200,7 +202,7 @@ public class ImportScheduler implements InitializingBean {
                     
                     getScheduler().deleteJob(jobName, JOB_GROUP);
                 } catch (SchedulerException e) {
-                    log().error("removeCurrentJobsFromSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("removeCurrentJobsFromSchedule: {}", e.getLocalizedMessage(), e);
                 }
             }
         }
@@ -230,9 +232,9 @@ public class ImportScheduler implements InitializingBean {
                     getScheduler().scheduleJob(detail, trigger);
                     
                 } catch (ParseException e) {
-                    log().error("buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 } catch (SchedulerException e) {
-                    log().error("buildImportSchedule: "+e.getLocalizedMessage(), e);
+                    LOG.error("buildImportSchedule: {}", e.getLocalizedMessage(), e);
                 }                
             }
         }
@@ -290,44 +292,27 @@ public class ImportScheduler implements InitializingBean {
     private void printCurrentSchedule() {
         
         try {
-            log().info("calendarNames: "+ StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
-            log().info("current executing jobs: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
-            log().info("current job names: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
-            log().info("scheduler metadata: "+getScheduler().getMetaData());
-            log().info("trigger names: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
+            LOG.info("calendarNames: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
+            LOG.info("current executing jobs: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
+            LOG.info("current job names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
+            LOG.info("scheduler metadata: {}", getScheduler().getMetaData());
+            LOG.info("trigger names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
             
             Iterator<String> it = Arrays.asList(getScheduler().getTriggerNames(JOB_GROUP)).iterator();
             while (it.hasNext()) {
                 String triggerName = it.next();
                 CronTrigger t = (CronTrigger) getScheduler().getTrigger(triggerName, JOB_GROUP);
-                StringBuilder sb = new StringBuilder("trigger: ");
-                sb.append(triggerName);
-                sb.append(", calendar name: ");
-                sb.append(t.getCalendarName());
-                sb.append(", cron expression: ");
-                sb.append(t.getCronExpression());
-                sb.append(", URL: ");
-                sb.append(t.getJobDataMap().get(ImportJob.KEY));
-                sb.append(", next fire time: ");
-                sb.append(t.getNextFireTime());
-                sb.append(", previous fire time: ");
-                sb.append(t.getPreviousFireTime());
-                sb.append(", time zone: ");
-                sb.append(t.getTimeZone());
-                sb.append(", priority: ");
-                sb.append(t.getPriority());
-                log().info(sb.toString());
+                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, next fire time: {}, time zone: {}, priority: {}",
+                         triggerName, t.getCalendarName(),
+                         t.getCronExpression(),
+                         t.getJobDataMap().get(ImportJob.KEY),
+                         t.getNextFireTime(), t.getPreviousFireTime(),
+                         t.getTimeZone(), t.getPriority());
             }
             
         } catch (Throwable e) {
-            log().error("printCurrentSchedule: "+e.getLocalizedMessage(), e);
+            LOG.error("printCurrentSchedule: {}", e.getLocalizedMessage(), e);
         }
         
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
-    }
-
-
 }

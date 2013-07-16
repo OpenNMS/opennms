@@ -38,13 +38,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.InternalResourceView;
 
 public final class FormatterView implements View {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FormatterView.class);
+
 
     private SystemReportFormatter m_formatter = null;
     private InternalResourceView m_view = null;
@@ -57,15 +61,17 @@ public final class FormatterView implements View {
             m_view = new InternalResourceView("/admin/support/systemReportList.htm");
         }
         
-        LogUtils.debugf(this, "formatter = %s, view = %s", m_formatter, m_view);
+        LOG.debug("formatter = {}, view = {}", m_formatter, m_view);
     }
 
+    @Override
     public String getContentType() {
         if (m_view != null) return m_view.getContentType();
         if (m_formatter == null) return "application/octet-stream";
         return m_formatter.getContentType();
     }
 
+    @Override
     public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         if (m_view == null) {
             String fileName = getFileName(request);
@@ -76,7 +82,7 @@ public final class FormatterView implements View {
         }
         if (model.containsKey("report")) {
             final SystemReportInfo info = (SystemReportInfo)model.get("report");
-            LogUtils.debugf(this, "found report = %s", info);
+            LOG.debug("found report = {}", info);
             final OutputStream output;
 
             if (m_view == null) {
@@ -89,29 +95,29 @@ public final class FormatterView implements View {
             }
 
             try {
-                LogUtils.debugf(this, "beginning output");
+                LOG.debug("beginning output");
                 m_formatter.setOutputStream(output);
                 m_formatter.begin();
 
                 for (final SystemReportPlugin plugin : info.getPlugins()) {
-                    LogUtils.debugf(this, "running plugin %s", plugin);
+                    LOG.debug("running plugin {}", plugin);
                     m_formatter.write(plugin);
                     output.flush();
                 }
                 
-                LogUtils.debugf(this, "finishing output");
+                LOG.debug("finishing output");
                 m_formatter.end();
             } catch (final Throwable e) {
-                LogUtils.warnf(this, e, "Error while formatting system report output");
+                LOG.warn("Error while formatting system report output", e);
                 throw new SystemReportException(e);
             } finally {
                 IOUtils.closeQuietly(output);
             }
         } else {
-            LogUtils.infof(this, "Invalid form input: %s", model);
+            LOG.info("Invalid form input: {}", model);
             throw new SystemReportException("Form input was invalid.");
         }
-        LogUtils.debugf(this, "done");
+        LOG.debug("done");
         if (m_view != null) {
             m_view.render(model, request, response);
         }
@@ -128,6 +134,7 @@ public final class FormatterView implements View {
         return fileName;
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("formatter", m_formatter)

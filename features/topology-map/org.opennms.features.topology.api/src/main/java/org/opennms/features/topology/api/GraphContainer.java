@@ -55,15 +55,27 @@ public interface GraphContainer extends DisplayState {
 
 	void removeChangeListener(ChangeListener listener);
 
+	SelectionManager getSelectionManager();
+
+	void setSelectionManager(SelectionManager selectionManager);
+
 	Graph getGraph();
 
 	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
     
 	MapViewManager getMapViewManager();
 
-	Property getScaleProperty();
+	Property<Double> getScaleProperty();
 
     StatusProvider getStatusProvider();
 
     void setStatusProvider(StatusProvider statusProvider);
+
+    String getUserName();
+
+    void setUserName(String userName);
+    
+    String getSessionId();
+    
+    void setSessionId(String sessionId);
 }

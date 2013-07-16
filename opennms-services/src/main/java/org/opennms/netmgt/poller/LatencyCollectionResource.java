@@ -64,6 +64,7 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return m_ipAddress + "[" + m_serviceName + "]";
     }
@@ -91,6 +92,7 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return m_serviceName;
     }
@@ -100,6 +102,7 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return "if";
     }
@@ -109,6 +112,7 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a int.
      */
+    @Override
     public int getType() {
         return 0;
     }
@@ -118,16 +122,19 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
     }
 
@@ -136,11 +143,13 @@ public class LatencyCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOwnerName() {
         return m_ipAddress;
     }
 
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository) {
         return new File(repository.getRrdBaseDir(), m_ipAddress);
     }
@@ -151,10 +160,12 @@ public class LatencyCollectionResource implements CollectionResource {
         return m_serviceName + "@" + m_ipAddress;
     }
 
+    @Override
     public String getParent() {
         return m_ipAddress;
     }
 
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

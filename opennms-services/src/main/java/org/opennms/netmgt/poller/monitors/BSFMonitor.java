@@ -41,7 +41,8 @@ import java.util.Map.Entry;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.bsf.util.IOUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -129,6 +130,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 
 public class BSFMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(BSFMonitor.class);
 
     private static final String STATUS_UNKNOWN = "UNK";
     private static final String STATUS_UNRESPONSIVE = "UNR";
@@ -136,6 +138,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
     private static final String STATUS_UNAVAILABLE = "NOK";
     
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
         BSFManager bsfManager = new BSFManager();
         PollStatus pollStatus = PollStatus.unavailable();
@@ -182,7 +185,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     } else if ("exec".equals(runType)) {
                         bsfManager.exec(lang, "BSFMonitor", 0, 0, code);
                     } else {
-                        LogUtils.warnf(this, "Invalid run-type parameter value '%s' for service '%s'. Only 'eval' and 'exec' are supported.", runType, svc.getSvcName());
+                        LOG.warn("Invalid run-type parameter value '{}' for service '{}'. Only 'eval' and 'exec' are supported.", runType, svc.getSvcName());
                         throw new RuntimeException("Invalid run-type '" + runType + "'");
                     }
                     long endTime = System.currentTimeMillis();
@@ -204,30 +207,30 @@ public class BSFMonitor extends AbstractServiceMonitor {
                         pollStatus = PollStatus.unavailable(results.get("status"));
                     }
                     
-                    LogUtils.debugf(this, "Setting %d times for service '%s'", times.size(), svc.getSvcName());
+                    LOG.debug("Setting {} times for service '{}'", times.size(), svc.getSvcName());
                     pollStatus.setProperties(times);
                     
                     if ("exec".equals(runType) && !results.containsKey("status")) {
-                        LogUtils.warnf(this, "The exec script '%s' for service '%s' never put a 'status' entry in the 'results' bean. Exec scripts should put this entry with a value of 'OK' for up.", fileName, svc.getSvcName());
+                        LOG.warn("The exec script '{}' for service '{}' never put a 'status' entry in the 'results' bean. Exec scripts should put this entry with a value of 'OK' for up.", fileName, svc.getSvcName());
                     }
             } else {
-                LogUtils.warnf(this, "Cannot locate or read BSF script file '%s'. Marking service '%s' down.", fileName, svc.getSvcName());
+                LOG.warn("Cannot locate or read BSF script file '{}'. Marking service '{}' down.", fileName, svc.getSvcName());
                 pollStatus = PollStatus.unavailable("Cannot locate or read BSF script file: " + fileName);
             }            
 
         } catch (BSFException e) {
-            LogUtils.warnf(this, e, "BSFMonitor poll for service '%s' failed with BSFException: %s", svc.getSvcName(), e.getMessage());
+            LOG.warn("BSFMonitor poll for service '{}' failed with BSFException: {}", svc.getSvcName(), e.getMessage(), e);
             pollStatus = PollStatus.unavailable(e.getMessage());
         } catch (FileNotFoundException e){
-            LogUtils.warnf(this, "Could not find BSF script file '%s'. Marking service '%s' down.", fileName, svc.getSvcName());
+            LOG.warn("Could not find BSF script file '{}'. Marking service '{}' down.", fileName, svc.getSvcName());
             pollStatus = PollStatus.unavailable("Could not find BSF script file: " + fileName);
         } catch (IOException e) {
             pollStatus = PollStatus.unavailable(e.getMessage());
-            LogUtils.warnf(this, e, "BSFMonitor poll for service '%s' failed with IOException: %s", svc.getSvcName(), e.getMessage());
+            LOG.warn("BSFMonitor poll for service '{}' failed with IOException: {}", svc.getSvcName(), e.getMessage(), e);
         } catch (Throwable e) {
             // Catch any RuntimeException throws
             pollStatus = PollStatus.unavailable(e.getMessage());
-            LogUtils.warnf(this, e, "BSFMonitor poll for service '%s' failed with unexpected throwable: %s", svc.getSvcName(), e.getMessage());
+            LOG.warn("BSFMonitor poll for service '{}' failed with unexpected throwable: {}", svc.getSvcName(), e.getMessage(), e);
         } finally { 
             bsfManager.terminate();
         }
@@ -236,11 +239,11 @@ public class BSFMonitor extends AbstractServiceMonitor {
     }
     
     public void log(String level, String format, Object... args) {
-        if ("TRACE".equals(level)) LogUtils.tracef(this, format, args);
-        if ("DEBUG".equals(level)) LogUtils.debugf(this, format, args);
-        if ("INFO".equals(level)) LogUtils.infof(this, format, args);
-        if ("WARN".equals(level)) LogUtils.warnf(this, format, args);
-        if ("ERROR".equals(level)) LogUtils.errorf(this, format, args);
-        if ("FATAL".equals(level)) LogUtils.errorf(this, format, args);
+        if ("TRACE".equals(level)) LOG.trace(format, args);
+        if ("DEBUG".equals(level)) LOG.debug(format, args);
+        if ("INFO".equals(level)) LOG.info(format, args);
+        if ("WARN".equals(level)) LOG.warn(format, args);
+        if ("ERROR".equals(level)) LOG.error(format, args);
+        if ("FATAL".equals(level)) LOG.error(format, args);
     }
 }

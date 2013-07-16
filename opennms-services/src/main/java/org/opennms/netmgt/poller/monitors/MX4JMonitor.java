@@ -54,6 +54,7 @@ public class MX4JMonitor extends JMXMonitor {
    * @see org.opennms.netmgt.poller.monitors.JMXMonitor#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
    */
   /** {@inheritDoc} */
+  @Override
   public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
       return MX4JConnectionFactory.getMBeanServerConnection(parameterMap, address);
   }

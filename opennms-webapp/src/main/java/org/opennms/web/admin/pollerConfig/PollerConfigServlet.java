@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,7 +51,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -63,6 +61,8 @@ import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -70,12 +70,11 @@ import org.opennms.netmgt.config.poller.Service;
  *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class PollerConfigServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PollerConfigServlet.class);
+
     /**
      * 
      */
@@ -108,6 +107,7 @@ public class PollerConfigServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         getInitParameters();
 
@@ -193,9 +193,7 @@ public class PollerConfigServlet extends HttpServlet {
     public void initCapsdProtocols() {
         m_pluginColl = getCapsdProtocolPlugins();
         if (m_pluginColl != null) {
-            Iterator<ProtocolPlugin> pluginiter = m_pluginColl.iterator();
-            while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = pluginiter.next();
+            for (ProtocolPlugin plugin : m_pluginColl) {
                 m_capsdColl.add(plugin);
                 m_capsdProtocols.put(plugin.getProtocol(), plugin);
             }
@@ -216,10 +214,7 @@ public class PollerConfigServlet extends HttpServlet {
             if (pkgiter.hasNext()) {
                 m_pkg = pkgiter.next();
                 Collection<Service> svcColl = m_pkg.getServiceCollection();
-                Iterator<Service> svcIter = svcColl.iterator();
-                Service svcProp = null;
-                while (svcIter.hasNext()) {
-                    svcProp = svcIter.next();
+                for (Service svcProp : svcColl) {
                     m_pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
@@ -227,6 +222,7 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 
@@ -259,10 +255,10 @@ public class PollerConfigServlet extends HttpServlet {
             Marshaller.marshal(m_pollerConfig, poller_fileWriter);
             Marshaller.marshal(m_capsdConfig, capsd_fileWriter);
         } catch (MarshalException e) {
-            log().error("Could not marshal config object when writing config file: " + e, e);
+            LOG.error("Could not marshal config object when writing config file: {}", e, e);
             throw new ServletException(e);
         } catch (ValidationException e) {
-            log().error("Could not validate config object when writing config file: " + e, e);
+            LOG.error("Could not validate config object when writing config file: {}", e, e);
             throw new ServletException(e);
         }
 
@@ -296,11 +292,8 @@ public class PollerConfigServlet extends HttpServlet {
     public void adjustNonChecked(List<String> checkedList) {
         if (m_pkg != null) {
             Collection<Service> svcColl = m_pkg.getServiceCollection();
-            Service svc = null;
             if (svcColl != null) {
-                Iterator<Service> svcIter = svcColl.iterator();
-                while (svcIter.hasNext()) {
-                    svc = svcIter.next();
+                for (Service svc : svcColl) {
                     if (svc != null) {
                         if (!checkedList.contains(svc.getName())) {
                             if (svc.getStatus().equals("on")) {
@@ -320,32 +313,22 @@ public class PollerConfigServlet extends HttpServlet {
      * @throws java.io.IOException if any.
      */
     public void deleteThese(List<String> deleteServices) throws IOException {
-        ListIterator<String> lstIter = deleteServices.listIterator();
-        while (lstIter.hasNext()) {
-            String svcname = lstIter.next();
-
+        for (String svcname : deleteServices) {
             if (m_pkg != null) {
-                boolean flag = false;
                 Collection<Service> svcColl = m_pkg.getServiceCollection();
                 if (svcColl != null) {
-                    Iterator<Service> svcIter = svcColl.iterator();
-                    Service svc = null;
-                    while (svcIter.hasNext()) {
-                        svc = svcIter.next();
+                    for (Service svc : svcColl) {
                         if (svc != null) {
                             if (svc.getName().equals(svcname)) {
-                                flag = true;
+                                m_pkg.removeService(svc);
+                                LOG.info("Package removed {}", svc.getName());
+                                removeMonitor(svc.getName());
+                                deleteCapsdInfo(svc.getName());
+                                m_props.remove("service." + svc.getName() + ".protocol");
+                                m_props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                                 break;
                             }
                         }
-                    }
-                    if (flag) {
-                        m_pkg.removeService(svc);
-                        log().info("Package removed " + svc.getName());
-                        removeMonitor(svc.getName());
-                        deleteCapsdInfo(svc.getName());
-                        m_props.remove("service." + svc.getName() + ".protocol");
-                        m_props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                     }
                 }
             }
@@ -363,9 +346,7 @@ public class PollerConfigServlet extends HttpServlet {
         Collection<Monitor> monitorColl = m_pollerConfig.getMonitorCollection();
         Monitor newMonitor = new Monitor();
         if (monitorColl != null) {
-            Iterator<Monitor> monitoriter = monitorColl.iterator();
-            while (monitoriter.hasNext()) {
-                Monitor mon = monitoriter.next();
+            for (Monitor mon : monitorColl) {
                 if (mon != null) {
                     if (mon.getService().equals(service)) {
                         newMonitor.setService(service);
@@ -389,9 +370,7 @@ public class PollerConfigServlet extends HttpServlet {
         if (m_pkg != null) {
             Collection<Service> svcColl = m_pkg.getServiceCollection();
             if (svcColl != null) {
-                Iterator<Service> svcIter = svcColl.iterator();
-                while (svcIter.hasNext()) {
-                    Service svc = svcIter.next();
+                for (Service svc : svcColl) {
                     if (svc != null) {
                         if (svc.getName().equals(protocol)) {
                             svc.setStatus(bPolled);
@@ -406,7 +385,5 @@ public class PollerConfigServlet extends HttpServlet {
     /**
      * @return logger for this servlet
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 }

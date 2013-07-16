@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.regexp.RE;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ssh.InsufficientParametersException;
 import org.opennms.netmgt.provision.support.ssh.Ssh;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SshClient class.</p>
@@ -51,6 +52,7 @@ import org.opennms.netmgt.provision.support.ssh.Ssh;
  */
 public class SshClient implements Client<NullRequest, SshResponse> {
     
+    private static final Logger LOG = LoggerFactory.getLogger(SshClient.class);
     private boolean m_isAvailable = false;
     
     private String m_banner = null;
@@ -62,11 +64,13 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         Map<String,?> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, SshClient.DEFAULT_RETRY, timeout);
@@ -92,7 +96,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
             try {
                 ps = ssh.poll(tracker);
             } catch (InsufficientParametersException e) {
-                LogUtils.errorf(this, e.getMessage());
+                LOG.error("Caught InsufficientParametersException: {}", e.getMessage(), e);
                 break;
             }
         
@@ -111,10 +115,10 @@ public class SshClient implements Client<NullRequest, SshResponse> {
             if (!regex.match(response)) {
                 // Got a response but it didn't match... no need to attempt
                 // retries
-                LogUtils.debugf(this, "isServer: NON-matching response='%s'", response);
+                LOG.debug("isServer: NON-matching response='{}'", response);
                 ps = PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
             } else {
-                LogUtils.debugf(this, "isServer: matching response='%s'", response);
+                LOG.debug("isServer: matching response='{}'", response);
             }
         }
         PollStatus result = ps;
@@ -129,6 +133,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SshResponse receiveBanner() throws IOException, Exception {
         SshResponse response = new SshResponse();
         response.receive(m_isAvailable);
@@ -143,6 +148,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SshResponse sendRequest(NullRequest request) throws IOException, Exception {
         return null;
     }

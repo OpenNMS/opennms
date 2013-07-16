@@ -31,7 +31,7 @@ package org.opennms.web.svclayer.support;
 import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -59,7 +59,7 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
     /**
      * <p>setAlarmDao</p>
      *
-     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
@@ -75,17 +75,20 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void closeTicket(Integer alarmId) {
         changeTicket(alarmId, TroubleTicketState.CLOSE_PENDING, EventConstants.TROUBLETICKET_CLOSE_UEI,null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void createTicket(Integer alarmId, Map<String,String> attributes) {
         changeTicket(alarmId, TroubleTicketState.CREATE_PENDING, EventConstants.TROUBLETICKET_CREATE_UEI,attributes);
     }
 
 
     /** {@inheritDoc} */
+    @Override
     public void updateTicket(Integer alarmId) {
         changeTicket(alarmId, TroubleTicketState.UPDATE_PENDING, EventConstants.TROUBLETICKET_UPDATE_UEI,null);
     }

@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.CountedObject;
+import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.opennms.systemreport.dao.CountedObject;
-import org.opennms.systemreport.dao.EventCountDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -49,18 +49,22 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
         BeanUtils.assertAutowiring(this);
     }
 
+    @Override
     public String getName() {
         return "TopEvent";
     }
 
+    @Override
     public String getDescription() {
         return "Top 20 most reported events";
     }
 
+    @Override
     public int getPriority() {
         return 4;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 

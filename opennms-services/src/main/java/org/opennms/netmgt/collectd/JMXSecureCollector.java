@@ -62,6 +62,7 @@ public class JMXSecureCollector extends JMXCollector
 	}
 
     /** {@inheritDoc} */
+        @Override
     public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address)
 	{
 		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);

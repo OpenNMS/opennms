@@ -19,6 +19,7 @@
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/etc</directory>

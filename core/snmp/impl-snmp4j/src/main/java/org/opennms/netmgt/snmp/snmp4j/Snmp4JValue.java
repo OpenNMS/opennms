@@ -32,7 +32,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -126,6 +125,7 @@ class Snmp4JValue extends AbstractSnmpValue {
 
     }
     
+    @Override
     public byte[] getBytes() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_INTEGER:
@@ -152,14 +152,17 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public int getType() {
         return m_value.getSyntax();
     }
     
+    @Override
     public boolean isEndOfMib() {
         return m_value.getSyntax() == SMIConstants.EXCEPTION_END_OF_MIB_VIEW;
     }
     
+    @Override
     public boolean isNumeric() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_INTEGER:
@@ -173,6 +176,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public int toInt() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -188,6 +192,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public long toLong() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -209,6 +214,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         return Double.valueOf(m_value.toString()).longValue();
     }
 
+    @Override
     public String toDisplayString() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OBJECT_IDENTIFIER :
@@ -232,6 +238,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         return new String(results);
     }
 
+    @Override
     public InetAddress toInetAddress() {
         switch (m_value.getSyntax()) {
             case SMIConstants.SYNTAX_IPADDRESS:
@@ -241,6 +248,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public String toHexString() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OCTET_STRING:
@@ -250,10 +258,12 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
         
+    @Override
     public String toString() {
         return toDisplayString();
     }
 
+    @Override
     public BigInteger toBigInteger() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -274,6 +284,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public SnmpObjId toSnmpObjId() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OBJECT_IDENTIFIER:
@@ -283,6 +294,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public boolean isDisplayable() {
         if (isNumeric()) {
             return true;
@@ -299,6 +311,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         return false;
     }
 
+    @Override
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;
     }
@@ -307,6 +320,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         return m_value;
     }
 
+    @Override
     public boolean isError() {
         switch (getType()) {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:
@@ -331,9 +345,7 @@ class Snmp4JValue extends AbstractSnmpValue {
     	   if (obj.getClass() != getClass()) return false;
 
     	   final Snmp4JValue that = (Snmp4JValue)obj;
-    	   return new EqualsBuilder()
-    	   	.append(this.m_value, that.m_value)
-    	   	.isEquals();
+    	   return this.m_value == null ? that.m_value == null : this.m_value.equals(that.m_value);
     }
     
 }

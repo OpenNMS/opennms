@@ -52,11 +52,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
@@ -77,7 +78,8 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("NCS")
 @Transactional
 public class NCSRestService {
-	
+	private static final Logger LOG = LoggerFactory.getLogger(NCSRestService.class);
+
 	@Autowired
 	NCSComponentService m_componentService;
 
@@ -108,7 +110,7 @@ public class NCSRestService {
     	afterPropertiesSet();
     	readLock();
     	try {
-	    	LogUtils.debugf(this, "getComponent: type = %s, foreignSource = %s, foreignId = %s", type, foreignSource, foreignId);
+	    	LOG.debug("getComponent: type = {}, foreignSource = {}, foreignId = {}", type, foreignSource, foreignId);
 	
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");
@@ -145,7 +147,7 @@ public class NCSRestService {
     	afterPropertiesSet();
     	writeLock();
     	try {
-			LogUtils.debugf(this, "addComponents: Adding component %s (deleteOrphans=%s)", component, Boolean.valueOf(deleteOrphans));
+			LOG.debug("addComponents: Adding component {} (deleteOrphans={})", component, Boolean.valueOf(deleteOrphans));
 
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");
@@ -174,7 +176,7 @@ public class NCSRestService {
     	afterPropertiesSet();
     	writeLock();
     	try {
-	    	LogUtils.debugf(this, "addComponent: type = %s, foreignSource = %s, foreignId = %s (deleteOrphans=%s)", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
+		LOG.debug("addComponent: type = {}, foreignSource = {}, foreignId = {} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 	
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");
@@ -201,7 +203,7 @@ public class NCSRestService {
     	writeLock();
     	
     	try {
-	        LogUtils.infof(this, "deleteComponent: Deleting component of type %s and foreignIdentity %s:%s (deleteOrphans=%s)", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
+	        LOG.info("deleteComponent: Deleting component of type {} and foreignIdentity {}:{} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 	
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");

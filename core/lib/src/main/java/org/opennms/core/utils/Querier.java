@@ -80,6 +80,7 @@ public class Querier extends JDBCTemplate implements RowProcessor {
     }
      
     /** {@inheritDoc} */
+    @Override
     protected void executeStmt(PreparedStatement stmt) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -96,6 +97,7 @@ public class Querier extends JDBCTemplate implements RowProcessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processRow(ResultSet rs) throws SQLException {
     }
 

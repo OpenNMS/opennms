@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
@@ -76,9 +76,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    </dependencies>
 </project>

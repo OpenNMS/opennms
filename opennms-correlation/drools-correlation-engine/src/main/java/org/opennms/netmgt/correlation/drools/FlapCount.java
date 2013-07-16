@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -38,6 +39,7 @@ import org.springframework.core.style.ToStringCreator;
  * @version $Id: $
  */
 public class FlapCount {
+    private static final Logger LOG = LoggerFactory.getLogger(FlapCount.class);
     Long m_nodeid;
     String m_ipAddr;
     String m_svcName;
@@ -62,7 +64,7 @@ public class FlapCount {
         m_count = 1;
         m_alerted = false;
         
-        LogUtils.debugf(this, "FlapCount created.");
+        LOG.debug("FlapCount created.");
     }
     
     /**
@@ -70,7 +72,7 @@ public class FlapCount {
      */
     public void increment() {
         m_count += 1;
-        LogUtils.debugf(this, "FlapCount incremented (%d).", m_count);
+        LOG.debug("FlapCount incremented ({}).", m_count);
     }
     
     /**
@@ -78,7 +80,7 @@ public class FlapCount {
      */
     public void decrement() {
         m_count -= 1;
-        LogUtils.debugf(this, "FlapCount decremented (%d).", m_count);
+        LOG.debug("FlapCount decremented ({}).", m_count);
     }
 
     /**
@@ -194,6 +196,7 @@ public class FlapCount {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
         	.append("nodeid", m_nodeid)

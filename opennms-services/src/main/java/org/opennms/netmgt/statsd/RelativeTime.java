@@ -62,36 +62,43 @@ public enum RelativeTime {
     },
     
     LASTTHIRTYONEDAYS {
+        @Override
         public Date getStart() {
             return getStartDate(31);
         }
         
+        @Override
         public Date getEnd() {
                   return getStartOfToday();
         }
     },
 
     LASTSEVENDAYS {
+        @Override
         public Date getStart() {
             return getStartDate(7);
         }
         
+        @Override
         public Date getEnd() {
                   return getStartOfToday();
         }
     },
 
     YESTERDAY {
+        @Override
         public Date getStart() {
             return getStartDate(1);
         }
         
+        @Override
         public Date getEnd() {
             return getStartOfToday();
         }
     },
     
     LASTHOUR {
+        @Override
         public Date getStart() {
             Calendar calendar = new GregorianCalendar(getTimeZone());
             calendar.setTimeInMillis(getCurrentTime());
@@ -104,6 +111,7 @@ public enum RelativeTime {
             return calendar.getTime();
         }
         
+        @Override
         public Date getEnd() {
             Calendar calendar = new GregorianCalendar(getTimeZone());
             calendar.setTimeInMillis(getCurrentTime());
@@ -117,6 +125,7 @@ public enum RelativeTime {
     },
     
     SLIDINGHOUR {
+               @Override
        	public Date getStart() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -128,6 +137,7 @@ public enum RelativeTime {
            return calendar.getTime();
        	}
         
+               @Override
        	public Date getEnd() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -140,6 +150,7 @@ public enum RelativeTime {
     },
     
     SLIDING4HOURS {
+               @Override
        	public Date getStart() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -151,6 +162,7 @@ public enum RelativeTime {
            return calendar.getTime();
        	}
         
+               @Override
        	public Date getEnd() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -163,6 +175,7 @@ public enum RelativeTime {
     },
     
     SLIDING8HOURS {
+        @Override
 	public Date getStart() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -174,6 +187,7 @@ public enum RelativeTime {
            return calendar.getTime();
        }
         
+        @Override
        	public Date getEnd() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -186,6 +200,7 @@ public enum RelativeTime {
     },
     
     SLIDINGDAY {
+               @Override
        	public Date getStart() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -197,6 +212,7 @@ public enum RelativeTime {
            return calendar.getTime();
        	}
         
+               @Override
        	public Date getEnd() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());
@@ -209,10 +225,12 @@ public enum RelativeTime {
     },
     
     TODAY {
+               @Override
        	public Date getStart() {
                return getStartOfToday();
        	}
         
+               @Override
        	public Date getEnd() {
            Calendar calendar = new GregorianCalendar(getTimeZone());
            calendar.setTimeInMillis(getCurrentTime());

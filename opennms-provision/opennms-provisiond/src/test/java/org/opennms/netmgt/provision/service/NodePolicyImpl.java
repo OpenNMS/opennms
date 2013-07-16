@@ -38,6 +38,7 @@ import org.opennms.netmgt.provision.NodePolicy;
  */
 public class NodePolicyImpl implements NodePolicy {
 
+    @Override
     public OnmsNode apply(OnmsNode entity) {
         return entity;
     }

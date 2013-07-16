@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN">
+
+  <properties>
+    <property name="prefix">uncategorized</property>
+    <property name="logdir">${install.logs.dir}</property>
+  </properties>
+
+  <!-- Each category/log can be set to one of TRACE, DEBUG, INFO, WARN, ERROR -->
+  <DynamicThresholdFilter key="prefix" defaultThreshold="INFO" onMatch="ACCEPT" onMismatch="DENY">
+    <KeyValuePair key="access-point-monitor" value="INFO" />
+    <KeyValuePair key="ackd"                 value="INFO" />
+    <KeyValuePair key="actiond"              value="INFO" />
+    <KeyValuePair key="alarmd"               value="INFO" />
+    <KeyValuePair key="asterisk-gateway"     value="INFO" />
+    <KeyValuePair key="archiver"             value="INFO" />
+    <KeyValuePair key="capsd"                value="INFO" />
+    <KeyValuePair key="collectd"             value="INFO" />
+    <KeyValuePair key="correlator"           value="INFO" />
+    <KeyValuePair key="dhcpd"                value="INFO" />
+    <KeyValuePair key="discovery"            value="INFO" />
+    <KeyValuePair key="eventd"               value="INFO" />
+    <KeyValuePair key="event-translator"     value="INFO" />
+    <KeyValuePair key="jetty-server"         value="INFO" />
+    <KeyValuePair key="linkd"                value="INFO" />
+    <KeyValuePair key="manager"              value="DEBUG" />
+    <KeyValuePair key="map"                  value="INFO" />
+    <KeyValuePair key="model-importer"       value="INFO" />
+    <KeyValuePair key="notifd"               value="INFO" />
+    <KeyValuePair key="oss-qosd"             value="INFO" />
+    <KeyValuePair key="oss-qosdrx"           value="INFO" />
+    <KeyValuePair key="passive"              value="INFO" />
+    <KeyValuePair key="poller"               value="INFO" />
+    <KeyValuePair key="provisiond"           value="INFO" />
+    <KeyValuePair key="queued"               value="INFO" />
+    <KeyValuePair key="reportd"              value="INFO" />
+    <KeyValuePair key="reports"              value="INFO" />
+    <KeyValuePair key="rtc"                  value="INFO" />
+    <KeyValuePair key="syslogd"              value="INFO" />
+    <KeyValuePair key="scriptd"              value="INFO" />
+    <KeyValuePair key="snmp-poller"          value="INFO" />
+    <KeyValuePair key="syslogd"              value="INFO" />
+    <KeyValuePair key="threshd"              value="INFO" />
+    <KeyValuePair key="tl1d"                 value="INFO" />
+    <KeyValuePair key="trapd"                value="INFO" />
+    <KeyValuePair key="vacuumd"              value="INFO" />
+    <KeyValuePair key="web"                  value="INFO" />
+    <KeyValuePair key="xmlrpcd"              value="INFO" />
+  </DynamicThresholdFilter>
+
+  <appenders>
+    <Routing name="RoutingAppender">
+      <Routes pattern="$${ctx:prefix}">
+        <Route>
+          <RollingFile name="Rolling-\${ctx:prefix}" fileName="\${logdir}/\${ctx:prefix}.log"
+                       filePattern="\${logdir}/\${ctx:prefix}.%i.log.gz">
+            <PatternLayout>
+              <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+      </Routes>
+    </Routing>
+  </appenders>
+
+  <loggers>
+    <root><appender-ref ref="RoutingAppender"/></root>
+  </loggers>
+
+</configuration>

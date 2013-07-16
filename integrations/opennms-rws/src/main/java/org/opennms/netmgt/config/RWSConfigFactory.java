@@ -40,7 +40,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -60,6 +61,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public final class RWSConfigFactory extends RWSConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(RWSConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -113,7 +115,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
 
-        LogUtils.debugf(RWSConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream stream = null;
         try {
@@ -166,12 +168,12 @@ public final class RWSConfigFactory extends RWSConfigManager {
             try {
                 final long timestamp = System.currentTimeMillis();
                 final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
-                LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+                LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
                 final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
                 fileWriter.write(xml);
                 fileWriter.flush();
                 fileWriter.close();
-                LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+                LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
             } finally {
                 getWriteLock().unlock();
             }
@@ -191,7 +193,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
-                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                LOG.debug("init: config file path: {}", cfgFile.getPath());
                 InputStream stream = null;
                 try {
                     stream = new FileInputStream(cfgFile);
@@ -199,7 +201,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
                 } finally {
                     IOUtils.closeQuietly(stream);
                 }
-                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
+                LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
             }
         } finally {
             getWriteLock().unlock();

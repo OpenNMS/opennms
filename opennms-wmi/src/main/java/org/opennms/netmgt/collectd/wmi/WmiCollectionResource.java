@@ -60,6 +60,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      *
      * @return a int.
      */
+    @Override
     public int getType() {
         return -1; //Is this right?
     }
@@ -70,11 +71,13 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(final ServiceParameters params) {
         return true;
     }
@@ -95,6 +98,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getResourceTypeName();
 
 
@@ -103,8 +107,10 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getInstance();
     
+    @Override
     public String getParent() {
         return m_agent.getStorageDir().toString();
     }

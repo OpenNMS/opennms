@@ -54,6 +54,7 @@ class DefaultLocationDefHandler implements LocationDefHandler {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void start(final int size) {
 	}
 
@@ -62,6 +63,7 @@ class DefaultLocationDefHandler implements LocationDefHandler {
 	 *
 	 * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
 	 */
+        @Override
 	public void handle(final OnmsMonitoringLocationDefinition def) {
 		final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(m_locationDataService.getLocationInfo(def));
 		getEventService().addEventUserSpecific(event);
@@ -70,6 +72,7 @@ class DefaultLocationDefHandler implements LocationDefHandler {
 	/**
 	 * <p>finish</p>
 	 */
+        @Override
 	public void finish() {
 	}
 

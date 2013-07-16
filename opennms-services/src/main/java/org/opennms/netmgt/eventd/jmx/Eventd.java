@@ -40,7 +40,7 @@ public class Eventd extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Eventd";
+        return org.opennms.netmgt.eventd.Eventd.LOG4J_CATEGORY;
     }
 
     /** {@inheritDoc} */

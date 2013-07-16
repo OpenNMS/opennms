@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,14 @@ package org.opennms.netmgt.provision.detector.datagram;
 
 import java.net.DatagramPacket;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.NtpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.RequestBuilder;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     
+    private static final Logger LOG = LoggerFactory.getLogger(NtpDetector.class);
     private final NtpClient m_client;
     
     /**
@@ -75,11 +77,12 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     private ResponseValidator<DatagramPacket> validateResponse() {
         return new ResponseValidator<DatagramPacket>(){
 
+            @Override
             public boolean validate(final DatagramPacket response) {
                 if (response.getAddress().equals(m_client.getAddress())) {
                     // Parse the incoming data
                     NtpMessage m = new NtpMessage(response.getData());
-                    LogUtils.infof(this, "NTP message received %s", m.toString());
+                    LOG.info("NTP message received {}", m.toString());
                     // All timestamps returned on the package are required in order to process the NTP package on the client side.
                     return m.originateTimestamp > 0 && m.transmitTimestamp > 0 && m.referenceTimestamp > 0 && m.receiveTimestamp > 0;
                 }else{
@@ -93,6 +96,7 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     private RequestBuilder<NtpMessage> createNtpMessage() {
         return new RequestBuilder<NtpMessage>(){
 
+            @Override
             public NtpMessage getRequest() {
                 return new NtpMessage();
             }

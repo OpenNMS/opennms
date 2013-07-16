@@ -36,10 +36,13 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyslogMessage {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogMessage.class);
     private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
+        @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -48,6 +51,7 @@ public class SyslogMessage {
     };
 
     private static final ThreadLocal<DateFormat> m_rfc3339Format = new ThreadLocal<DateFormat>() {
+        @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -132,7 +136,7 @@ public class SyslogMessage {
                 final InetAddress address = InetAddressUtils.addr(m_hostname);
                 return InetAddressUtils.str(address).replace("/", "");
             } catch (final IllegalArgumentException e) {
-                LogUtils.debugf(this, e, "Unable to resolve hostname '%s' in syslog message.", m_hostname);
+                LOG.debug("Unable to resolve hostname '{}' in syslog message.", m_hostname, e);
                 return null;
             }
         }
@@ -214,6 +218,7 @@ public class SyslogMessage {
         return m_fullText;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("facility", m_facility)

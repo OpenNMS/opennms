@@ -40,14 +40,15 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
 import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -62,6 +63,9 @@ import org.springframework.util.ClassUtils;
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AnnotationBasedEventListenerAdapter.class);
+
     private volatile String m_name = null;
     private volatile Object m_annotatedListener;
     private volatile String m_logPrefix = null;
@@ -111,6 +115,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -146,43 +151,46 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
-    public void onEvent(Event event) {
+    @Override
+    public void onEvent(final Event event) {
         if (event.getUei() == null) {
             return;
         }
         
         
-        Method method = m_ueiToHandlerMap.get(event.getUei());
+        Method m = m_ueiToHandlerMap.get(event.getUei());
         
-        if (method == null) {
+        if (m == null) {
             // Try to get a catch-all event handler
-            method = m_ueiToHandlerMap.get(EventHandler.ALL_UEIS);
-            if (method == null) {
+            m = m_ueiToHandlerMap.get(EventHandler.ALL_UEIS);
+            if (m == null) {
                 throw new IllegalArgumentException("Received an event for which we have no handler!");
             }
         }
         
-        String oldPrefix = ThreadCategory.getPrefix();
-        try {
-            
-            if (m_logPrefix != null) {
-                ThreadCategory.setPrefix(m_logPrefix);
+        final Method method = m;
+        
+         
+        Logging.withPrefix(m_logPrefix, new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    preprocessEvent(event);
+                    
+                    processEvent(event, method);
+                    
+                    postprocessEvent(event);
+                } catch (IllegalArgumentException e) {
+                    throw e;
+                } catch (IllegalAccessException e) {
+                    throw new UndeclaredThrowableException(e);
+                } catch (InvocationTargetException e) {
+                    handleException(event, e.getCause());
+                }
             }
             
-            preprocessEvent(event);
-            
-            processEvent(event, method);
-            
-            postprocessEvent(event);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (IllegalAccessException e) {
-            throw new UndeclaredThrowableException(e);
-        } catch (InvocationTargetException e) {
-            handleException(event, e.getCause());
-        } finally {
-            ThreadCategory.setPrefix(oldPrefix);
-        }
+        });
     }
 
     /**
@@ -249,7 +257,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             }
         }
         
-        LogUtils.debugf(this, cause, "Caught an unhandled exception while processing event %s, for listener %s. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener);
+        LOG.debug("Caught an unhandled exception while processing event {}, for listener {}. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener, cause);
     }
 
     /**
@@ -327,6 +335,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     private static class ClassComparator<T> implements Comparator<Class<? extends T>> {
+        @Override
         public int compare(Class<? extends T> lhsType, Class<? extends T> rhsType) {
             return ClassUtils.isAssignable(lhsType, rhsType) ? 1 : -1;
         }
@@ -337,6 +346,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         
         Comparator<Method> comparator = new Comparator<Method>() {
 
+            @Override
             public int compare(Method left, Method right) {
                 Class<? extends Throwable> lhsType = left.getParameterTypes()[1].asSubclass(Throwable.class);
                 Class<? extends Throwable> rhsType = right.getParameterTypes()[1].asSubclass(Throwable.class);
@@ -405,6 +415,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_subscriptionService.removeEventListener(this);
     }
@@ -414,6 +425,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         stop();
     }

@@ -30,7 +30,8 @@ package org.opennms.protocols.jmx.connectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -40,7 +41,6 @@ import javax.net.ssl.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -53,7 +53,8 @@ import java.util.Map;
  * @version $Id: $
  */
 public class JMXSecureConnectionFactory {
-    static ThreadCategory log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureConnectionFactory.class);
 
     /**
      * <p>getMBeanServerConnection</p>
@@ -86,9 +87,9 @@ public class JMXSecureConnectionFactory {
                 url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
-            log.error("JMXServiceURL exception: " + url + ". Error message: " + e.getMessage());
+            LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());
         }
-        log.debug("Set JMXServiceURL: " + url);
+        LOG.debug("Set JMXServiceURL: {}", url);
 
         // configure and create Simple Authentication and Security Layer
         if (factory.equals("SASL")) {
@@ -114,11 +115,17 @@ public class JMXSecureConnectionFactory {
                         SSLSocketFactory ssf = ctx.getSocketFactory();
                         env.put("jmx.remote.tls.socket.factory", ssf);
                     } catch (Throwable e) {
-                        log.error("Something bad occured: " + e.getMessage());
+                    	LOG.error("Something bad occured: {}", e.getMessage());
                         throw e;
                     }
 
-                    Security.addProvider(new com.sun.security.sasl.Provider());
+                    // We don't need to add this provider manually... it is included in the JVM
+                    // by default in Java5+
+                    //
+                    // @see $JAVA_HOME/jre/lib/security/java.security
+                    //
+                    //Security.addProvider(new com.sun.security.sasl.Provider());
+
                     String[] creds;
                     if (sunCacao.equals("true"))
                         creds = new String[]{"com.sun.cacao.user\001" + username, password};
@@ -133,16 +140,16 @@ public class JMXSecureConnectionFactory {
                     try {
                         connector.connect(env);
                     } catch (SSLException e) {
-                        log.warn("SSLException occured. Error message: " + e.getMessage());
+                        LOG.warn("SSLException occured. Error message: {}", e.getMessage());
                     } catch (SecurityException x) {
-                        log.error("Security exception: bad credentials. Error message: " + x.getMessage());
+                        LOG.error("Security exception: bad credentials. Error message: {}", x.getMessage());
                     }
                     MBeanServerConnection connection = connector.getMBeanServerConnection();
                     connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                     break;
                 }
             } catch (Throwable e) {
-                log.error("Unable to get MBeanServerConnection: " + url + ". Error message: " + e.getMessage());
+                LOG.error("Unable to get MBeanServerConnection: {}. Error message: {}", url, e.getMessage());
             }
         }
         return connectionWrapper;
@@ -150,6 +157,7 @@ public class JMXSecureConnectionFactory {
 
     private static class AnyServerX509TrustManager implements X509TrustManager {
         // Documented in X509TrustManager
+        @Override
         public X509Certificate[] getAcceptedIssuers() {
             // since client authentication is not supported by this
             // trust manager, there's no certificate authority trusted
@@ -158,6 +166,7 @@ public class JMXSecureConnectionFactory {
         }
 
         // Documented in X509TrustManager
+        @Override
         public void checkClientTrusted(X509Certificate[] certs, String authType)
                 throws CertificateException {
             // this trust manager is dedicated to server authentication
@@ -165,6 +174,7 @@ public class JMXSecureConnectionFactory {
         }
 
         // Documented in X509TrustManager
+        @Override
         public void checkServerTrusted(X509Certificate[] certs, String authType)
                 throws CertificateException {
             // any certificate sent by the server is automatically accepted

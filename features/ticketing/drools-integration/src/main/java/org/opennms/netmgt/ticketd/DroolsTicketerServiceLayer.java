@@ -32,7 +32,8 @@ import java.util.Properties;
 
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
@@ -50,6 +51,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
  * @version $Id: $
  */
 public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
+    private static final Logger LOG = LoggerFactory.getLogger(DroolsTicketerServiceLayer.class);
     DroolsTicketerConfigDao m_configDao;
     KnowledgeBase m_knowledgeBase;
 	
@@ -70,13 +72,14 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
     	return m_configDao;
     }
     
+    @Override
     public void reloadTicketer() {
-        log().debug("reloadTicketer: Reloading ticketer");
+        LOG.debug("reloadTicketer: Reloading ticketer");
         m_knowledgeBase = createKnowledgeBase();
     }
     
     private KnowledgeBase createKnowledgeBase() {
-        log().debug("createKnowledgeBase: Creating Drools KnowledgeBase");
+        LOG.debug("createKnowledgeBase: Creating Drools KnowledgeBase");
         final Properties props = new Properties();
         props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
 
@@ -87,7 +90,7 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
         // We will not throw an exception if the rules failed to be parsed
         builder.add(ResourceFactory.newFileResource(m_configDao.getRulesFile()), ResourceType.DRL);
         if( builder.hasErrors() ) {
-            log().error("Failed to create Drools KnowledgeBase: " + builder.getErrors().toString());
+            LOG.error("Failed to create Drools KnowledgeBase: {}", builder.getErrors().toString());
             return null;
         }
         
@@ -102,12 +105,13 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
 	 * @param alarm OpenNMS Model class alarm
 	 * @return OpenNMS Ticket processed by Drools logic.
 	 */
+    @Override
     protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
-        log().debug("createTicketFromAlarm: Processing ticket.");
+        LOG.debug("createTicketFromAlarm: Processing ticket.");
         
         // Call superclass method if the knowledge-base was not properly created.
         if( m_knowledgeBase == null ) {
-            log().error("KnowledgeBase is NULL, creating basic ticket form alarm.");
+            LOG.error("KnowledgeBase is NULL, creating basic ticket form alarm.");
             return super.createTicketFromAlarm(alarm);
         }
         
@@ -124,15 +128,7 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
             session.dispose();
         }
         
-        log().debug("createTicketFromAlarm: Succesfully processed ticket.");
+        LOG.debug("createTicketFromAlarm: Succesfully processed ticket.");
         return ticket;
-    }
-    
-    /**
-    * Convenience logging.
-    * @return a log4j Category for this class
-    */
-    ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

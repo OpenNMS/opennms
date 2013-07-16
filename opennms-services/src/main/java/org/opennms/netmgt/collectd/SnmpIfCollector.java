@@ -35,11 +35,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The SnmpIfCollector class is responsible for performing the actual SNMP data
@@ -52,10 +53,11 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * GetNext requests or SNMPv2 GetBulk requests depending upon the parms used to
  * construct the collector.
  *
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A>Jon Whetzel </A>
  */
 public class SnmpIfCollector extends AggregateTracker {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpIfCollector.class);
+    
     private Map<SnmpInstId, SNMPCollectorEntry> m_results = new TreeMap<SnmpInstId, SNMPCollectorEntry>();
     
     /**
@@ -72,6 +74,7 @@ public class SnmpIfCollector extends AggregateTracker {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
     	
@@ -106,22 +109,13 @@ public class SnmpIfCollector extends AggregateTracker {
     public SnmpIfCollector(InetAddress address, List<SnmpAttributeType> objList, SnmpCollectionSet collectionSet) {
         super(SnmpAttributeType.getCollectionTrackers(objList));
         
-        log().debug("COLLECTING on list of "+objList.size()+" items");
-        log().debug("List is "+objList);
+        LOG.debug("COLLECTING on list of {} items", objList.size());
+        LOG.debug("List is {}", objList);
         // Process parameters
         //
         m_primaryIf = InetAddressUtils.str(address);
         m_objList = objList;
         m_collectionSet = collectionSet;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(SnmpIfCollector.class);
     }
 
     /**
@@ -135,29 +129,33 @@ public class SnmpIfCollector extends AggregateTracker {
     }
     
 	/** {@inheritDoc} */
+    @Override
 	protected void reportGenErr(String msg) {
-        log().warn(m_primaryIf+": genErr collecting ifData. "+msg);
+        LOG.warn("{} : genErr collecting ifData. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
-        log().info(m_primaryIf+": noSuchName collecting ifData. "+msg);
+        LOG.info("{} : noSuchName collecting ifData. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportTooBigErr(String msg) {
-        log().info(m_primaryIf+": request tooBig. "+msg);
+        LOG.info("{} : request tooBig. {}", m_primaryIf, msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         if(res.getBase().toString().equals(SnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
-            log().debug("Skipping storeResult. Null or zero length ifAlias");
+            LOG.debug("Skipping storeResult. Null or zero length ifAlias");
             return;
         }
         SNMPCollectorEntry entry = m_results.get(res.getInstance());
         if (entry == null) {
-            log().debug("Creating new SNMPCollectorEntry entry");
+            LOG.debug("Creating new SNMPCollectorEntry entry");
             entry = new SNMPCollectorEntry(m_objList, m_collectionSet);
             m_results.put(res.getInstance(), entry);
         }

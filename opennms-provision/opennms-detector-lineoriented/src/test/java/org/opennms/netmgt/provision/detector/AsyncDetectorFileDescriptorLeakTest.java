@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,11 +44,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,7 +58,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 @Ignore
 public class AsyncDetectorFileDescriptorLeakTest {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncDetectorFileDescriptorLeakTest.class);
     private SimpleServer m_server;
     private ServerSocket m_socket;
 
@@ -102,6 +104,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
     private void setUpServer(final String banner, final int bannerDelay) throws Exception {
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 if (banner != null) {
                     setBanner(banner);
@@ -134,7 +137,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         assertNotNull(future);
         future.awaitFor();
         if (future.getException() != null) {
-            LogUtils.debugf(this, future.getException(), "got future exception");
+            LOG.debug("got future exception", future.getException());
             throw future.getException();
         }
         assertFalse("False positive during detection!!", future.isServiceDetected());
@@ -161,7 +164,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
         assertNotNull(future);
         future.awaitFor();
         if (future.getException() != null) {
-            LogUtils.debugf(this, future.getException(), "got future exception");
+            LOG.debug("got future exception", future.getException());
             throw future.getException();
         }
         assertTrue("False negative during detection!!", future.isServiceDetected());
@@ -176,7 +179,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
         int i = 0;
         while (i < 30000) {
-            LogUtils.infof(this, "current loop: %d", i);
+            LOG.info("current loop: {}", i);
 
             AsyncServiceDetector detector = getNewDetector(port, ".*");
 
@@ -187,7 +190,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
             assertNotNull(future);
             future.awaitFor();
             if (future.getException() != null) {
-                LogUtils.debugf(this, future.getException(), "got future exception");
+                LOG.debug("got future exception", future.getException());
                 throw future.getException();
             }
             assertTrue("False negative during detection!!", future.isServiceDetected());
@@ -206,7 +209,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
 
         int i = 0;
         while (i < 30000) {
-            LogUtils.infof(this, "current loop: %d", i);
+            LOG.info("current loop: {}", i);
 
             AsyncServiceDetector detector = getNewDetector(port, null);
 
@@ -217,7 +220,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
             assertNotNull(future);
             future.awaitFor();
             if (future.getException() != null) {
-                LogUtils.debugf(this, future.getException(), "got future exception");
+                LOG.debug("got future exception", future.getException());
                 throw future.getException();
             }
             assertTrue("False negative during detection!!", future.isServiceDetected());
@@ -231,7 +234,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
     @Repeat(10000)
     public void testNoServerPresent() throws Exception {
         AsyncServiceDetector detector = getNewDetector(1999, ".*");
-        LogUtils.infof(this, "Starting testNoServerPresent with detector: %s\n", detector);
+        LOG.info("Starting testNoServerPresent with detector: {}\n", detector);
         
         final DetectFuture future = detector.isServiceDetected(InetAddressUtils.getLocalHostAddress());
         assertNotNull(future);
@@ -239,6 +242,6 @@ public class AsyncDetectorFileDescriptorLeakTest {
         assertFalse("False positive during detection!!", future.isServiceDetected());
         assertNull(future.getException());
         
-        LogUtils.infof(this, "Finished testNoServerPresent with detector: %s\n", detector);
+        LOG.info("Finished testNoServerPresent with detector: {}\n", detector);
     }
 }

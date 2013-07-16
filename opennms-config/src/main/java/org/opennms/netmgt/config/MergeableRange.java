@@ -33,7 +33,8 @@ import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.snmp.Range;
 
 /**
@@ -42,6 +43,7 @@ import org.opennms.netmgt.config.snmp.Range;
  *
  */
 final class MergeableRange implements Comparable<Range> {
+    private static final Logger LOG = LoggerFactory.getLogger(MergeableRange.class);
     private Range m_range;
     private static final RangeComparator m_comparator = new RangeComparator();
     private final MergeableSpecific m_first;
@@ -92,6 +94,7 @@ final class MergeableRange implements Comparable<Range> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return 0;
     }
@@ -260,7 +263,7 @@ final class MergeableRange implements Comparable<Range> {
                 getRange().setEnd(InetAddressUtils.decr(specific.getSpecific()));
             }
         } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(getClass()).error("Error converting string to IP address: " + e.getMessage(), e);
+            LOG.error("Error converting string to IP address", e);
         }
 
         return newRange;

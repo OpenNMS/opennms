@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>container</artifactId>
-        <version>1.11.93-SNAPSHOT</version>
+        <version>1.13.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -37,6 +37,12 @@
             <type>zip</type>
             <scope>provided</scope>
             <version>${karafVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>

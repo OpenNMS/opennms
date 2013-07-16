@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,9 @@ package org.opennms.netmgt.dao.castor;
 
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
-import org.opennms.netmgt.dao.MicroblogConfigurationDao;
+import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -41,6 +43,8 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @version $Id: $
  */
 public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<MicroblogConfiguration, MicroblogConfiguration> implements MicroblogConfigurationDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultMicroblogConfigurationDao.class);
 
     /**
      * <p>Constructor for DefaultMicroblogConfigurationDao.</p>
@@ -54,6 +58,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @return a {@link org.opennms.netmgt.config.microblog.MicroblogConfiguration} object.
      */
+    @Override
     public MicroblogConfiguration getConfig() {
         return getContainer().getObject();
     }
@@ -70,6 +75,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
@@ -79,13 +85,15 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @return a {@link org.opennms.netmgt.config.microblog.MicroblogProfile} object.
      */
+    @Override
     public MicroblogProfile getDefaultProfile() {
         String defaultProfileName = getContainer().getObject().getDefaultMicroblogProfileName();
-        log().debug("Requesting default microblog, which is called '" + defaultProfileName + "'");
+        LOG.debug("Requesting default microblog, which is called '{}'", defaultProfileName);
         return getProfile(defaultProfileName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public MicroblogProfile getProfile(String name) {
         if (name == null)
             return null;

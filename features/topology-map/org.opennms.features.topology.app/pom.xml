@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -34,29 +34,12 @@
     <plugins>
         <plugin>
 		    <artifactId>maven-surefire-plugin</artifactId>
-		    <version>2.6</version>
 		    <configuration>
 		      <excludes>
 		        <exclude>**/*GwtTest.java</exclude>
 		      </excludes>
 		    </configuration>
 		</plugin>
-<!--       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.5.0-rc2</version>
-        <configuration>
-              <includes>**/*GwtTest.java</includes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
     </plugins>
   </build>
 
@@ -68,6 +51,12 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    <dependency> <!-- Required by pax/vaadin -->
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>api</artifactId>
@@ -77,13 +66,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <optional>true</optional>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -134,8 +116,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -144,40 +126,22 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    
-    <dependency>
-	   <groupId>org.osgi</groupId>
-	   <artifactId>org.osgi.core</artifactId>
-	   <scope>provided</scope>
-	</dependency>
-	
-    <dependency>
-	   <groupId>org.osgi</groupId>
-	   <artifactId>org.osgi.compendium</artifactId>
-	   <scope>provided</scope>
-	</dependency>
-	
-    <dependency>
-   	   <groupId>org.vaadin.addons</groupId>
-   	   <artifactId>contextmenu</artifactId>
-   	   <version>3.1.0</version>
-	   <scope>provided</scope>
-	</dependency>
-	<dependency>
-	   <groupId>org.opennms</groupId>
-	   <artifactId>opennms-web-api</artifactId>
-	   <scope>provided</scope>
-	</dependency>
 
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
-  
-  <repositories>
-      
-    <repository>
-   	  <id>vaadin-addons</id>
-   	  <url>http://maven.vaadin.com/vaadin-addons</url>
-	</repository>
-	
-  </repositories>
-  
 </project>

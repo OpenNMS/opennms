@@ -42,11 +42,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.RequisitionAccountant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class tracks nodes that need to be deleted, inserted, or updated during
@@ -55,6 +56,7 @@ import org.opennms.netmgt.provision.service.ProvisionService;
  * @author david
  */
 public class ImportOperationsManager {
+    private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
 	public static final class NullUpdateOperation extends UpdateOperation {
 		public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService) {
 			super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
@@ -62,7 +64,7 @@ public class ImportOperationsManager {
 
 		@Override
 	    protected void doPersist() {
-			LogUtils.debugf(this, "Skipping persist for node %s: rescanExisting is false", getNode());
+			LOG.debug("Skipping persist for node {}: rescanExisting is false", getNode());
 		}
 	}
 
@@ -186,16 +188,19 @@ public class ImportOperationsManager {
     	
     	private final Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
+            @Override
 		public boolean hasNext() {
 			return m_foreignIdIterator.hasNext();
 		}
 
+            @Override
 		public ImportOperation next() {
             Entry<String, Integer> entry = m_foreignIdIterator.next();
             return new DeleteOperation(entry.getValue(), getForeignSource(), entry.getKey(), m_provisionService);
 			
 		}
 
+            @Override
 		public void remove() {
 			m_foreignIdIterator.remove();
 		}
@@ -215,6 +220,7 @@ public class ImportOperationsManager {
     		m_iterIter = iters.iterator();
     	}
     	
+            @Override
 		public boolean hasNext() {
 			while((m_currentIter == null || !m_currentIter.hasNext()) && m_iterIter.hasNext()) {
 				m_currentIter = m_iterIter.next();
@@ -224,18 +230,22 @@ public class ImportOperationsManager {
 			return (m_currentIter == null ? false: m_currentIter.hasNext());
 		}
 
+            @Override
 		public ImportOperation next() {
 			return m_currentIter.next();
 		}
 
+            @Override
 		public void remove() {
 			m_currentIter.remove();
 		}
 
+            @Override
         public boolean hasMoreElements() {
             return hasNext();
         }
 
+            @Override
         public ImportOperation nextElement() {
             return next();
         }
@@ -256,7 +266,7 @@ public class ImportOperationsManager {
                 // loop util the await returns false
             }
         } catch (final InterruptedException e) {
-            log().error(msg, e);
+            LOG.error(msg, e);
             Thread.currentThread().interrupt();
         }
     }
@@ -273,16 +283,13 @@ public class ImportOperationsManager {
     @SuppressWarnings("unused")
     private Runnable sequence(final Executor pool, final Runnable a, final Runnable b) {
         return new Runnable() {
+            @Override
             public void run() {
                 a.run();
                 pool.execute(b);
             }
         };
     }
-
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 
     /**
      * <p>setForeignSource</p>
@@ -318,6 +325,7 @@ public class ImportOperationsManager {
     @SuppressWarnings("unused")
     private Runnable persister(final ImportOperation oper) {
         Runnable r = new Runnable() {
+                @Override
         	public void run() {
         		oper.persist();
         	}
@@ -328,8 +336,9 @@ public class ImportOperationsManager {
     @SuppressWarnings("unused")
     private Runnable scanner(final ImportOperation oper) {
         return new Runnable() {
+            @Override
             public void run() {
-                log().info("Preprocess: "+oper);
+                LOG.info("Preprocess: {}", oper);
                 oper.scan();
             }
         };

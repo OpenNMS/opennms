@@ -74,7 +74,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
-        "classpath:/testConfigContext.xml"
+        "classpath:/testConfigContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -87,6 +88,7 @@ public class LinkAdapterConfigurationTest implements InitializingBean {
             m_schemaFile = schemaFile;
         }
         
+        @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
         }

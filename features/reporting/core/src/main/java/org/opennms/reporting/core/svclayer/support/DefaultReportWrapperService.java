@@ -44,7 +44,9 @@ import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.UserFactory;
@@ -62,26 +64,24 @@ import org.opennms.reporting.core.svclayer.ReportWrapperService;
  * @version $Id: $
  */
 public class DefaultReportWrapperService implements ReportWrapperService {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultReportWrapperService.class);
 
     private ReportServiceLocator m_reportServiceLocator;
 
-    private final ThreadCategory log;
-
     private ReportStoreService m_reportStoreService;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     /**
      * <p>Constructor for DefaultReportWrapperService.</p>
      */
     public DefaultReportWrapperService() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(DefaultReportWrapperService.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        // TODO this should wrap the other methods
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /** {@inheritDoc} */
+    @Override
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
         DeliveryOptions options = new DeliveryOptions();
 
@@ -97,18 +97,13 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 options.setMailTo(emailAddress);
             }
         } catch (MarshalException e) {
-            log.error(
-                      "marshal exception trying to set destination email address",
-                      e);
+            LOG.error("marshal exception trying to set destination email address", e);
         } catch (ValidationException e) {
-            log.error(
-                      "validation exception trying to set destination email address",
-                      e);
+            LOG.error("validation exception trying to set destination email address", e);
         } catch (IOException e) {
-            log.error("IO exception trying to set destination email address",
-                      e);
+            LOG.error("IO exception trying to set destination email address", e);
         } catch (NullPointerException e) { // See NMS-5111 for more details.
-            log.warn("the user " + userId + " does not have any email configured.");
+            LOG.warn("the user {} does not have any email configured.", userId);
         }
 
         options.setInstanceId(reportId + " " + userId);
@@ -117,22 +112,24 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<ReportFormat> getFormats(String reportId) {
         return getReportService(reportId).getFormats(reportId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public ReportParameters getParameters(String reportId) {
         try {
             return getReportService(reportId).getParameters(reportId);
         } catch (ReportException e) {
-            log.error("Report Exception when retrieving report parameters",
-                      e);
+            LOG.error("Report Exception when retrieving report parameters", e);
         }
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public Boolean hasParameters(String reportId) {
        
         Map<String, Object> reportParms = getParameters(reportId).getReportParms();
@@ -144,18 +141,20 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {
         try {
             getReportService(reportId).render(reportId, location, format,
                                               outputStream);
         } catch (ReportException e) {
-            log.error("failed to render report", e);
+            LOG.error("failed to render report", e);
         }
 
     }
     
     /** {@inheritDoc} */
+    @Override
     public void run(ReportParameters parameters,
             ReportMode mode,
             DeliveryOptions deliveryOptions,
@@ -171,7 +170,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                                                         deliveryOptions.getFormat(),
                                                         bout);
             } catch (ReportException reportException) {
-                log.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
             mailReport(deliveryOptions, out);
         } else {
@@ -197,7 +196,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                     mailReport(deliveryOptions, out);
                 }
             } catch (ReportException reportException) {
-                log.error("failed to run or render report: " + reportId, reportException);
+                LOG.error("failed to run or render report: {}", reportId, reportException);
             }
         }
 
@@ -237,11 +236,12 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             }
             jm.mailSend();
         } catch (JavaMailerException e) {
-            log.error("Caught JavaMailer exception sending report", e);
+            LOG.error("Caught JavaMailer exception sending report", e);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean validate(ReportParameters parameters, String reportId) {
         return getReportService(reportId).validate(
                                                    parameters.getReportParms(),
@@ -273,6 +273,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     /** {@inheritDoc} */
    
+    @Override
     public void runAndRender(ReportParameters parameters, ReportMode mode,
             OutputStream outputStream) {
 
@@ -285,7 +286,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             } else {
                 value = reportParms.get(key).toString();
             }
-            log.debug("param " + key + " set " + value);
+            LOG.debug("param {} set {}", value, key);
         }
 
         try {
@@ -295,8 +296,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                                                                     parameters.getFormat(),
                                                                     outputStream);
         } catch (ReportException reportException) {
-            log.error("failed to run or render report: "
-                    + parameters.getReportId(), reportException);
+            LOG.error("failed to run or render report: ", parameters.getReportId(), reportException);
         }
 
     }

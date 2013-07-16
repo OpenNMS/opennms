@@ -34,9 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,14 +52,18 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class AdminRancidCloginUpdateController extends SimpleFormController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AdminRancidCloginUpdateController.class);
+
     
     InventoryService m_inventoryService;
     
     /** {@inheritDoc} */
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
-        log().debug("AdminRancidCloginUpdateController ModelAndView onSubmit");
+        LOG.debug("AdminRancidCloginUpdateController ModelAndView onSubmit");
         
         AdminRancidCloginCommClass bean = (AdminRancidCloginCommClass) command;
         if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
@@ -66,7 +71,7 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
             boolean done = m_inventoryService.updateClogin(bean.getDeviceName(), bean.getGroupName(), bean.getUserID(), bean.getPass(),
                                             bean.getEnpass(), bean.getLoginM(), bean.getAutoE());
             if (!done){
-                log().debug("AdminRancidCloginUpdateController error on submitting cLogin changes");
+                LOG.debug("AdminRancidCloginUpdateController error on submitting cLogin changes");
             }
         }
         String redirectURL = request.getHeader("Referer");
@@ -74,8 +79,9 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
         return super.onSubmit(request, response, command, errors);
     }
     /** {@inheritDoc} */
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        log().debug("AdminRancidCloginIpdateController initBinder");
+        LOG.debug("AdminRancidCloginIpdateController initBinder");
     }
     
     /**
@@ -96,8 +102,4 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
         m_inventoryService = inventoryService;
     }
 
-    
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
 }

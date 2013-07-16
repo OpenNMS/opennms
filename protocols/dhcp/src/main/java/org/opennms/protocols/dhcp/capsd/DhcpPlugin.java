@@ -33,10 +33,11 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -55,6 +56,9 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class DhcpPlugin extends AbstractPlugin {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DhcpPlugin.class);
+
     /**
      * The port where the DHCP server is detected. This is a well known port and
      * this integer is always returned in the qualifier map.
@@ -103,12 +107,12 @@ public final class DhcpPlugin extends AbstractPlugin {
             responseTime = Dhcpd.isServer(host, timeout, retries);
         } catch (final InterruptedIOException ioE) {
             ioE.fillInStackTrace();
-            LogUtils.debugf(this, ioE, "isServer: The DHCP discovery operation was interrupted");
+            LOG.debug("isServer: The DHCP discovery operation was interrupted", ioE);
         } catch (final IOException ioE) {
-            LogUtils.warnf(this, ioE, "isServer: An I/O exception occured during DHCP discovery");
+            LOG.warn("isServer: An I/O exception occured during DHCP discovery", ioE);
             isAServer = false;
         } catch (final Throwable t) {
-            LogUtils.errorf(this, t, "isServer: An undeclared throwable exception was caught during test");
+            LOG.error("isServer: An undeclared throwable exception was caught during test", t);
             isAServer = false;
         }
 
@@ -128,6 +132,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      *
      * @return The name of the protocol for the plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -141,6 +146,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress host) {
         return isServer(host, DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
@@ -154,6 +160,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress host, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;

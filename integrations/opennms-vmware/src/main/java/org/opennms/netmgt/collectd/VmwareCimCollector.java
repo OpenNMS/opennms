@@ -56,8 +56,8 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
-import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -111,6 +111,7 @@ public class VmwareCimCollector implements ServiceCollector {
      * @throws CollectionInitializationException
      *
      */
+    @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
         if (m_nodeDao == null) {
             m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
@@ -197,6 +198,7 @@ public class VmwareCimCollector implements ServiceCollector {
      * @throws CollectionInitializationException
      *
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
         OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
 
@@ -213,6 +215,7 @@ public class VmwareCimCollector implements ServiceCollector {
     /**
      * This method is used for cleanup.
      */
+    @Override
     public void release() {
     }
 
@@ -221,6 +224,7 @@ public class VmwareCimCollector implements ServiceCollector {
      *
      * @param agent the collection agent
      */
+    @Override
     public void release(CollectionAgent agent) {
     }
 
@@ -233,6 +237,7 @@ public class VmwareCimCollector implements ServiceCollector {
      * @return the generated collection set
      * @throws CollectionException
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
 
@@ -393,6 +398,7 @@ public class VmwareCimCollector implements ServiceCollector {
      * @param collectionName the collection's name
      * @return the Rrd repository
      */
+    @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         return m_vmwareCimDatacollectionConfigDao.getRrdRepository(collectionName);
     }

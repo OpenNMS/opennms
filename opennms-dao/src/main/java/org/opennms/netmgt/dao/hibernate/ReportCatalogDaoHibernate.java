@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 
 /**
@@ -49,6 +49,7 @@ public class ReportCatalogDaoHibernate extends
     }
 
     /** {@inheritDoc} */
+    @Override
     public void delete(Integer id) {
         ReportCatalogEntry catalogEntry = (ReportCatalogEntry)getHibernateTemplate().get(ReportCatalogEntry.class, id);
         super.delete(catalogEntry);

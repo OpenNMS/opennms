@@ -1112,12 +1112,15 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return new ToStringCreator(this).append("eventid", getId())
+		        .append("eventuei", getEventUei())
 				.toString();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void visit(EntityVisitor visitor) {
 		throw new RuntimeException("visitor method not implemented");
 	}

@@ -28,7 +28,8 @@
 
 package org.openoss.opennms.spring.qosd.jmx;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -44,6 +45,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
+    private static final Logger LOG = LoggerFactory.getLogger(QoSD.class);
 
 	/**
 	 * <p>Constructor for QoSD.</p>
@@ -64,12 +66,14 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 	/**
 	 * <p>onInit</p>
 	 */
+        @Override
 	protected void onInit() {}
 
 
 	/**
 	 * <p>onStart</p>
 	 */
+        @Override
 	protected void onStart() {
 
 
@@ -86,7 +90,7 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 //		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
 //		m_status = Fiber.RUNNING;
 
-		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
+		LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
 		// finds the already instantiated OpenNMS daoContext
 		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
@@ -97,53 +101,27 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 		// this chooses if we expect AlarmMonitor to run in seperate j2ee container ( Jboss ) or in local
 		// OpenNMS spring container
 		String qosdj2ee=System.getProperty("qosd.usej2ee");
-		ThreadCategory.getInstance().info("QoSD System Property qosd.usej2ee=" + qosdj2ee );
+		LOG.info("QoSD System Property qosd.usej2ee={}", qosdj2ee);
 		if ("true".equals(qosdj2ee)){
-			ThreadCategory.getInstance().debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-j2ee-context.xml");
+			LOG.debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-j2ee-context.xml");
 			m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosd/qosd-j2ee-context.xml" },daoContext);
 		}
 		else {
-			ThreadCategory.getInstance().debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-spring-context.xml");
+			LOG.debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-spring-context.xml");
 			m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosd/qosd-spring-context.xml" },daoContext);
 		}
 
-		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
+		LOG.debug("SPRING: context.classLoader={}", m_context.getClassLoader());
 
 		getQoSD().init();
 		getQoSD().start();
-
-
-//		TODO remove original code    	
-//		ThreadCategory.setPrefix(QoSD.NAME);
-//		m_status = Fiber.STARTING;
-//		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
-
-//		// this chooses if we expect AlarmMonitor to run in seperate j2ee container ( Jboss ) or in local
-//		// OpenNMS spring container
-//		String qosdj2ee=System.getProperty("qosd.usej2ee");
-//		ThreadCategory.getInstance().info("QoSD System Property qosd.usej2ee=" + qosdj2ee );
-//		if ("true".equals(qosdj2ee)){
-//		ThreadCategory.getInstance().debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-j2ee-context.xml");
-//		m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosd/qosd-j2ee-context.xml" });
-//		}
-//		else {
-//		ThreadCategory.getInstance().debug("QoSD using /org/openoss/opennms/spring/qosd/qosd-spring-context.xml");
-//		m_context = new ClassPathXmlApplicationContext(new String[] { "/org/openoss/opennms/spring/qosd/qosd-spring-context.xml" });
-//		}
-
-//		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
-
-//		getQoSD().init();
-//		getQoSD().start();
-
-
-//		m_status = Fiber.RUNNING;
 	}
 
 
 	/**
 	 * <p>onStop</p>
 	 */
+        @Override
 	protected void onStop() {
 		getQoSD().stop();
 

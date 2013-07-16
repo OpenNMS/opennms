@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -31,6 +31,7 @@
     <module>doc</module>
     <module>icmp-jna</module>
     <module>lib</module>
+    <module>logging-api</module>
     <module>runtime</module>
     <module>schema</module>
     <module>snmp</module>

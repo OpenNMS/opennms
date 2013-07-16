@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
-import org.opennms.netmgt.dao.Tl1ConfigurationDao;
+import org.opennms.netmgt.dao.api.Tl1ConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -59,6 +59,7 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Tl1Element> getElements() {
         return Collections.unmodifiableList(getContainer().getObject().getTl1ElementCollection());
     }
@@ -68,6 +69,7 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void update() throws DataAccessResourceFailureException {
         getContainer().reload();
     }

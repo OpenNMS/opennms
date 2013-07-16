@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -41,6 +40,7 @@ public class OspfNbrTable extends SnmpTable<OspfNbrTableEntry>{
     }
     
     /** {@inheritDoc} */
+    @Override
     protected OspfNbrTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new OspfNbrTableEntry();
     }

@@ -48,10 +48,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationAvailDataPoint;
 import org.opennms.netmgt.model.OnmsLocationAvailDefinition;
@@ -175,6 +175,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
                     public void run() {
                         m_defList = m_transactionTemplate.execute(new TransactionCallback<OnmsLocationAvailDefinitionList>() {
     
+                            @Override
                             public OnmsLocationAvailDefinitionList doInTransaction(TransactionStatus status) {
                                 return getAvailabilityList(getTimeChunkerFromMidnight(), getSortedApplications(), null, null);
                             }

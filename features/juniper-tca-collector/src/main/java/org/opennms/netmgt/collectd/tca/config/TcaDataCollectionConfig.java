@@ -183,6 +183,7 @@ public class TcaDataCollectionConfig implements Serializable, Comparable<TcaData
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
+        @Override
 	public int compareTo(TcaDataCollectionConfig obj) {
 		return new CompareToBuilder()
 		.append(getRrdRepository(), obj.getRrdRepository())

@@ -48,13 +48,13 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
@@ -72,6 +72,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -81,6 +82,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
@@ -168,6 +170,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
 
         m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
+            @Override
             public OnmsNode doInTransaction(TransactionStatus status) {
                 OnmsServiceType icmp = m_serviceTypeDao.findByName("ICMP");
                 OnmsServiceType snmp = m_serviceTypeDao.findByName("SNMP");
@@ -185,8 +188,9 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
         //m_distPollerDao.clear();
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
-            public Object doInTransaction(TransactionStatus status) {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = m_nodeDao.findByForeignId("imported:", "7");
                 assertNotNull(node);
                 assertEquals("node7", node.getLabel());
@@ -199,7 +203,6 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
                 System.err.println("###################3 UPDATE ####################");
                 m_nodeDao.update(node);
-                return null;
             }
         });
 
@@ -259,12 +262,12 @@ public class ImportOperationsManagerTest implements InitializingBean {
         opsMgr.setScanThreads(scanThreads);
         opsMgr.setForeignSource(specFile.getForeignSource());
 
-        m_transTemplate.execute(new TransactionCallback<Object>() {
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
-            public Object doInTransaction(TransactionStatus status) {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 AbstractImportVisitor accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
-                return null;
             }
 
         });
@@ -276,6 +279,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
         Map<String, Integer> assetNumbers = m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            @Override
             public Map<String, Integer> doInTransaction(TransactionStatus status) {
                 return Collections.unmodifiableMap(getAssetNumberMap(specFile.getForeignSource()));
             }

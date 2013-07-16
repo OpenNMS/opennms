@@ -35,12 +35,13 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>LatencyInterface class.</p>
@@ -50,7 +51,10 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class LatencyInterface {
 
-	private NetworkInterface<InetAddress> m_iface;
+        
+        private static final Logger LOG = LoggerFactory.getLogger(LatencyInterface.class);
+        
+        private NetworkInterface<InetAddress> m_iface;
 	private String m_serviceName;
 
 	/**
@@ -119,8 +123,7 @@ public class LatencyInterface {
 
 	File getLatencyDir() throws ThresholdingException {
 		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
-	    if (log().isDebugEnabled())
-	        log().debug("check: rrd repository=" + repository);
+	    LOG.debug("check: rrd repository=", repository);
 	    // Get File object representing the
 	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
 	    File latencyDir = new File(repository + File.separator + getHostAddress());
@@ -132,10 +135,6 @@ public class LatencyInterface {
 	    return latencyDir;
 	}
 	
-	private final ThreadCategory log() {
-		return ThreadCategory.getInstance(LatencyInterface.class);
-	}
-
 	/**
 	 * Creates a new threshold event from the specified parms.
 	 * @param dsValue
@@ -158,14 +157,10 @@ public class LatencyInterface {
 		int nodeId = getNodeId();
 		InetAddress ipAddr = getInetAddress();
 		
-		ThreadCategory log = ThreadCategory.getInstance(LatencyInterface.class);
-	
-	    if (threshold == null)
+		if (threshold == null)
 	        throw new IllegalArgumentException("threshold cannot be null.");
 	
-	    if (log.isDebugEnabled()) {
-	        log.debug("createEvent: ds=" + threshold.getDsName() + " uei=" + uei);
-	    }
+	    LOG.debug("createEvent: ds={} uei={}", threshold.getDsName(), uei);
 	
 	    // create the event to be sent
 	    EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd:" + threshold.getDsName(), date);

@@ -42,11 +42,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterfaceList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -67,6 +68,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("links")
 @Transactional
 public class DataLinkInterfaceRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DataLinkInterfaceRestService.class);
+
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
@@ -115,11 +119,11 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     public Response updateDataLinkInterface(@PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            LogUtils.debugf(this, "updateDataLinkInterface: Updating DataLinkInterface with ID %s", linkId);
+            LOG.debug("updateDataLinkInterface: Updating DataLinkInterface with ID {}", linkId);
             final DataLinkInterface iface = m_dataLinkInterfaceDao.get(linkId);
             if (iface != null) {
                 setProperties(params, iface);
-                LogUtils.debugf(this, "updateDataLinkInterface: DataLinkInterface with ID %s updated", linkId);
+                LOG.debug("updateDataLinkInterface: DataLinkInterface with ID {} updated", linkId);
                 m_dataLinkInterfaceDao.saveOrUpdate(iface);
                 return Response.seeOther(getRedirectUri(m_uriInfo)).build();
             }
@@ -141,7 +145,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
             if (iface.getSource() == null) {
                 iface.setSource("rest");
             }
-            LogUtils.debugf(this, "addOrReplaceDataLinkInterface: Adding data link interface %s", iface);
+            LOG.debug("addOrReplaceDataLinkInterface: Adding data link interface {}", iface);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
             return Response.seeOther(getRedirectUri(m_uriInfo, iface.getId())).build();
         } finally {
@@ -154,7 +158,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     public Response deleteDataLinkInterface(@PathParam("linkId") Integer linkId) {
         writeLock();
         try {
-            LogUtils.debugf(this, "deleteDataLinkInterface: deleting DataLinkInterface with ID %s", linkId);
+            LOG.debug("deleteDataLinkInterface: deleting DataLinkInterface with ID {}", linkId);
             final DataLinkInterface iface = m_dataLinkInterfaceDao.get(linkId);
             m_dataLinkInterfaceDao.delete(iface);
             return Response.ok().build();

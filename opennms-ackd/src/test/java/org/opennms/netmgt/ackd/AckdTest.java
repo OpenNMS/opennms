@@ -46,13 +46,13 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.config.ackd.Reader;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.NotificationDao;
-import org.opennms.netmgt.dao.UserNotificationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -61,7 +61,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -93,9 +92,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AckdTest implements InitializingBean {
 
-    @Autowired
-    private AckService m_ackService;
-    
     @Autowired
     private AlarmDao m_alarmDao;
     
@@ -215,7 +211,7 @@ public class AckdTest implements InitializingBean {
         m_ackDao.save(ack);
         m_ackDao.flush();
         
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         alarm = m_alarmDao.get(ack.getRefId());
         Assert.assertNotNull(alarm.getAlarmAckUser());
@@ -250,7 +246,7 @@ public class AckdTest implements InitializingBean {
         m_ackDao.flush();
         
         Thread.sleep(1);
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         OnmsNotification notif = m_notificationDao.get(ack.getRefId());
         Assert.assertNotNull(notif.getAnsweredBy());

@@ -34,15 +34,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Report;
-import org.opennms.netmgt.dao.ReportdConfigurationDao;
+import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,10 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class ReportScheduler implements InitializingBean, DisposableBean {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ReportScheduler.class);
 
     /** Constant <code>JOB_GROUP="Reportd"</code> */
     protected static final String JOB_GROUP = "Reportd";
@@ -83,7 +88,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
         try {
             getScheduler().setJobFactory(getReportJobFactory());
         } catch (SchedulerException e) {
-            LogUtils.errorf(this, e, "afterPropertiesSet: couldn't set proper JobFactory for scheduler: %s", e.getMessage());
+            LOG.error("afterPropertiesSet: couldn't set proper JobFactory for scheduler: {}", e.getMessage(), e);
         }
     }
 
@@ -96,32 +101,32 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
      */
     public void rebuildReportSchedule() {
         
-        LogUtils.infof(this,"rebuildReportSchedule: obtaining lock...");
+        LOG.info("rebuildReportSchedule: obtaining lock...");
 
 
         synchronized (m_lock) {
-            LogUtils.debugf(this,"rebuildReportSchedule: lock acquired. reloading configuration...");
+            LOG.debug("rebuildReportSchedule: lock acquired. reloading configuration...");
 
             try {
                 m_configDao.reloadConfiguration();
 
-                LogUtils.debugf(this,"rebuildReportSchedule: removing current report jobs from schedule...");
+                LOG.debug("rebuildReportSchedule: removing current report jobs from schedule...");
                 removeCurrentJobsFromSchedule();
 
-                LogUtils.debugf(this,"rebuildReportSchedule: recreating report schedule based on configuration...");
+                LOG.debug("rebuildReportSchedule: recreating report schedule based on configuration...");
                 buildReportSchedule();
                 
                 printCurrentSchedule();
 
             } catch (DataAccessResourceFailureException e) {
-                LogUtils.errorf(this, e, "rebuildReportSchedule: %s", e.getMessage());
+                LOG.error("rebuildReportSchedule: {}", e.getMessage(), e);
                 throw new IllegalStateException(e);
 
             } 
 
         }
 
-        LogUtils.infof(this,"rebuildReportSchedule: schedule rebuilt and lock released.");
+        LOG.info("rebuildReportSchedule: schedule rebuilt and lock released.");
    
     }
     
@@ -129,11 +134,11 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
         try {
             
             
-            LogUtils.infof(this,"calendarNames: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
-            LogUtils.infof(this,"current executing jobs: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
-            LogUtils.infof(this,"current job names: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
-            LogUtils.infof(this,"scheduler metadata: %s", getScheduler().getMetaData());
-            LogUtils.infof(this,"trigger names: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
+            LOG.info("calendarNames: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
+            LOG.info("current executing jobs: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
+            LOG.info("current job names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
+            LOG.info("scheduler metadata: {}", getScheduler().getMetaData());
+            LOG.info("trigger names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
 
             Iterator<String> it = Arrays.asList(getScheduler().getTriggerNames(JOB_GROUP)).iterator();
             while (it.hasNext()) {
@@ -155,11 +160,11 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
                 sb.append(t.getTimeZone());
                 sb.append(", priority: ");
                 sb.append(t.getPriority());
-                LogUtils.infof(this, sb.toString());
+                LOG.info(sb.toString());
             }
 
         } catch (Throwable e) {
-            LogUtils.errorf(this, e, "printCurrentSchedule: %s", e.getMessage());
+            LOG.error("printCurrentSchedule: {}", e.getMessage(), e);
         }
 
         
@@ -181,9 +186,9 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
                     getScheduler().scheduleJob(detail, trigger);
 
                 } catch (ParseException e) {
-                    LogUtils.errorf(this, e, "buildReportSchedule: %s", e.getMessage());
+                    LOG.error("buildReportSchedule: {}", e.getMessage(), e);
                 } catch (SchedulerException e) {
-                    LogUtils.errorf(this, e, "buildReportSchedule: %s", e.getMessage());
+                    LOG.error("buildReportSchedule: {}", e.getMessage(), e);
                 }
             }
         }
@@ -202,7 +207,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
             }
         
             } catch (SchedulerException e) {
-                    LogUtils.errorf(this, e, "removeCurrentJobsFromSchedule: %s", e.getMessage());
+                    LOG.error("removeCurrentJobsFromSchedule: {}", e.getMessage(), e);
                 }
             }        
     }
@@ -210,7 +215,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
     /**
      * <p>getConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ReportdConfigurationDao} object.
      */
     public ReportdConfigurationDao getConfigDao() {
         return m_configDao;
@@ -220,7 +225,7 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
     /**
      * <p>setConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.ReportdConfigurationDao} object.
      */
     public void setConfigDao(ReportdConfigurationDao configDao) {
         m_configDao = configDao;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,8 @@ import org.apache.mina.core.session.IoSessionInitializer;
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -59,7 +60,9 @@ import org.opennms.core.utils.LogUtils;
  * @author Duncan Mackintosh
  */
 public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryConnectorPoolImpl.class);
+    
     /**
      * The connector that will be reused for each incoming connection.
      */
@@ -108,7 +111,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
             synchronized (m_connectorMutex) {
                 if (m_connector == null) {
                     // Sanity check for null connector instance
-                    LogUtils.debugf(this, "Found a null NioSocketConnector, creating a new one with timeout %d", getTimeout());
+                    LOG.debug("Found a null NioSocketConnector, creating a new one with timeout {}", getTimeout());
                     m_connector = getSocketConnector(getTimeout(), handler);
                 }
 
@@ -141,7 +144,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
                     cf.addListener(portSwitcher(m_connector, remoteAddress, init, handler));
                     return cf;
                 } catch (Throwable e) {
-                    LogUtils.debugf(this, e, "Caught exception on factory %s, retrying: %s", this, e);
+                    LOG.debug("Caught exception on factory {}, retrying: {}", this, e);
                     m_connector.dispose();
                     m_connector = getSocketConnector(getTimeout(), handler);
                     continue;
@@ -154,6 +157,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
     private IoFutureListener<ConnectFuture> portSwitcher(final SocketConnector connector, final SocketAddress remoteAddress, final IoSessionInitializer<? extends ConnectFuture> init, final IoHandler handler) {
         return new IoFutureListener<ConnectFuture>() {
 
+            @Override
             public void operationComplete(ConnectFuture future) {
                 try {
                     Throwable e = future.getException();
@@ -167,7 +171,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
                         connect(remoteAddress, init, handler);
                     }
                 } catch (RuntimeIoException e) {
-                    LogUtils.debugf(this, e, "Exception of type %s caught, disposing of connector: %s", e.getClass().getName(), Thread.currentThread().getName());
+                    LOG.debug("Exception of type {} caught, disposing of connector: {}", e.getClass().getName(), Thread.currentThread().getName(), e);
                     // This will be thrown in the event of a ConnectException for example
                     connector.dispose();
                 }

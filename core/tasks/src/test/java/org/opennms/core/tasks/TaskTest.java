@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -57,6 +58,8 @@ import org.opennms.core.utils.LogUtils;
  * @author brozow
  */
 public class TaskTest {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TaskTest.class);
     
     ExecutorService m_executor;
     DefaultTaskCoordinator m_coordinator;
@@ -74,6 +77,7 @@ public class TaskTest {
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 sleep(100);
                 hasRun.set(true);
@@ -157,6 +161,7 @@ public class TaskTest {
         AtomicInteger count = new AtomicInteger(0);
     
         Runnable thrower = new Runnable() {
+            @Override
             public void run() {
                 throw new RuntimeException("Intentionally failed for test purposes");
 
@@ -185,6 +190,7 @@ public class TaskTest {
     
         Async<Integer> thrower = new Async<Integer>() {
 
+            @Override
             public void submit(Callback<Integer> cb) {
                 throw new RuntimeException("Intentionally failed for test purposes");
             }
@@ -403,6 +409,7 @@ public class TaskTest {
     
     public Runnable scheduler(final ContainerTask<?> container, final AtomicLong result, final long startIndex, final long count, final long remaining) {
         return new Runnable() {
+            @Override
             public void run() {
                 for(long i = startIndex; i < startIndex+count; i++) {
                     container.add(addr(result, i));
@@ -411,6 +418,7 @@ public class TaskTest {
                     container.add(scheduler(container, result, startIndex+count, count, remaining-1));
                 }
             }
+            @Override
             public String toString() {
                 long batchNo = (startIndex - 1)/count + 1;
                 long totalBatches = batchNo + remaining;
@@ -463,9 +471,11 @@ public class TaskTest {
     
     private <T> Runnable appender(final List<T> list, final T value) {
         return new Runnable() {
+            @Override
             public void run() {
                 list.add(value);
             }
+            @Override
             public String toString() {
                 return String.format("append(%s)", value);
             }
@@ -474,10 +484,12 @@ public class TaskTest {
     
     private Runnable incr(final AtomicInteger counter) {
         return new Runnable() {
+            @Override
             public void run() {
                 //System.err.println("Incrementing!");
                 counter.incrementAndGet();
             }
+            @Override
             public String toString() {
                 return "increment the counter: "+counter;
             }
@@ -487,6 +499,7 @@ public class TaskTest {
     
     private Runnable addr(final AtomicLong accum, final long n) {
         return new Runnable() {
+          @Override
           public void run() {
               int attempt = 0;
               while (true) {
@@ -502,6 +515,7 @@ public class TaskTest {
               }
 
           }
+          @Override
           public String toString() {
               return String.format("add(%d)", n);
           }
@@ -512,13 +526,15 @@ public class TaskTest {
     
     private Runnable waiter(final String name, final CountDownLatch latch) {
         return new Runnable() {
+            @Override
             public void run() {
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
-                    LogUtils.debugf(this, e, "interrupted waiting for task");
+                	LOG.debug("interrupted waiting for task", e);
                 }
             }
+            @Override
             public String toString() {
                 return name;
             }
@@ -528,6 +544,7 @@ public class TaskTest {
     private <T> Async<T> timer(final long millis, final T value) {
         final Timer timer = new Timer(true);
         return new Async<T>() {
+            @Override
             public void submit(final Callback<T> cb) {
                 TimerTask timerTask = new TimerTask() {
                     @Override
@@ -549,10 +566,12 @@ public class TaskTest {
     private Callback<Integer> setter(final AtomicInteger keeper) {
         return new Callback<Integer>() {
 
+            @Override
             public void complete(Integer t) {
                 keeper.set(t);
             }
 
+            @Override
             public void handleException(Throwable t) {
 
             }

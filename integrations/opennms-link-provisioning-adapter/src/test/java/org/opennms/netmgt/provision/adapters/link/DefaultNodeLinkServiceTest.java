@@ -42,19 +42,20 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.LinkStateDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LinkStateDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,6 +65,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
@@ -76,7 +78,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/provisiond-extensions.xml",
-        "classpath:/testConfigContext.xml"
+        "classpath:/testConfigContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -194,14 +197,14 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     @Transactional
     public void dwoTestUpdateLinkStatus(){
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(END_POINT2_ID);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         int parentNodeId = END_POINT1_ID;
         int nodeId = END_POINT2_ID;
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "G");
         
         dataLinks = m_dataLinkDao.findByNodeId(END_POINT2_ID);
-        assertEquals("G", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.GOOD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
@@ -211,12 +214,12 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "B");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("B", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.BAD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
@@ -226,17 +229,17 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "G");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("G", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.GOOD, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "B");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("B", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.BAD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
@@ -350,9 +353,10 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     }
     
     public void addPrimaryServiceToNode(final int nodeId, final String serviceName){
-        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             
-            public Object doInTransaction(TransactionStatus status) {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsServiceType svcType = m_serviceTypeDao.findByName(serviceName);
                 if(svcType == null){
                     svcType = new OnmsServiceType(serviceName);
@@ -369,8 +373,6 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
                 svc.setServiceType(svcType);
                 m_monitoredServiceDao.save(svc);
                 m_monitoredServiceDao.flush();
-                
-                return null;
             }
         });
         
@@ -379,12 +381,12 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     }
     
     public void saveLinkState(final OnmsLinkState linkState){
-        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             
-            public Object doInTransaction(final TransactionStatus status) {
+            @Override
+            public void doInTransactionWithoutResult(final TransactionStatus status) {
                 m_linkStateDao.saveOrUpdate(linkState);
                 m_linkStateDao.flush();
-                return null;
             }
         });
     }

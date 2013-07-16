@@ -48,10 +48,11 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -81,12 +82,14 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
 @Transactional
 public class SnmpCollectorMinMaxValTest implements TestContextAware, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValTest.class);
     private static final String TEST_HOST_ADDRESS = "172.20.1.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
 
@@ -155,7 +158,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware, Initializin
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
         
-        LogUtils.debugf(this, "iface = %s", iface);
+        LOG.debug("iface = {}", iface);
 
         final SnmpCollector collector = new SnmpCollector();
         collector.initialize(null);
@@ -242,6 +245,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware, Initializin
         return file + RrdUtils.getExtension();
     }
 
+    @Override
     public void setTestContext(final TestContext context) {
         m_context = context;
     }

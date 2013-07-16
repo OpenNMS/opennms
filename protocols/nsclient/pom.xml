@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.nsclient</artifactId>
-  <name>OpenNMS NSClient Monitoring</name>
+  <name>OpenNMS Protocols NSClient Monitoring</name>
   <description>
     This module provides NSClient discovery and monitoring to opennms.
   </description>

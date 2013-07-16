@@ -38,10 +38,10 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.importer.config.Asset;
 import org.opennms.netmgt.importer.config.Category;
 import org.opennms.netmgt.importer.config.Interface;
@@ -71,6 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/modelImporterTest.xml"
 })
 @JUnitConfigurationEnvironment
@@ -171,32 +172,39 @@ public class ModelImporterTest implements InitializingBean {
             return m_assetCompleted;
         }
 
+        @Override
         public void visitModelImport(ModelImport mi) {
             m_modelImportCount++;
         }
 
+        @Override
         public void visitNode(Node node) {
             m_nodeCount++;
             assertEquals("apknd", node.getNodeLabel());
             assertEquals("4243", node.getForeignId());
         }
 
+        @Override
         public void visitInterface(Interface iface) {
             m_ifaceCount++;
         }
 
+        @Override
         public void visitMonitoredService(MonitoredService svc) {
             m_svcCount++;
         }
 
+        @Override
         public void visitCategory(Category category) {
             m_categoryCount++;
         }
         
+        @Override
         public void visitAsset(Asset asset) {
             m_assetCount++;
         }
         
+        @Override
         public String toString() {
             return (new ToStringCreator(this)
                 .append("modelImportCount", getModelImportCount())
@@ -214,26 +222,32 @@ public class ModelImporterTest implements InitializingBean {
                 .toString());
         }
 
+        @Override
         public void completeModelImport(ModelImport modelImport) {
             m_modelImportCompleted++;
         }
 
+        @Override
         public void completeNode(Node node) {
             m_nodeCompleted++;
         }
 
+        @Override
         public void completeInterface(Interface iface) {
             m_ifaceCompleted++;
         }
 
+        @Override
         public void completeMonitoredService(MonitoredService svc) {
             m_svcCompleted++;
         }
 
+        @Override
         public void completeCategory(Category category) {
             m_categoryCompleted++;
         }
         
+        @Override
         public void completeAsset(Asset asset) {
             m_assetCompleted++;
         }

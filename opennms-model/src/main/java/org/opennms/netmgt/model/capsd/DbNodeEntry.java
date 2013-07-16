@@ -43,8 +43,9 @@ import java.util.List;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -76,6 +77,9 @@ import org.opennms.netmgt.EventConstants;
  * 
  */
 public final class DbNodeEntry {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DbNodeEntry.class);
+
     /**
      * The character returned if the node is active
      */
@@ -414,7 +418,7 @@ public final class DbNodeEntry {
             }
 
             names.append(") VALUES (").append(values).append(')');
-            log().debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
+            LOG.debug("DbNodeEntry.insert: SQL insert statment = {}", names.toString());
 
             // create the Prepared statment and then
             // start setting the result values
@@ -481,14 +485,12 @@ public final class DbNodeEntry {
             if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
                 stmt.setString(ndx++, m_foreignId);
 
-            if (log().isDebugEnabled()) {
-                log().debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
-            }
+                LOG.debug("nodeid='{}' nodetype='{}' createTime='{}' lastPoll='{}' dpName='{}' sysname='{}' sysoid='{}' sysdescr='{}' syslocation='{}' syscontact='{}' label='{}' labelsource='{}' netbios='{}' domain='{}' os='{}'", m_nodeId, new String(new char[] { m_type }), m_createTime, m_lastPoll, m_dpName, m_sysname, m_sysoid, m_sysdescr, m_syslocation, m_syscontact, m_label, new String(new char[] { m_labelSource }), m_nbName, m_nbDomainName, m_os); 
 
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            log().debug("DbNodeEntry.insert: SQL update result = " + rc);
+            LOG.debug("DbNodeEntry.insert: SQL update result = {}", rc);
 
             // Insert a null entry into the asset table
 
@@ -604,7 +606,7 @@ public final class DbNodeEntry {
 
         sqlText.append(" WHERE nodeID = ? AND dpName = ?");
 
-        log().debug("DbNodeEntry.update: SQL update statment = " + sqlText.toString());
+        LOG.debug("DbNodeEntry.update: SQL update statment = {}", sqlText.toString());
 
         PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(getClass());
@@ -726,7 +728,7 @@ public final class DbNodeEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            log().debug("DbNodeEntry.update: update result = " + rc);
+            LOG.debug("DbNodeEntry.update: update result = {}", rc);
 
             // clear the mask and mark as backed
             // by the database
@@ -1644,7 +1646,7 @@ public     String getDistributedPollerName() {
                     if (db != null)
                         db.close();
                 } catch (SQLException e) {
-                    log().warn("Exception closing JDBC connection", e);
+                    LOG.warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -1661,8 +1663,7 @@ public     String getDistributedPollerName() {
      *            The database connection used to write the record.
      */
     public void store(Connection db) throws SQLException {
-        ThreadCategory log = log();
-        log.debug("DbNodeEntry: changed map = 0x" + Integer.toHexString(m_changed));
+        LOG.debug("DbNodeEntry: changed map = 0x{}", Integer.toHexString(m_changed));
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb)
                 update(db);
@@ -1683,7 +1684,7 @@ public     String getDistributedPollerName() {
                 if (db != null)
                     db.close();
             } catch (SQLException e) {
-                log().warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
 
@@ -1813,7 +1814,7 @@ public     String getDistributedPollerName() {
                 if (db != null)
                     db.close();
             } catch (SQLException e) {
-                log().warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
 
@@ -1951,7 +1952,7 @@ public     String getDistributedPollerName() {
                 if (db != null)
                     db.close();
             } catch (SQLException e) {
-                ThreadCategory.getInstance(DbNodeEntry.class).warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
     }
@@ -2001,6 +2002,7 @@ public     String getDistributedPollerName() {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         String sep = System.getProperty("line.separator");
         StringBuffer buf = new StringBuffer();
@@ -2055,8 +2057,5 @@ public     String getDistributedPollerName() {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

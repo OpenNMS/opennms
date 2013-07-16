@@ -38,13 +38,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents SNMP collection data for a single collection period.
@@ -57,6 +58,8 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @version $Id: $
  */
 public class OnmsSnmpCollection {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpCollection.class);
 
     private ServiceParameters m_params;
     private NodeResourceType m_nodeResourceType;
@@ -263,15 +266,6 @@ public class OnmsSnmpCollection {
         return m_params.getSnmpPrivProtocol(current);
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     private DataCollectionConfigDao getDataCollectionConfigDao() {
         if (m_dataCollectionConfigDao == null) {
             setDataCollectionConfigDao(DataCollectionConfigFactory.getInstance());
@@ -297,9 +291,7 @@ public class OnmsSnmpCollection {
         String collectionName = getName();
         String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
-            log().warn("getStorageFlag: Configuration error, failed to "
-                    + "retrieve SNMP storage flag for collection: "
-                    + collectionName);
+            LOG.warn("getStorageFlag: Configuration error, failed to retrieve SNMP storage flag for collection: {}", collectionName);
             storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
         }
         return storageFlag;
@@ -310,6 +302,7 @@ public class OnmsSnmpCollection {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getName();
     }
@@ -383,7 +376,7 @@ public class OnmsSnmpCollection {
             groupType.addAttributeType(attrType);
             typeList.add(attrType);
         }
-        log().debug("getAttributeTypes(" + agent + ", " + ifType + "): " + typeList);
+        LOG.debug("getAttributeTypes({}, {}): {}", agent, ifType, typeList);
         return typeList;
     }
 
@@ -471,7 +464,7 @@ public class OnmsSnmpCollection {
                 try {
                     resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
                 } catch (IllegalArgumentException e) {
-                    log().warn("Ignoring resource type " + configuredResourceType.getLabel() + " (" + configuredResourceType.getName() + ") because it is not properly configured.");
+                    LOG.warn("Ignoring resource type {} ({}) because it is not properly configured.", configuredResourceType.getLabel(), configuredResourceType.getName());
                 }
             }
             m_genericIndexResourceTypes = resourceTypes;

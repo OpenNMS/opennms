@@ -74,6 +74,7 @@ public class UserDTOLight implements UserView {
      *
      * @return unique username
      */
+    @Override
     public String getUsername() {
         return username;
     }
@@ -92,6 +93,7 @@ public class UserDTOLight implements UserView {
      *
      * @return unique identifier
      */
+    @Override
     public Long getId() {
         return id;
     }
@@ -110,6 +112,7 @@ public class UserDTOLight implements UserView {
      *
      * @return if the user is enabled or not
      */
+    @Override
     public Boolean isEnabled() {
         return enabled;
     }

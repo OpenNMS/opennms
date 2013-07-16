@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.apache.log4j.Level;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
 import org.opennms.test.mock.MockUtil;
@@ -79,7 +78,6 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
 

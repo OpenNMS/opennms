@@ -3,16 +3,18 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Complex Dependencies</name>
+  <name>OpenNMS Dependencies</name>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>
     <module>asterisk</module>
+    <module>camel</module>
+    <module>camel-test</module>
     <module>castor</module>
     <module>dbpool</module>
     <module>dnsjava</module>

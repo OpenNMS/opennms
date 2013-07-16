@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -50,6 +49,8 @@ import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A servlet that handles updating the status of the notifications
@@ -62,11 +63,13 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class ActionDiscoveryServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ActionDiscoveryServlet.class);
+
  
     private static final long serialVersionUID = 2L;
     
     /** Constant <code>log</code> */
-    protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
     
     
     /** Constant <code>addSpecificAction="AddSpecific"</code> */
@@ -94,9 +97,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
     
     
 	/** {@inheritDoc} */
+    @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	    log.info("Loading Discovery configuration.");
+	    LOG.info("Loading Discovery configuration.");
         HttpSession sess = request.getSession(true);
         DiscoveryConfiguration config = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
         if (config == null) {
@@ -107,13 +111,13 @@ public class ActionDiscoveryServlet extends HttpServlet {
         config = GeneralSettingsLoader.load(request,config);
         
         String action = request.getParameter("action");
-        log.debug("action: "+action);
+        LOG.debug("action: {}", action);
         
 
         
         //add a Specific
         if(action.equals(addSpecificAction)){
-        	log.debug("Adding Specific");
+        	LOG.debug("Adding Specific");
         	String ipAddr = request.getParameter("specificipaddress");
         	String timeout = request.getParameter("specifictimeout");
         	String retries = request.getParameter("specificretries");
@@ -131,18 +135,18 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
         //remove 'Specific' from configuration
         if(action.equals(removeSpecificAction)){
-        	log.debug("Removing Specific");
+        	LOG.debug("Removing Specific");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	Specific spec= config.getSpecific(index);
         	boolean result = config.removeSpecific(spec);
-        	log.debug("Removing Specific result = "+result);
+        	LOG.debug("Removing Specific result = {}", result);
         } 
 
         
         //add an 'Include Range'
         if(action.equals(addIncludeRangeAction)){
-        	log.debug("Adding Include Range");
+        	LOG.debug("Adding Include Range");
         	String ipAddrBase = request.getParameter("irbase");
         	String ipAddrEnd = request.getParameter("irend");
         	String timeout = request.getParameter("irtimeout");
@@ -161,17 +165,17 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
         //remove 'Include Range' from configuration
         if(action.equals(removeIncludeRangeAction)){
-        	log.debug("Removing Include Range");
+        	LOG.debug("Removing Include Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	IncludeRange ir= config.getIncludeRange(index);
         	boolean result = config.removeIncludeRange(ir);
-        	log.debug("Removing Include Range result = "+result);
+        	LOG.debug("Removing Include Range result = {}", result);
         } 
         
         //add an 'Include URL'
         if(action.equals(addIncludeUrlAction)){
-            log.debug("Adding Include URL");
+            LOG.debug("Adding Include URL");
             String url = request.getParameter("iuurl");
             String timeout = request.getParameter("iutimeout");
             String retries = request.getParameter("iuretries");
@@ -189,17 +193,17 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
         //remove 'Include URL' from configuration
         if(action.equals(removeIncludeUrlAction)){
-            log.debug("Removing Include URL");
+            LOG.debug("Removing Include URL");
             String specificIndex = request.getParameter("index");
             int index = WebSecurityUtils.safeParseInt(specificIndex);
             IncludeUrl iu = config.getIncludeUrl(index);
             boolean result = config.removeIncludeUrl(iu);
-            log.debug("Removing Include URL result = "+result);
+            LOG.debug("Removing Include URL result = {}", result);
         } 
         
         //add an 'Exclude Range'
         if(action.equals(addExcludeRangeAction)){
-        	log.debug("Adding Exclude Range");
+        	LOG.debug("Adding Exclude Range");
         	String ipAddrBegin = request.getParameter("erbegin");
         	String ipAddrEnd = request.getParameter("erend");
         	ExcludeRange newER = new ExcludeRange();
@@ -210,28 +214,26 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
         //remove 'Exclude Range' from configuration
         if(action.equals(removeExcludeRangeAction)){
-        	log.debug("Removing Exclude Range");
+        	LOG.debug("Removing Exclude Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
         	ExcludeRange er= config.getExcludeRange(index);
         	boolean result = config.removeExcludeRange(er);
-        	log.debug("Removing Exclude Range result = "+result);
+        	LOG.debug("Removing Exclude Range result = {}", result);
         }         
         
         //save configuration and restart discovery service
         if(action.equals(saveAndRestartAction)){
         	DiscoveryConfigFactory dcf=null;
         	try{
-        		if (log.isDebugEnabled()) {
         			StringWriter configString = new StringWriter();
         			config.marshal(configString);
-        			log.debug(configString.toString().trim());
-        		}
+        			LOG.debug(configString.toString().trim());
         		DiscoveryConfigFactory.init();
         		dcf = DiscoveryConfigFactory.getInstance();
             	        dcf.saveConfiguration(config);
         	}catch(Throwable ex){
-        		log.error("Error while saving configuration. "+ex);
+        		LOG.error("Error while saving configuration. {}", ex);
         		throw new ServletException(ex);
         	}
         	
@@ -239,7 +241,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	try {
     			proxy = Util.createEventProxy();
     		} catch (Throwable me) {
-    			log.error(me.getMessage());
+    			LOG.error(me.getMessage());
     		}
 
     		EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");
@@ -248,10 +250,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
             try {
             	proxy.send(bldr.getEvent());
             } catch (Throwable me) {
-    			log.error(me.getMessage());
+    			LOG.error(me.getMessage());
     		}
 
-            log.info("Restart Discovery requested!");  
+            LOG.info("Restart Discovery requested!");  
             sess.removeAttribute("discoveryConfiguration");
             response.sendRedirect(Util.calculateUrlBase( request, "event/query?msgmatchany=Discovery" ));
             return;
@@ -263,6 +265,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
     }
 	
 	/** {@inheritDoc} */
+    @Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}

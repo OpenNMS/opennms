@@ -42,7 +42,8 @@ import java.util.Map;
 import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO need to completely javadoc this class
 
@@ -55,6 +56,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public abstract class AbstractTcpPlugin extends AbstractPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTcpPlugin.class);
 
     int m_defaultPort;
 
@@ -111,8 +114,6 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     final protected boolean checkConnection(ConnectionConfig config) {
         // get a log to send errors
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down
         int timeout = (config.getTimeout() == 0 ? 10 : config.getTimeout());
@@ -133,7 +134,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(config.getSocketAddress(), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug(getPluginName() + ": connected to host: " + config.getInetAddress() + " on port: " + config.getPort());
+                LOG.debug("{}: connected to host: {} on port: {}", getPluginName(), config.getInetAddress(), config.getPort());
 
                 socket = getSocketWrapper().wrapSocket(socket);
 
@@ -142,22 +143,22 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug(getPluginName() + ": connection refused to " + config.getInetAddress() + ":" + config.getPort());
+                LOG.debug("{}: connection refused to {}:{}", getPluginName(), config.getInetAddress(), config.getPort());
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                log.info(getPluginName() + ": Unable to test host " + config.getInetAddress() + ", no route available", e);
+                LOG.info("{}: Unable to test host {}, no route available", getPluginName(), config.getInetAddress(), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
-                log.debug(getPluginName() + ": did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("{}: did not connect to host within timeout: {} attempt: {}", getPluginName(), timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info(getPluginName() + ": Error communicating with host " + config.getInetAddress(), e);
+                LOG.info("{}: Error communicating with host {}", getPluginName(), config.getInetAddress(), e);
                 isAServer = false;
             } catch (Throwable t) {
-                log.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress(), t);
+                LOG.warn("{}: Undeclared throwable exception caught contacting host {}", getPluginName(), config.getInetAddress(), t);
                 isAServer = false;
             } finally {
                 if (socket != null)
@@ -273,6 +274,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     final public String getProtocolName() {
         return m_protocolName;
     }
@@ -283,6 +285,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     final public boolean isProtocolSupported(InetAddress address) {
         return isProtocolSupported(address, null);
     }
@@ -296,6 +299,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     final public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
         List<ConnectionConfig> connList = getConnectionConfigList(qualifiers, address);

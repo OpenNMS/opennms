@@ -35,12 +35,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
     public OSReportPlugin() {
         if (m_oses.size() == 0) {
@@ -60,18 +62,22 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         }
     }
 
+    @Override
     public String getName() {
         return "OS";
     }
 
+    @Override
     public String getDescription() {
         return "Kernel, OS, and Distribution";
     }
 
+    @Override
     public int getPriority() {
         return 2;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String, Resource> map = new TreeMap<String, Resource>();
         map.put("Name", getResourceFromProperty("os.name"));
@@ -81,11 +87,11 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
 
         OperatingSystemMXBean osBean = getBean(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
         if (osBean == null) {
-            LogUtils.infof(this, "falling back to local VM OperatingSystemMXBean");
+            LOG.info("falling back to local VM OperatingSystemMXBean");
             osBean = ManagementFactory.getOperatingSystemMXBean();
         }
 
-        LogUtils.tracef(this, "bean = %s", osBean.toString());
+        LOG.trace("bean = {}", osBean);
         addGetters(osBean, map);
 
         File lsb = new File("/bin/lsb_release");

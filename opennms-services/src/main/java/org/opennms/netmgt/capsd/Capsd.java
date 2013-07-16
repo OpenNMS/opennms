@@ -31,13 +31,17 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.model.events.StoppableEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -57,6 +61,9 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class Capsd extends AbstractServiceDaemon {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Capsd.class);
+    
     /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
@@ -118,13 +125,14 @@ public class Capsd extends AbstractServiceDaemon {
      * Constructs the Capsd objec
      */
     public Capsd() {
-    	super("OpenNMS.Capsd");
+    	super("capsd");
         m_scheduler = null;
     }
 
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         // System.err.println("Capsd onStop() dumping stack");
         // Thread.dumpStack();
@@ -144,6 +152,7 @@ public class Capsd extends AbstractServiceDaemon {
 	/**
 	 * <p>onInit</p>
 	 */
+    @Override
 	protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
@@ -172,13 +181,13 @@ public class Capsd extends AbstractServiceDaemon {
          * syncSnmpPrimaryState()
          */
 
-        log().debug("init: Loading services into database...");
+        LOG.debug("init: Loading services into database...");
         m_capsdDbSyncer.syncServices();
         
-        log().debug("init: Syncing management state...");
+        LOG.debug("init: Syncing management state...");
         m_capsdDbSyncer.syncManagementState();
         
-        log().debug("init: Syncing primary SNMP interface state...");
+        LOG.debug("init: Syncing primary SNMP interface state...");
         m_capsdDbSyncer.syncSnmpPrimaryState();
 
 	}
@@ -186,6 +195,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         // System.err.println("Capsd onStart() dumping stack");
         // Thread.dumpStack();
@@ -198,7 +208,7 @@ public class Capsd extends AbstractServiceDaemon {
     	RescanProcessor.setQueuedRescansTracker(new HashSet<Integer>());
     	
         // Start the rescan scheduler
-        log().debug("start: Starting rescan scheduler");
+        LOG.debug("start: Starting rescan scheduler");
         
         m_scheduler.start();
 	}
@@ -206,6 +216,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         // XXX Pause all threads?
     }
@@ -213,6 +224,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         // XXX Resume all threads?
 	}
@@ -246,15 +258,16 @@ public class Capsd extends AbstractServiceDaemon {
      *             internet address.
      */
     public void scanSuspectInterface(final String ifAddr) throws UnknownHostException {
-        final String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
-            final InetAddress addr = InetAddressUtils.addr(ifAddr);
-            final SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
-            proc.run();
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+        Logging.withPrefix(getName(), new Runnable() {
+
+            @Override
+            public void run() {
+                final InetAddress addr = InetAddressUtils.addr(ifAddr);
+                final SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
+                proc.run();
+            }
+            
+        });
     }
 
     /**
@@ -266,14 +279,15 @@ public class Capsd extends AbstractServiceDaemon {
      * @param nodeId
      *            The node identifier from the database.
      */
-    public void rescanInterfaceParent(Integer nodeId) {
-        String prefix = ThreadCategory.getPrefix();
-        try {
-            ThreadCategory.setPrefix(getName());
-            m_scheduler.forceRescan(nodeId.intValue());
-        } finally {
-            ThreadCategory.setPrefix(prefix);
-        }
+    public void rescanInterfaceParent(final Integer nodeId) {
+        Logging.withPrefix(getName(), new Runnable() {
+
+            @Override
+            public void run() {
+                m_scheduler.forceRescan(nodeId.intValue());
+            }
+            
+        });
     }
 
     /**

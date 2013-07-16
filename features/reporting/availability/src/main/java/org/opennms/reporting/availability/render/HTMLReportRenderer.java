@@ -46,7 +46,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**
@@ -56,8 +58,9 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  */
 public class HTMLReportRenderer implements ReportRenderer {
+    private static final Logger LOG = LoggerFactory.getLogger(HTMLReportRenderer.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private String m_outputFileName;
 
@@ -67,16 +70,12 @@ public class HTMLReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private final ThreadCategory log;
-
     /**
      * <p>Constructor for HTMLReportRenderer.</p>
      */
     public HTMLReportRenderer() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(HTMLReportRenderer.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        // TODO This shoud wrap the methods I think
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -84,15 +83,17 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
      */
+    @Override
     public void render() throws ReportRenderException {
         render(m_inputFileName, m_outputFileName, m_xsltResource);
     }
 
     /** {@inheritDoc} */
+    @Override
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
 
-        if (log.isDebugEnabled())
-            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to byte array");
+
+        LOG.debug("Rendering {} with XSL File {} to byte array", inputFileName, xsltResource.getDescription());
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         this.render(inputFileName, outputStream, xsltResource);
@@ -101,9 +102,10 @@ public class HTMLReportRenderer implements ReportRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-        if (log.isDebugEnabled())
-            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
 
         FileInputStream in = null, xslt = null;
         try {
@@ -114,30 +116,31 @@ public class HTMLReportRenderer implements ReportRenderer {
 
             this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
-            log.fatal("IOException ", ioe);
+            LOG.error("IOException ", ioe);
             throw new ReportRenderException(ioe);
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing XML stream: " + e.getMessage());
+                    LOG.warn("Error while closing XML stream: {}", e.getMessage());
                 }
             }
             if (xslt != null) {
                 try {
                     xslt.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
                 }
             }
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-        if (log.isDebugEnabled())
-            log.debug("Rendering InputStream with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        LOG.debug("Rendering InputStream with XSL File {} to OutputStream", xsltResource.getDescription());
 
         FileInputStream xslt = null;
         try {
@@ -147,23 +150,24 @@ public class HTMLReportRenderer implements ReportRenderer {
 
             this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
-            log.fatal("IOException ", ioe);
+            LOG.error("IOException ", ioe);
             throw new ReportRenderException(ioe);
         } finally {
             if (xslt != null) {
                 try {
                     xslt.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
                 }
             }
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
-        if (log.isDebugEnabled())
-            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to " + outputFileName + " with base directory of " + m_baseDir);
+
+        LOG.debug("Rendering {} with XSL File {} to {} with base directory of {}", m_baseDir, inputFileName, xsltResource.getDescription(), outputFileName);
 
         FileInputStream in = null, xslt = null;
         FileOutputStream out = null;
@@ -179,28 +183,28 @@ public class HTMLReportRenderer implements ReportRenderer {
             this.render(xml, out, xsl);
 
         } catch (IOException ioe) {
-            log.fatal("IOException ", ioe);
+            LOG.error("IOException ", ioe);
             throw new ReportRenderException(ioe);
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing XML stream: " + e.getMessage());
+                    LOG.warn("Error while closing XML stream: {}", e.getMessage());
                 }
             }
             if (xslt != null) {
                 try {
                     xslt.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
                 }
             }
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    log.warn("Error while closing PDF stream: " + e.getMessage());
+                    LOG.warn("Error while closing PDF stream: {}", e.getMessage());
                 }
             }
         }
@@ -221,20 +225,22 @@ public class HTMLReportRenderer implements ReportRenderer {
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.transform(new StreamSource(in), new StreamResult(out));
         } catch (TransformerConfigurationException tce) {
-            log.fatal("TransformerConfigurationException", tce);
+            LOG.error("TransformerConfigurationException", tce);
             throw new ReportRenderException(tce);
         } catch (TransformerException te) {
-            log.fatal("TransformerException", te);
+            LOG.error("TransformerException", te);
             throw new ReportRenderException(te);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setXsltResource(Resource xsltResource) {
         this.m_xsltResource = xsltResource;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
@@ -244,16 +250,19 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setInputFileName(String inputFileName) {
         this.m_inputFileName = inputFileName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setBaseDir(String baseDir) {
         this.m_baseDir = baseDir;
     }
@@ -263,6 +272,7 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getBaseDir() {
         return m_baseDir;
     }

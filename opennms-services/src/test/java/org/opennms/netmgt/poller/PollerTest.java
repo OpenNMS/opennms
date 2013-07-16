@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -59,10 +58,10 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -111,7 +110,6 @@ public class PollerTest {
 
 	private OutageAnticipator m_outageAnticipator;
 
-	private Level m_assertLevel;
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -121,7 +119,6 @@ public class PollerTest {
 
 	@Before
 	public void setUp() throws Exception {
-        m_assertLevel = Level.WARN;
 
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
@@ -225,9 +222,6 @@ public class PollerTest {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		if (m_assertLevel != null) {
-			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
-		}
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
@@ -631,7 +625,6 @@ public class PollerTest {
 	// interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     @Test
 	public void testInterfaceReparented() throws Exception {
-    	m_assertLevel = null;
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -1083,6 +1076,7 @@ public class PollerTest {
 		}
 		
 		MockVisitor gainSvcSender = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				Event event = MockEventUtil
 						.createNodeGainedServiceEvent("Test", svc);
@@ -1265,6 +1259,7 @@ public class PollerTest {
 
 	private void anticipateServicesUp(MockElement node) {
 		MockVisitor eventCreator = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				anticipateUp(svc);
 			}
@@ -1274,6 +1269,7 @@ public class PollerTest {
 
 	private void anticipateServicesDown(MockElement node) {
 		MockVisitor eventCreator = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				anticipateDown(svc);
 			}
@@ -1283,6 +1279,7 @@ public class PollerTest {
 
 	private void createOutages(MockElement element, final Event event) {
 		MockVisitor outageCreater = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 			    if (svc.getMgmtStatus().equals(SvcMgmtStatus.ACTIVE)) {
 			        m_db.createOutage(svc, event);
@@ -1294,6 +1291,7 @@ public class PollerTest {
 
 	private void bringDownCritSvcs(MockElement element) {
 		MockVisitor markCritSvcDown = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				if ("ICMP".equals(svc.getSvcName())) {
 					svc.bringDown();
@@ -1335,6 +1333,7 @@ public class PollerTest {
 								.getTime());
 		}
 
+                @Override
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));

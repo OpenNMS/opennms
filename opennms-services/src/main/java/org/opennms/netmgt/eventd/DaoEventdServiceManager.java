@@ -31,9 +31,11 @@ package org.opennms.netmgt.eventd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.EventdServiceManager;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,9 @@ import org.springframework.util.Assert;
  */
 @Transactional(readOnly = true)
 public class DaoEventdServiceManager implements InitializingBean, EventdServiceManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DaoEventdServiceManager.class);
+    
     private ServiceTypeDao m_serviceTypeDao;
 
     /**
@@ -64,21 +69,22 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
      * @see org.opennms.netmgt.eventd.EventdServiceManager#getServiceId(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized int getServiceId(String serviceName) throws DataAccessException {
         Assert.notNull(serviceName, "The serviceName argument must not be null");
 
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            log().debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
             OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
             if (serviceType == null) {
-                log().debug("Did not find entry for '" + serviceName + "' in database.");
+                LOG.debug("Did not find entry for '{}' in database.", serviceName);
                 return -1;
             }
             
-            log().debug("Found entry for '" + serviceName + "' (ID " + serviceType.getId() + " in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceType.getId());
 
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
             
@@ -92,16 +98,13 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>dataSourceSync</p>
      */
+    @Override
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
         for (OnmsServiceType serviceType : m_serviceTypeDao.findAll()) {
             m_serviceMap.put(serviceType.getName(), serviceType.getId());
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -117,7 +120,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>getServiceTypeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
@@ -126,7 +129,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;

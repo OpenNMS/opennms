@@ -36,9 +36,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -62,6 +59,7 @@ public class ConfigTester implements ApplicationContextAware {
 		return m_context;
 	}
 
+        @Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		m_context = context;
 	}
@@ -83,10 +81,6 @@ public class ConfigTester implements ApplicationContextAware {
 	}
 
 	public static void main(String[] argv) {
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.WARN);
-		
-		Logger.getLogger("org.springframework").setLevel(Level.WARN);
 		
 		ApplicationContext context = BeanUtils.getFactory("configTesterContext", ClassPathXmlApplicationContext.class);
 		ConfigTester tester = context.getBean("configTester", ConfigTester.class);

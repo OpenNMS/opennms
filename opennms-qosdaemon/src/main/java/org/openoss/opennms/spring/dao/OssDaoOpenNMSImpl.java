@@ -36,16 +36,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.openoss.opennms.spring.qosd.QoSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -55,6 +56,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version $Id: $
  */
 public class OssDaoOpenNMSImpl implements OssDao {
+    private static final Logger LOG = LoggerFactory.getLogger(OssDaoOpenNMSImpl.class);
 
 	/** 
 	 * local store for OpenNMS alarm list indexed by OpenNMS AlarmID as Integer
@@ -79,14 +81,6 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * */
 	private final Map<String,OnmsNode> nodeCacheByUniqueID = new ConcurrentHashMap<String,OnmsNode>();
 
-
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(OssDaoOpenNMSImpl.class);	
-	}
-
 	// ****************
 	// Spring DAO setters
 	// ****************
@@ -101,13 +95,14 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setDataSource(javax.sql.DataSource)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setDataSource(DataSource dataSource) {
 		_dataSource = dataSource;
 	}
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	protected AssetRecordDao _assetRecordDao;
 
@@ -116,13 +111,14 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAssetRecordDao(org.opennms.netmgt.dao.AssetRecordDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	protected NodeDao _nodeDao;
 
@@ -130,13 +126,14 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setNodeDao(org.opennms.netmgt.dao.NodeDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	protected AlarmDao _alarmDao;
 
@@ -144,6 +141,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAlarmDao(org.opennms.netmgt.dao.AlarmDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
@@ -158,6 +156,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setTransTemplate(org.springframework.transaction.support.TransactionTemplate)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setTransTemplate(TransactionTemplate _transTemplate) {
 		transTemplate = _transTemplate;
 	}
@@ -176,6 +175,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setQoSD(org.openoss.opennms.spring.qosd.QoSD)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setQoSD(QoSD _qoSD){
 		qoSD=_qoSD;
 	}
@@ -192,6 +192,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/**
 	 * <p>init</p>
 	 */
+        @Override
 	synchronized public void init(){
 		if (initialised) return;
 
@@ -217,10 +218,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm addCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
-		ThreadCategory log = getLog();	
 
-		if ((alarm==null)||(alarm.getId()!=null)) 
+                if ((alarm==null)||(alarm.getId()!=null)) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): Illegal value: alarm==null or alarmID!=null");
 		if ((alarm.getAlarmType()!=1)) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): Illegal value: alarm.getAlarmType() not 'raise' alarm type '1'");
@@ -236,15 +237,15 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		} 
 		else {
 			try { // add new alarm then save alarm in local alarm list
-				if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): ALARM TO SAVE:\n"+alarmToString(alarm));
+				LOG.debug("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): ALARM TO SAVE:{}", alarmToString(alarm));
 
 				String uniqueKey=alarm.getApplicationDN()+alarm.getOssPrimaryKey();
 
 				//_alarmDao.save(alarm); // - replaced by;
-				transTemplate.execute(new TransactionCallback<Object>() {
-					public Object doInTransaction(TransactionStatus status) {
+				transTemplate.execute(new TransactionCallbackWithoutResult() {
+                                        @Override
+					public void doInTransactionWithoutResult(TransactionStatus status) {
 						_alarmDao.save(alarm);
-						return null;
 					}
 				});				
 
@@ -252,7 +253,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				alarmCacheByUniqueKey.put(uniqueKey, alarm);			
 
 			} catch (Throwable ex){
-				log.error("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey():Error creating alarm in database:",ex);
+				LOG.error("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey():Error creating alarm in database",ex);
 				return null;
 			}
 //			try { // add new alarm then update alarm in local alarm list 
@@ -263,13 +264,13 @@ public class OssDaoOpenNMSImpl implements OssDao {
 //			}
 		}
 
-		if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): ALARM SAVED"+ alarmToStringBrief(alarm));
+		LOG.debug("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): ALARM SAVED: {}", alarmToStringBrief(alarm));
 		try{
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): Sending Updated alarm list to QoSD");
+			LOG.debug("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): Sending Updated alarm list to QoSD");
 			sendAlarms();
 		} 	catch ( Exception e ){
 			// ignore this exception as Qosd may not be running
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): problem sending alarm to QoSD ( QoSD may not be running ):" + e);
+			LOG.debug("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): problem sending alarm to QoSD ( QoSD may not be running )", e);
 		}
 		return alarm;
 	}
@@ -278,8 +279,8 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm updateCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
-		ThreadCategory log = getLog();	
 
 		if ((alarm==null)||(alarm.getId()==null)) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey(): Illegal value: alarm==null or alarmID==null");
@@ -297,12 +298,12 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 			alarm.setId(updateAlarm.getId());
 			try { // if alarm in database then update alarm in OpenNMS
-				if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database"+ alarmToStringBrief(alarm));
+				LOG.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database", alarmToStringBrief(alarm));
 
-				transTemplate.execute(new TransactionCallback<Object>() {
-					public Object doInTransaction(TransactionStatus status) {
+				transTemplate.execute(new TransactionCallbackWithoutResult() {
+                                        @Override
+					public void doInTransactionWithoutResult(TransactionStatus status) {
 						_alarmDao.update(alarm);
-						return null;
 					}
 				});	
 			
@@ -310,7 +311,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				alarmCacheByUniqueKey.put(uniqueKey, alarm);
 
 			} catch (Throwable ex){
-				log.error("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey():Error updating alarm in database:",ex);
+				LOG.error("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey():Error updating alarm in database:", ex);
 				return null;
 			}		
 		} 
@@ -318,15 +319,15 @@ public class OssDaoOpenNMSImpl implements OssDao {
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey(): Illegal value: alarm not found in Current Alarm list: ApplicationDN:"+alarm.getApplicationDN()+" OssPrimaryKey:"+alarm.getOssPrimaryKey());
 		}
 
-		if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: Sending Updated alarm list Updated alarm"+ alarmToStringBrief(alarm));
+		LOG.debug("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: Sending Updated alarm list Updated alarm", alarmToStringBrief(alarm));
 
 		// force send of updated alarm list
 		try{
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: Sending Updated alarm list to QoSD");
+			LOG.debug("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: Sending Updated alarm list to QoSD");
 			sendAlarms();
 		} 	catch ( Exception e ){
 			// ignore this exception as Qosd may not be running
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: problem sending alarm to  QoSD:" + e);
+			LOG.debug("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: problem sending alarm to  QoSD:", e);
 		}
 
 		return alarm;
@@ -336,8 +337,8 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#getCurrentAlarmForUniqueKey(java.lang.String, java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm getCurrentAlarmForUniqueKey(String applicationDN , String ossPrimaryKey){
-		ThreadCategory log = getLog();	
 
 		if ((applicationDN==null)||(applicationDN.equals(""))) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey(): Illegal value: alarm ApplicationDN null or empty ");
@@ -348,13 +349,13 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 		try {
 			// check if alarm is in local alarm cache alarmCacheByID
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey: checking if alarm is in local alarm cache alarmCacheByID");
+			LOG.debug("OssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey: checking if alarm is in local alarm cache alarmCacheByID");
 			alarm=searchAlarmCacheForUniqueKey(applicationDN, ossPrimaryKey);
 
 		} catch ( Exception ex) {
-			log.error("\tOssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey ERROR : ", ex);
+			LOG.error("OssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey ERROR", ex);
 		}
-		if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey: alarm result ="+ alarmToStringBrief(alarm));
+		LOG.debug("OssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey: alarm result = {}", alarmToStringBrief(alarm));
 		return alarm; // null if not found
 	}
 
@@ -363,10 +364,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateAlarmCache(){
-		transTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction(TransactionStatus status) {
+		transTemplate.execute(new TransactionCallbackWithoutResult() {
+                        @Override
+			public void doInTransactionWithoutResult(TransactionStatus status) {
 				localUpdateAlarmCacheTransaction();
-				return null;
 			}
 		});
 	}
@@ -375,9 +376,6 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * method to run in transaction to update from database
 	 */
 	private void localUpdateAlarmCacheTransaction(){
-		ThreadCategory log = getLog();	
-
-
 		Collection<OnmsAlarm> c = _alarmDao.findAll();
 
 		alarmCacheByID.clear(); // clear previous hashtable
@@ -404,7 +402,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				if (alarmCacheByUniqueKey.get(uniqueKey)==null) {
 					alarmCacheByUniqueKey.put(uniqueKey, newalarm);
 				} else {
-					log.error("\tOssDaoOpenNMSImpl().localUpdateAlarmCache(): ERROR - duplicate alarm uniqueKey in database ="+ uniqueKey +" AlarmID:"+newalarm.getId());
+					LOG.error("OssDaoOpenNMSImpl().localUpdateAlarmCache(): ERROR - duplicate alarm uniqueKey in database ={} AlarmID:{}", uniqueKey, newalarm.getId());
 				}
 			}
 
@@ -419,6 +417,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	synchronized public void updateAlarmCache() throws IllegalStateException{
 		localUpdateAlarmCache();
 	}
@@ -431,6 +430,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	synchronized public void updateAlarmCacheAndSendAlarms() throws IllegalStateException{
 		localUpdateAlarmCache();
 		sendAlarms();
@@ -444,6 +444,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @return an array of {@link org.opennms.netmgt.model.OnmsAlarm} objects.
 	 */
+        @Override
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
 		int i=0;
@@ -463,16 +464,15 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @throws an IllegalStateException if qoSD not running.
 	 */
 	private void sendAlarms(){
-		ThreadCategory log = getLog();	
 		if ( qoSD!=null){
 			try{
 				qoSD.sendAlarms();
 			} catch ( Exception ex){
-				log.error("\tOssDaoOpenNMSImpl().sendAlarms() Problem calling back to qoSD:",ex );
+				LOG.error("OssDaoOpenNMSImpl().sendAlarms() Problem calling back to qoSD:",ex );
 				throw new IllegalStateException("OssDaoOpenNMSImpl().sendAlarms() Problem calling back to qoSD:",ex);
 			}
 		} else {
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().sendAlarms(): QoSD not running - not calling back QoSD to send alarms");
+			LOG.debug("OssDaoOpenNMSImpl().sendAlarms(): QoSD not running - not calling back QoSD to send alarms");
 		}
 	}
 
@@ -484,11 +484,10 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private OnmsAlarm searchAlarmCacheForUniqueKey(String applicationDN , String ossPrimaryKey) {
-		ThreadCategory log = getLog();	
 
 		String uniqueKey=applicationDN+ossPrimaryKey;
 		OnmsAlarm alarm=(OnmsAlarm)alarmCacheByUniqueKey.get(uniqueKey);
-		if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().searchAlarmBufForUniqueKey alarmCacheByID search result:"+alarmToStringBrief(alarm));
+		LOG.debug("OssDaoOpenNMSImpl().searchAlarmBufForUniqueKey alarmCacheByID search result:{}", alarmToStringBrief(alarm));
 
 		return alarm;
 	}
@@ -573,15 +572,14 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByLabel(java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByLabel(String label) {
-		ThreadCategory log = getLog();	
-
 		if (label==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: label null or empty ");
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)nodeCacheByLabel.get(label);
 		} catch (Throwable ex){
-			log.error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
+			LOG.error("OssDaoOpenNMSImpl().findNodeByLabel ERROR", ex);
 		}
 		return node; //null if not found
 	}
@@ -591,8 +589,8 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByInstanceAndType(java.lang.String, java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByInstanceAndType(String managedObjectInstance, String managedObjectType) throws IllegalArgumentException{
-		ThreadCategory log = getLog();	
 		if (managedObjectInstance==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: managedObjectInstance null");
 		if (managedObjectType==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: label managedObjectType null");
 
@@ -601,7 +599,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		try {
 			node = (OnmsNode)nodeCacheByUniqueID.get(uniqueid);
 		} catch (Throwable ex){
-			log.error("\tOssDaoOpenNMSImpl().findNodeByInstanceAndType ERROR : ", ex);
+			LOG.error("OssDaoOpenNMSImpl().findNodeByInstanceAndType ERROR", ex);
 		}
 		return node; //null if not found
 	}
@@ -613,13 +611,14 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByID(java.lang.Integer)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByID(Integer nodeid){
 		if (nodeid==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: nodeid null or empty ");
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)this.nodeCacheByID.get(nodeid);
 		} catch (Throwable ex){
-			getLog().error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
+			LOG.error("OssDaoOpenNMSImpl().findNodeByLabel ERROR", ex);
 		}
 		return node; //null if not found
 	}
@@ -631,6 +630,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/**
 	 * <p>updateNodeCaches</p>
 	 */
+        @Override
 	public synchronized void updateNodeCaches(){
 		localUpdateNodeCaches();
 	}
@@ -641,13 +641,12 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateNodeCaches(){
-		ThreadCategory log = getLog();	
 		try{
 			nodeCacheByID.clear();
 			nodeCacheByLabel.clear();
 			nodeCacheByUniqueID.clear();
 
-			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updating Node Caches :");
+			LOG.debug("OssDaoOpenNMSImpl().updateNodeCaches - Updating Node Caches");
 
 			Collection<OnmsNode> c = _nodeDao.findAll();
 			OnmsNode[] nodelist= (OnmsNode[]) c.toArray(new OnmsNode[c.size()]);
@@ -660,18 +659,18 @@ public class OssDaoOpenNMSImpl implements OssDao {
 					// update node by Label cache
 					if (node.getLabel()!=null) {
 						if (nodeCacheByLabel.get((String)node.getLabel())!=null){
-							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" Node Label:"+node.getId()+" is duplicated");
+							LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} Node Label:{} is duplicated", node.getId(), node.getId());
 						} else {
 							nodeCacheByLabel.put((String)node.getLabel(), node);
 						}
 					} else {
-						log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" Node Label is NULL. Not putting node in nodeCacheByLabel");
+						LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} Node Label is NULL. Not putting node in nodeCacheByLabel", node.getId());
 					}
 
 					// update node by Unique ID -managedObjectInstance+ManagedObjectType 
 					final OnmsAssetRecord assetRecord = node.getAssetRecord();
 					if (assetRecord==null) {
-						log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+" assetRecord is NULL. Not putting node in nodeCacheByUniqueID");
+						LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} assetRecord is NULL. Not putting node in nodeCacheByUniqueID", node.getId());
 						continue;
 					} else {
 						
@@ -684,72 +683,69 @@ public class OssDaoOpenNMSImpl implements OssDao {
 							String fsrc = (node.getForeignSource()==null) ? "" : node.getForeignSource() ;
 							String label= (node.getLabel()==null) ? "" : node.getLabel();
 							moi  = "Label:"+label+":ForeignSource:"+fsrc+":ForeignId():"+fid;
-							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()
-									+" ManagedObjectInstance is NULL. Setting  ManagedObjectInstance to: "+moi);
+							LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} ManagedObjectInstance is NULL. Setting  ManagedObjectInstance to: {}", node.getId(), moi);
 							assetRecord.setManagedObjectInstance(moi);
 						}
 						String mot=assetRecord.getManagedObjectType();
 						if ((mot==null)||("".equals(mot))){
 							mot="UNSPECIFIED_TYPE";
-							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"
-									+node.getId()+"ManagedObjectType was NULL. Setting ManagedObjectType to: "+mot);
+							LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} ManagedObjectType was NULL. Setting ManagedObjectType to: {}", node.getId(), mot);
 							assetRecord.setManagedObjectType(mot);
 						}
 						
 						// save asset data back with new node information 
 						// (Note - data may not have changed)
-						transTemplate.execute(new TransactionCallback<Object>() {
-							public Object doInTransaction(TransactionStatus status) {
+						transTemplate.execute(new TransactionCallbackWithoutResult() {
+                                                        @Override
+							public void doInTransactionWithoutResult(TransactionStatus status) {
 								_assetRecordDao.update(assetRecord);
-								return null;
 							}
 						});
 						
 						// update nodeCacheByUniqueID
 						String uniqueid=assetRecord.getManagedObjectInstance()+assetRecord.getManagedObjectType();
 						if (nodeCacheByUniqueID.get((String)uniqueid)!=null){
-							log.info("\tOssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():"+node.getId()+
-										" Unique ID is duplicated. Unique ID = ManagedObjectInstance:"+assetRecord.getManagedObjectInstance()+"+ ManagedObjectType:"+assetRecord.getManagedObjectType());
+							LOG.info("OssDaoOpenNMSImpl().updateNodeCaches WARNING node.getId():{} Unique ID is duplicated. Unique ID = ManagedObjectInstance:{} ManagedObjectType:{}", node.getId(), assetRecord.getManagedObjectInstance(), assetRecord.getManagedObjectType());
 						} else {
 							nodeCacheByUniqueID.put(uniqueid, node);
 						}
 						
 					}
 				} catch (Throwable ex){
-					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches Error updating node caches: ERROR : ", ex);
+					LOG.error("OssDaoOpenNMSImpl().updateNodeCaches Error updating node caches: ERROR", ex);
 				}	
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByID : contents :");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("OssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByID : contents :");
 				try {
 				    for (Integer id : nodeCacheByID.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByID.get(id);
-						log.debug("\t\tKey: Node ID:"+id+"\tNodeLabel:"+node.getLabel());
+						LOG.debug("\tKey: Node ID:{} NodeLabel:{}", id, node.getLabel());
 					}
 				}catch ( Exception e){
-					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByLabel contents Error:",e);
+					LOG.error("OssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByLabel contents Error:",e);
 				}
-				log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByLabel : contents :");
+				LOG.debug("OssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByLabel : contents :");
 				try {
 				    for (String label : nodeCacheByLabel.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByLabel.get(label);
-						log.debug("\t\tKey: Label:"+label+"\tNodeID:"+node.getId());
+						LOG.debug("\tKey: Label:{} NodeID: {}", label, node.getId());
 					}
 				}catch ( Exception e){
-					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByLabel contents. Error:",e);
+					LOG.error("OssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByLabel contents. Error:",e);
 				}
 				try {
-					log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByUniqueID : contents :");
+					LOG.debug("OssDaoOpenNMSImpl().updateNodeCaches - Updated nodeCacheByUniqueID : contents :");
 					for (String uniqueID : nodeCacheByUniqueID.keySet()) {
 						OnmsNode node =(OnmsNode)nodeCacheByUniqueID.get(uniqueID);
-						log.debug("\t\tKey: uniqueID:"+uniqueID+"\tNodeID:"+node.getId());
+						LOG.debug("\tKey: uniqueID:{} NodeID:{}", uniqueID, node.getId());
 					}
 				}catch ( Exception e){
-					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByUniqueID contents Error:",e);
+					LOG.error("OssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByUniqueID contents Error:",e);
 				}
 			}
 		} catch (Throwable ex){
-			log.error("\tOssDaoOpenNMSImpl().updateNodeCaches ERROR : ", ex);
+			LOG.error("OssDaoOpenNMSImpl().updateNodeCaches ERROR : ", ex);
 		}
 	}
 

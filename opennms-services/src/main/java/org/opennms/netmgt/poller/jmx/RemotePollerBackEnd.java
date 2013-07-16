@@ -29,6 +29,7 @@
 package org.opennms.netmgt.poller.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.poller.Poller;
 
 /**
  * <p>RemotePollerBackEnd class.</p>
@@ -44,7 +45,7 @@ public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon<o
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "PollerBackEnd";
+        return Poller.getLoggingCategory();
     }
 
     /** {@inheritDoc} */

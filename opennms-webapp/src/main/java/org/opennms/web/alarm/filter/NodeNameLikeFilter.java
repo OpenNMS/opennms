@@ -61,6 +61,7 @@ public class NodeNameLikeFilter extends SubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("node name containing \"" + getValue() + "\"");
     }
@@ -70,6 +71,7 @@ public class NodeNameLikeFilter extends SubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AlarmFactory.NodeNameContainingFilter: " + this.getDescription() + ">");
     }
@@ -84,6 +86,7 @@ public class NodeNameLikeFilter extends SubstringFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

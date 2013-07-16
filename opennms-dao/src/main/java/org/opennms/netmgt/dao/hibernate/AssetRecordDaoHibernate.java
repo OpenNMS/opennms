@@ -32,7 +32,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
-import org.opennms.netmgt.dao.AssetRecordDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
 import java.util.Collections;
@@ -59,6 +59,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
      * @param id a {@link java.lang.Integer} object.
      * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
      */
+    @Override
     public OnmsAssetRecord findByNodeId(Integer id) {
         return (OnmsAssetRecord) findUnique("from OnmsAssetRecord rec where rec.node.id = ?", id);
     }
@@ -71,6 +72,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
      * @param foreignSource a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
 
         @SuppressWarnings("unchecked") List<Object[]> assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '" + foreignSource + "%'");

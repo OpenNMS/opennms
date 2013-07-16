@@ -33,7 +33,7 @@ import java.util.Collection;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.opennms.netmgt.dao.LinkStateDao;
+import org.opennms.netmgt.dao.api.LinkStateDao;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -53,9 +53,11 @@ public class LinkStateDaoHibernate extends AbstractDaoHibernate<OnmsLinkState, I
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public Collection<OnmsLinkState> findAll(final Integer offset, final Integer limit) {
         return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsLinkState>>() {
 
+            @Override
             public Collection<OnmsLinkState> doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createCriteria(OnmsLinkState.class)
                 .setFirstResult(offset)
@@ -66,21 +68,25 @@ public class LinkStateDaoHibernate extends AbstractDaoHibernate<OnmsLinkState, I
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsLinkState findById(Integer id) {
         return findUnique("from OnmsLinkState as ls where ls.id = ?", id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsLinkState findByDataLinkInterfaceId(final Integer interfaceId) {
         return findUnique("from OnmsLinkState as ls where ls.dataLinkInterface.id = ?", interfaceId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsLinkState> findByNodeId(Integer nodeId) {
         return find("from OnmsLinkState as ls where ls.dataLinkInterface.nodeId = ?", nodeId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsLinkState> findByNodeParentId(Integer nodeParentId) {
         return find("from OnmsLinkState as ls where ls.dataLinkInterface.nodeParentId = ?", nodeParentId);
     }

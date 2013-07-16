@@ -6,7 +6,7 @@
     <parent>
     <artifactId>themes</artifactId>
     <groupId>org.opennms.features</groupId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.themes</groupId>
@@ -44,7 +44,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Fragment-Host>com.vaadin;bundle-version=${vaadinVersion}</Fragment-Host>
+                        <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>

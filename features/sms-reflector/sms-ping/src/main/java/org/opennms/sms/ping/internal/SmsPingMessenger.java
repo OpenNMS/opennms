@@ -32,10 +32,11 @@ package org.opennms.sms.ping.internal;
 import java.io.IOException;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
 import org.opennms.protocols.rt.Messenger;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.InboundMessage;
 import org.smslib.Message.MessageTypes;
@@ -51,7 +52,7 @@ import org.springframework.util.Assert;
  */
 public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, OnmsInboundMessageNotification, InitializingBean {
     
-    Logger log = Logger.getLogger(getClass());
+    Logger log = LoggerFactory.getLogger(getClass());
     
     private SmsService m_smsService;
     
@@ -82,6 +83,7 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
      * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void sendRequest(PingRequest request) throws Exception {
     	request.setSentTimestamp(System.currentTimeMillis());
         debugf("SmsMessenger.sendRequest %s", request);
@@ -91,12 +93,14 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(Queue<PingReply> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
     	long receiveTime = System.currentTimeMillis();
     	

@@ -36,7 +36,6 @@ import java.net.InetAddress;
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.BaseAgiScript;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <p>Abstract BaseOnmsAgiScript class.</p>
@@ -45,6 +44,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public abstract class BaseOnmsAgiScript extends BaseAgiScript {
+
 
     /** Constant <code>VAR_INTERRUPT_DIGITS="INTERRUPT_DIGITS"</code> */
     protected static final String VAR_INTERRUPT_DIGITS = "INTERRUPT_DIGITS";
@@ -213,14 +213,4 @@ public abstract class BaseOnmsAgiScript extends BaseAgiScript {
             return 0x0;
         }
     }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

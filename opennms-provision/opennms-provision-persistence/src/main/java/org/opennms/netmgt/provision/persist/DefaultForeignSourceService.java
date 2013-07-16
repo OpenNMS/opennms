@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,13 +43,14 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.PropertyPath;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,6 +62,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @version $Id: $
  */
 public class DefaultForeignSourceService implements ForeignSourceService, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultForeignSourceService.class);
     
     @Autowired
     private ServiceRegistry m_serviceRegistry;
@@ -83,10 +86,12 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDeployedForeignSourceRepository(ForeignSourceRepository repo) {
         m_deployedForeignSourceRepository = repo;
     }
     /** {@inheritDoc} */
+    @Override
     public void setPendingForeignSourceRepository(ForeignSourceRepository repo) {
         m_pendingForeignSourceRepository = repo;
     }
@@ -96,6 +101,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<ForeignSource> getAllForeignSources() {
         Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
         foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
@@ -108,6 +114,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource getForeignSource(String name) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(name);
         if (fs.isDefault()) {
@@ -117,12 +124,14 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         normalizePluginConfigs(fs);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public void deleteForeignSource(String name) {
         if (name.equals("default")) {
             m_pendingForeignSourceRepository.resetDefaultForeignSource();
@@ -134,6 +143,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource cloneForeignSource(String name, String target) {
         ForeignSource fs = getForeignSource(name);
         fs.setDefault(false);
@@ -144,6 +154,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addParameter(String foreignSourceName, String pathToAdd) {
         ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToAdd);
@@ -164,6 +175,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deletePath(String foreignSourceName, String pathToDelete) {
         ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToDelete);
@@ -191,6 +203,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addDetectorToForeignSource(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
@@ -199,6 +212,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deleteDetector(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> detectors = fs.getDetectors();
@@ -214,6 +228,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
     
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addPolicyToForeignSource(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
@@ -222,6 +237,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deletePolicy(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> policies = fs.getPolicies();
@@ -241,6 +257,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, String> getDetectorTypes() {
         if (m_detectors == null) {
             Map<String,String> detectors = new TreeMap<String,String>();
@@ -265,6 +282,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
             Map<String,String> policies = new TreeMap<String,String>();
@@ -293,6 +311,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String,PluginWrapper> getWrappers() {
         if (m_wrappers == null && m_policies != null && m_detectors != null) {
             m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());
@@ -301,7 +320,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    log().warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
             for (String key : m_detectors.keySet()) {
@@ -309,7 +328,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    log().warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
         }
@@ -342,10 +361,6 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 }
             }
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultForeignSourceService.class);
     }
 
 }

@@ -21,7 +21,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -171,7 +171,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
+        if(m_presenter.getViewRenderer() != null){
             m_presenter.getViewRenderer().draw(graph, this, oldBBox);
+        }
     }
     
     @Override
@@ -238,6 +240,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return center;
     }
     
+    @Override
     public SVGPoint getPoint(int clientX, int clientY) {
         SVGGElement g = getSVGViewPort().cast();
         SVGMatrix stateTF = g.getCTM().inverse();

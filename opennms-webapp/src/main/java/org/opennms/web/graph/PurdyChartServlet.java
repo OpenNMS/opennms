@@ -38,8 +38,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.charts.ChartUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * <p>PurdyChartServlet class.</p>
  *
@@ -48,6 +49,9 @@ import org.opennms.netmgt.charts.ChartUtils;
  * @since 1.8.1
  */
 public class PurdyChartServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PurdyChartServlet.class);
+
     /**
      * 
      */
@@ -77,13 +81,14 @@ public class PurdyChartServlet extends HttpServlet {
 */    
 
     /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String chartName = request.getParameter("chart-name");
         String buffered = request.getParameter("buffered");
         
         if (chartName == null) {
-            log().warn("doGet: request doesn't contain a chart-name parameter.");
+            LOG.warn("doGet: request doesn't contain a chart-name parameter.");
             return;
         }
         
@@ -101,18 +106,18 @@ public class PurdyChartServlet extends HttpServlet {
         response.setContentType("image/png");
         OutputStream out = response.getOutputStream();
         
-        log().debug("doGet: displaying chart: "+chartName);
+        LOG.debug("doGet: displaying chart: {}", chartName);
         
         try {
                 ChartUtils.getBarChartPNG(chartName, out);
         } catch (MarshalException e) {
-            log().error("Error marshalling chart-configuration.xml: ",e);
+            LOG.error("Error marshalling chart-configuration.xml: ",e);
         } catch (ValidationException e) {
-            log().error("Error validating chart-configuration.xml: ",e);
+            LOG.error("Error validating chart-configuration.xml: ",e);
         } catch (IOException e) {
-            log().error("Error reading chart-configuration.xml: ",e);
+            LOG.error("Error reading chart-configuration.xml: ",e);
         } catch (SQLException e) {
-            log().error("Error in SQL for chart: "+chartName,e);
+            LOG.error("Error in SQL for chart: {}", chartName,e);
         }
 
         out.flush();
@@ -125,9 +130,6 @@ public class PurdyChartServlet extends HttpServlet {
 */        
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
     
 
 }

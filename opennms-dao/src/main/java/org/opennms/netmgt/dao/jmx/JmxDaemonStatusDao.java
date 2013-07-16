@@ -39,9 +39,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.QueryExp;
 
-import org.opennms.netmgt.dao.DaemonStatusDao;
-import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.dao.api.DaemonStatusDao;
 import org.opennms.netmgt.model.ServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jmx.access.MBeanProxyFactoryBean;
 
@@ -63,6 +63,7 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
+        @Override
 	public Map<String, ServiceInfo> getCurrentDaemonStatus() {
 		// TODO Auto-generated method stub
 		Map<String, ServiceInfo> serviceInfo = new HashMap<String, ServiceInfo>();
@@ -110,6 +111,7 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public ServiceDaemon getServiceHandle(String service) {
 		Set<ObjectName> mBeanNames;
 		try {

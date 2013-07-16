@@ -36,7 +36,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.protocols.ntp.NtpMessage;
 
@@ -52,6 +53,7 @@ import org.opennms.protocols.ntp.NtpMessage;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class NtpPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(NtpPlugin.class);
     /**
      * </P>
      * The protocol name that is tested by this plugin.
@@ -89,7 +91,6 @@ public final class NtpPlugin extends AbstractPlugin {
      */
     private boolean isServer(InetAddress nserver, int port, int retries, int timeout) {
         boolean isAServer = false;
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Allocate a communication socket
         //
@@ -131,7 +132,7 @@ public final class NtpPlugin extends AbstractPlugin {
                 }
             }
         } catch (IOException ex) {
-            log.warn("isServer: An I/O exception during NTP resolution test.", ex);
+            LOG.warn("isServer: An I/O exception during NTP resolution test.", ex);
         } finally {
             if (socket != null)
                 socket.close();
@@ -146,6 +147,7 @@ public final class NtpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -156,6 +158,7 @@ public final class NtpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
@@ -178,6 +181,7 @@ public final class NtpPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;

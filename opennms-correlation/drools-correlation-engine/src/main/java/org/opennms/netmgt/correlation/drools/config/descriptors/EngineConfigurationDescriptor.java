@@ -119,6 +119,7 @@ import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     EngineConfiguration target = (EngineConfiguration) object;
@@ -240,6 +241,7 @@ import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

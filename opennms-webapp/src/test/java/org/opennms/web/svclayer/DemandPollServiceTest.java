@@ -44,8 +44,8 @@ import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.DemandPollDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -65,6 +65,7 @@ public class DemandPollServiceTest extends TestCase {
 	private PollerService m_pollerService;
 	private SingleDemandPollStore m_pollStore;
 
+        @Override
 	protected void setUp() throws Exception {
 		m_demandPollDao = createMock(DemandPollDao.class);
 		m_monitoredServiceDao = createMock(MonitoredServiceDao.class);
@@ -77,6 +78,7 @@ public class DemandPollServiceTest extends TestCase {
 		m_demandPollService.setMonitoredServiceDao(m_monitoredServiceDao);
 	}
 
+        @Override
 	protected void tearDown() throws Exception {
 	}
 	
@@ -89,40 +91,49 @@ public class DemandPollServiceTest extends TestCase {
 			return m_id;
 		}
 
+                @Override
 		public void clear() {
 		}
 
+                @Override
 		public int countAll() {
 			return (m_demandPoll == null ? 0 : 1);
 		}
 
+                @Override
 		public void delete(Integer id) {
 			if (id == m_demandPoll.getId())
 				m_demandPoll = null;
 		}
 
+                @Override
 		public void delete(DemandPoll entity) {
 			if (entity.getId() == m_demandPoll.getId())
 				m_demandPoll = null;
 		}
 
+                @Override
 		public List<DemandPoll> findAll() {
 			return Collections.singletonList(m_demandPoll);
 		}
 
+                @Override
 		public void flush() {
 		}
 
+                @Override
 		public DemandPoll get(Integer id) {
 			if (id.intValue() == m_id)
 				return m_demandPoll;
 			return null;
 		}
 
+                @Override
 		public DemandPoll load(Integer id) {
 			return get(id);
 		}
 
+                @Override
 		public void saveOrUpdate(DemandPoll entity) {
 			if (entity.getId() == null)
 				save(entity);
@@ -130,11 +141,13 @@ public class DemandPollServiceTest extends TestCase {
 				update(entity);
 		}
 
+                @Override
 		public void update(DemandPoll entity) {
 			if (entity.getId().intValue() == m_id)
 				m_demandPoll = entity;
 		}
 
+                @Override
 		public void save(DemandPoll entity) {
 			if (entity.getId() == null) {
 				entity.setId(m_id);
@@ -144,26 +157,32 @@ public class DemandPollServiceTest extends TestCase {
 			}
 		}
 
+                @Override
 		public void initialize(Object obj) {
 			// TODO Auto-generated method stub
 			
 		}
 
+                @Override
                 public void lock() {
 		}
 
+                @Override
         public List<DemandPoll> findMatching(Criteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
 
+                @Override
         public int countMatching(Criteria criteria) {
             throw new UnsupportedOperationException("not yet implemented");
         }
 
+                @Override
         public List<DemandPoll> findMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemeneted");
         }
 
+                @Override
         public int countMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemented");
         }
@@ -179,6 +198,7 @@ public class DemandPollServiceTest extends TestCase {
 		m_demandPollDao.save(isA(DemandPoll.class));
 		expectLastCall().andAnswer(new IAnswer<Object>() {
 
+                        @Override
 			public Object answer() throws Throwable {
 				DemandPoll poll = (DemandPoll)getCurrentArguments()[0];
 				m_pollStore.save(poll);

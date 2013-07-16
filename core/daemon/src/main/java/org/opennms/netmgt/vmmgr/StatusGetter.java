@@ -145,6 +145,7 @@ public class StatusGetter {
         }
 
         Authenticator.setDefault(new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("manager",
                                                   "manager".toCharArray());

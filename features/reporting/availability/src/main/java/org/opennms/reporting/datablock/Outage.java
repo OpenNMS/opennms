@@ -28,8 +28,6 @@
 
 package org.opennms.reporting.datablock;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * This class holds the service lost and regained time pair for the
  * node/ipaddr/service combination.
@@ -134,15 +132,10 @@ public class Outage extends Object {
      *         the last rolling window
      */
     public long getDownTime(long curTime, long rollingWindow) {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        // Category log = ThreadCategory.getInstance(this.getClass());
         long downTime = 0;
 
         // make sure the losttime is greater than current time.
         if (curTime < m_svcLostTime) {
-            // if(log.isDebugEnabled())
-            // log.debug("Downtime " + downTime);
             return downTime;
         }
 
@@ -180,10 +173,7 @@ public class Outage extends Object {
                 }
             }
         }
-        ThreadCategory.setPrefix(oldPrefix);
-        
-        // if(log.isDebugEnabled())
-        // log.debug("Downtime " + downTime);
+
         return downTime;
     }
 
@@ -192,6 +182,7 @@ public class Outage extends Object {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer retVal = new StringBuffer();
         retVal.append(" Lost service ").append(new java.util.Date(m_svcLostTime));

@@ -35,9 +35,11 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReadOnlyRtConfigDao implements RtConfigDao {
+    private static final Logger LOG = LoggerFactory.getLogger(ReadOnlyRtConfigDao.class);
     private Configuration m_config = null;
     private long m_lastUpdated = 0L;
     private static final long TIMEOUT = 1000 * 60 * 5; // 5 minutes
@@ -55,13 +57,13 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	    if (m_config == null || now > (m_lastUpdated + TIMEOUT)) {
 	        String propsFile = getFile();
 	        
-	        LogUtils.debugf(this, "loading properties from: %s", propsFile);
+	        LOG.debug("loading properties from: {}", propsFile);
 	        
 	        try {
 	            m_config = new PropertiesConfiguration(propsFile);
 	            m_lastUpdated = now;
 	        } catch (final ConfigurationException e) {
-	            LogUtils.errorf(this, e, "Unable to load RT properties");
+	            LOG.error("Unable to load RT properties", e);
 	        }
 	    }
 	
@@ -77,63 +79,77 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	    return "rt";
 	}
 
+    @Override
 	public String getUsername() {
 		return getProperties().getString(getPrefix() + ".username");
 	}
 
+    @Override
 	public String getPassword() {
 		return getProperties().getString(getPrefix() + ".password");
 	}
 	
+    @Override
 	public String getQueue() {
 		return getProperties().getString(getPrefix() + ".queue", "General");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<String> getValidClosedStatus() {
 		return getProperties().getList(getPrefix() + ".validclosedstatus");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<Integer> getValidOpenStatus() {
 		return getProperties().getList(getPrefix() + ".validopenstatus");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<String> getValidCancelledStatus() {
 		return getProperties().getList(getPrefix() + ".validcancelledstatus");
 	}
 	
+    @Override
 	public String getOpenStatus() {
 		return getProperties().getString(getPrefix() + ".openstatus", "open");
 	}
 	
+    @Override
 	public String getClosedStatus() { 
 		return getProperties().getString(getPrefix() + ".closedstatus", "closed");
 	}
 	
+    @Override
 	public String getCancelledStatus() {
 		return getProperties().getString(getPrefix() + ".cancelledstatus", "cancelled");
 	}
 
+    @Override
 	public String getRequestor() {
         return getProperties().getString(getPrefix() + ".requestor");
     }
 	
+    @Override
 	public String getBaseURL() {
 	    return getProperties().getString(getPrefix() + ".baseURL");
 	}
 	
+    @Override
 	public int getTimeout() {
 	    return getProperties().getInt(getPrefix() + ".timeout", 3000);
 	}
 	
+    @Override
 	public int getRetry() {
 	    return getProperties().getInt(getPrefix() + ".retry", 0);
 	}
 	
+    @Override
 	public void save() throws IOException {
-	    LogUtils.warnf(this, "ReadOnlyRtConfigDao cannot save.");
+	    LOG.warn("ReadOnlyRtConfigDao cannot save.");
 	}
 
     protected void clearCache() {
@@ -144,13 +160,13 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
         if (getProperties() != null) {
             return getProperties().getString(propertyName, defaultValue);
         }
-        LogUtils.warnf(this, "getProperties() is null, returning the default value instead");
+        LOG.warn("getProperties() is null, returning the default value instead");
         return defaultValue;
     }
 
     protected void setProperty(final String propertyName, final Object propertyValue) {
         if (getProperties() == null) {
-            LogUtils.warnf(this, "Unable to set the %s property, getProperties() is null!", propertyName);
+            LOG.warn("Unable to set the {} property, getProperties() is null!", propertyName);
             return;
         }
         getProperties().setProperty(propertyName, propertyValue);

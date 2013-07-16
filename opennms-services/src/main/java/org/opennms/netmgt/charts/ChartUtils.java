@@ -58,7 +58,6 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.jdbc.JDBCCategoryDataset;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.netmgt.config.charts.Blue;
@@ -69,6 +68,8 @@ import org.opennms.netmgt.config.charts.Rgb;
 import org.opennms.netmgt.config.charts.SeriesDef;
 import org.opennms.netmgt.config.charts.SubTitle;
 import org.opennms.netmgt.config.charts.Title;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ChartUtils class.</p>
@@ -77,6 +78,8 @@ import org.opennms.netmgt.config.charts.Title;
  * @version $Id: $
  */
 public abstract class ChartUtils {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ChartUtils.class);
     
     /**
      * Use this it initialize required factories so that the WebUI doesn't
@@ -87,30 +90,21 @@ public abstract class ChartUtils {
             DataSourceFactory.init();
             ChartConfigFactory.init();
         } catch (MarshalException e) {
-            log().error("static initializer: Error marshalling chart configuration. "+e);
+            LOG.error("static initializer: Error marshalling chart configuration", e);
         } catch (ValidationException e) {
-            log().error("static initializer: Error validating chart configuration. "+e);
+            LOG.error("static initializer: Error validating chart configuration.", e);
         } catch (FileNotFoundException e) {
-            log().error("static initializer: Error finding chart configuration. "+e);
+            LOG.error("static initializer: Error finding chart configuration.", e);
         } catch (IOException e) {
-            log().error("static initializer: IO error while marshalling chart configuration file. "+e);
+            LOG.error("static initializer: IO error while marshalling chart configuration file.", e);
         } catch (ClassNotFoundException e) {
-            log().error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         } catch (PropertyVetoException e) {
-            log().error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         } catch (SQLException e) {
-            log().error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         }
         // XXX why don't we throw an exception here or something?
-    }
-
-    /**
-     * Logging helper method.
-     * 
-     * @return A log4j <code>Category</code>.
-     */
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(ChartUtils.class);
     }
 
     /**
@@ -165,11 +159,11 @@ public abstract class ChartUtils {
             }
             plot.setDomainAxis(subLabels);
         } catch (InstantiationException e) {
-            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         } catch (IllegalAccessException e) {
-            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         } catch (ClassNotFoundException e) {
-            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+            LOG.error("getBarChart: Couldn't instantiate configured CategorySubLabels class: {}", subLabelClass, e);
         }
     }
 
@@ -190,11 +184,11 @@ public abstract class ChartUtils {
             try {
                 seriesColors = (CustomSeriesColors) Class.forName(chartConfig.getSeriesColorClass()).newInstance();
             } catch (InstantiationException e) {
-                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             } catch (IllegalAccessException e) {
-                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             } catch (ClassNotFoundException e) {
-                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+                LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             }
         }
 

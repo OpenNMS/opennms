@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,10 +37,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SimpleServer class.</p>
@@ -50,6 +51,8 @@ import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
  */
 public class SimpleServer extends SimpleConversationEndPoint {
     
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleServer.class);
+    
     public static class ServerErrorExchange implements Exchange{
         protected RequestHandler m_errorRequest;
         
@@ -57,14 +60,17 @@ public class SimpleServer extends SimpleConversationEndPoint {
             m_errorRequest = requestHandler;
         }
         
+        @Override
         public boolean matchResponseByString(final String response) {
             return false;
         }
 
+        @Override
         public boolean processResponse(final BufferedReader in) throws IOException {
             return false;
         }
 
+        @Override
         public boolean sendRequest(final OutputStream out) throws IOException {
             m_errorRequest.doRequest(out);
             return false;
@@ -146,6 +152,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void init() throws Exception {
         super.init();
         setServerSocket(new ServerSocket());
@@ -212,6 +219,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
+            @Override
             public void run(){
                 OutputStream out = null;
                 InputStreamReader isr = null;
@@ -255,25 +263,23 @@ public class SimpleServer extends SimpleConversationEndPoint {
                     }
                 } catch (final InterruptedException e) {
                     if (m_stopped) {
-                        LogUtils.debugf(this, e, "interrupted, shutting down");
+                        LOG.debug("interrupted, shutting down", e);
                     } else {
-                        LogUtils.infof(this, e, "interrupted while listening");
+                        LOG.info("interrupted while listening", e);
                     }
                     Thread.currentThread().interrupt();
                 } catch (final Exception e){
                     if (m_stopped) {
-                        if (LogUtils.isTraceEnabled(this)) {
-                            LogUtils.tracef(this, e, "error during conversation");
-                        }
+                        LOG.trace("error during conversation", e);
                     } else {
-                        LogUtils.infof(this, e, "error during conversation");
+                        LOG.info("error during conversation", e);
                     }
                 } finally {
                     try {
                         // just in case we're stopping because of an exception
                         stopServer();
                     } catch (final IOException e) {
-                        LogUtils.infof(this, e, "error while stopping server");
+                        LOG.info("error while stopping server", e);
                     }
                 }
             }
@@ -333,6 +339,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler errorString(final String error) {
         return new RequestHandler() {
 
+            @Override
             public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", error).getBytes());
                 
@@ -350,6 +357,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler shutdownServer(final String response) {
         return new RequestHandler() {
             
+            @Override
             public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", response).getBytes());
                 stopServer();

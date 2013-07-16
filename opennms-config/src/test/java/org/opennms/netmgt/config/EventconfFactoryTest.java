@@ -61,7 +61,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -84,6 +85,7 @@ import org.springframework.util.StringUtils;
  * 
  */
 public class EventconfFactoryTest {
+    private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryTest.class);
 
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
     private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
@@ -215,20 +217,13 @@ public class EventconfFactoryTest {
             setSpecific(trapIdentity.getSpecific());
             setEnterpriseId(trapIdentity.getEnterpriseId().toString());
         
-            if (log().isDebugEnabled()) {
-                log().debug("setTrapIdentity: SNMP trap "+trapIdentity);
-            }
-        
+            LOG.debug("setTrapIdentity: SNMP trap {}", trapIdentity);
         }
 
         public org.opennms.netmgt.xml.event.Event getEvent() {
             return getEventBuilder().getEvent();
         }
         
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
-
 		private EventBuilder getEventBuilder() {
 			return m_eventBuilder;
 		}
@@ -565,6 +560,7 @@ public class EventconfFactoryTest {
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
         
         File[] eventFilesOnDiskArray = eventsDirFile.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
@@ -648,50 +644,62 @@ public class EventconfFactoryTest {
             m_inputStream = inputStream;
         }
         
+        @Override
         public InputStream getInputStream() {
             return m_inputStream;
         }
 
+        @Override
         public Resource createRelative(String relative) throws IOException {
             return m_delegate.createRelative(relative);
         }
 
+        @Override
         public boolean exists() {
             return m_delegate.exists();
         }
 
+        @Override
         public String getDescription() {
             return m_delegate.getDescription();
         }
 
+        @Override
         public File getFile() throws IOException {
             return m_delegate.getFile();
         }
 
+        @Override
         public String getFilename() {
             return m_delegate.getFilename();
         }
 
+        @Override
         public URL getURL() throws IOException {
             return m_delegate.getURL();
         }
 
+        @Override
         public boolean isOpen() {
             return m_delegate.isOpen();
         }
 
+        @Override
         public URI getURI() throws IOException {
             return m_delegate.getURI();
         }
 
+        @Override
         public boolean isReadable() {
             return m_delegate.isReadable();
         }
 
+        @Override
         public long lastModified() throws IOException {
             return m_delegate.lastModified();
         }
 
+        @Override
         public long contentLength() throws IOException {
             return m_delegate.contentLength();
         }

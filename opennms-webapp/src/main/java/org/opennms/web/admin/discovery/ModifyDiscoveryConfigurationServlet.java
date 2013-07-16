@@ -36,9 +36,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -53,6 +54,9 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
  * @since 1.8.1
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ModifyDiscoveryConfigurationServlet.class);
+
 
 	/**
      * 
@@ -60,12 +64,12 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
     private static final long serialVersionUID = -3782436743630940629L;
 
 	/** Constant <code>log</code> */
-	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
 	/** {@inheritDoc} */
+    @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	    log.info("Loading Discovery configuration.");
+	    LOG.info("Loading Discovery configuration.");
 	    DiscoveryConfiguration config=getDiscoveryConfig();
 	    HttpSession sess = request.getSession();
         //sess.removeAttribute("discoveryConfiguration");
@@ -76,6 +80,7 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
     }
 	
 	/** {@inheritDoc} */
+    @Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}

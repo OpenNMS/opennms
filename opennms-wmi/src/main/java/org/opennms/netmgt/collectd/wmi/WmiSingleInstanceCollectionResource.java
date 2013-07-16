@@ -52,6 +52,7 @@ public class WmiSingleInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return "node";
     }
@@ -61,6 +62,7 @@ public class WmiSingleInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return null;
     }

@@ -34,24 +34,30 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 public class JavaReportPlugin extends AbstractSystemReportPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(JavaReportPlugin.class);
 
+    @Override
     public String getName() {
         return "Java";
     }
 
+    @Override
     public String getDescription() {
         return "Java and JVM information";
     }
 
+    @Override
     public int getPriority() {
         return 1;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("Class Version", getResourceFromProperty("java.class.version"));
@@ -64,7 +70,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
         MemoryMXBean memoryBean = getBean(ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
         if (memoryBean == null) {
-            LogUtils.infof(this, "falling back to local VM MemoryMXBean");
+            LOG.info("falling back to local VM MemoryMXBean");
             memoryBean = ManagementFactory.getMemoryMXBean();
         }
 
@@ -72,7 +78,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
         RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
         if (runtimeBean == null) {
-            LogUtils.infof(this, "falling back to local VM RuntimeMXBean");
+            LOG.info("falling back to local VM RuntimeMXBean");
             runtimeBean = ManagementFactory.getRuntimeMXBean();
         }
 
@@ -80,7 +86,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
         ClassLoadingMXBean classBean = getBean(ManagementFactory.CLASS_LOADING_MXBEAN_NAME, ClassLoadingMXBean.class);
         if (classBean == null) {
-            LogUtils.infof(this, "falling back to local VM ClassLoadingMXBean");
+            LOG.info("falling back to local VM ClassLoadingMXBean");
             classBean = ManagementFactory.getClassLoadingMXBean();
         }
 
@@ -89,11 +95,11 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
         /* this stuff is really not giving us anything useful
         List<GarbageCollectorMXBean> beans = getBeans(ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE, GarbageCollectorMXBean.class);
         if (beans == null || beans.size() == 0) {
-            LogUtils.infof(this, "falling back to local VM MemoryMXBean");
+            LOG.info("falling back to local VM MemoryMXBean");
             beans = ManagementFactory.getGarbageCollectorMXBeans();
         }
 
-        LogUtils.tracef(this, "beans = %s", beans.toString());
+        LOG.trace("beans = {}", beans);
         int collectorNum = 1;
         for (final GarbageCollectorMXBean bean : beans) {
             final Map<String,Resource> temp = new TreeMap<String,Resource>();

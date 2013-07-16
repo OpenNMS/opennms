@@ -34,18 +34,20 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSReportPlugin.class);
     @Autowired
     public NodeDao m_nodeDao;
 
@@ -66,18 +68,22 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         BeanUtils.assertAutowiring(this);
     }
 
+    @Override
     public String getName() {
         return "OpenNMS";
     }
 
+    @Override
     public String getDescription() {
         return "OpenNMS core information, version, and basic configuration";
     }
 
+    @Override
     public int getPriority() {
         return 3;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         final InputStream is = this.getClass().getResourceAsStream("/version.properties");
@@ -87,7 +93,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
                 p.load(is);
                 map.put("Version", getResource(p.getProperty("version.display")));
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "Unable to load from version.properties");
+                LOG.warn("Unable to load from version.properties", e);
             }
         }
         

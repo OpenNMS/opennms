@@ -31,16 +31,20 @@ import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
-import com.vaadin.Application;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class SNMP Collection Administration Application.
  */
 @SuppressWarnings("serial")
-public class SnmpCollectionAdminApplication extends Application {
+@Title("SNMP Collection Administration")
+@Theme(Reindeer.THEME_NAME)
+public class SnmpCollectionAdminApplication extends UI {
 
     /** The OpenNMS Data Collection Configuration DAO. */
     private DataCollectionConfigDao dataCollectionDao;
@@ -54,28 +58,21 @@ public class SnmpCollectionAdminApplication extends Application {
         this.dataCollectionDao = dataCollectionDao;
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.Application#init()
-     */
     @Override
-    public void init() {
+    public void init(VaadinRequest request) {
         if (dataCollectionDao == null)
             throw new RuntimeException("dataCollectionDao cannot be null.");
-
-        setTheme(Runo.THEME_NAME);
 
         Logger logger = new SimpleLogger();
         SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao, logger);
         DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
 
         TabSheet tabs = new TabSheet();
-        tabs.setStyleName(Runo.TABSHEET_SMALL);
+        tabs.setStyleName(Reindeer.TABSHEET_SMALL);
         tabs.setSizeFull();
         tabs.addTab(scAdmin);
         tabs.addTab(dcgAdmin);
 
-        final Window mainWindow = new Window("SNMP Collection Administration", tabs);
-        setMainWindow(mainWindow);
+        setContent(tabs);
     }
-
 }

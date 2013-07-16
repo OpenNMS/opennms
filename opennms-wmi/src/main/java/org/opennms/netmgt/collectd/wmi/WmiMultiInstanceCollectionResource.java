@@ -30,9 +30,10 @@ package org.opennms.netmgt.collectd.wmi;
 
 import java.io.File;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>WmiMultiInstanceCollectionResource class.</p>
@@ -41,6 +42,9 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(WmiMultiInstanceCollectionResource.class);
+
     private String m_inst;
     private String m_name;
 
@@ -64,7 +68,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
         final File nodeDir = new File(rrdBaseDir, getParent());
         final File typeDir = new File(nodeDir, m_name);
         final File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        LogUtils.debugf(this, "getResourceDir: %s", instDir);
+        LOG.debug("getResourceDir: {}", instDir);
         return instDir;
     }
 
@@ -73,6 +77,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return m_name;
     }
@@ -82,6 +87,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return m_inst;
     }

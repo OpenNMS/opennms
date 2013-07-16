@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -56,6 +56,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link org.opennms.netmgt.config.provisiond.ProvisiondConfiguration} object.
      */
+    @Override
     public ProvisiondConfiguration getConfig() {
         return getContainer().getObject();
     }
@@ -72,11 +73,13 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
 
     /** {@inheritDoc} */
+    @Override
     public RequisitionDef getDef(String defName) {
         final List<RequisitionDef> defs = getDefs();
         if (defs != null) {
@@ -94,6 +97,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<RequisitionDef> getDefs() {
         return getConfig().getRequisitionDefCollection();
     }
@@ -103,6 +107,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getForeignSourceDir() {
         return getConfig().getForeignSourceDir();
     }
@@ -112,6 +117,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getRequisitionDir() {
         return getConfig().getRequistionDir();
     }
@@ -121,6 +127,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getImportThreads() {
         return Integer.valueOf((int)getConfig().getImportThreads());
     }
@@ -130,6 +137,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getScanThreads() {
         return Integer.valueOf((int)getConfig().getScanThreads());
     }
@@ -139,6 +147,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getRescanThreads() {
         return Integer.valueOf((int)getConfig().getRescanThreads());
     }
@@ -148,6 +157,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCastorConfigDao<P
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getWriteThreads() {
         return Integer.valueOf((int)getConfig().getWriteThreads());
     }

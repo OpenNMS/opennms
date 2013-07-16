@@ -50,6 +50,7 @@ public abstract class AbstractPlugin implements Plugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public abstract String getProtocolName();
 
     /**
@@ -58,6 +59,7 @@ public abstract class AbstractPlugin implements Plugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public abstract boolean isProtocolSupported(InetAddress address);
 
     /**
@@ -69,6 +71,7 @@ public abstract class AbstractPlugin implements Plugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public abstract boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers);
 
 }

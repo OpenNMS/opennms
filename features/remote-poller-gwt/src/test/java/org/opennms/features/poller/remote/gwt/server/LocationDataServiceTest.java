@@ -53,23 +53,23 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -85,7 +85,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
-        "classpath:/locationDataServiceTest.xml"
+        "classpath:/locationDataServiceTest.xml",
+        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -458,6 +459,7 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         return ps;
     }
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         FilterDaoFactory.setInstance(null);
     }

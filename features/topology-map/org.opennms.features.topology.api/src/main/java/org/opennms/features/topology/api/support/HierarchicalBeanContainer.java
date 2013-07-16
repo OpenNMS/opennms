@@ -60,6 +60,7 @@ public abstract class HierarchicalBeanContainer<K, T> extends BeanContainer<K,T>
 	/**
 	 * Expose {@link #fireItemSetChange()} as a public method.
 	 */
+        @Override
 	public void fireItemSetChange() {
 		super.fireItemSetChange();
 	}

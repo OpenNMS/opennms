@@ -31,8 +31,8 @@ package org.opennms.web.svclayer.support;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.DemandPollDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.web.services.PollerService;
@@ -54,7 +54,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	/**
 	 * <p>setDemandPollDao</p>
 	 *
-	 * @param demandPollDao a {@link org.opennms.netmgt.dao.DemandPollDao} object.
+	 * @param demandPollDao a {@link org.opennms.netmgt.dao.api.DemandPollDao} object.
 	 */
 	public void setDemandPollDao(final DemandPollDao demandPollDao) {
 		m_demandPollDao = demandPollDao;
@@ -72,12 +72,13 @@ public class DefaultDemandPollService implements DemandPollService {
 	/**
 	 * <p>setMonitoredServiceDao</p>
 	 *
-	 * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+	 * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
 	 */
 	public void setMonitoredServiceDao(final MonitoredServiceDao monitoredServiceDao) {
 		m_monitoredServiceDao = monitoredServiceDao;
 	}
 
+        @Override
 	public DemandPoll pollMonitoredService(final int nodeId, final InetAddress ipAddr, final int ifIndex, final int serviceId) {
 	    final DemandPoll demandPoll = new DemandPoll();
 		demandPoll.setRequestTime(new Date());
@@ -94,6 +95,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public DemandPoll getUpdatedResults(final int pollId) {
 		return m_demandPollDao.get(pollId);
 	}

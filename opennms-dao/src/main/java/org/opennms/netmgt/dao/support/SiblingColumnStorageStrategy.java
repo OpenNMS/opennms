@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.dao.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ReplaceAllOperation;
 import org.opennms.core.utils.ReplaceFirstOperation;
 import org.opennms.core.utils.StringReplaceOperation;
@@ -44,6 +46,9 @@ import org.opennms.netmgt.config.datacollection.Parameter;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SiblingColumnStorageStrategy.class);
+    
     private static final String PARAM_SIBLING_COLUMN_NAME = "sibling-column-name";
     private String m_siblingColumnName;
 
@@ -62,7 +67,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
-        log().debug("Finding the value of sibling column " + m_siblingColumnName + " for resource " + resource.getInstance() + "@" + resource.getParent());
+        LOG.debug("Finding the value of sibling column {} for resource {}@{}", m_siblingColumnName, resource.getInstance(), resource.getParent());
         StringAttributeVisitor visitor = new StringAttributeVisitor(m_siblingColumnName);
         resource.visit(visitor);
         String value = (visitor.getValue() != null ? visitor.getValue() : resource.getInstance());
@@ -72,11 +77,11 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
         
         // Then perform all replacement operations specified in the parameters
         for (StringReplaceOperation op : m_replaceOps) {
-            log().debug("Doing string replacement on instance name '" + name + "' using " + op);
+            LOG.debug("Doing string replacement on instance name '{}' using {}", name, op);
             name = op.replace(name);
         }
 
-        log().debug("Inbound instance name was '" + resource.getInstance() + "', outbound was '" + ("".equals(name) ? resource.getInstance() : name) + "'");
+        LOG.debug("Inbound instance name was '{}', outbound was '{}'", resource.getInstance(), ("".equals(name) ? resource.getInstance() : name));
         return ("".equals(name) ? resource.getInstance() : name);
     }
     
@@ -85,7 +90,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
         if (parameterCollection == null) {
             final String msg ="Got a null parameter list, but need one containing a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.";
-            log().fatal(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
         
@@ -99,17 +104,17 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
             } else {
                 if (param.getKey().equals("sibling-column-oid")) {
                     final String msg = "The parameter 'sibling-column-oid' has been deprecated and it is no longer used. You should configure 'sibling-column-name' instead. For this parameter, you should use the name of any MibObj defined as string for the same resource type.";
-                    log().error(msg);
+                    LOG.error(msg);
                     throw new IllegalArgumentException(msg);
                 } else {
-                    log().warn("Encountered unsupported parameter key=\"" + param.getKey() + "\". Can accept: " + PARAM_SIBLING_COLUMN_NAME + ", " + PARAM_REPLACE_FIRST + ", " + PARAM_REPLACE_ALL);
+                    LOG.warn("Encountered unsupported parameter key=\"{}\". Can accept: {}, {}, {}", param.getKey(), PARAM_SIBLING_COLUMN_NAME, PARAM_REPLACE_FIRST, PARAM_REPLACE_ALL);
                 }
             }
         }
         
         if (m_siblingColumnName == null) {
             final String msg = "The provided parameter list must contain a '" + PARAM_SIBLING_COLUMN_NAME + "' parameter.";
-            log().error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
     }

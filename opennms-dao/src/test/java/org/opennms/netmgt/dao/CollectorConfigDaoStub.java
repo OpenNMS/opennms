@@ -33,6 +33,7 @@ import java.util.Collections;
 
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
 
 public class CollectorConfigDaoStub implements CollectorConfigDao {
 
@@ -43,6 +44,7 @@ public class CollectorConfigDaoStub implements CollectorConfigDao {
     }
     */
 
+    @Override
     public int getSchedulerThreads() {
         // TODO Auto-generated method stub
         return 0;
@@ -55,19 +57,23 @@ public class CollectorConfigDaoStub implements CollectorConfigDao {
     }
     */
 
+    @Override
     public Collection<Collector> getCollectors() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public void rebuildPackageIpListMap() {
         // do nothing
     }
 
+    @Override
     public CollectdPackage getPackage(String name) {
         return null;
     }
 
+    @Override
     public Collection<CollectdPackage> getPackages() {
         return Collections.emptySet();
     }

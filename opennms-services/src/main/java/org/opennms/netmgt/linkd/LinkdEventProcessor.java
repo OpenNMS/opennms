@@ -29,7 +29,7 @@
 package org.opennms.netmgt.linkd;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-@EventListener(name="OpenNMS.Linkd")
+@EventListener(name="OpenNMS.Linkd", logPrefix="linkd")
 public final class LinkdEventProcessor {
 
     private Linkd m_linkd;

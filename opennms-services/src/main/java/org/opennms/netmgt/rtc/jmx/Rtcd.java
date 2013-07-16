@@ -38,6 +38,7 @@ public class Rtcd implements RtcdMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().init();
     }
@@ -45,6 +46,7 @@ public class Rtcd implements RtcdMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().start();
     }
@@ -52,6 +54,7 @@ public class Rtcd implements RtcdMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().stop();
     }
@@ -61,6 +64,7 @@ public class Rtcd implements RtcdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return org.opennms.netmgt.rtc.RTCManager.getInstance().getStatus();
     }
@@ -70,6 +74,7 @@ public class Rtcd implements RtcdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -79,6 +84,7 @@ public class Rtcd implements RtcdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

@@ -32,17 +32,18 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public abstract class InsAbstractSession extends Thread {
+    private static final Logger LOG = LoggerFactory.getLogger(InsAbstractSession.class);
 
     private String m_criteria;
     
@@ -70,14 +71,13 @@ public abstract class InsAbstractSession extends Thread {
 	}
 
 	public void setCriteriaRestriction(final String criteriaRestriction) {
-	    LogUtils.debugf(this, "Setting the criteria restriction for active alarm list: %s", criteriaRestriction);
+	    LOG.debug("Setting the criteria restriction for active alarm list: {}", criteriaRestriction);
 		this.criteriaRestriction = criteriaRestriction;
 	}
 
     public InsAbstractSession() {
         super();
-        ThreadCategory.setPrefix("OpenNMS.InsProxy");
-        LogUtils.debugf(this, "InsAbstract Session Constructor: loaded");
+        LOG.debug("InsAbstract Session Constructor: loaded");
     }
 
     private String getCriteria() {
@@ -90,7 +90,7 @@ public abstract class InsAbstractSession extends Thread {
     
     protected String getIfAlias(final int nodeid, final int ifindex) {
 
-        LogUtils.debugf(this, "getting ifalias for nodeid: %d and ifindex: %d", nodeid, ifindex);
+        LOG.debug("getting ifalias for nodeid: {} and ifindex: {}", nodeid, ifindex);
 
         setCriteria("nodeid = " + nodeid + " AND snmpifindex = " + ifindex);
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
@@ -105,11 +105,11 @@ public abstract class InsAbstractSession extends Thread {
                         }
                    }
         );
-        LogUtils.debugf(this, "interfaces found: %d", iface.size());
+        LOG.debug("interfaces found: {}", iface.size());
 
         if (iface.size() == 0) return "-1";
         final String ifAlias = iface.get(0).getIfAlias();
-        LogUtils.debugf(this, "ifalias found: %s", ifAlias);
+        LOG.debug("ifalias found: {}", ifAlias);
         
         return ifAlias;
     }

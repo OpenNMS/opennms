@@ -37,10 +37,12 @@ import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory;
 public class ResourceQueryExecuterFactoryBundle implements
         QueryExecuterFactoryBundle {
 
+    @Override
     public String[] getLanguages() {
         return new String[] {"resourceQuery"};
     }
 
+    @Override
     public JRQueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
         if("resourceQuery".equals(language)) {
             return new JRobinQueryExecutorFactory();

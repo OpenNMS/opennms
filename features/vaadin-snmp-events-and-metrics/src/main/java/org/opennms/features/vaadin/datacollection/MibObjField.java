@@ -31,13 +31,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.MibObj;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
@@ -52,22 +55,26 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField implements Button.ClickListener {
+public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implements Button.ClickListener {
+	
+	public static class MibObjArrayList extends ArrayList<MibObj> {}
+
+    private static final long serialVersionUID = 3665919460707298011L;
 
     /** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+    private final BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new MIB object field.
@@ -95,27 +102,24 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
+        setBuffered(true);
+        setValidationVisible(true);
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-
-        setWriteThrough(false);
-        setValidationVisible(true);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<?> getType() {
-        return ArrayList.class;
+    public Class<MibObjArrayList> getType() {
+        return MibObjArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public void setPropertyDataSource(Property newDataSource) {
@@ -131,12 +135,9 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
-    public Object getValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>(); 
+    public MibObjArrayList getValue() {
+        MibObjArrayList beans = new MibObjArrayList(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -156,6 +157,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();
         if (btn == add) {
@@ -189,9 +191,9 @@ public class MibObjField extends CustomField implements Button.ClickListener {
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a MIB Object from the table.");
+            Notification.show("Please select a MIB Object from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
@@ -199,6 +201,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         table.removeItem(itemId);

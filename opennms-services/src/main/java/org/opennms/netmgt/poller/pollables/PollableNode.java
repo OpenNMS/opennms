@@ -31,7 +31,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class PollableNode extends PollableContainer {
+    private static final Logger LOG = LoggerFactory.getLogger(PollableNode.class);
 
     /**
      * Represents a Lock 
@@ -54,24 +56,22 @@ public class PollableNode extends PollableContainer {
         private int m_obtainCount = 0;
         
         public synchronized void obtain() {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
-                log.debug("Trying to obtain lock for "+PollableNode.this);
+                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
                 while (m_owner != null) {
                     try { wait();} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
                 }
                 m_owner = Thread.currentThread();
-                log.debug("Obtained lock for "+PollableNode.this);
+                LOG.debug("Obtained lock for {}", PollableNode.this);
             }
             m_obtainCount++;
         }
         
         public synchronized void obtain(long timeout) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
-                log.debug("Trying to obtain lock for "+PollableNode.this);
+                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
                 long now = System.currentTimeMillis();
                 long endTime = (timeout == 0 ? Long.MAX_VALUE : now+timeout);
                 while (m_owner != null) {
@@ -81,7 +81,7 @@ public class PollableNode extends PollableContainer {
                         throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
                 }
                 m_owner = Thread.currentThread();
-                log.debug("Obtained lock for "+PollableNode.this);
+                LOG.debug("Obtained lock for {}", PollableNode.this);
             }
             m_obtainCount++;
         }
@@ -90,7 +90,7 @@ public class PollableNode extends PollableContainer {
             if (m_owner == Thread.currentThread()) {
                 m_obtainCount--;
                 if (m_obtainCount == 0) {
-                    ThreadCategory.getInstance(getClass()).debug("Releasing lock for "+PollableNode.this);
+                    LOG.debug("Releasing lock for {}", PollableNode.this);
                     m_owner = null;
                     notifyAll();
                 }
@@ -159,6 +159,7 @@ public class PollableNode extends PollableContainer {
     public PollableInterface createInterface(final InetAddress addr) {
         final PollableInterface[] retVal = new PollableInterface[1];
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
                 addMember(iface);
@@ -193,11 +194,13 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
      */
+    @Override
     public PollContext getContext() {
         return getNetwork().getContext();
     }
     
     /** {@inheritDoc} */
+    @Override
     protected Object createMemberKey(PollableElement member) {
         PollableInterface iface = (PollableInterface)member;
         return iface.getAddress();
@@ -214,6 +217,7 @@ public class PollableNode extends PollableContainer {
         final PollableService retVal[] = new PollableService[1];
         
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableInterface iface = getInterface(addr);
                 if (iface == null)
@@ -239,17 +243,20 @@ public class PollableNode extends PollableContainer {
 
 
     /** {@inheritDoc} */
+    @Override
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitNode(this);
     }
     
     /** {@inheritDoc} */
+    @Override
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
     
     /** {@inheritDoc} */
+    @Override
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
@@ -259,6 +266,7 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return String.valueOf(getNodeId()); }
 
     /**
@@ -266,6 +274,7 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
+    @Override
     public PollableElement getLockRoot() {
         return this;
     }
@@ -275,11 +284,13 @@ public class PollableNode extends PollableContainer {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isTreeLockAvailable() {
         return m_lock.isLockAvailable();
     }
     
     /** {@inheritDoc} */
+    @Override
     public void obtainTreeLock(long timeout) {
         if (timeout == 0)
             m_lock.obtain();
@@ -290,14 +301,17 @@ public class PollableNode extends PollableContainer {
     /**
      * <p>releaseTreeLock</p>
      */
+    @Override
     public void releaseTreeLock() {
         m_lock.release();
     }
     
     /** {@inheritDoc} */
+    @Override
     public PollStatus doPoll(final PollableElement elem) {
         final PollStatus retVal[] = new PollStatus[1];
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 resetStatusChanged();
                 retVal[0] =  poll(elem);

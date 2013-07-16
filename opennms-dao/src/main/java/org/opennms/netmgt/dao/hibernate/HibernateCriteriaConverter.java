@@ -67,7 +67,7 @@ import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
-import org.opennms.netmgt.dao.CriteriaConverter;
+import org.opennms.netmgt.dao.api.CriteriaConverter;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
@@ -95,6 +95,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     @Override
     public DetachedCriteria convertForCount(final Criteria criteria) {
         final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor() {
+            @Override
             public void visitOrder(final Order order) {
                 // skip order-by when converting for count
             }
@@ -105,6 +106,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public static class CountHibernateCriteriaVisitor extends HibernateCriteriaVisitor {
+        @Override
         public void visitOrder(final Order order) {
             // skip order-by when converting for count
         }
@@ -191,7 +193,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 aliasType = org.hibernate.Criteria.INNER_JOIN;
                 break;
             }
-            m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType);
+            if (alias.hasJoinCondition()) { // an additional condition for the join
+                final HibernateRestrictionVisitor visitor = new HibernateRestrictionVisitor();
+                alias.getJoinCondition().visit(visitor);
+                m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType, visitor.getCriterions().get(0));
+            } else { // no additional condition for the join
+                m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType);
+            }
         }
 
         @Override

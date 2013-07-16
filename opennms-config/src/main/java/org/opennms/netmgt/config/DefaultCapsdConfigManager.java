@@ -41,7 +41,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultCapsdConfigManager class.</p>
@@ -50,6 +51,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class DefaultCapsdConfigManager extends CapsdConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultCapsdConfigManager.class);
     /**
      * Timestamp of the file for the currently loaded configuration
      */
@@ -81,13 +83,14 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     protected synchronized void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
         
-        log().debug("Checking to see if capsd configuration should be reloaded from " + configFile);
+        LOG.debug("Checking to see if capsd configuration should be reloaded from {}", configFile);
         
         if (m_currentVersion < configFile.lastModified()) {
-            log().debug("Reloading capsd configuration file");
+            LOG.debug("Reloading capsd configuration file");
             
             long lastModified = configFile.lastModified();
 
@@ -104,11 +107,12 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
             // Update currentVersion after we have successfully reloaded
             m_currentVersion = lastModified; 
 
-            log().info("Reloaded capsd configuration file");
+            LOG.info("Reloaded capsd configuration file");
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
@@ -117,9 +121,5 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
             fileWriter.flush();
             fileWriter.close();
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

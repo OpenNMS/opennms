@@ -30,12 +30,17 @@ package org.opennms.netmgt.mock;
 
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockMonitor implements ServiceMonitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
+
 
     private MockNetwork m_network;
 
@@ -56,32 +61,37 @@ public class MockMonitor implements ServiceMonitor {
         m_svcName = svcName;
     }
 
+    @Override
     public void initialize(MonitoredService svc) {
     }
 
+    @Override
     public void initialize(Map<String, Object> parameters) {
     }
 
+    @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         synchronized(m_network) {
             int nodeId = monSvc.getNodeId();
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
-                LogUtils.infof(this, "Invalid Poll: %s/%s", ipAddr, m_svcName);
+                LOG.info("Invalid Poll: {}{}", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
                 return PollStatus.unknown();
             } else {
-                LogUtils.infof(this, "Poll: [%s/%s/%s]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
+                LOG.info("Poll: [{}{}{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
                 PollStatus pollStatus = svc.poll();
 				return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
             }
         }
     }
 
+    @Override
     public void release() {
     }
 
+    @Override
     public void release(MonitoredService svc) {
     }
 

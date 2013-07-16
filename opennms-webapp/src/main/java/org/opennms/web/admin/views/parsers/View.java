@@ -83,6 +83,7 @@ public class View implements Cloneable {
      *
      * @return a {@link java.lang.Object} object.
      */
+    @Override
     public Object clone() {
         try {
             super.clone();

@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.xml</artifactId>
-  <name>OpenNMS XML Collector</name>
+  <name>OpenNMS Protocols XML Collector</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -92,6 +92,10 @@
       <artifactId>commons-jxpath</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
     </dependency>
@@ -99,6 +103,12 @@
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

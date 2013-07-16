@@ -59,9 +59,11 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(RequestTracker.class);
     private final String m_baseURL;
 
     private String m_user;
@@ -115,7 +117,7 @@ public class RequestTracker {
             post.setEntity(entity);
         } catch (final UnsupportedEncodingException e) {
             // Should never happen
-            LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
+            LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
         }
 
         try {
@@ -129,11 +131,11 @@ public class RequestTracker {
                 if (matcher.find()) {
                     rtTicketNumber = matcher.group(1);
                 } else {
-                    LogUtils.debugf(this, "did not get ticket ID from response when posting to %s", post.toString());
+                    LOG.debug("did not get ticket ID from response when posting to {}", post);
                 }
             }
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "Failure attempting to update ticket.");
+            LOG.error("Failure attempting to update ticket.", e);
             throw new RequestTrackerException(e);
         }
 
@@ -162,7 +164,7 @@ public class RequestTracker {
                 }
             }
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "An exception occurred while getting user info for " + username);
+            LOG.error("An exception occurred while getting user info for {}", username, e);
             return null;
         }
 
@@ -171,7 +173,7 @@ public class RequestTracker {
         final String email = attributes.get("emailaddress");
 
         if (id == null || "".equals(id)) {
-            LogUtils.errorf(this, "Unable to retrieve ID from user info.");
+            LOG.error("Unable to retrieve ID from user info.");
             return null;
         }
         return new RTUser(Long.parseLong(id.replace("user/", "")), username, realname, email);
@@ -214,10 +216,8 @@ public class RequestTracker {
             }
         }
 
-        if (LogUtils.isTraceEnabled(this)) {
-            if (attributes.size() > 0) {
-                LogUtils.tracef(this, "unhandled RT ticket attributes: %s", attributes.keySet().toString());
-            }
+        if (attributes.size() > 0) {
+            LOG.trace("unhandled RT ticket attributes: {}", attributes.keySet());
         }
 
         if (ticket.getText() == null || ticket.getText().equals("") && getTextAttachment) {
@@ -232,7 +232,7 @@ public class RequestTracker {
                         ticket.setText(attributes.remove("content"));
                     }
                 }
-                LogUtils.debugf(this, "attachment ID = %s", attachmentId);
+                LOG.debug("attachment ID = {}", attachmentId);
             }
         }
         return ticket;
@@ -282,7 +282,7 @@ public class RequestTracker {
                 }
             }
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "An exception occurred while getting tickets for queue " + queueName);
+            LOG.error("An exception occurred while getting tickets for queue {}", queueName, e);
             return null;
         }
 
@@ -290,7 +290,7 @@ public class RequestTracker {
             try {
                 tickets.add(getTicket(id, false));
             } catch (final RequestTrackerException e) {
-                LogUtils.warnf(this, e, "Unable to retrieve ticket.");
+                LOG.warn("Unable to retrieve ticket.", e);
             }
         }
 
@@ -299,7 +299,7 @@ public class RequestTracker {
 
     public RTQueue getFirstPublicQueueForUser(final String username) throws RequestTrackerException {
         if (username == null) {
-            LogUtils.errorf(this, "User name cannot be null.");
+            LOG.error("User name cannot be null.");
             throw new RequestTrackerException("User name cannot be null.");
         }
 
@@ -312,7 +312,7 @@ public class RequestTracker {
 
     public List<RTQueue> getQueuesForUser(final String username) throws RequestTrackerException {
         if (username == null) {
-            LogUtils.errorf(this, "User name cannot be null.");
+            LOG.error("User name cannot be null.");
             throw new RequestTrackerException("User name cannot be null.");
         }
 
@@ -330,9 +330,9 @@ public class RequestTracker {
                 break;
             }
             if (queue.isAccessible() && queue.getName().startsWith("___")) {
-                LogUtils.debugf(this, "found queue: %s (skipping)", queue);
+                LOG.debug("found queue: {} (skipping)", queue);
             } else {
-                LogUtils.debugf(this, "found queue: %s", queue);
+                LOG.debug("found queue: {}", queue);
                 queues.add(queue);
             }
             id++;
@@ -355,12 +355,12 @@ public class RequestTracker {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
                 if (response.getEntity() == null) {
-                    LogUtils.debugf(this, "no entity returned by HTTP client");
+                    LOG.debug("no entity returned by HTTP client");
                 }
                 attributes = parseResponseStream(response.getEntity().getContent());
             }
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "An exception occurred while getting queue #" + id);
+            LOG.error("An exception occurred while getting queue #{}", id, e);
             return null;
         }
 
@@ -370,14 +370,14 @@ public class RequestTracker {
 
             final String name = attributes.get("name").trim();
             final String priority = attributes.get("finalpriority").trim();
-            LogUtils.debugf(this, "name = %s, priority = %s", name, priority);
+            LOG.debug("name = {}, priority = {}", name, priority);
             if ("".equals(name) && "".equals(priority)) {
-                LogUtils.debugf(this, "We got a response back, but it had no name or priority; assuming we have no access to this queue.");
+                LOG.debug("We got a response back, but it had no name or priority; assuming we have no access to this queue.");
                 return new RTInaccessibleQueue(longId);
             }
             return new RTQueue(longId, attributes.get("name"));
         } else {
-            LogUtils.debugf(this, "id or name missing (%d, %s)", attributes.get("id"), attributes.get("name"));
+            LOG.debug("id or name missing ({}, {})", attributes.get("id"), attributes.get("name"));
             return null;
         }
     }
@@ -387,7 +387,7 @@ public class RequestTracker {
 
         if (ticketQuery == null) {
 
-            LogUtils.errorf(this, "No ticket query specified!");
+            LOG.error("No ticket query specified!");
             throw new RequestTrackerException("No ticket query specified!");
 
         }
@@ -404,16 +404,16 @@ public class RequestTracker {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
             } else {
                 if (response.getEntity() == null) {
-                    LogUtils.debugf(this, "no entity returned by HTTP client");
+                    LOG.debug("no entity returned by HTTP client");
                 }
                 ticketAttributes = parseResponseStream(response.getEntity().getContent());
             }
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "HTTP exception attempting to get ticket.");
+            LOG.error("HTTP exception attempting to get ticket.", e);
         }
 
         if (ticketAttributes.size() == 0) {
-            LogUtils.debugf(this, "matcher did not match %s", m_inTokensPattern.pattern());
+            LOG.debug("matcher did not match {}", m_inTokensPattern.pattern());
             return null;
         }
         return ticketAttributes;
@@ -422,11 +422,11 @@ public class RequestTracker {
     protected Map<String,String> parseResponseStream(final InputStream responseStream) throws IOException {
         final Map<String,String> ticketAttributes = new HashMap<String,String>();
 
-        LogUtils.debugf(this, "parsing response");
+        LOG.debug("parsing response");
         String lastIndent = "";
         String lastKey = null;
         for (final String line : (List<String>)IOUtils.readLines(responseStream)) {
-            LogUtils.tracef(this, "line = %s", line);
+            LOG.trace("line = {}", line);
             if (line.contains("does not exist.")) {
                 return ticketAttributes;
             } if (lastIndent.length() > 0 && line.startsWith(lastIndent)) {
@@ -468,7 +468,7 @@ public class RequestTracker {
                 post.setEntity(entity);
             } catch (final UnsupportedEncodingException e) {
                 // Should never happen
-                LogUtils.warnf(this, e, "unsupported encoding exception for UTF-8 -- WTF?!");
+                LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
             }
 
             try {
@@ -480,10 +480,10 @@ public class RequestTracker {
                     if (response.getEntity() != null) {
                         EntityUtils.consume(response.getEntity());
                     }
-                    LogUtils.warnf(this, "got user session for username: %s", m_user);
+                    LOG.warn("got user session for username: {}", m_user);
                 }
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "Unable to get session (by requesting user details)");
+                LOG.warn("Unable to get session (by requesting user details)", e);
             }
         }
     }
@@ -517,6 +517,7 @@ public class RequestTracker {
         m_password = password;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
         .append("base-url", m_baseURL)

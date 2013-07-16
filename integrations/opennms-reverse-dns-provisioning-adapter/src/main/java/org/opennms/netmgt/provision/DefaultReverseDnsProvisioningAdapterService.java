@@ -3,12 +3,11 @@ package org.opennms.netmgt.provision;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
-
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
@@ -47,7 +46,7 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -55,7 +54,7 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     /**
      * <p>setNodeDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
@@ -66,19 +65,21 @@ public class DefaultReverseDnsProvisioningAdapterService implements
         Assert.notNull(m_ipInterfaceDao, "ReverseDnsProvisioner requires an IpInterfaceDao which is not null.");
     }
     
+    @Override
     public List<ReverseDnsRecord> get(final Integer nodeid) {
         final List<ReverseDnsRecord> records = new ArrayList<ReverseDnsRecord>();
-        m_template.execute(new TransactionCallback<Object>() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        m_template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 for (OnmsIpInterface ipInterface : m_nodeDao.get(nodeid).getIpInterfaces()) {
                     records.add(new ReverseDnsRecord(ipInterface));
                 }
-                return null;
             }
         });
         return records;
     }
 
+    @Override
     public void update(Integer nodeid, ReverseDnsRecord rdr) {
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, rdr.getIp().getHostAddress());
         if (ipInterface != null) {

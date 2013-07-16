@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.web.alarm.AcknowledgeType;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -54,7 +54,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * @since 1.8.1
  */
 public class AcknowledgeAlarmController extends AbstractController implements InitializingBean {
-    private WebAlarmRepository m_webAlarmRepository;
+    private AlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
     
@@ -70,9 +70,9 @@ public class AcknowledgeAlarmController extends AbstractController implements In
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository} object.
      */
-    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
 
@@ -93,6 +93,7 @@ public class AcknowledgeAlarmController extends AbstractController implements In
      * Acknowledge the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // required parameter

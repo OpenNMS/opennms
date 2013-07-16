@@ -36,6 +36,8 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.api.FactoryBasedSnmpConfigDao;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 
@@ -45,6 +47,7 @@ public class SnmpConfigDaoTest extends TestCase {
     private SnmpConfigDao m_snmpConfigDao;
     private File m_configFile;
     
+    @Override
     public void setUp() throws Exception {
         
         File dir = new File("target/test-work-dir");

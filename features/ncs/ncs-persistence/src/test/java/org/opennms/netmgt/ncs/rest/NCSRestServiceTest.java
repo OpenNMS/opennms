@@ -43,10 +43,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -54,9 +53,13 @@ import org.opennms.netmgt.ncs.persistence.NCSComponentDao;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
+	private static final Logger LOG = LoggerFactory.getLogger(NCSRestServiceTest.class);
+
 	private static void setupLogging(final String level) {
 		final Properties config = new Properties();
 		config.setProperty("log4j.logger.org.opennms.netmgt.mock.MockEventIpcManager", "ERROR");
@@ -222,7 +225,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		final NCSComponentRepository repo = getBean("ncsComponentRepository", NCSComponentRepository.class);
 		for (final NCSComponent component : repo.findAll()) {
-			LogUtils.debugf(this, "Found Component: %s/%s/%s", component.getType(), component.getForeignSource(), component.getForeignId());
+			LOG.debug("Found Component: {}/{}/{}", component.getType(), component.getForeignSource(), component.getForeignId());
 		}
 		String url = "/NCS/ServiceElementComponent/NA-SvcElemComp:9876%2Cvcid(50)";
 		// Testing GET Collection

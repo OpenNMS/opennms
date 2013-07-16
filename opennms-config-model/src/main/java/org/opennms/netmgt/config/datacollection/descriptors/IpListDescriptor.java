@@ -120,6 +120,7 @@ import org.opennms.netmgt.config.datacollection.IpList;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     IpList target = (IpList) object;
@@ -173,6 +174,7 @@ import org.opennms.netmgt.config.datacollection.IpList;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     IpList target = (IpList) object;
@@ -298,6 +300,7 @@ import org.opennms.netmgt.config.datacollection.IpList;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

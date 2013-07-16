@@ -34,9 +34,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -146,7 +146,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getTestOperation(), getProps("File|New", "NewOperation", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -175,7 +175,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Device", "NewOperation?group=additions", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -202,7 +202,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -231,7 +231,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -259,7 +259,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getTestOperation(), getProps("File|New", "NewOperation", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -281,7 +281,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getCheckedTestOperation(), getProps("File", "Operation1", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -343,7 +343,7 @@ public class TestMenuBarBuilder {
 
 	@Test
     public void commandManagerParseConfigTest() {
-        Dictionary<Object,Object> props = new Properties();
+        Dictionary<String,String> props = new Hashtable<String,String>();
         props.put("toplevelMenuOrder", "File,Edit,View,Additions,Help");
         props.put("submenu.File.groups", "start,new,close,save,print,open,import,additions,end");
         props.put("submenu.Edit.groups", "start,undo,cut,find,add,end,additions");
@@ -421,6 +421,7 @@ public class TestMenuBarBuilder {
     }
     
     private Command menuCommand = new Command() {
+        @Override
         public void menuSelected(MenuItem selectedItem) {
             
         }

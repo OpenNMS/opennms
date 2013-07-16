@@ -32,19 +32,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-import com.vaadin.terminal.ExternalResource;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * The TracerouteWindow class creates a Vaadin Sub-window with a form and results section
@@ -54,7 +57,7 @@ import com.vaadin.ui.Window;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class TracerouteWindow extends Window{
+public class TracerouteWindow extends Window {
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
 	protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
@@ -102,7 +105,7 @@ public class TracerouteWindow extends Window{
 		/*Initialize the header of the Sub-window with the name of the selected Node*/
 		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
 		nodeLabel = new Label(nodeName);
-		nodeLabel.setContentMode(Label.CONTENT_XHTML);
+		nodeLabel.setContentMode(ContentMode.HTML);
 
 		/*Creating various layouts to encapsulate all of the components*/
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -143,7 +146,8 @@ public class TracerouteWindow extends Window{
 
 		/*Creates the Ping button and sets up the listener*/
 		tracerouteButton = new Button("Traceroute"); 
-		tracerouteButton.addListener(new Button.ClickListener() {
+		tracerouteButton.addClickListener(new Button.ClickListener() {
+                        @Override
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}
@@ -161,7 +165,7 @@ public class TracerouteWindow extends Window{
 		topLayout.setComponentAlignment(nodeLabel, Alignment.MIDDLE_CENTER);
 		topLayout.addComponent(form);
 		topLayout.setSizeFull();
-		topLayout.setMargin(true, true, false, true);
+		topLayout.setMargin(new MarginInfo(true, true, false, true));
 
 		/*Adds components to the Bottom Layout and sets the width and margins*/
 		bottomLayout.setSizeFull();
@@ -173,7 +177,7 @@ public class TracerouteWindow extends Window{
 		/*Setting first and second components for the split panel and setting the panel divider position*/
 		vSplit.setFirstComponent(topLayout);
 		vSplit.setSecondComponent(bottomLayout);
-		vSplit.setSplitPosition(splitHeight, UNITS_PIXELS);
+		vSplit.setSplitPosition(splitHeight, Unit.PIXELS);
 		vSplit.setLocked(true);
 
 		/*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/
@@ -187,8 +191,8 @@ public class TracerouteWindow extends Window{
 	public void attach() {
 		super.attach();
 
-		int width = (int)getApplication().getMainWindow().getWidth();
-		int height = (int)getApplication().getMainWindow().getHeight();
+		int width = (int)getUI().getWidth();
+		int height = (int)getUI().getHeight();
 
 		int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
 		setWidth("" + windowWidth + "px");
@@ -225,34 +229,37 @@ public class TracerouteWindow extends Window{
 	 * @throws MalformedURLException
 	 */
 	protected URL buildURL() {
-	    boolean validInput = false;
-	    try {
-	        validInput = validateInput();
-	    } catch (Exception e) {
-	        getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_WARNING_MESSAGE);
-	        return null;
-	    }
-	    if (validInput) {
-	        final URL baseUrl = getApplication().getURL();
+		boolean validInput = false;
+		try {
+			validInput = validateInput();
+		} catch (Exception e) {
+			Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			return null;
+		}
+		if (validInput) {
+			final StringBuilder options = new StringBuilder(tracerouteUrl);
+			try {
+				URL baseUrl = getUI().getPage().getLocation().toURL();
 
-	        final StringBuilder options = new StringBuilder(tracerouteUrl);
-	        options.append("&address=").append(ipDropdown.getValue());
-	        if (!("".equals(forcedHopField.getValue().toString()))) {
-	            options.append("&hopAddress=").append(forcedHopField.getValue());
-	        }
-	        if (numericalDataCheckBox.getValue().equals(true)) {
-	            options.append("&numericOutput=true");
-	        }
-	        try {
-	            return new URL(baseUrl, options.toString());
-	        } catch (final MalformedURLException e) {
-	            getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
-	            return null;
-	        }
-	    } else {
-	        getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.TYPE_WARNING_MESSAGE);
-	        return null;
-	    }
+				options.append(tracerouteUrl.contains("?") ? "&" : "?");
+
+				options.append("address=").append(ipDropdown.getValue());
+				if (!("".equals(forcedHopField.getValue().toString()))) {
+					options.append("&hopAddress=").append(forcedHopField.getValue());
+				}
+				if (numericalDataCheckBox.getValue().equals(true)) {
+					options.append("&numericOutput=true");
+				}
+
+				return new URL(baseUrl, options.toString());
+			} catch (final MalformedURLException e) {
+				Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
+				return null;
+			}
+		} else {
+			Notification.show("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
+			return null;
+		}
 	}
 
 	/**

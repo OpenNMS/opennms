@@ -35,12 +35,13 @@ import java.util.Collection;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Collector;
-import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>CollectorConfigDaoImpl class.</p>
@@ -49,6 +50,8 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
  * @version $Id: $
  */
 public class CollectorConfigDaoImpl implements CollectorConfigDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorConfigDaoImpl.class);
 
     /**
      * <p>Constructor for CollectorConfigDaoImpl.</p>
@@ -65,24 +68,15 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
             // XXX was reload(); this doesn't work well from unit tests, however
             CollectdConfigFactory.init();
         } catch (MarshalException ex) {
-            log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
+            LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
+            LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
+            LOG.error("loadConfigFactory: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private CollectdConfig getConfig() {

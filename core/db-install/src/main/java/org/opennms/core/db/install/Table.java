@@ -115,6 +115,7 @@ public class Table {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(final Object o) {
 		if (o == null || !(o instanceof Table)) {
 			return false;
@@ -129,6 +130,7 @@ public class Table {
 			.isEquals();
 	}
 	
+        @Override
 	public int hashCode() {
 		return new HashCodeBuilder(3, 73)
 			.append(m_name)

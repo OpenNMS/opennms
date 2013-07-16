@@ -28,12 +28,13 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class XmlCollectionAttribute.
@@ -42,6 +43,8 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class XmlCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
+
+	private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionAttribute.class);
 
     /** The Attribute Value. */
     private String m_value;
@@ -68,6 +71,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getAttributeType()
      */
+    @Override
     public CollectionAttributeType getAttributeType() {
         return m_attribType;
     }
@@ -75,6 +79,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
      */
+    @Override
     public String getName() {
         return m_attribType.getName();
     }
@@ -82,17 +87,18 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
      */
+    @Override
     public String getNumericValue() {
         try {
             Double d = Double.parseDouble(m_value); // This covers negative and scientific notation numbers.
             return d.toString();
         } catch (Exception e) {
-            log().debug("getNumericValue: the value " + m_value + " is not a valid number. Removing invalid characters and try again.");
+            LOG.debug("getNumericValue: the value {} is not a valid number. Removing invalid characters and try again.", m_value);
             try {
                 Double d = Double.parseDouble(m_value.replaceAll("[^-\\d.]+", ""));  // Removing Units to return only a numeric value.
                 return d.toString();
             } catch (Exception ex) {
-                log().warn("getNumericValue: the value " + m_value + " is not parsable as a valid numeric value.");
+                LOG.warn("getNumericValue: the value {} is not parsable as a valid numeric value.", m_value);
             }
         }
         return "U"; // Ignoring value from RRDtool/JRobin point of view.
@@ -101,6 +107,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
      */
+    @Override
     public CollectionResource getResource() {
         return m_resource;
     }
@@ -108,6 +115,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getStringValue()
      */
+    @Override
     public String getStringValue() {
         return m_value;
     }
@@ -115,6 +123,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
      */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
@@ -122,6 +131,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
      */
+    @Override
     public String getType() {
         return m_attribType.getType();
     }
@@ -129,6 +139,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return "XmlCollectionAttribute " + getName() + "=" + getStringValue();
     }
@@ -138,9 +149,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+   
 
     @Override
     public String getMetricIdentifier() {

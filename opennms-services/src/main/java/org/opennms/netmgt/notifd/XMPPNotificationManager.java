@@ -33,21 +33,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Singleton class used to send messages to an XMPP Server. Used by
@@ -60,10 +64,12 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class XMPPNotificationManager {
+    
+        private static final Logger LOG = LoggerFactory.getLogger(XMPPNotificationManager.class);
 
 	private final Properties props = new Properties();
 
-	private static final String LOG4J_CATEGORY = "OpenNMS.Notifd";
+	private static final String LOG4J_CATEGORY = "notifd";
 
 	private static final String XMPP_RESOURCE = "notifd";
 
@@ -90,27 +96,32 @@ public class XMPPNotificationManager {
 	private static XMPPNotificationManager instance = null;
 
 	private ConnectionListener conlistener = new ConnectionListener() {
+                @Override
 		public void connectionClosed() {
-			log().debug("XMPP connection closed");
+			LOG.debug("XMPP connection closed");
 		}
 
+                @Override
 		public void connectionClosedOnError(Exception e) {
-			log().warn("XMPP connection closed", e);
+			LOG.warn("XMPP connection closed", e);
 		}
 
+                @Override
         public void reconnectingIn(int seconds) {
-            if (log().isDebugEnabled()) log().debug("XMPP reconnecting in " + seconds + " seconds");
+            LOG.debug("XMPP reconnecting in {} seconds", seconds);
         }
 
+                @Override
         public void reconnectionFailed(Exception e) {
-            log().warn("XMPP reconnection failed", e);
+            LOG.warn("XMPP reconnection failed", e);
             xmpp.disconnect();
             instance = null;
             
         }
 
+                @Override
         public void reconnectionSuccessful() {
-            log().debug("XMPP reconnection succeeded");
+            LOG.debug("XMPP reconnection succeeded");
         }
 	};
 
@@ -119,18 +130,17 @@ public class XMPPNotificationManager {
 	 */
 	protected XMPPNotificationManager() {
 
-		// get the category logger
-		String oldPrefix = ThreadCategory.getPrefix();
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+		Map mdc = Logging.getCopyOfContextMap();
+                try {
+                    mdc.put(Logging.PREFIX_KEY, LOG4J_CATEGORY);
 
-		try {
 			// Load up some properties
 
 			File config = null;
 			try {
 				config = ConfigFileConstants.getFile(ConfigFileConstants.XMPP_CONFIG_FILE_NAME);
 			} catch (IOException e) {
-				log().warn(ConfigFileConstants.XMPP_CONFIG_FILE_NAME + " not readable", e);
+				LOG.warn("{} not readable", ConfigFileConstants.XMPP_CONFIG_FILE_NAME, e);
 			}
 			if (Boolean.getBoolean("useSystemXMPPConfig") || !config.canRead()) {
 				this.props.putAll(System.getProperties());
@@ -140,9 +150,9 @@ public class XMPPNotificationManager {
 					fis = new FileInputStream(config);
 					this.props.load(fis);
 				} catch (FileNotFoundException e) {
-					log().warn("unable to load " + config, e);
+					LOG.warn("unable to load {}", config, e);
 				} catch (IOException e) {
-					log().warn("unable to load " + config, e);
+					LOG.warn("unable to load {}", config, e);
 				} finally {
 					IOUtils.closeQuietly(fis);
 				}
@@ -158,9 +168,6 @@ public class XMPPNotificationManager {
 
 			boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
 			xmppConfig.setDebuggerEnabled(debuggerEnabled);
-			if (debuggerEnabled) {
-				log().setLevel(ThreadCategory.Level.DEBUG);
-			}
 
 			xmppConfig.setSASLAuthenticationEnabled(Boolean.parseBoolean(props.getProperty("xmpp.SASLEnabled", "true")));
 			xmppConfig.setSelfSignedCertificateEnabled(Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled")));
@@ -176,39 +183,37 @@ public class XMPPNotificationManager {
 				xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
 			}
 
-			if (log().isDebugEnabled()) {
-				log().debug("XMPP Manager connection config: " + xmppConfig.toString());
-			}
+			LOG.debug("XMPP Manager connection config: {}", xmppConfig.toString());
 
 			xmpp = new XMPPConnection(xmppConfig);
 
 			// Connect to xmpp server
 			connectToServer();
 		} finally {
-			ThreadCategory.setPrefix(oldPrefix);
+		    Logging.setContextMap(mdc);
 		}
 	}
 
 	private void connectToServer() {
 		try {
-			log().debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
+			LOG.debug("Attempting vanilla XMPP Connection to {}:{}", xmppServer, xmppPort);
 			xmpp.connect();
 			if (xmpp.isConnected()) {
-				log().debug("XMPP Manager successfully connected");
+				LOG.debug("XMPP Manager successfully connected");
 				// Following requires a later version of the library
 				if (xmpp.isSecureConnection()) 
-					log().debug("XMPP Manager successfully nogotiated a secure connection");
+					LOG.debug("XMPP Manager successfully nogotiated a secure connection");
 				if (xmpp.isUsingTLS()) 
-					log().debug("XMPP Manager successfully nogotiated a TLS connection");
-				log().debug("XMPP Manager Connected"); 
+					LOG.debug("XMPP Manager successfully nogotiated a TLS connection");
+				LOG.debug("XMPP Manager Connected"); 
 				login();
 				// Add connection listener
 				xmpp.addConnectionListener(conlistener);
 			} else {
-				log().debug("XMPP Manager Not Connected");
+				LOG.debug("XMPP Manager Not Connected");
 			}
 		} catch (Throwable e) {
-			log().fatal("XMPP Manager unable to connect", e);
+			LOG.error("XMPP Manager unable to connect", e);
 		}
 	}
 
@@ -221,14 +226,14 @@ public class XMPPNotificationManager {
     private void login() {
         try {
             if (xmpp.isConnected()) {
-                log().debug("XMPP Manager logging in");
+                LOG.debug("XMPP Manager logging in");
                 xmpp.login(xmppUser, xmppPassword, XMPP_RESOURCE);
                 rooms.clear();
             } else {
-                log().debug("XMPP Manager unable to login: Not connected to XMPP server");
+                LOG.debug("XMPP Manager unable to login: Not connected to XMPP server");
             }
         } catch (Throwable e) {
-            log().fatal("XMPP Manager unable to login: ", e);
+            LOG.error("XMPP Manager unable to login: ", e);
         }
     }
 
@@ -267,6 +272,7 @@ public class XMPPNotificationManager {
 	 */
 
 	private static class NullMessageListener implements MessageListener {
+        @Override
         public void processMessage(Chat chat, Message message) {
         }
 	}
@@ -284,9 +290,9 @@ public class XMPPNotificationManager {
 		try {
 		    ChatManager cm = xmpp.getChatManager();
 			cm.createChat(xmppTo, new NullMessageListener()).sendMessage(xmppMessage);
-			log().debug("XMPP Manager sent message to: " + xmppTo);
+			LOG.debug("XMPP Manager sent message to: {}", xmppTo);
 		} catch (XMPPException e) {
-			log().fatal("XMPP Exception Sending message ", e);
+			LOG.error("XMPP Exception Sending message ", e);
 			return false;
 		}
 
@@ -310,39 +316,30 @@ public class XMPPNotificationManager {
 		if (rooms.containsKey(xmppChatRoom)) {
 			groupChat = rooms.get(xmppChatRoom);
 		} else {
-			log().debug("Adding room: " + xmppChatRoom);
+			LOG.debug("Adding room: {}", xmppChatRoom);
 			groupChat = new MultiUserChat(xmpp, xmppChatRoom);
 			rooms.put(xmppChatRoom, groupChat);
 		}
 
 		if (!groupChat.isJoined()) {
-			log().debug("Joining room: " + xmppChatRoom);
+			LOG.debug("Joining room: {}", xmppChatRoom);
 			try {
 				groupChat.join(xmppUser);
 			} catch (XMPPException e) {
-				log().fatal("XMPP Exception joining chat room ", e);
+				LOG.error("XMPP Exception joining chat room ", e);
 				return false;
 			}
 		}
 
 		try {
 			groupChat.sendMessage(xmppMessage);
-			log().debug("XMPP Manager sent message to: " + xmppChatRoom);
+			LOG.debug("XMPP Manager sent message to: {}", xmppChatRoom);
 		} catch (XMPPException e) {
-			log().fatal("XMPP Exception sending message to Chat room", e);
+			LOG.error("XMPP Exception sending message to Chat room", e);
 			return false;
 		}
 
 		return true;
 
-	}
-	
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(this.getClass());
 	}
 }

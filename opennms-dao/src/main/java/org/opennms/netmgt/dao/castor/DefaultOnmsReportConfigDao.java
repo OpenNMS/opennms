@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.netmgt.config.reporting.StringParm;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.reporting.opennms.Report;
-import org.opennms.netmgt.dao.OnmsReportConfigDao;
+import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 
 public class DefaultOnmsReportConfigDao extends AbstractCastorConfigDao<OpennmsReports, List<Report>>
 implements OnmsReportConfigDao {
@@ -50,6 +50,7 @@ implements OnmsReportConfigDao {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getHtmlStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -59,6 +60,7 @@ implements OnmsReportConfigDao {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getPdfStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -68,6 +70,7 @@ implements OnmsReportConfigDao {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getSvgStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -77,6 +80,7 @@ implements OnmsReportConfigDao {
     }
     
     /** {@inheritDoc} */
+    @Override
     public String getLogo(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -86,6 +90,7 @@ implements OnmsReportConfigDao {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getType(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -106,6 +111,7 @@ implements OnmsReportConfigDao {
     }
     
     /** {@inheritDoc} */
+    @Override
     public Parameters getParameters(String id) {
         
         Parameters parameters = null;
@@ -119,6 +125,7 @@ implements OnmsReportConfigDao {
     }
     
     /** {@inheritDoc} */
+    @Override
     public DateParm[] getDateParms(String id) {
         
         DateParm[] dateParms = null;
@@ -132,6 +139,7 @@ implements OnmsReportConfigDao {
     }
     
     /** {@inheritDoc} */
+    @Override
     public StringParm[] getStringParms(String id) {
         
         StringParm[] stringParms = null;
@@ -145,6 +153,7 @@ implements OnmsReportConfigDao {
     }
     
     /** {@inheritDoc} */
+    @Override
     public IntParm[] getIntParms(String id) {
         
         IntParm[] intParms = null;

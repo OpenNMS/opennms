@@ -52,7 +52,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
@@ -63,6 +62,8 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.RTCHashMap;
 import org.opennms.netmgt.rtc.datablock.RTCNode;
 import org.opennms.netmgt.rtc.datablock.RTCNodeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.xml.sax.SAXException;
@@ -86,11 +87,15 @@ import org.xml.sax.SAXException;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class DataManager extends Object {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
+    
     private class RTCNodeProcessor implements RowCallbackHandler {
 		RTCNodeKey m_currentKey = null;
 
 		Map<String,Set<Integer>> m_categoryNodeIdLists = new HashMap<String,Set<Integer>>();
 
+                @Override
 		public void processRow(ResultSet rs) throws SQLException {
 			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), InetAddressUtils.addr(rs.getString("ipaddr")), rs.getString("servicename"));
 			processKey(key);
@@ -149,18 +154,16 @@ public class DataManager extends Object {
 		private Set<Integer> catConstructNodeIds (RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
-				if (log().isDebugEnabled())
-					log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
+				LOG.debug("Category: {}\t{}", cat.getLabel(), filterRule);
 		
 				Set<Integer> nodeIds = FilterDaoFactory.getInstance().getNodeMap(filterRule).keySet();
 				
-		        if (log().isDebugEnabled())
-		            log().debug("Number of nodes satisfying rule: " + nodeIds.size());
+		        LOG.debug("Number of nodes satisfying rule: {}", nodeIds.size());
 		
 		        return nodeIds;
 		        
 			} catch (FilterParseException e) {
-				log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);
+				LOG.error("Unable to parse filter rule {} ignoring category {}", filterRule, cat.getLabel(), e);
 				return Collections.emptySet();
 			}
 		}
@@ -215,11 +218,9 @@ public class DataManager extends Object {
 		if (regainedTimeTS != null)
 			regainedTime = regainedTimeTS.getTime();
 
-		if (log().isDebugEnabled()) {
-			log().debug("lost time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + lostTimeTS + "/" + lostTime);
+		LOG.debug("lost time for nodeid/ip/svc: {}/{}/{}: {}/{}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), lostTimeTS, lostTime);
 
-			log().debug("regained time for nodeid/ip/svc: " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + ": " + regainedTimeTS + "/" + regainedTime);
-		}
+		LOG.debug("regained time for nodeid/ip/svc: {}/{}/{}: {}/{}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), regainedTimeTS, regainedTime);
 
 		rtcN.addSvcTime(lostTime, regainedTime);
 	}
@@ -236,8 +237,7 @@ public class DataManager extends Object {
 		// Add node to category
 		cat.addNode(rtcN);
 
-		if (log().isDebugEnabled())
-		    log().debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + " added to cat: " + cat.getLabel());
+		LOG.debug("rtcN : {}/{}/{} added to cat: {}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), cat.getLabel());
 	}
 
     /**
@@ -251,13 +251,13 @@ public class DataManager extends Object {
             cFactory = CategoryFactory.getInstance();
 
         } catch (IOException ex) {
-            log().error("Failed to load categories information", ex);
+            LOG.error("Failed to load categories information", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (MarshalException ex) {
-            log().error("Failed to load categories information", ex);
+            LOG.error("Failed to load categories information", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log().error("Failed to load categories information", ex);
+            LOG.error("Failed to load categories information", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -346,11 +346,7 @@ public class DataManager extends Object {
 		return args.toArray();
 	}
 
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(DataManager.class);
-	}
-
-    /**
+	/**
      * Constructor. Parses categories from the categories.xml and populates them
      * with 'RTCNode' objects created from data read from the database (services
      * and outage tables)
@@ -377,8 +373,7 @@ public class DataManager extends Object {
     		throw new RTCException("No categories found in categories.xml");
     	}
 
-    	if (log().isDebugEnabled())
-    		log().debug("Number of categories read: " + m_categories.size());
+	LOG.debug("Number of categories read: {}", m_categories.size());
 
     	// create data holder
     	m_map = new RTCHashMap(30000);
@@ -394,22 +389,22 @@ public class DataManager extends Object {
 		    DataSourceFactory.init();
 		    connFactory = DataSourceFactory.getInstance();
 		} catch (IOException ex) {
-		    log().warn("Failed to load database config", ex);
+		    LOG.warn("Failed to load database config", ex);
 		    throw new UndeclaredThrowableException(ex);
 		} catch (MarshalException ex) {
-		    log().warn("Failed to unmarshall database config", ex);
+		    LOG.warn("Failed to unmarshall database config", ex);
 		    throw new UndeclaredThrowableException(ex);
 		} catch (ValidationException ex) {
-		    log().warn("Failed to unmarshall database config", ex);
+		    LOG.warn("Failed to unmarshall database config", ex);
 		    throw new UndeclaredThrowableException(ex);
         } catch (ClassNotFoundException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (SQLException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (PropertyVetoException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         }
 		return connFactory;
@@ -436,11 +431,9 @@ public class DataManager extends Object {
         // Include only service status 'A' and where service is not SNMP
         //
         if (svcStatus != 'A') {
-            if (log().isInfoEnabled())
-                log().info("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + " IGNORED because status is not active: " + svcStatus);
+            LOG.info("nodeGainedSvc: {}/{}/{} IGNORED because status is not active: {}", nodeid, ip, svcName, svcStatus);
         } else {
-            if (log().isDebugEnabled())
-                log().debug("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + "/" + svcStatus);
+            LOG.debug("nodeGainedSvc: {}/{}/{}/{}", nodeid, ip, svcName, svcStatus);
 
             // I ran into problems with adding new services, so I just ripped
             // all that out and added
@@ -458,19 +451,17 @@ public class DataManager extends Object {
             // 
             // This is mainly useful when SNMP is discovered on a node.
 
-            if (log().isDebugEnabled()) {
-                log().debug("rtcN : Rescanning services on : " + ip);
-            }
+            LOG.debug("rtcN : Rescanning services on : {}", ip);
             try {
                 rtcNodeRescan(nodeid);
             } catch (FilterParseException ex) {
-                log().warn("Failed to unmarshall database config", ex);
+                LOG.warn("Failed to unmarshall database config", ex);
                 throw new UndeclaredThrowableException(ex);
             } catch (SQLException ex) {
-                log().warn("Failed to get database connection", ex);
+                LOG.warn("Failed to get database connection", ex);
                 throw new UndeclaredThrowableException(ex);
             } catch (RTCException ex) {
-                log().warn("Failed to get database connection", ex);
+                LOG.warn("Failed to get database connection", ex);
                 throw new UndeclaredThrowableException(ex);
             }
 
@@ -496,7 +487,7 @@ public class DataManager extends Object {
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            log().info("Received a nodeLostService event for an unknown/irrelevant node: " + key.toString());
+            LOG.info("Received a nodeLostService event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 
@@ -582,7 +573,7 @@ public class DataManager extends Object {
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            log().info("Received a nodeRegainedService event for an unknown/irrelevant node: " + key.toString());
+            LOG.info("Received a nodeRegainedService event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 
@@ -607,7 +598,7 @@ public class DataManager extends Object {
         // lookup the node
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
-            log().warn("Received a " + EventConstants.SERVICE_DELETED_EVENT_UEI + " event for an unknown node: " + key.toString());
+            LOG.warn("Received a {} event for an unknown node: {}", EventConstants.SERVICE_DELETED_EVENT_UEI, key.toString());
 
             return;
         }
@@ -633,7 +624,7 @@ public class DataManager extends Object {
                 // remove from the category if it is the only service left.
                 if (m_map.getServiceCount(nodeid, catlabel) == 1) {
                     catNodes.remove(nIndex);
-                    log().info("Removing node from category: " + catlabel);
+                    LOG.info("Removing node from category: {}", catlabel);
                 }
 
                 // let the node know that this category is out
@@ -656,13 +647,13 @@ public class DataManager extends Object {
         try {
         	rtcNodeRescan(nodeid);
         } catch (FilterParseException ex) {
-            log().warn("Failed to unmarshall database config", ex);
+            LOG.warn("Failed to unmarshall database config", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (SQLException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (RTCException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -678,13 +669,13 @@ public class DataManager extends Object {
         try {
         	rtcNodeRescan(nodeid);
         } catch (FilterParseException ex) {
-            log().warn("Failed to unmarshall database config", ex);
+            LOG.warn("Failed to unmarshall database config", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (SQLException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (RTCException ex) {
-            log().warn("Failed to get database connection", ex);
+            LOG.warn("Failed to get database connection", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }

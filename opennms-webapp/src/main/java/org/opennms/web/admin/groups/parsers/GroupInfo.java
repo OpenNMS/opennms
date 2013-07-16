@@ -221,6 +221,7 @@ public class GroupInfo {
      *
      * @return a string representation
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

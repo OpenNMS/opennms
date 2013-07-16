@@ -87,6 +87,7 @@ public abstract class SnmpV2Error extends Object implements SnmpSyntax, Cloneabl
      * 
      * @return The ASN.1 type identifier
      */
+    @Override
     public abstract byte typeId();
 
     /**
@@ -103,6 +104,7 @@ public abstract class SnmpV2Error extends Object implements SnmpSyntax, Cloneabl
      * @return The index of the byte immedantly after the last encoded byte.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildHeader(buf, offset, typeId(), 0);
     }
@@ -121,6 +123,7 @@ public abstract class SnmpV2Error extends Object implements SnmpSyntax, Cloneabl
      * 
      * @return The index of the byte immedantly after the last encoded byte.
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseHeader(buf, offset);
 
@@ -140,6 +143,7 @@ public abstract class SnmpV2Error extends Object implements SnmpSyntax, Cloneabl
      * 
      * @return A newly created object that is a duplicate of self.
      */
+    @Override
     public abstract SnmpSyntax duplicate();
 
     /**
@@ -150,5 +154,6 @@ public abstract class SnmpV2Error extends Object implements SnmpSyntax, Cloneabl
      * @return A newly created object that is a duplicate of self
      * 
      */
+    @Override
     public abstract Object clone();
 }

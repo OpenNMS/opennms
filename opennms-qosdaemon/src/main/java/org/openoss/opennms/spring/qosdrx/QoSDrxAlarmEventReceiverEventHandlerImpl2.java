@@ -41,11 +41,10 @@ import javax.oss.fm.monitor.NotifyNewAlarmEvent;
 import javax.oss.util.IRPEvent;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -54,6 +53,8 @@ import org.openoss.opennms.spring.dao.OssDao;
 import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
 import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
 import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -63,15 +64,9 @@ import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
  * @version $Id: $
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventReceiverEventHandler{
+    private static final Logger LOG = LoggerFactory.getLogger(QoSDrxAlarmEventReceiverEventHandlerImpl2.class);
 
 	private boolean initialised = false; // true if init() has initialised class
-
-	/**
-	 *  Method to get the QoSDrx's logger from OpenNMS
-	 */
-	private static ThreadCategory getLog() {
-		return ThreadCategory.getInstance(QoSDrxAlarmEventReceiverEventHandlerImpl2.class);
-	}
 
 	// ************************
 	// Spring DAO setters
@@ -133,7 +128,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to obtain opennms asset information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.AssetRecordDao
+	 * @see org.opennms.netmgt.dao.api.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
 	private AssetRecordDao _assetRecordDao;
@@ -142,7 +137,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 *
-	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param ar a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -150,7 +145,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to obtain opennms node information for inclusion in alarms
-	 * @see org.opennms.netmgt.dao.NodeDao 
+	 * @see org.opennms.netmgt.dao.api.NodeDao 
 	 */
 	@SuppressWarnings("unused")
 	private NodeDao _nodeDao;
@@ -158,7 +153,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 *
-	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodedao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -166,7 +161,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used to search and update opennms alarm list
-	 * @see org.opennms.netmgt.dao.AlarmDao
+	 * @see org.opennms.netmgt.dao.api.AlarmDao
 	 */
 	@SuppressWarnings("unused")
 	private AlarmDao _alarmDao;
@@ -174,7 +169,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in alarmDao
 	 *
-	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
 	 */
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
@@ -188,7 +183,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 *
-	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
 	 */
 	public  void setDistPollerDao(DistPollerDao _distPollerDao) {
 		 distPollerDao =  _distPollerDao;
@@ -226,6 +221,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used by receiver to initialise this class
 	 * Must be called before any other methods to ensure that ossDao is initialised
 	 */
+        @Override
 	synchronized public void init(){
 		if (initialised) return;
 		try {
@@ -255,14 +251,14 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		
@@ -273,18 +269,16 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 			OnmsAlarm alarm=null;
 			String ossPrimaryKey=nnae.getAlarmKey().getAlarmPrimaryKey();
 			String applicationDN=nnae.getAlarmKey().getApplicationDN();
-			if (log.isDebugEnabled()) 
-				log.debug(logheader+": Received an onNotifyNewAlarmEvent() - AlarmPrimaryKey: "
-						+ ossPrimaryKey +" ApplictionDN: " + applicationDN +" eventtime: " + nnae.getEventTime());
-			if (log.isDebugEnabled())log.debug(logheader+":Using this OssDao (toString):"+ossDao.toString());
+			LOG.debug("{} Received an onNotifyNewAlarmEvent() - AlarmPrimaryKey: {} ApplictionDN: {} eventtime: {}", logheader, ossPrimaryKey, applicationDN, nnae.getEventTime());
+			LOG.debug("{} Using this OssDao (toString):{}", logheader, ossDao.toString());
 			if ((applicationDN==null)||(applicationDN.equals("")) || (ossPrimaryKey==null)||(ossPrimaryKey.equals(""))) {
-				log.error(logheader+" ApplicatioDN or PrimaryKey not set");
+				LOG.error("{} ApplicatioDN or PrimaryKey not set", logheader);
 			} else {
-				if (log.isDebugEnabled()) log.debug(logheader+": Creating new alarm");
+				LOG.debug("{} Creating new alarm", logheader);
 
 //				alarm = ossDao.getCurrentAlarmForUniqueKey(applicationDN, ossPrimaryKey);
-//				if (alarm!=null) { // already an alarm with this unique id - log error
-//				log.error(logheader+" Alarm Already exists with this Unique ID");
+//				if (alarm!=null) { // already an alarm with this unique id - LOG.error
+//				LOG.error("{} Alarm Already exists with this Unique ID", logheader);
 //				} else {
 				alarm=new OnmsAlarm();
 				
@@ -304,7 +298,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				try{
 					onmsseverity= OnmsAlarmOssjMapper.ossjSeveritytoOnmsSeverity(nnae.getPerceivedSeverity());
 				} catch (IllegalArgumentException iae){
-					log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
+					LOG.error("{} problem setting severity used default:'WARNING'. Exception:", logheader, iae);
 					onmsseverity=OnmsSeverity.WARNING;
 				}
 				alarm.setSeverity(onmsseverity); 
@@ -329,43 +323,38 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setNode(node); // 
 
 				if (almUpdateBehaviour==null) {
-					log.error("RX:"+callingAer.getName()+": This receiver's alarmUpdateBehaviour is not set: defaulting to update nodeID:1");
+					LOG.error("RX:{}: This receiver's alarmUpdateBehaviour is not set: defaulting to update nodeID:1", callingAer.getName());
 				}
 				else if (callingAer.getName()==null) {
-					log.error("RX:"+callingAer.getName()+": This receiver has no name: default alarms will update nodeID:1");
+					LOG.error("RX:{}: This receiver has no name: default alarms will update nodeID:1", callingAer.getName());
 				}
 				else {
-					if (log.isDebugEnabled()) 
-						log.debug(logheader+" alarmUpdateBehaviour:"+almUpdateBehaviour+" "+alarmUpdateBehaviour);
+					LOG.debug("{} alarmUpdateBehaviour:{} {}", logheader, almUpdateBehaviour, alarmUpdateBehaviour);
 
 					if (almUpdateBehaviour.equals(SPECIFY_OUTSTATION)) {
 						// this will look for first match of node label to callingAer.getName()
 						// and set node id to this value.
 
-						if (log.isDebugEnabled()) 
-							log.debug(logheader+" SPECIFY_OUTSTATION looking for node with nodelabel:"+callingAer.getName());
+						LOG.debug("{} SPECIFY_OUTSTATION looking for node with nodelabel:{}", logheader, callingAer.getName());
 						try {
 							// TODO temp remove ?
 							try {
 								node =ossDao.findNodeByLabel(callingAer.getName());
 							} catch (Throwable ex){
-								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node "+ex);
+								LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node ", logheader, ex);
 							}
 
 							if (node!=null) {
-								if (log.isDebugEnabled()) 
-									log.debug(logheader+" alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):"
-											+"NODE FOUND for this RX Name:"+callingAer.getName()+" setting node id to NodeLabel:"+node.getLabel()+" NodeID:"+node.getId());
+								LOG.debug("{} alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):NODE FOUND for this RX Name:{} setting node id to NodeLabel:{} NodeID:{}", logheader, callingAer.getName(), node.getLabel(), node.getId());
 								alarm.setNode(node); // maps into FIRST instance of node with the same managedObjectInstance and managedObjectType
 							} else {
-								log.error(logheader+" alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):"
-										+"NODE NOT FOUND for this RX Name:"+callingAer.getName()+" setting node id to default NodeID: 1");
+								LOG.error("{} alarmUpdateBehaviour.equals(SPECIFY_OUTSTATION):NODE NOT FOUND for this RX Name:{} setting node id to default NodeID: 1", logheader, callingAer.getName());
 								node=new OnmsNode() ; // TODO remove ossDao.makeExtendedOnmsNode(); 
 								node.setId(new Integer(1));  // node id cannot be null
 								alarm.setNode(node); // 
 							}
 						} catch (Throwable ex){
-							log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
+							LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1", logheader, ex);
 						}
 
 					} 
@@ -375,29 +364,25 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						String managedObjectType=nnae.getManagedObjectClass();
 						String managedObjectInstance=nnae.getManagedObjectInstance();
 
-						if (log.isDebugEnabled()) 
-							log.debug(logheader+" USE_TYPE_INSTANCE looking for node with managedObjectType:"+managedObjectType+" managedObjectInstance:"+managedObjectInstance);
+						LOG.debug("{} USE_TYPE_INSTANCE looking for node with managedObjectType:{} managedObjectInstance:{}", logheader, managedObjectType, managedObjectInstance);
 						try {
 							node =ossDao.findNodeByInstanceAndType(managedObjectInstance, managedObjectType);
 
 							if (node!=null) {
-								if (log.isDebugEnabled()) 
-									log.debug(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):"
-											+"NODE FOUND for this RX Name:"+callingAer.getName()+" setting node id to NodeLabel:"+node.getLabel()+" NodeID:"+node.getId());
+								LOG.debug("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):NODE FOUND for this RX Name:{} setting node id to NodeLabel:{} NodeID:{}", logheader, callingAer.getName(), node.getLabel(), node.getId());
 								alarm.setNode(node); // maps into FIRST instance of node with the same managedObjectInstance and managedObjectType
 							} else {
-								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):"
-										+"NODE NOT FOUND for this managedObjectType:"+managedObjectType+" managedObjectInstance:"+managedObjectInstance+" setting node id to default NodeID: 1");
+								LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE):NODE NOT FOUND for this managedObjectType:{} managedObjectInstance:{} setting node id to default NodeID: 1", logheader, managedObjectType, managedObjectInstance);
 								node=new OnmsNode() ; // TODO remove ossDao.makeExtendedOnmsNode();
 								node.setId(new Integer(1));  // node id cannot be null
 								alarm.setNode(node); // 
 							}
 						} catch (Throwable ex){
-							log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
+							LOG.error("{} alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1", logheader, ex);
 						}
 					}		
 					else {
-						log.error(logheader+" Invalid value for alarmUpdateBehaviour:"+almUpdateBehaviour+" "+alarmUpdateBehaviour+" defaulting to update nodeID:1");
+						LOG.error("{} Invalid value for alarmUpdateBehaviour:{} {} defaulting to update nodeID:1", logheader, almUpdateBehaviour, alarmUpdateBehaviour);
 					}
 				}
 
@@ -435,34 +420,30 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setDetails(m_details);
 
 				try {
-					if (log.isDebugEnabled()) log.debug(logheader+": Creating Alarm: " );
+					LOG.debug("{} Creating Alarm: ", logheader);
 					OnmsAlarm updatedAlarm = ossDao.addCurrentAlarmForUniqueKey(alarm);
-					if (log.isDebugEnabled()) {
-						log.debug(logheader+": Created alarm:"
-								+ OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
-					}
+					LOG.debug("{} Created alarm: {}", logheader, OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
 				}
 				catch ( Exception ex ) {
-					log.error(logheader+": problem creating new alarm AlarmPrimaryKey: "
-							+ ossPrimaryKey +" ApplictionDN: " + applicationDN+": "+ ex);
+					LOG.error("{} problem creating new alarm AlarmPrimaryKey: {} ApplictionDN: {}", logheader, ossPrimaryKey, applicationDN, ex);
 				}
 			}
 			//TODO remove			}
 		}
 		catch(Throwable e){
-			log.error(logheader+" Error : ", e);
+			LOG.error("{} Error", logheader, e);
 		}
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
-		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent(): ";
+		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent():";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		// BUSINESS LOGIC
@@ -472,23 +453,18 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 			OnmsAlarm alarm=null;
 			String ossPrimaryKey=nclae.getAlarmKey().getAlarmPrimaryKey();
 			String applicationDN=nclae.getAlarmKey().getApplicationDN();
-			if (log.isDebugEnabled()) 
-				log.debug(logheader+": Received an onNotifyClearedAlarmEvent() - AlarmPrimaryKey: "
-						+ ossPrimaryKey +" ApplictionDN: " + applicationDN +" eventtime: " + nclae.getEventTime());
+			LOG.debug("{} Received an onNotifyClearedAlarmEvent() - AlarmPrimaryKey: {} ApplictionDN: {} eventtime: {}", logheader, ossPrimaryKey, applicationDN, nclae.getEventTime());
 			if ((applicationDN==null)||(applicationDN.equals("")) 
 					|| (ossPrimaryKey==null)||(ossPrimaryKey.equals(""))) {
-				log.error(logheader+" ApplicatioDN or PrimaryKey not set");
+				LOG.error("{} ApplicatioDN or PrimaryKey not set", logheader);
 			} else {
-				if (log.isDebugEnabled()) 
-					log.debug(logheader+": trying to find existing alarm using getCurrentAlarmForUniqueKey");
+				LOG.debug("{} trying to find existing alarm using getCurrentAlarmForUniqueKey", logheader);
 
 				alarm = ossDao.getCurrentAlarmForUniqueKey(applicationDN, ossPrimaryKey);
-				if (alarm==null) { // no alarm with this unique id - log error
-					log.info(logheader+"WARNING Alarm does not exist with this Unique ID:- AlarmPrimaryKey: "
-							+ ossPrimaryKey +" ApplictionDN: " + applicationDN);
+				if (alarm==null) { // no alarm with this unique id - LOG.error
+					LOG.info("{} WARNING Alarm does not exist with this Unique ID:- AlarmPrimaryKey: {} ApplictionDN: {}", logheader, ossPrimaryKey, applicationDN);
 				} else {
-					if (log.isDebugEnabled()) 
-						log.debug(logheader+": found alarm alarmID:"+alarm.getId());
+					LOG.debug("{} found alarm alarmID:{}", logheader, alarm.getId());
 
 					//alarm.setUei(arg0);
 					//alarm.setTTicketState(arg0);
@@ -525,25 +501,19 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					alarm.setAlarmAckTime(new Date());
 
 					try {
-						if (log.isDebugEnabled()) {
-							log.debug(logheader+": Alarm before update:"+ OssDaoOpenNMSImpl.alarmToString(alarm));
-						}
-						if (log.isDebugEnabled()) log.debug(logheader+": Updating Alarm using ossDao.updateCurrentAlarmForUniqueKey" );
+						LOG.debug("{} Alarm before update:{}", logheader, OssDaoOpenNMSImpl.alarmToString(alarm));
+						LOG.debug("{} Updating Alarm using ossDao.updateCurrentAlarmForUniqueKey", logheader);
 						OnmsAlarm updatedAlarm = ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						if (log.isDebugEnabled()) {
-							log.debug(logheader+": Updated alarm:"
-									+ OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
-						}
+						LOG.debug("{} Updated alarm:{}", logheader, OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
 					}
 					catch ( Exception ex ) {
-						log.error(logheader+": problem clearing new alarm AlarmPrimaryKey: "
-								+ ossPrimaryKey +" ApplictionDN: " + applicationDN+": "+ ex);
+						LOG.error("{} problem clearing new alarm AlarmPrimaryKey: {} ApplictionDN: {}", logheader, ossPrimaryKey, applicationDN, ex);
 					}
 				}
 			}
 		}
 		catch(Throwable e){
-			log.error(logheader+" Error : ", e);
+			LOG.error("{} Error : ", logheader, e);
 		}
 	}
 
@@ -552,14 +522,14 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAckStateChangedEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
@@ -568,8 +538,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 		try{
 
-			if (log.isDebugEnabled()) 
-				log.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+			LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Received an NotifyAckStateChangedEvent - AlarmPrimaryKey: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 			OnmsAlarm alarm=null;
 			try {
 				String ossPrimaryKey=nasce.getAlarmKey().getAlarmPrimaryKey();
@@ -578,10 +547,10 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setId(null);  // must be done to do update
 			}
 			catch (IllegalStateException ise) {
-				log.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: nasce alarm key set in illegal state"+ ise);
+				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: nasce alarm key set in illegal state", ise);
 			}
 			catch (java.lang.IllegalArgumentException iae){
-				log.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): "+ iae);
+				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): {}", iae);
 			}
 
 			if(nasce.getAlarmAckState() == AlarmAckState.ACKNOWLEDGED) {
@@ -590,14 +559,14 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(nasce.getAckTime());
 						alarm.setAlarmAckUser(nasce.getAckUserId());
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						if (log.isDebugEnabled()) log.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
-						log.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state"+ ex);
+						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
 					}
 				}
 				else {  //if opennms does not have an alarm with this id to update
-					if (log.isDebugEnabled()) log.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be acknowledged - not in database: " + nasce.getAlarmKey().getAlarmPrimaryKey());
+					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be acknowledged - not in database: {}", nasce.getAlarmKey().getAlarmPrimaryKey());
 				}
 			} else { // unacknowledge alarm
 				if (alarm != null ) { // if opennms has an alarm with this id to update
@@ -605,19 +574,19 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						alarm.setAlarmAckTime(null);  // may throw illegal as putting in null
 						alarm.setAlarmAckUser(null);
 						ossDao.updateCurrentAlarmForUniqueKey(alarm);
-						if (log.isDebugEnabled()) log.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
+						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: {} New Ack State: {}", nasce.getAlarmKey().getAlarmPrimaryKey(), nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
-						log.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state"+ ex);
+						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
 					}
 				}
 				else {  //if opennms does not have an alarm with this id to update
-					if (log.isDebugEnabled()) log.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be Unacknowledged - not in database: " + nasce.getAlarmKey().getAlarmPrimaryKey());
+					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be Unacknowledged - not in database: {}", nasce.getAlarmKey().getAlarmPrimaryKey());
 				}
 			}
 		}
 		catch(Throwable e){
-			log.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent() Error : ", e);
+			LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent() Error : ", e);
 		}
 
 		 */
@@ -625,70 +594,70 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmListRebuiltEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage(): ";
 
-		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
+		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
 		if (!initialised ){
-			log.error(logheader+"event handler not initialised. init() must be called by receiver before handling any events");
+			LOG.error("{} event handler not initialised. init() must be called by receiver before handling any events", logheader);
 			return;
 		}
 		//TODO ADD IN BUSINESS LOGIC

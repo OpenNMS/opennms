@@ -47,6 +47,7 @@ public interface KscAddGraphView<T> extends IsWidget {
     String getSearchText();
     void setPresenter(Presenter<T> presenter);
     void setDataList(List<T> dataList);
+    @Override
     Widget asWidget();
 
     String getTitle();

@@ -31,8 +31,9 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements NotificationStragey pattern used to send NULL notifications The
@@ -43,6 +44,9 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * @version $Id: $
  */
 public class NullNotificationStrategy implements NotificationStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NullNotificationStrategy.class);
+    
     /**
      * <p>Constructor for NullNotificationStrategy.</p>
      */
@@ -50,13 +54,10 @@ public class NullNotificationStrategy implements NotificationStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
-        log().debug("In the NullNotification class.");
+        LOG.debug("In the NullNotification class.");
         return 0;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

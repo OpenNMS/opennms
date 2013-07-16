@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -57,6 +56,7 @@ public class Dot1dBasePortTable extends SnmpTable<Dot1dBasePortTableEntry>
     }
     
     /** {@inheritDoc} */
+        @Override
     protected Dot1dBasePortTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new Dot1dBasePortTableEntry();
     }

@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
 /**
@@ -36,33 +36,38 @@ import org.opennms.features.vaadin.api.Logger;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SimpleLogger implements Logger {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SimpleLogger.class);
 
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */
+    @Override
     public void error(String message) {
-        LogUtils.errorf(this, message);
+        LOG.error(message);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#warn(java.lang.String)
      */
+    @Override
     public void warn(String message) {
-        LogUtils.warnf(this, message);
+        LOG.warn(message);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#info(java.lang.String)
      */
+    @Override
     public void info(String message) {
-        LogUtils.infof(this, message);
+        LOG.info(message);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#debug(java.lang.String)
      */
+    @Override
     public void debug(String message) {
-        LogUtils.debugf(this, message);
+        LOG.debug(message);
     }
 
 }

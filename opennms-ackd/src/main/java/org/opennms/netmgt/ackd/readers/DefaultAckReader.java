@@ -32,9 +32,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -68,7 +69,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultAckReader implements AckReader, InitializingBean {
-
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultAckReader.class);
     private volatile String m_name;
 
     private volatile Future<?> m_future;
@@ -100,26 +101,27 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig) throws IllegalStateException {
         if (reloadConfig) {
             //FIXME:The reload of JavaMailConfiguration is made here because the DAO is there. Perhaps that should be changed.
-            log().info("start: reloading ack processor configuration...");
+            LOG.info("start: reloading ack processor configuration...");
             m_ackProcessor.reloadConfigs();
-            log().info("start: ack processor configuration reloaded.");
+            LOG.info("start: ack processor configuration reloaded.");
         }
 
         if (AckReaderState.STOPPED.equals(getState())) {
             this.setState(AckReaderState.START_PENDING);
             this.setSchedule(executor, schedule, false);
-            log().info("start: Starting reader...");
+            LOG.info("start: Starting reader...");
 
             this.scheduleReads(executor);
 
             this.setState(AckReaderState.STARTED);
-            log().info("start: Reader started.");
+            LOG.info("start: Reader started.");
         } else {
             IllegalStateException e = new IllegalStateException("Reader is not in a stopped state.  Reader state is: "+getState());
-            log().error("start: "+e, e);
+            LOG.error("start error", e);
             throw e;
         }
     }
@@ -129,9 +131,10 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public synchronized void pause() throws IllegalStateException {
         if (AckReaderState.STARTED.equals(getState()) || AckReaderState.RESUMED.equals(getState())) {
-            log().info("pause: lock acquired; pausing reader...");
+            LOG.info("pause: lock acquired; pausing reader...");
             setState(AckReaderState.PAUSE_PENDING);
 
             if (m_future != null) {
@@ -140,27 +143,28 @@ public class DefaultAckReader implements AckReader, InitializingBean {
             }
 
             setState(AckReaderState.PAUSED);
-            log().info("pause: Reader paused.");
+            LOG.info("pause: Reader paused.");
         } else {
             IllegalStateException e = new IllegalStateException("Reader is not in a running state (STARTED or RESUMED).  Reader state is: "+getState());
-            log().error("pause: "+e, e);
+            LOG.error("pause error", e);
             throw e;
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void resume(final ScheduledThreadPoolExecutor executor) throws IllegalStateException {
         if (AckReaderState.PAUSED.equals(getState())) {
             setState(AckReaderState.RESUME_PENDING);
-            log().info("resume: lock acquired; resuming reader...");
+            LOG.info("resume: lock acquired; resuming reader...");
 
             scheduleReads(executor);
 
             setState(AckReaderState.RESUMED);
-            log().info("resume: reader resumed.");
+            LOG.info("resume: reader resumed.");
         } else {
             IllegalStateException e = new IllegalStateException("Reader is not in a paused state, cannot resume.  Reader state is: "+getState());
-            log().error("resume: "+e, e);
+            LOG.error("resume error", e);
             throw e;
         }
     }
@@ -170,10 +174,11 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public synchronized void stop() throws IllegalStateException {
         if (!AckReaderState.STOPPED.equals(getState())) {
             setState(AckReaderState.STOP_PENDING);
-            log().info("stop: lock acquired; stopping reader...");
+            LOG.info("stop: lock acquired; stopping reader...");
 
             if (m_future != null) {
                 m_future.cancel(false);
@@ -181,37 +186,29 @@ public class DefaultAckReader implements AckReader, InitializingBean {
             }
 
             setState(AckReaderState.STOPPED);
-            log().info("stop: Reader stopped.");
+            LOG.info("stop: Reader stopped.");
         } else {
             IllegalStateException e = new IllegalStateException("Reader is already stopped.");
-            log().error("stop: "+e, e);
+            LOG.error("stop error", e);
             throw e;
         }
     }
 
     private synchronized void scheduleReads(final ScheduledThreadPoolExecutor executor) {
-        log().debug("scheduleReads: acquired lock, creating schedule...");
+        LOG.debug("scheduleReads: acquired lock, creating schedule...");
 
         executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
         executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
         m_future = executor.scheduleWithFixedDelay(this.getAckProcessor(), getSchedule().getInitialDelay(), 
                 getSchedule().getInterval(), getSchedule().getUnit());
-        log().debug("scheduleReads: exited lock, schedule updated.");
-        log().debug("scheduleReads: schedule is:" +
-                " attempts remaining: "+getSchedule().getAttemptsRemaining()+
-                "; initial delay: "+getSchedule().getInitialDelay()+
-                "; interval: "+getSchedule().getInterval()+
-                "; unit: "+getSchedule().getUnit());
+        LOG.debug("scheduleReads: exited lock, schedule updated.");
+        LOG.debug("scheduleReads: schedule is: attempts remaining: {}; initial delay: {}; interval: {}; unit: {}",
+                  getSchedule().getAttemptsRemaining(),
+                  getSchedule().getInitialDelay(),
+                  getSchedule().getInterval(),
+                  getSchedule().getUnit());
 
-        log().debug("scheduleReads: executor details:"+
-                " active count: "+executor.getActiveCount()+
-                "; completed task count: "+executor.getCompletedTaskCount()+
-                "; task count: "+executor.getTaskCount()+
-                "; queue size: "+executor.getQueue().size());
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
+        LOG.debug("scheduleReads: executor details: active count: {}; completed task count: {}; task count: {}; queue size: {}", executor.getActiveCount(), executor.getCompletedTaskCount(), executor.getTaskCount(), executor.getQueue().size());
     }
 
     /** {@inheritDoc} */
@@ -221,6 +218,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setAckProcessor(AckProcessor ackProcessor) {
         m_ackProcessor = ackProcessor;
     }
@@ -230,6 +228,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.ackd.readers.AckProcessor} object.
      */
+    @Override
     public AckProcessor getAckProcessor() {
         return m_ackProcessor;
     }
@@ -237,7 +236,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     /**
      * <p>setAckdConfigDao</p>
      *
-     * @param ackdConfigDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param ackdConfigDao a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public void setAckdConfigDao(AckdConfigurationDao ackdConfigDao) {
         m_ackdConfigDao = ackdConfigDao;
@@ -246,7 +245,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     /**
      * <p>getAckdConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public AckdConfigurationDao getAckdConfigDao() {
         return m_ackdConfigDao;
@@ -287,6 +286,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a AckReaderState object.
      */
+    @Override
     public AckReaderState getState() {
         return m_state;
     }
@@ -305,11 +305,13 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void setName(String name) {
         m_name = name;
     }

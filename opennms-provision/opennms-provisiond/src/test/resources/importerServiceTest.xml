@@ -20,6 +20,10 @@
   <bean id="cronExpression" class="java.lang.String">
     <constructor-arg><value>0 15 10 * * ? 2020</value></constructor-arg>
   </bean>
+
+  <bean id="scanExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
+    <constructor-arg ref="scanThreads" />
+  </bean>
   
   <bean class="org.opennms.netmgt.provision.service.MockServiceDetector" />
 

@@ -39,7 +39,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -63,6 +64,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 @Distributable
 final public class TcpMonitor extends AbstractServiceMonitor {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(TcpMonitor.class);
 
     /**
      * Default port.
@@ -95,6 +99,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
      * to Provided that the interface's response is valid we set the service
      * status to SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -126,8 +131,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log().isDebugEnabled())
-            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
+	LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         //
@@ -142,7 +146,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("TcpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("TcpMonitor: connected to host: {} on port: {}", ipv4Addr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -163,24 +167,30 @@ final public class TcpMonitor extends AbstractServiceMonitor {
 
                 if (response == null)
                     continue;
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: banner = " + response);
-                    log().debug("poll: responseTime= " + responseTime + "ms");
-                }
+                LOG.debug("poll: banner = {}", response);
+                LOG.debug("poll: responseTime= {}ms", responseTime);
 
                 if (response.indexOf(strBannerMatch) > -1) {
                     serviceStatus = PollStatus.available(responseTime);
                 } else
                     serviceStatus = PollStatus.unavailable("Banner: '"+response+"' does not contain match string '"+strBannerMatch+"'");
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
+            	String reason = "No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+            	String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+            	String reason = "Connection exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+            	String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -188,8 +198,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log().isDebugEnabled())
-                        log().debug("poll: Error closing socket.", e);
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

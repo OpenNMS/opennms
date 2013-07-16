@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
@@ -31,8 +32,9 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of Executor strategy that instantiates a Java class.
@@ -44,32 +46,32 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * @version $Id: $
  */
 public class ClassExecutor implements ExecutorStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ClassExecutor.class);
+    
     /**
      * {@inheritDoc}
      *
      * This method calls the send method of the specified class in
      */
+    @Override
     public int execute(String className, List<Argument> arguments) {
-        log().debug("Going for the class instance: " + className);
+        LOG.debug("Going for the class instance: {}", className);
         NotificationStrategy ns;
         try {
             ns = (NotificationStrategy) Class.forName(className).newInstance();
-            log().debug(className + " class created: " + ns.getClass());
+            LOG.debug("{} class created: {}", className, ns.getClass());
         } catch (Throwable e) {
-            log().error("Execption creating notification strategy class: " + className, e);
+            LOG.error("Execption creating notification strategy class: {}", className, e);
             return 1;
         }
 
         try {
             return ns.send(arguments);
         } catch (Throwable t) {
-            log().error("Throwable received while sending message: " + t, t);
+            LOG.error("Throwable received while sending message", t);
             return 1;
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.web.alarm.WebAlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -62,7 +62,7 @@ public class AlarmSeverityChangeController extends AbstractController implements
     /** Constant <code>CLEAR_ACTION="2"</code> */
     public final static String CLEAR_ACTION = "2";
 
-    private WebAlarmRepository m_webAlarmRepository;
+    private AlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
     
@@ -78,9 +78,9 @@ public class AlarmSeverityChangeController extends AbstractController implements
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository} object.
      */
-    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
 
@@ -102,6 +102,7 @@ public class AlarmSeverityChangeController extends AbstractController implements
      * Adjust the severity of the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // required parameter
         String[] alarmIdStrings = request.getParameterValues("alarm");

@@ -38,6 +38,8 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -47,6 +49,8 @@ import org.opennms.netmgt.utils.NodeLabel;
  * @version $Id: $
  */
 public class AliasedResource extends SnmpCollectionResource {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AliasedResource.class);
     
     private final IfInfo m_ifInfo;
     private final String m_ifAliasComment;
@@ -104,6 +108,7 @@ public class AliasedResource extends SnmpCollectionResource {
     }
  
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(final RrdRepository repository) {
         File domainDir = new File(repository.getRrdBaseDir(), getDomain());
         File aliasDir = new File(domainDir, getAliasDir());
@@ -115,6 +120,7 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getDomain()+'/'+getAliasDir()+" ["+m_ifInfo+']';
     }
@@ -124,6 +130,7 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() {
         boolean outOfDate = getIfInfo().currentAliasIsOutOfDate(m_ifAlias);
         if(outOfDate) {
@@ -140,13 +147,12 @@ public class AliasedResource extends SnmpCollectionResource {
     public boolean isScheduledForCollection() {
         return getIfInfo().isScheduledForCollection();
     }
-
+    
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(final ServiceParameters serviceParameters) {
         boolean shdPrsist = (serviceParameters.aliasesEnabled() && getAliasDir() != null && !getAliasDir().equals("")) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
-        if (log().isDebugEnabled()) {
-            log().debug("shouldPersist = " + shdPrsist);
-        }
+        LOG.debug("shouldPersist = {}", shdPrsist);
         return shdPrsist;
     }
 
@@ -155,6 +161,7 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a int.
      */
+    @Override
     public int getType() {
         return getIfInfo().getType();
     }
@@ -177,6 +184,7 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<AttributeGroup> getGroups() {
     	return getIfInfo().getGroups();
     }
@@ -186,6 +194,7 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return "if"; //AliasedResources are implicitly interface type data, at least as far as I (Craig Miskell) understand.  If anyone is sure, please adjust this comment
     }
@@ -195,10 +204,12 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return null; //For node and interface type resources, use the default instance
     }
 
+    @Override
     public String getParent() {
         return null; //For node and interface type resources, use the default parent
     }
@@ -208,10 +219,12 @@ public class AliasedResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return getDomain() + '/' + getAliasDir();
     }
 
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

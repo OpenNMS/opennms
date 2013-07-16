@@ -68,6 +68,7 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     private static ResponseValidator<DhcpResponse> responseTimeGreaterThan(final long num) {
         return new ResponseValidator<DhcpResponse>(){
 
+            @Override
             public boolean validate(DhcpResponse response) {
                 return response.validate(num);
             }

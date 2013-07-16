@@ -39,12 +39,13 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.users.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class holds all the data and logic for sending out a notification Each
@@ -60,6 +61,9 @@ import org.opennms.netmgt.config.users.User;
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  */
 public class NotificationTask extends Thread {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationTask.class);
+    
     /**
      * The User object the notification needs to go out to
      */
@@ -119,6 +123,7 @@ public class NotificationTask extends Thread {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer("Send ");
 
@@ -218,12 +223,13 @@ public class NotificationTask extends Thread {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         boolean outstanding = false;
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
         } catch (Throwable e) {
-            log().error("Unable to get response status on notice #" + m_notifyId, e);
+            LOG.error("Unable to get response status on notice #{}", m_notifyId, e);
         }
 
         // check to see if someone has responded, if so remove all the brothers
@@ -241,12 +247,12 @@ public class NotificationTask extends Thread {
                             try {
                                 getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, command.getName(), cntct, m_autoNotify);
                             } catch (Throwable e) {
-                                log().error("Could not insert notice info into database, aborting send notice", e);
+                                LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
                             String binaryCommand = command.getBinary();
                             if (binaryCommand == null) {
-                                log().error("binary flag not set for command: " + command.getExecute() + ".  Guessing false.");
+                                LOG.error("binary flag not set for command: {}.  Guessing false.", command.getExecute());
                                 binaryCommand = "false";
                             }
                             if (binaryCommand.equals("true")) {
@@ -254,29 +260,23 @@ public class NotificationTask extends Thread {
                             } else {
                                 strategy = new ClassExecutor();
                             }
-                            if (log().isDebugEnabled()) {
-                                log().debug("Class created is: " + command.getClass());
-                            }
+                            LOG.debug("Class created is: {}", command.getClass());
 
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
-                            if (log().isDebugEnabled()) {
-                                log().debug("command " + command.getName() + " return code = " + returnCode);
-                            }
+                            LOG.debug("command {} return code = {}", command.getName(), returnCode);
                         } catch (Throwable e) {
-                            log().warn("Notification command failed: " + command.getName(), e);
+                            LOG.warn("Notification command failed: {}", command.getName(), e);
                         }
                     }
                 } else {
-                    if (log().isDebugEnabled()) {
-                        log().debug("User " + m_user.getUserId() + " is not on duty, skipping");
-                    }
+                    LOG.debug("User {} is not on duty, skipping", m_user.getUserId());
                 }
             } catch (IOException e) {
-                log().warn("Could not get user duty schedule information: ", e);
+                LOG.warn("Could not get user duty schedule information: ", e);
             } catch (MarshalException e) {
-                log().warn("Could not get user duty schedule information: ", e);
+                LOG.warn("Could not get user duty schedule information: ", e);
             } catch (ValidationException e) {
-                log().warn("Could not get user duty schedule information: ", e);
+                LOG.warn("Could not get user duty schedule information: ", e);
             }
         } else {
             // remove all the related notices that have yet to be sent
@@ -288,10 +288,6 @@ public class NotificationTask extends Thread {
             // m_notifTree.remove(task);
             //}
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private NotificationManager getNotificationManager() {
@@ -313,9 +309,7 @@ public class NotificationTask extends Thread {
         List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
 
         for (Argument curArg : notifArgs) {
-            if (log().isDebugEnabled()) {
-                log().debug("argument: " + curArg.getSwitch() + " " + curArg.getSubstitution() + " '" + getArgumentValue(curArg.getSwitch()) + "' " + Boolean.valueOf(curArg.getStreamed()).booleanValue());
-            }
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue());
 
             commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }
@@ -360,7 +354,7 @@ public class NotificationTask extends Thread {
                 value = m_params.get(aSwitch);
             }
         } catch (Throwable e) {
-            log().error("unable to get value for parameter " + aSwitch);
+            LOG.error("unable to get value for parameter {}", aSwitch);
         }
 
         return value;
@@ -393,6 +387,7 @@ public class NotificationTask extends Thread {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         m_started = true;
         super.start();

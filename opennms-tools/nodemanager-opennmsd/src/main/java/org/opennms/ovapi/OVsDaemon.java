@@ -32,15 +32,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.opennms.nnm.swig.NNM;
 import org.opennms.nnm.swig.OVsPMDCommand;
 import org.opennms.nnm.swig.fd_set;
 import org.opennms.nnm.swig.timeval;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class OVsDaemon {
     
-    Logger log = Logger.getLogger(getClass());
+    Logger log = LoggerFactory.getLogger(getClass());
     
     public abstract static class ScheduledTask implements Runnable {
         

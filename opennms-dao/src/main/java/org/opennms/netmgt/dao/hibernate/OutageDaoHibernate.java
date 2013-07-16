@@ -38,7 +38,7 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -60,6 +60,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer currentOutageCount() {
         return queryInt("select count(*) from OnmsOutage as o where o.ifRegainedService is null");
     }
@@ -69,15 +70,18 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<OnmsOutage> currentOutages() {
         return find("from OnmsOutage as o where o.ifRegainedService is null");
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsOutage> findAll(final Integer offset, final Integer limit) {
         return (Collection<OnmsOutage>)getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsOutage>>() {
 
             @SuppressWarnings("unchecked")
+            @Override
             public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException, SQLException {
                 return session.createCriteria(OnmsOutage.class)
                 .setFirstResult(offset)
@@ -89,6 +93,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsOutage> matchingCurrentOutages(final ServiceSelector selector) {
         final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getIPAddressList(selector.getFilterRule()));
         final Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
@@ -107,12 +112,14 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countOutagesByNode() {
         return getNodeOutageSummaries(0).size();
     }
 
     // final int nodeId, final String nodeLabel, final Date timeDown, final Date timeUp, final Date timeNow
     /** {@inheritDoc} */
+    @Override
     public List<OutageSummary> getNodeOutageSummaries(final int rows) {
         final List<OutageSummary> outages = findObjects(
             OutageSummary.class,

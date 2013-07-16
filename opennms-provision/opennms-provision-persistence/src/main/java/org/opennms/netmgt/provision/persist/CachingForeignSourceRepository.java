@@ -159,6 +159,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		m_foreignSourceRepository = fsr;
 	}
 
+        @Override
 	public void afterPropertiesSet() {
 		Assert.notNull(m_foreignSourceRepository);
 	}

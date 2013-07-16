@@ -27,17 +27,19 @@
  *******************************************************************************/
 
 package org.opennms.features.topology.ssh.internal.testframework;
+
 import java.util.Map;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Paintable;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.StreamVariable;
-import com.vaadin.terminal.VariableOwner;
+import com.vaadin.server.ClientConnector;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamVariable;
+import com.vaadin.server.VariableOwner;
+import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
-public class SudoPaintTarget implements PaintTarget{
+public class SudoPaintTarget implements PaintTarget {
 
 	public SudoPaintTarget() {
 		
@@ -45,21 +47,6 @@ public class SudoPaintTarget implements PaintTarget{
 	
 	@Override
 	public void addSection(String sectionTagName, String sectionData)
-			throws PaintException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean startTag(Paintable paintable, String tag)
-			throws PaintException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	@Deprecated
-	public void paintReference(Paintable paintable, String referenceName)
 			throws PaintException {
 		// TODO Auto-generated method stub
 		
@@ -134,13 +121,6 @@ public class SudoPaintTarget implements PaintTarget{
 	}
 
 	@Override
-	public void addAttribute(String name, Paintable value)
-			throws PaintException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void addVariable(VariableOwner owner, String name, String value)
 			throws PaintException {
 		// TODO Auto-generated method stub
@@ -190,13 +170,6 @@ public class SudoPaintTarget implements PaintTarget{
 	}
 
 	@Override
-	public void addVariable(VariableOwner owner, String name, Paintable value)
-			throws PaintException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void addUploadStreamVariable(VariableOwner owner, String name)
 			throws PaintException {
 		// TODO Auto-generated method stub
@@ -235,7 +208,7 @@ public class SudoPaintTarget implements PaintTarget{
 	}
 
 	@Override
-	public String getTag(Paintable paintable) {
+	public String getTag(ClientConnector paintable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -244,6 +217,30 @@ public class SudoPaintTarget implements PaintTarget{
 	public boolean isFullRepaint() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void addAttribute(String name, Component value)
+			throws PaintException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void addVariable(VariableOwner owner, String name, Component value)
+			throws PaintException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void endPaintable(Component paintable) throws PaintException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public PaintStatus startPaintable(Component paintable, String tag)
+			throws PaintException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

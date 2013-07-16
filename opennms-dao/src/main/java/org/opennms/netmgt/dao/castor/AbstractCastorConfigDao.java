@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,9 +29,10 @@
 package org.opennms.netmgt.dao.castor;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.FileReloadCallback;
 import org.opennms.core.utils.FileReloadContainer;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
@@ -47,6 +48,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCastorConfigDao.class);
     private Class<K> m_castorClass;
     private String m_description;
     private Resource m_configResource;
@@ -78,15 +81,6 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     public abstract V translateConfig(K castorConfig);
 
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
      * <p>loadConfig</p>
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
@@ -95,14 +89,12 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     protected V loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
         
-        if (log().isDebugEnabled()) {
-            log().debug("Loading " + m_description + " configuration from " + resource);
-        }
+        LOG.debug("Loading {} configuration from {}", m_description, resource);
 
         V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource));
         
         long endTime = System.currentTimeMillis();
-        log().info(createLoadedLogMessage(config, (endTime - startTime)));
+        LOG.info(createLoadedLogMessage(config, (endTime - startTime)));
         
         return config;
     }
@@ -161,6 +153,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     }
     
     public class CastorReloadCallback implements FileReloadCallback<V> {
+        @Override
         public V reload(final V object, final Resource resource) {
             return loadConfig(resource);
         }

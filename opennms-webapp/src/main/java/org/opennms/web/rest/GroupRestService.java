@@ -49,6 +49,8 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("groups")
 @Transactional
 public class GroupRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(GroupRestService.class);
+
     @Autowired
     private GroupManager m_groupManager;
     
@@ -126,7 +131,7 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         
         try {
-            log().debug("addGroup: Adding group " + group);
+            LOG.debug("addGroup: Adding group {}", group);
             m_groupManager.save(group);
             return Response.seeOther(getRedirectUri(m_uriInfo, group.getName())).build();
         } catch (final Throwable t) {
@@ -150,7 +155,7 @@ public class GroupRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, t);
             }
             if (group == null) throw getException(Status.BAD_REQUEST, "updateGroup: Group does not exist: " + groupName);
-            log().debug("updateGroup: updating group " + group);
+            LOG.debug("updateGroup: updating group {}", group);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -160,7 +165,7 @@ public class GroupRestService extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            log().debug("updateGroup: group " + group + " updated");
+            LOG.debug("updateGroup: group {} updated", group);
             try {
                 m_groupManager.save(group);
             } catch (final Throwable t) {
@@ -178,7 +183,7 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
-            log().debug("deleteGroup: deleting group " + group);
+            LOG.debug("deleteGroup: deleting group {}", group);
             m_groupManager.deleteGroup(groupName);
             return Response.ok().build();
         } catch (final Throwable t) {

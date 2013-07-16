@@ -37,8 +37,14 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -59,11 +65,13 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Header;
 import org.opennms.protocols.xml.config.Request;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class for managing HTTP URL Connection using Apache HTTP Client
@@ -71,6 +79,8 @@ import org.opennms.protocols.xml.config.Request;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HttpUrlConnection extends URLConnection {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HttpUrlConnection.class);
 
     /** The URL. */
     private URL m_url;
@@ -134,7 +144,7 @@ public class HttpUrlConnection extends URLConnection {
                     final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
                     registry.register(lenient);
                 } catch (NoSuchAlgorithmException e) {
-                    log().warn(e.getMessage());
+                    LOG.warn(e.getMessage());
                 }
             }
         }
@@ -163,7 +173,7 @@ public class HttpUrlConnection extends URLConnection {
                 final Content cnt = m_request.getContent();
                 HttpPost post = new HttpPost(ub.build());
                 ContentType contentType = ContentType.create(cnt.getType());
-                log().info("Processing POST request for " + contentType);
+                LOG.info("Processing POST request for %s", contentType);
                 if (contentType.getMimeType().equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType())) {
                     FormFields fields = JaxbUtils.unmarshal(FormFields.class, cnt.getData());
                     post.setEntity(fields.getEntity());
@@ -209,8 +219,5 @@ public class HttpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

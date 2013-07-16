@@ -32,7 +32,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.icmp.PingerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class IcmpPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(IcmpPlugin.class);
     /**
      * The name of the protocol that is supported by this plugin
      */
@@ -58,6 +60,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -68,6 +71,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
 		try {
 	    	Number retval = PingerFactory.getInstance().ping(address);
@@ -75,8 +79,7 @@ public final class IcmpPlugin extends AbstractPlugin {
 	    		return true;
 	    	}
 		} catch (Throwable e) {
-	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+			LOG.warn("Pinger failed to ping {}", address, e);
 		}
 		return false;
     }
@@ -90,6 +93,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
     	int retries;
     	long timeout;
@@ -107,8 +111,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			return true;
     		}
     	} catch (Throwable e) {
-	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+			LOG.warn("Pinger failed to ping {}", address, e);
         }
     	
     	return false;

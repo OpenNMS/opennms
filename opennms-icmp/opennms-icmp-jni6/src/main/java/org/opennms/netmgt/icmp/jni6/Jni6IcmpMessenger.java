@@ -33,12 +33,14 @@ import java.net.DatagramPacket;
 import java.net.Inet6Address;
 import java.util.Queue;
 
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp6.ICMPv6EchoReply;
 import org.opennms.protocols.icmp6.ICMPv6Packet;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;
 import org.opennms.protocols.icmp6.ICMPv6Socket;
 import org.opennms.protocols.rt.Messenger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JniIcmpMessenger
@@ -47,6 +49,7 @@ import org.opennms.protocols.rt.Messenger;
  * @version $Id: $
  */
 public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingResponse> {
+    private static final Logger LOG = LoggerFactory.getLogger(Jni6IcmpMessenger.class);
     
     private int m_pingerId;
     private ICMPv6Socket m_socket;
@@ -75,13 +78,13 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
 
      
             } catch (IOException e) {
-                LogUtils.errorf(this, e, "I/O Error occurred reading from ICMP Socket");
+                LOG.error("I/O Error occurred reading from ICMP Socket", e);
             } catch (IllegalArgumentException e) {
                 // this is not an EchoReply so ignore it
             } catch (IndexOutOfBoundsException e) {
                 // this packet is not a valid EchoReply ignore it
             } catch (Throwable e) {
-                LogUtils.errorf(this, e, "Unexpected Exception processing reply packet!");
+                LOG.error("Unexpected Exception processing reply packet!", e);
             }
         }
 
@@ -103,11 +106,13 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
     public void start(final Queue<Jni6PingResponse> responseQueue) {
         Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
 
+            @Override
             public void run() {
+                Logging.putPrefix("icmp");
                 try {
                     processPackets(responseQueue);
                 } catch (Throwable t) {
-                    LogUtils.errorf(this, t, "Unexpected exception on Thread %s!", this);
+                    LOG.error("Unexpected exception on Thread {}!", this, t);
                 }
             }
         };

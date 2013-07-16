@@ -41,7 +41,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.web.servlet.MissingParameterException;
 
@@ -56,7 +57,8 @@ public class MailerServlet extends HttpServlet {
     /**
      * 
      */
-    private static final long serialVersionUID = -6241742874510146571L;
+    private static final Logger LOG = LoggerFactory.getLogger(MailerServlet.class);
+    private static final long serialVersionUID = -6241742874510146572L;
 
     /** Constant <code>REQUIRED_FIELDS="new String[] { sendto, subject, usernam"{trunked}</code> */
     protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "username", "msg" };
@@ -70,6 +72,7 @@ public class MailerServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -86,15 +89,14 @@ public class MailerServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sendto = request.getParameter("sendto");
         String subject = request.getParameter("subject");
         String msg = request.getParameter("msg");
         String username = request.getRemoteUser();
 
-        if (log().isDebugEnabled()) {
-            log().debug("To: " + sendto + ", Subject: " + subject + ", message: " + msg + ", username: " + username);
-        }
+        LOG.debug("To: {}, Subject: {}, message: {}, username: {}", sendto, subject, msg, username);
 
         if (sendto == null) {
             throw new MissingParameterException("sendto", REQUIRED_FIELDS);
@@ -130,7 +132,7 @@ public class MailerServlet extends HttpServlet {
             String errorMessage = tempErr.toString();
 
             // log the error message
-            log().warn("Read from stderr: " + errorMessage);
+            LOG.warn("Read from stderr: {}", errorMessage);
 
             // send the error message to the client
             response.setContentType("text/plain");
@@ -140,9 +142,5 @@ public class MailerServlet extends HttpServlet {
         } else {
             response.sendRedirect(this.redirectSuccess);
         }
-    }
-    
-    private Logger log() {
-        return Logger.getLogger("WEB.MAIL");
     }
 }

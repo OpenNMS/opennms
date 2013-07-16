@@ -29,10 +29,7 @@
 package org.opennms.netmgt.jetty;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -43,6 +40,8 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements Web Application within OpenNMS as a Service Daemon.
@@ -52,6 +51,10 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  */
 public class JettyServer extends AbstractServiceDaemon {
     
+    private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
+
+    private static final String LOG4J_CATEGORY = "jetty-server";
+    
     int m_port = 8080;
 
     private Server m_server;
@@ -60,7 +63,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * <p>Constructor for JettyServer.</p>
      */
     protected JettyServer() {
-        super("OpenNMS.JettyServer");
+        super(LOG4J_CATEGORY);
     }
     
     /** {@inheritDoc} */
@@ -159,7 +162,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * @param contextPath a {@link java.lang.String} object.
      */
     protected void addContext(HandlerCollection handlers, File name, String contextPath) {
-        log().warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
+        LOG.warn("adding context: {} -> {}", contextPath, name.getAbsolutePath());
         WebAppContext wac = new WebAppContext();
 	/*
 	 * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
@@ -196,17 +199,17 @@ public class JettyServer extends AbstractServiceDaemon {
         String[] exclSuites;
         String exclSuitesString = System.getProperty("org.opennms.netmgt.jetty.https-exclude-cipher-suites");
         if (exclSuitesString == null) {
-            log().warn("No excluded SSL/TLS cipher suites specified, using hard-coded defaults");
+            LOG.warn("No excluded SSL/TLS cipher suites specified, using hard-coded defaults");
             exclSuites = defaultExclSuites;
         } else {
             exclSuites = exclSuitesString.split("\\s*:\\s*");
-            log().warn("Excluding " + exclSuites.length + " user-specified SSL/TLS cipher suites");
+            LOG.warn("Excluding {} user-specified SSL/TLS cipher suites", exclSuites.length);
         }
         
         contextFactory.setExcludeCipherSuites(exclSuites);
         
         for (String suite : exclSuites) {
-            log().info("Excluded SSL/TLS cipher suite " + suite + " for connector on port " + port);
+            LOG.info("Excluded SSL/TLS cipher suite {} for connector on port {}", suite, port);
         }
     }
 
@@ -216,7 +219,7 @@ public class JettyServer extends AbstractServiceDaemon {
         try {
             m_server.start();
         } catch (Throwable e) {
-            log().error("Error starting Jetty Server", e);
+            LOG.error("Error starting Jetty Server", e);
         }
     }
 
@@ -226,8 +229,11 @@ public class JettyServer extends AbstractServiceDaemon {
         try {
             m_server.stop();
         } catch (Throwable e) {
-            log().error("Error stopping Jetty Server", e);
+            LOG.error("Error stopping Jetty Server", e);
         }
     }
-    
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
+    }
 }

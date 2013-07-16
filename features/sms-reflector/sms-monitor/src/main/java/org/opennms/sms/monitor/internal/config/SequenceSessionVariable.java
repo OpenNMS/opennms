@@ -28,8 +28,6 @@
 
 package org.opennms.sms.monitor.internal.config;
 
-import static org.opennms.core.utils.LogUtils.warnf;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +46,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.sms.monitor.session.SessionVariableGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SequenceSessionVariable class.</p>
@@ -59,6 +59,7 @@ import org.opennms.sms.monitor.session.SessionVariableGenerator;
 @XmlType(name="SequenceSessionVariableType", propOrder={"m_name", "m_className", "m_parameters"})
 @XmlRootElement(name="session-variable")
 public class SequenceSessionVariable {
+    private static final Logger LOG = LoggerFactory.getLogger(SequenceSessionVariable.class);
 	@XmlAttribute(name="name")
 	private String m_name;
 
@@ -174,6 +175,7 @@ public class SequenceSessionVariable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("name", getName())
@@ -200,7 +202,7 @@ public class SequenceSessionVariable {
                 m_generator = generator;
     
             } else {
-                warnf(this, "unable to get instance of session class: %s", c);
+                LOG.warn("unable to get instance of session class: {}", c);
             }
         }
         return m_generator;

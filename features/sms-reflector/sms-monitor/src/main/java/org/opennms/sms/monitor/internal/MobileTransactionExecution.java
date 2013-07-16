@@ -67,6 +67,7 @@ public class MobileTransactionExecution {
             m_pendingResponses = Collections.synchronizedSet(new LinkedHashSet<MobileSequenceResponse>(getTransaction().getResponses()));
         }
 
+        @Override
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 
             synchronized (m_pendingResponses) {
@@ -81,12 +82,14 @@ public class MobileTransactionExecution {
             }
         }
 
+        @Override
         public void handleTimeout(MobileMsgRequest request) {
             SocketTimeoutException err = new SocketTimeoutException("timed out processing request " + request);
             setError(err);
             m_cb.handleException(err);
         }
 
+        @Override
         public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse response) {
             if (request != null) setSendTime(request.getSentTime());
             if (response != null) setReceiveTime(response.getReceiveTime());
@@ -110,11 +113,13 @@ public class MobileTransactionExecution {
             return !m_pendingResponses.isEmpty();
         }
 
+        @Override
         public void handleError(MobileMsgRequest request, Throwable t) {
             setError(t);
             m_cb.handleException(t);
         }
         
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("callback", m_cb)
@@ -186,6 +191,7 @@ public class MobileTransactionExecution {
     
     Callback<MobileMsgResponse> getCallback() {
         return new Callback<MobileMsgResponse>() {
+            @Override
             public void complete(MobileMsgResponse t) {
                 if (t != null) {
                     setSendTime(t.getRequest().getSentTime());
@@ -193,6 +199,7 @@ public class MobileTransactionExecution {
                 }
             }
         
+            @Override
             public void handleException(Throwable t) {
                 setError(t);
             }

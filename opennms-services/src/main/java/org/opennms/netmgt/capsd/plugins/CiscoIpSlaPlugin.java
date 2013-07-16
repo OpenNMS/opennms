@@ -33,13 +33,14 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to monitor if a particular Cisco IP-SLA is within a
@@ -50,6 +51,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public class CiscoIpSlaPlugin extends SnmpPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CiscoIpSlaPlugin.class);
 
     /**
      * The protocol supported by this plugin
@@ -91,6 +94,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -104,6 +108,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
      * return additional information by key-name. These key-value pairs can be
      * added to service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress ipaddr,
             Map<String, Object> parameters) {
 
@@ -117,7 +122,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
              * the configured IP-SLA admin tag to be monitored.
              */
             if (adminTag == null) {
-                log().warn("poll: No IP-SLA admin-tag defined!");
+                LOG.warn("poll: No IP-SLA admin-tag defined!");
                 return status;
             }
 
@@ -175,11 +180,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 }
 
                 // Establish SNMP session with interface
-                if (log().isDebugEnabled()) {
-                    log().debug(
-                                "poll: SnmpAgentConfig address: "
-                                        + agentConfig);
-                }
+                LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
 
                 /*
                  * Get two maps one with all configured admin tags and one of
@@ -190,7 +191,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                                                                                "CiscoIpSlaMonitor",
                                                                                SnmpObjId.get(RTT_ADMIN_TAG_OID));
                 if (tagResults == null) {
-                    log().warn("poll: No admin tags received! ");
+                    LOG.warn("poll: No admin tags received! ");
                     return status;
                 }
 
@@ -199,19 +200,14 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                                                                                      "CiscoIpSlaMonitor",
                                                                                      SnmpObjId.get(RTT_OPER_STATE_OID));
                 if (operStateResults == null) {
-                    log().warn("poll: No oper state received! ");
+                    LOG.warn("poll: No oper state received! ");
                     return status;
                 }
 
                 // Iterate over the list of configured IP SLAs
                 for (SnmpInstId ipslaInstance : tagResults.keySet()) {
 
-                    log().debug(
-                                "poll: " + "admin tag=" + adminTag
-                                        + " value="
-                                        + tagResults.get(ipslaInstance)
-                                        + " oper state="
-                                        + operStateResults.get(ipslaInstance));
+                    LOG.debug("poll: admin tag={} value={} oper state={}", adminTag, tagResults.get(ipslaInstance), operStateResults.get(ipslaInstance));
                     /*
                      *  Check if a configured ip sla with specific tag exist
                      *  and is the operational state active 
@@ -219,34 +215,20 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                     if (tagResults.get(ipslaInstance).toString().equals(
                                                                         adminTag)
                             && operStateResults.get(ipslaInstance).toInt() == RTT_MON_OPER_STATE.ACTIVE.value()) {
-                        log().debug("poll: admin tag found");
+                        LOG.debug("poll: admin tag found");
                         status = true;
                     }
                 }
             }
         } catch (NullPointerException e) {
-            log().warn(
-                       "SNMP not available or CISCO-RTT-MON-MIB not supported!");
+            LOG.warn("SNMP not available or CISCO-RTT-MON-MIB not supported!");
         } catch (NumberFormatException e) {
-            log().warn(
-                       "Number operator used on a non-number "
-                               + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            log().warn(
-                       "Unexpected exception during SNMP poll of interface "
-                               + InetAddressUtils.str(ipaddr), t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", InetAddressUtils.str(ipaddr), t);
         }
         return status;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public static ThreadCategory log() {
-        return ThreadCategory.getInstance(CiscoIpSlaPlugin.class);
     }
 }

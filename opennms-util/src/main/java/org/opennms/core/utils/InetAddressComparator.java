@@ -44,6 +44,7 @@ import java.util.Comparator;
  */
 public class InetAddressComparator implements Comparator<InetAddress> {
 
+    @Override
     public int compare(InetAddress addr1, InetAddress addr2) {
         if (addr1 == null) {
             if (addr2 == null) {

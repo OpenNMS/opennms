@@ -48,7 +48,8 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
@@ -75,6 +76,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner</a>
  */
 public class SnmpPeerFactory implements SnmpAgentConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpPeerFactory.class);
     private static final int DEFAULT_SNMP_PORT = 161;
     private static final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private static final Lock m_readLock = m_globalLock.readLock();
@@ -203,7 +205,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             }
     
             final File cfgFile = getFile();
-            LogUtils.debugf(SnmpPeerFactory.class, "init: config file path: %s", cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             m_singleton = new SnmpPeerFactory(cfgFile);
             m_loaded = true;
         } finally {
@@ -324,6 +326,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
@@ -358,7 +361,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                             break DEFLOOP;
                         }
                     } catch (final IllegalArgumentException e) {
-                        LogUtils.debugf(this, e, "Error while reading SNMP config <specific> tag: %s", saddr);
+                        LOG.debug("Error while reading SNMP config <specific> tag: {}", saddr, e);
                     }
                 }
 
@@ -375,7 +378,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                     if (comparator.compare(begin, end) <= 0) {
                         inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
                     } else {
-                        LogUtils.warnf(this, "%s has an 'end' that is earlier than its 'beginning'!", rng);
+                        LOG.warn("{} has an 'end' that is earlier than its 'beginning'!", rng);
                         inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
                     }
                     if (inRange) {
@@ -393,12 +396,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 }
 
             } // end DEFLOOP
-
-            if (agentConfig == null) {
-                final Definition def = new Definition();
-                setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
-            }
-
             return agentConfig;
         } finally {
             SnmpPeerFactory.getReadLock().unlock();
@@ -417,9 +414,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
+        agentConfig.setEngineId(determineEngineId(def));
+        agentConfig.setEnterpriseId(determineEnterpriseId(def));
+        agentConfig.setContextEngineId(determineContextEngineId(def));
+        agentConfig.setContextName(determineContextName(def));
     }
     
-    /**
+	/**
      * This is a helper method to set all the common attributes in the agentConfig.
      * 
      * @param agentConfig
@@ -455,7 +456,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             try {
                 inetAddr =  InetAddressUtils.addr(address);
             } catch (final IllegalArgumentException e) {
-                LogUtils.debugf(this, e, "Error while reading SNMP config proxy host: %s", address);
+                LOG.debug("Error while reading SNMP config proxy host: {}", address, e);
             }
         }
         return inetAddr;
@@ -621,6 +622,50 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return (def.getPort() == 0 ? (m_config.getPort() == 0 ? DEFAULT_SNMP_PORT : m_config.getPort()) : def.getPort());
     }
 
+    /**
+     * Helper method to search the snmp-config for a engineId
+     * @param def
+     * @return
+     */
+	private String determineEngineId(Definition def) {
+		if (def.getEngineId() != null) return def.getEngineId();
+		if (m_config.getEngineId() != null) return m_config.getEngineId();
+		return null;
+	}
+    
+	 /**
+     * Helper method to search the snmp-config for a contextEngineId
+     * @param def
+     * @return 
+     */
+    private String determineContextEngineId(Definition def) {
+    	if (def.getContextEngineId() != null) return def.getContextEngineId();
+    	if (m_config.getContextEngineId() != null) return m_config.getContextEngineId();
+    	return null;
+	}
+    
+    /**
+     * Helper method to search the snmp-config for a contextName
+     * @param def
+     * @return 
+     */
+    private String determineContextName(Definition def) {
+    	if (def.getContextName() != null) return def.getContextName();
+    	if (m_config.getContextName() != null) return m_config.getContextName();
+    	return null;
+	}
+    
+    /**
+     * Helper method to search the snmp-config for a enterpriseId
+     * @param def
+     * @return 
+     */
+    private String determineEnterpriseId(Definition def) {
+    	if (def.getEnterpriseId() != null) return def.getEnterpriseId();
+    	if (m_config.getEnterpriseId() != null) return m_config.getEnterpriseId();
+    	return null;
+	}
+    
     /**
      * Helper method to search the snmp-config 
      * @param def

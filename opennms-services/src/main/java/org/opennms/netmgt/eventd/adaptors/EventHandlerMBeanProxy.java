@@ -37,7 +37,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 
@@ -50,6 +51,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @version $Id: $
  */
 public class EventHandlerMBeanProxy implements EventHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(EventHandlerMBeanProxy.class);
     private MBeanServer m_mbserver;
 
     private ObjectName m_listener;
@@ -112,23 +114,25 @@ public class EventHandlerMBeanProxy implements EventHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean processEvent(final Event event) {
         boolean result = false;
         try {
             result = (Boolean) m_mbserver.invoke(m_listener, "processEvent", new Object[] { event }, new String[] { "org.opennms.netmgt.xml.event.Event" });
         } catch (final Throwable t) {
-            ThreadCategory.getInstance(getClass()).warn("Invocation on object " + m_listener + " failed", t);
+            LOG.warn("Invocation on object {} failed", t, m_listener);
         }
 
         return result;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void receiptSent(final EventReceipt receipt) {
         try {
             m_mbserver.invoke(m_listener, "receiptSent", new Object[] { receipt }, new String[] { "org.opennms.netmgt.xml.event.EventReceipt" });
         } catch (final Throwable t) {
-            ThreadCategory.getInstance(getClass()).warn("Invocation on object " + m_listener + " failed", t);
+            LOG.warn("Invocation on object {} failed", t, m_listener);
         }
     }
 

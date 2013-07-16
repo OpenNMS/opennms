@@ -32,19 +32,14 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Resource;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
@@ -52,6 +47,8 @@ import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -80,6 +77,11 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory, TrapNotificationListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
+
+    private static final String LOG4J_CATEGORY = "trapd";
+    
     /**
      * The last status sent to the service control manager.
      */
@@ -130,7 +132,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
-        super("OpenNMS.Trapd");
+        super(LOG4J_CATEGORY);
     }
     
     /**
@@ -161,23 +163,28 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         try {
             m_trapdIpMgr.dataSourceSync();
         } catch (final SQLException e) {
-            LogUtils.errorf(this, e, "init: Failed to load known IP address list");
+            LOG.error("init: Failed to load known IP address list", e);
             throw new UndeclaredThrowableException(e);
         }
 
         try {
         	InetAddress address = getInetAddress();
-    		LogUtils.infof(this, "Listening on %s:%d", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
+        	LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
             SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users);
             m_registeredForTraps = true;
 
-            LogUtils.debugf(this, "init: Creating the trap session");
+            LOG.debug("init: Creating the trap session");
         } catch (final IOException e) {
             if (e instanceof java.net.BindException) {
-                managerLog().error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
-                LogUtils.errorf(this, e, "init: Failed to listen on SNMP trap port, perhaps something else is already listening?");
+                Logging.withPrefix("OpenNMS.Manager", new Runnable() {
+                    @Override
+                    public void run() {
+                        LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                    }
+                });
+                LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
             } else {
-                LogUtils.errorf(this, e, "init: Failed to initialize SNMP trap socket");
+                LOG.error("init: Failed to initialize SNMP trap socket", e);
             }
             throw new UndeclaredThrowableException(e);
         }
@@ -185,7 +192,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         try {
             m_eventReader.open();
         } catch (final Throwable e) {
-            LogUtils.errorf(this, e, "init: Failed to open event reader");
+            LOG.error("init: Failed to open event reader", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -195,10 +202,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     		return null;
     	}
 		return InetAddressUtils.addr(m_snmpTrapAddress);
-    }
-
-    private Category managerLog() {
-        return Logger.getLogger("OpenNMS.Manager");
     }
 
     /**
@@ -214,11 +217,11 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     public synchronized void onStart() {
         m_status = STARTING;
 
-        LogUtils.debugf(this, "start: Initializing the trapd config factory");
+        LOG.debug("start: Initializing the trapd config factory");
 
         m_status = RUNNING;
 
-        LogUtils.debugf(this, "start: Trapd ready to receive traps");
+        LOG.debug("start: Trapd ready to receive traps");
     }
 
     /**
@@ -231,12 +234,12 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         }
 
         m_status = PAUSE_PENDING;
-
-        LogUtils.debugf(this, "pause: Calling pause on processor");
+        
+        LOG.debug("pause: Calling pause on processor");
 
         m_status = PAUSED;
 
-        LogUtils.debugf(this, "pause: Trapd paused");
+        LOG.debug("pause: Trapd paused");
     }
 
     /**
@@ -250,11 +253,11 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
 
         m_status = RESUME_PENDING;
 
-        LogUtils.debugf(this, "resume: Calling resume on processor");
+        LOG.debug("resume: Calling resume on processor");
 
         m_status = RUNNING;
 
-        LogUtils.debugf(this, "resume: Trapd resumed");
+        LOG.debug("resume: Trapd resumed");
     }
 
     /**
@@ -266,24 +269,24 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
-        LogUtils.debugf(this, "stop: closing communication paths.");
+        LOG.debug("stop: closing communication paths.");
 
         try {
             if (m_registeredForTraps) {
-                LogUtils.debugf(this, "stop: Closing SNMP trap session.");
+                LOG.debug("stop: Closing SNMP trap session.");
                 SnmpUtils.unregisterForTraps(this, getInetAddress(), m_snmpTrapPort);
-                LogUtils.debugf(this, "stop: SNMP trap session closed.");
+                LOG.debug("stop: SNMP trap session closed.");
             } else {
-            	LogUtils.debugf(this, "stop: not attemping to closing SNMP trap session--it was never opened");
+                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened");
             }
 
         } catch (final IOException e) {
-            LogUtils.warnf(this, e, "stop: exception occurred closing session");
+            LOG.warn("stop: exception occurred closing session", e);
         } catch (final IllegalStateException e) {
-            LogUtils.debugf(this, e, "stop: The SNMP session was already closed");
+            LOG.debug("stop: The SNMP session was already closed", e);
         }
 
-        LogUtils.debugf(this, "stop: Stopping queue processor.");
+        LOG.debug("stop: Stopping queue processor.");
 
         m_backlogQ.shutdown();
 
@@ -291,7 +294,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
 
         m_status = STOPPED;
 
-        LogUtils.debugf(this, "stop: Trapd stopped");
+        LOG.debug("stop: Trapd stopped");
     }
 
     /**
@@ -307,7 +310,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /** {@inheritDoc} */
     @Override
     public void trapError(final int error, final String msg) {
-        LogUtils.warnf(this, "Error Processing Received Trap: error = " + error + (msg != null ? ", ref = " + msg : ""));
+        LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
     }
 
     /**
@@ -344,5 +347,9 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public void setBacklogQ(ExecutorService backlogQ) {
         m_backlogQ = backlogQ;
+    }
+
+    public static String getLoggingCategory() {
+        return LOG4J_CATEGORY;
     }
 }

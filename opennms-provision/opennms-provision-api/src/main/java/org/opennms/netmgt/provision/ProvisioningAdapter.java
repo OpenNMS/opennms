@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import java.util.concurrent.ScheduledFuture;
+
 /**
  * This class provides an API for implementing provider "extensions" to the OpenNMS
  * Provisioning daemon.
@@ -42,8 +44,9 @@ public interface ProvisioningAdapter {
      *
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      * @param nodeId a int.
+     * @return 
      */
-    void addNode(int nodeId) throws ProvisioningAdapterException;
+    ScheduledFuture<?> addNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
      * This method is called by the Provisioner when a node is updated through provisioning.
@@ -51,7 +54,7 @@ public interface ProvisioningAdapter {
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      * @param nodeId a int.
      */
-    void updateNode(int nodeId) throws ProvisioningAdapterException;
+    ScheduledFuture<?> updateNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
      * This method is called by the Provisioner when a node is deleted through provisioning.
@@ -59,7 +62,7 @@ public interface ProvisioningAdapter {
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      * @param nodeId a int.
      */
-    void deleteNode(int nodeId) throws ProvisioningAdapterException;
+    ScheduledFuture<?> deleteNode(int nodeId) throws ProvisioningAdapterException;
 
     /**
      * <p>getName</p>
@@ -76,7 +79,7 @@ public interface ProvisioningAdapter {
      * @param nodeid a int.
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
-    void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
+    ScheduledFuture<?> nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
     
     /**
      * This method is called in case the adapter needs to perform some initialization prior to

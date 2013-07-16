@@ -37,8 +37,8 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.ServiceInfo;
 import org.opennms.netmgt.model.MockServiceDaemon;
+import org.opennms.netmgt.model.ServiceInfo;
 
 public class JmxDaemonStatusDaoTest extends TestCase {
     static private MBeanServer mBeanServer;
@@ -60,6 +60,7 @@ public class JmxDaemonStatusDaoTest extends TestCase {
 		}
 	}
 	
+    @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		for(int i = 0; i < 4; i++){
@@ -73,6 +74,7 @@ public class JmxDaemonStatusDaoTest extends TestCase {
 		jmxDaemonStatusDao.setMbeanServer(mBeanServer);
 	}
 
+    @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		for(int i = 0; i < 4; i++){

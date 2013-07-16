@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -289,8 +290,23 @@ public class Criteria implements Cloneable {
 
     @Override
     public String toString() {
-        return "Criteria [class=" + m_class + ", orders=" + m_orders + ", aliases=" + m_aliases + ", fetchTypes=" + m_fetchTypes + ", restrictions=" + m_restrictions + ", distinct=" + m_distinct
-                + ", limit=" + m_limit + ", offset=" + m_offset + "]";
+        final StringBuilder sb = new StringBuilder();
+        final List<String> entries = new ArrayList<String>();
+        sb.append("Criteria [");
+        if (m_class != null) entries.add("class=" + m_class.toString());
+        if (m_orders != null && m_orders.size() > 0) entries.add("orders=" + m_orders.toString());
+        if (m_aliases != null && m_aliases.size() > 0) entries.add("aliases=" + m_aliases.toString());
+        if (m_fetchTypes != null && m_fetchTypes.size() > 0) entries.add("fetchTypes=" + m_fetchTypes.toString());
+        if (m_restrictions != null && m_restrictions.size() > 0) entries.add("restrictions=" + m_restrictions.toString());
+        entries.add("distinct=" + String.valueOf(m_distinct));
+        if (m_limit != null) entries.add("limit=" + String.valueOf(m_limit));
+        if (m_offset != null) entries.add("offset=" + String.valueOf(m_offset));
+        for (final ListIterator<String> it = entries.listIterator(); it.hasNext(); ) {
+            sb.append(it.next());
+            if (it.hasNext()) sb.append(",");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     @Override

@@ -55,18 +55,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 class XmpCollectionResource extends AbstractCollectionResource 
 {
     /* class variables and methods *********************** */
+	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionResource.class);
+
 
     /* instance variables ******************************** */
     String nodeTypeName;
@@ -118,14 +122,13 @@ class XmpCollectionResource extends AbstractCollectionResource
     }
 
     /* private methods *********************************** */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     /* public methods ************************************ */
 
     // get the location where we are supposed to write our data to
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository)
     {
 
@@ -178,6 +181,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance()
     {
         // for node level resources, no instance
@@ -196,6 +200,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() { return nodeTypeName; };
 
     /**
@@ -213,6 +218,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a int.
      */
+    @Override
     public int getType() { return nodeType; }
     /**
      * <p>setType</p>
@@ -226,8 +232,10 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() { return false; }
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) { return true; }
 
     /**
@@ -242,12 +250,14 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return "XmpCollectionResource for "+agent+" resType="+resourceType+" instance="+instance+" nodeType="+nodeTypeName+" nodeType="+nodeType; }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) 
     { 
-        log().debug("XmpCollectionResource: visit starting with "+ getGroups().size()+" attribute groups");
+        LOG.debug("XmpCollectionResource: visit starting with {} attribute groups", getGroups().size());
 
         visitor.visitResource(this);
 
@@ -258,10 +268,11 @@ class XmpCollectionResource extends AbstractCollectionResource
 
         visitor.completeResource(this);
 
-        log().debug("XmpCollectionResource: visit finished for "+agent);
+        LOG.debug("XmpCollectionResource: visit finished for {}", agent);
 
     } /* visit */
 
+    @Override
     public String getParent() {
         return agent.getStorageDir().toString();
     }

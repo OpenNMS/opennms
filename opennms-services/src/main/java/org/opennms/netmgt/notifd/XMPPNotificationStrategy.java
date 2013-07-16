@@ -31,7 +31,8 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 
@@ -47,6 +48,7 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
  */
 public class XMPPNotificationStrategy implements NotificationStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(XMPPNotificationStrategy.class);
 
 	/**
 	 * String used to identify the user to whom the XMPP message will be sent.
@@ -96,6 +98,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 	 * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public int send(List<Argument> arguments) {
 
 		try {
@@ -109,7 +112,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 			        first = false;
 			        argumentString.append(argument == null ? "[null]" : "\"" + argument.toString() + "\"");
 			    }
-			    ThreadCategory.getInstance(getClass()).warn("Blank XMPP address on notification: " + argumentString.toString());
+			    LOG.warn("Blank XMPP address on notification: {}", argumentString);
 			    return 1;
 			} 
 
@@ -118,7 +121,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 			xmppManager.sendMessage(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
 
 		} catch (Throwable e) {
-			ThreadCategory.getInstance(getClass()).error(e.getMessage());
+			LOG.error(e.getMessage());
 			return 1;
 		}
 

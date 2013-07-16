@@ -217,6 +217,7 @@ public class GWTMonitoredService implements Serializable, IsSerializable, Compar
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "GWTMonitoredService[id=" + m_id + ",service=" + m_serviceName + ",nodeId=" + m_nodeId + ",ipInterfaceId=" + m_ipInterfaceId
                 + "]";
@@ -228,6 +229,7 @@ public class GWTMonitoredService implements Serializable, IsSerializable, Compar
      * @param that a {@link org.opennms.features.poller.remote.gwt.client.GWTMonitoredService} object.
      * @return a int.
      */
+        @Override
     public int compareTo(GWTMonitoredService that) {
         return new CompareToBuilder()
         .append(this.getServiceName(), that.getServiceName())

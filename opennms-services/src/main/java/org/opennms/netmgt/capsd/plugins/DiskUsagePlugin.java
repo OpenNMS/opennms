@@ -32,11 +32,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
-//import java.util.regex.Pattern;
-//import org.apache.log4j.Level;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-//import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -44,7 +41,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -60,6 +58,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public final class DiskUsagePlugin extends AbstractPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DiskUsagePlugin.class);
+    
     /**
      * The protocol supported by this plugin
      */
@@ -87,6 +88,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -97,6 +99,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         try {
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
@@ -122,6 +125,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int matchType = MATCH_TYPE_EXACT;
 
@@ -197,10 +201,10 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                 }
 
                 for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                    log().debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                    LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(address), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
                   
                     if (isMatch(e.getValue().toString(), disk, matchType)) {
-                    	log().debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");
+			LOG.debug("Found disk '{}' (matching hrStorageDescr was '{}')", disk, e.getValue());
                     	return true;
                     		
                     }
@@ -217,25 +221,21 @@ public final class DiskUsagePlugin extends AbstractPlugin {
     
     private boolean isMatch(String candidate, String target, int matchType) {
         boolean matches = false;
-        log().debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        LOG.debug("isMessage: candidate is '{}', matching against target '{}'", candidate, target);
         if (matchType == MATCH_TYPE_EXACT) {
-            log().debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting equality match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.equals(target);
         } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            log().debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.startsWith(target);
         } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.endsWith(target);
         } else if (matchType == MATCH_TYPE_REGEX) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
-        log().debug("isMatch: Match is positive");
+        LOG.debug("isMatch: Match is positive");
         return matches;
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

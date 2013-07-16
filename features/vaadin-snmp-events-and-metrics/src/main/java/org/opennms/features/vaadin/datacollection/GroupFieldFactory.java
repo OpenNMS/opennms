@@ -60,7 +60,8 @@ public final class GroupFieldFactory implements FormFieldFactory {
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
-    public Field createField(Item item, Object propertyId, Component uiContext) {
+    @Override
+    public Field<?> createField(Item item, Object propertyId, Component uiContext) {
         if ("name".equals(propertyId)) {
             final TextField f = new TextField("Group Name");
             f.setRequired(true);
@@ -76,6 +77,7 @@ public final class GroupFieldFactory implements FormFieldFactory {
             f.setImmediate(true);
             f.setNewItemsAllowed(true);
             f.setNewItemHandler(new NewItemHandler() {
+                @Override
                 public void addNewItem(String newItemCaption) {
                     if (!f.containsId(newItemCaption)) {
                         f.addItem(newItemCaption);

@@ -3,13 +3,12 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>1.11.93-SNAPSHOT</version>
-	 <relativePath>..</relativePath>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
-  <name>OpenNMS SNMP4J SNMP Implementation</name>
+  <name>OpenNMS Core SNMP SNMP4J Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -22,8 +21,11 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.snmp.snmp4j.*;version="${project.version}"</Export-Package>
-	    <Import-Package>org.apache.commons.lang.builder;version="[2.6,3)", org.opennms.core.utils;version="[1.11,3)", org.opennms.netmgt.snmp;version="${project.version}", org.snmp4j.smi, org.snmp4j.*"</Import-Package>
+            <!--  don't export anything this is implementation only -->
+            <Export-Package></Export-Package>
+            <Private-Package>org.opennms.netmgt.snmp.snmp4j.*</Private-Package>
+            <Import-Package>org.apache.log4j.*;resolution:=optional,*</Import-Package>
+            <Embed-Dependency>snmp4j;inline=true</Embed-Dependency>
           </instructions>
         </configuration>
       </plugin>
@@ -36,15 +38,15 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j</artifactId>
-      <version>1.11.1</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp4j-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j-agent</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp4j-agent-dependencies</artifactId>
       <scope>test</scope>
-      <version>1.4.1</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -53,19 +55,4 @@
       <type>pom</type>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>

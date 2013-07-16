@@ -33,15 +33,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>CollectionSpecification class.</p>
@@ -50,6 +51,9 @@ import org.opennms.netmgt.model.RrdRepository;
  * @version $Id: $
  */
 public class CollectionSpecification {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSpecification.class);
 
     private CollectdPackage m_package;
     private String m_svcName;
@@ -132,6 +136,7 @@ public class CollectionSpecification {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_svcName + '/' + m_package.getName();
     }
@@ -154,10 +159,6 @@ public class CollectionSpecification {
         return Collections.unmodifiableMap(m_parameters);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     private boolean isTrue(String stg) {
         return stg.equalsIgnoreCase("yes") || stg.equalsIgnoreCase("on") || stg.equalsIgnoreCase("true");
     }
@@ -172,7 +173,7 @@ public class CollectionSpecification {
         StringBuffer sb;
         Collection<Parameter> params = getService().getParameterCollection();
         for (Parameter p : params) {
-            if (log().isDebugEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 sb = new StringBuffer();
                 sb.append("initializeParameters: adding service: ");
                 sb.append(getServiceName());
@@ -180,7 +181,7 @@ public class CollectionSpecification {
                 sb.append(p.getKey());
                 sb.append(" of value ");
                 sb.append(p.getValue());
-                log().debug(sb.toString());
+                LOG.debug(sb.toString());
             }
             m.put(p.getKey(), p.getValue());
         }
@@ -205,7 +206,7 @@ public class CollectionSpecification {
                 m.put("storFlagOverride", "true");
             }
             m.put("ifAliasComment", ifAliasComment());
-            if (log().isDebugEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 sb = new StringBuffer();
                 sb.append("ifAliasDomain = ");
                 sb.append(ifAliasDomain());
@@ -217,7 +218,7 @@ public class CollectionSpecification {
                 sb.append(storeFlagOverride());
                 sb.append(", ifAliasComment = ");
                 sb.append(ifAliasComment());
-                log().debug(sb.toString());
+                LOG.debug(sb.toString());
             }
         }
         m_parameters = m;
@@ -292,9 +293,7 @@ public class CollectionSpecification {
                 if ((outageFactory.isNodeIdInOutage(agent.getNodeId(), outageName)) ||
                         (outageFactory.isInterfaceInOutage(agent.getHostAddress(), outageName)))
                 {
-                    if (log().isDebugEnabled()) {
-                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + agent.getHostAddress() + " will not be collected for " + this);
-                    }
+                    LOG.debug("scheduledOutage: configured outage '{}' applies, interface {} will not be collected for {}", outageName, agent.getHostAddress(), this);
                     outageFound = true;
                     break;
                 }
@@ -307,7 +306,7 @@ public class CollectionSpecification {
     /**
      * <p>refresh</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
     public void refresh(CollectorConfigDao collectorConfigDao) {
         CollectdPackage refreshedPackage = collectorConfigDao.getPackage(getPackageName());

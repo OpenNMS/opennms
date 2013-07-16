@@ -40,10 +40,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -60,6 +61,9 @@ import org.springframework.util.Assert;
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
  */
 public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TcpEventReceiver.class);
+    
     /**
      * The value that defines unlimited events per connection.
      */
@@ -151,6 +155,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *             Thrown if the fiber is in an erronous state or the underlying
      *             thread cannot be started.
      */
+    @Override
     public synchronized void start() {
         assertNotRunning();
 
@@ -185,6 +190,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * children threads of this object are terminated and
      * {@link java.lang.Thread#join joined}.
      */
+    @Override
     public synchronized void stop() {
         if (m_status == STOPPED) {
             return;
@@ -200,7 +206,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         try {
             m_server.stop();
         } catch (InterruptedException e) {
-            log().warn("Thread Interrupted while attempting to join server socket thread", e);
+            LOG.warn("Thread Interrupted while attempting to join server socket thread", e);
         }
         m_server = null;
         m_worker = null;
@@ -213,6 +219,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Event TCP Receiver[" + m_tcpPort + "]";
     }
@@ -222,6 +229,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -231,6 +239,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
@@ -240,6 +249,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return getStatusText();
     }
@@ -247,6 +257,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Called when the fiber is initialized
      */
+    @Override
     public void init() {
         // do nothing
     }
@@ -254,6 +265,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Called when the fiber is destroyed
      */
+    @Override
     public void destroy() {
         // do nothing
     }
@@ -264,6 +276,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
      */
+    @Override
     public void addEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             if (!m_eventHandlers.contains(handler)) {
@@ -279,6 +292,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code> class.
      */
+    @Override
     public void removeEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             m_eventHandlers.remove(handler);
@@ -328,11 +342,13 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getPort() {
         return m_tcpPort;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPort(final Integer port) {
         assertNotRunning();
         
@@ -340,16 +356,19 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
@@ -361,6 +380,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * the connection is terminated by the server. The connection is always
      * terminated after an event receipt is generated, if one is required.
      */
+    @Override
     public void setEventsPerConnection(Integer number) {
         assertNotRunning();
 
@@ -369,9 +389,5 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     private void assertNotRunning() {
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

@@ -35,7 +35,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to the default Asterisk configuration data.
@@ -44,8 +45,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class AsteriskConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(AsteriskConfig.class);
 
-    
     /**
      * This loads the configuration file.
      *
@@ -53,7 +54,7 @@ public class AsteriskConfig {
      * @throws java.io.IOException if any.
      */
     public static synchronized Properties getProperties() throws IOException {
-        log().debug("Loading Asterisk configuration properties.");
+        LOG.debug("Loading Asterisk configuration properties.");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.ASTERISK_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
@@ -61,9 +62,4 @@ public class AsteriskConfig {
         in.close();
         return properties;
     }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(AsteriskConfig.class);
-    }
-
 }

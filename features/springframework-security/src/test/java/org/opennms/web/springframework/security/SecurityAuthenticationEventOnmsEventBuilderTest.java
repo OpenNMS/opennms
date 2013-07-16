@@ -42,7 +42,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.opennms.netmgt.eventd.mock.EventWrapper;
+import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -148,6 +148,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             m_expected = expected;
         }
 
+        @Override
         public boolean matches(Object actual) {
             if (!(actual instanceof Event)) {
                 return false;
@@ -157,6 +158,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             return MockEventUtil.eventsMatchDeep(m_expected, actualEvent);
         }
 
+        @Override
         public void appendTo(StringBuffer buffer) {
             buffer.append("eqEvent(");
             buffer.append(new EventWrapper(m_expected));
@@ -190,10 +192,12 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             return m_details;
         }
 
+                @Override
         public Object getCredentials() {
             return m_credentials;
         }
 
+                @Override
         public Object getPrincipal() {
             return m_principal;
         }

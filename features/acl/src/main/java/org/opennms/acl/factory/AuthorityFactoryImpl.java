@@ -62,6 +62,7 @@ import org.springframework.stereotype.Service;
 public class AuthorityFactoryImpl implements AutorityFactory, InitializingBean {
 
     /** {@inheritDoc} */
+    @Override
     public Authority getAuthority(Integer id) {
         return new Authority(authorityService.getAuthority(id), authorityService, aclItemService);
     }

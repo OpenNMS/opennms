@@ -163,6 +163,7 @@ import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     XmpDatacollectionConfig target = (XmpDatacollectionConfig) object;
@@ -285,6 +286,7 @@ import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

@@ -29,7 +29,8 @@
 package org.opennms.netmgt.charts;
 
 import org.jfree.chart.axis.ExtendedCategoryAxis;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SeveritySubLabels class.</p>
@@ -38,6 +39,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class SeveritySubLabels extends ExtendedCategoryAxis {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SeveritySubLabels.class);
+    
     private static final long serialVersionUID = 4985544589299368239L;
 
     /**
@@ -74,7 +78,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
         try {
             sev = Integer.parseInt(severity);
         } catch (NumberFormatException e) {
-            log().warn("Problem converting severity: "+severity+" to an int value.");
+            LOG.warn("Problem converting severity: {} to an int value.", severity);
         }
 
         switch (sev) {
@@ -105,14 +109,5 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
         }
         return converted;
 
-}
-
-    /**
-     * Logging helper method.
-     * 
-     * @return A log4j <code>Category</code>.
-     */
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(SeveritySubLabels.class);
     }
 }

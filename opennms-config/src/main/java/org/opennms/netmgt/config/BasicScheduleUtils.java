@@ -39,7 +39,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.config.poller.Outage;
  * @version $Id: $
  */
 public abstract class BasicScheduleUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(BasicScheduleUtils.class);
 
     /**
      * The day of the week values to name mapping
@@ -72,9 +74,15 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isTimeInSchedule(final Calendar cal, final BasicSchedule sched) {
-        LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking for time '%s' in schedule '%s'", cal.getTime(), sched.getName());
+        if (cal == null) {
+            LOG.warn("isTimeInOutage: calendar is null");
+            return false;
+        } else if (sched == null) {
+            LOG.warn("isTimeInOutage: schedule is null");
+            return false;
+        }
 
-        if (cal == null || sched == null) return false;
+        LOG.debug("isTimeInOutage: checking for time '{}' in schedule '{}'", cal.getTime(), sched.getName());
 
         Calendar outCalBegin = new GregorianCalendar();
         Calendar outCalEnd = new GregorianCalendar();
@@ -126,7 +134,7 @@ public abstract class BasicScheduleUtils {
             setOutCalTime(outCalEnd, ends);
     
             // check if calendar passed is in the out cal range
-            LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking begin/end time...\n current: %s\n begin: %s\n end: %s", cal.getTime(), outCalBegin.getTime(), outCalEnd.getTime());
+            LOG.debug("isTimeInOutage: checking begin/end time...\n current: {}\n begin: {}\n end: {}", cal.getTime(), outCalBegin.getTime(), outCalEnd.getTime());
     
             // round these to the surrounding seconds since we can only specify
             // this to seconds

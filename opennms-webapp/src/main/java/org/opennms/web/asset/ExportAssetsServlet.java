@@ -57,11 +57,13 @@ public class ExportAssetsServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         this.model = new AssetModel();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Asset[] assets = null;
 

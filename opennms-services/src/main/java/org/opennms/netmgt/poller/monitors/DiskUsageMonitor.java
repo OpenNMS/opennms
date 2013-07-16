@@ -34,7 +34,6 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -64,6 +65,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 @Distributable(DistributionContext.DAEMON)
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(DiskUsageMonitor.class);
+    
     private static final String m_serviceName = "DISK-USAGE";
     
     private static final String hrStorageDescr = ".1.3.6.1.2.1.25.2.3.1.3";
@@ -99,13 +103,14 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+        	LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -124,6 +129,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -139,6 +145,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         int matchType = MATCH_TYPE_EXACT;
         
@@ -152,7 +159,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
         
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
@@ -174,17 +181,15 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
         }
         
-        log().debug("diskName=" + diskName);
-        log().debug("percentfree=" + percentFree);
-        log().debug("matchType=" + matchTypeStr);
+        LOG.debug("diskName=", diskName);
+        LOG.debug("percentfree=", percentFree);
+        LOG.debug("matchType=", matchTypeStr);
         
-        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId hrStorageDescrSnmpObject = SnmpObjId.get(hrStorageDescr);
             
             
@@ -192,15 +197,15 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
             
             if(flagResults.size() == 0) {
-                log().debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", hostAddress, hrStorageDescrSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, hrStorageDescrSnmpObject, e.getKey(), e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
-                	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
+			LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
                 	
                 	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
                 	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());
@@ -210,7 +215,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
                 	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
                 
-                	log().debug("DiskUsageMonitor: calculatedPercentage=" + calculatedPercentage + " percentFree="+percentFree);
+			LOG.debug("DiskUsageMonitor: calculatedPercentage={} percentFree={}", calculatedPercentage, percentFree);
                 	
                 	if (calculatedPercentage < percentFree) {
                 	
@@ -226,16 +231,22 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             }
 
             // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
-            log().debug("DiskUsageMonitor: no disks found");
+            LOG.debug("DiskUsageMonitor: no disks found");
             return PollStatus.unavailable("could not find " + diskName + "in table");
             
             
         } catch (NumberFormatException e) {
-            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;
@@ -243,21 +254,21 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     
     private boolean isMatch(String candidate, String target, int matchType) {
         boolean matches = false;
-        log().debug("isMessage: candidate is '" + candidate + "', matching against target '" + target + "'");
+        LOG.debug("isMessage: candidate is '{}', matching against target '{}'", candidate, target);
         if (matchType == MATCH_TYPE_EXACT) {
-            log().debug("Attempting equality match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting equality match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.equals(target);
         } else if (matchType == MATCH_TYPE_STARTSWITH) {
-            log().debug("Attempting startsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting startsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.startsWith(target);
         } else if (matchType == MATCH_TYPE_ENDSWITH) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = candidate.endsWith(target);
         } else if (matchType == MATCH_TYPE_REGEX) {
-            log().debug("Attempting endsWith match: candidate '" + candidate + "', target '" + target + "'");
+            LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
-        log().debug("isMatch: Match is positive");
+        LOG.debug("isMatch: Match is positive");
         return matches;
     }
 }

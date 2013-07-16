@@ -79,6 +79,10 @@ div.v-table-header-wrap {
 	stroke: #4D6C80;
 }
 
+.edge.ncs.direct {
+	stroke: #FFD700;
+}
+
 .edge.ncs.selected {
 	stroke: #00ffff;
 }
@@ -99,33 +103,152 @@ div.v-table-header-wrap {
 /* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
 .v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
 
-.v-table-row-alarm-table-minor.v-table-row td { background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; }
-.v-table-row-alarm-table-minor.v-table-row-odd td { background-color: #F8E4C6; border-top: 2px solid #FF9900 !important; }
-.v-table-row-alarm-table-minor .v-table-cell-content-bright { background-image: url(../../../images/bgMinor.png); }
+.v-table-row-alarm-minor,
+.v-table-row-alarm-minor-noack { 
+  border-top: 2px solid #FF9900 !important;
+}
+.v-table-row-alarm-minor-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-minor.v-table-row,
+.v-table-row-alarm-minor-noack.v-table-row {
+  background-color: #FFEBCD;
+}
+.v-table-row-alarm-minor.v-table-row-odd,
+.v-table-row-alarm-minor-noack.v-table-row-odd {
+  background-color: #F8E4C6;
+}
+.v-table-row-alarm-minor .v-table-cell-content-bright,
+.v-table-row-alarm-minor-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgMinor.png);
+}
 
-.v-table-row-alarm-table-critical.v-table-row td { background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; }
-.v-table-row-alarm-table-critical.v-table-row-odd td { background-color: #EEC6C6; border-top: 2px solid #CC0000 !important; }
-.v-table-row-alarm-table-critical .v-table-cell-content-bright { background-image: url(../../../images/bgCritical.png); }
+.v-table-row-alarm-critical,
+.v-table-row-alarm-critical-noack { 
+  border-top: 2px solid #CC0000 !important;
+}
+.v-table-row-alarm-critical-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-critical.v-table-row,
+.v-table-row-alarm-critical-noack.v-table-row {
+  background-color: #F5CDCD;
+}
+.v-table-row-alarm-critical.v-table-row-odd,
+.v-table-row-alarm-critical-noack.v-table-row-odd {
+  background-color: #EEC6C6;
+}
+.v-table-row-alarm-critical .v-table-cell-content-bright,
+.v-table-row-alarm-critical-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgCritical.png);
+}
 
-.v-table-row-alarm-table-major.v-table-row td { background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; }
-.v-table-row-alarm-table-major.v-table-row-odd td { background-color: #F8D0C6; border-top: 2px solid #FF3300 !important; }
-.v-table-row-alarm-table-major .v-table-cell-content-bright { background-image: url(../../../images/bgMajor.png); }
+.v-table-row-alarm-major,
+.v-table-row-alarm-major-noack { 
+  border-top: 2px solid #FF3300 !important;
+}
+.v-table-row-alarm-major-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-major.v-table-row,
+.v-table-row-alarm-major-noack.v-table-row {
+  background-color: #FFD7CD;
+}
+.v-table-row-alarm-major.v-table-row-odd,
+.v-table-row-alarm-major-noack.v-table-row-odd {
+  background-color: #F8D0C6;
+}
+.v-table-row-alarm-major .v-table-cell-content-bright,
+.v-table-row-alarm-major-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgMajor.png);
+}
 
-.v-table-row-alarm-table-warning.v-table-row td { background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; }
-.v-table-row-alarm-table-warning.v-table-row-odd td { background-color: #F8EEC6; border-top: 2px solid #FFCC00 !important; }
-.v-table-row-alarm-table-warning .v-table-cell-content-bright { background-image: url(../../../images/bgWarning.png); }
+.v-table-row-alarm-warning,
+.v-table-row-alarm-warning-noack { 
+  border-top: 2px solid #FFCC00 !important;
+}
+.v-table-row-alarm-warning-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-warning.v-table-row,
+.v-table-row-alarm-warning-noack.v-table-row {
+  background-color: #FFF5CD;
+}
+.v-table-row-alarm-warning.v-table-row-odd,
+.v-table-row-alarm-warning-noack.v-table-row-odd {
+  background-color: #F8EEC6;
+}
+.v-table-row-alarm-warning .v-table-cell-content-bright,
+.v-table-row-alarm-warning-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgWarning.png);
+}
 
-.v-table-row-alarm-table-indeterminate.v-table-row td { background-color: #EBEBCD; border-top: 2px solid #999000 !important; }
-.v-table-row-alarm-table-indeterminate.v-table-row-odd td { background-color: #E4E4C6; border-top: 2px solid #999000 !important; }
-.v-table-row-alarm-table-indeterminate .v-table-cell-content-bright { background-image: url(../../../images/bgIndeterminate.png); }
+.v-table-row-alarm-indeterminate,
+.v-table-row-alarm-indeterminate-noack { 
+  border-top: 2px solid #999000 !important;
+}
+.v-table-row-alarm-indeterminate-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-indeterminate.v-table-row,
+.v-table-row-alarm-indeterminate-noack.v-table-row {
+  background-color: #EBEBCD;
+}
+.v-table-row-alarm-indeterminate.v-table-row-odd,
+.v-table-row-alarm-indeterminate-noack.v-table-row-odd {
+  background-color: #E4E4C6;
+}
+.v-table-row-alarm-indeterminate .v-table-cell-content-bright,
+.v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgIndeterminate.png);
+}
 
-.v-table-row-alarm-table-normal.v-table-row td { background-color: #D7E1CD; border-top: 2px solid #336600 !important; }
-.v-table-row-alarm-table-normal.v-table-row-odd td { background-color: #D0DAC6; border-top: 2px solid #336600 !important; }
-.v-table-row-alarm-table-normal .v-table-cell-content-bright { background-image: url(../../../images/bgNormal.png); }
+.v-table-row-alarm-normal,
+.v-table-row-alarm-normal-noack { 
+  border-top: 2px solid #336600 !important;
+}
+.v-table-row-alarm-normal-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-normal.v-table-row,
+.v-table-row-alarm-normal-noack.v-table-row {
+  background-color: #D7E1CD;
+}
+.v-table-row-alarm-normal.v-table-row-odd,
+.v-table-row-alarm-normal-noack.v-table-row-odd {
+  background-color: #D0DAC6;
+}
+.v-table-row-alarm-normal .v-table-cell-content-bright,
+.v-table-row-alarm-normal-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgNormal.png);
+}
 
-.v-table-row-alarm-table-cleared.v-table-row td { background-color: #EEEEEE; border-top: 2px solid #999 !important; }
-.v-table-row-alarm-table-cleared.v-table-row-odd td { background-color: #E7E7E7; border-top: 2px solid #999 !important; }
-.v-table-row-alarm-table-cleared .v-table-cell-content-bright { background-image: url(../../../images/bgCleared.png); }
+.v-table-row-alarm-cleared,
+.v-table-row-alarm-cleared-noack { 
+  border-top: 2px solid #999 !important;
+}
+.v-table-row-alarm-cleared-noack { 
+  font-weight: bold;
+}
+.v-table-row-alarm-cleared.v-table-row,
+.v-table-row-alarm-cleared-noack.v-table-row {
+  background-color: #EEEEEE;
+}
+.v-table-row-alarm-cleared.v-table-row-odd,
+.v-table-row-alarm-cleared-noack.v-table-row-odd {
+  background-color: #E7E7E7;
+}
+.v-table-row-alarm-cleared .v-table-cell-content-bright,
+.v-table-row-alarm-cleared-noack .v-table-cell-content-bright 
+{
+  background-image: url(../../../images/bgCleared.png);
+}
 
 
 /******** Status Styles ********/
@@ -164,4 +287,29 @@ div.v-table-header-wrap {
 
 .vertex .status.critical{
 	fill:#CC0000;
+}
+
+.status-counter {
+  min-width: 8px;
+  height: 20px;
+  line-height: 20px;
+  margin-top: -11px;
+  padding: 0 6px;
+  font-weight: normal;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+  background: #e23442;
+  border: 1px solid #911f28;
+  border-radius: 11px;
+  background-image: -webkit-linear-gradient(top, #e8616c, #dd202f);
+  background-image: -moz-linear-gradient(top, #e8616c, #dd202f);
+  background-image: -o-linear-gradient(top, #e8616c, #dd202f);
+  background-image: linear-gradient(to bottom, #e8616c, #dd202f);
+  -webkit-box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.node-status-counter {
+  overflow: visible;
 }

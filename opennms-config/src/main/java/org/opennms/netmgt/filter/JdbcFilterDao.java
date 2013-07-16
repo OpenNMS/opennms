@@ -51,7 +51,8 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,6 +65,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class JdbcFilterDao implements FilterDao, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcFilterDao.class);
     private static final Pattern SQL_KEYWORD_PATTERN = Pattern.compile("\\s+(?:AND|OR|(?:NOT )?(?:LIKE|IN)|IS (?:NOT )?DISTINCT FROM)\\s+|(?:\\s+IS (?:NOT )?NULL|::(?:TIMESTAMP|INET))(?!\\w)|(?<!\\w)(?:NOT\\s+|IPLIKE(?=\\())", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern SQL_QUOTE_PATTERN = Pattern.compile("'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"");
 	private static final Pattern SQL_ESCAPED_PATTERN = Pattern.compile("###@(\\d+)@###");
@@ -132,7 +134,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     	final SortedMap<Integer, String> resultMap = new TreeMap<Integer, String>();
         String sqlString;
 
-        LogUtils.debugf(this, "Filter.getNodeMap(%s)", rule);
+        LOG.debug("Filter.getNodeMap({})", rule);
 
         // get the database connection
         Connection conn = null;
@@ -143,7 +145,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // parse the rule and get the sql select statement
             sqlString = getNodeMappingStatement(rule);
-            LogUtils.debugf(this, "Filter.getNodeMap(%s): SQL statement: %s", rule, sqlString);
+            LOG.debug("Filter.getNodeMap({}): SQL statement: {}", rule, sqlString);
 
             // execute query
             final Statement stmt = conn.createStatement();
@@ -158,13 +160,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                 }
             }
         } catch (final FilterParseException e) {
-            LogUtils.warnf(this, e, "Filter Parse Exception occurred getting node map.");
+            LOG.warn("Filter Parse Exception occurred getting node map.", e);
             throw new FilterParseException("Filter Parse Exception occurred getting node map: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
-            LogUtils.warnf(this, e, "SQL Exception occurred getting node map.");
+            LOG.warn("SQL Exception occurred getting node map.", e);
             throw new FilterParseException("SQL Exception occurred getting node map: " + e.getLocalizedMessage(), e);
         } catch (final Throwable e) {
-            LogUtils.errorf(this, e, "Exception getting database connection.");
+            LOG.error("Exception getting database connection.", e);
             throw new UndeclaredThrowableException(e);
         } finally {
             d.cleanUp();
@@ -179,7 +181,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         final Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>(new InetAddressComparator());
         String sqlString;
 
-        LogUtils.debugf(this, "Filter.getIPAddressServiceMap(%s)", rule);
+        LOG.debug("Filter.getIPAddressServiceMap({})", rule);
 
         // get the database connection
         Connection conn = null;
@@ -190,7 +192,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // parse the rule and get the sql select statement
             sqlString = getIPServiceMappingStatement(rule);
-            LogUtils.debugf(this, "Filter.getIPAddressServiceMap(%s): SQL statement: %s", rule, sqlString);
+            LOG.debug("Filter.getIPAddressServiceMap({}): SQL statement: {}", rule, sqlString);
 
             // execute query
             final Statement stmt = conn.createStatement();
@@ -215,16 +217,16 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
 
         } catch (final FilterParseException e) {
-        	LogUtils.warnf(this, e, "Filter Parse Exception occurred getting IP Service List.");
+        	LOG.warn("Filter Parse Exception occurred getting IP Service List.", e);
             throw new FilterParseException("Filter Parse Exception occurred getting IP Service List: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
-            LogUtils.warnf(this, e, "SQL Exception occurred getting IP Service List.");
+            LOG.warn("SQL Exception occurred getting IP Service List.", e);
             throw new FilterParseException("SQL Exception occurred getting IP Service List: " + e.getLocalizedMessage(), e);
         } catch (final RuntimeException e) {
-            LogUtils.errorf(this, e, "Unexpected exception getting database connection.");
+            LOG.error("Unexpected exception getting database connection.", e);
             throw e;
         } catch (final Error e) {
-            LogUtils.errorf(this, e, "Unexpected exception getting database connection.");
+            LOG.error("Unexpected exception getting database connection.", e);
             throw e;
         } finally {
             d.cleanUp();
@@ -253,7 +255,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     	final List<InetAddress> resultList = new ArrayList<InetAddress>();
         String sqlString;
 
-        LogUtils.debugf(this, "Filter.getIPAddressList(%s)", rule);
+        LOG.debug("Filter.getIPAddressList({})", rule);
 
         // get the database connection
         Connection conn = null;
@@ -271,7 +273,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             conn = getDataSource().getConnection();
             d.watch(conn);
 
-            LogUtils.debugf(this, "Filter.getIPAddressList(%s): SQL statement: %s", rule, sqlString);
+            LOG.debug("Filter.getIPAddressList({}): SQL statement: {}", rule, sqlString);
 
             // execute query and return the list of ip addresses
             final Statement stmt = conn.createStatement();
@@ -288,19 +290,19 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
 
         } catch (final FilterParseException e) {
-            LogUtils.warnf(this, e, "Filter Parse Exception occurred getting IP List.");
+            LOG.warn("Filter Parse Exception occurred getting IP List.", e);
             throw new FilterParseException("Filter Parse Exception occurred getting IP List: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
-            LogUtils.warnf(this, e, "SQL Exception occurred getting IP List.");
+            LOG.warn("SQL Exception occurred getting IP List.", e);
             throw new FilterParseException("SQL Exception occurred getting IP List: " + e.getLocalizedMessage(), e);
         } catch (final Throwable e) {
-            LogUtils.errorf(this, e, "Exception getting database connection.");
+            LOG.error("Exception getting database connection.", e);
             throw new UndeclaredThrowableException(e);
         } finally {
             d.cleanUp();
         }
 
-        LogUtils.debugf(this, "Filter.getIPAddressList(%s): resultList = %s", rule, resultList);
+        LOG.debug("Filter.getIPAddressList({}): resultList = {}", rule, resultList);
         return resultList;
     }
 
@@ -331,7 +333,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         boolean matches = false;
         String sqlString;
 
-        LogUtils.debugf(this, "Filter.isRuleMatching(%s)", rule);
+        LOG.debug("Filter.isRuleMatching({})", rule);
 
         final DBUtils d = new DBUtils(getClass());
 
@@ -343,7 +345,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule) + " LIMIT 1";
-            LogUtils.debugf(this, "Filter.isRuleMatching(%s): SQL statement: %s", rule, sqlString);
+            LOG.debug("Filter.isRuleMatching({}): SQL statement: {}", rule, sqlString);
 
             // execute query and return the list of ip addresses
             final Statement stmt = conn.createStatement();
@@ -354,15 +356,15 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             // we only want to check if zero or one rows were fetched, so just
             // return the output from rset.next()
             matches = rset.next();
-            LogUtils.debugf(this, "isRuleMatching: rule \"%s\" %s an entry in the database", rule, matches? "matches" : "does not match");
+            LOG.debug("isRuleMatching: rule \"{}\" {} an entry in the database", rule, matches? "matches" : "does not match");
         } catch (final FilterParseException e) {
-            LogUtils.warnf(this, e, "Filter Parse Exception occurred testing rule \"%s\" for matching results.", rule);
+            LOG.warn("Filter Parse Exception occurred testing rule \"{}\" for matching results.", rule, e);
             throw new FilterParseException("Filter Parse Exception occurred testing rule \"" + rule + "\" for matching results: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
-            LogUtils.warnf(this, e, "SQL Exception occurred testing rule \"%s\" for matching results.");
+            LOG.warn("SQL Exception occurred testing rule \"{}\" for matching results.", e);
             throw new FilterParseException("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e.getLocalizedMessage(), e);
         } catch (final Throwable e) {
-            LogUtils.errorf(this, e, "Exception getting database connection.");
+            LOG.error("Exception getting database connection.", e);
             throw new UndeclaredThrowableException(e);
         } finally {
             d.cleanUp();
@@ -372,6 +374,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
 	/** {@inheritDoc} */
+    @Override
     public void validateRule(final String rule) throws FilterParseException {
         // Since parseRule does not do complete syntax checking,
         // we need to call a function that will actually execute the generated SQL
@@ -571,12 +574,12 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             regex.appendTail(tempStringBuff);
             if (tempStringBuff.substring(tempIndex).indexOf('\'') > -1) {
                 final String message = "Unmatched ' in filter rule '" + rule + "'";
-				LogUtils.errorf(this, message);
+				LOG.error(message);
                 throw new FilterParseException(message);
             }
             if (tempStringBuff.substring(tempIndex).indexOf('"') > -1) {
                 final String message = "Unmatched \" in filter rule '" + rule + "'";
-				LogUtils.errorf(this, message);
+				LOG.error(message);
                 throw new FilterParseException(message);
             }
             sqlRule = tempStringBuff.toString();
@@ -664,7 +667,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             final Table table = m_databaseSchemaConfigFactory.findTableByVisibleColumn(column);
             if(table == null) {
                 final String message = "Could not find the column '" + column +"' in filter rule";
-				LogUtils.errorf(this, message);
+				LOG.error(message);
                 throw new FilterParseException(message);
             }
             if (!tables.contains(table)) {

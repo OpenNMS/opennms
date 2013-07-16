@@ -71,6 +71,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getAttributeType()
 	 */
+        @Override
 	public CollectionAttributeType getAttributeType() {
 		return m_attribType;
 	}
@@ -78,6 +79,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
 	 */
+        @Override
 	public String getName() {
 		return m_name;
 	}
@@ -85,6 +87,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
 	 */
+        @Override
 	public String getNumericValue() {
 		return m_value;
 	}
@@ -92,6 +95,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
 	 */
+        @Override
 	public CollectionResource getResource() {
 		return m_resource;
 	}
@@ -99,6 +103,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getStringValue()
 	 */
+        @Override
 	public String getStringValue() {
 		return m_value;
 	}
@@ -106,6 +111,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
 	 */
+        @Override
 	public boolean shouldPersist(ServiceParameters params) {
 		return true;
 	}
@@ -113,6 +119,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
 	 */
+        @Override
 	public String getType() {
 		return m_attribType.getType();
 	}
@@ -120,6 +127,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+        @Override
 	public String toString() {
 		return "TcaCollectionAttribute " + m_name + "=" + m_value;
 	}

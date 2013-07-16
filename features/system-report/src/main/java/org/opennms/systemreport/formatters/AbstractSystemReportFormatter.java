@@ -38,7 +38,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.ByteArrayResource;
@@ -46,6 +47,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public abstract class AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSystemReportFormatter.class);
     protected OutputStream m_outputStream = null;
     private String m_output;
 
@@ -56,6 +58,7 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
         return m_output;
     }
 
+    @Override
     public void setOutput(final String output) {
         m_output = output;
     }
@@ -64,37 +67,45 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
         return m_outputStream;
     }
 
+    @Override
     public void setOutputStream(final OutputStream stream) {
         m_outputStream = stream;
     }
 
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
+    @Override
     public String getName() {
-        LogUtils.warnf(this, "Plugin did not implement getFormatName()! Using the class name: %s", this.getClass().getName());
+        LOG.warn("Plugin did not implement getFormatName()! Using the class name: {}", this.getClass().getName());
         return this.getClass().getName();
     }
 
+    @Override
     public String getDescription() {
-        LogUtils.warnf(this, "Plugin %s did not implement getDescription()! Using the format name.", getName());
+        LOG.warn("Plugin {} did not implement getDescription()! Using the format name.", getName());
         return this.getName();
     }
 
+    @Override
     public void write(final SystemReportPlugin plugin) {
-        LogUtils.warnf(this, "Plugin %s did not implement write()! No data was written.", getName());
+        LOG.warn("Plugin {} did not implement write()! No data was written.", getName());
     }
 
+    @Override
     public void begin() {
         if (needsOutputStream() && m_outputStream == null) {
-            LogUtils.errorf(this, "The output stream is not set and this formatter requires an output stream.");
+            LOG.error("The output stream is not set and this formatter requires an output stream.");
         }
     }
 
+    @Override
     public void end() {
     }
     
+    @Override
     public final int compareTo(final SystemReportFormatter o) { 
         return new CompareToBuilder()
             .append(this.getName(), (o == null? null:o.getName()))
@@ -131,7 +142,7 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
                     return sb.toString();
                 }
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "Unable to get inputstream for resource '%s'", r);
+                LOG.warn("Unable to get inputstream for resource '{}'", r, e);
                 return null;
             } finally {
                 IOUtils.closeQuietly(br);

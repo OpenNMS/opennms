@@ -48,6 +48,7 @@ public class TestAgentTest extends TestCase {
         
     private TestAgent m_agent;
 
+    @Override
     protected void setUp() throws Exception {
         m_agent = new TestAgent();
         Properties agentData = new Properties();

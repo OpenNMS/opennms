@@ -31,6 +31,8 @@ package org.opennms.netmgt.asterisk.agi.scripts;
 import org.asteriskjava.fastagi.AgiChannel;
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.AgiRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A fairly useless AGI script that reads the lyrics of
@@ -43,10 +45,12 @@ import org.asteriskjava.fastagi.AgiRequest;
  * @version $Id: $
  */
 public class LouieLouieLyricsAgiScript extends BaseOnmsAgiScript {
+    private static final Logger LOG = LoggerFactory.getLogger(LouieLouieLyricsAgiScript.class);
 
     /** {@inheritDoc} */
+    @Override
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
-        log().debug("Reading lyrics of Louie, Louie to user");
+        LOG.debug("Reading lyrics of Louie, Louie to user");
         streamFile("lyrics-louie-louie");
     }
 

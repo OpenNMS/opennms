@@ -37,8 +37,8 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -192,7 +192,6 @@ public class NrtController {
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
      */
-    @SuppressWarnings("unchecked")
     private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());

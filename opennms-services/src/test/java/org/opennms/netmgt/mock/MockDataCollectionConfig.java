@@ -170,30 +170,37 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         getAttrList().add(attrType);
     }
 
+    @Override
     public List<String> getRRAList(String collectionName) {
         return new ArrayList<String>(0);
     }
 
+    @Override
     public String getRrdPath() {
         return "/tmp";
     }
 
+    @Override
     public String getSnmpStorageFlag(String collectionName) {
         return SnmpCollector.SNMP_STORAGE_PRIMARY;
     }
 
+    @Override
     public int getStep(String collectionName) {
         return 300;
     }
 
+    @Override
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         return getAttrList();
     }
 
+    @Override
     public Map<String,ResourceType> getConfiguredResourceTypes() {
         return new TreeMap<String, ResourceType>();
     }
 
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdPath()));
@@ -203,18 +210,22 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         return repo;
     }
 
+    @Override
     public DatacollectionConfig getRootDataCollection() {
         return new DatacollectionConfig();
     }
 
+    @Override
     public List<String> getAvailableDataCollectionGroups() {
         return null;
     }
 
+    @Override
     public List<String> getAvailableSystemDefs() {
         return null;
     }
 
+    @Override
     public List<String> getAvailableMibGroups() {
         return null;
     }

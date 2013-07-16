@@ -83,7 +83,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
      */
     public SystemDefForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("System Definition Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
 
         // Adding all groups already defined on this source
@@ -102,10 +102,10 @@ public abstract class SystemDefForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -146,6 +146,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(ClickEvent event) {
         Button source = event.getButton();
         if (source == save) {
@@ -161,7 +162,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
             setReadOnly(false);
         }
         if (source == delete) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the System Definition" + getSystemDef().getName() + "?<br/>This action cannot be undone.",
@@ -169,6 +170,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         setVisible(false);

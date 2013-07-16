@@ -39,7 +39,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -63,6 +64,7 @@ import org.xbill.DNS.Update;
  * @version $Id: $
  */
 public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ReverseDnsProvisioningAdapter.class);
     
     /*
      * A read-only DAO will be set by the Provisioning Daemon.
@@ -81,10 +83,11 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {        
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
-            log().info("DNS property found: "+dnsServer);
+            LOG.info("DNS property found: {}", dnsServer);
             if (dnsServer.contains(":")) {
                 final String[] serverAddress = dnsServer.split(":");
                 m_resolver = new SimpleResolver(serverAddress[0]);
@@ -100,7 +103,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
                 m_resolver.setTSIGKey(TSIG.fromString(m_signature));
             }
         } else {
-            log().warn("no DNS server configured, ReverseDnsProvisioningAdapter will not do anything!");
+            LOG.warn("no DNS server configured, ReverseDnsProvisioningAdapter will not do anything!");
         }
     }
     
@@ -136,6 +139,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -152,7 +156,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
         if (m_resolver == null) {
             return;
         }
-        log().info("processPendingOperationForNode: Handling Operation: "+op);
+        LOG.info("processPendingOperationForNode: Handling Operation: {}", op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
             doUpdate(op);
         } else if (op.getType() == AdapterOperationType.DELETE) {
@@ -160,14 +164,14 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             //do nothing in this adapter
         } else {
-            log().warn("unknown operation: " + op.getType());
+            LOG.warn("unknown operation: {}", op.getType());
         }
     }
 
     private void doUpdate(AdapterOperation op) {
-        log().debug("doUpdate: operation: " + op.getType().name());
+        LOG.debug("doUpdate: operation: {}", op.getType().name());
         for (ReverseDnsRecord record : m_reverseDnsProvisioningAdapterService.get(op.getNodeId()) ) {
-            log().debug("doUpdate: ReverseDnsRecord: hostname: " + record.getHostname() + " zone: " + record.getZone() + " ip address: " + record.getIp().getHostAddress());
+            LOG.debug("doUpdate: ReverseDnsRecord: hostname: {} zone: {} ip address: {}", record.getIp().getHostAddress(), record.getHostname(), record.getZone());
             try {
                 Update update = new Update(Name.fromString(record.getZone()));
                 Name ptrRecord=ReverseMap.fromAddress(record.getIp());
@@ -175,7 +179,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
                 m_resolver.send(update);
                 m_reverseDnsProvisioningAdapterService.update(op.getNodeId(),record);
             } catch (Exception e) {
-                log().error("updateNode: Error handling updated event.", e);
+                LOG.error("updateNode: Error handling updated event.", e);
                 sendAndThrow(op.getNodeId(), e);
             }
         }
@@ -192,9 +196,4 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
         builder.setNodeid(nodeId);
         return builder;
     }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(ReverseDnsProvisioningAdapter.class);
-    }
-
 }

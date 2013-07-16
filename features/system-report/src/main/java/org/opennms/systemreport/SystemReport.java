@@ -50,13 +50,14 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SystemReport extends Bootstrap {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemReport.class);
     final static Pattern m_pattern = Pattern.compile("^-D(.*?)=(.*)$");
 
     public static void main(String[] args) throws Exception {
@@ -89,8 +90,6 @@ public class SystemReport extends Bootstrap {
             System.setProperty("rrd.binary", "/usr/bin/rrdtool");
         }
 
-        setupLogging("WARN");
-
         final CommandLineParser parser = new PosixParser();
 
         final Options options = new Options();
@@ -101,7 +100,6 @@ public class SystemReport extends Bootstrap {
         options.addOption("l", "list-formats",   false, "list the available output formats");
         options.addOption("f", "format",         true,  "the format to output");
         options.addOption("o", "output",         true,  "the file to write output to");
-        options.addOption("x", "log-level",      true,  "the log level to log at (default: INFO)");
         
         final CommandLine line = parser.parse(options, args, false);
         final Set<String> plugins = new LinkedHashSet<String>();
@@ -113,10 +111,6 @@ public class SystemReport extends Bootstrap {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("system-report.sh [options]", options);
             System.exit(0);
-        }
-
-        if (line.hasOption("x")) {
-            setupLogging(line.getOptionValue("x"));
         }
 
         // format and output file
@@ -168,7 +162,7 @@ public class SystemReport extends Bootstrap {
             }
         }
         if (formatter == null) {
-            LogUtils.errorf(this, "Unknown format '%s'!", m_format);
+            LOG.error("Unknown format '{}'!", m_format);
             System.exit(1);
         }
 
@@ -184,13 +178,13 @@ public class SystemReport extends Bootstrap {
                     f.delete();
                     stream = new FileOutputStream(f, false);
                 } catch (final FileNotFoundException e) {
-                    LogUtils.errorf(SystemReport.class, e, "Unable to write to '%s'", m_output);
+                    LOG.error("Unable to write to '{}'", m_output, e);
                     System.exit(1);
                 }
             }
 
             if (m_output.equals("-") && !formatter.canStdout()) {
-                LogUtils.errorf(this, "%s formatter does not support writing to STDOUT!", formatter.getName());
+                LOG.error("{} formatter does not support writing to STDOUT!", formatter.getName());
                 System.exit(1);
             }
 
@@ -211,12 +205,12 @@ public class SystemReport extends Bootstrap {
             for (final String pluginName : plugins) {
                 final SystemReportPlugin plugin = pluginMap.get(pluginName);
                 if (plugin == null) {
-                    LogUtils.warnf(this, "No plugin named '%s' found, skipping.", pluginName);
+                    LOG.warn("No plugin named '{}' found, skipping.", pluginName);
                 } else {
                     try {
                         formatter.write(plugin);
                     } catch (final Exception e) {
-                        LogUtils.errorf(this, e, "An error occurred calling plugin '%s'", plugin.getName());
+                        LOG.error("An error occurred calling plugin '{}'", plugin.getName(), e);
                     }
                     if (stream != null) stream.flush();
                 }
@@ -224,7 +218,7 @@ public class SystemReport extends Bootstrap {
             formatter.end();
             if (stream != null) stream.flush();
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "An error occurred writing plugin data to output.");
+            LOG.error("An error occurred writing plugin data to output.", e);
             System.exit(1);
         }
 
@@ -269,17 +263,6 @@ public class SystemReport extends Bootstrap {
         }
     }
 
-    private static void setupLogging(final String level) {
-        final Properties logConfig = new Properties();
-        logConfig.setProperty("log4j.reset", "true");
-        logConfig.setProperty("log4j.rootCategory", "WARN, CONSOLE");
-        logConfig.setProperty("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
-        logConfig.setProperty("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-        logConfig.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-        logConfig.setProperty("log4j.logger.org.opennms.systemreport", level);
-        PropertyConfigurator.configure(logConfig);
-    }
-    
     public void setServiceRegistry(final ServiceRegistry registry) {
         m_serviceRegistry = registry;
     }

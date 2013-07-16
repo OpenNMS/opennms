@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 
@@ -43,6 +43,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 	}
 
     /** {@inheritDoc} */
+        @Override
     public int deletePreviousEventsForAlarm(Integer id, OnmsEvent e) throws DataAccessException {
         String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
         Object[] values = {id, e.getId()};

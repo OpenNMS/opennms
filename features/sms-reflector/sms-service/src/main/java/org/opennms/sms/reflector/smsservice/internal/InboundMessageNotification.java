@@ -81,6 +81,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
 	}
 
 	/** {@inheritDoc} */
+    @Override
 	public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
 	    
 	    deleteMessage(gateway, msg);
@@ -97,7 +98,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
         try {
             listener.process(gateway, msgType, msg);
         } catch (Throwable e) {
-            log.error("Unexpected exception processing InboundMessage "+ msg + " listener: " + listener, e);
+            log.error("Unexpected exception processing InboundMessage {} listener: {}", msg, listener, e);
         }
     }
 
@@ -105,7 +106,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
         try {
             gateway.deleteMessage(msg);
         } catch (Throwable e) {
-            log.error("Unable to delete message " + msg, e);
+            log.error("Unable to delete message {}", msg, e);
         }
     }
 	
