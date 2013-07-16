@@ -302,17 +302,17 @@
         <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
           <% if( "true".equals(acknowledgeEvent) ) { %>
 						<% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-						<td valign="top" rowspan="3" class="divider">
+						<td valign="top" rowspan="4" class="divider">
 									<input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
 							</td>
 							<% } else { %>
-								<td valign="top" rowspan="3" class="divider">&nbsp;</td>
+								<td valign="top" rowspan="4" class="divider">&nbsp;</td>
 							<% } %>
             <% } %>
 
-          <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
+          <td valign="top" rowspan="4" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
-          <td valign="top" rowspan="3" class="divider bright"> 
+          <td valign="top" rowspan="4" class="divider bright"> 
             <strong><%= events[i].getSeverity().getLabel() %></strong>
             <% Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
@@ -415,6 +415,10 @@
        
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
           <td colspan="4"><%=this.getTextDesc(events[i].getDescription())%></td>
+        </tr>
+
+        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
+          <td colspan="4"><%=events[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>

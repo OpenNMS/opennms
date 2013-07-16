@@ -427,7 +427,8 @@
 				      <% } %>
 				      </c:if>
 				</th>
-				<th width="48%">Description</th>
+				<th width="24%">Description</th>
+                                <th width="24%">Log Message</th>
 			</tr>
 		</thead>
 
@@ -583,6 +584,7 @@
           </c:if>
           </td>
           <td class="divider"><%=this.getTextDesc(alarms[i].getDescription())%></td>
+          <td class="divider"><%=alarms[i].getLogMsg()%></td>
        </tr> 
       <% } /*end for*/%>
 	
