@@ -477,7 +477,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     @Override
     public List<?> getItemIds(int startIndex, int numberOfItems) {
         int endIndex = startIndex + numberOfItems;
-        if (endIndex >= size()) endIndex = size() - 1;
+        if (endIndex > size()) endIndex = size() - 1;
         Page page = new Page(1000, size);  // only get 10000 items at once
         page.offset = startIndex;
         List<K> itemIds = new ArrayList<K>();
