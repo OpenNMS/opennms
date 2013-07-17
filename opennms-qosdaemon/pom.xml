@@ -428,7 +428,7 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </releases>
-      <id>sourceforge</id>
+      <id>openoss-repo</id>
       <name>Sourceforge OSSbeans Release Repository</name>
       <url>http://maven.opennms.org/content/groups/openoss.sourceforge.net-release</url>
     </repository>

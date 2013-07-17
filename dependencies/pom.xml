@@ -35,7 +35,6 @@
     <module>netty</module>
     <module>quartz</module>
     <module>rancid</module>
-    <!-- <module>rrd4j</module> -->
     <module>rxtx</module>
     <module>servlet</module>
     <module>snmp4j</module>
