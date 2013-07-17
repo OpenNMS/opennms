@@ -14,7 +14,7 @@
         <repository>
             <id>atlassian-public</id>
             <name>Atlassian public repo</name>
-            <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
+            <url>http://maven.opennms.org/content/groups/atlassian.com-release/</url>
         </repository>
     </repositories>
 
