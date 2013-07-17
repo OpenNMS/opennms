@@ -32,21 +32,20 @@ package org.opennms.web.map;
  * Created on 8-giu-2005
  *
  */
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.concurrent.Callable;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.map.view.Manager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.logging.Logging;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
- * <p>LoadMapsController class.</p>
+ * <p>AddMapsController class.</p>
  *
  * @author mmigliore
  *
@@ -55,50 +54,34 @@ import org.springframework.web.servlet.ModelAndView;
  * @version $Id: $
  * @since 1.8.1
  */
-public class LoadMapsController extends MapsLoggingController {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(LoadMapsController.class);
+public abstract class MapsLoggingController implements Controller, ServletContextAware {
+
+    private ServletContext m_servletContext;
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        m_servletContext = servletContext;
+    }
+    
+    public ServletContext getServletContext() {
+        return m_servletContext;
+    }
 
 
-	private Manager manager;
-	
-	
-	/**
-	 * <p>Getter for the field <code>manager</code>.</p>
-	 *
-	 * @return a {@link org.opennms.web.map.view.Manager} object.
-	 */
-	public Manager getManager() {
-		return manager;
-	}
+    /** {@inheritDoc} */
+    @Override
+    final public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        return Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Callable<ModelAndView>() {
 
-	/**
-	 * <p>Setter for the field <code>manager</code>.</p>
-	 *
-	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
-	 */
-	public void setManager(Manager manager) {
-		this.manager = manager;
-	}
+            @Override
+            public ModelAndView call() throws Exception {
+                return handleRequestInternal(request, response);
+            }
 
-	/** {@inheritDoc} */
-        @Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		LOG.debug("Loading Maps");
-		
-		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-		try {
-			bw.write(ResponseAssembler.getLoadMapsResponse(manager.getVisibleMapsMenu(user)));
-		} catch (Throwable e) {
-			LOG.error("Error while loading visible maps for user:{}", user,e);
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADMAPS_ACTION));
-		} finally {
-			bw.close();
-		}
+        });
 
-		return null;
-	}
+    }
+
+    abstract protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

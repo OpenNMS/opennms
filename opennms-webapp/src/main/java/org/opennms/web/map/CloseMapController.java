@@ -39,14 +39,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.MDC;
-import org.opennms.core.logging.Logging;
-import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.view.*;
+import org.opennms.web.map.view.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * <p>CloseMapController class.</p>
@@ -58,7 +54,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class CloseMapController implements Controller {
+public class CloseMapController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CloseMapController.class);
 
@@ -88,9 +84,8 @@ public class CloseMapController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		
 		BufferedWriter  bw = new BufferedWriter(new OutputStreamWriter(response

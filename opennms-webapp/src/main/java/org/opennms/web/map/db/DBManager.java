@@ -100,8 +100,15 @@ public class DBManager extends Manager {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public DBManager() throws MapsException {
-        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
-            LOG.debug("Instantiating DBManager (using Vault)");
+        Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                LOG.debug("Instantiating DBManager (using Vault)");
+            }
+            
+        });
+        
     }
 
     /**
@@ -110,10 +117,12 @@ public class DBManager extends Manager {
      * @param params a java$util$Map object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public DBManager(java.util.Map<String, String> params)
+    public DBManager(final java.util.Map<String, String> params)
             throws MapsException {
-        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
-            LOG.debug("Instantiating DBManager with params: {}", params);
+        Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+            public void run() { LOG.debug("Instantiating DBManager with params: {}", params); }
+        });
+
         String url = params.get("url");
         String driver = params.get("driver");
         String user = params.get("user");
