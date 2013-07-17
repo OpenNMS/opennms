@@ -1511,12 +1511,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rrd4j-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>rxtx-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
