@@ -26,18 +26,18 @@ package org.opennms.groovy.poller.remote;
 
 import groovy.swing.SwingBuilder;
 
-import java.awt.BorderLayout
-import java.awt.CardLayout
-import java.awt.FlowLayout
-import java.text.SimpleDateFormat
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.text.SimpleDateFormat;
 
-import javax.swing.BorderFactory
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.poller.remote.MonitoringLocationListCellRenderer;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.slf4j.Logger;
@@ -91,7 +91,12 @@ class GroovyPollerView implements InitializingBean {
 		                    	label(text:'Current monitoring locations: ')
 		                    }
 		                    td {
-		                        m_monLocation = comboBox(items:getCurrentMonitoringLocations(), renderer:new MonitoringLocationListCellRenderer())
+                            def locations = getCurrentMonitoringLocations()
+                            if (locations.size() > 0) {
+		                            m_monLocation = comboBox(items:locations, renderer:new MonitoringLocationListCellRenderer())
+                            } else {
+                                label(text:'No monitoring locations found')
+                            }
 		                    }
 		                }
 		                tr {
@@ -128,16 +133,20 @@ class GroovyPollerView implements InitializingBean {
    }
    
    private void doRegistration() {
-       String loc = m_monLocation.selectedItem.name;
-       System.err.println("Registering for location "+loc)
-       m_frontEnd.register(loc);
+       String loc = m_monLocation?.selectedItem?.name;
+       if (loc == null) {
+           LOG.warn("Null monitoring location selected");
+       } else {
+          System.err.println("Registering for location " + loc)
+          m_frontEnd.register(loc);
+       }
    }
    
    private List getCurrentMonitoringLocations() {
 	   try {
 		   return m_frontEnd.getMonitoringLocations();
 	   } catch (final Exception e) {
-		   LOG.errorf("an error occurred getting the list of monitoring locations", e);
+		   LOG.error("an error occurred getting the list of monitoring locations", e);
            System.exit(1);
 	   }
    }
