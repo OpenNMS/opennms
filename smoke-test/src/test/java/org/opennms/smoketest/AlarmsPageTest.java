@@ -60,7 +60,6 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
-        assertTrue(selenium.isTextPresent("alarm is outstanding"));
         assertTrue(selenium.isElementPresent("//input[@value='Go']"));
         assertTrue(selenium.isElementPresent("css=input[type='submit']"));
         selenium.click("css=a[title='Alarms System Page']");
@@ -85,4 +84,17 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
     }
 
+    @Test
+    public void testAlarmLink() {
+        selenium.click("link=All alarms (summary)");
+        waitForPageToLoad();
+        assertTrue(selenium.isTextPresent("alarm is outstanding"));
+        assertTrue(selenium.isElementPresent("//input[@value='Go']"));
+        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
+        selenium.click("//a[contains(@href,'alarm/detail.htm')]");
+        waitForPageToLoad();
+        assertTrue(selenium.isTextPresent("Severity"));
+        assertTrue(selenium.isTextPresent("Ticket State"));
+        assertTrue(selenium.isTextPresent("Acknowledgment and Severity Actions"));
+    }
 }
