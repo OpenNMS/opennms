@@ -242,12 +242,21 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
 
         @Override
         public void trapReceived(final TrapNotification trapNotification) {
+            LOG.debug("Received Trap... {}", trapNotification);
+
+            if (trapNotification != null) {
+                LOG.debug(trapNotification.getClass().getName());
+                TestTrapProcessor processor = (TestTrapProcessor)trapNotification.getTrapProcessor();
+                LOG.debug("processor is {}", processor);
+            }
+
             m_traps.add(trapNotification);
             m_trapCount++;
         }
 
         @Override
         public void trapError(final int error, final String msg) {
+            LOG.debug("Received Trap Error... {}:{}", error, msg);
             m_errors.add(msg);
         }
 
@@ -266,7 +275,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         @Override
         public void setTimeStamp(long timeStamp) {}
         @Override
-        public void setVersion(String version) {}
+        public void setVersion(String version) { LOG.debug("Processed Trap with version: {}", version); }
         @Override
         public void setAgentAddress(InetAddress agentAddress) {}
         @Override
