@@ -111,16 +111,19 @@ END
 	exit 1;
 }
 
-if (not defined $JAVA_HOME) {
+if (not defined $JAVA_HOME or $JAVA_HOME eq "") {
 	debug("--java-home not passed, searching for \$JAVA_HOME");
-	if (exists $ENV{'JAVA_HOME'} and -e $ENV{'JAVA_HOME'}) {
+	if (exists $ENV{'JAVA_HOME'} and -e $ENV{'JAVA_HOME'} and $ENV{'JAVA_HOME'} ne "") {
 		$JAVA_HOME = $ENV{'JAVA_HOME'};
 	} else {
 		warning("\$JAVA_HOME is not set, things might go wonky.  Or not.");
 	}
 }
-$ENV{'JAVA_HOME'} = $JAVA_HOME;
-$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
+
+if (defined $JAVA_HOME and $JAVA_HOME ne "") {
+	$ENV{'JAVA_HOME'} = $JAVA_HOME;
+	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
+}
 
 if (not exists $ENV{'JAVA_VENDOR'}) {
 	warning("You do not have \$JAVA_VENDOR set. This is probably OK, but on some platforms");
