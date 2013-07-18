@@ -90,7 +90,6 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	categories.categoryname,
 	node.nodelabel,
 	node.nodeid,
 	snmpinterface.snmpifname,
@@ -104,22 +103,12 @@ RIGHT JOIN
 	snmpinterface
 ON
 	(node.nodeid = snmpinterface.nodeid)
-JOIN
-	category_node
-ON
-	(category_node.nodeid = node.nodeid)
-JOIN
-	categories
-ON
-	(categories.categoryid = category_node.categoryid)
 WHERE
 	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
 	node.nodetype = 'A'
 ORDER BY
-	categories.categoryname,
 	node.nodelabel]]>
 	</queryString>
-	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
 	<field name="snmpifname" class="java.lang.String"/>
