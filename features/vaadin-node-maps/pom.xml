@@ -33,7 +33,7 @@
 				<artifactId>gwt-maven-plugin</artifactId>
 				<configuration>
 					<webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
 				</configuration>
 				<executions>
 					<execution>
