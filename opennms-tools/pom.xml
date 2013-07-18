@@ -14,6 +14,8 @@
     <module>opennms-rrd-stresser</module>
     <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>
+    <module>csv-requisitions</module>
+    <module>csv-address</module>
   </modules>
   <profiles>
     <profile>
@@ -31,6 +33,9 @@
         <module>jrobin-spike-hunter</module>
         <module>scriptd-event-proxy</module>
         <module>jrb-to-rrd-converter</module>
+        <module>jrb-to-rrd-converter</module>
+        <module>csv-requisitions</module>
+        <module>csv-address</module>
       </modules>
     </profile>
   </profiles>
