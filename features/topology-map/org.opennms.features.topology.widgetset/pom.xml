@@ -34,7 +34,7 @@
         <configuration>
           <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
           <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
-          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+          <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
         </configuration>
         <executions>
           <execution>
