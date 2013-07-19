@@ -36,12 +36,18 @@ import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.ServiceConfig;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 
+import com.google.common.base.CaseFormat;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
 /**
@@ -50,31 +56,47 @@ import com.vaadin.ui.TextField;
  * @author Markus von Rüden <mvr@opennms.com>
  * @see ServiceConfig
  */
+@SuppressWarnings("deprecation")
 public class ConfigForm extends Form implements ModelChangeListener<UiModel>, ClickListener {
-
-	private JmxConfigGeneratorApplication app;
-
+    private static final long serialVersionUID = -9179098093927051983L;
+    private JmxConfigGeneratorApplication app;
 	private ButtonPanel buttonPanel = new ButtonPanel(this);
 
-	public ConfigForm(JmxConfigGeneratorApplication app) {
+    public ConfigForm(JmxConfigGeneratorApplication app) {
 		this.app = app;
 		setImmediate(true);
 		setDescription(UIHelper.loadContentFromFile(getClass(), "/descriptions/ServiceConfiguration.html"));
-		setWriteThrough(true);
+		setFormFieldFactory(new com.vaadin.ui.DefaultFieldFactory() {
+            
+            @Override
+            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
+                if (MetaConfigModel.PASSWORD.equals(propertyId)) {
+                    PasswordField field = new PasswordField();
+                    field.setNullRepresentation("");
+                    field.setCaption(createCaptionByPropertyId(propertyId));
+                    return field;
+                }
+                return super.createField(item, propertyId, uiContext);
+            }
+        });
+		setBuffered(false);
 		setFooter(buttonPanel);
 	}
 
-	private Object[] createVisibleItemProperties() {
-		return new Object[] { MetaConfigModel.SERVICE_NAME, MetaConfigModel.JMXMP, MetaConfigModel.HOST,
-				MetaConfigModel.PORT, MetaConfigModel.AUTHENTICATE, MetaConfigModel.USER, MetaConfigModel.PASSWORD,
-				MetaConfigModel.SKIP_DEFAULT_VM, MetaConfigModel.RUN_WRITABLE_MBEANS };
-	}
+    @Override
+    public void modelChanged(UiModel newModel) {
+        setItemDataSource(new BeanItem<ServiceConfig>(newModel.getServiceConfig()));
+        setVisibleItemProperties(createVisibleItemProperties());
+        initFields();
+        updateDescriptions();
+        updateAuthenticationFields(false); // default -> hide those fields
+    }
 
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (buttonPanel.getNext().equals(event.getButton())) {
 			if (!isValid()) {
-				UIHelper.showValidationError(getWindow(),
+				UIHelper.showValidationError(
 						"There are still errors on this page. You cannot continue. Please check if all required fields have been filled.");
 				return;
 			}
@@ -85,11 +107,23 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 		}
 	}
 
+	private Object[] createVisibleItemProperties() {
+	    return new Object[] { MetaConfigModel.SERVICE_NAME, 
+	            MetaConfigModel.JMXMP,
+	            MetaConfigModel.HOST,
+	            MetaConfigModel.PORT,
+	            MetaConfigModel.AUTHENTICATE,
+	            MetaConfigModel.USER, 
+	            MetaConfigModel.PASSWORD,
+	            MetaConfigModel.SKIP_DEFAULT_VM,
+	            MetaConfigModel.RUN_WRITABLE_MBEANS };
+	}
 	/**
 	 * Toggles the visibility of user and password fields. The fields are shown
 	 * if "authenticate" checkbox is presssed. Otherwise they are not shown.
 	 */
 	private void updateAuthenticationFields(boolean visible) throws ReadOnlyException, ConversionException {
+	    getField(MetaConfigModel.AUTHENTICATE).setValue(visible);
 		getField(MetaConfigModel.USER).setVisible(visible);
 		getField(MetaConfigModel.PASSWORD).setVisible(visible);
 		if (!visible) {
@@ -111,10 +145,7 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 			}
 		});
 		((TextField) getField(MetaConfigModel.USER)).setNullRepresentation("");
-		((TextField) getField(MetaConfigModel.PASSWORD)).setNullRepresentation("");
-		((TextField) getField(MetaConfigModel.PASSWORD)).setSecret(true); // use
-																			// PasswordField
-																			// instead
+		((PasswordField) getField(MetaConfigModel.PASSWORD)).setNullRepresentation("");
 
 		final TextField serviceNameField = ((TextField) getField(MetaConfigModel.SERVICE_NAME));
 		serviceNameField.setNullRepresentation("");
@@ -143,7 +174,8 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 		for (Object property : getVisibleItemProperties()) {
 			String propName = property.toString();
 			if (getField(propName) != null && optionDescriptions.get(propName) != null) {
-				getField(propName).setDescription(optionDescriptions.get(propName));
+				// There is no tooltip description in Vaadin 7
+				//getField(propName).setDescription(optionDescriptions.get(propName));
 			}
 		}
 	}
@@ -174,14 +206,5 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 			optionDescriptions.put(ann.name().replaceAll("-", ""), ann.usage());
 		}
 		return optionDescriptions;
-	}
-
-	@Override
-	public void modelChanged(UiModel newModel) {
-		setItemDataSource(new BeanItem<ServiceConfig>(newModel.getServiceConfig()));
-		setVisibleItemProperties(createVisibleItemProperties());
-		initFields();
-		updateDescriptions();
-		updateAuthenticationFields(false); // default -> hide those fields
 	}
 }

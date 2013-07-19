@@ -28,119 +28,159 @@
 
 package org.opennms.features.topology.netutils.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 public class PingWindowTest {
 
 	PingWindow pingWindow;
 	PingWindow pingWindow2;
-	PingWindow pingWindow3;
-	Window mainWindow;
-	Application app;
-	
+	UI app;
+
+	boolean didNotify = false;
+
 	@Before
 	public void setUp() throws Exception {
+		didNotify = false;
+
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
+
+		pingWindow = new PingWindow(testNode1, "/opennms/ExecCommand.map?command=ping");
+		pingWindow2 = new PingWindow(null, "/opennms/ExecCommand.map?command=ping");
 		
-		pingWindow = new PingWindow(testNode1, "http://Localhost:8080/");
-		pingWindow2 = new PingWindow(null, "http://localhost:8080/");
-		pingWindow3 = new PingWindow(testNode1, "");
-		
-		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		app = new UI() { //Empty Application
+
+			private static final long serialVersionUID = -6761162156810032609L;
+
 			@Override
-			public void init() {}
+			public void init(VaadinRequest request) {}
+
+			@Override
+			public Page getPage() {
+				Page page = EasyMock.createMock(Page.class);
+				try {
+					EasyMock.expect(page.getLocation()).andReturn(new URI("http://localhost:8080/servlet/")).anyTimes();
+					page.showNotification(EasyMock.anyObject(Notification.class));
+					// If Notification.show() is called, then set didNotify to true
+					EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+						@Override
+						public Object answer() throws Throwable {
+							System.out.println("Notification was called: " + ((Notification)EasyMock.getCurrentArguments()[0]).getCaption());
+							didNotify = true;
+							return null;
+						}
+					}).anyTimes();
+				} catch (URISyntaxException e) {
+					// Should never be thrown
+				}
+				EasyMock.replay(page);
+				return page;
+			}
 		};
-		app.setMainWindow(mainWindow);
-		app.getMainWindow().addWindow(pingWindow);
-		app.getMainWindow().addWindow(pingWindow2);
-		app.getMainWindow().addWindow(pingWindow3);
+		app.addWindow(pingWindow);
+		app.addWindow(pingWindow2);
+		UI.setCurrent(app);
 	}
-	
+
 	@Test
 	public void testBuildURL_correctInput() {
 		pingWindow.numericalDataCheckBox.setValue(true);
 		pingWindow.packetSizeDropdown.setValue("32");
 		pingWindow.requestsField.setValue("100");
 		pingWindow.timeoutField.setValue("100");
-		assertNotNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNotNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertFalse(didNotify);
 	}
-	
-	@Test
-	public void testBuildURL_malformedURL() {
-		pingWindow3.numericalDataCheckBox.setValue(true);
-		pingWindow3.packetSizeDropdown.setValue("32");
-		pingWindow3.requestsField.setValue("100");
-		pingWindow3.timeoutField.setValue("100");
-		assertNull(pingWindow3.buildURL());
-	}
-	
+
 	@Test
 	public void testBuildURL_upperBounds() {
 		pingWindow.numericalDataCheckBox.setValue(true);
 		pingWindow.packetSizeDropdown.setValue("1024");
 		pingWindow.requestsField.setValue("10000");
 		pingWindow.timeoutField.setValue("10000");
-		assertNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertTrue(didNotify);
 	}
-	
+
 	@Test
 	public void testBuildURL_lowerBounds() {
 		pingWindow.packetSizeDropdown.setValue("16");
 		pingWindow.requestsField.setValue("0");
 		pingWindow.timeoutField.setValue("0");
-		assertNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertTrue(didNotify);
 	}
-	
+
 	@Test
 	public void testBuildURL_nonIntegerInput() {
 		pingWindow.numericalDataCheckBox.setValue(true);
 		pingWindow.packetSizeDropdown.setValue("1024");
 		pingWindow.requestsField.setValue("abcd");
 		pingWindow.timeoutField.setValue("abcd");
-		assertNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertTrue(didNotify);
 	}
-	
+
 	@Test
 	public void testBuildURL_negativeIntegers() {
 		pingWindow.numericalDataCheckBox.setValue(true);
 		pingWindow.packetSizeDropdown.setValue("1024");
 		pingWindow.requestsField.setValue("-99");
 		pingWindow.timeoutField.setValue("-1024");
-		assertNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertTrue(didNotify);
 	}
-	
+
 	@Test
 	public void testBuildURL_invalidRequests() {
 		pingWindow.numericalDataCheckBox.setValue(true);
 		pingWindow.packetSizeDropdown.setValue("1024");
 		pingWindow.requestsField.setValue("10000");
 		pingWindow.timeoutField.setValue("100");
-		assertNull(pingWindow.buildURL());
+		URL url = pingWindow.buildURL();
+		assertNull(url == null ? "null" : url.toString(), pingWindow.buildURL());
+		assertTrue(didNotify);
 	}
-	
+
 	@Test
 	public void testButtonClick() {
 		pingWindow.pingButton.click();
-		
+
 		pingWindow2.numericalDataCheckBox.setValue(true);
 		pingWindow2.packetSizeDropdown.setValue("32");
 		pingWindow2.requestsField.setValue("100");
 		pingWindow2.timeoutField.setValue("100");
 		pingWindow2.pingButton.click();
+		assertFalse(didNotify);
 	}
-	
+
 	@Test
 	public void testAttach() {
-		assertTrue(app.getMainWindow().getChildWindows().contains(pingWindow));
-		app.getMainWindow().removeWindow(pingWindow);
-		assertFalse(app.getMainWindow().getChildWindows().contains(pingWindow));
+		assertTrue(app.getWindows().contains(pingWindow));
+		app.removeWindow(pingWindow);
+		assertFalse(app.getWindows().contains(pingWindow));
+		assertFalse(didNotify);
 	}
 
 }

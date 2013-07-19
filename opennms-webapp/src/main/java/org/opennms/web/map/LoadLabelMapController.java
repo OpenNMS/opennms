@@ -40,17 +40,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
-import org.slf4j.MDC;
-import org.opennms.core.logging.Logging;
-import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.view.*;
-
+import org.opennms.web.map.view.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
@@ -62,7 +55,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @since 1.8.1
  */
 @SuppressWarnings("deprecation")
-public class LoadLabelMapController extends SimpleFormController {
+public class LoadLabelMapController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(LoadLabelMapController.class);
 
@@ -89,10 +82,9 @@ public class LoadLabelMapController extends SimpleFormController {
 	
 	/** {@inheritDoc} */
 	@Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		
 		try{

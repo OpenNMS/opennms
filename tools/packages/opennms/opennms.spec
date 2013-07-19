@@ -997,16 +997,6 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	fi
 fi
 
-for dir in controller daemon webapp; do
-	if [ -f "$RPM_INSTALL_PREFIX2/$dir" ]; then
-		printf -- "ERROR: not sure what to do... $RPM_INSTALL_PREFIX2/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
-	else
-		if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
-			mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
-		fi
-	fi
-done
-
 if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
 	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then

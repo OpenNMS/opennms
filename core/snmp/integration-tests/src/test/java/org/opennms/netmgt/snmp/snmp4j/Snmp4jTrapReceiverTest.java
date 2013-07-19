@@ -155,7 +155,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         assertEquals(0, m_trapCount);
         LOG.debug("ONMS: Register for Traps");
         final TestTrapListener trapListener = new TestTrapListener();
-        SnmpV3User user = new SnmpV3User("agalue", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
+        SnmpV3User user = new SnmpV3User("opennmsUser", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
         try {
             long start = System.currentTimeMillis();
 
@@ -209,6 +209,8 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
         pdu.send(hostAddress, 9162, "public");
+        
+        //Thread.sleep(10000);
 
         LOG.debug("Sending V3 Trap");
         SnmpV3TrapBuilder pduv3 = m_strategy.getV3TrapBuilder();
@@ -242,12 +244,21 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
 
         @Override
         public void trapReceived(final TrapNotification trapNotification) {
+            LOG.debug("Received Trap... {}", trapNotification);
+
+            if (trapNotification != null) {
+                LOG.debug(trapNotification.getClass().getName());
+                TestTrapProcessor processor = (TestTrapProcessor)trapNotification.getTrapProcessor();
+                LOG.debug("processor is {}", processor);
+            }
+
             m_traps.add(trapNotification);
             m_trapCount++;
         }
 
         @Override
         public void trapError(final int error, final String msg) {
+            LOG.debug("Received Trap Error... {}:{}", error, msg);
             m_errors.add(msg);
         }
 
@@ -266,7 +277,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         @Override
         public void setTimeStamp(long timeStamp) {}
         @Override
-        public void setVersion(String version) {}
+        public void setVersion(String version) { LOG.debug("Processed Trap with version: {}", version); }
         @Override
         public void setAgentAddress(InetAddress agentAddress) {}
         @Override

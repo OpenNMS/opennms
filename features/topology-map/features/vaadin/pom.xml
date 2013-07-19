@@ -27,8 +27,9 @@
             <feature>http-whiteboard</feature>
           </features>
           <bundles>
-            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.1.1</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/3.1.0</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.1.7</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.1</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/messagebox/1.1.1</bundle>
           </bundles>
         </configuration>
       </plugin>
@@ -36,13 +37,44 @@
   </build>
 
   <dependencies>
+<!-- Vaadin Update -->
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin</artifactId>
+      <artifactId>vaadin-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client-compiled</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-themes</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-shared</artifactId>
+        <version>${vaadinVersion}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-shared-deps</artifactId>
+        <version>1.0.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.7.2</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
+      <version>0.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -52,13 +84,18 @@
     <!-- this will actually get skipped because it's wrapped above -->
     <dependency>
       <groupId>org.vaadin.addons</groupId>
-      <artifactId>refresher</artifactId>
-      <version>1.1.1</version>
+      <artifactId>contextmenu</artifactId>
+      <version>4.2.1</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.vaadin.addons</groupId>
+    	<artifactId>refresher</artifactId>
+    	<version>1.2.1.7</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addons</groupId>
-      <artifactId>contextmenu</artifactId>
-      <version>3.1.0</version>
+      <artifactId>messagebox</artifactId>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.themes</groupId>
@@ -70,7 +107,14 @@
   <repositories>
     <repository>
        <id>vaadin-addons</id>
-       <url>http://maven.vaadin.com/vaadin-addons</url>
+       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
   </repositories>
 

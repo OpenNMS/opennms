@@ -36,7 +36,8 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class ResourceGraphsWindowTest {
@@ -47,7 +48,7 @@ public class ResourceGraphsWindowTest {
 
     Window mainWindow;
 
-    Application app;
+    UI app;
 
     @Before
     public void setUp() throws Exception {
@@ -56,20 +57,22 @@ public class ResourceGraphsWindowTest {
         window1 = new ResourceGraphsWindow(testNode1, url);
         window2 = new ResourceGraphsWindow(null, url);
         mainWindow = new Window();
-        app = new Application() { // Empty Application
+        app = new UI() { // Empty Application
+
+            private static final long serialVersionUID = -8945754438079223762L;
+
             @Override
-            public void init() {
+            public void init(VaadinRequest request) {
             }
         };
     }
 
     @Test
     public void testAttach() {
-        app.setMainWindow(mainWindow);
-        app.getMainWindow().addWindow(window1);
-        assertTrue(app.getMainWindow().getChildWindows().contains(window1));
-        app.getMainWindow().removeWindow(window1);
-        assertFalse(app.getMainWindow().getChildWindows().contains(window1));
+        app.addWindow(window1);
+        assertTrue(app.getWindows().contains(window1));
+        app.removeWindow(window1);
+        assertFalse(app.getWindows().contains(window1));
     }
 
 }

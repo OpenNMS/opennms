@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <relativePath>../../topology-map/poms/compiled/</relativePath>
+        <groupId>org.opennms.features.topology.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>1.13.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.features.vaadin-dashlets</groupId>
+    <artifactId>dashlet-alarms</artifactId>
+
+    <properties>
+        <bundle.symbolicName>org.opennms.features.vaadin-dashlets.dashlet-alarms</bundle.symbolicName>
+        <bundle.namespace>org.opennms.features.vaadin.dashboard.dashlets</bundle.namespace>
+    </properties>
+
+    <name>${bundle.symbolicName}</name>
+
+    <packaging>bundle</packaging>
+
+    <repositories>
+        <repository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin-dashboard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Vaadin Dependencies -->
+
+        <dependency>
+            <groupId>org.opennms.osgi.features.topology</groupId>
+            <artifactId>vaadin</artifactId>
+            <type>pom</type>
+        </dependency>
+
+        <!-- Required by pax/vaadin -->
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>servlet-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>dashboard-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>

@@ -35,7 +35,7 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 import com.vaadin.data.Property;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.UI;
 
 public class SaveToXmlTest {
 
@@ -48,8 +48,8 @@ public class SaveToXmlTest {
 		}
 
 		@Override
-		public Window getMainWindow() {
-			return EasyMock.createMock(Window.class);
+		public UI getMainWindow() {
+			return EasyMock.createMock(UI.class);
 		}
 
 		@Override
@@ -85,7 +85,7 @@ public class SaveToXmlTest {
 		saver.execute(null, new TestOperationContext(graphContainer));
 	}
 
-    public Property getScaleProperty() {
+    public Property<Double> getScaleProperty() {
         return null;
     }
 }

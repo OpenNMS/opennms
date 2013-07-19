@@ -83,7 +83,7 @@ import java.util.*;
 public class JasperReportService implements ReportService {
     private static final Logger LOG = LoggerFactory.getLogger(JasperReportService.class);
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
 
     private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 

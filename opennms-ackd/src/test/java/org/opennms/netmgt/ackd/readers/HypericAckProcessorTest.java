@@ -55,7 +55,7 @@ import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
 import org.opennms.netmgt.config.ackd.Readers;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultAckdConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;

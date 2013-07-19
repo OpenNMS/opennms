@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 
 /**

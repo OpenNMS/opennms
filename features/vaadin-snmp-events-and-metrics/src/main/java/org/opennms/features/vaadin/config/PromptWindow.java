@@ -66,25 +66,27 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
 
         fileName = new TextField(fieldLabel);
         fileName.setNullSettingAllowed(false);
-        fileName.setWriteThrough(false);
+        fileName.setBuffered(true);
         fileName.setWidth("100%");
         fileName.setRequired(true);
         fileName.setRequiredError("This field cannot be null.");
 
         okButton = new Button("Continue");
-        okButton.addListener(this);
+        okButton.addClickListener(this);
 
         cancelButton = new Button("Cancel");
-        cancelButton.addListener(this);
+        cancelButton.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        addComponent(fileName);
-        addComponent(toolbar);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(fileName);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
 
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        setContent(layout);
     }
 
     /* (non-Javadoc)

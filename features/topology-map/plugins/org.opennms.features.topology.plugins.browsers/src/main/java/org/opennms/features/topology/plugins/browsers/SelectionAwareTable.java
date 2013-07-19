@@ -49,12 +49,11 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
 	private List<String> nonCollapsibleColumns = new ArrayList<String>();
-	
+
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
-	@SuppressWarnings("unchecked")
 	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
 		super(caption, container);
 		m_container = container;
@@ -123,10 +122,17 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 */
 	@Override
 	public void setCellStyleGenerator(CellStyleGenerator generator) {
-		try {
-			((TableAware)generator).setTable(this);
-		} catch (ClassCastException e) {}
 		super.setCellStyleGenerator(generator);
+	}
+
+	@Override
+	public String toString() {
+		Object value = getValue();
+		if (value == null) {
+			return null;
+		} else {
+			return value.toString();
+		}
 	}
 	
 	/**

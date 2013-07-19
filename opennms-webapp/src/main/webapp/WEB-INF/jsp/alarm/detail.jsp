@@ -93,6 +93,7 @@
     String alarmIdString = req.getParameter( "id" );
     
     OnmsAlarm alarm = (OnmsAlarm) request.getAttribute("alarm");
+    final String alarmId = (String)request.getAttribute("alarmId");
 
     EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
     pageContext.setAttribute("parms", parms);

@@ -28,9 +28,9 @@
 
 package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
 
 /**
  * The VTerminal class is associated with the GwtTerminal widget and handles all of the communication 

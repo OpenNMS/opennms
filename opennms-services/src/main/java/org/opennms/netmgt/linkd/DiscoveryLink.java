@@ -247,11 +247,6 @@ public final class DiscoveryLink implements ReadyRunnable {
             for (final AtInterface at : getLinkd().getAtInterfaces(getPackageName()).get(macAddress)) {
                 int nodeid = at.getNodeid();
                 LOG.debug("populateMacToAtInterface: Parsing AtInterface nodeid/ipaddr/macaddr: {}/{}/{}", nodeid, at.getIpAddress(), macAddress);
-                if (isMacIdentifierOfBridgeNode(macAddress)) {
-                    LOG.debug("populateMacToAtInterface: AtInterface {} belongs to bridge node! Not adding to discoverable atinterface.", macAddress);
-                    macsExcluded.add(macAddress);
-                    continue;
-                }
                 if ((macAddress.indexOf("00000c07ac") == 0)
                         || (macAddress.indexOf("00000c9ff") == 0)) {
                     LOG.debug("populateMacToAtInterface: AtInterface {} is Cisco HSRP address! Not adding to discoverable atinterface.", macAddress);

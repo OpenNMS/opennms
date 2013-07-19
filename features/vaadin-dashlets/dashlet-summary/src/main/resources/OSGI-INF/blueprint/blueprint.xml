@@ -1,0 +1,21 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+
+    <bean id="summaryDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.SummaryDashletFactory" scope="singleton">
+        <argument ref="alarmDao"/>
+        <property name="name" value="Summary"/>
+        <property name="requiredParameters">
+            <map>
+                <entry key="timeslot" value="3600"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="timeslot" value="The timeslot to search for alarms in seconds"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="summaryDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

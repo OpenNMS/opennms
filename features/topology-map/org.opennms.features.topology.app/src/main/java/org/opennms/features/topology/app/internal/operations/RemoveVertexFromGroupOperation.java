@@ -45,15 +45,15 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.Select;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-
 
 public class RemoveVertexFromGroupOperation implements Constants, Operation {
 	
@@ -73,7 +73,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 			log.debug("Child ID: {}", child.getId());
 		}
 
-		final Window window = operationContext.getMainWindow();
+		final UI window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window("Remove item from this Group");
 		groupNamePrompt.setModal(true);
@@ -88,12 +88,12 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
 			private static final long serialVersionUID = 243277720538924081L;
 
-                        @Override
-			public Field createField(Item item, Object propertyId, Component uiContext) {
+			@Override
+			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Item".equals(pid)) {
-					Select select = new Select("Item");
+					ComboBox select = new ComboBox("Item");
 					for (Vertex child : children) {
 						log.debug("Adding child: {}, {}", child.getId(), child.getLabel());
 						select.addItem(child.getId());
@@ -137,13 +137,13 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 			}
 		};
 		// Buffer changes to the datasource
-		promptForm.setWriteThrough(false);
+		promptForm.setBuffered(true);
 		// You must set the FormFieldFactory before you set the data source
 		promptForm.setFormFieldFactory(fieldFactory);
 		promptForm.setItemDataSource(item);
 
 		Button ok = new Button("OK");
-		ok.addListener(new ClickListener() {
+		ok.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 7388841001913090428L;
 
@@ -157,7 +157,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		promptForm.getFooter().addComponent(ok);
 
 		Button cancel = new Button("Cancel");
-		cancel.addListener(new ClickListener() {
+		cancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 8780989646038333243L;
 
@@ -169,7 +169,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		});
 		promptForm.getFooter().addComponent(cancel);
 
-		groupNamePrompt.addComponent(promptForm);
+		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
 

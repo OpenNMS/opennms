@@ -32,7 +32,7 @@ import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
 
 public class SelectionTreeFactory implements IViewContribution {
 

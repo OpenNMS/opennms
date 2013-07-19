@@ -30,26 +30,22 @@ package org.opennms.web.map;
 
 
 import java.io.BufferedWriter;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.MDC;
-import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
-
-
-import org.opennms.web.map.view.*;
-
+import org.opennms.web.map.view.Manager;
+import org.opennms.web.map.view.VElement;
+import org.opennms.web.map.view.VMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-
-import java.util.*;
 
 /**
  * <p>SaveMapController class.</p>
@@ -59,7 +55,7 @@ import java.util.*;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SaveMapController implements Controller {
+public class SaveMapController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SaveMapController.class);
 
@@ -88,9 +84,8 @@ public class SaveMapController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
