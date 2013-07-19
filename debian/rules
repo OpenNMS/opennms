@@ -306,6 +306,12 @@ install: build
 	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
+	
+	##
+	## Make sure there aren't any files left over in debian/temp that missed packaging
+	##
+	$(eval REMAINING_COUNT := $(shell find debian/temp -type f | wc -l))
+	if [ $(REMAINING_COUNT) -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged"; exit 1; fi
 
 # Build architecture-independent files here.
 binary-indep: build install
