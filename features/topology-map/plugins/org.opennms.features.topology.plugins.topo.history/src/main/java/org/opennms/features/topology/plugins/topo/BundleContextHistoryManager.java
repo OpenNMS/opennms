@@ -47,14 +47,18 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
 
 	@Override
 	protected synchronized SavedHistory getHistory(String userId, String fragmentId) {
-		Properties props = loadProperties(m_bundleContext);
-		String xml = props.getProperty(fragmentId);
-		if (xml == null || "".equals(xml)) {
-			// There is no stored history for this fragment ID
-			return null;
-		} else {
-			return JAXB.unmarshal(new StringReader(xml), SavedHistory.class);
-		}
+        if(fragmentId != null){
+            Properties props = loadProperties(m_bundleContext);
+            String xml = props.getProperty(fragmentId);
+            if (xml == null || "".equals(xml)) {
+                // There is no stored history for this fragment ID
+                return null;
+            } else {
+                return JAXB.unmarshal(new StringReader(xml), SavedHistory.class);
+            }
+        }
+
+        return null;
 	}
 
 	@Override
