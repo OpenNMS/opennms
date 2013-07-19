@@ -55,7 +55,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets
                     </webappDirectory>
                     <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets
