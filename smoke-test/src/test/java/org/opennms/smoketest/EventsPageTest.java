@@ -29,9 +29,22 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 
 public class EventsPageTest extends OpenNMSSeleniumTestCase {
+    @BeforeClass
+    public static void createAlarm() throws Exception {
+        final EventProxy eventProxy = new TcpEventProxy();
+        final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "EventsPageTest");
+        builder.setParam("importResource", "foo");
+        eventProxy.send(builder.getEvent());
+    }
+
     @Before
     public void setUp() throws Exception {
     	super.setUp();
@@ -46,13 +59,14 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("hit [Enter]"));
         assertTrue(selenium.isTextPresent("Event ID:"));
     }
-    
+
     @Test
     public void testAllLinksArePresent() {
         assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
         assertTrue(selenium.isElementPresent("link=All events"));
         assertTrue(selenium.isElementPresent("link=Advanced Search"));
     }
+
     @Test 
     public void testAllLinks() {
         selenium.click("link=All events");
