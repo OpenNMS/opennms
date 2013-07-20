@@ -614,8 +614,9 @@
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.smslib</groupId>
-      <artifactId>smslib</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>smslib-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
