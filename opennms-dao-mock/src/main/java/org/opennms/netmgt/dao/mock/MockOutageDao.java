@@ -52,4 +52,16 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public List<OnmsOutage> findbyNodeIdIpAddrServiceId(Integer nodeId,
+            String ipAddr, Integer serviceId) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<OnmsOutage> findbyNodeIdAndIpAddr(Integer nodeId,
+            String ipAddr) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
 }

@@ -122,5 +122,14 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
     OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
+    
+    List<OnmsMonitoredService> findByIpaddr(String ipAddr);
+    
+    List<OnmsMonitoredService> getByServiceName(String service);
 
+    List<OnmsMonitoredService> getByIpaddr(String ipAddr);
+    
+    List<OnmsMonitoredService> getByNodeId(Integer nodeId);
+    
+    List<OnmsMonitoredService> getByNodeIdIpAddrServiceName(Integer nodeId, String ipAddr, String service);
 }

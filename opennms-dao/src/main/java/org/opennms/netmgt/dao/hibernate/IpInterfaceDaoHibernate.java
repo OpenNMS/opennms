@@ -224,4 +224,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
         return queryInt(query, nodeLabel, ipaddr);
     }
+    
+    @Override
+    public Integer getNodeIdByIpAddr(String ipAddr) {
+        String query = "select node.id from OnmsNode as node, OnmsIpInterface as ipInterface " +
+        		"where node.id = ipInterface.node.id " +
+        		"and ipInterface.ipAddress = ?";
+        
+        return queryInt(query, ipAddr);
+    }
 }

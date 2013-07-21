@@ -48,7 +48,6 @@ import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 /**
  * This class represents a singular instance that is used to check address to
@@ -62,17 +61,6 @@ import org.springframework.stereotype.Controller;
 @Component
 final class KnownIPMgr {
     private static final Logger LOG = LoggerFactory.getLogger(KnownIPMgr.class);
-    /**
-     * The SQL statement used to extract the list of currently known IP
-     * addresses from the IP Interface table.
-     */
-    private final static String IP_LOAD_SQL = "SELECT ipAddr, nodeid, ipLastCapsdPoll FROM ipInterface";
-
-    /**
-     * The SQL statment used to update the last capabilities check time.
-     */
-    private final static String IP_UPDATE_TIME_SQL = "UPDATE ipInterface SET ipLastCapsdPoll = ? WHERE ipAddr = ? AND nodeid = ?";
-
     /**
      * The set of all discovered addresses
      */
@@ -214,7 +202,7 @@ final class KnownIPMgr {
     }
     @Autowired
     private KnownIPMgr(IpInterfaceDaoHibernate m_ipInterfaceDao) {
-        this.m_ipInterfaceDao = m_ipInterfaceDao;
+        KnownIPMgr.m_ipInterfaceDao = m_ipInterfaceDao;
     }
     /**
      * Clears and synchronizes the internal known IP address cache with the
@@ -237,7 +225,7 @@ final class KnownIPMgr {
         for(OnmsIpInterface ipInterface : ipInterfaceList) {
             // extract the IP address.
             //
-            String ipstr = ipInterface.getIpAddress().getHostAddress();
+            String ipstr = InetAddressUtils.str(ipInterface.getIpAddress());
             InetAddress addr = null;
             addr = InetAddressUtils.addr(ipstr);
             if (addr == null) {
@@ -330,7 +318,7 @@ final class KnownIPMgr {
 
     @Autowired
     public void setIpInterfaceDao(IpInterfaceDaoHibernate m_ipInterfaceDao) {
-        this.m_ipInterfaceDao = m_ipInterfaceDao;
+        KnownIPMgr.m_ipInterfaceDao = m_ipInterfaceDao;
     }
 
 } // end KnownIPMgr

@@ -30,8 +30,6 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
@@ -589,7 +587,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
         
         for(OnmsAlarm alarm : alarmList) {
-            if(alarm.getIpAddr().getHostAddress() == ipAddr) 
+            if(InetAddressUtils.str(alarm.getIpAddr()) == ipAddr) 
                 m_alarmDao.delete(alarm.getId()); 
         }
     }
@@ -622,7 +620,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<OnmsAlarm> alarmList = m_alarmDao.findByNodeId(nodeId);
         
         for(OnmsAlarm alarm : alarmList) {
-            if(alarm.getIpAddr().getHostName() == ipAddr && alarm.getServiceType().getId() == serviceTypeId)
+            if(InetAddressUtils.str(alarm.getIpAddr()) == ipAddr && alarm.getServiceType().getId() == serviceTypeId)
                 m_alarmDao.delete(alarm.getId()); 
         }
     }
@@ -1658,7 +1656,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         
         Set<String> ipAddrs = new HashSet<String>();
         for(OnmsIpInterface ipInterface : ipInterfaceList) {
-            String ipAddr = ipInterface.getIpAddress().getHostAddress();
+            String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
             LOG.debug("found interface " + ipAddr + " for node " + nodeId);
             ipAddrs.add(ipAddr);
         }

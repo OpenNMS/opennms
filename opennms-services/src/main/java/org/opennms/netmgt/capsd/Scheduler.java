@@ -47,9 +47,6 @@ import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,17 +66,6 @@ final class Scheduler implements Runnable, PausableFiber {
      * The prefix for the fiber name.
      */
     private static final String FIBER_NAME = "Capsd Scheduler";
-
-    /**
-     * SQL used to retrieve list of nodes from the node table.
-     */
-    private static final String SQL_RETRIEVE_NODES = "SELECT nodeid FROM node WHERE nodetype != 'D'";
-
-    /**
-     * SQL used to retrieve the last poll time for all the managed interfaces
-     * belonging to a particular node.
-     */
-    private static final String SQL_GET_LAST_POLL_TIME = "SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')";
 
     /**
      * Special identifier used in place of a valid node id in order to schedule

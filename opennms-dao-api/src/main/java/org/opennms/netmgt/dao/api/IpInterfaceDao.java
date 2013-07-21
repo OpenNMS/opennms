@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -114,4 +113,6 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     Map<InetAddress, Integer> getInterfacesForNodes();
 
     OnmsIpInterface findPrimaryInterfaceByNodeId(Integer nodeId);
+    
+    Integer getNodeIdByIpAddr(String ipAddr);
 }

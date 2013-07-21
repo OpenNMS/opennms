@@ -138,5 +138,16 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             return outages.subList(0, rows);
         }
     }
+    
+    @Override
+    public List<OnmsOutage> findbyNodeIdIpAddrServiceId(Integer nodeId, String ipAddr, Integer serviceId) {
+        String query = "from OnmsOutage as outage where outage.nodeId = ? and outage.ipAddress = ? and outage.serviceId = ?";
+        return find(query, nodeId, ipAddr, serviceId);
+    }
 
+    @Override
+    public List<OnmsOutage> findbyNodeIdAndIpAddr(Integer nodeId, String ipAddr) {
+        String query = "from OnmsOutage as outage where outage.nodeId = ? and outage.ipAddress = ?";
+        return find(query, nodeId, ipAddr);
+    }
 }
