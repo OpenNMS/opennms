@@ -161,7 +161,7 @@ public class WillItUnmarshalTest {
         
         addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
         addFile(Source.CONFIG, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
