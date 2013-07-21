@@ -35,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
@@ -94,6 +95,14 @@ public class InvalidRequisitionDataTest implements InitializingBean {
     @Autowired
     private DatabasePopulator m_populator;
 
+    @Autowired
+    @Qualifier("scanExecutor")
+    private PausibleScheduledThreadPoolExecutor m_scanExecutor;
+
+    @Autowired
+    @Qualifier("scheduledExecutor")
+    private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
+    
     private EventAnticipator m_anticipator;
 
     @Override
@@ -117,6 +126,10 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         m_eventManager.setEventAnticipator(m_anticipator);
         m_eventManager.setSynchronous(true);
         m_provisioner.start();
+
+        // make sure node scan scheduler is running initially
+        m_scanExecutor.resume();
+        m_scheduledExecutor.resume();
     }
 
     @After
@@ -142,6 +155,7 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
         m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), true);
+        m_provisioner.waitFor();
         m_anticipator.verifyAnticipated();
 
         // should still import the node, just skip the asset field
@@ -172,6 +186,7 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
         m_provisioner.doImport(resource.getURL().toString(), true);
+        m_provisioner.waitFor();
         m_anticipator.verifyAnticipated();
 
         // should still import the node, just skip the asset field
@@ -193,6 +208,7 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
         m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), true);
+        m_provisioner.waitFor();
         m_anticipator.verifyAnticipated();
 
         // should fail to import the node, it should bomb if the requisition is unparseable

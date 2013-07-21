@@ -49,6 +49,8 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         Collections.sort(paths);
+        printPaths(paths);
+
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_1"));
         assertTrue(paths.get(1).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
@@ -69,8 +71,9 @@ public class ResourcePathFileTraversalTest {
         traverser.addDatasourceFilter("http-8980");
         List<String> paths = traverser.traverseDirectory();
         
-        
         Collections.sort(paths);
+        printPaths(paths);
+
         assertEquals(2, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_2"));
     }
@@ -83,6 +86,8 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         Collections.sort(paths);
+        printPaths(paths);
+
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
@@ -95,6 +100,8 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         Collections.sort(paths);
+        printPaths(paths);
+
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/nsVpnMonitor/tun_id_3"));
     }
@@ -107,6 +114,8 @@ public class ResourcePathFileTraversalTest {
         List<String> paths = traverser.traverseDirectory();
         
         Collections.sort(paths);
+        printPaths(paths);
+
         assertEquals(1, paths.size());
         assertTrue(paths.get(0).matches(".*src/test/resources/share/rrd/snmp/10/storeby-group-jvm"));
         
@@ -116,6 +125,13 @@ public class ResourcePathFileTraversalTest {
         
         assertEquals(0, paths.size());
 
+    }
+
+    private void printPaths(final List<String> paths) {
+        System.err.println("Paths:");
+        for (final String path : paths) {
+            System.err.println("  " + path);
+        }
     }
 
 }

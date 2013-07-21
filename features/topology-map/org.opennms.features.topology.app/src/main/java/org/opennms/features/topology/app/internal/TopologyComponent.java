@@ -76,8 +76,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void scrollWheel(double scrollVal, int x, int y) {
-            scrollVal = -1 * scrollVal;
-            getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
+            getViewManager().zoomToPoint(getViewManager().getScale() - scrollVal, new Point(x, y));
         }
 
         @Override

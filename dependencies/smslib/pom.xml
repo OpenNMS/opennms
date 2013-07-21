@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>1.13.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>smslib-dependencies</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS SMSLib Dependencies</name>
+  <description>
+    This module is used to provide a single artifact that the opennms project
+    can depend on to use the SMSLib library.
+  </description>
+  <dependencies>
+    <!-- Netty -->
+    <dependency>
+      <groupId>org.smslib</groupId>
+      <artifactId>smslib</artifactId>
+      <version>3.5.3</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>smslib-repo</id>
+      <name>SMSLib Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/smslib.org-release</url>
+    </repository>
+  </repositories>
+</project>

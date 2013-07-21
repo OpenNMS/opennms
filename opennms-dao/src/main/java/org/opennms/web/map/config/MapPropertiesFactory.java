@@ -1,5 +1,4 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.

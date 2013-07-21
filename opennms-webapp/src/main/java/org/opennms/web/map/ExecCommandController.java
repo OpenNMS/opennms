@@ -40,13 +40,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.MDC;
-import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
@@ -59,15 +56,14 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class ExecCommandController implements Controller {
+public class ExecCommandController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ExecCommandController.class);
 
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-            Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         int timeOut = 1;
         int numberOfRequest = 10;

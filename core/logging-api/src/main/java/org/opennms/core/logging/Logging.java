@@ -44,9 +44,6 @@ public class Logging {
         }
     }
 
-    public static void configureInstallerLogging() {
-    }
-
     public static void putPrefix(String name) {
         MDC.put(PREFIX_KEY, name);
     }

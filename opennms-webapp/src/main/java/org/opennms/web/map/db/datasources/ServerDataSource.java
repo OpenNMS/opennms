@@ -90,10 +90,16 @@ public class ServerDataSource implements DataSourceInterface {
 	 * @param params a {@link java.util.Map} object.
 	 */
 	public ServerDataSource(Map<?,?> params){
-	    Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
+	    this.params = params;
+	    Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                init();
+            }
+	        
+	    });
 		
-		this.params = params;
-		init();
 	}
 	
 	/**

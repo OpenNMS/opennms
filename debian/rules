@@ -125,11 +125,15 @@ install: build
 	# Setup NCS
 	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
 	install -d -m 755 debian/opennms-ncs/etc/opennms/drools-engine.d
+	install -d -m 755 debian/opennms-ncs/etc/opennms/events
 	install -d -m 755 debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d
+	install -d -m 755 debian/opennms-ncs/var/lib/opennms/etc-pristine/events
 	install -d -m 755 debian/opennms-ncs/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/system/org/opennms/features/topology/plugins
+	install -d -m 755 debian/opennms-ncs/usr/share/opennms/system/org/opennms/osgi/features/topology
 	
 	# CIFS
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
@@ -206,6 +210,8 @@ install: build
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
+	mv debian/temp/system/org/opennms/features/topology/plugins/ncs                            debian/opennms-ncs/usr/share/opennms/system/org/opennms/features/topology/plugins/
+	mv debian/temp/system/org/opennms/osgi/features/topology/opennms-topology-runtime-ncs      debian/opennms-ncs/usr/share/opennms/system/org/opennms/osgi/features/topology/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/drools-engine.d/ncs                  debian/opennms-ncs/var/lib/opennms/etc-pristine/drools-engine.d/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/ncs-northbounder-configuration.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/
 	
@@ -306,6 +312,12 @@ install: build
 	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
+	
+	##
+	## Make sure there aren't any files left over in debian/temp that missed packaging
+	##
+	$(eval REMAINING_COUNT := $(shell find debian/temp -type f | wc -l))
+	if [ $(REMAINING_COUNT) -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged"; exit 1; fi
 
 # Build architecture-independent files here.
 binary-indep: build install
