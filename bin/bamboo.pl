@@ -17,7 +17,7 @@ if (not defined $GIT) {
 clean_m2_repository() unless (exists $ENV{'SKIP_CLEAN'});
 clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
-my @command = ($MVN, @ARGS);
+my @command = ($MVN, '-U', @ARGS);
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
