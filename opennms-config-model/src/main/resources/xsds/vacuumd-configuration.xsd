@@ -73,7 +73,7 @@
             </sequence>
           </complexType>
         </element>
-        
+
       </sequence>
 
       <attribute name="period" use="required">
@@ -86,7 +86,7 @@
           <restriction base="int">
             <minInclusive value="1"/>
           </restriction>
-        </simpleType>      
+        </simpleType>
       </attribute>
     </complexType>
   </element>
@@ -106,7 +106,7 @@
 
       <attribute name="interval" type="int" use="required">
         <annotation>
-          <documentation>How ofter should this autmation run</documentation>
+          <documentation>How often should this automation run</documentation>
         </annotation>
       </attribute>
 
@@ -161,7 +161,7 @@
 
       <attribute name="operator" use="optional">
         <annotation>
-          <documentation>only run the action if the row count evalutes with
+          <documentation>only run the action if the row count evaluates with
           the operator (defaults to &gt; 0)</documentation>
         </annotation>
 
@@ -223,7 +223,7 @@
       </simpleContent>
     </complexType>
   </element>
-  
+
   <element name="action-event">
     <complexType>
       <sequence>
@@ -234,7 +234,7 @@
       <attribute name="add-all-parms" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
-  
+
   <element name="assignment">
     <complexType>
       <attribute name="type" type="string" use="required" />
@@ -242,7 +242,7 @@
       <attribute name="value" type="string" use="required" />
     </complexType>
   </element>
-  
+
   <element name="statement">
     <annotation>
       <documentation>Just a generic string used for SQL

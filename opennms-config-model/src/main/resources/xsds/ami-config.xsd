@@ -27,7 +27,7 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" ref="this:definition">
           <annotation>
-            <documentation>Maps IP addresses to specific AMI parmeters
+            <documentation>Maps IP addresses to specific AMI parameters
                            (username, password, port...)
             </documentation>
           </annotation>
@@ -36,7 +36,7 @@
       <attribute name="port" type="int" default="5038" use="optional">
         <annotation>
           <documentation>
-            Default port (in milliseconds).
+            Default port.
           </documentation>
         </annotation>
       </attribute>
