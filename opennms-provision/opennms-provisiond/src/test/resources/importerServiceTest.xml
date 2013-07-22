@@ -10,11 +10,11 @@
   </bean>
 
   <bean id="scanThreads" class="java.lang.Integer">
-    <constructor-arg><value>50</value></constructor-arg>
+    <constructor-arg><value>1</value></constructor-arg>
   </bean>
   
   <bean id="writeThreads" class="java.lang.Integer">
-    <constructor-arg><value>8</value></constructor-arg>
+    <constructor-arg><value>1</value></constructor-arg>
   </bean>
   
   <bean id="cronExpression" class="java.lang.String">
