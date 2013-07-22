@@ -10,8 +10,8 @@
 
         <property name="requiredParameters">
             <map>
-                <entry key="boostSeverity" value="6"/>
-                <entry key="criteria" value="Limit(10)"/>
+                <entry key="boostSeverity" value="WARNING"/>
+                <entry key="criteria" value="Gt(severity,WARNING).OrderBy(lastEventTime).Limit(10)"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">
@@ -29,8 +29,8 @@
 
         <property name="requiredParameters">
             <map>
-                <entry key="boostSeverity" value="6"/>
-                <entry key="criteria" value="Limit(10)"/>
+                <entry key="boostSeverity" value="WARNING"/>
+                <entry key="criteria" value="Gt(severity,WARNING).OrderBy(lastEventTime).Limit(10)"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">

@@ -49,7 +49,7 @@ public class CriteriaBuilderHelper {
     /**
      * the map of properties
      */
-    private Map<String, Class> m_entities = new TreeMap<String, Class>();
+    private Map<String, Class> m_entities = new LinkedHashMap<String, Class>();
     /**
      * the map of parsers
      */
@@ -163,8 +163,13 @@ public class CriteriaBuilderHelper {
          */
         populateProperties(entityType, false);
 
-        for (Class clazz : aliasTypes) {
-            populateProperties(clazz, true);
+        TreeMap<String, Class> sortedMap = new TreeMap<String, Class>();
+
+        for(Class clazz : aliasTypes) {
+            sortedMap.put(clazz.getSimpleName(), clazz);
+        }
+        for (Map.Entry<String, Class> entry : sortedMap.entrySet()) {
+            populateProperties(entry.getValue(), true);
         }
     }
 
@@ -247,6 +252,13 @@ public class CriteriaBuilderHelper {
      * @param alias       true, if the properties should be aliased, false otherwise
      */
     private void populateProperties(Class entityClass, boolean alias) {
+        TreeMap<String, Class> sortedMap = new TreeMap<String, Class>(new Comparator<String>() {
+            @Override
+            public int compare(String a, String b) {
+                return a.toLowerCase().compareTo(b.toLowerCase());
+            }
+        });
+
         String aliasName = null;
 
         if (alias) {
@@ -264,15 +276,18 @@ public class CriteriaBuilderHelper {
 
                     if (m_parsers.containsKey(clazz)) {
                         if (aliasName != null) {
-                            m_entities.put(aliasName + "." + propertyName, clazz);
+                            sortedMap.put(aliasName + "." + propertyName, clazz);
                         } else {
-                            m_entities.put(propertyName, clazz);
+                            sortedMap.put(propertyName, clazz);
                         }
                     } else {
                         LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("No parser for class " + clazz.getSimpleName() + " found, ignoring property " + propertyName);
                     }
                 }
             }
+        }
+        for (Map.Entry<String, Class> entry : sortedMap.entrySet()) {
+            m_entities.put(entry.getKey(), entry.getValue());
         }
     }
 }
