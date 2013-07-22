@@ -48,6 +48,7 @@ import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
@@ -65,7 +66,8 @@ import java.util.List;
 @Theme("topo_default")
 @JavaScript({
 	"http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js",
-	"chromeFrameCheck.js"
+	"chromeFrameCheck.js",
+	"handleTimeoutInTopology.js"
 })
 @PreserveOnRefresh
 public class TopologyWidgetTestApplication extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {

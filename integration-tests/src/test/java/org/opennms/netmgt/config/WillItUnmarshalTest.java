@@ -158,14 +158,6 @@ public class WillItUnmarshalTest {
         addFile(Source.SPRING, "eventconf-good-ordering.xml", Events.class, Impl.JAXB);
         addFile(Source.SPRING, "eventconf-bad-ordering.xml", Events.class, Impl.JAXB, true);
 
-        final Iterator<String> allIterator = allXml.iterator();
-        while (allIterator.hasNext()) {
-        	final String file = allIterator.next();
-        	if (file.startsWith("Juniper/mbg/")) {
-        		allIterator.remove();
-        	}
-        }
-
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
         
         addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);

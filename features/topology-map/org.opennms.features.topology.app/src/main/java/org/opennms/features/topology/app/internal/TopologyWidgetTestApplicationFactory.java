@@ -30,9 +30,13 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+
+import org.ops4j.pax.vaadin.ScriptTag;
 
 import com.vaadin.ui.UI;
 
@@ -60,31 +64,6 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         return headers;
     }
 
-    @Override
-    public List<ScriptTag> getAdditionalScripts() {
-        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
-        tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
-        tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
-
-	String idleJs = "\r\n" +  
-	"if (window.top != window.self) { " + "\r\n" +
-	"	document.onclick = function(e) { " + "\r\n" +
-	"       	if (parent.resetIdle != null) " + "\r\n" +
-	"               	parent.resetIdle(); " + "\r\n" +
-	"	} " + "\r\n" +
-	"	document.onkeypress = function(e) { " + "\r\n" +
-	"               if (parent.resetIdle != null) " + "\r\n" +
-	"                        parent.resetIdle(); " + "\r\n" +
-	"       } " + "\r\n" +
-	"	document.onmousemove = function(e) { " + "\r\n" +
-	"               if (parent.resetIdle != null) " + "\r\n" +
-	"                        parent.resetIdle(); " + "\r\n" +
-	"       } " + "\r\n" +
-	"} " + "\r\n";
-	tags.add(new ScriptTag(null, "text/javascript", idleJs));
-        return tags;
-    }
-   
     @Override 
     public UI getUI() {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
