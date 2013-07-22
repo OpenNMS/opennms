@@ -325,4 +325,10 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         return m_id.get() + 1;
     }
 
+    @Override
+    public OnmsNode getPathOutageByNodeId(Integer nodeId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

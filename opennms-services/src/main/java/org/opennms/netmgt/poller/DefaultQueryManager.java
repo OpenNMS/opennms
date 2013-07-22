@@ -51,8 +51,12 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,9 +110,9 @@ public class DefaultQueryManager implements QueryManager {
     
     IpInterfaceDao m_ipInterfaceDao;
 
-    NodeDao m_nodeDao;
+    NodeDaoHibernate m_nodeDao;
 
-    ServiceTypeDao m_serviceTypeDao;
+    ServiceTypeDaoHibernate m_serviceTypeDao;
 
     /** {@inheritDoc} */
     @Override
@@ -408,25 +412,19 @@ public class DefaultQueryManager implements QueryManager {
      */
     public int getServiceID(String serviceName) {
         if (serviceName == null) return -1;
-        final Integer result = m_serviceTypeDao.findByName(serviceName).getId();
-        return result == null ? -1 : result.intValue();
+        final OnmsServiceType result = m_serviceTypeDao.findByName(serviceName);
+        return result == null ? -1 : result.getId().intValue();
     }
 
     /** {@inheritDoc} */
     @Override
     public String[] getCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
-        Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
-    
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                cpath[0] = rs.getString(1);
-                cpath[1] = rs.getString(2);
-            }
-    
-        };
-        querier.execute(Integer.valueOf(nodeId));
-    
+        
+        OnmsNode pathOutage = m_nodeDao.getPathOutageByNodeId(nodeId);
+        cpath[0] = pathOutage.getCriticalPathIp();
+        cpath[1] = pathOutage.getCriticalPathServiceName();
+        
         if (cpath[0] == null || cpath[0].equals("")) {
             cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
             cpath[1] = "ICMP";
@@ -470,12 +468,12 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     @Autowired
-    public void setNodeDao(NodeDao nodeDao) {
+    public void setNodeDao(NodeDaoHibernate nodeDao) {
         m_nodeDao = nodeDao;
     }
 
     @Autowired
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+    public void setServiceTypeDao(ServiceTypeDaoHibernate serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 

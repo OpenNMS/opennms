@@ -431,4 +431,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                         "and node.label = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D' and node.type != 'D'";
         return find(query, nodeLabel, ipAddr);
     }
+    
+    @Override
+    public OnmsNode getPathOutageByNodeId(Integer nodeId) {
+        String query = "from pathoutage where nodeid = ?";
+        return findUnique(query, nodeId);
+    }
 }
