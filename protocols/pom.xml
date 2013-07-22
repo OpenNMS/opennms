@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Protocols</name>
   <modules>
-    <module>systemexecutemonitor</module>
     <module>cifs</module>
     <module>dhcp</module>
     <module>nsclient</module>

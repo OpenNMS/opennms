@@ -42,8 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-//TODO how to handel remote poller?
-@Distributable(DistributionContext.DAEMON)
+@Distributable(DistributionContext.ALL)
 final public class SystemExecuteMonitor extends AbstractServiceMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemExecuteMonitor.class);
 
