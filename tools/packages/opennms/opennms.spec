@@ -699,6 +699,11 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v '/ncs/' | \
+	grep -v 'opennms-topology-runtime-ncs' | \
+	sort >> %{_tmppath}/files.main
 
 # jetty
 find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
@@ -781,7 +786,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{logdir}
 			%{instprefix}/data
 			%{instprefix}/deploy
-			%{instprefix}/system
 
 %if %{with_docs}
 %files docs
@@ -802,6 +806,8 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs -f %{_tmppath}/files.pristine.opennms-ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
+%{instprefix}/system/org/opennms/features/topology/plugins/ncs
+%{instprefix}/system/org/opennms/osgi/features/topology/opennms-topology-runtime-ncs
 %{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
@@ -809,6 +815,7 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
+%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 

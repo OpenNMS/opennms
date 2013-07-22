@@ -31,6 +31,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
+import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,20 @@ public class DashletSpecEditor extends Panel {
         this.m_wallboardEditor = wallboardEditor;
         this.m_dashletSpec = dashletSpec;
         this.m_dashletSelector = dashletSelector;
+
+        /**
+         * Setting defaults
+         */
+
+        DashletFactory dashletFactory = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName());
+
+        final Map<String, String> requiredParameters = dashletFactory.getRequiredParameters();
+
+        for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
+            if (!dashletSpec.getParameters().containsKey(entry.getKey())) {
+                dashletSpec.getParameters().put(entry.getKey(), requiredParameters.get(entry.getKey()));
+            }
+        }
 
         /**
          * Setting up this component with size and layout
@@ -285,7 +300,8 @@ public class DashletSpecEditor extends Panel {
         m_propertiesButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new PropertiesWindow(m_dashletSpec, m_dashletSelector));
+                DashletConfigurationWindow configurationWindow = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).configurationWindow(m_dashletSpec);
+                getUI().addWindow(configurationWindow);
             }
         });
 

@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -77,5 +78,16 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
     @Override
     public String getHelpContentHTML() {
         return "This Dashlet displays a detailed alarm list.";
+    }
+
+    /**
+     * Returns a custom configuration window.
+     *
+     * @param dashletSpec the {@link DashletSpec} to use
+     * @return the configuration window
+     */
+    @Override
+    public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec) {
+        return new AlarmConfigurationWindow(dashletSpec);
     }
 }

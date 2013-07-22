@@ -73,4 +73,12 @@ public interface DashletFactory {
      */
     public Component getHelpComponent();
 
+    /**
+     * Returns the window used for configuring a {@link DashletSpec} instance.
+     *
+     * @param dashletSpec the {@link DashletSpec} instance
+     * @return the {@link DashletConfigurationWindow}
+     */
+    public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec);
+
 }

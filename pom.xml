@@ -1578,6 +1578,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>smslib-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-security-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2790,11 +2796,6 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <groupId>org.smslib</groupId>
-        <artifactId>smslib</artifactId>
-        <version>3.5.3</version>
-      </dependency>
-      <dependency>
         <groupId>org.rxtx</groupId>
         <artifactId>rxtx</artifactId>
         <version>2.2-pre2</version>
@@ -2893,11 +2894,6 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
-		<repository>
-      <id>smslib-snapshots</id>
-      <name>SMSLib Repository</name>
-      <url>http://smslib.org/maven2/v3/</url>
-		</repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

@@ -7,18 +7,17 @@
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarms"/>
+
         <property name="requiredParameters">
             <map>
-                <entry key="alarmsPerPage" value="12"/>
-                <entry key="minimumSeverity" value="4"/>
                 <entry key="boostSeverity" value="6"/>
+                <entry key="criteria" value="Limit(10)"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">
             <map>
-                <entry key="alarmsPerPage" value="Number of alarms to display"/>
-                <entry key="minimumSeverity" value="The minimum severity of alarms to be displayed"/>
                 <entry key="boostSeverity" value="At which minimum severity level the dashlet is &quot;boosted&quot;"/>
+                <entry key="criteria" value="The list of restrictions used for searching for alarm entries"/>
             </map>
         </property>
     </bean>
@@ -27,18 +26,17 @@
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarm Details"/>
+
         <property name="requiredParameters">
             <map>
-                <entry key="alarmsPerPage" value="6"/>
-                <entry key="minimumSeverity" value="4"/>
                 <entry key="boostSeverity" value="6"/>
+                <entry key="criteria" value="Limit(10)"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">
             <map>
-                <entry key="alarmsPerPage" value="Number of alarms to display"/>
-                <entry key="minimumSeverity" value="The minimum severity of alarms to be displayed"/>
                 <entry key="boostSeverity" value="At which minimum severity level the dashlet is &quot;boosted&quot;"/>
+                <entry key="criteria" value="The list of restrictions used for searching for alarm entries"/>
             </map>
         </property>
     </bean>
