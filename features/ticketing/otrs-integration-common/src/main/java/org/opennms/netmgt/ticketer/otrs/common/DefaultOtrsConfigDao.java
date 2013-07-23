@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.ticketer.otrs;
+package org.opennms.netmgt.ticketer.otrs.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,60 +81,60 @@ public class DefaultOtrsConfigDao {
 	}
 
 	
-	String getPassword() {
+	public String getPassword() {
 		return getProperties().getString("otrs.password");
 	}
 	
-	String getEndpoint() {
+	public String getEndpoint() {
 		return getProperties().getString("otrs.endpoint");
 	}
 	
-	String getState() {
+	public String getState() {
 		return getProperties().getString("otrs.state");
 	}
 	
-	Integer getOwnerID() {
+	public Integer getOwnerID() {
 		return getProperties().getInteger("otrs.ownerid", 1);
 	}
 	
-	String getPriority() {
+	public String getPriority() {
 		return getProperties().getString("otrs.priority");
 	}
 	
-	String getLock() {
+	public String getLock() {
 		return getProperties().getString("otrs.lock");
 	}
 	
-	String getQueue() {
+	public String getQueue() {
 		return getProperties().getString("otrs.queue");
 	}
 	
-	String getArticleFrom() {
+	public String getArticleFrom() {
 		return getProperties().getString("otrs.articlefrom");
 	}
 	
-	String getArticleType() {
+	public String getArticleType() {
 		return getProperties().getString("otrs.articletype");
 	}
 	
-	String getArticleSenderType() {
+	public String getArticleSenderType() {
 		return getProperties().getString("otrs.articlesendertype");
 	}
 	
-	String getArticleContentType() {
+	public String getArticleContentType() {
 		return getProperties().getString("otrs.articlecontenttype");
 	}
 	
-	String getArticleHistoryComment() {
+	public String getArticleHistoryComment() {
 		return getProperties().getString("otrs.articlehistorycomment");
 	}
 	
-	String getArticleHistoryType() {
+	public String getArticleHistoryType() {
 		return getProperties().getString("otrs.articlehistorytype");
 	}
 	
 	@SuppressWarnings("unchecked")
-	List<Integer> getValidClosedStateId() {
+	public List<Integer> getValidClosedStateId() {
 		
 		List<String> closedStateId = getProperties().getList("otrs.validclosedstateid");
 		return stringToInt(closedStateId);
@@ -142,7 +142,7 @@ public class DefaultOtrsConfigDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	List<Integer> getValidOpenStateId() {
+	public List<Integer> getValidOpenStateId() {
 		
 		List<String> openStateId = getProperties().getList("otrs.validopenstateid");
 		return stringToInt(openStateId);
@@ -150,27 +150,27 @@ public class DefaultOtrsConfigDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	List<Integer> getValidCancelledStateId() {
+	public List<Integer> getValidCancelledStateId() {
 		
 		List<String> cancelledStateId = getProperties().getList("otrs.validcancelledstateid");
 		return stringToInt(cancelledStateId);
 		
 	}
 	
-	Integer getOpenStateId() {
+	public Integer getOpenStateId() {
 		return getProperties().getInteger("otrs.openstateid", 1);
 	}
 	
-	Integer getClosedStateId() {
+	public Integer getClosedStateId() {
 		LOG.debug("getting closed state ID: {}", getProperties().getInteger("otrs.closedstateid", 2));
 		return getProperties().getInteger("otrs.closedstateid", 2);
 	}
 	
-	Integer getCancelledStateId() {
+	public Integer getCancelledStateId() {
 		return getProperties().getInteger("otrs.cancelledstateid", 5);
 	}
 	
-	String getDefaultUser() {
+	public String getDefaultUser() {
 		return getProperties().getString("otrs.defaultuser");
 	}
 	
@@ -185,23 +185,23 @@ public class DefaultOtrsConfigDao {
 		return intList;
 	}
 
-	String getTicketOpenedMessage() {
+	public String getTicketOpenedMessage() {
 		return getProperties().getString("otrs.ticketopenedmessage");
 	}
 
-	String getTicketClosedMessage() {
+	public String getTicketClosedMessage() {
 		return getProperties().getString("otrs.ticketclosedmessage");
 	}
 
-	String getTicketCancelledMessage() {
+	public String getTicketCancelledMessage() {
 		return getProperties().getString("otrs.ticketcancelledmessage");
 	}
 
-	String getTicketUpdatedMessage() {
+	public String getTicketUpdatedMessage() {
 		return getProperties().getString("otrs.ticketupdatedmessage");
 	}
 
-	String getArticleUpdateSubject() {
+	public String getArticleUpdateSubject() {
 		return getProperties().getString("otrs.articleupdatesubject");
 	}
 }
