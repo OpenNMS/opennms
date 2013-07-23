@@ -76,7 +76,6 @@ import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -291,18 +290,19 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void createScheduler() {
-
-        // Create a scheduler
-        try {
-            LOG.debug("init: Creating collectd scheduler");
-
-            setScheduler(new LegacyScheduler(
-                                             "Collectd",
-                                             getCollectorConfigDao().getSchedulerThreads()));
-        } catch (RuntimeException e) {
-            LOG.error("init: Failed to create collectd scheduler", e);
-            throw e;
-        }
+        Logging.withPrefix("collectd", new Runnable() {
+            @Override
+            public void run() {
+                // Create a scheduler
+                try {
+                    LOG.debug("init: Creating collectd scheduler");
+                    setScheduler(new LegacyScheduler("Collectd", getCollectorConfigDao().getSchedulerThreads()));
+                } catch (final RuntimeException e) {
+                    LOG.error("init: Failed to create collectd scheduler", e);
+                    throw e;
+                }
+            }
+        });
     }
 
     /** {@inheritDoc} */

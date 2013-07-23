@@ -67,8 +67,6 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.addStyleName("debug");
-        verticalLayout.setSizeFull();
         verticalLayout.setHeight(100, Unit.PERCENTAGE);
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
