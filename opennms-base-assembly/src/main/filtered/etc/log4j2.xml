@@ -21,6 +21,7 @@
     <KeyValuePair key="discovery"            value="INFO" />
     <KeyValuePair key="eventd"               value="INFO" />
     <KeyValuePair key="event-translator"     value="INFO" />
+    <KeyValuePair key="instrumentation"      value="DEBUG" />
     <KeyValuePair key="jetty-server"         value="INFO" />
     <KeyValuePair key="linkd"                value="INFO" />
     <KeyValuePair key="manager"              value="DEBUG" />
