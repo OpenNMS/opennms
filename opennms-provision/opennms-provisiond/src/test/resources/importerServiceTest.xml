@@ -9,7 +9,15 @@
     <constructor-arg><value>/tec_dump.xml.smalltest</value></constructor-arg>
   </bean>
 
+  <bean id="importThreads" class="java.lang.Integer">
+    <constructor-arg><value>1</value></constructor-arg>
+  </bean>
+  
   <bean id="scanThreads" class="java.lang.Integer">
+    <constructor-arg><value>1</value></constructor-arg>
+  </bean>
+  
+  <bean id="rescanThreads" class="java.lang.Integer">
     <constructor-arg><value>1</value></constructor-arg>
   </bean>
   
@@ -21,8 +29,16 @@
     <constructor-arg><value>0 15 10 * * ? 2020</value></constructor-arg>
   </bean>
 
+  <bean id="importExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
+    <constructor-arg ref="importThreads" />
+  </bean>
+  
   <bean id="scanExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
     <constructor-arg ref="scanThreads" />
+  </bean>
+  
+  <bean id="writeExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
+    <constructor-arg ref="writeThreads" />
   </bean>
   
   <bean class="org.opennms.netmgt.provision.service.MockServiceDetector" />

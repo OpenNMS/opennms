@@ -93,7 +93,7 @@ import org.springframework.test.context.ContextConfiguration;
         "importer.requisition.dir=target/imports"
 })
 @DirtiesContext
-public class NewSuspectScanTest implements InitializingBean {
+public class NewSuspectScanTest extends ProvisioningTestCase implements InitializingBean {
 
     @Autowired
     private Provisioner m_provisioner;
@@ -167,9 +167,9 @@ public class NewSuspectScanTest implements InitializingBean {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
         m_populator.resetDatabase();
-        m_provisioner.waitFor();
+        waitForEverything();
     }
 
     @Test(timeout=300000)
@@ -295,7 +295,6 @@ public class NewSuspectScanTest implements InitializingBean {
         runScan(scan);
 
         anticipator.verifyAnticipated(200000, 0, 2000, 0, 0);
-        m_provisioner.waitFor();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -321,6 +320,7 @@ public class NewSuspectScanTest implements InitializingBean {
         final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
+        waitForEverything();
     }
 
 
