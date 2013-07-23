@@ -34,13 +34,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
+import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.*;
 
 import java.util.List;
 
@@ -70,6 +69,10 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
      * boosted value
      */
     private boolean boosted = false;
+    /**
+     * Helper for handling criterias
+     */
+    private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
 
     /**
      * Constructor for instantiating new objects.
@@ -101,28 +104,17 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
     public void update() {
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
 
-        int minimumSeverity = 4;
-        int boostSeverity = 6;
-        int alarmsPerPage = 6;
+        alarmCb.alias("node", "node");
+        alarmCb.alias("node.categories", "category");
+        alarmCb.alias("lastEvent", "event");
 
-        try {
-            alarmsPerPage = Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("alarmsPerPage")));
-            minimumSeverity = Math.min(7, Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("minimumSeverity"))));
-            boostSeverity = Math.min(7, Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("boostSeverity"))));
-        } catch (NumberFormatException numberFormatException) {
-            /**
-             * just ignore
-             */
-        }
+        String criteria = m_dashletSpec.getParameters().get("criteria");
+        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
+
+        m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
 
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
-
-        alarmCb.isNull("alarmAckUser");
-        alarmCb.ge("severity", OnmsSeverity.get(minimumSeverity));
-
-        alarmCb.orderBy("lastEventTime").desc();
-        alarmCb.limit(alarmsPerPage);
 
         alarmCb.distinct();
 
@@ -153,7 +145,7 @@ public class AlarmDetailsDashlet extends VerticalLayout implements Dashlet {
                 }
                 addComponent(createAlarmComponent(onmsAlarm, onmsNode));
 
-                if (onmsAlarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.get(boostSeverity))) {
+                if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
                     boosted = true;
                 }
             }

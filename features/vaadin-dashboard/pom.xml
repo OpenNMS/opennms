@@ -19,6 +19,7 @@
         <bundle.symbolicName>org.opennms.features.vaadin-dashboard</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.vaadin.dashboard</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <guava.version>10.0.1</guava.version>
     </properties>
 
     <build>
@@ -140,6 +141,13 @@
     </pluginRepositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.vaadin.addon</groupId>
             <artifactId>PortalLayout</artifactId>

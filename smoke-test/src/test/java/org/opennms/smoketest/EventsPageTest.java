@@ -46,13 +46,14 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("hit [Enter]"));
         assertTrue(selenium.isTextPresent("Event ID:"));
     }
-    
+
     @Test
     public void testAllLinksArePresent() {
         assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
         assertTrue(selenium.isElementPresent("link=All events"));
         assertTrue(selenium.isElementPresent("link=Advanced Search"));
     }
+
     @Test 
     public void testAllLinks() {
         selenium.click("link=All events");

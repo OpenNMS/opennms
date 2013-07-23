@@ -13,5 +13,8 @@
     <feature name="dashlet-image" version="${pom.version}">
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${pom.version}</bundle>
     </feature>
+    <feature name="dashlet-charts" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
+    </feature>
 
 </features>

@@ -28,11 +28,11 @@
 
 package org.opennms.util.ilr;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assume.assumeThat;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.util.ilr.BaseLogMessage;
 import org.opennms.util.ilr.BaseLogMessage.MsgType;
 
 
@@ -56,7 +55,7 @@ import org.opennms.util.ilr.BaseLogMessage.MsgType;
  */
 @RunWith(Parameterized.class)
 public class BaseLogMessageTest {
-    
+
     static Date timestamp(String dateString) throws ParseException {
         return BaseLogMessage.parseTimestamp(dateString);
     }
@@ -119,11 +118,27 @@ public class BaseLogMessageTest {
                     null,
                     null,
                     "Totall bogus log message"
+                },
+                {
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "2013-07-23 11:38:51,997 DEBUG [LegacyScheduler-Thread-1-of-50] o.o.n.c.DefaultCollectdInstrumentation: scheduleInterfaceWithService: begin: 2647/10.152.128.34/SNMP"
+                },
+                {
+                    true,
+                    timestamp("2013-07-23 11:39:22,287"),
+                    "LegacyScheduler-Thread-10-of-50",
+                    MsgType.BEGIN_COLLECTION,
+                    "4489/10.151.27.1/SNMP",
+                    "2013-07-23 11:39:22,287 DEBUG [LegacyScheduler-Thread-10-of-50] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin:4489/10.151.27.1/SNMP"
                 }
         });
-        
+
     }
-    
+
     private boolean m_msgIsValid;
     private Date m_timestamp;
     private String m_threadName;
@@ -131,8 +146,8 @@ public class BaseLogMessageTest {
     private BaseLogMessage m_logMessage;
     private MsgType m_msgType;
     private String m_serviceId;
-    
-    public BaseLogMessageTest(boolean msgIsValid, Date timestamp, String threadName, MsgType msgType, String serviceId, String logString) {
+
+    public BaseLogMessageTest(final boolean msgIsValid, final Date timestamp, final String threadName, final MsgType msgType, final String serviceId, final String logString) {
         m_msgIsValid = msgIsValid;
         m_timestamp = timestamp;
         m_threadName = threadName;
@@ -140,14 +155,12 @@ public class BaseLogMessageTest {
         m_serviceId = serviceId;
         m_logString = logString;
     }
-    
-    
+
     @Before
     public void setUp() {
         m_logMessage = BaseLogMessage.create(m_logString);
     }
-    
-    
+
     @Test
     public void testInvalidMessage() {
         assumeThat(m_msgIsValid, is(false));
@@ -159,27 +172,27 @@ public class BaseLogMessageTest {
         assumeThat(m_msgIsValid, is(true));
         assertEquals(m_timestamp, m_logMessage.getDate());
     }
-    
+
     @Test
     public void testGetThreadName() {
         assumeThat(m_msgIsValid, is(true));
         assertEquals(m_threadName, m_logMessage.getThread());
     }
-    
+
     @Test
     public void testGetMsgType() {
         assumeThat(m_msgIsValid, is(true));
         assertEquals(m_msgType, m_logMessage.getMsgType());
         assertTrue(m_logMessage.is(m_msgType));
     }
-    
+
     @Test
     public void testServiceId() {
         assumeThat(m_msgIsValid, is(true));
         assertEquals(m_serviceId, m_logMessage.getServiceID());
     }
-    
-    
-    
+
+
+
 
 }

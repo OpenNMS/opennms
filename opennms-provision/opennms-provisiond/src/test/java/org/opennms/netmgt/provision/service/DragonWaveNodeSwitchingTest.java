@@ -236,6 +236,7 @@ public class DragonWaveNodeSwitchingTest implements InitializingBean, MockSnmpDa
 
     private void importResource(final String location) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(location), true);
+        m_provisioner.waitFor();
     }
 
     @Override

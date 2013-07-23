@@ -27,14 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
-
-import java.util.List;
 
 /**
  * This class is used to display an brief overview about existing {@link Wallboard} configurations.

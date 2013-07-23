@@ -44,7 +44,7 @@ public class DashletSpec {
     /**
      * The normal duration before moving to the next {@link Dashlet}
      */
-    private int m_duration = 5;
+    private int m_duration = 15;
     /**
      * The priority of the {@link Dashlet}
      */
