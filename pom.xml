@@ -2770,7 +2770,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4jVersion}</version>
+        <version>${log4jVersion}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
