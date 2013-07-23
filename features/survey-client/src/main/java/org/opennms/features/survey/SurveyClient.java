@@ -28,31 +28,61 @@
 
 package org.opennms.features.survey;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 
 public class SurveyClient {
-    
-    private URL m_baseURL;
-    
-    private static final ObjectWriter m_jsonWriter = new ObjectMapper().writer();
-    
-    public SurveyClient() throws Exception {
-//        m_baseURL = baseURL;
-        
-        Survey survey = new Survey();
-        
-        
-        String json = m_jsonWriter.writeValueAsString(survey);
-        
-        System.err.println(json);
-    }
-    
-    
-    
-    
 
+	private static final String			USERNAME		= "karaf";
+	private static final String			PASSWORD		= "karaf";
+
+	static {
+		// Setup the user/pass for Basic/Digest authentication
+		Authenticator.setDefault(new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(USERNAME, PASSWORD.toCharArray());
+			}
+		});
+	}
+
+    private URL m_baseURL = new URL("http://localhost:8181/cxf/surveys");
+    
+    private static final ObjectMapper m_jsonMapper = new ObjectMapper();
+
+
+    public SurveyClient() throws Exception {
+
+        Survey survey = new Survey();
+
+        HttpURLConnection connection = (HttpURLConnection)POST(survey, m_baseURL);
+
+        System.err.println("Returned status: " + connection.getResponseCode());
+        System.err.println(connection.getHeaderField("Location"));
+    }
+
+    private static HttpURLConnection POST(Object json, URL url) throws IOException {
+
+		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+		connection.setDoOutput(true);
+		connection.setInstanceFollowRedirects(false);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", "application/json");
+
+		OutputStream output = connection.getOutputStream();
+		m_jsonMapper.writeValue(output, json);
+
+		return connection;
+	}
+
+    public static void main(String[] args) throws Exception {
+    	new SurveyClient();
+    }
 
 }
