@@ -31,18 +31,19 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
-import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderComponent;
-import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.charts.ChartUtils;
+import org.opennms.netmgt.config.charts.BarChart;
+
+import java.util.Iterator;
 
 /**
- * This class represents the configuration window for alarm dashlets.
+ * This class represents the configuration window for charts dashlets.
  *
  * @author Christian Pape
  */
-public class AlarmConfigurationWindow extends DashletConfigurationWindow {
+public class ChartsConfigurationWindow extends DashletConfigurationWindow {
     /**
      * The {@link DashletSpec} to be used
      */
@@ -50,14 +51,15 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
     /**
      * The field for storing the 'boostSeverity' parameter
      */
-    private NativeSelect m_boostedSeveritySelect;
+    private CheckBox m_maximizeWidth, m_maximizeHeight;
+    private NativeSelect m_chartSelect;
 
     /**
      * Constructor for instantiating new objects of this class.
      *
      * @param dashletSpec the {@link DashletSpec} to be edited
      */
-    public AlarmConfigurationWindow(DashletSpec dashletSpec) {
+    public ChartsConfigurationWindow(DashletSpec dashletSpec) {
         /**
          * Setting the members
          */
@@ -66,45 +68,70 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
         /**
          * Setting up the base layouts
          */
+
+        setHeight(230, Unit.PIXELS);
+        setWidth(40, Unit.PERCENTAGE);
+
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setHeight(100, Unit.PERCENTAGE);
-        verticalLayout.setSizeFull();
+        verticalLayout.setWidth(100, Unit.PERCENTAGE);
         verticalLayout.setSpacing(true);
         verticalLayout.setMargin(true);
 
         /**
-         * Adding the selection box
+         * Adding the checkboxes
          */
-        m_boostedSeveritySelect = new NativeSelect();
-        m_boostedSeveritySelect.setCaption("Boosted Severity");
-        m_boostedSeveritySelect.setMultiSelect(false);
-        m_boostedSeveritySelect.setNullSelectionAllowed(false);
-        m_boostedSeveritySelect.setInvalidAllowed(false);
-        m_boostedSeveritySelect.setNewItemsAllowed(false);
+        m_maximizeWidth = new CheckBox();
+        m_maximizeWidth.setCaption("Maximize width");
 
-        for (OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
-            m_boostedSeveritySelect.addItem(onmsSeverity.name());
+        m_maximizeHeight = new CheckBox();
+        m_maximizeHeight.setCaption("Maximize width");
+
+        String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
+        String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
+
+        boolean maximizeHeight = ("true".equals(maximizeHeightString) || "yes".equals(maximizeHeightString) || "1".equals(maximizeHeightString));
+        boolean maximizeWidth = ("true".equals(maximizeWidthString) || "yes".equals(maximizeWidthString) || "1".equals(maximizeWidthString));
+
+        m_maximizeWidth.setValue(maximizeWidth);
+        m_maximizeHeight.setValue(maximizeHeight);
+
+        verticalLayout.addComponent(m_maximizeWidth);
+        verticalLayout.addComponent(m_maximizeHeight);
+
+        m_chartSelect = new NativeSelect();
+        m_chartSelect.setCaption("Chart");
+        m_chartSelect.setNullSelectionAllowed(false);
+        m_chartSelect.setInvalidAllowed(false);
+        m_chartSelect.setNewItemsAllowed(false);
+
+        String firstChartName = null;
+
+        try {
+            Iterator<BarChart> it = ChartUtils.getChartCollectionIterator();
+
+            while (it.hasNext()) {
+                BarChart chartConfig = (BarChart) it.next();
+
+                if (firstChartName == null) {
+                    firstChartName = chartConfig.getName();
+                }
+
+                m_chartSelect.addItem(chartConfig.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        String boostSeverity = m_dashletSpec.getParameters().get("boostSeverity");
+        String chartName = m_dashletSpec.getParameters().get("chart");
 
-        if (boostSeverity == null || "".equals(boostSeverity)) {
-            boostSeverity = OnmsSeverity.CLEARED.name();
+        if (chartName == null || "".equals(chartName)) {
+            chartName = firstChartName;
         }
 
-        m_boostedSeveritySelect.setValue(boostSeverity);
+        m_chartSelect.setValue(chartName);
 
-        verticalLayout.addComponent(m_boostedSeveritySelect);
 
-        /**
-         * Setting up the {@link CriteriaBuilderComponent} component
-         */
-        CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsEvent.class, OnmsCategory.class);
-
-        final CriteriaBuilderComponent criteriaBuilderComponent = new CriteriaBuilderComponent(criteriaBuilderHelper, m_dashletSpec.getParameters().get("criteria"));
-
-        verticalLayout.addComponent(criteriaBuilderComponent);
-        verticalLayout.setExpandRatio(criteriaBuilderComponent, 1.0f);
+        verticalLayout.addComponent(m_chartSelect);
 
         /**
          * Using an additional {@link com.vaadin.ui.HorizontalLayout} for layouting the buttons
@@ -138,8 +165,9 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                m_dashletSpec.getParameters().put("criteria", criteriaBuilderComponent.getCriteria());
-                m_dashletSpec.getParameters().put("boostSeverity", String.valueOf(m_boostedSeveritySelect.getValue()));
+                m_dashletSpec.getParameters().put("maximizeWidth", (m_maximizeWidth.getValue() ? "true" : "false"));
+                m_dashletSpec.getParameters().put("maximizeHeight", (m_maximizeHeight.getValue() ? "true" : "false"));
+                m_dashletSpec.getParameters().put("chart", String.valueOf(m_chartSelect.getValue()));
 
                 WallboardProvider.getInstance().save();
                 ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");
