@@ -69,6 +69,26 @@ public enum CriteriaEntry {
 
             return textField;
         }
+    },
+
+    StringValue() {
+        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+            TextField textField = new TextField();
+
+            textField.setCaption("Text value");
+
+            return textField;
+        }
+    },
+
+    IntegerValue() {
+        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+            TextField textField = new TextField();
+
+            textField.setCaption("Integer value");
+
+            return textField;
+        }
     };
 
     /**
