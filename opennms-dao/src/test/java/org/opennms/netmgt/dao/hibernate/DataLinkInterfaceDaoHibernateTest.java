@@ -70,31 +70,31 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(DataLinkInterfaceDaoHibernateTest.class);
-    
+
     @Autowired
     private NodeDao m_nodeDao;
-    
-	@Autowired
+
+    @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
-	@Autowired
-	private DatabasePopulator m_databasePopulator;
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
-	@Before
-	public void setUp() {
-	    for (final OnmsNode node : m_nodeDao.findAll()) {
-	        m_nodeDao.delete(node);
-	    }
-	    m_nodeDao.flush();
-		m_databasePopulator.populateDatabase();
-	}
+    @Before
+    public void setUp() {
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+        m_databasePopulator.populateDatabase();
+    }
 
     @Test
     @JUnitTemporaryDatabase
@@ -127,10 +127,10 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.or(
-            Restrictions.eq("node.id", m_databasePopulator.getNode1().getId()),
-            Restrictions.eq("nodeParentId", m_databasePopulator.getNode1().getId())
-        ));
-        
+                                     Restrictions.eq("node.id", m_databasePopulator.getNode1().getId()),
+                                     Restrictions.eq("nodeParentId", m_databasePopulator.getNode1().getId())
+                ));
+
         final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
         for (final DataLinkInterface iface : dlis) {
             LOG.debug("dli = {}", iface);
@@ -142,7 +142,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     public void testFindByStatus() throws Exception {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("status", StatusType.ACTIVE));
-        
+
         final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
         for (final DataLinkInterface iface : dlis) {
             LOG.debug("dli = {}", iface);
@@ -173,7 +173,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
         assertEquals(dli.getSource(), "linkd");
     }
-    
+
     @Test
     @Transactional // why is this necessary?
     public void testSaveDataLinkInterface2() {
@@ -210,7 +210,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         m_dataLinkInterfaceDao.flush();
 
         m_dataLinkInterfaceDao.setStatusForNode(m_databasePopulator.getNode4().getId(), "updatetest",StatusType.DELETED);
-        
+
         assertNotNull(m_dataLinkInterfaceDao.get(dli.getId()));
 
         DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
