@@ -47,8 +47,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -64,6 +62,8 @@ import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -110,7 +110,7 @@ public class ProvisionerRescanTest implements InitializingBean {
 
     @Autowired
     @Qualifier("scheduledExecutor")
-    private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
+    private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -161,7 +161,7 @@ public class ProvisionerRescanTest implements InitializingBean {
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         
-        m_pausibleExecutor.pause();
+        m_scheduledExecutor.pause();
     }
     
     @After
