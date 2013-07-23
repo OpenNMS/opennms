@@ -86,6 +86,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
          * Adding the restriction's select box
          */
         m_restrictionSelect = new NativeSelect();
+        m_restrictionSelect.setCaption("Restriction");
         m_restrictionSelect.setNullSelectionAllowed(false);
         m_restrictionSelect.setMultiSelect(false);
         m_restrictionSelect.setNewItemsAllowed(false);

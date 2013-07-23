@@ -25,6 +25,13 @@ public class Address {
 		setRegion(fields[8].trim());
 	}
 	
+	public Address() {
+	}
+	
+	public Address(String foreignSource) {
+		m_foreignSource = foreignSource;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

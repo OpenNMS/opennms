@@ -54,7 +54,7 @@ public enum CriteriaRestriction {
             criteriaBuilder.between(values[0].toString(), values[1], values[2]);
         }
     },
-    Contains(CriteriaEntry.Property, CriteriaEntry.Value) {
+    Contains(CriteriaEntry.Property, CriteriaEntry.StringValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             criteriaBuilder.contains(values[0].toString(), values[1]);
         }
@@ -79,7 +79,7 @@ public enum CriteriaRestriction {
             criteriaBuilder.gt(values[0].toString(), values[1]);
         }
     },
-    Ilike(CriteriaEntry.Property, CriteriaEntry.Value) {
+    Ilike(CriteriaEntry.Property, CriteriaEntry.StringValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             criteriaBuilder.ilike(values[0].toString(), values[1]);
         }
@@ -96,7 +96,7 @@ public enum CriteriaRestriction {
             criteriaBuilder.in(values[0].toString(), set);
         }
     },
-    Iplike(CriteriaEntry.Property, CriteriaEntry.Value) {
+    Iplike(CriteriaEntry.Property, CriteriaEntry.StringValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             criteriaBuilder.iplike(values[0].toString(), values[1]);
         }
@@ -121,12 +121,12 @@ public enum CriteriaRestriction {
             criteriaBuilder.lt(values[0].toString(), values[1]);
         }
     },
-    Like(CriteriaEntry.Property, CriteriaEntry.Value) {
+    Like(CriteriaEntry.Property, CriteriaEntry.StringValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             criteriaBuilder.like(values[0].toString(), values[1]);
         }
     },
-    Limit(CriteriaEntry.Value) {
+    Limit(CriteriaEntry.IntegerValue) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
             criteriaBuilder.limit(Integer.valueOf(values[0].toString()));
         }
@@ -205,13 +205,31 @@ public enum CriteriaRestriction {
                     break;
                 }
                 case Value: {
-                    Class clazz;
+                    Class clazz = criteriaBuilderHelper.getTypeOfProperty(property);
 
-                    if (property == null) {
-                        clazz = Integer.class;
+                    Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
+
+                    if (object == null) {
+                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("Cannot parse value '" + values[i] + "' for class " + clazz.getSimpleName());
+                        return;
                     } else {
-                        clazz = criteriaBuilderHelper.getTypeOfProperty(property);
+                        listOfObjects.add(object);
                     }
+                }
+                case IntegerValue: {
+                    Class clazz = Integer.class;
+
+                    Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
+
+                    if (object == null) {
+                        LoggerFactory.getLogger(CriteriaBuilderHelper.class).warn("Cannot parse value '" + values[i] + "' for class " + clazz.getSimpleName());
+                        return;
+                    } else {
+                        listOfObjects.add(object);
+                    }
+                }
+                case StringValue: {
+                    Class clazz = String.class;
 
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
