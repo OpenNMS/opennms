@@ -35,11 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Caches properties files in order to improve performance.
@@ -78,9 +80,7 @@ public class PropertiesCache {
                 }
                 return prop;
             } finally {
-                if (in != null) {
-                    try { in.close(); } catch (IOException e) { }
-                }
+                IOUtils.closeQuietly(in);
             }
         }
         
@@ -91,9 +91,7 @@ public class PropertiesCache {
                 out = new FileOutputStream(m_file);
                 m_properties.store(out, null);
             } finally {
-                if (out != null) {
-                    try { out.close(); } catch(IOException e) {}
-                }
+                IOUtils.closeQuietly(out);
             }
         }
 
@@ -140,6 +138,7 @@ public class PropertiesCache {
         }
 
         public void update(Map<String, String> props) throws IOException {
+            if (props == null) return;
             lock.lock();
             try {
                 boolean save = false;

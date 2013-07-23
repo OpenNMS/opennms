@@ -145,10 +145,12 @@ public class PersistOperationBuilder {
             // Nothing to do.  In fact, we'll get an error if we try to create an RRD file with no data sources            
             return;
         }
-        
-        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
-        RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
-        RrdUtils.createMetaDataFile(getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_metaData);
+
+        final String ownerName = m_resource.getOwnerName();
+        final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
+        RrdUtils.createRRD(ownerName, absolutePath, m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
+        RrdUtils.updateRRD(ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+        RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
     }
 
     private String getValues() {
