@@ -235,7 +235,7 @@ public abstract class ResourceTypeUtils {
         try {
             s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
         } catch (IOException e) {
-            log().error("Unable to save DataSource Properties file" + e, e);
+            log().error("Unable to save DataSource Properties file: " + e, e);
         }
     }
 
