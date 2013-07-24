@@ -43,7 +43,6 @@ import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
 import org.opennms.integration.otrs.ticketservice.TicketStateUpdate;
 import org.opennms.integration.otrs.ticketservice.TicketWithArticles;
-import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
 
 import org.opennms.api.integration.ticketing.*;
 
