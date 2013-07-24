@@ -98,7 +98,9 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAlarmLink() {
+    public void testAlarmLink() throws Exception {
+        createAlarm();
+        Thread.sleep(10000L);
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
