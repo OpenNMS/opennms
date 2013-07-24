@@ -52,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -85,6 +86,8 @@ public class MigratorTest {
     }
 
     @Test
+    @DirtiesContext
+    @JUnitTemporaryDatabase(createSchema=false)
     public void testUpdate() throws Exception {
         Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -122,6 +125,8 @@ public class MigratorTest {
     }
     
     @Test
+    @DirtiesContext
+    @JUnitTemporaryDatabase(createSchema=false)
     public void testMultipleChangelogs() throws Exception {
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -130,7 +135,7 @@ public class MigratorTest {
         m.setCreateUser(false);
         m.setCreateDatabase(false);
 
-        Migration migration = new Migration();
+        final Migration migration = new Migration();
         migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
@@ -158,6 +163,8 @@ public class MigratorTest {
     }
     
     @Test
+    @DirtiesContext
+    @JUnitTemporaryDatabase(createSchema=false)
     @Ignore("takes a long time, just did this to make sure 'upgrades' would not bomb")
     public void testUpdateTwice() throws Exception {
         final Migrator m = new Migrator();
