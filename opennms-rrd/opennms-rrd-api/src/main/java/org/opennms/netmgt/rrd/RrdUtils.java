@@ -94,7 +94,11 @@ public abstract class RrdUtils {
         final File metaFile = new File(directory + File.separator + rrdName + ".meta");
 
         try {
-            s_cache.updateProperties(metaFile, attributeMappings);
+            if (metaFile.exists()) {
+                s_cache.updateProperties(metaFile, attributeMappings);
+            } else {
+                s_cache.saveProperties(metaFile, attributeMappings);
+            }
         } catch (final IOException e) {
             LOG.error("Failed to save metadata file {}", metaFile, e);
         }
