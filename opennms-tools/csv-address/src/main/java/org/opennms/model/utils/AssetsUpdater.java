@@ -40,8 +40,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -54,14 +52,16 @@ import org.apache.commons.lang.StringUtils;
 import au.com.bytecode.opencsv.CSVReader;
 
 
-public class AddressUpdater {
+public class AssetsUpdater {
 
     private static final String PROPERTY_CSV_FILE = "csv.file";
     private static final String PROPERTY_DB_SVR = "db.server";
     private static final String PROPERTY_DB_NAME = "db.name";
     private static final String PROPERTY_DB_USER = "db.user";
     private static final String PROPERTY_DB_PW = "db.password";
-    private static final String PROPERTY_FOREIGN_SOURCE = "foreign.source";
+    private static final String PROPERTY_FOREIGN_SOURCE_FORMATTER = "foreign.source.formatter";
+    private static final String PROPERTY_DB_QUERY ="db.query";
+    private static final String PROPERTY_DB_QUERY_COLUMN = "db.query.column";
     
     protected static final String PROPERTY_FIELD_PREFIX = "field";
     
@@ -70,10 +70,13 @@ public class AddressUpdater {
     private static String m_dbName = "opennms";
     private static String m_dbUser = "opennms";
     private static String m_dbPass = "opennms";
-    private static String m_foreignSource = null;
+    private static String m_foreignSourceFormatter = "org.opennms.model.utils.NullFormatter";
     
-	private static int _csvFields = 9;
+    private static String m_dbQuery = "SELECT * FROM assets WHERE nodeid = ?";
+    private static int m_dbQueryColumn = 1;
+    
 	private static Map<Integer, String> m_fieldMap = new HashMap<Integer, String>();
+	private static ForeignSourceFormatter m_formatter;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         Runtime.getRuntime().addShutdownHook(createShutdownHook());
@@ -98,11 +101,21 @@ public class AddressUpdater {
 				e1.printStackTrace();
 			}
         	System.exit(1);
-        }
+        } catch (IllegalArgumentException e) {
+			e.printStackTrace();
+        	System.exit(1);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+        	System.exit(1);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+        	System.exit(1);
+		}
         
         try {
-        	List<Address> addresses = parseCsv(m_csvFile);
-			updateAssetTable(addresses);
+        	parseCsv2(m_csvFile);
+//        	List<Address> addresses = parseCsv(m_csvFile);
+//			updateAssetTable(addresses);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -110,33 +123,30 @@ public class AddressUpdater {
         System.out.println("Finished.");
     }
     
-    private static void updateAssetTable(List<Address> addresses) throws ClassNotFoundException, SQLException {
-    	
-    	String sql = "" +
-    			"SELECT a.id AS \"id\", " +
-    			"       a.nodeid AS \"nodeid\", " +
-    			"       a.address1 AS \"address1\", " +
-    			"       a.city AS \"city\", " +
-    			"       a.state AS \"state\", " +
-    			"       a.zip AS \"zip\", " +
-    			"       a.country AS \"country\", " +
-    			"       a.department AS \"department\", " +
-    			"       a.division AS \"division\", " +
-    			"       a.region AS \"region\" " +
-    			"  FROM assets a " +
-    			"  JOIN node n on n.nodeid = a.nodeid " +
-    			" WHERE n.foreignsource = ?";
-    	
-    	Connection con = createConnection();
-    	con.setAutoCommit(false);
-    	PreparedStatement ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-    	
-    	for (Address address : addresses) {
-			String foreignSource = "Store" + StringUtils.leftPad(address.getForeignSource(), 4, '0');
+    protected static void parseCsv2(final File csv) throws ClassNotFoundException, SQLException, IOException {
+	
+	String sql = m_dbQuery;
+	
+	Connection con = createConnection(false);
+	PreparedStatement ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+	
+	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
+	CSVReader csvReader = new CSVReader(br);
+		String[] line;
+		int lineCnt = 0;
+		while((line = csvReader.readNext()) != null) {
+			
+			System.out.println("Processing csv line: "+ String.valueOf(++lineCnt));
+	
+			if (line.length != m_fieldMap.size()+1) {
+				continue;
+			}
+	
+			String foreignSource = m_formatter.formatForeignSource(StringUtils.isBlank(line[0]) ? null : line[0]);
+	
+			System.out.println("Running query for foreignSource: "+foreignSource+" ...");
 			ps.setString(1, foreignSource);
-			
 			ResultSet rs = ps.executeQuery();
-			
 			rs.last();
 			int rows = rs.getRow();
 			if (rows < 1) {
@@ -144,154 +154,46 @@ public class AddressUpdater {
 				System.out.println("No results found for foreignsource: "+foreignSource+"; continuing to next foreignsource...");
 				continue;
 			}
-			
+			System.out.println("Found "+rows+" rows.");
+	
 			rs.beforeFirst();
-			
+	
 			while (rs.next()) {
 				System.out.println("Updating node: "+rs.getInt("nodeid"));
-				rs.updateString("address1", address.getAddress());
-				rs.updateString("city", address.getCity());
-				rs.updateString("state", address.getState());
-				rs.updateString("zip", address.getZip());
-				rs.updateString("country", address.getCountry());
-				rs.updateString("department", address.getDepartment());
-				rs.updateString("division", address.getDivision());
-				rs.updateString("region", address.getRegion());
+	
+				Set<Entry<Integer, String>> entrySet = m_fieldMap.entrySet();
+				for (Entry<Integer, String> entry : entrySet) {
+					int csvField = entry.getKey()-1;
+					String columnName = entry.getValue();
+					System.out.println("\t"+"updating column: "+columnName+" with csv field: "+line[csvField]);
+					rs.updateString(columnName, line[csvField]);
+				}
+				
 				rs.updateRow();
 			}
 			rs.close();
 		}
-    	
-    	ps.close();
-    	try {
+	
+		try {
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			con.rollback();
 		}
-    	con.close();
+	
+		ps.close();
+		con.close();
 	}
 
-    protected static List<Address> parseCsv2(final File csv) throws FileNotFoundException, ClassNotFoundException, SQLException {
-    	
-    	String sql = "" +
-    			"SELECT a.* " +
-    			"  FROM assets a " +
-    			"  JOIN node n on n.nodeid = a.nodeid " +
-    			" WHERE n.foreignsource = ?";
-
-    	Connection con = createConnection();
-    	PreparedStatement ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-    	
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
-    	CSVReader csvReader = new CSVReader(br);
-    	try {
-			String[] line;
-			while((line = csvReader.readNext()) != null) {
-				
-				if (line.length != m_fieldMap.size()+1) {
-					continue;
-				}
-				
-				String foreignSource;
-				if (m_foreignSource != null) {
-					foreignSource = m_foreignSource;
-				} else {
-					foreignSource = line[0];
-				}
-				
-				if (foreignSource == null) {
-					continue;
-				}
-				
-				ps.setString(1, foreignSource);
-				ResultSet rs = ps.executeQuery();
-				rs.last();
-				int rows = rs.getRow();
-				if (rows < 1) {
-					rs.close();
-					System.out.println("No results found for foreignsource: "+foreignSource+"; continuing to next foreignsource...");
-					continue;
-				}
-
-				rs.beforeFirst();
-
-				while (rs.next()) {
-					System.out.println("Updating node: "+rs.getInt("nodeid"));
-
-					Set<Entry<Integer, String>> entrySet = m_fieldMap.entrySet();
-					for (Entry<Integer, String> entry : entrySet) {
-						rs.updateString(entry.getValue(), line[entry.getKey()]);
-					}
-					rs.updateRow();
-				}
-				rs.close();
-		    	
-		    	try {
-					con.commit();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					con.rollback();
-				}
-		    	
-		    	ps.close();
-		    	con.close();
-					
-				}
-				
-			} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-		return null;
-    }
-    
-	/**
-	 * Parses the addresses defined in a csv file to an <code>Address</code>
-	 * @param csv
-	 * @param m_repo
-	 * @return The number of lines successfully parsed into an <code>Address</code> from the csv input file.
-	 * @throws IOException
-	 */
-	protected static List<Address> parseCsv(final File csv) throws IOException {
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
-	    List<Address> addresses = new LinkedList<Address>();
-	    
-	    String line = null;
-	    int lineNum = 0;
-	    while ((line = br.readLine()) != null) {
-	        lineNum++;
-	        if (line != null && line.startsWith("#")) {
-	            continue;
-	        }
-	        
-	        String[] fields = line.split(",", _csvFields);
-	        int fieldCount = fields.length;
-	        if (fieldCount != _csvFields) {
-	            System.err.println("Error on line: "+Integer.toString(lineNum)+". Found "+Integer.toString(fieldCount)+" fields and expected: "+_csvFields+".");
-	            continue;
-	        }
-	                    
-	        Address address = new Address(fields);
-	        System.out.println("Line "+Integer.toString(lineNum)+":"+address.toString());
-	        
-	        addresses.add(address);
-	        
-	    }
-	    br.close();
-	    return addresses;
-	}
-
-
-    private static Connection createConnection() throws ClassNotFoundException, SQLException {
+    private static Connection createConnection(boolean autoCommit) throws ClassNotFoundException, SQLException {
         Class.forName("org.postgresql.Driver");
         Connection connection = DriverManager.getConnection("jdbc:postgresql://" + m_dbSvr + ":5432/"+m_dbName, m_dbUser, m_dbPass);
+        connection.setAutoCommit(autoCommit);
         return connection;
     }
 
     //need to do some better exception handling here
-    protected static void validateProperties(Properties props) throws IOException, FileNotFoundException, IllegalArgumentException  {
+    protected static void validateProperties(Properties props) throws IOException, FileNotFoundException, IllegalArgumentException, ClassNotFoundException, InstantiationException, IllegalAccessException  {
     	
     	createCsvFileMappingFromProperties(props);
 		
@@ -299,7 +201,13 @@ public class AddressUpdater {
     	
     	createDbConnectionSettingsFromProperties();
     	
-    	m_foreignSource = System.getProperty(PROPERTY_FOREIGN_SOURCE);
+    	m_dbQuery = props.getProperty(PROPERTY_DB_QUERY, m_dbQuery);
+    	m_dbQueryColumn = Integer.valueOf(props.getProperty(PROPERTY_DB_QUERY_COLUMN, String.valueOf(m_dbQueryColumn)));
+    	
+    	m_foreignSourceFormatter = System.getProperty(PROPERTY_FOREIGN_SOURCE_FORMATTER, m_foreignSourceFormatter);
+		Class<?> formatterClass = Class.forName(m_foreignSourceFormatter);
+    	
+    	m_formatter = (ForeignSourceFormatter) formatterClass.newInstance();
 
     }
 
@@ -328,7 +236,7 @@ public class AddressUpdater {
     	System.out.println("\t"+PROPERTY_DB_PW+":"+m_dbPass);
 	}
 
-	private static void createCsvFileMappingFromProperties(Properties props) {
+	protected static void createCsvFileMappingFromProperties(Properties props) {
 		Set<Object> keySet = props.keySet();
 		String regex = "^"+PROPERTY_FIELD_PREFIX +"([0-9]+)$";
 		Pattern pattern = Pattern.compile(regex);
@@ -341,7 +249,9 @@ public class AddressUpdater {
 				continue;
 			}
 			
-			m_fieldMap.put(Integer.valueOf(m.group(1)), props.getProperty(key.toString()));
+			Integer mapKey = Integer.valueOf(m.group(1));
+			String mapValue = props.getProperty(key.toString());
+			m_fieldMap.put(mapKey, mapValue);
 		}
 
     	int mapEntries = m_fieldMap.size();
@@ -351,9 +261,13 @@ public class AddressUpdater {
 			createDefaultMapping();
 		}
 		
-		for (int i=0; i < mapEntries; i++) {
-			System.out.println("Mapping property: field"+i+"="+m_fieldMap.get(i)+" maps to csv field "+i+" to column name "+m_fieldMap.get(i));
+		Set<Entry<Integer, String>> entrySet = m_fieldMap.entrySet();
+		for (Entry<Integer, String> entry : entrySet) {
+			Integer key = entry.getKey();
+			String value = entry.getValue();
+			System.out.println("csv field: "+key+" maps to asset column name: "+value);
 		}
+
 	}
 
 	private static void createDefaultMapping() {
@@ -377,15 +291,15 @@ public class AddressUpdater {
                 "\t"+PROPERTY_DB_NAME+": default:"+m_dbName+"\n" +
                 "\t"+PROPERTY_DB_USER+": default:"+m_dbUser+"\n" +
                 "\t"+PROPERTY_DB_PW+": default:"+m_dbPass+"\n" +
-                "\t"+PROPERTY_FOREIGN_SOURCE+": default: null\n" +
-                "\t"+PROPERTY_FIELD_PREFIX+"[1...]: default: \n" +
-                		"\t\tfield2=address1" +
-                		"\t\tfield3=city" +
-                		"\t\tfield4=state" +
-                		"\t\tfield5=state" +
-                		"\t\tfield6=zip" +
-                		"\t\tfield7=department" +
-                		"\t\tfield8=division" +
+                "\t"+PROPERTY_FOREIGN_SOURCE_FORMATTER+": default: "+m_foreignSourceFormatter+" \n" +
+                "\t"+PROPERTY_FIELD_PREFIX+"[2...]: (field1 is required to be the \"foreign source\") with defaults: \n" +
+                		"\t\tfield2=address1 \n" +
+                		"\t\tfield3=city \n" +
+                		"\t\tfield4=state \n" +
+                		"\t\tfield5=state \n" +
+                		"\t\tfield6=zip \n" +
+                		"\t\tfield7=department \n" +
+                		"\t\tfield8=division \n" +
                 		"\t\tfield9=region\n" +
                 "\n" +
                 "\n" +
@@ -395,12 +309,12 @@ public class AddressUpdater {
                 "\t\t-D"+PROPERTY_DB_NAME+"=opennms \\\n" +
                 "\t\t-D"+PROPERTY_DB_USER+"=opennms \\\n" +
                 "\t\t-D"+PROPERTY_DB_PW+"=opennms \\\n" +
-                "\t\t-D"+PROPERTY_FOREIGN_SOURCE+"=Store0001 \\\n" +
+                "\t\t-D"+PROPERTY_FOREIGN_SOURCE_FORMATTER+"=org.opennms.model.utils.StoreFormatter \\\n" +
                 "\t\t-D"+PROPERTY_FIELD_PREFIX+"10=address2 \\\n" +
                 "\t\t-jar opennms-csv-address-1.13.0-SNAPSHOT-jar-with-dependencies.jar" +
                 "\n" +
                 "\n" +
-                "FYI: This application expects the csv file to have 9 fields: node.foreignsource,address1,city,state.zip,country,department,division,region.  Example:" +
+                "The default format fits the following sample:" +
                 "\n\n" +
                 "#ForeignSource,Address,City,State,Zip,Country,Department,Division,Region\n" +
                 "HQ,220 Chatham Business Drive,Pittsboro,NC,27312,USA,RTP,Piedmont,SouthEast\n"
