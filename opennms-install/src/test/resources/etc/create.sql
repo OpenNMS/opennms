@@ -501,11 +501,13 @@ create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 --########################################################################
 
 create table service (
-	serviceID		integer not null,
+	serviceID		integer default nextval('serviceNxtId') not null,
 	serviceName		varchar(255) not null,
 
 	constraint pk_serviceID primary key (serviceID)
 );
+
+create unique index service_servicename_key on service (serviceid);
 
 --########################################################################
 --# ifServices Table - Contains a mapping of interfaces to services available
