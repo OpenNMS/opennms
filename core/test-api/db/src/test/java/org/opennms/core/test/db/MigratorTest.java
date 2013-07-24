@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -94,6 +95,7 @@ public class MigratorTest {
      * be located in the classpath before the schema.a and schema.b test migrations.
      */
     @Test
+    @DirtiesContext
     @JUnitTemporaryDatabase(createSchema=false)
     public void testUpdate() throws Exception {
         // Make sure there is no databasechangelog table
@@ -192,6 +194,7 @@ public class MigratorTest {
     }
 
     @Test
+    @DirtiesContext
     @JUnitTemporaryDatabase(createSchema=false)
     public void testMultipleChangelogs() throws Exception {
         // Make sure there is no databasechangelog table
@@ -235,6 +238,7 @@ public class MigratorTest {
     }
 
     @Test
+    @DirtiesContext
     @JUnitTemporaryDatabase(createSchema=false)
     public void testUpdateTwice() throws Exception {
         final Migrator m = new Migrator();
