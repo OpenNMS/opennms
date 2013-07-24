@@ -246,10 +246,17 @@ public class PropertiesCache {
      * @param properties a {@link java.util.Properties} object.
      * @throws java.io.IOException if any.
      */
-    public void saveProperties(File propFile, Properties properties) throws IOException {
+    public void saveProperties(final File propFile, final Properties properties) throws IOException {
         getHolder(propFile).put(properties);
     }
-    
+
+    public void saveProperties(final File propFile, final Map<String, String> attributeMappings) throws IOException {
+        if (attributeMappings == null) return;
+        final Properties properties = new Properties();
+        properties.putAll(attributeMappings);
+        saveProperties(propFile, properties);
+    }
+
     /**
      * <p>updateProperties</p>
      *
@@ -284,6 +291,5 @@ public class PropertiesCache {
     public String getProperty(File propFile, String key) throws IOException {
         return getHolder(propFile).getProperty(key);
     }
-    
 
 }

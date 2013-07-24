@@ -113,7 +113,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         if (config == null) {
             return;
         }
-        
+
         boolean shouldIgnoreNonExistent = testContext.getTestException() != null;
 
         if (config.anticipateFiles().length > 0 ||
