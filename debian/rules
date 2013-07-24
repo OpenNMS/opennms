@@ -264,7 +264,7 @@ install: build
 	##
 	find debian/temp -name .gitignore -o -name .gwtignore -o -name .readme -exec rm -rf {} \;
 	$(eval REMAINING_COUNT := $(shell find debian/temp -type f | wc -l))
-	if [ $(REMAINING_COUNT) -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged"; exit 1; fi
+	if [ $(REMAINING_COUNT) -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged:"; find debian/temp -type f; exit 1; fi
 
 # Build architecture-independent files here.
 binary-indep: build install
