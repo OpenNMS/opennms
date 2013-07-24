@@ -500,11 +500,13 @@ create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 --########################################################################
 
 create table service (
-	serviceID		integer not null,
+	serviceID		integer default nextval('serviceNxtId') not null,
 	serviceName		varchar(255) not null,
 
 	constraint pk_serviceID primary key (serviceID)
 );
+
+create unique index service_servicename_key on service (serviceid);
 
 --########################################################################
 --# ifServices Table - Contains a mapping of interfaces to services available
@@ -898,7 +900,7 @@ create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID)
 
 create table notifications (
        textMsg      text not null,
-       subject      varchar(256),
+       subject      text,
        numericMsg   varchar(256),
        notifyID	    integer not null,
        pageTime     timestamp with time zone,
@@ -1008,43 +1010,43 @@ create table memos (
 --########################################################################
 
 create table alarms (
-	alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
-	eventUei                VARCHAR(256) NOT NULL,
-	dpName                  VARCHAR(12) NOT NULL,
-	nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
-	ipaddr                  VARCHAR(39),
-	serviceID               INTEGER,
-	reductionKey            VARCHAR(256),
-	alarmType               INTEGER,
-        counter                 INTEGER NOT NULL,
-	severity                INTEGER NOT NULL,
-	lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
-	firstEventTime          timestamp with time zone,
-	lastEventTime           timestamp with time zone,
-	firstAutomationTime     timestamp with time zone,
-	lastAutomationTime      timestamp with time zone,
-	description             text,
-	logMsg                  text,
-	operInstruct            VARCHAR(1024),
-	tticketID               VARCHAR(128),
-	tticketState            INTEGER,
-	mouseOverText           VARCHAR(64),
-	suppressedUntil         timestamp with time zone,
-	suppressedUser          VARCHAR(256),
-	suppressedTime          timestamp with time zone,
-	alarmAckUser            VARCHAR(256),
-	alarmAckTime            timestamp with time zone,
-	managedObjectInstance   VARCHAR(512),
-	managedObjectType       VARCHAR(512),
-	applicationDN           VARCHAR(512),
-	ossPrimaryKey           VARCHAR(512),
-	x733AlarmType           VARCHAR(31),
-	x733ProbableCause       INTEGER default 0 not null,
-	qosAlarmState           VARCHAR(31),
-        ifIndex                 INTEGER,
-        clearKey                VARCHAR(256),
-        eventParms              text,
-        stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
+    alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+    eventUei                VARCHAR(256) NOT NULL,
+    dpName                  VARCHAR(12) NOT NULL,
+    nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
+    ipaddr                  VARCHAR(39),
+    serviceID               INTEGER,
+    reductionKey            VARCHAR(256),
+    alarmType               INTEGER,
+    counter                 INTEGER NOT NULL,
+    severity                INTEGER NOT NULL,
+    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
+    firstEventTime          timestamp with time zone,
+    lastEventTime           timestamp with time zone,
+    firstAutomationTime     timestamp with time zone,
+    lastAutomationTime      timestamp with time zone,
+    description             text,
+    logMsg                  text,
+    operInstruct            VARCHAR(1024),
+    tticketID               VARCHAR(128),
+    tticketState            INTEGER,
+    mouseOverText           VARCHAR(64),
+    suppressedUntil         timestamp with time zone,
+    suppressedUser          VARCHAR(256),
+    suppressedTime          timestamp with time zone,
+    alarmAckUser            VARCHAR(256),
+    alarmAckTime            timestamp with time zone,
+    managedObjectInstance   VARCHAR(512),
+    managedObjectType       VARCHAR(512),
+    applicationDN           VARCHAR(512),
+    ossPrimaryKey           VARCHAR(512),
+    x733AlarmType           VARCHAR(31),
+    x733ProbableCause       INTEGER default 0 not null,
+    qosAlarmState           VARCHAR(31),
+    ifIndex                 INTEGER,
+    clearKey                VARCHAR(256),
+    eventParms              text,
+    stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
