@@ -182,6 +182,7 @@ public class MockLogAppender {
     public static void setupLogging(final boolean toConsole, String level, final Properties config) {
         s_defaultLevel = level;
         resetLogLevel();
+<<<<<<< HEAD
         resetEvents();
 
         if (s_instance == null) {
@@ -213,6 +214,37 @@ public class MockLogAppender {
         for (final Object oKey : config.keySet()) {
             final String key = ((String)oKey).replaceAll("^log4j.logger.", MockLogger.LOG_KEY_PREFIX);
             setProperty(logger, key, config.getProperty((String)oKey));
+=======
+        
+        final Properties logConfig = new Properties(config);
+        final String consoleAppender = (toConsole ? ", CONSOLE" : "");
+        
+        setProperty(logConfig, "log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+        setProperty(logConfig, "log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+        setProperty(logConfig, "log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+        setProperty(logConfig, "log4j.appender.MOCK", MockLogAppender.class.getName());
+        setProperty(logConfig, "log4j.appender.MOCK.layout", "org.apache.log4j.PatternLayout");
+        setProperty(logConfig, "log4j.appender.MOCK.layout.ConversionPattern", "%-5p [%t] %c: %m%n");
+
+        setProperty(logConfig, "log4j.rootCategory", level + consoleAppender + ", MOCK");
+        setProperty(logConfig, "log4j.logger.org.apache.commons.httpclient.HttpMethodBase", "ERROR");
+        setProperty(logConfig, "log4j.logger.org.exolab.castor", "INFO");
+        setProperty(logConfig, "log4j.logger.org.snmp4j", "ERROR");
+        setProperty(logConfig, "log4j.logger.org.snmp4j.agent", "ERROR");
+        setProperty(logConfig, "log4j.logger.com.mchange.v2", "WARN");
+        setProperty(logConfig, "log4j.logger.org.springframework.beans.factory.support", "WARN");
+        setProperty(logConfig, "log4j.logger.org.springframework.context.support", "WARN");
+        setProperty(logConfig, "log4j.logger.org.springframework.jdbc.datasource", "WARN");
+        setProperty(logConfig, "log4j.logger.org.springframework.test.context.support", "WARN");
+        setProperty(logConfig, "log4j.logger.org.hibernate.cfg.AnnotationBinder", "ERROR" + consoleAppender + ", MOCK");
+        
+        PropertyConfigurator.configure(logConfig);
+    }
+    
+    private static void setProperty(final Properties logConfig, final String key, final String value) {
+        if (!logConfig.containsKey(key)) {
+            logConfig.put(key, value);
+>>>>>>> opennms/1.12
         }
     }
 
