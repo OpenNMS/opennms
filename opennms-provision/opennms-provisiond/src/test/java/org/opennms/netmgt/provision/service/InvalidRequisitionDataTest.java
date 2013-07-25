@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -172,6 +173,7 @@ public class InvalidRequisitionDataTest {
 
     @Test
     @JUnitTemporaryDatabase
+    @Ignore
     public void testImportInvalidXml() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 
