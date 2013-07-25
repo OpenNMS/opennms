@@ -76,6 +76,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * This class is designed to rescan all the managed interfaces for a specified
@@ -186,14 +187,6 @@ public final class RescanProcessor implements Runnable {
     
     private static Set<Integer> m_queuedRescanTracker;
     
-    private static IpInterfaceDaoHibernate m_ipInterfaceDao; 
-
-    private MonitoredServiceDaoHibernate m_monitoredServiceDao;
-    
-    private static NodeDaoHibernate m_nodeDao;
-    
-    private ServiceTypeDaoHibernate m_serviceTypeDao;
-
     /**
      * Constructor.
      * 
@@ -2399,13 +2392,24 @@ public final class RescanProcessor implements Runnable {
          */
         PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(RescanProcessor.class);
-        String nodeTypeStr = m_nodeDao.getTypeForId(nodeId);
-        if (nodeTypeStr != null ) {
-            char nodeType = nodeTypeStr.charAt(0);
-            if (nodeType == DbNodeEntry.NODE_TYPE_DELETED) {
-                nodeDeleted = true;
+        try {
+            stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_NODE_TYPE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            rs.next();
+            String nodeTypeStr = rs.getString(1);
+            if (!rs.wasNull()) {
+                char nodeType = nodeTypeStr.charAt(0);
+                if (nodeType == DbNodeEntry.NODE_TYPE_DELETED) {
+                    nodeDeleted = true;
+                }
             }
+        } finally {
+            d.cleanUp();
         }
+
         return nodeDeleted;
     }
 
@@ -3555,27 +3559,6 @@ public final class RescanProcessor implements Runnable {
         synchronized(m_queuedRescanTracker) {
             return (m_queuedRescanTracker.contains(nodeId));
         }
-    }
-
-    @Autowired
-    public void setIpInterfaceDao(IpInterfaceDaoHibernate ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    @Autowired
-    public void setMonitoredServiceDao(
-            MonitoredServiceDaoHibernate monitoredServiceDao) {
-        m_monitoredServiceDao = monitoredServiceDao;
-    }
-
-    @Autowired
-    public void setNodeDao(NodeDaoHibernate nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    @Autowired
-    public void setServiceTypeDao(ServiceTypeDaoHibernate serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
     }
 
 } // end class

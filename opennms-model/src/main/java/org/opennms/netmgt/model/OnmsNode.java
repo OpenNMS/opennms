@@ -148,10 +148,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     
     private String m_foreignId;
     
-    private String m_criticalPathIp;
-    
-    private String m_criticalPathServiceName;
-
     /** persistent field */
     private OnmsDistPoller m_distPoller;
 
@@ -242,24 +238,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public void setNodeId(String nodeid) {
         setId(Integer.valueOf(nodeid));
-    }
-
-    @Column(table="pathOutage", name="criticalpathip")
-    public String getCriticalPathIp() {
-        return m_criticalPathIp;
-    }
-
-    public void setCriticalPathIp(String criticalPathIp) {
-        m_criticalPathIp = criticalPathIp;
-    }
-
-    @Column(table="pathOutage", name="criticalpathservicename")
-    public String getCriticalPathServiceName() {
-        return m_criticalPathServiceName;
-    }
-
-    public void setCriticalPathServiceName(String criticalPathServiceName) {
-        m_criticalPathServiceName = criticalPathServiceName;
     }
 
     /**

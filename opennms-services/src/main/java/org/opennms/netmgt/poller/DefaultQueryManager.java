@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -42,7 +41,6 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -51,8 +49,6 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -110,9 +106,9 @@ public class DefaultQueryManager implements QueryManager {
     
     IpInterfaceDao m_ipInterfaceDao;
 
-    NodeDaoHibernate m_nodeDao;
+    NodeDao m_nodeDao;
 
-    ServiceTypeDaoHibernate m_serviceTypeDao;
+    ServiceTypeDao m_serviceTypeDao;
 
     /** {@inheritDoc} */
     @Override
@@ -422,8 +418,8 @@ public class DefaultQueryManager implements QueryManager {
         final String[] cpath = new String[2];
         
         OnmsNode pathOutage = m_nodeDao.getPathOutageByNodeId(nodeId);
-        cpath[0] = pathOutage.getCriticalPathIp();
-        cpath[1] = pathOutage.getCriticalPathServiceName();
+        cpath[0] = pathOutage.getPathElement().getIpAddress();
+        cpath[1] = pathOutage.getPathElement().getServiceName();
         
         if (cpath[0] == null || cpath[0].equals("")) {
             cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
@@ -468,12 +464,12 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     @Autowired
-    public void setNodeDao(NodeDaoHibernate nodeDao) {
+    public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
     @Autowired
-    public void setServiceTypeDao(ServiceTypeDaoHibernate serviceTypeDao) {
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
