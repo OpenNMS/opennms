@@ -388,6 +388,20 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.12">
+		<title>Changes in OpenNMS 1.10.12</title>
+
+		<section id="opennms-1.10.12-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Alarm list and alarm details is not showing in the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5947'>NMS-5947</ulink>)</para></listitem>
+				<listitem><para>The report SerialInterfaceUtilizationSummary  is showing duplicated data. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5978'>NMS-5978</ulink>)</para></listitem>
+				<listitem><para>Serial Interface Utilization Report is displaying the wrong start date on the report. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5985'>NMS-5985</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.11">
 		<title>Changes in OpenNMS 1.10.11</title>
 
