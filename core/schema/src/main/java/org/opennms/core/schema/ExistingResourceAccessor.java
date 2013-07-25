@@ -71,4 +71,8 @@ public class ExistingResourceAccessor implements ResourceAccessor {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public String toString() {
+        return m_resource.toString();
+    }
 }

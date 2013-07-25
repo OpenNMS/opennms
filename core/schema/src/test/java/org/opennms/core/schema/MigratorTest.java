@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,11 +28,13 @@
 
 package org.opennms.core.schema;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,11 +42,12 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.test.mock.MockLogAppender;
@@ -59,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/migratorTest.xml"
 })
-@JUnitTemporaryDatabase(createSchema=false)
+@JUnitTemporaryDatabase
 public class MigratorTest {
 
     @Autowired
@@ -71,69 +74,66 @@ public class MigratorTest {
     @Autowired
     ApplicationContext m_context;
 
-    private Migration m_migration;
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
-        m_migration = new Migration();
-        m_migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        m_migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        m_migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
-        m_migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        m_migration.setChangeLog("changelog.xml");
     }
 
     @Test
-    @DirtiesContext
     @JUnitTemporaryDatabase(createSchema=false)
     public void testUpdate() throws Exception {
-        Migrator m = new Migrator();
-        m.setDataSource(m_dataSource);
-        m.setAdminDataSource(m_dataSource);
-        m.setValidateDatabaseVersion(false);
-        m.setCreateUser(false);
-        m.setCreateDatabase(false);
+        // Make sure there is no databasechangelog table
+        assertFalse(changelogExists());
 
-        m.prepareDatabase(m_migration);
-        m.migrate(m_migration);
-
-        Connection conn = null;
-        try {
-            conn = m_dataSource.getConnection();
-
-            Set<String> tables = new HashSet<String>();
-            ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
-            while (rs.next()) {
-                tables.add(rs.getString("TABLE_NAME").toLowerCase());
-            }
-            assertTrue("must contain table 'alarms'", tables.contains("alarms"));
-
-            Set<String> procs = new HashSet<String>();
-            rs = conn.getMetaData().getProcedures(null, null, "%");
-            while (rs.next()) {
-                procs.add(rs.getString("PROCEDURE_NAME").toLowerCase());
-            }
-            System.err.println("procs = " + procs);
-            assertTrue("must have stored procedure 'setSnmpInterfaceKeysOnUpdate'", procs.contains("setsnmpinterfacekeysonupdate"));
-        } finally {
-            if (conn != null) {
-                conn.close();
+        Resource aResource = null;
+        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+            if (resource.getURI().toString().contains("test-api.schema.a")) {
+                aResource = resource;
             }
         }
-    }
-    
-    @Test
-    @DirtiesContext
-    @JUnitTemporaryDatabase(createSchema=false)
-    public void testMultipleChangelogs() throws Exception {
+
+        Set<String> tables = getTables();
+        assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
+        
+        final Migration migration = new Migration();
+        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
+        migration.setAccessor(new ExistingResourceAccessor(aResource));
+
+        LogUtils.infof(this, "Running migration on database: %s", migration.toString());
+
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
         m.setAdminDataSource(m_dataSource);
         m.setValidateDatabaseVersion(false);
         m.setCreateUser(false);
         m.setCreateDatabase(false);
+
+        m.prepareDatabase(migration);
+        m.migrate(migration);
+
+        LogUtils.infof(this, "Migration complete: %s", migration.toString());
+
+        tables = getTables();
+        assertTrue("must contain table 'schematest'", tables.contains("schematest"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase(createSchema=false)
+    public void testMultipleChangelogs() throws Exception {
+        // Make sure there is no databasechangelog table
+        Connection connection = m_dataSource.getConnection();
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT id FROM databasechangelog");
+            statement.execute();
+            Assert.fail("databasechangelog exists");
+        } catch (SQLException e) {
+        } finally {
+            connection.close();
+        }
 
         final Migration migration = new Migration();
         migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
@@ -142,34 +142,90 @@ public class MigratorTest {
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setChangeLog("changelog.xml");
 
+        final Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.setAdminDataSource(m_dataSource);
+        m.setValidateDatabaseVersion(false);
+        m.setCreateUser(false);
+        m.setCreateDatabase(false);
+
+        // Add a resource accessor to the migration so that it will load multiple changelog.xml files
+        // from the classpath
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            System.err.println("=== found resource: " + resource + " ===");
+            LogUtils.infof(this, "=== found resource: " + resource + " ===");
             migration.setAccessor(new ExistingResourceAccessor(resource));
             m.migrate(migration);
         }
 
-        final Connection connection = m_dataSource.getConnection();
-        final PreparedStatement statement = connection.prepareStatement("SELECT id FROM databasechangelog");
+        connection = m_dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement("SELECT id FROM databasechangelog");
         assertTrue(statement.execute());
-        final ResultSet rs = statement.getResultSet();
-        final List<String> ids = new ArrayList<String>();
+        ResultSet rs = statement.getResultSet();
+        List<String> ids = new ArrayList<String>();
         while (rs.next()) {
             ids.add(rs.getString(1));
         }
-        
+
         assertTrue(ids.size() > 0);
         assertTrue(ids.contains("test-api.schema.a"));
         assertTrue(ids.contains("test-api.schema.b"));
     }
-    
+
     @Test
-    @DirtiesContext
     @JUnitTemporaryDatabase(createSchema=false)
-    @Ignore("takes a long time, just did this to make sure 'upgrades' would not bomb")
     public void testUpdateTwice() throws Exception {
+        final Migration migration = new Migration();
+        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
+
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
-        m.migrate(m_migration);
-        m.migrate(m_migration);
+        m.migrate(migration);
+        m.migrate(migration);
+    }
+
+    protected boolean changelogExists() throws SQLException {
+        final Connection connection = m_dataSource.getConnection();
+        boolean exists = false;
+        try {
+            connection.prepareStatement("SELECT id FROM databasechangelog").execute();
+            exists = true;
+        } catch (SQLException e) {
+        } finally {
+            connection.close();
+        }
+        return exists;
+    }
+
+    protected Set<String> getStoredProcedures() throws SQLException {
+        final Connection connection = m_dataSource.getConnection();
+        final Set<String> procs = new HashSet<String>();
+        try {
+            final ResultSet rs = connection.getMetaData().getProcedures(null, null, "%");
+            while (rs.next()) {
+                procs.add(rs.getString("PROCEDURE_NAME").toLowerCase());
+            }
+        } finally {
+            connection.close();
+        }
+        return procs;
+    }
+
+    protected Set<String> getTables() throws SQLException {
+        final Connection connection = m_dataSource.getConnection();
+        final Set<String> tables = new HashSet<String>();
+        try {
+            final ResultSet rs = connection.getMetaData().getTables(null, null, "%", null);
+            while (rs.next()) {
+                final String tableName = rs.getString("TABLE_NAME").toLowerCase();
+                tables.add(tableName);
+            }
+        } finally {
+            connection.close();
+        }
+        return tables;
     }
 }
