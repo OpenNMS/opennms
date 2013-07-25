@@ -35,15 +35,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -54,14 +51,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
 public class AccessPointMonitorConfigTest {
-    private Marshaller m;
-    private Unmarshaller um;
     private FileAnticipator fa;
-    private JAXBContext c;
     private AccessPointMonitorConfig apmc;
 
     static private class TestOutputResolver extends SchemaOutputResolver {
@@ -80,9 +75,6 @@ public class AccessPointMonitorConfigTest {
     @Before
     public void setUp() throws Exception {
         fa = new FileAnticipator();
-        c = JAXBContext.newInstance(AccessPointMonitorConfig.class);
-        m = c.createMarshaller();
-        um = c.createUnmarshaller();
 
         ServiceTemplate svcTemplate = new ServiceTemplate();
         svcTemplate.setName("IsAPAdoptedOnController-Template");
@@ -132,6 +124,7 @@ public class AccessPointMonitorConfigTest {
     @Test
     public void generateSchema() throws Exception {
         File schemaFile = fa.expecting("access-point-monitor-configuration.xsd");
+        JAXBContext c = JAXBContext.newInstance(AccessPointMonitorConfig.class);
         c.generateSchema(new TestOutputResolver(schemaFile));
         if (fa.isInitialized()) {
             fa.deleteExpected();
@@ -142,7 +135,7 @@ public class AccessPointMonitorConfigTest {
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string
         StringWriter objectXML = new StringWriter();
-        m.marshal(apmc, objectXML);
+        JaxbUtils.marshal(apmc, objectXML);
 
         // Read the example XML from src/test/resources
         StringBuffer exampleXML = new StringBuffer();
@@ -176,14 +169,9 @@ public class AccessPointMonitorConfigTest {
         File apmConfig = new File(ClassLoader.getSystemResource("access-point-monitor-configuration.xml").getFile());
         assertTrue("access-point-monitor-configuration.xml is readable", apmConfig.canRead());
 
-        InputStream reader = new FileInputStream(apmConfig);
-
-        um.setSchema(null);
-        AccessPointMonitorConfig exampleApmc = (AccessPointMonitorConfig) um.unmarshal(reader);
+        AccessPointMonitorConfig exampleApmc = JaxbUtils.unmarshal(AccessPointMonitorConfig.class, apmConfig);
 
         assertTrue("Compare Access Point Monitor Config objects.", apmc.equals(exampleApmc));
-
-        reader.close();
     }
 
     @Test

@@ -193,7 +193,7 @@ public class MockLogAppender {
 
         setProperty(logger, MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2.c3p0.impl", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "mx4j", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
@@ -207,7 +207,12 @@ public class MockLogAppender {
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.jdbc.datasource", "WARN");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.test.context.support", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.springframework.security", "INFO");
+        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "snaq.db", "INFO");
 
         for (final Object oKey : config.keySet()) {

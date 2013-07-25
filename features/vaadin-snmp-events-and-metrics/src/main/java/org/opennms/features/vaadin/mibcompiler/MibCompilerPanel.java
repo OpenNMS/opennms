@@ -73,6 +73,9 @@ public class MibCompilerPanel extends Panel {
     /** The Constant COMPILED. */
     private static final String COMPILED = "compiled";
 
+    /** The Constant MIB_FILE_EXTENTION. */
+    private static final String MIB_FILE_EXTENTION = ".mib";
+
     /** The Constant MIBS_ROOT_DIR. */
     private static final File MIBS_ROOT_DIR = new File(ConfigFileConstants.getHome(),  "/share/mibs"); // TODO Must be configurable
 
@@ -266,15 +269,13 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
-                        String mibName = fileName;
-                        if (!fileName.contains(mibParser.getMibName())) {
-                            mibName = mibParser.getMibName() + ".mib";
-                            logger.info("Renaming file " + fileName + " to " + mibName);
-                        }
+                        // Renaming the file to be sure that the target name is correct and always has a file extension.
+                        String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
+                        logger.info("Renaming file " + fileName + " to " + mibFileName);
                         mibsTree.removeItem(target);
-                        addTreeItem(mibName, COMPILED);
+                        addTreeItem(mibFileName, COMPILED);
                         File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, mibName));
+                        file.renameTo(new File(MIBS_COMPILED_DIR, mibFileName));
                     }
                 }
                 if (action == ACTION_EVENTS) {

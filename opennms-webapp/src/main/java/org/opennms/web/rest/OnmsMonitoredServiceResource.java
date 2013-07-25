@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
@@ -66,6 +67,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
@@ -98,6 +100,9 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Autowired
     private MonitoredServiceDao m_serviceDao;
     
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
     
@@ -154,22 +159,32 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, OnmsMonitoredService service) {
+    public Response addService(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
         writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
-            OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
+            final OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
             if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
             if (service == null) throw getException(Status.BAD_REQUEST, "addService: service object cannot be null");
             if (service.getServiceName() == null) throw getException(Status.BAD_REQUEST, "addService: service must have a name");
-            OnmsServiceType serviceType = m_serviceTypeDao.findByName(service.getServiceName());
-            if (serviceType == null)  {
-                LOG.info("addService: creating service type {}", service.getServiceName());
-                serviceType = new OnmsServiceType(service.getServiceName());
-                m_serviceTypeDao.save(serviceType);
-            }
+
+            final OnmsServiceType serviceType = new CreateIfNecessaryTemplate<OnmsServiceType, ServiceTypeDao>(m_transactionManager, m_serviceTypeDao) {
+                @Override
+                protected OnmsServiceType query() {
+                    return m_dao.findByName(service.getServiceName());
+                }
+
+                @Override
+                protected OnmsServiceType doInsert() {
+                    LOG.info("addService: creating service type {}", service.getServiceName());
+                    final OnmsServiceType s = new OnmsServiceType(service.getServiceName());
+                    m_dao.saveOrUpdate(s);
+                    return s;
+                }
+            }.execute();
+
             service.setServiceType(serviceType);
             service.setIpInterface(intf);
             LOG.debug("addService: adding service {}", service);

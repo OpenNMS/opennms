@@ -1561,12 +1561,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rrd4j-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>rxtx-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1574,6 +1568,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>servlet-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>smslib-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -2743,6 +2743,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.7.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
         <version>${minaVersion}</version>
@@ -2765,7 +2770,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>${slf4jVersion}</version>
+        <version>${log4jVersion}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -2784,11 +2789,6 @@
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.smslib</groupId>
-        <artifactId>smslib</artifactId>
-        <version>3.5.3</version>
       </dependency>
       <dependency>
         <groupId>org.rxtx</groupId>
@@ -2889,11 +2889,6 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
-		<repository>
-      <id>smslib-snapshots</id>
-      <name>SMSLib Repository</name>
-      <url>http://smslib.org/maven2/v3/</url>
-		</repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

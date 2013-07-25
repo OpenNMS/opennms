@@ -173,7 +173,7 @@
       </releases>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven</name>
-      <url>http://download.java.net/maven/2/</url>
+      <url>http://maven.opennms.org/content/groups/java.net-release/</url>
       <layout>default</layout>
     </repository>
   </repositories>

@@ -235,8 +235,14 @@ public class ManagerDefaultImpl implements Manager {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public ManagerDefaultImpl() throws MapsException {
-        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
-            LOG.debug("Instantiating ManagerDefaultImpl");
+        Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                LOG.debug("Instantiating ManagerDefaultImpl");
+            }
+            
+        });
     }
 
     /**

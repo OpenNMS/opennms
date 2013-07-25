@@ -477,16 +477,10 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     @Override
     public List<?> getItemIds(int startIndex, int numberOfItems) {
         int endIndex = startIndex + numberOfItems;
-        if (endIndex >= size()) endIndex = size() - 1;
-        Page page = new Page(1000, size);  // only get 10000 items at once
-        page.offset = startIndex;
+        if (endIndex > size()) endIndex = size() - 1;
         List<K> itemIds = new ArrayList<K>();
-        for (int i=startIndex; i<endIndex; i+=page.length) {
-            List<T> tmpItems = m_dao.findMatching(getCriteria(page, false));
-            for (T eachItem : tmpItems) {
-                itemIds.add(getId(eachItem));
-            }
-            page.updateOffset(page.offset + page.length);
+        for (int i=startIndex; i<endIndex; i++) {
+            itemIds.add((K)getIdByIndex(i));
         }
         return itemIds;
     }

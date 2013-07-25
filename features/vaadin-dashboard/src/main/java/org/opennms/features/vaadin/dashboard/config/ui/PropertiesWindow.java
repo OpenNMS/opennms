@@ -30,7 +30,8 @@ package org.opennms.features.vaadin.dashboard.config.ui;
 import com.vaadin.data.Container;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
-import org.opennms.features.vaadin.dashboard.config.DashletSelector;
+import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
+import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 import java.util.Map;
@@ -40,29 +41,23 @@ import java.util.Map;
  *
  * @author Christian Pape
  */
-public class PropertiesWindow extends Window {
+public class PropertiesWindow extends DashletConfigurationWindow {
 
     /**
      * Constructor for instantiating a {@link PropertiesWindow} for a given {@link DashletSpec}.
      *
-     * @param dashletSpec     the {@link DashletSpec} to edit
-     * @param dashletSelector the {@link DashletSelector} for querying the property data
+     * @param dashletSpec    the {@link DashletSpec} to edit
+     * @param dashletFactory the {@link DashletFactory} for querying the property data
      */
-    public PropertiesWindow(final DashletSpec dashletSpec, final DashletSelector dashletSelector) {
-        super("Properties");
-        /**
-         * Setting up this window instance
-         */
-        setModal(true);
-        setClosable(false);
-        setResizable(false);
-        setWidth("60%");
-
+    public PropertiesWindow(final DashletSpec dashletSpec, final DashletFactory dashletFactory) {
         /**
          * Using a vertical layout for content
          */
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
+        //verticalLayout.addStyleName("debug");
+        verticalLayout.setSizeFull();
+        verticalLayout.setHeight(100, Unit.PERCENTAGE);
 
         /**
          * Setting up the table object for displaying the parameters
@@ -92,19 +87,15 @@ public class PropertiesWindow extends Window {
         /**
          * Filling the date with parameter data
          */
-        final Map<String, String> requiredParameters = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).getRequiredParameters();
+        final Map<String, String> requiredParameters = dashletFactory.getRequiredParameters();
 
         for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-            if (dashletSpec.getParameters().containsKey(entry.getKey())) {
-                table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().get(entry.getKey())}, entry.getKey());
-            } else {
-                table.addItem(new Object[]{entry.getKey(), entry.getValue()}, entry.getKey());
-            }
+            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().get(entry.getKey())}, entry.getKey());
         }
 
         table.setColumnWidth("Key", 100);
         table.setColumnWidth("Value", -1);
-
+        table.setSizeFull();
         verticalLayout.addComponent(table);
 
         /**
@@ -114,7 +105,7 @@ public class PropertiesWindow extends Window {
 
         horizontalLayout.setMargin(true);
         horizontalLayout.setSpacing(true);
-        horizontalLayout.setWidth("100%");
+        horizontalLayout.setWidth(100, Unit.PERCENTAGE);
 
         /**
          * Adding the cancel button...
@@ -146,7 +137,7 @@ public class PropertiesWindow extends Window {
                 }
 
                 WallboardProvider.getInstance().save();
-                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Duration");
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");
 
                 close();
             }
@@ -154,11 +145,15 @@ public class PropertiesWindow extends Window {
 
         ok.setClickShortcut(ShortcutAction.KeyCode.ENTER, null);
         horizontalLayout.addComponent(ok);
+        //horizontalLayout.addStyleName("debug");
 
         /**
          * Adding the layout and setting the content
          */
         verticalLayout.addComponent(horizontalLayout);
+
+        verticalLayout.setExpandRatio(table, 1.0f);
+
         setContent(verticalLayout);
     }
 }

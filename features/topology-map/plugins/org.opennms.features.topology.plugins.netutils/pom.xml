@@ -51,7 +51,7 @@
 	                <version>${gwtPluginVersion}</version>
 	                <configuration>
 	                    <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-	                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+	                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
 	                </configuration>
 	                <executions>
 	                    <execution>

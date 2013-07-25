@@ -13,7 +13,7 @@
       <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.5+" java-vm-args="-Xmx384m" />
+    <j2se version="1.6+" java-vm-args="-Xmx384m" />
     $dependencies
   </resources>
   <application-desc main-class="$mainClass">

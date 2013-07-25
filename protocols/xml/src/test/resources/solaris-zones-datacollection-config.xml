@@ -7,7 +7,7 @@
             <rra>RRA:MIN:0.5:12:8784</rra>
             <rra>RRA:MAX:0.5:12:8784</rra>
         </rrd>
-        <xml-source url="http://{ipaddr}/zone-stats">
+        <xml-source url="http://{ipaddr}:10342/junit/solaris-zones.json">
             <xml-group name="solaris-zone-stats" resource-type="solarisZoneStats"
                 resource-xpath="/zones/zone"
                 key-xpath="@name">

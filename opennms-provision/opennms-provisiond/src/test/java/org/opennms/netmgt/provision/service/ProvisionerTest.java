@@ -50,7 +50,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -108,7 +107,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
@@ -134,63 +132,55 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
-public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
+public class ProvisionerTest extends ProvisioningTestCase implements InitializingBean, MockSnmpDataProviderAware {
     private static final Logger LOG = LoggerFactory.getLogger(ProvisionerTest.class);
-    
+
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
-    
+
     @Autowired
     private Provisioner m_provisioner;
-    
+
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
-    
+
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
-    
+
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-    
+
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-    
+
     @Autowired
     private MockNodeDao m_nodeDao;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
-    
-    @Autowired
-    private AssetRecordDao m_assetRecordDao;
-    
-    @Autowired
-    private ResourceLoader m_resourceLoader;
-    
-    @Autowired
-    private ProvisionService m_provisionService;
-    
-    @Autowired
-    @Qualifier("scanExecutor")
-    private PausibleScheduledThreadPoolExecutor m_scanExecutor;
 
     @Autowired
-    @Qualifier("scheduledExecutor")
-    private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
-    
+    private AssetRecordDao m_assetRecordDao;
+
+    @Autowired
+    private ResourceLoader m_resourceLoader;
+
+    @Autowired
+    private ProvisionService m_provisionService;
+
     @Autowired
     private ImportScheduler m_importSchedule;
-    
+
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
-    
+
     @Autowired
     private DatabasePopulator m_populator;
-    
+
     private EventAnticipator m_eventAnticipator;
 
     private ForeignSourceRepository m_foreignSourceRepository;
-    
+
     private ForeignSource m_foreignSource;
 
     private MockSnmpDataProvider m_mockSnmpDataProvider;
@@ -209,37 +199,37 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         MockLogAppender.setupLogging(props);
     }
-    
+
     @Before
     public void setUp() throws Exception {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
-        
+
         // ensure this property is unset for tests and set it only in tests that need it
         System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
-        
+
         m_provisioner.start();
-        
+
         m_foreignSource = new ForeignSource();
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
-        
+
         final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "TestCategory");
         policy.addParameter("label", "localhost");
-        
+
         m_foreignSource.addPolicy(policy);
-        
+
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_foreignSourceRepository.save(m_foreignSource);
-        
+
         final ForeignSource emptyForeignSource = new ForeignSource();
         emptyForeignSource.setName("empty");
         emptyForeignSource.setScanInterval(Duration.standardDays(1));
         m_foreignSourceRepository.save(emptyForeignSource);
-        
+
         final ForeignSource snmpForeignSource = new ForeignSource();
         snmpForeignSource.setName("snmp");
         snmpForeignSource.setScanInterval(Duration.standardDays(1));
@@ -252,13 +242,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
 
         // make sure node scan scheduler is running initially
-        m_scanExecutor.resume();
-        m_scheduledExecutor.pause();
+        getScanExecutor().resume();
+        getScheduledExecutor().pause();
     }
-    
+
     @After
     public void tearDown() {
-    	// remove property set during tests
+        // remove property set during tests
         System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
         m_populator.resetDatabase();
         m_eventAnticipator.reset();
@@ -271,8 +261,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         requisition.visit(visitor);
         verifyBasicImportCounts(visitor);
     }
-    
-    
+
+
     @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
@@ -280,40 +270,40 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         importFromResource("classpath:/no-ipaddrtable.xml", true);
 
         OnmsNode node = getNodeDao().findByForeignId("empty", "123");
-        
+
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
-        
+
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-   
+
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
-        
+
     }
-    
+
     @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:lameForce10.properties")
@@ -321,38 +311,38 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         importFromResource("classpath:/lameForce10.xml", true);
 
         OnmsNode node = getNodeDao().findByForeignId("empty", "123");
-        
+
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
-        
+
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-   
+
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
+
     }
     /**
      * We have to ignore this test until there is a DNS service available in the test harness
@@ -409,55 +399,56 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         importFromResource("classpath:/tec_dump.xml", true);
 
         m_eventAnticipator.verifyAnticipated();
-        
+
     }
 
     private void importFromResource(final String path, final Boolean rescanExisting) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
+        waitForImport();
     }
-    
+
     private void anticpateCreationEvents(final MockElement element) {
         element.visit(new MockVisitorAdapter() {
             @Override
             public void visitElement(final MockElement e) {
-            	final Event newEvent = e.createNewEvent();
+                final Event newEvent = e.createNewEvent();
                 LOG.debug("Anticipate Event: {}", newEvent.getUei());
                 m_eventAnticipator.anticipateEvent(newEvent);
             }
-            
+
         });
     }
-    
-    
+
+
     @Test(timeout=300000)
     public void testNonSnmpImportAndScan() throws Exception {
         importFromResource("classpath:/import_localhost.xml", true);
-        
+
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
+
         runScan(scan);
-        
+
         final OnmsNode scannedNode = getNodeDao().findAll().get(0);
         assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
-                
+
     }
-    
-    
+
+
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        
+
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             LOG.debug("Building = {}", assetRecord.getBuilding());
         }
     }
-    
+
     @Test(timeout=300000)
     public void testBigImport() throws Exception {
-    	final File file = new File("/tmp/tec_dump.xml.large");
+        final File file = new File("/tmp/tec_dump.xml.large");
         if (file.exists()) {
             m_eventAnticipator.reset();
             m_eventAnticipator.setDiscardUnanticipated(true);
@@ -465,9 +456,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
             LOG.debug("Importing: {}", path);
             importFromResource(path, true);
         }
-        
+
     }
-    
+
     @Test(timeout=300000)
     @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
@@ -477,22 +468,22 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
 
         //Verify ifservices count
         assertEquals(4, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(2, getSnmpInterfaceDao().countAll());
-        
+
     }
 
     // fail if we take more than five minutes
@@ -507,47 +498,47 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(1, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
-        
+
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
-        
+
+
         // Node Delete
         importFromResource("classpath:/nonodes-snmp.xml", true);
 
@@ -567,13 +558,13 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
         // Expect there to be no services since we are not provisioning one
@@ -585,25 +576,25 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on both ifs
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
+
         // Node Delete
         importFromResource("classpath:/nonodes-snmp.xml", true);
 
@@ -628,53 +619,53 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(1, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
-        
-        
+
+
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals("Unexpected number of IP interfaces found: " + getInterfaceDao().findAll(), 3, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
-        
+
         // Ensure that collection is on for all ip interfaces
         for(OnmsIpInterface iface : getInterfaceDao().findAll()) {
-        	OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
-			assertNotNull("Expected an snmp interface associated with "+iface.getIpAddress(), snmpIface);
-        	assertTrue("Expected snmp interface associated with "+iface.getIpAddress()+" to have collection enabled.", snmpIface.isCollectionEnabled());
-        	
+            OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
+            assertNotNull("Expected an snmp interface associated with "+iface.getIpAddress(), snmpIface);
+            assertTrue("Expected snmp interface associated with "+iface.getIpAddress()+" to have collection enabled.", snmpIface.isCollectionEnabled());
+
         }
     }
 
@@ -690,16 +681,16 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(1, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(1, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
@@ -711,19 +702,19 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals("Unexpected number of IP interfaces found: " + getInterfaceDao().findAll(), 3, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
 
@@ -734,9 +725,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-    	@JUnitSnmpAgent(host="172.20.2.201", port=161, resource="classpath:snmpTestData3.properties"),
-    	@JUnitSnmpAgent(host="172.20.2.202", port=161, resource="classpath:snmpTestData4.properties"),
-    	@JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
+        @JUnitSnmpAgent(host="172.20.2.201", port=161, resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="172.20.2.202", port=161, resource="classpath:snmpTestData4.properties"),
+        @JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
     })
     public void testImportAddrThenChangeAddr() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", true);
@@ -745,53 +736,53 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         final OnmsNode node = nodes.get(0);
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
+
         runScan(scan);
-        
+
         m_nodeDao.flush();
-        
+
         assertEquals(2, getInterfaceDao().countAll());
 
         System.err.println("-------------------------------------------------------------------------");
 
         m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
-        
+
         importFromResource("classpath:/requisition_primary_addr_changed.xml", true);
 
         final NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
 
         runScan(scan2);
-        
+
         m_nodeDao.flush();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         LOG.debug("found: {}", getInterfaceDao().findAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
-        
+
+
         // Node Delete
         importFromResource("classpath:/nonodes-snmp.xml", true);
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
     }
-    
+
     @Test
     public void testDeleteService() throws Exception {
 
@@ -836,26 +827,26 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
     @Test
     public void testDontDeleteRequisitionedService() throws Exception {
-    	
-    	assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-    	
+
+        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
-        
+
         importFromResource("classpath:/deleteService.xml", true);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(6, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
 
@@ -864,15 +855,15 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertNotNull(node);
         final int nodeid = node.getId();
 
-        
+
         m_eventAnticipator.reset();
 
         m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
-        
+
         // there is no event to wait for so make sure we don't get anything..
         m_eventAnticipator.waitForAnticipated(5000);
         m_eventAnticipator.verifyAnticipated();
-        
+
         // Make sure the service is still there
         assertEquals(6, getMonitoredServiceDao().countAll());
 
@@ -880,28 +871,28 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
     @Test
     public void testDeleteInterface() throws Exception {
-    	
-    	System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-    	assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-    	
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
         importFromResource("classpath:/deleteService.xml", true);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(6, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
 
@@ -917,12 +908,12 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, ipaddr));
 
         m_mockEventIpcManager.sendEventToListeners(deleteInterface(nodeid, ipaddr));
-        
+
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
     }
-    
+
     @Test
     public void testDeleteNode() throws Exception {
 
@@ -934,19 +925,19 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
         importFromResource("classpath:/deleteService.xml", true);
-        
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(4, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(6, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(2, getServiceTypeDao().countAll());
 
@@ -959,21 +950,21 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.136.160.1", "ICMP"));
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.136.160.1", "HTTP"));
         m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.136.160.1"));
-        
+
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "ICMP"));
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "HTTP"));
         m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.163"));
-        
+
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.161", "ICMP"));
         m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.161"));
-        
+
         m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.167", "ICMP"));
         m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.167"));
-       
+
         m_eventAnticipator.anticipateEvent(nodeDeleted(nodeid));
 
         m_mockEventIpcManager.sendEventToListeners(deleteNode(nodeid));
-        
+
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
@@ -985,30 +976,34 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(10, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(30, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count
         assertEquals(50, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(3, getServiceTypeDao().countAll());
     }
-    
+
     private DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
     }
 
     private void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
+        final boolean paused = getScheduledExecutor().isPaused();
+        if (paused) getScheduledExecutor().resume();
+        final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
+        waitForEverything();
+        if (paused) getScheduledExecutor().pause();
     }
-    
+
     private NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -1032,11 +1027,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     private ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
     }
-    
+
     private AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
     }
-    
+
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
@@ -1054,9 +1049,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         final OnmsNode onmsNode = getNodeDao().get(nextNodeId);
         LOG.debug("node = {}", onmsNode);
         assertEquals("\u00f1ode2", onmsNode.getLabel());
-        
+
     }
-    
+
     /**
      * This test first bulk imports 10 nodes then runs update with 1 node missing
      * from the import file.
@@ -1069,7 +1064,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(10, getNodeDao().countAll());
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
         assertEquals(9, getNodeDao().countAll());
-    
+
         importFromResource("classpath:/tec_dump.xml.smalltest.nonodes", true);
         assertEquals(0, getNodeDao().countAll());
     }
@@ -1086,11 +1081,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals("Asset Record: Operating System", "Windows Pi",             n.getAssetRecord().getOperatingSystem());
         assertEquals("Asset Record: Description",      "Large and/or In Charge", n.getAssetRecord().getDescription());
     }
-    
+
     //Scheduler tests
     @Test(timeout=300000)
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
         m_provisioner.scheduleRescanForExistingNodes();
         final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
         final int nodeCount = getNodeDao().countAll();
@@ -1099,53 +1094,53 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(nodeCount, schedulesForNode.size());
         assertEquals(nodeCount, m_provisioner.getScheduleLength());
     }
-    
+
     @Test(timeout=300000)
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
-       importFromResource("classpath:/tec_dump.xml.smalltest", true);
-       m_scanExecutor.pause();
+        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        getScanExecutor().pause();
 
-       m_provisioner.scheduleRescanForExistingNodes();
-       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       assertEquals(10, schedulesForNode.size());
+        m_provisioner.scheduleRescanForExistingNodes();
+        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
 
-       m_scanExecutor.resume();
-       importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
-       m_scanExecutor.pause();
-       
-       m_provisioner.scheduleRescanForExistingNodes();
-       schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       assertEquals(9, schedulesForNode.size());
-       assertEquals(9, m_provisioner.getScheduleLength());
+        assertEquals(10, schedulesForNode.size());
+
+        getScanExecutor().resume();
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
+        getScanExecutor().pause();
+
+        m_provisioner.scheduleRescanForExistingNodes();
+        schedulesForNode = m_provisionService.getScheduleForNodes();
+
+        assertEquals(9, schedulesForNode.size());
+        assertEquals(9, m_provisioner.getScheduleLength());
     }
-    
+
     @Test(timeout=300000)
     public void testProvisionerAddNodeToSchedule() throws Exception{
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(0, m_provisioner.getScheduleLength());
-        
+
         final OnmsNode node = createNode("empty");
         assertEquals(nextNodeId, node.getId().intValue());
-        
+
         assertNotNull(m_nodeDao.get(nextNodeId));
-        
+
         final EventBuilder bldr = new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Tests");
         bldr.setNodeid(nextNodeId);
-        
+
         m_mockEventIpcManager.broadcastNow(bldr.getEvent());
-        
+
         assertEquals(1, m_provisioner.getScheduleLength());
     }
-    
+
     @Test(timeout=300000)
     public void testProvisionerRescanWorking() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        m_scanExecutor.pause();
-    
+        getScanExecutor().pause();
+
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
     }
@@ -1157,19 +1152,19 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_populator.populateDatabase();
 
         m_provisioner.scheduleRescanForExistingNodes();
-        
+
         // make sure just the provisioned nodes are scheduled
         assertEquals(4, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryEnabled() throws Exception{
-    	System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         // populator creates 4 provisioned nodes and 2 discovered nodes
         m_populator.populateDatabase();
 
         m_provisioner.scheduleRescanForExistingNodes();
-        
+
         // make sure all the nodes are scheduled (even the discovered ones)
         assertEquals(6, m_provisioner.getScheduleLength());
     }
@@ -1177,38 +1172,38 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @Test(timeout=300000)
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
-        
+
         final List<OnmsNode> nodes = m_nodeDao.findAll();
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Tests");
         bldr.setNodeid(nodes.get(nodes.size() - 1).getId());
-        
+
         m_mockEventIpcManager.broadcastNow(bldr.getEvent());
-        
+
         assertEquals(9, m_provisioner.getScheduleLength());
     }
-    
+
     @Test
     public void testProvisionServiceScanIntervalCalcWorks() {
         long now = System.currentTimeMillis();
-        
+
         Date date = new Date();
         date.setTime(now - 43200000);
         long lastPoll = date.getTime();
         long nextPoll = lastPoll + 86400000;
         long initialDelay = Math.max(0, nextPoll - now);
-        
+
         assertEquals(43200000, initialDelay);
-        
+
     }
-    
+
     @Test(timeout=300000)
     public void testProvisionerNodeRescanSchedule() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
         List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
@@ -1217,11 +1212,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
     }
-    
+
     @Test(timeout=300000)
     public void testProvisionerUpdateScheduleAfterImport() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
 
         List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
         assertEquals(10, schedulesForNode.size());
@@ -1229,19 +1224,19 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(10, m_provisioner.getScheduleLength());
 
         //reimport with one missing node
-        m_scanExecutor.resume();
+        getScanExecutor().resume();
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
         schedulesForNode = m_provisionService.getScheduleForNodes();
-        
+
         m_provisioner.scheduleRescanForExistingNodes();
 
         //check the schedule to make sure that it deletes the node
         assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
         assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
-        
+
     }
 
     @Test(timeout=300000)
@@ -1253,7 +1248,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         final String NEW_LABEL = "apknd-new";
 
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
-        m_scanExecutor.pause();
+        getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
 
@@ -1335,27 +1330,27 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         bldr.setNodeid(nodeid);
         return bldr.getEvent();        
     }
-    
+
     private static Event deleteNode(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         return bldr.getEvent();        
     }
-    
+
     private static Event interfaceDeleted(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
-    
+
     private static Event deleteInterface(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
-    
+
     private static Event serviceDeleted(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
@@ -1363,7 +1358,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         bldr.setService(svc);
         return bldr.getEvent();
     }
-    
+
     private static Event deleteService(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
@@ -1373,20 +1368,20 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     }
 
 
-    
-    
+
+
     private OnmsNode createNode(final String foreignSource) {
         OnmsNode node = new OnmsNode();
         //node.setId(nodeId);
         node.setLastCapsdPoll(new Date());
         node.setForeignSource(foreignSource);
         node.setLabel("default");
-        
+
         m_nodeDao.save(node);
         m_nodeDao.flush();
         return node;
     }
-    
+
     private static void verifyDnsImportCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         // 1 for "opennms.com", 1 for "www.opennms.com"
@@ -1404,7 +1399,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
         assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
     }
-    
+
     private static void verifyBasicImportCounts(CountingVisitor visitor) {
         assertEquals(1, visitor.getModelImportCount());
         assertEquals(1, visitor.getNodeCount());
@@ -1449,35 +1444,35 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         public int getModelImportCount() {
             return m_modelImportCount;
         }
-        
+
         public int getModelImportCompletedCount() {
             return m_modelImportCompleted;
         }
-        
+
         public int getNodeCount() {
             return m_nodeCount;
         }
-        
+
         public int getNodeCompletedCount() {
             return m_nodeCompleted;
         }
-        
+
         public int getInterfaceCount() {
             return m_ifaceCount;
         }
-        
+
         public int getInterfaceCompletedCount() {
             return m_ifaceCompleted;
         }
-        
+
         public int getMonitoredServiceCount() {
             return m_svcCount;
         }
-        
+
         public int getMonitoredServiceCompletedCount() {
             return m_svcCompleted;
         }
-        
+
         public int getNodeCategoryCount() {
             return m_nodeCategoryCount;
         }
@@ -1497,11 +1492,11 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         public int getAssetCount() {
             return m_assetCount;
         }
-        
+
         public int getAssetCompletedCount() {
             return m_assetCompleted;
         }
-        
+
         @Override
         public void visitModelImport(final Requisition req) {
             m_modelImportCount++;
@@ -1528,35 +1523,35 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
             m_nodeCategoryCount++;
         }
-        
+
         @Override
         public void visitServiceCategory(final OnmsServiceCategoryRequisition catReq) {
             m_svcCategoryCount++;
         }
-        
+
         @Override
         public void visitAsset(final OnmsAssetRequisition assetReq) {
             m_assetCount++;
         }
-        
+
         @Override
         public String toString() {
             return (new ToStringCreator(this)
-                .append("modelImportCount", getModelImportCount())
-                .append("modelImportCompletedCount", getModelImportCompletedCount())
-                .append("nodeCount", getNodeCount())
-                .append("nodeCompletedCount", getNodeCompletedCount())
-                .append("nodeCategoryCount", getNodeCategoryCount())
-                .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
-                .append("interfaceCount", getInterfaceCount())
-                .append("interfaceCompletedCount", getInterfaceCompletedCount())
-                .append("monitoredServiceCount", getMonitoredServiceCount())
-                .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
-                .append("serviceCategoryCount", getServiceCategoryCount())
-                .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
-                .append("assetCount", getAssetCount())
-                .append("assetCompletedCount", getAssetCompletedCount())
-                .toString());
+            .append("modelImportCount", getModelImportCount())
+            .append("modelImportCompletedCount", getModelImportCompletedCount())
+            .append("nodeCount", getNodeCount())
+            .append("nodeCompletedCount", getNodeCompletedCount())
+            .append("nodeCategoryCount", getNodeCategoryCount())
+            .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
+            .append("interfaceCount", getInterfaceCount())
+            .append("interfaceCompletedCount", getInterfaceCompletedCount())
+            .append("monitoredServiceCount", getMonitoredServiceCount())
+            .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
+            .append("serviceCategoryCount", getServiceCategoryCount())
+            .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
+            .append("assetCount", getAssetCount())
+            .append("assetCompletedCount", getAssetCompletedCount())
+            .toString());
         }
 
         @Override
@@ -1583,12 +1578,12 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
             m_nodeCategoryCompleted++;
         }
-        
+
         @Override
         public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
             m_nodeCategoryCompleted++;
         }
-        
+
         @Override
         public void completeAsset(OnmsAssetRequisition assetReq) {
             m_assetCompleted++;
