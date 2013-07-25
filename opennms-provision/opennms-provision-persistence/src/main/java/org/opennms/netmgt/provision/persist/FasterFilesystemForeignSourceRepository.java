@@ -63,7 +63,6 @@ import org.springframework.util.Assert;
 public class FasterFilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
-    private boolean m_updateDateStamps = true;
     
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -108,20 +107,6 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
         }
     }
 
-    /**
-     * <p>setUpdateDateStamps</p>
-     *
-     * @param update a boolean.
-     */
-    public void setUpdateDateStamps(final boolean update) {
-        m_writeLock.lock();
-        try {
-            m_updateDateStamps = update;
-        } finally {
-            m_writeLock.unlock();
-        }
-    }
-    
     /**
      * <p>getForeignSourceCount</p>
      *
@@ -197,9 +182,6 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
             OutputStream outputStream = null;
             Writer writer = null;
             try {
-                if (m_updateDateStamps) {
-                    foreignSource.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(foreignSource, writer);
@@ -308,9 +290,6 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
             Writer writer = null;
             OutputStream outputStream = null;
             try {
-                if (m_updateDateStamps) {
-                    requisition.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(requisition, writer);

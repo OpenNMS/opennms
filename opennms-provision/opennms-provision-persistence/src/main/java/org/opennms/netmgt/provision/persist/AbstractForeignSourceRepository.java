@@ -54,7 +54,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     /** {@inheritDoc} */
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
- 
+
         LogUtils.debugf(this, "importing requisition from %s", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         requisition.setResource(resource);
@@ -84,15 +84,13 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             throw new ForeignSourceRepositoryException("foreign source was null");
         }
         foreignSource.setName("default");
-        foreignSource.updateDateStamp();
- 
+
         final File outputFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         Writer writer = null;
         OutputStream outputStream = null;
         try {
-            foreignSource.updateDateStamp();
             outputStream = new FileOutputStream(outputFile);
-			writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer = new OutputStreamWriter(outputStream, "UTF-8");
             JaxbUtils.marshal(foreignSource, writer);
         } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -108,7 +106,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
-    	final File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
+        final File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         if (!deleteFile.exists()) {
             return;
         }
@@ -122,18 +120,18 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
-    
+
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-    	/*
+        /*
     	final String name = foreignSource.getName();
 		if (name.contains(":")) {
     		throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") cannot contain a colon!");
     	}
-    	*/
+         */
     }
-    
+
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
-    	/*
+        /*
     	final String foreignSource = requisition.getForeignSource();
 		if (foreignSource.contains(":")) {
     		throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") cannot contain a colon!");
@@ -144,6 +142,6 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         		throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " cannot contain a colon!");
     		}
     	}
-    	*/
+         */
     }
 }

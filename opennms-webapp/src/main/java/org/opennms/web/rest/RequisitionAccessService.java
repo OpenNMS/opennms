@@ -5,8 +5,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -123,6 +121,7 @@ public class RequisitionAccessService {
         void addOrReplaceNode(final RequisitionNode node) {
             Requisition req = getActiveRequisition(true);
             if (req != null) {
+                req.updateDateStamp();
                 req.putNode(node);
                 save(req);
             }
@@ -133,6 +132,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putInterface(iface);
                     save(req);
                 }
@@ -146,6 +146,7 @@ public class RequisitionAccessService {
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         iface.putMonitoredService(service);
                         save(req);
                     }
@@ -158,6 +159,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putCategory(category);
                     save(req);
                 }
@@ -169,6 +171,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putAsset(asset);
                     save(req);
                 }
@@ -176,42 +179,48 @@ public class RequisitionAccessService {
         }
 
         void updateRequisition(final MultivaluedMapImpl params) {
-            String foreignSource = m_foreignSource;
+            final String foreignSource = m_foreignSource;
             debug("updateRequisition: Updating requisition with foreign source %s", foreignSource);
+            if (params.isEmpty()) return;
             Requisition req = getActiveRequisition(false);
             if (req != null) {
+                req.updateDateStamp();
                 RestUtils.setBeanProperties(req, params);
-                debug("updateRequisition: Requisition with foreign source %s updated", foreignSource);
                 save(req);
+                debug("updateRequisition: Requisition with foreign source %s updated", foreignSource);
             }
         }
 
-        void updateNode(String foreignId, MultivaluedMapImpl params) {
-            String foreignSource = m_foreignSource;
+        void updateNode(final String foreignId, final MultivaluedMapImpl params) {
+            final String foreignSource = m_foreignSource;
             debug("updateNode: Updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
+            if (params.isEmpty()) return;
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     RestUtils.setBeanProperties(node, params);
-                    debug("updateNode: Node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                     save(req);
+                    debug("updateNode: Node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                 }
             }
         }
 
-        void updateInterface(String foreignId, String ipAddress, MultivaluedMapImpl params) {
+        void updateInterface(final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
             String foreignSource = m_foreignSource;
             debug("updateInterface: Updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
+            if (params.isEmpty()) return;
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         RestUtils.setBeanProperties(iface, params);
-                        debug("updateInterface: Interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                         save(req);
+                        debug("updateInterface: Interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                     }
                 }
             }
@@ -233,6 +242,7 @@ public class RequisitionAccessService {
             debug("deleteNode: Deleting node %s from foreign source %s", foreignId, getForeignSource());
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
+                req.updateDateStamp();
                 req.deleteNode(foreignId);
                 save(req);
             }
@@ -244,6 +254,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteInterface(ipAddress);
                     save(req);
                 }
@@ -258,6 +269,7 @@ public class RequisitionAccessService {
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         iface.deleteMonitoredService(service);
                         save(req);
                     }
@@ -271,6 +283,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteCategory(category);
                     save(req);
                 }
@@ -283,6 +296,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteAsset(parameter);
                     save(req);
                 }
@@ -386,10 +400,10 @@ public class RequisitionAccessService {
             Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
 
             URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
-                ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
-                : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
+                    ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
+                        : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
 
-            return activeUrl;
+                    return activeUrl;
         }
 
         private void flush() {
@@ -440,9 +454,7 @@ public class RequisitionAccessService {
 
     private <T> T submitAndWait(Callable<T> callable) {
         try {
-
             return m_executor.submit(callable).get();
-
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -452,7 +464,6 @@ public class RequisitionAccessService {
                 throw new RuntimeException(e.getCause());
             }
         }
-
     }
 
     private Future<?> submitWriteOp(Runnable r) {
