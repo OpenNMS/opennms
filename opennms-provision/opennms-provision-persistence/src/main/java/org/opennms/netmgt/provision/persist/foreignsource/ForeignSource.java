@@ -96,7 +96,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @param name a {@link java.lang.String} object.
      */
     public ForeignSource(final String name) {
-        updateDateStamp();
+        this();
         setName(name);
     }
     
