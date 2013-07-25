@@ -60,11 +60,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 // this is marked not distributable because it relieds on the dhcpd deamon of opennms
 @Distributable(DistributionContext.DAEMON)
 
-/**
- *
- * @deprecated Use the SystemExecuteMonitor instead
- */
-@Deprecated
 final public class GpMonitor extends AbstractServiceMonitor {
     /**
      * Default retries.

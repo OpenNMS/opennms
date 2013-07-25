@@ -34,7 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.netmgt.mock.MockMonitoredService;
 
 import java.net.InetAddress;
 import java.util.HashMap;
