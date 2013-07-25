@@ -386,6 +386,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             LOG.debug("addDetector: Adding detector {}", detector.getName());
             ForeignSource fs = getActiveForeignSource(foreignSource);
+            fs.updateDateStamp();
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
             return Response.seeOther(getRedirectUri(m_uriInfo, detector.getName())).build();
@@ -410,6 +411,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             LOG.debug("addPolicy: Adding policy {}", policy.getName());
             ForeignSource fs = getActiveForeignSource(foreignSource);
+            fs.updateDateStamp();
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
             return Response.seeOther(getRedirectUri(m_uriInfo, policy.getName())).build();
@@ -434,9 +436,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             LOG.debug("updateForeignSource: updating foreign source {}", foreignSource);
-            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
+            
+            if (params.isEmpty()) return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
-            for(String key : params.keySet()) {
+            for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     Object value = null;
                     String stringValue = params.getFirst(key);
@@ -445,6 +450,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                 }
             }
             LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
+            fs.updateDateStamp();
             m_pendingForeignSourceRepository.save(fs);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
@@ -511,6 +517,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             List<PluginConfig> detectors = fs.getDetectors();
             PluginConfig removed = removeEntry(detectors, detector);
             if (removed != null) {
+                fs.updateDateStamp();
                 fs.setDetectors(detectors);
                 m_pendingForeignSourceRepository.save(fs);
                 return Response.ok().build();
@@ -538,6 +545,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             List<PluginConfig> policies = fs.getPolicies();
             PluginConfig removed = removeEntry(policies, policy);
             if (removed != null) {
+                fs.updateDateStamp();
                 fs.setPolicies(policies);
                 m_pendingForeignSourceRepository.save(fs);
                 return Response.ok().build();
