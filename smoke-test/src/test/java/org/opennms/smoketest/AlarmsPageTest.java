@@ -100,16 +100,29 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAlarmLink() throws Exception {
         createAlarm();
-        Thread.sleep(10000L);
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
+        int waitTime = 300000; // 5 minutes
+        final int sleepTime = 10000; // 10 seconds
+
+        do {
+            selenium.refresh();
+            Thread.sleep(sleepTime);
+            waitTime -= sleepTime;
+        } while (!hasAlarmDetailLink() && waitTime != 0);
+
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
         assertTrue(selenium.isElementPresent("//input[@value='Go']"));
         assertTrue(selenium.isElementPresent("css=input[type='submit']"));
+        assertTrue(hasAlarmDetailLink());
         selenium.click("//a[contains(@href,'alarm/detail.htm')]");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Severity"));
         assertTrue(selenium.isTextPresent("Ticket State"));
         assertTrue(selenium.isTextPresent("Acknowledgment and Severity Actions"));
+    }
+
+    private boolean hasAlarmDetailLink() {
+        return selenium.isElementPresent("//a[contains(@href,'alarm/detail.htm')]");
     }
 }
