@@ -43,7 +43,7 @@ public class Linkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Linkd";
+        return "linkd";
     }
 
     /** {@inheritDoc} */
