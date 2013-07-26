@@ -117,6 +117,7 @@ public class InvalidRequisitionDataTest {
     @After
     public void tearDown() throws Exception {
         m_anticipator.verifyAnticipated();
+        Thread.sleep(5000);
     }
     
     @Test
@@ -173,7 +174,6 @@ public class InvalidRequisitionDataTest {
 
     @Test
     @JUnitTemporaryDatabase
-    @Ignore
     public void testImportInvalidXml() throws Exception {
         assertEquals(0, m_nodeDao.countAll());
 
