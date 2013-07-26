@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -126,9 +125,9 @@ public class InvalidRequisitionDataTest extends ProvisioningTestCase implements 
 
     @After
     public void tearDown() throws Exception {
+        waitForEverything();
         m_anticipator.verifyAnticipated();
         m_populator.resetDatabase();
-        waitForEverything();
     }
 
     @Test
