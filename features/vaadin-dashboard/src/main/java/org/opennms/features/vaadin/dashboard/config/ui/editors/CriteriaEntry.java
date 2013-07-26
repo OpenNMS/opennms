@@ -40,6 +40,9 @@ public enum CriteriaEntry {
     Property() {
         public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             NativeSelect nativeSelect = new NativeSelect();
+
+            nativeSelect.setCaption("Property");
+
             nativeSelect.setNullSelectionAllowed(false);
             nativeSelect.setMultiSelect(false);
             nativeSelect.setNewItemsAllowed(false);
@@ -61,6 +64,29 @@ public enum CriteriaEntry {
     Value() {
         public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
             TextField textField = new TextField();
+
+            textField.setCaption("Value");
+
+            return textField;
+        }
+    },
+
+    StringValue() {
+        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+            TextField textField = new TextField();
+
+            textField.setCaption("Text value");
+
+            return textField;
+        }
+    },
+
+    IntegerValue() {
+        public AbstractField getComponent(CriteriaBuilderHelper criteriaBuilderHelper) {
+            TextField textField = new TextField();
+
+            textField.setCaption("Integer value");
+
             return textField;
         }
     };

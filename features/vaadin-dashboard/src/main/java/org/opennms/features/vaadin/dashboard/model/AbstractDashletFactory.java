@@ -122,7 +122,7 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * @param requiredParameters the parameter {@link Map} to be set
      */
     public void setRequiredParameters(Map<String, String> requiredParameters) {
-        m_requiredParameters = requiredParameters;
+        m_requiredParameters = new TreeMap<String, String>(requiredParameters);
     }
 
     /**

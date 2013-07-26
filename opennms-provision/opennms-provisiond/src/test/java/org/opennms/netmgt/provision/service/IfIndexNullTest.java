@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -49,11 +48,9 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class IfIndexNullTest implements InitializingBean {
+public class IfIndexNullTest extends ProvisioningTestCase implements InitializingBean {
     
     @Autowired
     private Provisioner m_provisioner;
@@ -113,10 +110,11 @@ public class IfIndexNullTest implements InitializingBean {
         @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:snmpTestData-null.properties")
     })
     public void testNullIfIndex() throws Exception {
-        final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
+        final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
 
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"), true);
-        
+        waitForEverything();
+
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
         
@@ -134,23 +132,7 @@ public class IfIndexNullTest implements InitializingBean {
     	final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
-    }
-    
-    private CountDownLatch anticipateEvents(String... ueis) {
-        final CountDownLatch eventRecieved = new CountDownLatch(1);
-        m_eventSubscriber.addEventListener(new EventListener() {
-
-            @Override
-            public void onEvent(Event e) {
-                eventRecieved.countDown();
-            }
-
-            @Override
-            public String getName() {
-                return "Test Initial Setup";
-            }
-        }, Arrays.asList(ueis));
-        return eventRecieved;
+        waitForEverything();
     }
     
     private NodeDao getNodeDao() {

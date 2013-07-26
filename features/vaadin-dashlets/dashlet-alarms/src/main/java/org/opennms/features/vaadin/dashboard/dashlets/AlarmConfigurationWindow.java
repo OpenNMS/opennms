@@ -67,22 +67,20 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.addStyleName("debug");
-        verticalLayout.setSizeFull();
         verticalLayout.setHeight(100, Unit.PERCENTAGE);
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
         verticalLayout.setMargin(true);
-
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSpacing(true);
-        formLayout.setMargin(true);
 
         /**
          * Adding the selection box
          */
         m_boostedSeveritySelect = new NativeSelect();
         m_boostedSeveritySelect.setCaption("Boosted Severity");
+        m_boostedSeveritySelect.setMultiSelect(false);
+        m_boostedSeveritySelect.setNullSelectionAllowed(false);
+        m_boostedSeveritySelect.setInvalidAllowed(false);
+        m_boostedSeveritySelect.setNewItemsAllowed(false);
 
         for (OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
             m_boostedSeveritySelect.addItem(onmsSeverity.name());
@@ -96,9 +94,7 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
 
         m_boostedSeveritySelect.setValue(boostSeverity);
 
-        formLayout.addComponent(m_boostedSeveritySelect);
-
-        verticalLayout.addComponent(formLayout);
+        verticalLayout.addComponent(m_boostedSeveritySelect);
 
         /**
          * Setting up the {@link CriteriaBuilderComponent} component

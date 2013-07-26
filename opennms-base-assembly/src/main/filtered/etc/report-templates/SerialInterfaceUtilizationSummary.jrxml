@@ -58,21 +58,6 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date(
-new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
-)]]></defaultValueExpression>
-	</parameter>
-	<parameter name="TIME_RANGE_NUM" class="java.lang.Integer">
-		<parameterDescription><![CDATA[Report Time Range]]></parameterDescription>
-		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
-	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUM} + " Days"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
-	</parameter>
 	<parameter name="startDate" class="java.util.Date">
 		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
@@ -83,6 +68,16 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE_NUM" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Report Time Range]]></parameterDescription>
+		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUM} + " Days"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{startDate}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>

@@ -58,7 +58,7 @@ public class BaseLogMessage implements LogMessage {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
         }
     };
-    private static final String s_regexp = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) DEBUG \\[([^\\]]+)] Collectd: collector.collect: (begin|end|error|persistDataQueueing: begin|persistDataQueueing: end): ?(\\d+/\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/[\\w-]+).*";
+    private static final String s_regexp = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) DEBUG \\[([^\\]]+)\\] (?:[\\p{Alnum}\\.]+): collector.collect: (begin|end|error|persistDataQueueing: begin|persistDataQueueing: end): ?(\\d+/\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/[\\w-]+).*";
     private static final Pattern s_pattern = Pattern.compile(s_regexp);
 
     private static MsgType toMsgType(String msgIndicator) {

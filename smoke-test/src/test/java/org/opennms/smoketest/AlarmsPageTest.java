@@ -29,9 +29,22 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
+    @BeforeClass
+    public static void createAlarm() throws Exception {
+        final EventProxy eventProxy = new TcpEventProxy();
+        final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
+        builder.setParam("importResource", "foo");
+        eventProxy.send(builder.getEvent());
+    }
+
     @Before
     public void setUp() throws Exception {
     	super.setUp();
@@ -85,7 +98,9 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAlarmLink() {
+    public void testAlarmLink() throws Exception {
+        createAlarm();
+        Thread.sleep(10000L);
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("alarm is outstanding"));

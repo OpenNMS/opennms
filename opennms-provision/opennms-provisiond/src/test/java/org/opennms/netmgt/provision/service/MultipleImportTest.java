@@ -30,17 +30,14 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
@@ -50,11 +47,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -74,7 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class MultipleImportTest {
+public class MultipleImportTest extends ProvisioningTestCase {
     
     @Autowired
     private Provisioner m_provisioner;
@@ -114,37 +109,18 @@ public class MultipleImportTest {
 
         System.err.println("triggering first import");
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-a.xml"), true);
+        waitForEverything();
+
         System.err.println("triggering second import");
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-b.xml"), true);
+        waitForEverything();
+
         System.err.println("finished triggering imports");
         
         eventReceived.await(5, TimeUnit.MINUTES);
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(200, nodes.size());
-    }
-
-    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
-        t.schedule();
-        t.waitFor();
-    }
-    
-    private CountDownLatch anticipateEvents(final int numberToMatch, final String... ueis) {
-        final CountDownLatch eventReceived = new CountDownLatch(numberToMatch);
-        m_eventSubscriber.addEventListener(new EventListener() {
-
-            @Override
-            public void onEvent(final Event e) {
-                eventReceived.countDown();
-            }
-
-            @Override
-            public String getName() {
-                return "Test Initial Setup";
-            }
-        }, Arrays.asList(ueis));
-        return eventReceived;
     }
 
     private NodeDao getNodeDao() {

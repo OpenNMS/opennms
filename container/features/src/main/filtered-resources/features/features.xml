@@ -52,6 +52,7 @@
        <feature>dashlet-summary</feature>
        <feature>dashlet-map</feature>
        <feature>dashlet-image</feature>
+       <feature>dashlet-charts</feature>
    </feature>
 
 </features>
