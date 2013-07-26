@@ -43,9 +43,8 @@ WHERE
     </changeSet>
 
     <!-- Fix duplicate service IDs. -->
-    <changeSet author="rangerrick" id="1.10.12-unique-service-type">
+    <changeSet author="rangerrick" id="1.10.12-unique-service-type" runOnChange="true">
         <sql>
---# Update alarms, setting the serviceid to the lowest ID for a given service name
 UPDATE alarms SET serviceid=bad.good_serviceid FROM (
    SELECT
       serviceid AS bad_serviceid,
@@ -69,8 +68,6 @@ UPDATE alarms SET serviceid=bad.good_serviceid FROM (
 ) bad
 WHERE
    serviceid=bad.bad_serviceid;
-
---# Update events, setting the serviceid to the lowest ID for a given service name
 UPDATE events SET serviceid=bad.good_serviceid FROM (
    SELECT
       serviceid AS bad_serviceid,
@@ -94,8 +91,6 @@ UPDATE events SET serviceid=bad.good_serviceid FROM (
 ) bad
 WHERE
    serviceid=bad.bad_serviceid;
-
---# Update ifServices, setting the serviceid to the lowest ID for a given service name
 UPDATE ifservices SET serviceid=bad.good_serviceid FROM (
    SELECT
       serviceid AS bad_serviceid,
@@ -119,8 +114,6 @@ UPDATE ifservices SET serviceid=bad.good_serviceid FROM (
 ) bad
 WHERE
    serviceid=bad.bad_serviceid;
-
---# Update notifications, setting the serviceid to the lowest ID for a given service name
 UPDATE notifications SET serviceid=bad.good_serviceid FROM (
    SELECT
       serviceid AS bad_serviceid,
@@ -144,8 +137,6 @@ UPDATE notifications SET serviceid=bad.good_serviceid FROM (
 ) bad
 WHERE
    serviceid=bad.bad_serviceid;
-
---# Update outages, setting the serviceid to the lowest ID for a given service name
 UPDATE outages SET serviceid=bad.good_serviceid FROM (
    SELECT
       serviceid AS bad_serviceid,
@@ -169,8 +160,6 @@ UPDATE outages SET serviceid=bad.good_serviceid FROM (
 ) bad
 WHERE
    serviceid=bad.bad_serviceid;
-
---# remove obsolete service IDs
 DELETE FROM
   service
 WHERE
@@ -181,9 +170,8 @@ WHERE
          service
       GROUP BY
          servicename
-   )
-;
-        </sql>
+   );
+</sql>
         <addUniqueConstraint tableName="service" columnNames="servicename" />
         <opennms:setSequence sequenceName="servicenxtid">
             <opennms:table name="service" column="serviceid" />
