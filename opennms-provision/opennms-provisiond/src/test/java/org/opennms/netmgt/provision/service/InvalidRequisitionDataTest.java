@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -116,8 +115,8 @@ public class InvalidRequisitionDataTest {
 
     @After
     public void tearDown() throws Exception {
-        m_anticipator.verifyAnticipated();
         Thread.sleep(5000);
+        m_anticipator.verifyAnticipated();
     }
     
     @Test
