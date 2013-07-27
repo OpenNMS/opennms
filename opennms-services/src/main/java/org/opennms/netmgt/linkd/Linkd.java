@@ -75,7 +75,7 @@ public class Linkd extends AbstractServiceDaemon {
     /**
      * The log4j category used to log messages.
      */
-    private static final String LOG4J_CATEGORY = "linkd";
+    protected static final String LOG_PREFIX = "linkd";
 
     /**
      * Rescan scheduler thread
@@ -143,7 +143,7 @@ public class Linkd extends AbstractServiceDaemon {
      * </p>
      */
     public Linkd() {
-        super(LOG4J_CATEGORY);
+        super(LOG_PREFIX);
     }
 
     /**
