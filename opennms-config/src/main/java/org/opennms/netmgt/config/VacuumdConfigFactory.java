@@ -31,14 +31,13 @@ package org.opennms.netmgt.config;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.springframework.util.Assert;
-
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -85,11 +83,24 @@ public final class VacuumdConfigFactory {
      * <p>Constructor for VacuumdConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public VacuumdConfigFactory(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(VacuumdConfiguration.class, stream);
+    public VacuumdConfigFactory(InputStream stream) {
+        m_config = JaxbUtils.unmarshal(VacuumdConfiguration.class, new InputStreamReader(stream));
+    }
+
+    /**
+     * <p>
+     * Constructor for VacuumdConfigFactory.
+     * </p>
+     *
+     * Calling reload() on a instance created with method will have no effect.
+     *
+     * @param config
+     *          The configuration the use.
+     */
+    public VacuumdConfigFactory(VacuumdConfiguration config) {
+        m_config = config;
+        m_loadedFromFile = false;
     }
 
     /**
@@ -98,15 +109,9 @@ public final class VacuumdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_singleton != null) {
             /*
              * The init method has already called, so return.
@@ -134,15 +139,9 @@ public final class VacuumdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         if (m_loadedFromFile) {
             setInstance(null);
 
