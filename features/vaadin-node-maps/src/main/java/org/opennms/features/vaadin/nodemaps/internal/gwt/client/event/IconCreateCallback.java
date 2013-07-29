@@ -68,7 +68,7 @@ public class IconCreateCallback extends JSObjectWrapper {
     		}
     	}
     	
-    	String svg = getChartSvg(20, 20, 18, 12, dataArray, classArray, total);
+    	String svg = getChartSvg(20.0, 20.0, 18.0, 12.0, dataArray, classArray, (double) total);
     	
     	options.setHtml(svg + "<div><span>" + cluster.getChildCount() + "</span></div>");
     	options.setClassName("marker-cluster marker-cluster-" + severityLabel);
@@ -78,8 +78,8 @@ public class IconCreateCallback extends JSObjectWrapper {
     }
 	
 	//this function returns the svg for a donut chart with the given parameters
-	private String getChartSvg(int cx, int cy, int r, int innerR,
-			int[] dataArray, String[] classArray, int total) {
+	private String getChartSvg(double cx, double cy, double r, double innerR,
+			int[] dataArray, String[] classArray, double total) {
 		String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 
 		double startangle = 0;
@@ -87,20 +87,20 @@ public class IconCreateCallback extends JSObjectWrapper {
 
 			if (dataArray[i] > 0) {
 
-				double endangle = startangle + ((dataArray[i] / total) * Math.PI
-						* 2);
+				double endangle = startangle + ((((double) dataArray[i]) / total) * Math.PI
+						* 2.0);
 
 				String path = "<path d=\"";
 
-				double x1 = cx + r * Math.sin(startangle);
-				double y1 = cy - r * Math.cos(startangle);
-				double X1 = cx + innerR * Math.sin(startangle);
-				double Y1 = cy - innerR * Math.cos(startangle);
+				double x1 = cx + (r * Math.sin(startangle));
+				double y1 = cy - (r * Math.cos(startangle));
+				double X1 = cx + (innerR * Math.sin(startangle));
+				double Y1 = cy - (innerR * Math.cos(startangle));
 
-				double x2 = cx + r * Math.sin(endangle);
-				double y2 = cy - r * Math.cos(endangle);
-				double X2 = cx + innerR * Math.sin(endangle);
-				double Y2 = cy - innerR * Math.cos(endangle);
+				double x2 = cx + (r * Math.sin(endangle));
+				double y2 = cy - (r * Math.cos(endangle));
+				double X2 = cx + (innerR * Math.sin(endangle));
+				double Y2 = cy - (innerR * Math.cos(endangle));
 
 				int big = 0;
 				if (endangle - startangle > Math.PI)
@@ -130,7 +130,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 	            
 	            path = path.concat(classArray[i]);
 //	            path = path.concat(" stroke= \"black\"");
-	            path = path.concat(" stroke-width= \"2\"/>");
+	            path = path.concat(" stroke-width= \"0\"/>");
 	            
 	            svg = svg.concat(path);
 	            startangle = endangle;
