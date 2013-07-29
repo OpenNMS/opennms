@@ -441,8 +441,8 @@ public class JasperReportService implements ReportService {
             }
         }
 
-        for (Map.Entry<String,Object> entry : subreportMap.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + " - " + "Value: " + entry.getValue());
+        for (final Map.Entry<String,Object> entry : subreportMap.entrySet()) {
+            LOG.debug("Key: {} - Value: {}", entry.getKey(), entry.getValue());
         }
         return subreportMap;
     }
