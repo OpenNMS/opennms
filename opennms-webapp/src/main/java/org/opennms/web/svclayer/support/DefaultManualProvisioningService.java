@@ -376,21 +376,19 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
     /** {@inheritDoc} */
     @Override
-    public void importProvisioningGroup(final String groupName) {
+    public void importProvisioningGroup(final String requisitionName) {
         m_writeLock.lock();
         
         try {
-            // first we update the import timestamp
-            final Requisition group = getProvisioningGroup(groupName);
-            group.updateDateStamp();
-            saveProvisioningGroup(groupName, group);
+            final Requisition requisition = getProvisioningGroup(requisitionName);
+            saveProvisioningGroup(requisitionName, requisition);
             
             // then we send an event to the importer
             final EventProxy proxy = Util.createEventProxy();
     
             m_pendingForeignSourceRepository.flush();
-            final String url = m_pendingForeignSourceRepository.getRequisitionURL(groupName).toString();
-            Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
+            final String url = m_pendingForeignSourceRepository.getRequisitionURL(requisitionName).toString();
+            Assert.notNull(url, "Could not find url for group "+requisitionName+".  Does it exists?");
             
             final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             bldr.addParam(EventConstants.PARM_URL, url);
@@ -398,7 +396,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             try {
                 proxy.send(bldr.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group "+groupName, e);
+                throw new DataAccessResourceFailureException("Unable to send event to import group "+requisitionName, e);
             }
         } finally {
             m_writeLock.unlock();

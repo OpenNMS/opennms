@@ -26,15 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.osgi;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+public class VaadinApplicationContextImpl implements VaadinApplicationContext {
+    private String sessionId;
+    private String userName;
+    private int uiId;
+    private final OnmsServiceManager serviceManager;
 
-public interface IViewContribution {
+    public VaadinApplicationContextImpl(OnmsServiceManager serviceManager) {
+        this.serviceManager = serviceManager;
+    }
 
-    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
-    String getTitle();
-	Resource getIcon();
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    @Override
+    public String getUsername() {
+        return userName;
+    }
+
+    public void setUsername(String username) {
+        this.userName = username;
+    }
+
+    @Override
+    public EventConsumerScope getEventStorage() {
+        EventRegistry eventRegistry = serviceManager.getEventRegistry();
+        if (eventRegistry == null) throw new IllegalArgumentException("EventRegistry must not be null");
+        return eventRegistry.getScope(this);
+    }
+
+    public void setUiId(int uiId) {
+        this.uiId = uiId;
+    }
+
+    @Override
+    public int getUiId() {
+        return uiId;
+    }
 }

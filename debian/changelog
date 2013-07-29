@@ -1,3 +1,10 @@
+opennms (1.11.94-1) unstable; urgency=medium
+
+  * New upstream release.  This release has a few bug fixes and enhancements,
+    including a fix for the alarm details page.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 26 Jul 2013 13:07:00 -0400
+
 opennms (1.11.93-1) unstable; urgency=low
 
   * New upstream release.
@@ -46,6 +53,13 @@ opennms (1.11.0-1) unstable; urgency=low
   * New upstream release.
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 07 May 2012 11:21:00 -0400
+
+opennms (1.10.12-1) stable; urgency=medium
+
+  * New upstream release.  This release has a few bug fixes and enhancements,
+    including a fix for the alarm details page.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 24 Jul 2013 16:06:00 -0500
 
 opennms (1.10.11-1) stable; urgency=low
 

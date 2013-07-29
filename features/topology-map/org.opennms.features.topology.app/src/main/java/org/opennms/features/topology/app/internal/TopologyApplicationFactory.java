@@ -36,19 +36,19 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import com.vaadin.ui.UI;
 
-public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFactory {
+public class TopologyApplicationFactory extends AbstractApplicationFactory {
     
 	private final BlueprintContainer m_blueprintContainer;
 	private final String m_beanName;
 	
-	public TopologyWidgetTestApplicationFactory(BlueprintContainer container, String beanName) {
+	public TopologyApplicationFactory(BlueprintContainer container, String beanName) {
 		m_blueprintContainer = container;
 		m_beanName = beanName;
 	}
 
     @Override
     public Class<? extends UI> getUIClass() {
-        return TopologyWidgetTestApplication.class;
+        return TopologyUI.class;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 
     @Override
     public UI getUI() {
-        TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
+        TopologyUI application = (TopologyUI) m_blueprintContainer.getComponentInstance(m_beanName);
         return application;
     }
 

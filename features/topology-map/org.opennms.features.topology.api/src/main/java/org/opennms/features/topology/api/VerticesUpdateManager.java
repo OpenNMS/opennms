@@ -28,13 +28,31 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+import java.util.List;
 
-public interface IViewContribution {
+/**
+ * A VerticesUpdateManager is responsible to publish all nodeIds
+ * which are currently in focus (e.g. selected or displayable).
+ */
+public interface VerticesUpdateManager extends SelectionListener, GraphContainer.ChangeListener {
 
-    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
-    String getTitle();
-	Resource getIcon();
+    /**
+     * If you want to listen to {@link VerticesUpdateEvent}s, implement this interface.
+     */
+    interface VerticesUpdateListener {
+        void verticesUpdated(VerticesUpdateEvent event);
+    }
+
+    class VerticesUpdateEvent {
+
+        private final List<Integer> nodeIdFocus;
+
+        public VerticesUpdateEvent(List<Integer> nodeIdFocus) {
+            this.nodeIdFocus = nodeIdFocus;
+        }
+
+        public List<Integer> getNodeIdFocus() {
+            return nodeIdFocus;
+        }
+    }
 }

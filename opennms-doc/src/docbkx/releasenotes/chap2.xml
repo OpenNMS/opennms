@@ -6,6 +6,31 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.94">
+		<title>Changes in OpenNMS 1.11.94</title>
+
+		<section id="opennms-1.11.94-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Bluecat / Adonis graph definition fixes and enhancements (Issue <ulink url='http://issues.opennms.org/browse/NMS-4767'>NMS-4767</ulink>)</para></listitem>
+				<listitem><para>It is possible to define an OnmsServiceType twice and that can hurt some features. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5914'>NMS-5914</ulink>)</para></listitem>
+				<listitem><para>Alarm list and alarm details is not showing in the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5947'>NMS-5947</ulink>)</para></listitem>
+				<listitem><para>.meta files are re-written on every poll (Issue <ulink url='http://issues.opennms.org/browse/NMS-5967'>NMS-5967</ulink>)</para></listitem>
+				<listitem><para>JDBC jasperreports not working with JniRrdStrategy configured  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5975'>NMS-5975</ulink>)</para></listitem>
+				<listitem><para>The report SerialInterfaceUtilizationSummary  is showing duplicated data. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5978'>NMS-5978</ulink>)</para></listitem>
+				<listitem><para>NCS configuration file found in 1.12 branch (Issue <ulink url='http://issues.opennms.org/browse/NMS-5982'>NMS-5982</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.94-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Changed unmarshalling integration test to use parametrized unit tests and a separate coverage test (Issue <ulink url='http://issues.opennms.org/browse/NMS-5966'>NMS-5966</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.93">
 		<title>Changes in OpenNMS 1.11.93</title>
 
@@ -387,6 +412,20 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.12">
+		<title>Changes in OpenNMS 1.10.12</title>
+
+		<section id="opennms-1.10.12-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Alarm list and alarm details is not showing in the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-5947'>NMS-5947</ulink>)</para></listitem>
+				<listitem><para>The report SerialInterfaceUtilizationSummary  is showing duplicated data. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5978'>NMS-5978</ulink>)</para></listitem>
+				<listitem><para>Serial Interface Utilization Report is displaying the wrong start date on the report. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5985'>NMS-5985</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.11">
 		<title>Changes in OpenNMS 1.10.11</title>

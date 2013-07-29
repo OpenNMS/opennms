@@ -29,36 +29,25 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.core.criteria.restrictions.AnyRestriction;
-import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-abstract class SelectionContextToRestrictionConverter {
-    public List<Restriction> getRestrictions(SelectionContext selectionContext) {
+abstract class NodeIdFocusToRestrictionsConverter {
+    public List<Restriction> getRestrictions(List<Integer> nodeIdFocus) {
         List<Restriction> restrictions = new ArrayList<Restriction>();
-        restrictions.add(getAnyRestriction(selectionContext));
+        restrictions.add(getAnyRestriction(nodeIdFocus));
         return restrictions;
     }
 
-    private AnyRestriction getAnyRestriction(SelectionContext selectionContext) {
+    private AnyRestriction getAnyRestriction(List<Integer> nodeIdFocus) {
         List<Restriction> restrictions = new ArrayList<Restriction>();
-        for (VertexRef eachRef : selectionContext.getSelectedVertexRefs()) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    restrictions.add(createRestriction(eachRef));
-                } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
-                }
-            }
+        for (Integer eachNodeId : nodeIdFocus) {
+            restrictions.add(createRestriction(eachNodeId));
         }
         return new AnyRestriction(restrictions.toArray(new Restriction[restrictions.size()]));
     }
 
-    abstract protected Restriction createRestriction(VertexRef ref);
+    abstract protected Restriction createRestriction(Integer nodeId);
 }

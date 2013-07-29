@@ -139,6 +139,11 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         }
     }
     
+    public List<OnmsOutage> findbyNodeId(Integer nodeId) {
+        String query = "from OnmsOutage as outage where outage.nodeId = ?";
+        return find(query, nodeId);
+    }
+    
     @Override
     public List<OnmsOutage> findbyNodeIdIpAddrServiceId(Integer nodeId, String ipAddr, Integer serviceId) {
         String query = "from OnmsOutage as outage where outage.nodeId = ? and outage.ipAddress = ? and outage.serviceId = ?";
@@ -149,5 +154,40 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     public List<OnmsOutage> findbyNodeIdAndIpAddr(Integer nodeId, String ipAddr) {
         String query = "from OnmsOutage as outage where outage.nodeId = ? and outage.ipAddress = ?";
         return find(query, nodeId, ipAddr);
+    }
+    
+    public List<OnmsOutage> findbyNodeIdIpAddrAndServiceName(Integer nodeId, String ipAddr, String serviceName) {
+        //select outages.outageid from outages, service 
+        //  where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ?
+        String query = "from OnmsOutage as outage, OnmsServiceType as svcType " +
+        		"where outage.nodeId = ? AND outage.ipAddress = ? AND svcType.name = ? " +
+        		"AND outage.serviceId = svcType.id";
+        return find(query, nodeId, ipAddr, serviceName);
+    }
+    
+    public OnmsOutage findByServiceStatus() {
+        //select outages.outageid from outages, ifservices 
+        //where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) 
+        //        AND (outages.serviceid = ifservices.serviceid) 
+        //        AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) 
+        //        AND (outages.ifregainedservice IS NULL)
+        String query = "from OnmsOutage as outage, OnmsMonitoredService as svc " +
+        		"where outage.nodeId = svc.ipInterface.node.id and outage.ipAddress = svc.ipInterface.ipAddress " +
+        		"outage.serviceId = svc.serviceType and " +
+        		"(svc.status = 'D' or svc.status = 'F' or svc.status = 'U') " +
+        		"and outage.ifRegainedService IS NULL";
+        return findUnique(query);
+    }
+    
+    public OnmsOutage findByIpInterfaceIsManaged () {
+        //select outages.outageid from outages, ipinterface 
+        //where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) 
+        //        AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) 
+        //        AND (outages.ifregainedservice IS NULL)        
+        String query = "from OnmsOutage as outage, OnmsIpInterface as ipInterface " +
+                        "where outage.nodeId = ipInterface.node.id and outage.ipAddress = ipInterface.ipAddress " +
+                        "and (ipInterface.isManaged = 'D' or ipInterface.isManaged = 'U') " +
+                        "and outage.ifRegainedService IS NULL";
+        return findUnique(query);
     }
 }

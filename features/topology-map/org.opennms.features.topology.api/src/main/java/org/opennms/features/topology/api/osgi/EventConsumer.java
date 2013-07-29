@@ -26,15 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.osgi;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 
-public interface IViewContribution {
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
-    String getTitle();
-	Resource getIcon();
+/**
+ * If you want an instance of a class to get notified when an event of a concrete type is fired, just add
+ * this annotation to the method which consumes that event object. <br/><br/>
+ * <b>Example:</b><br/>
+ * <pre>
+ *     // An event consumer
+ *     class MyEventConsumer {
+ *         //...
+ *        &#64;EventConsumer
+ *        public void eventTypeChanged(EventType eventType) {
+ *            // do something..
+ *        }
+ *         //...
+ *     }
+ *
+ *     // some event producer which publishes the event through the EventRegistry
+ *     EventProducer producer = new EventProducer();
+ *     producer.fireEvent(new EventType());
+ * </pre>
+ *
+ * @see {@link EventRegistry}, {@link EventConsumerScope}
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventConsumer {
+
 }

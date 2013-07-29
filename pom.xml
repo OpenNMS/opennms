@@ -856,7 +856,7 @@
     <jettyVersion>7.6.10.v20130312</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
-    <liquibaseVersion>2.0.1</liquibaseVersion>
+    <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.0-beta7</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
@@ -885,7 +885,7 @@
     -->
     <vaadinVersion>7.1.0</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
+    <paxVaadinVersion>0.3.0-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 

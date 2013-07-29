@@ -242,12 +242,19 @@ install: build
 	mv debian/temp/bin/* debian/opennms-common/usr/share/opennms/bin/
 	find debian/opennms-common/usr/share/opennms/bin -type f -execdir chmod 755 {} \;
 	mv debian/temp/etc/* debian/opennms-common/etc/opennms/
+	mv debian/temp/lib   debian/opennms-common/usr/share/opennms/
+	install -d -m 755 debian/opennms-common/varlib/opennms/xsds
+	mv debian/temp/share/xsds/* debian/opennms-common/varlib/opennms/xsds/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
 	
 	# move karaf stuff to common
 	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
 	find debian/opennms-common/usr/share/opennms/{data,deploy,system} ! -type d -execdir chmod 644 {} \;
 	find debian/opennms-common/usr/share/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
+	
+	# move SNMP MIB files
+	install -d -m 755 debian/opennms-common/var/lib/opennms/mibs/compiled
+	mv debian/temp/share/mibs/compiled/* debian/opennms-common/var/lib/opennms/mibs/compiled/
 	
 	# Adjust permissions for config files containing sensitive information
 	install -m 644 debian/opennms-common.overrides debian/opennms-common/usr/share/lintian/overrides/opennms-common
@@ -289,9 +296,10 @@ install: build
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting}
-	mv debian/temp/jetty-webapps/opennms/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting,ROOT}
+	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
 	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
+	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
@@ -316,8 +324,8 @@ install: build
 	##
 	## Make sure there aren't any files left over in debian/temp that missed packaging
 	##
-	$(eval REMAINING_COUNT := $(shell find debian/temp -type f | wc -l))
-	if [ $(REMAINING_COUNT) -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged"; exit 1; fi
+	find debian/temp -name .gitignore -o -name .gwtignore -o -name .readme | xargs rm -rf
+	if [ `find debian/temp -type f | wc -l` -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged:"; find debian/temp -type f; exit 1; fi
 
 # Build architecture-independent files here.
 binary-indep: build install

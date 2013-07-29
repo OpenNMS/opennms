@@ -52,7 +52,7 @@
 	<include file="1.9.94/changelog.xml"/>
 	<include file="1.10.1/changelog.xml"/>
 	<include file="1.10.4/changelog.xml"/>
-	<include file="1.10.12/changelog.xml"/>
+	<include file="1.10.13/changelog.xml"/>
 	<include file="1.11.1/AlarmNotes.xml"/>
 	<include file="1.11.3/changelog.xml"/>
 	<include file="1.11.4/changelog.xml"/>

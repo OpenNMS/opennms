@@ -87,7 +87,6 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
 
         validate(foreignSource);
 
-        foreignSource.updateDateStamp();
         m_foreignSources.put(foreignSource.getName(), foreignSource);
     }
 
@@ -121,7 +120,6 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         
         validate(requisition);
 
-        requisition.updateDateStamp();
         m_requisitions.put(requisition.getForeignSource(), requisition);
     }
 
@@ -157,7 +155,6 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
         }
         foreignSource.setDefault(true);
         foreignSource.setName("default");
-        foreignSource.updateDateStamp();
         
         save(foreignSource);
     }
