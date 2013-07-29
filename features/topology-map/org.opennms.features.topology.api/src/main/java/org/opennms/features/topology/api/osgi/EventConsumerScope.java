@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.osgi;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
-
-public interface IViewContribution {
-
-    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
-    String getTitle();
-	Resource getIcon();
+/**
+ * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
+ * 
+ * @author Markus von Rüden
+ * @see {@link EventRegistry}
+ */
+public interface EventConsumerScope {
+    <T> void fireEvent(T eventObject);
+    <T> void addPossibleEventConsumer(T possibleEventConsumer);
 }

@@ -28,12 +28,12 @@
 
 package org.opennms.features.topology.api.support;
 
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.WidgetContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
 public class BlueprintIViewContribution implements IViewContribution {
 
@@ -46,12 +46,14 @@ public class BlueprintIViewContribution implements IViewContribution {
 		m_beanName = beanName;
 	}
 
-	@Override
-	public Component getView(WidgetContext widgetContext) {
-		// Get the component by asking the blueprint container to instantiate a prototype bean 
-		Component component = (Component)m_container.getComponentInstance(m_beanName);
-		return component;
-	}
+    @Override
+    public Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext) {
+        // Get the component by asking the blueprint container to instantiate a prototype bean
+        Component component = (Component)m_container.getComponentInstance(m_beanName);
+        applicationContext.getEventStorage().addPossibleEventConsumer(component);
+        return component;
+
+    }
 
 	/**
 	 * Returns null.

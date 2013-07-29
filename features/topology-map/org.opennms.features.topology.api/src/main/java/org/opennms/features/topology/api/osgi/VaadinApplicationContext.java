@@ -26,15 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.osgi;
 
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
-
-public interface IViewContribution {
-
-    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
-    String getTitle();
-	Resource getIcon();
+/**
+ * An ApplicationContext for Vaadin-Applications. 
+ * It should provide a Vaadin-Application with all needed information, such as sessionId, username and so on.
+ * In addition it helps getting access to the underlying OSGi-Container and provide the application
+ * with a session scope.
+ * 
+ * @author Markus von Rüden
+ *
+ */
+public interface VaadinApplicationContext {
+    int getUiId();
+    String getSessionId();
+    String getUsername();
+    EventConsumerScope getEventStorage();
 }

@@ -885,7 +885,7 @@
     -->
     <vaadinVersion>7.1.0</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
+    <paxVaadinVersion>0.3.0-SNAPSHOT</paxVaadinVersion>
 
   </properties>
 
