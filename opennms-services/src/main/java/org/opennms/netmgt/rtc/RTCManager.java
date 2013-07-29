@@ -39,6 +39,7 @@ import java.util.concurrent.Executors;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
@@ -310,6 +311,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      */
     public RTCManager() {
     	super("rtc");
+        Logging.putPrefix("rtc");
     }
 
     /**
