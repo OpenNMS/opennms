@@ -12,12 +12,12 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>org.opennms.features.vaadin.app.TopologyWidgetTestApplication</param-value>
+            <param-value>org.opennms.features.topology.app.internal.TopologyUI</param-value>
         </init-param>
         <init-param>
             <description>Application widgetset</description>
             <param-name>widgetset</param-name>
-            <param-value>org.opennms.features.topology.app.internal.gwt.TopologyWidget</param-value>
+            <param-value>org.opennms.features.topology.widgetset.gwt.TopologyWidgetset</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

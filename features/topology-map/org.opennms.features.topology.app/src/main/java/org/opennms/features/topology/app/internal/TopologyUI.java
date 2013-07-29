@@ -73,7 +73,7 @@ import java.util.List;
 	"chromeFrameCheck.js"
 })
 @PreserveOnRefresh
-public class TopologyWidgetTestApplication extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
+public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
@@ -111,7 +111,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         }
     }
 
-    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+    public TopologyUI(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
         // Ensure that selection changes trigger a history save operation
         m_commandManager = commandManager;
         m_historyManager = historyManager;
@@ -145,6 +145,12 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         setupListeners();
         createLayouts();
         setupErrorHandler();
+
+        // notifiy osgi-listeners, otherwise initialization would not work
+        m_graphContainer.addChangeListener(m_verticesUpdateManager);
+        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
+        m_verticesUpdateManager.selectionChanged(m_selectionManager);
+        m_verticesUpdateManager.graphChanged(m_graphContainer);
     }
 
     private void setupListeners() {
@@ -154,8 +160,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_graphContainer.getMapViewManager().addListener(this);
         m_commandManager.addMenuItemUpdateListener(this);
         m_commandManager.addCommandUpdateListener(this);
-        m_graphContainer.addChangeListener(m_verticesUpdateManager);
-        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
     }
 
     private void createLayouts() {
@@ -174,7 +178,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.ERROR_MESSAGE);
-                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyWidgetTestApplication", event.getThrowable());
+                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
         });
