@@ -103,7 +103,7 @@ public class EventRegistry {
                 listener.setEventMethod(eachEventConsumerMethod);
 
                 // register as event listener for session scope
-                serviceManager.registerAsService(listener, applicationContext, EventListener.getProperties(eachEventConsumerMethod.getParameterTypes()[0]));
+                serviceManager.registerAsService(EventListener.class, listener, applicationContext, EventListener.getProperties(eachEventConsumerMethod.getParameterTypes()[0]));
             }
         }
     }

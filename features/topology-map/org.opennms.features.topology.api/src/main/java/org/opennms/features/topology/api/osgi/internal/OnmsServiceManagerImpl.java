@@ -55,15 +55,15 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     }
 
     @Override
-    public void registerAsService(Object object, VaadinApplicationContext applicationContext) {
-        registerAsService(object, applicationContext, new Properties());
+    public <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext) {
+        registerAsService(clazz, object, applicationContext, new Properties());
     }
 
     @Override
-    public void registerAsService(Object object, VaadinApplicationContext applicationContext, Properties properties) {
-        if (object == null) return;
+    public <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+        if (object == null || clazz == null) return;
         ServiceRegistration serviceRegistration = bundleContext
-                .registerService(object.getClass().getName(), object, (Dictionary) getProperties(applicationContext, properties));
+                .registerService(clazz.getName(), object, (Dictionary) getProperties(applicationContext, additionalProperties));
         serviceRegistrations.put(object, serviceRegistration);
     }
 
@@ -128,7 +128,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         VaadinApplicationContext newContext = creator.create(this);
         VaadinApplicationContext oldContext = getService(VaadinApplicationContext.class, newContext);
         if (oldContext != null) return oldContext;
-        registerAsService(newContext, newContext);
+        registerAsService(VaadinApplicationContext.class, newContext, newContext);
         return newContext;
     }
 

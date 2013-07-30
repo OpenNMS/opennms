@@ -56,7 +56,7 @@ public interface OnmsServiceManager extends SessionListener {
      * @param object The service to be registered. Must not be null.
      * @param applicationContext The session scope. Must not be null.
      */
-    void registerAsService(Object object, VaadinApplicationContext applicationContext);
+    <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext);
 
     /**
      * Registers a service with session scope but allows to set additional Properties.
@@ -65,7 +65,7 @@ public interface OnmsServiceManager extends SessionListener {
      * @param applicationContext the session scope. Must not be null.
      * @param additionalProperties Additional Properties. Must not be null.
      */
-    void registerAsService(Object object, VaadinApplicationContext applicationContext, Properties additionalProperties);
+    <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext, Properties additionalProperties);
 
     /**
      * Returns a service in session-scope. Be aware that if there are multiple services registered
