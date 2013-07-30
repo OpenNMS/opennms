@@ -57,8 +57,6 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -67,6 +65,8 @@ import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -450,7 +450,7 @@ public class DiscoveryConfigFactory {
                 } else if (defaultRetries != null) {
                     retries = defaultRetries;
                 }
-        
+                
                 try {
                     includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
                 } catch (final UnknownHostException uhE) {
@@ -497,6 +497,7 @@ public class DiscoveryConfigFactory {
                 }
         
                 final String address = s.getContent();
+                
                 try {
                     specifics.add(new IPPollAddress(InetAddressUtils.addr(address), timeout, retries));
                 } catch (final IllegalArgumentException e) {
@@ -534,6 +535,38 @@ public class DiscoveryConfigFactory {
             getReadLock().unlock();
         }
     }
+    
+    public String getForeignSource(InetAddress address) {
+    	getReadLock().lock();
+    	
+        final byte[] laddr = address.getAddress();
+
+    	List<Specific> specificCollection = getConfiguration().getSpecificCollection();
+    	for (Specific specific : specificCollection) {
+			String ipAddr = specific.getContent();
+			if (ipAddr.equals(InetAddressUtils.str(address))) {
+				return specific.getForeignSource();
+			}
+		}
+    	
+    	List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRangeCollection();
+    	for (IncludeRange range : includeRangeCollection) {
+            if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
+    			range.getForeignSource();
+            }
+		}
+    	
+    	List<IncludeUrl> includeUrlCollection = getConfiguration().getIncludeUrlCollection();
+    	for (IncludeUrl includeUrl : includeUrlCollection) {
+    		String ipAddr = includeUrl.getContent();
+			if (ipAddr.equals(InetAddressUtils.str(address))) {
+				return includeUrl.getForeignSource();
+			}
+		}
+    	
+    	return getConfiguration().getForeignSource();
+    }
+    	
 
     /**
      * <p>getIntraPacketDelay</p>
