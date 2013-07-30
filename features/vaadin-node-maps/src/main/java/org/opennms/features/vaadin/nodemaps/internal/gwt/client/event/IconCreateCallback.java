@@ -53,7 +53,7 @@ public class IconCreateCallback extends JSObjectWrapper {
     	
     	int severity = 0;
     	int total = 0;
-    	int[] dataArray = {0, 0, 0, 0, 0, 0, 0};
+    	double[] dataArray = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     	//class array corresponds to data array
     	String[] classArray = {"Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical"};
     	
@@ -61,7 +61,7 @@ public class IconCreateCallback extends JSObjectWrapper {
     	for(final NodeMarker marker : (List<NodeMarker>)cluster.getAllChildMarkers()) {
     		final int nodeSeverity = marker.getSeverity();
     		total++;
-    		dataArray[nodeSeverity -1]++;
+    		dataArray[nodeSeverity -1] += 1.0;
     		if (nodeSeverity > severity) {
     			severity = nodeSeverity;
     			severityLabel = marker.getSeverityLabel();
@@ -79,7 +79,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 	
 	//this function returns the svg for a donut chart with the given parameters
 	private String getChartSvg(double cx, double cy, double r, double innerR,
-			int[] dataArray, String[] classArray, double total) {
+			double[] dataArray, String[] classArray, double total) {
 		String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 
 		double startangle = 0;
@@ -87,7 +87,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 
 			if (dataArray[i] > 0) {
 
-				double endangle = startangle + ((((double) dataArray[i]) / total) * Math.PI
+				double endangle = startangle + (((dataArray[i]) / total) * Math.PI
 						* 2.0);
 
 				String path = "<path d=\"";
