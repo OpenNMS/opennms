@@ -29,10 +29,10 @@
 package org.opennms.report;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.opennms.core.logging.Logging;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
@@ -45,96 +45,103 @@ import org.opennms.javamail.JavaMailerException;
  */
 public class ReportMailer {
     private static final Logger LOG = LoggerFactory.getLogger(ReportMailer.class);
-    
-	private static final String LOG4J_CATEGORY = "reports";
-	
-	private String m_filename;
-	
-	private String m_address;
 
-	private String m_subject;
-	
-	/**
-	 * <p>Constructor for ReportMailer.</p>
-	 */
-	public ReportMailer() {
-	    this(null, null, null);
-	}
+    private static final String LOG4J_CATEGORY = "reports";
 
-	
-	/**
-	 * <p>Constructor for ReportMailer.</p>
-	 *
-	 * @param address a {@link java.lang.String} object.
-	 * @param filename a {@link java.lang.String} object.
-	 * @param subject a {@link java.lang.String} object.
-	 */
-	public ReportMailer(String address, String filename, String subject) {
-		this.m_address = address;
-		this.m_filename = filename;
-		this.m_subject = subject;
-		
-		// TODO wrap the methods is probably better
-		Logging.putPrefix(LOG4J_CATEGORY);
-	}
-	
-	/**
-	 * <p>send</p>
-	 *
-	 * @throws java.io.IOException if any.
-	 */
-	public void send() throws IOException {
+    private String m_filename;
+
+    private String m_address;
+
+    private String m_subject;
+
+    /**
+     * <p>Constructor for ReportMailer.</p>
+     */
+    public ReportMailer() {
+        this(null, null, null);
+    }
+
+
+    /**
+     * <p>Constructor for ReportMailer.</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @param subject a {@link java.lang.String} object.
+     */
+    public ReportMailer(String address, String filename, String subject) {
+        this.m_address = address;
+        this.m_filename = filename;
+        this.m_subject = subject;
+    }
+
+    /**
+     * <p>send</p>
+     *
+     * @throws java.io.IOException if any.
+     */
+    public void send() throws IOException {
         if (m_filename == null || m_address == null) {
             throw new IllegalArgumentException("Cannot take null paramters.");
         }
 
         try {
-            JavaMailer jm = new JavaMailer();
-            jm.setTo(m_address);
-            jm.setSubject(m_subject);
-            jm.setFileName(m_filename);
-            jm.setMessageText(m_subject + " Mailed from JavaMailer class.");
-            jm.mailSend();
-        } catch (JavaMailerException e) {
-            LOG.error("Caught JavaMailer exception sending file: {}", m_filename, e);
-            throw new IOException("Error sending file: " + m_filename);
+            Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    try {
+                        JavaMailer jm = new JavaMailer();
+                        jm.setTo(m_address);
+                        jm.setSubject(m_subject);
+                        jm.setFileName(m_filename);
+                        jm.setMessageText(m_subject + " Mailed from JavaMailer class.");
+                        jm.mailSend();
+                    } catch (final JavaMailerException e) {
+                        LOG.error("Caught JavaMailer exception sending file: {}", m_filename, e);
+                        throw e;
+                    }
+                    return null;
+                }
+            });
+        } catch (final Exception e) {
+            throw new IOException("Error sending file: " + m_filename, e);
         }
     }
 
-	/**
-	 * <p>getAddress</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getAddress() {
-		return m_address;
-	}
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAddress() {
+        return m_address;
+    }
 
-	/**
-	 * <p>setAddress</p>
-	 *
-	 * @param address a {@link java.lang.String} object.
-	 */
-	public void setAddress(String address) {
-		this.m_address = address;
-	}
+    /**
+     * <p>setAddress</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     */
+    public void setAddress(String address) {
+        this.m_address = address;
+    }
 
-	/**
-	 * <p>getFilename</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getFilename() {
-		return m_filename;
-	}
+    /**
+     * <p>getFilename</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFilename() {
+        return m_filename;
+    }
 
-	/**
-	 * <p>setFilename</p>
-	 *
-	 * @param filename a {@link java.lang.String} object.
-	 */
-	public void setFilename(String filename) {
-		this.m_filename = filename;
-	}
+    /**
+     * <p>setFilename</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     */
+    public void setFilename(String filename) {
+        this.m_filename = filename;
+    }
 
 }

@@ -13,10 +13,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <cm:property name="showHeader" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
-    
+
     <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
-    
-    <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
+
+    <reference id="serviceManager" interface="org.opennms.features.topology.api.osgi.OnmsServiceManager" availability="mandatory"/>
+
+    <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
@@ -29,6 +31,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
+        <property name="serviceManager" ref="serviceManager"/>
     </bean>
     
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
@@ -40,7 +43,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
 
-    <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
+    <bean id="topologyApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyApplicationFactory" >
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
@@ -52,7 +55,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="providerManager"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
+    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyApplicationFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
             <entry key="widgetset" value="${widgetset}"/>
@@ -166,7 +169,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
         </reference-listener>
     </reference-list>
-    
+
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -182,19 +185,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
     </service>
-    
-    <!--
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="History"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.HistoryOperation">
-            <argument ref="commandManager"/>
-        </bean>
-    </service>
-    -->
-    
+
+
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>

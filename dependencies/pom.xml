@@ -51,6 +51,7 @@
     <module>snmp</module>
     <module>snmp-test</module>
     <module>spring</module>
+    <module>spring-security-core</module>
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>

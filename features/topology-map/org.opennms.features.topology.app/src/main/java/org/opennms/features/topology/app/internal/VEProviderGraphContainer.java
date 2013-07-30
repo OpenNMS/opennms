@@ -1,44 +1,19 @@
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphVisitor;
-import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.LayoutAlgorithm;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.topo.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
     
@@ -200,9 +175,15 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
     }
-    
+
+    private interface ServiceChangedEventHandler<T> {
+        void doRegistration(T service);
+        void doUnregistration(T service);
+    }
+
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
+    private final Map<Class<?>, ServiceChangedEventHandler> serviceChangedEventHandlers = new HashMap<Class<?>, ServiceChangedEventHandler>();
     private int m_semanticZoomLevel = 0;
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
@@ -238,7 +219,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         if(oldLevel != m_semanticZoomLevel) {
             rebuildGraph();
         }
-        
     }
 
     @Override
@@ -255,13 +235,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void setScale(double scale) {
         m_scaleProperty.setValue(scale);
     }
+
     @Override
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         if(m_layoutAlgorithm != layoutAlgorithm) {
             m_layoutAlgorithm = layoutAlgorithm;
             redoLayout();
         }
-        
     }
 
     @Override
@@ -360,12 +340,36 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	}
     	
     	m_graph = new VEGraph(m_layout, displayVertices, displayEdges);
-    	
+
+        unselectVerticesWhichAreNotVisibleAnymore();
+
     	fireGraphChanged();
     	
     }
 
-	private String pseudoId(VertexRef displaySource, VertexRef displayTarget) {
+    // we have to find out if each selected vertex is still displayable,
+    // if not we deselect it.
+    private void unselectVerticesWhichAreNotVisibleAnymore() {
+        if (m_selectionManager == null) return;
+        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(m_selectionManager.getSelectedVertexRefs());
+        List<VertexRef> newSelectedVertexRefs = new ArrayList<VertexRef>();
+        for (VertexRef eachSelectedVertex : selectedVertexRefs) {
+            for (Vertex eachDisplayableVertex : m_graph.getDisplayVertices()) {
+                if (eachDisplayableVertex.getNamespace().equals(eachSelectedVertex.getNamespace())
+                    && eachDisplayableVertex.getId().equals(eachSelectedVertex.getId())) {
+                    newSelectedVertexRefs.add(eachSelectedVertex);
+                    break;
+                }
+            }
+        }
+
+        // if the selection changed, inform selectionManager
+        if (!newSelectedVertexRefs.equals(selectedVertexRefs)) {
+            m_selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+        }
+    }
+
+    private String pseudoId(VertexRef displaySource, VertexRef displayTarget) {
 		String sourceId = displaySource.getNamespace()+":"+displaySource.getId();
 		String targetId = displayTarget.getNamespace() + ":" + displayTarget.getId();
 		
@@ -501,32 +505,52 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     
     public void setSessionId(String sessionId) {
         m_sessionId = sessionId;
-        
+        buildServiceChangedEventHandlers();
+        registerServiceListener();
+    }
+
+    private void buildServiceChangedEventHandlers() {
+        serviceChangedEventHandlers.clear();
+        serviceChangedEventHandlers.put(Criteria.class, new ServiceChangedEventHandler<Criteria>() {
+
+            @Override
+            public void doRegistration(Criteria service) {
+                setCriteria(service);
+            }
+
+            @Override
+            public void doUnregistration(Criteria service) {
+                removeCriteria(service);
+            }
+        });
+    }
+
+    private void registerServiceListener() {
         try {
             m_bundleContext.removeServiceListener(this);
-            m_bundleContext.addServiceListener(this, "(&(objectClass=org.opennms.features.topology.api.topo.Criteria)(sessionId=" + m_sessionId + "))");
+            for (Class<?> eachClass : serviceChangedEventHandlers.keySet()) {
+                m_bundleContext.addServiceListener(this,
+                        String.format("(&(objectClass=%s)(sessionId=%s))", eachClass.getName(), m_sessionId));
+            }
         } catch (InvalidSyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerFactory.getLogger(getClass()).error("registerServiceListener() failed", e);
         }
     }
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        ServiceReference<Criteria> serviceReference;
-        Criteria criteria;
-        switch(event.getType()) {
-            case ServiceEvent.REGISTERED:
-            serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
-            criteria = m_bundleContext.getService(serviceReference);
-            setCriteria(criteria);
-            break;
-            
-            case ServiceEvent.UNREGISTERING:
-            serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
-            criteria = m_bundleContext.getService(serviceReference);
-            removeCriteria(criteria);
-            break;                        
+        Object service = m_bundleContext.getService(event.getServiceReference());
+        Class<?> serviceClass = service.getClass();
+        ServiceChangedEventHandler serviceChangedEventHandler = serviceChangedEventHandlers.get(serviceClass);
+        if (serviceChangedEventHandler != null) {
+            switch (event.getType()) {
+                case ServiceEvent.REGISTERED:
+                    serviceChangedEventHandler.doRegistration(service);
+                    break;
+                case ServiceEvent.UNREGISTERING:
+                    serviceChangedEventHandler.doUnregistration(service);
+                    break;
+            }
         }
     }
 }

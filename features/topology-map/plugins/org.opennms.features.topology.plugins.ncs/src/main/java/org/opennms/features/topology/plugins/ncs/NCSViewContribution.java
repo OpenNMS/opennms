@@ -8,6 +8,7 @@ import java.util.List;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -34,10 +35,9 @@ public class NCSViewContribution implements IViewContribution {
     public void setNcsComponentRepository(NCSComponentRepository ncsComponentRepository) {
 		m_ncsComponentRepository = ncsComponentRepository;
 	}
-	
-	@Override
-	public Component getView(final WidgetContext widgetContext) {
-		
+
+    @Override
+    public Component getView(final VaadinApplicationContext applicationContext, final WidgetContext widgetContext) {
 		final Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);

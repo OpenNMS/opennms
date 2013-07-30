@@ -54,17 +54,18 @@ package org.opennms.features.topology.plugins.browsers;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-import java.util.*;
 
 import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.osgi.EventConsumer;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+
+import java.util.*;
 
 public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 
@@ -109,19 +110,19 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
     }
 
     @Override
-	public void selectionChanged(SelectionContext selectionContext) {
-        List<Restriction> newRestrictions = new SelectionContextToRestrictionConverter() {
+    @EventConsumer
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+        List<Restriction> newRestrictions = new NodeIdFocusToRestrictionsConverter() {
 
             @Override
-            protected Restriction createRestriction(VertexRef ref ) {
-                return new EqRestriction("node.id", Integer.valueOf(ref.getId()));
+            protected Restriction createRestriction(Integer nodeId ) {
+                return new EqRestriction("node.id", nodeId);
             }
-        }.getRestrictions(selectionContext);
+        }.getRestrictions(event.getNodeIdFocus());
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);
             getCache().reload(getPage());
             fireItemSetChangedEvent();
         }
-	}
-
+    }
 }

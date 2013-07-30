@@ -142,7 +142,7 @@ public class CommandManager {
 		m_updateListeners.add(listener);
 	}
 
-    public void removeCommandUpdateListener(TopologyWidgetTestApplication components) {
+    public void removeCommandUpdateListener(TopologyUI components) {
         m_updateListeners.remove(components);
     }
 
