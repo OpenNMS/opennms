@@ -185,7 +185,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private void addHeader() {
-        if (m_headerHtml != null) {
+        if (m_headerHtml != null && m_showHeader) {
             InputStream is = null;
             try {
                 is = new ByteArrayInputStream(m_headerHtml.getBytes());
