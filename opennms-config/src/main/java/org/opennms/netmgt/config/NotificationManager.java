@@ -812,11 +812,15 @@ public abstract class NotificationManager {
             } else {
                 statement.setNull(7, Types.INTEGER);
             }
-    
+
             // eventID field
             final String eventID = params.get("eventID");
-            statement.setInt(8, Integer.parseInt(eventID));
-    
+            if (eventID != null && !eventID.trim().equals("") && !eventID.trim().equals("0") && !eventID.equalsIgnoreCase("null") && !eventID.equalsIgnoreCase("%eventid%")) {
+                statement.setInt(8, Integer.parseInt(eventID));
+            } else {
+                statement.setNull(8, Types.INTEGER);
+            }
+
             statement.setString(9, params.get("eventUEI"));
             
             // notifications subject field
