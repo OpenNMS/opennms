@@ -1009,13 +1009,11 @@ public abstract class NotificationManager {
 	        notice.setNumericMessage(newNotice.getNumericMessage());
 	        notice.setStatus(newNotice.getStatus());
 	        notice.setVarbind(newNotice.getVarbind());
-           
-	        Parameter parameters[] = newNotice.getParameter();
-	        for (int i = 0; i < parameters.length; i++) {
+	        notice.getParameterCollection().clear(); // Required to avoid NMS-5948
+	        for (Parameter parameter : newNotice.getParameterCollection()) {
 		            Parameter newParam = new Parameter();
-		            newParam.setName(parameters[i].getName());
-		            newParam.setValue(parameters[i].getValue());
-
+		            newParam.setName(parameter.getName());
+		            newParam.setValue(parameter.getValue());
 		            notice.addParameter(newParam);
 	        } 
                 saveCurrent();
