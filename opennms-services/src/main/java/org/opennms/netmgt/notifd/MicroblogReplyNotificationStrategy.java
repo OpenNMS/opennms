@@ -45,9 +45,6 @@ import twitter4j.TwitterException;
  *
  * @author <a href="mailto:jeffg@opennms.org>Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
- * @author <a href="mailto:jeffg@opennms.org>Jeff Gehlbach</a>
- * @author <a href="http://www.opennms.org/>OpenNMS</a>
- * @version $Id: $
  */
 public class MicroblogReplyNotificationStrategy extends MicroblogNotificationStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(MicroblogReplyNotificationStrategy.class);
@@ -72,8 +69,8 @@ public class MicroblogReplyNotificationStrategy extends MicroblogNotificationStr
 
     /** {@inheritDoc} */
     @Override
-    public int send(List<Argument> arguments) {
-        Twitter svc = buildUblogService(arguments);
+    public int send(final List<Argument> arguments) {
+        final Twitter svc = buildUblogService(arguments);
         String destUser = findDestName(arguments);
         Status response;
 
@@ -86,17 +83,16 @@ public class MicroblogReplyNotificationStrategy extends MicroblogNotificationStr
         if (destUser.startsWith("@"))
             destUser = destUser.substring(1);
         
-        String fullMessage = String.format("@%s %s", destUser, buildMessageBody(arguments));
+        final String fullMessage = String.format("@%s %s", destUser, buildMessageBody(arguments));
         
-        LOG.debug("Dispatching microblog reply notification for user '{}' at base URL '{}' with message '{}'", svc.getUserId(), svc.getBaseURL(), fullMessage);
+        LOG.debug("Dispatching microblog reply notification at base URL '{}' with message '{}'", svc.getConfiguration().getClientURL(), fullMessage);
         try {
             response = svc.updateStatus(fullMessage);
-        } catch (TwitterException e) {
-            LOG.error("Microblog notification failed");
-            LOG.info("Failed to update status for user '{}' at service URL '{}', caught exception", svc.getUserId(), svc.getBaseURL(), e);
+        } catch (final TwitterException e) {
+            LOG.error("Microblog notification failed at service URL '{}'", svc.getConfiguration().getClientURL(), e);
             return 1;
         }
-        
+
         LOG.info("Microblog reply notification succeeded: reply update posted with ID {}", response.getId());
         return 0;
     }
