@@ -12,7 +12,7 @@
     file. Version: $Id$. </documentation>
   </annotation>
 
-  <element name="actiond-configuration"> 
+  <element name="actiond-configuration">
     <annotation>
       <documentation>Top-level element for the actiond-configuration.xml
       configuration file.</documentation>
@@ -26,7 +26,7 @@
           reaches this number, actiond waits for a process to complete or get
           terminated before it launches the next process.</documentation>
         </annotation>
-        
+
         <simpleType>
           <restriction base="int">
             <minInclusive value="1"/>

@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
@@ -234,11 +235,35 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         }
     }
 
-    public final void testConfigReload() {
-        // TODO: Check configuration before and after
-        EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
-        Event e = builder.getEvent();
-        m_eventdIpcMgr.sendNow(e);
+    @Test
+    public final void testConfigReload() throws Exception {
+        // Start vacuumd
+        m_vacuumd.start();
+
+        // Setup our event anticipator
+        EventAnticipator eventAnticipator = new EventAnticipator();
+        eventAnticipator.setDiscardUnanticipated(true);
+        m_eventdIpcMgr.setEventAnticipator(eventAnticipator);
+
+        // Build and anticipate the request reload event
+        EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        builder.addParam(EventConstants.PARM_DAEMON_NAME, m_vacuumd.getName());
+        Event requestReloadEvent = builder.getEvent();
+        eventAnticipator.anticipateEvent(requestReloadEvent);
+
+        // Build and anticipate the reload confirmation event
+        builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, m_vacuumd.getName());
+        Event reloadSuccesfulEvent = builder.getEvent();
+        eventAnticipator.anticipateEvent(reloadSuccesfulEvent);
+
+        // Send the reload event
+        m_eventdIpcMgr.sendNow(requestReloadEvent);
+        Thread.sleep(1000);
+
+        // Stop the daemon and verify that the configuration reload was confirmed
+        m_vacuumd.stop();
+        m_eventdIpcMgr.setEventAnticipator(null);
+        eventAnticipator.verifyAnticipated();
     }
 
     /**

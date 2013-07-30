@@ -37,18 +37,15 @@ import java.lang.reflect.UndeclaredThrowableException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.xml.rtc.EuiLevel;
 
 /**
- * The class that marshalls the object to be sent to a PipedReader
+ * The class that marshals the object to be sent to a PipedReader
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class PipedMarshaller {
     private static final Logger LOG = LoggerFactory.getLogger(PipedMarshaller.class);
