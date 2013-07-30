@@ -139,9 +139,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 			
 			
 		}
-		
-		logger.log(Level.INFO, svg);
-		
+				
 		svg = svg.concat("</svg>");
 	    
 	    return svg;
