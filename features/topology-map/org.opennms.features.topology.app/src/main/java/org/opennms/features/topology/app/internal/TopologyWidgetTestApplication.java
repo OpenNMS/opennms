@@ -144,7 +144,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_rootLayout.setSizeFull();
         setContent(m_rootLayout);
 
-        addHeader();
+        //addHeader();
 
         addContentLayout();
     }
