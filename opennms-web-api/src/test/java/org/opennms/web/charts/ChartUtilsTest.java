@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.charts;
+package org.opennms.web.charts;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.charts.ChartUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)

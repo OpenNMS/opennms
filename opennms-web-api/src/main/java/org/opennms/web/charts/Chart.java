@@ -26,24 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.charts;
-
-import java.awt.Paint;
+package org.opennms.web.charts;
 
 /**
- * <p>CustomSeriesColors interface.</p>
+ * <p>Chart class.</p>
  *
  * @author <a href="david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public interface CustomSeriesColors {
-
-    /**
-     * <p>getPaint</p>
-     *
-     * @param cat a {@link java.lang.Comparable} object.
-     * @return a {@link java.awt.Paint} object.
-     */
-    Paint getPaint(Comparable<?> cat);
+public class Chart {
 
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.charts;
+package org.opennms.web.charts;
 
 import java.awt.Color;
 import java.awt.Paint;
