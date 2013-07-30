@@ -89,13 +89,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
-    
+
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
-                    <entry key="default" value="theme://images/generic-device.png" />
-                    <entry key="group" value="theme://images/cloud.png"/>
+                    <entry key="default" value="generic" />
+                    <entry key="group" value="cloud"/>
                     
                     <!--  TODO: move these into VMWare ToPr -->
                     <entry key="NETWORK_ICON" value="theme://images/vmware-network.png"/>
@@ -112,6 +112,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
 					<!-- linkd icon information has been moved into the linkd ToPr's blueprint.xml file -->
                 </map>
+            </property>
+            <property name="SVGDefs">
+                <list>
+                    <value>theme://svg/default_icons.svg</value>
+                </list>
             </property>
         </bean>
     </service>

@@ -28,14 +28,17 @@
 
 package org.opennms.features.topology.api.support;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.IconRepository;
 
 public class DefaultIconRepository implements IconRepository {
 
-    private Map<String, String> m_iconMap = Collections.emptyMap();;
+    private Map<String, String> m_iconMap = Collections.emptyMap();
+    private List<String> m_svgDefs = new ArrayList<String>();
 
     @Override
     public boolean contains(String type) {
@@ -46,9 +49,18 @@ public class DefaultIconRepository implements IconRepository {
         m_iconMap = icons;
     }
 
+    public void setSVGDefs(List<String> svgDefs){
+        m_svgDefs = svgDefs;
+    }
+
     @Override
-    public String getIconUrl(String type) {
+    public String getSVGIconId(String type) {
         return m_iconMap.get(type);
+    }
+
+    @Override
+    public List<String> getSVGIconFiles() {
+        return m_svgDefs;
     }
 
 }

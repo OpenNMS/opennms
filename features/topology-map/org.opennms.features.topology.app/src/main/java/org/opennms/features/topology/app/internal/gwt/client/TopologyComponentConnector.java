@@ -32,7 +32,15 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
    @Override
    public void onStateChanged(StateChangeEvent event) {
        super.onStateChanged(event);
-       
+
+       if (event.hasPropertyChanged("SVGDefFiles")) {
+           getWidget().injectSVGDefs(getConnection(), getState().getSVGDefFiles());
+       }
+
+       if(event.hasPropertyChanged("ActiveTool")){
+           getWidget().setActiveTool(getState().getActiveTool());
+       }
+
        getWidget().updateGraph(getConnection(), getState());
 
    }

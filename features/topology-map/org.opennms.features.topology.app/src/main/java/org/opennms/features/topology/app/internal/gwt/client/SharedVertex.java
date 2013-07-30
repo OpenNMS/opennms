@@ -10,6 +10,7 @@ public class SharedVertex {
     private boolean m_selected;
     private String m_status;
     private String m_iconUrl;
+    private String m_svgIconId;
     private String m_label;
     private String m_tooltipText;
     private String m_statusCount = "0";
@@ -112,4 +113,11 @@ public class SharedVertex {
         return m_selected;
     }
 
+    public String getSVGIconId() {
+        return m_svgIconId;
+    }
+
+    public void setSVGIconId(String m_svgIconId) {
+        this.m_svgIconId = m_svgIconId;
+    }
 }

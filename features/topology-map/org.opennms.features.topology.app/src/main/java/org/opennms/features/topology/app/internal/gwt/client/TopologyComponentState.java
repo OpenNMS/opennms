@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.shared.AbstractComponentState;
@@ -13,6 +14,7 @@ public class TopologyComponentState extends AbstractComponentState {
     private String m_activeTool;
     private List<SharedVertex> m_vertices;
     private List<SharedEdge> m_edges;
+    private List<String> m_svgDefs;
 
     public void setBoundX(int boundX) {
         m_boundX = boundX;
@@ -70,5 +72,12 @@ public class TopologyComponentState extends AbstractComponentState {
         m_edges = edges;
     }
 
+    public void setSVGDefFiles(List<String> svgFiles){
+        m_svgDefs = svgFiles;
+    }
+
+    public List<String> getSVGDefFiles() {
+        return m_svgDefs;
+    }
     
 }

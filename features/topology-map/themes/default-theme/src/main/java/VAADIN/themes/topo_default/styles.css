@@ -11,23 +11,6 @@
     border-collapse: collapse;
 }
 
-/*** Vertex Styles ***/
-.vertex:hover{
-	opacity: 0.8;
-}
-
-.vertex .highlight{
-	opacity: 0;
-	fill: #00ffff;
-}
-
-.vertex.selected .highlight{
-    opacity: 1;
-    stroke: #00ffff;
-}
-
-/*** End Vertex Styles***/
-
 .toolbar-button{
 	
 }
@@ -251,7 +234,15 @@ div.v-table-header-wrap {
 }
 
 
+/** Vertex Styles **/
+.vertex .icon-container {
+    pointer-events: none;
+}
+
+
+
 /******** Status Styles ********/
+.vertex .status.selected,
 .vertex .status.cleared,
 .vertex .status.normal, 
 .vertex .status.indeterminate,
@@ -263,53 +254,52 @@ div.v-table-header-wrap {
 }
 
 .vertex .status.cleared{
-	fill:#999;
+	stroke:#999;
+	fill: #999;
 }
 
 .vertex .status.normal{
-	fill:#336600;
+	stroke:#336600;
+	fill: #336600;
 }
 
 .vertex .status.indeterminate{
+	stroke:#999000;
 	fill:#999000;
 }
 
 .vertex .status.warning{
+	stroke:#FFCC00;
 	fill:#FFCC00;
 }
 
 .vertex .status.minor{
+	stroke:#FF9900;
 	fill:#FF9900;
 }
 .vertex .status.major{
+	stroke:#FF3300;
 	fill:#FF3300;
 }
 
 .vertex .status.critical{
+	stroke:#CC0000;
 	fill:#CC0000;
 }
 
+.vertex .status.selected{
+    stroke: #91C054;
+    stroke: #91C054;
+}
+
 .status-counter {
-  min-width: 8px;
-  height: 20px;
-  line-height: 20px;
-  margin-top: -11px;
-  padding: 0 6px;
-  font-weight: normal;
-  color: white;
-  text-align: center;
-  text-shadow: 0 1px rgba(0, 0, 0, 0.2);
-  background: #e23442;
-  border: 1px solid #911f28;
-  border-radius: 11px;
-  background-image: -webkit-linear-gradient(top, #e8616c, #dd202f);
-  background-image: -moz-linear-gradient(top, #e8616c, #dd202f);
-  background-image: -o-linear-gradient(top, #e8616c, #dd202f);
-  background-image: linear-gradient(to bottom, #e8616c, #dd202f);
-  -webkit-box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
-  box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+  stroke: white;
+  fill: white;
+
 }
 
 .node-status-counter {
   overflow: visible;
 }
+
+/*** End Vertex Styles***/
