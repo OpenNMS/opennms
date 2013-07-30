@@ -381,7 +381,15 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-        }
+        } catch (MarshalException e) {
+            LOG.error("onEvent: Problem marshaling Vacuumd configuration", e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
+            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
+		} catch (ValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         LOG.info("onEvent: completed configuration reload.");
         
