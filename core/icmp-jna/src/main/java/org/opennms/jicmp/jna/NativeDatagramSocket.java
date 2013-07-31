@@ -30,6 +30,8 @@ package org.opennms.jicmp.jna;
 
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
@@ -39,7 +41,8 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 public abstract class NativeDatagramSocket {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(NativeDatagramSocket.class);
+
     public static final int AF_INET = 2;
     public static final int PF_INET = AF_INET;
     public static final int AF_INET6 = Platform.isMac() ? 30 
@@ -65,11 +68,10 @@ public abstract class NativeDatagramSocket {
         }
     }
     
-    public static NativeDatagramSocket create(int family, int type, int protocol) throws Exception {
-        String implClassName = NativeDatagramSocket.getImplementationClassName(family);
-        System.err.println(String.format("%s(%d, %d, %d)", implClassName, family, type, protocol));
-        Class<? extends NativeDatagramSocket> implementationClass =
-             Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
+    public static NativeDatagramSocket create(final int family, final int type, final int protocol) throws Exception {
+        final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
+        LOG.debug("{}({}, {}, {})", implClassName, family, type, protocol);
+        final Class<? extends NativeDatagramSocket> implementationClass = Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
         return implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(family, type, protocol);
     }
 

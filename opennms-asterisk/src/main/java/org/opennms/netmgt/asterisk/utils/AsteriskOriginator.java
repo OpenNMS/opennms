@@ -42,8 +42,6 @@ import org.asteriskjava.manager.ManagerConnectionFactory;
 import org.asteriskjava.manager.TimeoutException;
 import org.asteriskjava.manager.action.OriginateAction;
 import org.asteriskjava.manager.response.ManagerResponse;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.AmiPeerFactory;
@@ -128,10 +126,6 @@ public class AsteriskOriginator {
         // Get the details for this AMI peer from the AmiPeerFactory
         try {
             AmiPeerFactory.init();
-        } catch (MarshalException me) {
-            throw new AsteriskOriginatorException("Failed to unmarshal AMI peer factory configuration", me);
-        } catch (ValidationException ve) {
-            throw new AsteriskOriginatorException("Failed to validate AMI peer factory configuration", ve);
         } catch (IOException ioe) {
             throw new AsteriskOriginatorException("I/O error initializing AMI peer factory", ioe);
         }

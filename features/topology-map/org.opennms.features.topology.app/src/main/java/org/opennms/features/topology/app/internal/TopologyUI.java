@@ -31,11 +31,13 @@ package org.opennms.features.topology.app.internal;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
-import com.vaadin.server.ErrorEvent;
 import com.vaadin.data.Property;
-import com.vaadin.server.*;
+import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -45,6 +47,10 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.osgi.OnmsServiceManager;
+import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+import org.opennms.features.topology.api.osgi.VaadinApplicationContextCreator;
+import org.opennms.features.topology.api.osgi.VaadinApplicationContextImpl;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
@@ -53,7 +59,6 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vaadin.peter.contextmenu.ContextMenu;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
@@ -70,7 +75,7 @@ import java.util.List;
 	"handleTimeoutInTopology.js"
 })
 @PreserveOnRefresh
-public class TopologyWidgetTestApplication extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
+public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
@@ -96,6 +101,9 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     private boolean m_showHeader = true;
     private OnmsHeaderProvider m_headerProvider = null;
     private String m_userName;
+    private OnmsServiceManager serviceManager;
+    private VaadinApplicationContext m_applicationContext;
+    private VerticesUpdateManager m_verticesUpdateManager;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -104,8 +112,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             return m_headerProvider.getHeaderHtml(request);
         }
     }
-    
-    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+
+    public TopologyUI(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
         // Ensure that selection changes trigger a history save operation
         m_commandManager = commandManager;
         m_historyManager = historyManager;
@@ -118,16 +126,33 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     }
 
 	@Override
-    protected void init(VaadinRequest request) {
+    protected void init(final VaadinRequest request) {
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
         m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
+
+        //create VaadinApplicationContext
+        m_applicationContext = serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
+            @Override
+            public VaadinApplicationContext create(OnmsServiceManager manager) {
+                VaadinApplicationContextImpl context = new VaadinApplicationContextImpl(manager);
+                context.setSessionId(request.getWrappedSession().getId());
+                context.setUiId(getUIId());
+                context.setUsername(request.getRemoteUser());
+                return context;
+            }
+        });
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_applicationContext);
 
         loadUserSettings(request);
         setupListeners();
         createLayouts();
         setupErrorHandler();
-        //addExtension(new Refresher());
 
+        // notifiy osgi-listeners, otherwise initialization would not work
+        m_graphContainer.addChangeListener(m_verticesUpdateManager);
+        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
+        m_verticesUpdateManager.selectionChanged(m_selectionManager);
+        m_verticesUpdateManager.graphChanged(m_graphContainer);
     }
 
     private void setupListeners() {
@@ -155,7 +180,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.ERROR_MESSAGE);
-                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyWidgetTestApplication", event.getThrowable());
+                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
         });
@@ -317,7 +342,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     private void loadUserSettings(VaadinRequest request) {
         m_userName = request.getRemoteUser();
         m_graphContainer.setUserName(m_userName);
-        m_graphContainer.setSessionId(request.getWrappedSession().getId());
 
         // See if the history manager has an existing fragment stored for
         // this user. Do this before laying out the UI because the history
@@ -342,9 +366,9 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             m_treeAccordion.addTab(m_tree, m_tree.getTitle());
             for(IViewContribution widget : treeWidgetManager.getWidgets()) {
                 if(widget.getIcon() != null) {
-                    m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
+                    m_treeAccordion.addTab(widget.getView(m_applicationContext, this), widget.getTitle(), widget.getIcon());
                 }else {
-                    m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
+                    m_treeAccordion.addTab(widget.getView(m_applicationContext, this), widget.getTitle());
                 }
             }
         }
@@ -397,7 +421,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
         for(IViewContribution viewContrib : manager.getWidgets()) {
             // Create a new view instance
-            final Component view = viewContrib.getView(widgetContext);
+            final Component view = viewContrib.getView(m_applicationContext, widgetContext);
             try {
                 m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
             } catch (ClassCastException e) {}
@@ -704,7 +728,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     }
 
     @Override
-    public void selectionChanged(SelectionContext selectionManager) {
+    public void selectionChanged(SelectionContext selectionContext) {
         saveHistory();
     }
 
@@ -715,5 +739,11 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         super.detach();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
+    public void setServiceManager(OnmsServiceManager serviceManager) {
+        this.serviceManager = serviceManager;
+    }
 
+    public VaadinApplicationContext getApplicationContext() {
+        return m_applicationContext;
+    }
 }

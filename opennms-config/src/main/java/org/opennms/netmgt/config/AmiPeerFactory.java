@@ -29,10 +29,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -46,17 +44,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
@@ -103,18 +97,12 @@ public class AmiPeerFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      *
      * @param configFile the path to the config file to load in.
      */
-    private AmiPeerFactory(final String configFile) throws IOException, MarshalException, ValidationException {
+    private AmiPeerFactory(final String configFile) throws IOException {
         super();
-        final InputStream cfgIn = new FileInputStream(configFile);
-        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn);
-        IOUtils.closeQuietly(cfgIn);
+        m_config = JaxbUtils.unmarshal(AmiConfig.class, new File(configFile));
     }
 
     public Lock getReadLock() {
@@ -131,15 +119,11 @@ public class AmiPeerFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -157,15 +141,11 @@ public class AmiPeerFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -220,7 +200,7 @@ public class AmiPeerFactory {
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(m_config, stringWriter);
+            JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
                 final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), "UTF-8");
                 fileWriter.write(stringWriter.toString());

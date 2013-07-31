@@ -49,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
-
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
@@ -325,7 +324,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         if (vmwareHostSystemId == null) {
-            System.err.println("Cannot find host system id for virtual machine " + vmwareManagementServer + "/" + vmwareManagedObjectId);
+            LOG.warn("Cannot find host system id for virtual machine {}/{}", vmwareManagementServer, vmwareManagedObjectId);
         }
 
         AbstractVertex datacenterVertex = addDatacenterGroup(vmwareManagementServer, datacenterName);

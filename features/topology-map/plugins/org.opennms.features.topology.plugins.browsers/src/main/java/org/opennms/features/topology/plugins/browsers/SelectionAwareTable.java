@@ -28,6 +28,12 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import com.vaadin.ui.Table;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.osgi.EventConsumer;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionNotifier;
-
-import com.vaadin.data.Container;
-import com.vaadin.ui.Table;
-
-public class SelectionAwareTable extends Table implements SelectionListener, SelectionNotifier {
+public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener {
 
 	private static final long serialVersionUID = 2761774077365441249L;
 
@@ -57,46 +56,6 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
 		super(caption, container);
 		m_container = container;
-	}
-
-	@Override
-	public void selectionChanged(SelectionContext selectionManager) {
-		m_container.selectionChanged(selectionManager);
-	}
-
-	/**
-	 * Delegate {@link SelectionNotifier} calls to the container.
-	 */
-	@Override
-	public void addSelectionListener(SelectionListener listener) {
-		if (listener != null) {
-			m_container.addSelectionListener(listener);
-			for (SelectionNotifier notifier : m_selectionNotifiers) {
-				notifier.addSelectionListener(listener);
-			}
-		}
-	}
-
-	/**
-	 * Delegate {@link SelectionNotifier} calls to the container.
-	 */
-	@Override
-	public void removeSelectionListener(SelectionListener listener) {
-		m_container.removeSelectionListener(listener);
-		for (SelectionNotifier notifier : m_selectionNotifiers) {
-			notifier.removeSelectionListener(listener);
-		}
-	}
-
-	/**
-	 * Delegate {@link SelectionNotifier} calls to the container.
-	 */
-	@Override
-	public void setSelectionListeners(Set<SelectionListener> listeners) {
-		m_container.setSelectionListeners(listeners);
-		for (SelectionNotifier notifier : m_selectionNotifiers) {
-			notifier.setSelectionListeners(listeners);
-		}
 	}
 
 	/**
@@ -153,5 +112,11 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
         for (Object eachPropertyId : this.nonCollapsibleColumns) {
             setColumnCollapsible(eachPropertyId,  false);
         }
+    }
+
+    @Override
+    @EventConsumer
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+        m_container.verticesUpdated(event);
     }
 }

@@ -46,7 +46,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-security-dependencies</artifactId>
+      <artifactId>spring-security-core-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

@@ -30,20 +30,16 @@ package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.osgi.EventConsumer;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
@@ -73,20 +69,21 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
     }
 
     @Override
-	public void selectionChanged(SelectionContext selectionContext) {
-        List<Restriction> newRestrictions = new SelectionContextToRestrictionConverter() {
+    @EventConsumer
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+        List<Restriction> newRestrictions = new NodeIdFocusToRestrictionsConverter() {
 
             @Override
-            protected Restriction createRestriction(VertexRef ref) {
-                return new EqRestriction("id", Integer.valueOf(ref.getId()));
+            protected Restriction createRestriction(Integer nodeId) {
+                return new EqRestriction("id", nodeId);
             }
-        }.getRestrictions(selectionContext);
+        }.getRestrictions(event.getNodeIdFocus());
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);
             getCache().reload(getPage());
             fireItemSetChangedEvent();
         }
-	}
+    }
 }
 
 
