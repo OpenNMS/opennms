@@ -30,19 +30,18 @@ package org.opennms.features.topology.api.osgi;
 
 
 import org.ops4j.pax.vaadin.SessionListener;
-import org.osgi.framework.BundleContext;
 
 import java.util.List;
 import java.util.Properties;
 
 /**
- * The {@linkplain OnmsServiceManager} is a abstraction layer above the {@link BundleContext}.
- * Its intention is to provide a so called session-scope for services. 
+ * The {@linkplain org.opennms.features.topology.api.osgi.OnmsServiceManager} is a abstraction layer above the {@link org.osgi.framework.BundleContext}.
+ * Its intention is to provide a so called session-scope for services.
  * The session-scope is realized by the {@link VaadinApplicationContext}-object.<br/><br>/
- * 
- * Therefore you should always use {@linkplain OnmsServiceManager} instead of the {@link BundleContext}.<br/><br/>
- * 
- * A {@linkplain OnmsServiceManager} also listens to session events (e.g. to remove all registered services
+ *
+ * Therefore you should always use {@linkplain org.opennms.features.topology.api.osgi.OnmsServiceManager} instead of the {@link org.osgi.framework.BundleContext}.<br/><br/>
+ *
+ * A {@linkplain org.opennms.features.topology.api.osgi.OnmsServiceManager} also listens to session events (e.g. to remove all registered services
  * from the OSGi-container for a session when the session has already been destroyed).
  * 
  * @author Markus von Rüden

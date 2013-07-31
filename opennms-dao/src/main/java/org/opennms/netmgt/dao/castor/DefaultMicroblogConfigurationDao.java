@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.dao.castor;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ListIterator;
+
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
@@ -52,7 +59,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
     public DefaultMicroblogConfigurationDao() {
         super(MicroblogConfiguration.class, "Microblog Configuration");
     }
-    
+
     /**
      * <p>getConfig</p>
      *
@@ -102,6 +109,37 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
                 return profile;
         }
         return null;
+    }
+
+    public void saveProfile(final MicroblogProfile profile) throws IOException {
+        reloadConfiguration();
+        final MicroblogConfiguration config = getContainer().getObject();
+
+        boolean found = false;
+        final ListIterator<MicroblogProfile> it = config.getMicroblogProfileCollection().listIterator();
+        while (it.hasNext()) {
+            final MicroblogProfile existing = it.next();
+            if (existing.getName().equals(profile.getName())) {
+                found = true;
+                it.set(profile);
+                break;
+            }
+        }
+        if (!found) config.addMicroblogProfile(profile);
+
+        final File file = getContainer().getFile();
+        if (file == null) {
+            LOG.warn("No file associated with this config.  Skipping marshal.");
+            return;
+        }
+
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            CastorUtils.marshalWithTranslatedExceptions(config, writer);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
     }
 
 }

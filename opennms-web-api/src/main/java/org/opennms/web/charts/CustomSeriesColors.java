@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,15 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
+package org.opennms.web.charts;
+
+import java.awt.Paint;
 
 /**
- * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
- * 
- * @author Markus von Rüden
- * @see {@link EventRegistry}
+ * <p>CustomSeriesColors interface.</p>
+ *
+ * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
-public interface EventConsumerScope {
-    <T> void fireEvent(T eventObject);
-    <T> void addPossibleEventConsumer(T possibleEventConsumer);
+public interface CustomSeriesColors {
+
+    /**
+     * <p>getPaint</p>
+     *
+     * @param cat a {@link java.lang.Comparable} object.
+     * @return a {@link java.awt.Paint} object.
+     */
+    Paint getPaint(Comparable<?> cat);
+
 }

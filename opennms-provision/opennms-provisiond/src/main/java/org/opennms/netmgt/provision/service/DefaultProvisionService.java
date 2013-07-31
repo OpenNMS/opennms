@@ -30,8 +30,10 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -52,7 +54,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -90,6 +91,9 @@ import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -1113,7 +1117,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
         
         OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
@@ -1139,7 +1143,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
                 node.setLabel(hostname == null ? ipAddress : hostname);
                 node.setLabelSource(hostname == null ? "A" : "H");
-                node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
+                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
                 node.setType("A");
                 node.setLastCapsdPoll(now);
                 
@@ -1156,7 +1160,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
         
         if (node != null) {
-            
+        	
+        	if (foreignSource != null) {
+            	node.setForeignId(node.getNodeId());
+            	createUpdateRequistion(ipAddress, node, foreignSource);
+        	}
+        	
             // we do this here rather than in the doInsert method because
             // the doInsert may abort
             node.visit(new AddEventVisitor(m_eventForwarder));
@@ -1165,6 +1174,45 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return node;
         
     }
+    
+	private boolean createUpdateRequistion(final String addrString, final OnmsNode node, String m_foreignSource) {
+		LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
+		try {
+			Requisition r = null;
+			if (m_foreignSource != null) {
+				r = m_foreignSourceRepository.getRequisition(m_foreignSource);
+				if (r == null) {
+					r = new Requisition(m_foreignSource);
+				}
+			}
+			
+			r.updateDateStamp();
+			RequisitionNode rn = new RequisitionNode();
+
+			RequisitionInterface iface = new RequisitionInterface();
+			iface.setDescr("disc-if");
+			iface.setIpAddr(addrString);
+			iface.setManaged(true);
+			iface.setSnmpPrimary(PrimaryType.PRIMARY);
+			iface.setStatus(Integer.valueOf(1));
+			RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
+			ric.add(iface);
+			rn.setInterfaces(ric);
+			rn.setBuilding(m_foreignSource);
+			rn.setForeignId(node.getForeignId());
+			rn.setNodeLabel(node.getLabel());
+			r.putNode(rn);
+			m_foreignSourceRepository.save(r);
+			m_foreignSourceRepository.flush();
+		} catch (ForeignSourceRepositoryException e) {
+			LOG.error("Couldn't create/update requistion for newSuspect "+addrString, e);
+			return false;
+		}
+		LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);
+		return true;
+	}
+
+
     
     private String getHostnameForIp(final String address) {
     	return addr(address).getCanonicalHostName();

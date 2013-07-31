@@ -26,54 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.charts;
+package org.opennms.web.charts;
 
-import org.jfree.chart.axis.ExtendedCategoryAxis;
+import java.awt.Color;
+import java.awt.Paint;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>SeveritySubLabels class.</p>
+ * <p>SeveritySeriesColors class.</p>
  *
  * @author <a href="david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class SeveritySubLabels extends ExtendedCategoryAxis {
+public class SeveritySeriesColors implements CustomSeriesColors {
     
-    private static final Logger LOG = LoggerFactory.getLogger(SeveritySubLabels.class);
-    
-    private static final long serialVersionUID = 4985544589299368239L;
+    private static final Logger LOG = LoggerFactory.getLogger(SeveritySeriesColors.class);
 
     /**
-     * <p>Constructor for SeveritySubLabels.</p>
+     * <p>Constructor for SeveritySeriesColors.</p>
      */
-    public SeveritySubLabels() {
-        super(null);
+    public SeveritySeriesColors() {
+        super();
     }
 
-    /**
-     * <p>Constructor for SeveritySubLabels.</p>
-     *
-     * @param label a {@link java.lang.String} object.
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.charts.CustomSeriesColors#getPaint(java.lang.Comparable)
      */
-    public SeveritySubLabels(String label) {
-        super(label);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Adds a sublabel for a category.
-     */
+    /** {@inheritDoc} */
     @Override
-    public void addSubLabel(@SuppressWarnings("unchecked") Comparable category, String label) {
-        super.addSubLabel(category, convertLabel(label));
-    }
-    
-    private static String convertLabel(String severity) {
-
+    public Paint getPaint(Comparable<?> cat) {
+        
         int sev = 0;
-        String converted = "Unk";
+        String severity = cat.toString();
+        Paint converted = Color.BLACK;
         
         try {
             sev = Integer.parseInt(severity);
@@ -83,31 +70,30 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
 
         switch (sev) {
         case 0 :
-            converted = "Unk";
             break;
         case 1 :
-            converted = "Ind";
+            converted = Color.GRAY;
             break;
         case 2 :
-            converted = "Cleared";
+            converted = Color.WHITE;
             break;
         case 3 :
-            converted = "Normal";
+            converted = Color.GREEN;
             break;
         case 4 :
-            converted = "Warn";
+            converted = Color.CYAN;
             break;
         case 5 :
-            converted = "Minor";
+            converted = Color.YELLOW;
             break;
         case 6 :
-            converted = "Major";
+            converted = Color.ORANGE;
             break;
         case 7 :
-            converted = "Critical";
+            converted = Color.RED;
             break;
         }
         return converted;
-
     }
+
 }

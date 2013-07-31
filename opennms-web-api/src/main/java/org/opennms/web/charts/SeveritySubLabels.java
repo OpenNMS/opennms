@@ -26,41 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.charts;
+package org.opennms.web.charts;
 
-import java.awt.Color;
-import java.awt.Paint;
-
+import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>SeveritySeriesColors class.</p>
+ * <p>SeveritySubLabels class.</p>
  *
  * @author <a href="david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class SeveritySeriesColors implements CustomSeriesColors {
+public class SeveritySubLabels extends ExtendedCategoryAxis {
     
-    private static final Logger LOG = LoggerFactory.getLogger(SeveritySeriesColors.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SeveritySubLabels.class);
+    
+    private static final long serialVersionUID = 4985544589299368239L;
 
     /**
-     * <p>Constructor for SeveritySeriesColors.</p>
+     * <p>Constructor for SeveritySubLabels.</p>
      */
-    public SeveritySeriesColors() {
-        super();
+    public SeveritySubLabels() {
+        super(null);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.charts.CustomSeriesColors#getPaint(java.lang.Comparable)
+    /**
+     * <p>Constructor for SeveritySubLabels.</p>
+     *
+     * @param label a {@link java.lang.String} object.
      */
-    /** {@inheritDoc} */
+    public SeveritySubLabels(String label) {
+        super(label);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Adds a sublabel for a category.
+     */
     @Override
-    public Paint getPaint(Comparable<?> cat) {
-        
+    public void addSubLabel(@SuppressWarnings("unchecked") Comparable category, String label) {
+        super.addSubLabel(category, convertLabel(label));
+    }
+    
+    private static String convertLabel(String severity) {
+
         int sev = 0;
-        String severity = cat.toString();
-        Paint converted = Color.BLACK;
+        String converted = "Unk";
         
         try {
             sev = Integer.parseInt(severity);
@@ -70,30 +83,31 @@ public class SeveritySeriesColors implements CustomSeriesColors {
 
         switch (sev) {
         case 0 :
+            converted = "Unk";
             break;
         case 1 :
-            converted = Color.GRAY;
+            converted = "Ind";
             break;
         case 2 :
-            converted = Color.WHITE;
+            converted = "Cleared";
             break;
         case 3 :
-            converted = Color.GREEN;
+            converted = "Normal";
             break;
         case 4 :
-            converted = Color.CYAN;
+            converted = "Warn";
             break;
         case 5 :
-            converted = Color.YELLOW;
+            converted = "Minor";
             break;
         case 6 :
-            converted = Color.ORANGE;
+            converted = "Major";
             break;
         case 7 :
-            converted = Color.RED;
+            converted = "Critical";
             break;
         }
         return converted;
-    }
 
+    }
 }

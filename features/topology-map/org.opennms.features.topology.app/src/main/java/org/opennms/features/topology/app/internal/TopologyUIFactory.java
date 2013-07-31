@@ -40,12 +40,12 @@ import org.ops4j.pax.vaadin.ScriptTag;
 
 import com.vaadin.ui.UI;
 
-public class TopologyApplicationFactory extends AbstractApplicationFactory {
+public class TopologyUIFactory extends AbstractApplicationFactory {
     
 	private final BlueprintContainer m_blueprintContainer;
 	private final String m_beanName;
 	
-	public TopologyApplicationFactory(BlueprintContainer container, String beanName) {
+	public TopologyUIFactory(BlueprintContainer container, String beanName) {
 		m_blueprintContainer = container;
 		m_beanName = beanName;
 	}

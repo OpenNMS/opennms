@@ -28,15 +28,13 @@
 
 package org.opennms.features.topology.api.osgi;
 
+import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.osgi.framework.BundleContext;
+
 public class VaadinApplicationContextImpl implements VaadinApplicationContext {
     private String sessionId;
     private String userName;
     private int uiId;
-    private final OnmsServiceManager serviceManager;
-
-    public VaadinApplicationContextImpl(OnmsServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
-    }
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
@@ -57,10 +55,17 @@ public class VaadinApplicationContextImpl implements VaadinApplicationContext {
     }
 
     @Override
-    public EventConsumerScope getEventStorage() {
+    public EventProxy getEventProxy(OnmsServiceManager serviceManager) {
+        if (serviceManager == null) throw new IllegalArgumentException("OnmsServiceManager must not be null");
         EventRegistry eventRegistry = serviceManager.getEventRegistry();
         if (eventRegistry == null) throw new IllegalArgumentException("EventRegistry must not be null");
         return eventRegistry.getScope(this);
+    }
+
+    @Override
+    public EventProxy getEventProxy(BundleContext bundleContext) {
+        if (bundleContext == null) throw new IllegalArgumentException("BundleContext must not be null");
+        return getEventProxy(new OnmsServiceManagerLocator().lookup(bundleContext));
     }
 
     public void setUiId(int uiId) {

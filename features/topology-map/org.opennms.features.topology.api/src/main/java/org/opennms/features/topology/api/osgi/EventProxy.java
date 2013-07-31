@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,39 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.features.topology.api.osgi;
 
-<%@page language="java"
-        contentType="text/html; charset=UTF-8"
-            pageEncoding="UTF-8"
-%>
-
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Charts" />
-  <jsp:param name="headTitle" value="Charts" />
-  <jsp:param name="location" value="chart" />
-  <jsp:param name="breadcrumb" value="Charts" />
-</jsp:include>
-
-<%@ page import="org.opennms.web.charts.ChartUtils" %>
-<%@ page import="java.util.Iterator" %>
-<%@ page import="org.opennms.netmgt.config.charts.BarChart" %>
-
-<%--Align images in the center of the page --%>
-
-<div id="include-charts">
-<%--Get collection of charts --%>
-<%
-Iterator it = ChartUtils.getChartCollectionIterator();
-while (it.hasNext()) {
-    BarChart chartConfig = (BarChart)it.next();
-    String chartName = chartConfig.getName();
-%>
-        <img src="charts?chart-name=<%=chartName %>" alt="<%=chartName %>" />
-<%
+/**
+ * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
+ * 
+ * @author Markus von Rüden
+ * @see {@link EventRegistry}
+ */
+public interface EventProxy {
+    <T> void fireEvent(T eventObject);
+    <T> void addPossibleEventConsumer(T possibleEventConsumer);
 }
-%>
-
-</div>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
