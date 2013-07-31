@@ -37,7 +37,7 @@
        None of the below of the KeyValuePairs are actually necessary but are just to indicate
        some well known prefixes in the log or to override the defaultThreshold for a given prefix.
   -->
-  <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG" onMatch="NEUTRAL" onMismatch="DENY">
+  <DynamicThresholdFilter key="prefix" defaultThreshold="ERROR" onMatch="ACCEPT" onMismatch="NEUTRAL">
     <KeyValuePair key="access-point-monitor" value="DEBUG" />
     <KeyValuePair key="ackd"                 value="DEBUG" />
     <KeyValuePair key="actiond"              value="DEBUG" />
@@ -128,7 +128,7 @@
     <logger name="org.quartz"                                 level="info" />
     <logger name="org.springframework"                        level="info" />
     <logger name="snaq.db"                                    level="info" />
-    <root><appender-ref ref="RoutingAppender"/></root>
+    <root level="error"><appender-ref ref="RoutingAppender"/></root>
   </loggers>
 
 </configuration>
