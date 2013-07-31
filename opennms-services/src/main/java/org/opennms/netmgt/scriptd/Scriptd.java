@@ -38,9 +38,11 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.xml.event.Event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 
 /**
@@ -54,9 +56,10 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
 public final class Scriptd extends AbstractServiceDaemon {
-
-    /** Constant <code>NAME="OpenNMS.Scriptd"</code> */
-    public static final String NAME = "OpenNMS.Scriptd";
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Scriptd.class);
+    
+    public static final String NAME = "scriptd";
 
     /**
      * The singleton instance.
@@ -96,13 +99,13 @@ public final class Scriptd extends AbstractServiceDaemon {
             ScriptdConfigFactory.reload();
             aFactory = ScriptdConfigFactory.getInstance();
         } catch (MarshalException ex) {
-            log().error("Failed to load scriptd configuration", ex);
+            LOG.error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log().error("Failed to load scriptd configuration", ex);
+            LOG.error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log().error("Failed to load scriptd configuration", ex);
+            LOG.error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -115,7 +118,7 @@ public final class Scriptd extends AbstractServiceDaemon {
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
         } catch (Throwable ex) {
-            log().error("Failed to setup event reader", ex);
+            LOG.error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -136,7 +139,7 @@ public final class Scriptd extends AbstractServiceDaemon {
 		}
 
 		m_execution.start();
-		log().info("Scriptd running");
+		LOG.info("Scriptd running");
 	}
 
     /**

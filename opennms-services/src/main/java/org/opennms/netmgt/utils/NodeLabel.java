@@ -41,8 +41,9 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -67,6 +68,9 @@ import org.opennms.netmgt.dao.NodeDao;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NodeLabel {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(NodeLabel.class);
+	
     /**
      * The SQL statement to update the 'nodelabel' and 'nodelabelsource' fields
      * of 'node' table
@@ -269,9 +273,7 @@ public class NodeLabel {
         ResultSet rs = null;
         final DBUtils d = new DBUtils(NodeLabel.class);
 
-        if (log().isDebugEnabled()) {
-            log().debug("NodeLabel.retrieveLabel: sql: " + SQL_DB_RETRIEVE_NODELABEL + " node id: " + nodeID);
-        }
+        LOG.debug("NodeLabel.retrieveLabel: sql: {} node id: {}", SQL_DB_RETRIEVE_NODELABEL, nodeID);
 
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_NODELABEL);
@@ -357,9 +359,7 @@ public class NodeLabel {
             int column = 1;
 
             // Node Label
-            if (log().isDebugEnabled()) {
-                log().debug("NodeLabel.assignLabel: Node label: " + nodeLabel.getLabel() + " source: " + nodeLabel.getSource());
-            }
+            LOG.debug("NodeLabel.assignLabel: Node label: {} source: {}", nodeLabel.getLabel(), nodeLabel.getSource());
 
             if (nodeLabel.getLabel() != null) {
                 // nodeLabel may not exceed MAX_NODELABEL_LEN.if it does truncate it
@@ -465,10 +465,8 @@ public class NodeLabel {
                     netbiosName = netbiosName.substring(0, MAX_NODE_LABEL_LENGTH);
                 }
 
-                if (log().isDebugEnabled()) {
-                    log().debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: " + netbiosName);
-                }
-
+                LOG.debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: {}", netbiosName);
+                    
                 NodeLabel nodeLabel = new NodeLabel(netbiosName, SOURCE_NETBIOS);
                 return nodeLabel;
             }
@@ -487,7 +485,7 @@ public class NodeLabel {
         }
 
         if (!method.equals(SELECT_METHOD_MIN) && !method.equals(SELECT_METHOD_MAX)) {
-            log().warn("Interface selection method is '" + method + "'.  Valid values are 'min' & 'max'.  Will use default value: " + DEFAULT_SELECT_METHOD);
+		LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
             method = DEFAULT_SELECT_METHOD;
         }
 
@@ -505,7 +503,7 @@ public class NodeLabel {
             // Process result set, store retrieved addresses/host names in lists
             loadAddressList(rs, ipv4AddrList, ipHostNameList);
         } catch (Throwable e) {
-            log().warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
+            LOG.warn("Exception thrown while fetching managed interfaces: {}", e.getMessage(), e);
         } finally {
             d.cleanUp();
         }
@@ -517,9 +515,7 @@ public class NodeLabel {
         // managed interfaces. So lets go after all the non-managed interfaces
         // and select the primary interface from them.
         if (primaryAddr == null) {
-            if (log().isDebugEnabled()) {
-                log().debug("NodeLabel.computeLabel: unable to find a primary address for node " + nodeID + ", returning null");
-            }
+        	LOG.debug("NodeLabel.computeLabel: unable to find a primary address for node {}, returning null", nodeID);
 
             ipv4AddrList.clear();
             ipHostNameList.clear();
@@ -533,7 +529,7 @@ public class NodeLabel {
                 d.watch(rs);
                 loadAddressList(rs, ipv4AddrList, ipHostNameList);
             } catch (Throwable e) {
-                log().warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
+                LOG.warn("Exception thrown while fetching managed interfaces: {}", e.getMessage(), e);
             } finally {
                 d.cleanUp();
             }
@@ -542,7 +538,7 @@ public class NodeLabel {
         }
 
         if (primaryAddr == null) {
-            log().warn("Could not find primary interface for node " + nodeID + ", cannot compute nodelabel");
+            LOG.warn("Could not find primary interface for node {}, cannot compute nodelabel", nodeID);
             return new NodeLabel("Unknown", SOURCE_UNKNOWN);
         }
 
@@ -612,7 +608,6 @@ public class NodeLabel {
      *             result set.
      */
     private static void loadAddressList(ResultSet rs, List<InetAddress> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
-        ThreadCategory log = log();
 
         // Process result set, store retrieved addresses/host names in lists
         while (rs.next()) {
@@ -631,8 +626,7 @@ public class NodeLabel {
             else
                 ipHostNameList.add(hostName);
 
-            if (log.isDebugEnabled())
-                log.debug("NodeLabel.computeLabel: adding address " + inetAddr.toString() + " with hostname: " + hostName);
+            LOG.debug("NodeLabel.computeLabel: adding address {} with hostname: {}", inetAddr, hostName);
         }
     }
 
@@ -700,9 +694,4 @@ public class NodeLabel {
 
         return buffer.toString();
     }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(NodeLabel.class);
-    }
-
 }

@@ -33,7 +33,8 @@ package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.Date;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingFinishedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingUpdatingRemoteEvent;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import de.novanic.eventservice.service.EventExecutorService;
 
 class GeocodingHandler implements LocationDefHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(GeocodingHandler.class);
 	private final LocationDataService m_locationDataService;
 	private final EventExecutorService m_eventService;
 	private int m_size;
@@ -82,7 +84,7 @@ class GeocodingHandler implements LocationDefHandler {
 		final Date now = new Date();
 		if (now.getTime() - m_date.getTime() >= 500) {
 			m_eventService.addEventUserSpecific(new GeocodingUpdatingRemoteEvent(m_count, m_size));
-			LogUtils.debugf(this, "initializing locations (" + m_count + "/" + m_size + ")");
+			LOG.debug("initializing locations ({}/{})", m_count, m_size);
 			m_date = now;
 		}
 		m_count++;

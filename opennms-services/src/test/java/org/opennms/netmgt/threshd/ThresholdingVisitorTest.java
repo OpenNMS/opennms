@@ -54,8 +54,6 @@ import java.util.Properties;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +63,8 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -92,10 +91,10 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
@@ -118,8 +117,8 @@ import org.springframework.core.io.FileSystemResource;
  *
  */
 public class ThresholdingVisitorTest {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingVisitorTest.class);
 
-    Level m_defaultErrorLevelToCheck;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
@@ -199,9 +198,6 @@ public class ThresholdingVisitorTest {
         // Resets Counters Cache Data
         CollectionResourceWrapper.s_cache.clear();
 
-        // This is set at ERROR because JEXL prints some harmless, expected warning messages
-        m_defaultErrorLevelToCheck = Level.ERROR;
-        System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
@@ -239,14 +235,13 @@ public class ThresholdingVisitorTest {
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
-        log().info("Initialize Threshold Factories");
+        LOG.info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
     
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNotGreaterOrEqual(m_defaultErrorLevelToCheck);
         EasyMock.verify(m_filterDao);
     }
 
@@ -855,14 +850,6 @@ public class ThresholdingVisitorTest {
          * Original code expects WARNs, but this message is now an INFO.
          */
         resource.visit(visitor);
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.TRACE);
-        int count = 0;
-        String expectedMsg = "getEntityMap: No thresholds configured for resource type 'frCircuitIfIndex' in threshold group generic-snmp. Skipping this group.";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().equals(expectedMsg))
-                count++;
-        }
-        assertEquals("expecting 2 events", 2, count);
     }
 
     /*
@@ -979,16 +966,6 @@ public class ThresholdingVisitorTest {
     public void testBug3554_withDBFilterDao() throws Exception {
         runTestForBug3554();
 
-        // Validate FilterDao Calls
-        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
-        int count = 0;
-        String expectedMsgHeader = "createPackageIpMap: package ";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
     }
 
     /*
@@ -1007,15 +984,8 @@ public class ThresholdingVisitorTest {
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
             filters.add(pkg.getFilter().getContent());
         }
-        int expectedCalls = filters.size(); // The number of different filter rules defined across all threshold packages.
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
-        int count = 0;
-        String expectedMsgHeader = "createPackageIpMap: package ";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
+
+
     }
 
     /*
@@ -1147,10 +1117,6 @@ public class ThresholdingVisitorTest {
     public void testBug3487() throws Exception {
         initFactories("/threshd-configuration-bug3487.xml","/test-thresholds.xml");
         assertNotNull(createVisitor());
-        m_defaultErrorLevelToCheck = Level.FATAL;
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
-        assertEquals("expecting 1 event", 1, events.length);
-        assertEquals("initialize: Can't process threshold group SMS_Dieta", events[0].getMessage());
     }
 
     /*
@@ -1166,14 +1132,9 @@ public class ThresholdingVisitorTest {
         attributes.put("http", 200.0);
         assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
 
-        m_defaultErrorLevelToCheck = Level.ERROR;
         List<Event> triggerEvents = new ArrayList<Event>();
         for (int i=0; i<5; i++)
             triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("expecting 5 events", 5, events.length);
-        for (LoggingEvent e : events)
-            assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
         assertTrue(triggerEvents.size() == 1);
 
         addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);
@@ -1462,14 +1423,14 @@ public class ThresholdingVisitorTest {
         // Test Trigger
         attributes.put("http", 200.0);
         for (int i = 1; i < 5; i++) {
-            log().debug("testLatencyThresholdingSet: run number " + i);
+            LOG.debug("testLatencyThresholdingSet: run number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
             }
         }
         if (thresholdingSet.hasThresholds(attributes)) {
-            log().debug("testLatencyThresholdingSet: run number 5");
+            LOG.debug("testLatencyThresholdingSet: run number 5");
             triggerEvents = thresholdingSet.applyThresholds("http", attributes);
             assertTrue(triggerEvents.size() == 1);
         }
@@ -1515,7 +1476,7 @@ public class ThresholdingVisitorTest {
         // Testing trigger the threshold 3 times
         attributes.put("http", 200.0);
         for (int i = 1; i <= 3; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
@@ -1525,13 +1486,13 @@ public class ThresholdingVisitorTest {
         
         // This should reset the counter
         attributes.put("http", 40.0);
-        log().debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
+        LOG.debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
         triggerEvents = thresholdingSet.applyThresholds("http", attributes);
 
         // Increase the counter again two times, no threshold should be generated
         attributes.put("http", 300.0);
         for (int i = 4; i <= 5; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 assertTrue(triggerEvents.size() == 0);
@@ -1540,7 +1501,7 @@ public class ThresholdingVisitorTest {
         
         // Increase 3 more times and now, the threshold event should be triggered.
         for (int i = 6; i <= 8; i++) {
-            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
             if (thresholdingSet.hasThresholds(attributes)) {
                 triggerEvents = thresholdingSet.applyThresholds("http", attributes);
                 if (i < 8)
@@ -1850,7 +1811,7 @@ public class ThresholdingVisitorTest {
             
             Collections.sort(receivedList, EVENT_COMPARATOR);
             Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);
-            log().info("verifyEvents: Anticipated=" + m_anticipatedEvents.size() + ", Received=" + receivedList.size());
+            LOG.info("verifyEvents: Anticipated={}, Received= {}", receivedList.size(), m_anticipatedEvents.size());
             if (m_anticipatedEvents.size() != receivedList.size()) {
                 for (Event e : m_anticipatedEvents) {
                     System.err.println("expected event " + e.getUei() + ": " + e.getDescr());
@@ -1859,7 +1820,7 @@ public class ThresholdingVisitorTest {
                 fail("Anticipated event count (" + m_anticipatedEvents.size() + ") is different from received event count (" + receivedList.size() + ").");
             }
             for (int i = 0; i < m_anticipatedEvents.size(); i++) {
-                log().info("verifyEvents: processing event " + (i+1));
+                LOG.info("verifyEvents: processing event {}", (i+1));
                 compareEvents(m_anticipatedEvents.get(i), receivedList.get(i));
             }
         }
@@ -1964,10 +1925,6 @@ public class ThresholdingVisitorTest {
 				return internalTimestamp;
 			}
 		};
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

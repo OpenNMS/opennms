@@ -35,13 +35,14 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -58,6 +59,9 @@ import org.springframework.util.Assert;
  *  
  */
 class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
+	
     /**
      * The name of the local host.
      */
@@ -153,9 +157,9 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
-            log().info(e.getMessage());
+            LOG.info(e.getMessage());
         } catch (Throwable e) {
-            log().error("Unexpected error processing trap: " + e, e);
+            LOG.error("Unexpected error processing trap: {}", e, e);
         }
         return null;
     }
@@ -180,7 +184,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
             if (logmsg != null) {
                 final String dest = logmsg.getDest();
                 if ("discardtraps".equals(dest)) {
-                    log().debug("Trap discarded due to matching event having logmsg dest == discardtraps");
+                    LOG.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
                     return;
                 }
             }
@@ -189,14 +193,13 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
         // send the event to eventd
         m_eventMgr.sendNow(event);
 
-        log().debug("Trap successfully converted and sent to eventd with UEI " + event.getUei());
+        LOG.debug("Trap successfully converted and sent to eventd with UEI {}", event.getUei());
 
         if (!event.hasNodeid() && m_newSuspect) {
             sendNewSuspectEvent(InetAddressUtils.str(trapInterface));
 
-            if (log().isDebugEnabled()) {
-                log().debug("Sent newSuspectEvent for interface: " + trapInterface);
-            }
+            LOG.debug("Sent newSuspectEvent for interface: {}", trapInterface);
+
         }
     }
 
@@ -221,10 +224,6 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
      * The constructor
      */
     public TrapQueueProcessor() {
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

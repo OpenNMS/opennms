@@ -31,11 +31,14 @@ package org.opennms.netmgt.collectd;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.isNull;
+import static org.easymock.EasyMock.matches;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.TestCase;
@@ -46,7 +49,7 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -109,6 +112,13 @@ public class SnmpAttributeTest extends TestCase {
         testPersisting("9223372036854775000", new Snmp4JValueFactory().getOctetString(new byte[]{ 0x7f, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xfc, (byte)0xd8 }));
     }
 
+    public void testNumericAttributeHexStringValueInString() throws Exception {
+        String stringValue = "769";
+        byte[] bytes = new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x03, (byte)0x01 };
+        testPersisting(stringValue, new Snmp4JValueFactory().getOctetString(bytes));
+    }
+
+    @SuppressWarnings("unchecked")
     private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {
         OnmsNode node = new OnmsNode();
         node.setId(3);
@@ -123,11 +133,11 @@ public class SnmpAttributeTest extends TestCase {
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
 
-        // m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) eq(null));
+        m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) isNull());
 
-        // expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
-        // m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
-        // m_rrdStrategy.closeFile(isA(Object.class));
+        expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
+        m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
+        m_rrdStrategy.closeFile(isA(Object.class));
 
         m_mocks.replayAll();
 

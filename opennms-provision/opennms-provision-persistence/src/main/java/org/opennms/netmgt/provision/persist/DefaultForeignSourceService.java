@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,13 +43,14 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.PropertyPath;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,6 +62,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @version $Id: $
  */
 public class DefaultForeignSourceService implements ForeignSourceService, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultForeignSourceService.class);
     
     @Autowired
     private ServiceRegistry m_serviceRegistry;
@@ -317,7 +320,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    log().warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
             for (String key : m_detectors.keySet()) {
@@ -325,7 +328,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
                 } catch (Throwable e) {
-                    log().warn("unable to wrap " + key, e);
+                    LOG.warn("unable to wrap {}", key, e);
                 }
             }
         }
@@ -358,10 +361,6 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 }
             }
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultForeignSourceService.class);
     }
 
 }

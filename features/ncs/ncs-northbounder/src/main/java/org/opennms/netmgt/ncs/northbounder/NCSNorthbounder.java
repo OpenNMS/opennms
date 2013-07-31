@@ -29,6 +29,7 @@
 package org.opennms.netmgt.ncs.northbounder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,9 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -62,13 +60,15 @@ import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarm;
 import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarmNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Forwards north bound alarms via HTTP.
@@ -78,6 +78,8 @@ import org.opennms.netmgt.ncs.northbounder.transfer.ServiceAlarmNotification;
  */
 public class NCSNorthbounder extends AbstractNorthbounder {
 	
+    private static final Logger LOG = LoggerFactory.getLogger(NCSNorthbounder.class);
+
     //FIXME: This should be wired with Spring but is implmented as was in the PSM
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
@@ -93,16 +95,10 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 	private static final String COMPONENT_FOREIGN_SOURCE = "componentForeignSource";
 	private static final String COMPONENT_TYPE = "componentType";
 	private NCSNorthbounderConfig m_config;
-	private JAXBContext m_context;
-	private Marshaller m_marshaller;
 
-    public NCSNorthbounder(NCSNorthbounderConfig config) throws JAXBException {
+    public NCSNorthbounder(NCSNorthbounderConfig config) {
         super("NCSNorthbounder");
         
-		m_context = JAXBContext.newInstance(ServiceAlarmNotification.class);
-		m_marshaller = m_context.createMarshaller();
-		m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		
 		m_config = config;
 		
 		setNaglesDelay(m_config.getNaglesDelay());
@@ -189,7 +185,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
     	
     	if (!m_config.isEnabled()) return;
     	
-        LogUtils.infof(this, "Forwarding %d alarms", alarms.size());
+        LOG.info("Forwarding {} alarms", alarms.size());
   
         HttpEntity entity = createEntity(alarms);
         
@@ -257,7 +253,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
         }
         
         System.err.println(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
-        LogUtils.debugf(this, response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
+        LOG.debug(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
 	}
 
 
@@ -267,7 +263,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 			// marshall the output
-			m_marshaller.marshal(toServiceAlarms(alarms), out);
+			JaxbUtils.marshal(toServiceAlarms(alarms), new OutputStreamWriter(out));
 
 			// verify its matches the expected results
 			byte[] utf8 = out.toByteArray();
@@ -276,7 +272,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 			entity.setContentType("application/xml");
             return entity;
 
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new NorthbounderException("failed to convert alarms to xml", e);
 		}
 	}
@@ -317,7 +313,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 
 	@Override
 	public void reloadConfig() {
-		LogUtils.debugf(this, "Reload configuration - not yet implemented.");
+		LOG.debug("Reload configuration - not yet implemented.");
 	}
 
 }

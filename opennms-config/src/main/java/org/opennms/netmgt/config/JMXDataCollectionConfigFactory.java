@@ -41,7 +41,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attr;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -71,6 +72,7 @@ import org.springframework.core.io.Resource;
  * @version $Id: $
  */
 public final class JMXDataCollectionConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(JMXDataCollectionConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -189,10 +191,10 @@ public final class JMXDataCollectionConfigFactory {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.JMX_DATA_COLLECTION_CONF_FILE_NAME);
 
-            ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             m_singleton = new JMXDataCollectionConfigFactory(cfgFile.getPath());
         } catch (IOException ioe) {
-        	log().error("Unable to open JMX data collection config file", ioe);
+        	LOG.error("Unable to open JMX data collection config file", ioe);
         	throw ioe;
         }
 
@@ -251,16 +253,15 @@ public final class JMXDataCollectionConfigFactory {
      * @return a list of MIB objects
      */
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
-        ThreadCategory log = log();
         
         Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
 
-        if (log.isDebugEnabled())
-            log.debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress);
+
+        LOG.debug("getMibObjectList: collection: {} sysoid: {} address: {}", anAddress, cName, aSysoid);
 
         if (aSysoid == null) {
-            if (log.isDebugEnabled())
-                log.debug("getMibObjectList: aSysoid parameter is NULL...");
+
+            LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
             return attributeMap;
         }
 
@@ -312,7 +313,7 @@ public final class JMXDataCollectionConfigFactory {
         JmxCollection collection = m_collectionMap.get(cName);
 
         if (collection == null) {
-            log().warn("no collection named '" + cName + "' was found");
+            LOG.warn("no collection named '{}' was found", cName);
         } else {
             Mbeans beans = collection.getMbeans();
             Enumeration<Mbean> en = beans.enumerateMbean();
@@ -485,9 +486,4 @@ public final class JMXDataCollectionConfigFactory {
         
         return rrdPath;
     }
-    
-    private static ThreadCategory log() {
-    	return ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class);
-    }
-    
 }

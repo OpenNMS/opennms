@@ -48,16 +48,17 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Transactional
 public class OnmsIpInterfaceResource extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsIpInterfaceResource.class);
+
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -108,7 +112,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         readLock();
         
         try {
-            LogUtils.debugf(this, "getIpInterfaces: reading interfaces for node %s", nodeCriteria);
+            LOG.debug("getIpInterfaces: reading interfaces for node {}", nodeCriteria);
     
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             
@@ -178,7 +182,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } else if (ipInterface.getIpAddress().getAddress() == null) {
                 throw getException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress bytes cannot be null");
             }
-            LogUtils.debugf(this, "addIpInterface: adding interface %s", ipInterface);
+            LOG.debug("addIpInterface: adding interface {}", ipInterface);
             node.addIpInterface(ipInterface);
             m_ipInterfaceDao.save(ipInterface);
             
@@ -221,7 +225,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             if (ipInterface == null) {
                 throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
             }
-            LogUtils.debugf(this, "updateIpInterface: updating ip interface %s", ipInterface);
+            LOG.debug("updateIpInterface: updating ip interface {}", ipInterface);
     
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(ipInterface);
     
@@ -232,7 +236,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            LogUtils.debugf(this, "updateIpInterface: ip interface %s updated", ipInterface);
+            LOG.debug("updateIpInterface: ip interface {} updated", ipInterface);
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
@@ -261,7 +265,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             if (intf == null) {
                 throw getException(Status.CONFLICT, "deleteIpInterface: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
             }
-            LogUtils.debugf(this, "deleteIpInterface: deleting interface %s from node %s", ipAddress, nodeCriteria);
+            LOG.debug("deleteIpInterface: deleting interface {} from node {}", ipAddress, nodeCriteria);
             node.getIpInterfaces().remove(intf);
             m_nodeDao.save(node);
             

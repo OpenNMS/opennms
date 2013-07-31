@@ -35,7 +35,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;
@@ -64,7 +64,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		public CheckboxButton(String string) {
 			super(string);
 			setColumnCollapsingAllowed(false);
-			addListener(new ClickListener() {
+			addClickListener(new ClickListener() {
 
 				private static final long serialVersionUID = 4351558084135658129L;
 
@@ -101,7 +101,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 						// Clear the checkboxes
 						m_generator.clearSelectedIds(AlarmTable.this);
 
-						AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
+						AlarmTable.this.containerItemSetChange(new Container.ItemSetChangeEvent() {
 							private static final long serialVersionUID = 7086486972418241175L;
 							@Override
 							public Container getContainer() {
@@ -127,7 +127,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	    private RefreshLinkButton(String caption) {
 	        super(caption);
 	        setStyleName(BaseTheme.BUTTON_LINK);
-	        addListener(new ClickListener() {
+	        addClickListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
                     AlarmTable.this.refreshRowCache();
@@ -143,7 +143,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		public SelectAllButton(String string) {
 			super(string);
 			setStyleName(BaseTheme.BUTTON_LINK);
-			addListener(new ClickListener() {
+			addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					m_generator.selectAll(AlarmTable.this);
@@ -163,7 +163,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		public ResetSelectionButton(String string) {
 			super(string);
 			setStyleName(BaseTheme.BUTTON_LINK);
-			addListener(new ClickListener() {
+			addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					m_generator.clearSelectedIds(AlarmTable.this);
@@ -198,8 +198,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_ESCALATE);
 		m_ackCombo.addItem(ACTION_CLEAR);
-		// Make "Acknowledge" the default value
-		m_ackCombo.setValue(ACTION_ACKNOWLEDGE);
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE); // Make "Acknowledge" the default value
 
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);
@@ -243,6 +242,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 	
 	private String getUser() {
-	    return (String) getApplication().getUser();
+	    return "admin"; // TODO use real user name
 	}
 }

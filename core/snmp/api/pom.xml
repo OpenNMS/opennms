@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.api</artifactId>
-  <name>OpenNMS SNMP API</name>
+  <name>OpenNMS Core SNMP API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

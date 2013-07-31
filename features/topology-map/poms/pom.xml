@@ -99,7 +99,7 @@
     <repository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
@@ -117,7 +117,7 @@
     <pluginRepository>
       <id>servicemix</id>
       <name>Apache ServiceMix Repository</name>
-      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>

@@ -46,9 +46,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.AmiPeerFactory;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Originates a call using the Asterisk Manager API
@@ -57,6 +58,7 @@ import org.opennms.netmgt.config.ami.AmiAgentConfig;
  * @version $Id: $
  */
 public class AsteriskOriginator {
+    private static final Logger LOG = LoggerFactory.getLogger(AsteriskOriginator.class);
     private static final String DEFAULT_AMI_HOST = "127.0.0.1";
     private static final boolean DEFAULT_ORIGINATOR_DEBUG = true;
     private static final long DEFAULT_RESPONSE_TIMEOUT = 10000;
@@ -198,7 +200,7 @@ public class AsteriskOriginator {
     public void originateCall() throws AsteriskOriginatorException {
         m_originateAction = buildOriginateAction();
         
-        log().info("Logging in Asterisk manager connection");
+        LOG.info("Logging in Asterisk manager connection");
         try {
             m_managerConnection.login();
         } catch (IllegalStateException ise) {
@@ -210,13 +212,11 @@ public class AsteriskOriginator {
         } catch (TimeoutException toe) {
             throw new AsteriskOriginatorException("Timed out logging in Asterisk manager connection", toe);
         }
-        log().info("Successfully logged in Asterisk manager connection");
+        LOG.info("Successfully logged in Asterisk manager connection");
         
-        log().info("Originating a call to extension " + m_legAExtension);
-        if (log().isDebugEnabled()) {
-            log().debug(createCallLogMsg());    
-            log().debug("Originate action:\n\n" + m_originateAction.toString());
-        }
+        LOG.info("Originating a call to extension {}", m_legAExtension);
+        LOG.debug(createCallLogMsg());
+        LOG.debug("Originate action:\n\n{}", m_originateAction.toString());
         
         try {
             m_managerResponse = m_managerConnection.sendAction(m_originateAction);
@@ -234,17 +234,17 @@ public class AsteriskOriginator {
             throw new AsteriskOriginatorException("Timed out sending originate action", toe);
         }
         
-        log().info("Asterisk manager responded: " + m_managerResponse.getResponse());
-        log().info("Asterisk manager message: " + m_managerResponse.getMessage());
+        LOG.info("Asterisk manager responded: {}", m_managerResponse.getResponse());
+        LOG.info("Asterisk manager message: {}", m_managerResponse.getMessage());
         
         if (m_managerResponse.getResponse().toLowerCase().startsWith("error")) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("Got error response sending originate event. Response: " + m_managerResponse.getResponse() + "; Message: " + m_managerResponse.getMessage());
         }
         
-        log().info("Logging off Asterisk manager connection");
+        LOG.info("Logging off Asterisk manager connection");
         m_managerConnection.logoff();
-        log().info("Successfully logged off Asterisk manager connection");
+        LOG.info("Successfully logged off Asterisk manager connection");
     }
 
     /**
@@ -273,14 +273,14 @@ public class AsteriskOriginator {
     }
 
     private String expandPattern(String pattern) {
-        log().debug("Expanding pattern " + pattern);
+        LOG.debug("Expanding pattern {}", pattern);
         String expanded = AsteriskUtils.expandPattern(pattern);
         
         // Further expand AsteriskOriginator-specific tokens
         Properties props = new Properties();
         props.put("exten", getLegAExtension());
         expanded = PropertiesUtils.substitute(expanded, props);
-        log().debug("Expanded pattern is: " + expanded);
+        LOG.debug("Expanded pattern is: {}", expanded);
         return expanded;
     }
 
@@ -441,13 +441,6 @@ public class AsteriskOriginator {
      */
     public void setDebug(boolean debug) {
         m_debug = debug;
-    }
-
-    /**
-     * @return log4j Category
-     */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

@@ -44,8 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
@@ -55,8 +53,9 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 
 /**
@@ -69,8 +68,10 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AddNodesController extends AbstractController {
-	ThreadCategory log;
+public class AddNodesController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AddNodesController.class);
+
 
 	private Manager manager;
 	
@@ -95,13 +96,11 @@ public class AddNodesController extends AbstractController {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
 		String action = request.getParameter("action");
 		String elems = request.getParameter("elems");
-		log.debug("Adding Nodes action:"+action+", elems="+elems );
+		LOG.debug("Adding Nodes action:{}, elems={}", action, elems);
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
@@ -110,7 +109,7 @@ public class AddNodesController extends AbstractController {
 			boolean actionfound = false;
 			
 			if (action.equals(MapsConstants.ADDNODES_ACTION)) {
-				log.debug("Adding nodes by id: "+ elems);
+				LOG.debug("Adding nodes by id: {}", elems);
 				actionfound = true;
 				String[] snodeids = elems.split(",");
 				nodeids = new Integer[snodeids.length];
@@ -120,7 +119,7 @@ public class AddNodesController extends AbstractController {
 			}
 			
 			if (action.equals(MapsConstants.ADDNODES_BY_CATEGORY_ACTION)) {
-				log.debug("Adding nodes by category: "+ elems);
+				LOG.debug("Adding nodes by category: {}", elems);
 				actionfound = true;
 				String categoryName = elems;
 				CategoryFactory.init();
@@ -129,12 +128,12 @@ public class AddNodesController extends AbstractController {
 				try {
     				final String rule = cf.getEffectiveRule(categoryName);
     				final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getIPAddressList(rule);
-    				LogUtils.debugf(this, "ips found: %s", nodeIPs.toString());
+    				LOG.debug("ips found: {}", nodeIPs.toString());
     				nodeids = new Integer[nodeIPs.size()];
     				for (int i = 0; i<nodeIPs.size();i++) {
     					final InetAddress nodeIp = nodeIPs.get(i);
     					final List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(InetAddressUtils.str(nodeIp));
-    					LogUtils.debugf(this, "Ids by ipaddress %s: %s", nodeIp, ids.toString());
+    					LOG.debug("Ids by ipaddress {}: {}", nodeIp, ids.toString());
     					nodeids[i] = ids.get(0);
                }
             } finally {
@@ -144,7 +143,7 @@ public class AddNodesController extends AbstractController {
 			
 			
 			if (action.equals(MapsConstants.ADDNODES_BY_LABEL_ACTION)) {
-				log.debug("Adding nodes by label: "+ elems);
+				LOG.debug("Adding nodes by label: {}", elems);
 				actionfound = true;
 				List<OnmsNode> nodes = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
 				nodeids = new Integer[nodes.size()];
@@ -154,19 +153,19 @@ public class AddNodesController extends AbstractController {
 			}	
 
 			if (action.equals(MapsConstants.ADDRANGE_ACTION)) {
-				log.debug("Adding nodes by range: "+ elems);
+				LOG.debug("Adding nodes by range: {}", elems);
 				actionfound = true;
 				nodeids = (Integer[]) NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(elems).toArray(new Integer[0]);
 			}
 
 			if (action.equals(MapsConstants.ADDNODES_NEIG_ACTION)) {
-				log.debug("Adding nodes neighbor of:"+ elems);
+				LOG.debug("Adding nodes neighbor of:{}", elems);
 				actionfound = true;
 				nodeids = (Integer[]) NetworkElementFactory.getInstance(getServletContext()).getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems)).toArray(new Integer[0]);
 			}
 
 			if (action.equals(MapsConstants.ADDNODES_WITH_NEIG_ACTION)) {
-				log.debug("Adding nodes with neighbor of:"+ elems);
+				LOG.debug("Adding nodes with neighbor of:{}", elems);
 				actionfound = true;
 				Set<Integer> linkednodeids = NetworkElementFactory.getInstance(getServletContext()).getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems));
 				linkednodeids.add(new Integer(elems));
@@ -174,19 +173,18 @@ public class AddNodesController extends AbstractController {
 			} 
 			
 	         VMap map = manager.openMap();
-	            if(log.isDebugEnabled())
-	                log.debug("Got map from manager "+map);
+	                LOG.debug("Got map from manager {}", map);
 	            
 
 			List<VElement> velems = new ArrayList<VElement>();
 			// response for addElement
 			if (actionfound) {
-				log.debug("Before Checking map contains elems");
+				LOG.debug("Before Checking map contains elems");
 				
 				for (int i = 0; i < nodeids.length; i++) {
 					int elemId = nodeids[i].intValue();
 					if (map.containsElement(elemId, MapsConstants.NODE_TYPE)) {
-						log.debug("Action: " + action + " . Map Contains Element: " + elemId+MapsConstants.NODE_TYPE);
+						LOG.debug("Action: {} . Map Contains Element: {}", action, elemId+MapsConstants.NODE_TYPE);
 						continue;
 						
 					}
@@ -196,12 +194,12 @@ public class AddNodesController extends AbstractController {
 
 				//get links and add elements to map
 				map = manager.addElements(map, velems);
-				log.debug("After getting/adding links");
+				LOG.debug("After getting/adding links");
 	
 				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks()));
 			}
 		} catch (Throwable e) {
-			log.error("Error while adding nodes for action: "+action,e);
+			LOG.error("Error while adding nodes for action: {}", action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));
 		} finally {
 			bw.close();
@@ -209,11 +207,6 @@ public class AddNodesController extends AbstractController {
 
 		return null;
 	}
-
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return handleRequest(request, response);
-    }
 
 
 }

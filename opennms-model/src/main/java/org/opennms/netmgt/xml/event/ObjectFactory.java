@@ -30,7 +30,9 @@ package org.opennms.netmgt.xml.event;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -49,6 +51,9 @@ import org.opennms.core.utils.LogUtils;
  */
 @XmlRegistry
 public class ObjectFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ObjectFactory.class);
+
 
 
     /**
@@ -56,7 +61,7 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
-    	LogUtils.debugf(this, "ObjectFactory initialized");
+    	LOG.debug("ObjectFactory initialized");
     }
 
     /**
@@ -64,7 +69,7 @@ public class ObjectFactory {
      * 
      */
     public AlarmData createAlarmData() {
-    	LogUtils.debugf(this, "createAlarmData");
+    	LOG.debug("createAlarmData");
         return new AlarmData();
     }
 
@@ -73,7 +78,7 @@ public class ObjectFactory {
      * 
      */
     public Value createValue() {
-    	LogUtils.debugf(this, "createValue");
+    	LOG.debug("createValue");
         return new Value();
     }
 
@@ -82,7 +87,7 @@ public class ObjectFactory {
      * 
      */
     public Events createEvents() {
-    	LogUtils.debugf(this, "createEvents");
+    	LOG.debug("createEvents");
         return new Events();
     }
 
@@ -91,7 +96,7 @@ public class ObjectFactory {
      * 
      */
     public Maskelement createMaskelement() {
-    	LogUtils.debugf(this, "createMaskelement");
+    	LOG.debug("createMaskelement");
         return new Maskelement();
     }
 
@@ -100,7 +105,7 @@ public class ObjectFactory {
      * 
      */
     public Log createLog() {
-    	LogUtils.debugf(this, "createLog");
+    	LOG.debug("createLog");
         return new Log();
     }
 
@@ -109,7 +114,7 @@ public class ObjectFactory {
      * 
      */
     public Forward createForward() {
-    	LogUtils.debugf(this, "createForward");
+    	LOG.debug("createForward");
         return new Forward();
     }
 
@@ -119,7 +124,7 @@ public class ObjectFactory {
      */
     @Deprecated
     public Parms createParms() {
-    	LogUtils.debugf(this, "createParms");
+    	LOG.debug("createParms");
         return new Parms();
     }
 
@@ -128,7 +133,7 @@ public class ObjectFactory {
      * 
      */
     public Event createEvent() {
-    	LogUtils.debugf(this, "createEvent");
+    	LOG.debug("createEvent");
         return new Event();
     }
 
@@ -137,7 +142,7 @@ public class ObjectFactory {
      * 
      */
     public Header createHeader() {
-    	LogUtils.debugf(this, "createHeader");
+    	LOG.debug("createHeader");
         return new Header();
     }
 
@@ -146,7 +151,7 @@ public class ObjectFactory {
      * 
      */
     public Logmsg createLogmsg() {
-    	LogUtils.debugf(this, "createLogmsg");
+    	LOG.debug("createLogmsg");
         return new Logmsg();
     }
 
@@ -155,7 +160,7 @@ public class ObjectFactory {
      * 
      */
     public Mask createMask() {
-    	LogUtils.debugf(this, "createMask");
+    	LOG.debug("createMask");
         return new Mask();
     }
 
@@ -164,7 +169,7 @@ public class ObjectFactory {
      * 
      */
     public Operaction createOperaction() {
-    	LogUtils.debugf(this, "createOperaction");
+    	LOG.debug("createOperaction");
         return new Operaction();
     }
 
@@ -173,7 +178,7 @@ public class ObjectFactory {
      * 
      */
     public Autoacknowledge createAutoacknowledge() {
-    	LogUtils.debugf(this, "createAutoacknowledge");
+    	LOG.debug("createAutoacknowledge");
         return new Autoacknowledge();
     }
 
@@ -182,7 +187,7 @@ public class ObjectFactory {
      * 
      */
     public Parm createParm() {
-    	LogUtils.debugf(this, "createParm");
+    	LOG.debug("createParm");
         return new Parm();
     }
 
@@ -191,7 +196,7 @@ public class ObjectFactory {
      * 
      */
     public Snmp createSnmp() {
-    	LogUtils.debugf(this, "createSnmp");
+    	LOG.debug("createSnmp");
         return new Snmp();
     }
 
@@ -200,7 +205,7 @@ public class ObjectFactory {
      * 
      */
     public Script createScript() {
-    	LogUtils.debugf(this, "createScript");
+    	LOG.debug("createScript");
         return new Script();
     }
 
@@ -209,7 +214,7 @@ public class ObjectFactory {
      * 
      */
     public EventReceipt createEventReceipt() {
-    	LogUtils.debugf(this, "createEventReceipt");
+    	LOG.debug("createEventReceipt");
         return new EventReceipt();
     }
 
@@ -218,7 +223,7 @@ public class ObjectFactory {
      * 
      */
     public Correlation createCorrelation() {
-    	LogUtils.debugf(this, "createCorrelation");
+    	LOG.debug("createCorrelation");
         return new Correlation();
     }
 
@@ -227,7 +232,7 @@ public class ObjectFactory {
      * 
      */
     public Autoaction createAutoaction() {
-    	LogUtils.debugf(this, "createAutoaction");
+    	LOG.debug("createAutoaction");
         return new Autoaction();
     }
 
@@ -236,7 +241,7 @@ public class ObjectFactory {
      * 
      */
     public Tticket createTticket() {
-    	LogUtils.debugf(this, "createTticket");
+    	LOG.debug("createTticket");
         return new Tticket();
     }
 

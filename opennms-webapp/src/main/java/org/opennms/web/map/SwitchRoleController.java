@@ -39,14 +39,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.view.*;
-
+import org.opennms.web.map.view.Manager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
@@ -59,8 +55,10 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SwitchRoleController implements Controller {
-	ThreadCategory log;
+public class SwitchRoleController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SwitchRoleController.class);
+
 
 	private Manager manager;
 	
@@ -85,10 +83,7 @@ public class SwitchRoleController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String adminModeStr = request.getParameter("adminMode");
 		boolean adminMode = false;
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
@@ -97,13 +92,13 @@ public class SwitchRoleController implements Controller {
 			
 			if(adminModeStr!=null ){
 				adminMode=Boolean.parseBoolean(adminModeStr);
-				log.info("Swithing to mode admin: "+!adminMode);
+				LOG.info("Swithing to mode admin: {}", !adminMode);
 				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.SWITCH_MODE_ACTION));
 			} else{
 				throw new IllegalStateException("Parameter adminMode is null ");
 			}
 		} catch (Throwable e) {
-			log.error("Exception found when changing adminMode: ",e);
+			LOG.error("Exception found when changing adminMode: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SWITCH_MODE_ACTION));
 		} finally {
 			bw.close();

@@ -33,19 +33,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.opennms.core.xml.JaxbUtils;
+import org.xml.sax.InputSource;
 
 public class JdbcDataCollectionConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcDataCollectionConfigFactory.class);
+
     private JdbcDataCollectionConfig m_jdbcDataCollectionConfig = null;
     
     public JdbcDataCollectionConfigFactory() {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.JDBC_COLLECTION_CONFIG_FILE_NAME);
-            log().debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream reader = new FileInputStream(cfgFile);
             unmarshall(reader);
             reader.close();
@@ -56,22 +58,13 @@ public class JdbcDataCollectionConfigFactory {
     
     public JdbcDataCollectionConfig unmarshall(InputStream configFile) {
         try {
-            InputStream jdccStream = configFile;
-            JAXBContext context = JAXBContext.newInstance(JdbcDataCollectionConfig.class);
-            Unmarshaller um = context.createUnmarshaller();
-            um.setSchema(null);
-            JdbcDataCollectionConfig jdcc = (JdbcDataCollectionConfig) um.unmarshal(jdccStream);
-            m_jdbcDataCollectionConfig = jdcc;
-            return jdcc;
+            m_jdbcDataCollectionConfig = JaxbUtils.unmarshal(JdbcDataCollectionConfig.class, new InputSource(configFile));
+            return m_jdbcDataCollectionConfig;
         } catch (Throwable e) {
             // TODO!!
             //throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
         }
         return m_jdbcDataCollectionConfig;
-    }
-    
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(JdbcDataCollectionConfig.class);
     }
 
 }

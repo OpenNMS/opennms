@@ -59,15 +59,19 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.Persister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 class XmpCollectionAttributeType implements CollectionAttributeType {
     /* class variables and methods *********************** */
+	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionAttributeType.class);
+
 
     /* instance variables ******************************** */
     //MibObj mibObj; // this might need to be MibObj
@@ -82,9 +86,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
     }
 
     /* private methods *********************************** */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+   
 
     /* public methods ************************************ */
     /**
@@ -99,7 +101,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
     @Override
     public void storeAttribute(CollectionAttribute attrib, Persister persister)
     {
-        log().debug("XmpCollectionAttributeType: store "+attrib);
+        LOG.debug("XmpCollectionAttributeType: store {}", attrib);
 
         // persist as either string or numeric based on our
         // XMP type

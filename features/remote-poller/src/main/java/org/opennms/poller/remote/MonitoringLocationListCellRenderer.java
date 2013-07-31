@@ -53,8 +53,15 @@ public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         OnmsMonitoringLocationDefinition location = (OnmsMonitoringLocationDefinition)value;
         
-        String stringValue = location.getArea() + " - " + location.getName();
-        return super.getListCellRendererComponent(list, stringValue, index, isSelected, cellHasFocus);
+        StringBuffer stringValue = new StringBuffer();
+        if (location != null) {
+            stringValue.append(location.getArea());
+            stringValue.append(" - ");
+            stringValue.append(location.getName());
+        } else {
+            stringValue.append("[null]");
+        }
+        return super.getListCellRendererComponent(list, stringValue.toString(), index, isSelected, cellHasFocus);
     }
 
     

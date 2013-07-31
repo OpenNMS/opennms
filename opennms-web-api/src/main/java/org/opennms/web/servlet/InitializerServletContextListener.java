@@ -37,10 +37,11 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.RTCPostSubscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initializes our internal servlet systems at servlet container startup, and
@@ -54,6 +55,9 @@ import org.opennms.web.category.RTCPostSubscriber;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public class InitializerServletContextListener implements ServletContextListener {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(InitializerServletContextListener.class);
+
 
     private Timer rtcCheckTimer = null;
 
@@ -67,24 +71,21 @@ public class InitializerServletContextListener implements ServletContextListener
              */
             ServletInitializer.init(event.getServletContext());
 
-            log().info("Initialized servlet systems successfully");
+            LOG.info("Initialized servlet systems successfully");
         } catch (ServletException e) {
-            log().error("Error while initializing servlet systems: " + e, e);
+            LOG.error("Error while initializing servlet systems: {}", e, e);
         } catch (Throwable e) {
-            log().error("Error while initializing user, group, or view factory: " + e, e);
+            LOG.error("Error while initializing user, group, or view factory: {}", e, e);
         }
 
         try {
             rtcCheckTimer = new Timer();
             rtcCheckTimer.schedule(new RTCPostSubscriberTimerTask(), new Date(), 130000);
         } catch (ServletException e) {
-            log().error("Error while initializing RTC check timer: " + e, e);
+            LOG.error("Error while initializing RTC check timer: {}", e, e);
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -97,9 +98,9 @@ public class InitializerServletContextListener implements ServletContextListener
             ServletInitializer.destroy(event.getServletContext());
 
             // Report success.
-            log().info("Destroyed servlet systems successfully");
+            LOG.info("Destroyed servlet systems successfully");
         } catch (ServletException e) {
-            log().error("Error while destroying servlet systems: " + e, e);
+            LOG.error("Error while destroying servlet systems: {}", e, e);
         }
 
         if (rtcCheckTimer != null) {
@@ -122,28 +123,25 @@ public class InitializerServletContextListener implements ServletContextListener
                     return;
                 }
             } catch (Throwable e) {
-                log().error("Error checking if OpenNMS is disconnected: " + e, e);
+                LOG.error("Error checking if OpenNMS is disconnected: {}", e, e);
                 return;
             }
 
-            log().info("OpenNMS is disconnected -- attempting RTC POST subscription");
+            LOG.info("OpenNMS is disconnected -- attempting RTC POST subscription");
 
             try {
                 RTCPostSubscriber.subscribeAll("WebConsoleView");
-                log().info("RTC POST subscription event sent successfully");
+                LOG.info("RTC POST subscription event sent successfully");
             } catch (EventProxyException e) {
                 if (e.getCause() instanceof ConnectException) {
-                    log().info("RTC POST failed due to ConnectException: " + e.getCause().toString());
+                    LOG.info("RTC POST failed due to ConnectException: {}", e.getCause().toString());
                 } else {
-                    log().error("Error subscribing to RTC POSTs: " + e, e);
+                    LOG.error("Error subscribing to RTC POSTs: {}", e, e);
                 }
             } catch (Throwable e) {
-                log().error("Error subscribing to RTC POSTs: " + e, e);
+                LOG.error("Error subscribing to RTC POSTs: {}", e, e);
             }
         }
         
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
     }
 }

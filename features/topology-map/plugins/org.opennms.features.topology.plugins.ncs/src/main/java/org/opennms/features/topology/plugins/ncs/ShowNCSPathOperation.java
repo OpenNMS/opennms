@@ -16,7 +16,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSServiceCriteria;
 import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -32,9 +32,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Select;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 public class ShowNCSPathOperation implements Operation {
     
@@ -59,7 +60,7 @@ public class ShowNCSPathOperation implements Operation {
         final SelectionManager selectionManager = operationContext.getGraphContainer().getSelectionManager();
         final Collection<VertexRef> vertexRefs = getVertexRefsForNCSService(m_storedCriteria); //selectionManager.getSelectedVertexRefs();
         
-        final Window mainWindow = operationContext.getMainWindow();
+        final UI mainWindow = operationContext.getMainWindow();
         
         final Window ncsPathPrompt = new Window("Show NCS Path");
         ncsPathPrompt.setModal(true);
@@ -126,15 +127,21 @@ public class ShowNCSPathOperation implements Operation {
                 try {
                     NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource, serviceName);
                     
+                    if(path.getStatusCode() == 200) {
+                        NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
+                        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
                     
-                    NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
-                    m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
+                        //Select only the vertices in the path
+                        selectionManager.setSelectedVertexRefs(path.getVertices());
+                    } else {
+                        LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path, Juniper NetworkAppsApi send error code: " + path.getStatusCode());
+                        mainWindow.showNotification("An error occurred while retrieving the NCS Path\nStatus Code: " + path.getStatusCode(), Notification.TYPE_ERROR_MESSAGE);
+                    }
                     
-                    //Select only the vertices in the path
-                    selectionManager.setSelectedVertexRefs(path.getVertices());
                     
-                }  catch (Exception e) {
-                    
+                } catch (Exception e) {
+                    LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
+                    Notification.show("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     if(e.getCause() instanceof ConnectException ) {
                         LoggerFactory.getLogger(this.getClass()).warn("Connection Exception Occurred while retreiving path {}", e);
                         mainWindow.showNotification("Connection Refused when attempting to reach the NetworkAppsApi", Notification.TYPE_ERROR_MESSAGE);
@@ -157,12 +164,12 @@ public class ShowNCSPathOperation implements Operation {
             
         };
         
-        promptForm.setWriteThrough(false);
+        promptForm.setBuffered(true);
         promptForm.setFormFieldFactory(fieldFactory);
         promptForm.setItemDataSource(item);
         
         Button ok = new Button("OK");
-        ok.addListener(new ClickListener() {
+        ok.addClickListener(new ClickListener() {
 
             private static final long serialVersionUID = -2742886456007926688L;
 
@@ -176,7 +183,7 @@ public class ShowNCSPathOperation implements Operation {
         promptForm.getFooter().addComponent(ok);
         
         Button cancel = new Button("Cancel");
-        cancel.addListener(new ClickListener(){
+        cancel.addClickListener(new ClickListener(){
             private static final long serialVersionUID = -9026067481179449095L;
 
             @Override
@@ -186,7 +193,7 @@ public class ShowNCSPathOperation implements Operation {
             
         });
         promptForm.getFooter().addComponent(cancel);
-        ncsPathPrompt.addComponent(promptForm);
+        ncsPathPrompt.setContent(promptForm);
         mainWindow.addWindow(ncsPathPrompt);
         promptForm.getField("Device A").setValue(defaultVertRef.getId());
         return null;

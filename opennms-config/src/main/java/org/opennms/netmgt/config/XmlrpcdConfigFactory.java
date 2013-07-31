@@ -42,7 +42,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
@@ -65,6 +66,7 @@ import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
  * @version $Id: $
  */
 public final class XmlrpcdConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(XmlrpcdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -190,7 +192,7 @@ public final class XmlrpcdConfigFactory {
             return;
         }
 
-        log().debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         setInstance(new XmlrpcdConfigFactory(cfgFile.getPath()));
     }
@@ -246,10 +248,6 @@ public final class XmlrpcdConfigFactory {
                 getConfiguration().addSubscription(subscription);
             }
         }
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(XmlrpcdConfigFactory.class);
     }
 
     /**
@@ -334,8 +332,7 @@ public final class XmlrpcdConfigFactory {
                  * Oops -- a serverSubscription element referenced a 
                  * subscription element that doesn't exist.
                  */
-                log().error("serverSubscription element " + name + 
-                            " references a subscription that does not exist");
+                LOG.error("serverSubscription element {} references a subscription that does not exist", name);
                 throw new ValidationException("serverSubscription element " +
                     name + " references a subscription that does not exist");
             }

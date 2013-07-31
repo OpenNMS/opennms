@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>liquibase-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS LiquiBase Dependencies</name>
+  <name>OpenNMS Dependencies LiquiBase</name>
   <dependencyManagement>
     <dependencies>
       <dependency>

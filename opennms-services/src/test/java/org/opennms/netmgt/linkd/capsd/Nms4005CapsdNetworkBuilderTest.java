@@ -45,7 +45,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms4005NetworkBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,13 +68,13 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-capsd.xml",
         // import simple defined events
-        "classpath:/META-INF/opennms/smallEventConfDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         // Override the capsd config with a stripped-down version
         "classpath:/META-INF/opennms/capsdTest.xml",
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 public class Nms4005CapsdNetworkBuilderTest extends Nms4005NetworkBuilder implements InitializingBean {
 

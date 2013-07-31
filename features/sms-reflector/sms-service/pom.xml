@@ -78,9 +78,15 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
-      <artifactId>smslib</artifactId>
-      <version>3.4.3-20100302</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4jVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>smslib-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>

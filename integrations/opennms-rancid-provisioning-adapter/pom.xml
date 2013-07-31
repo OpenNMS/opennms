@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rancid-provisioning-adapter</artifactId>
-  <name>OpenNMS RANCID Provisioning Interface</name>
+  <name>OpenNMS Integrations RANCID Provisioning Interface</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -39,6 +39,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

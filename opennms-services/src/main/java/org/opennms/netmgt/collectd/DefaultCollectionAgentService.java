@@ -36,15 +36,16 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
@@ -55,11 +56,14 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
  * @version $Id: $
  */
 public class DefaultCollectionAgentService implements CollectionAgentService {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgentService.class);
+    
     /**
      * <p>create</p>
      *
      * @param ifaceId a {@link java.lang.Integer} object.
-     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
      */
@@ -276,26 +280,15 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     	Set<OnmsSnmpInterface> snmpIfs = node.getSnmpInterfaces();
     	
     	if (snmpIfs.size() == 0) {
-            log().debug("no known SNMP interfaces for node " + node);
+            LOG.debug("no known SNMP interfaces for node {}", node);
     	}
         return snmpIfs;
     }
 
     private void logInitializeSnmpIf(OnmsSnmpInterface snmpIface) {
-        if (log().isDebugEnabled()) {
-        	log().debug(
-        			"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-        			+ ", snmpifname = " + snmpIface.getIfName()
-        			+ ", snmpifdescr = " + snmpIface.getIfDescr()
-        			+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
-        	log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
-        }
+        LOG.debug("initialize: snmpifindex = {}, snmpifname = {}, snmpifdescr = {}, snmpphysaddr = -{}-", snmpIface.getIfIndex().intValue(), snmpIface.getIfName(), snmpIface.getIfDescr(), snmpIface.getPhysAddr());
+        LOG.debug("initialize: ifLabel = '{}'", snmpIface.computeLabelForRRD());
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 
     /**
      * <p>getInetAddress</p>

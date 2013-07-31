@@ -6,7 +6,8 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultremedyConfigDao class.</p>
@@ -15,6 +16,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class DefaultRemedyConfigDao {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultRemedyConfigDao.class);
 
 	Configuration m_config = null;
 	/**
@@ -29,14 +31,14 @@ public class DefaultRemedyConfigDao {
 		if (m_config != null) return m_config;
 		String propsFile = new String(System.getProperty("opennms.home") + "/etc/remedy.properties");
 		
-		LogUtils.debugf(this, "loading properties from: %s", propsFile);
+		LOG.debug("loading properties from: {}", propsFile);
 		
 		Configuration config = null;
 		
 		try {
 			config = new PropertiesConfiguration(propsFile);
 		} catch (final ConfigurationException e) {
-		    LogUtils.debugf(this, e, "Unable to load properties from %s", propsFile);
+		    LOG.debug("Unable to load properties from {}", propsFile, e);
 		}
 		m_config = config;
 		return config;

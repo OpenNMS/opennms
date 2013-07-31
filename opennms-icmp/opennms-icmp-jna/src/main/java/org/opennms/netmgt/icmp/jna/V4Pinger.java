@@ -32,13 +32,15 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.logging.Logging;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Platform;
 
@@ -48,6 +50,7 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 public class V4Pinger extends AbstractPinger<Inet4Address> {
+    private static final Logger LOG = LoggerFactory.getLogger(V4Pinger.class);
     
 
     public V4Pinger(final int pingerId) throws Exception {
@@ -68,6 +71,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     
     @Override
     public void run() {
+        Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
             final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
@@ -84,7 +88,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             }
         } catch(final Throwable t) {
             setThrowable(t);
-            LogUtils.debugf(this, t, "Error caught while processing ping packets: %s", t.getMessage());
+            LOG.debug("Error caught while processing ping packets: {}", t.getMessage(), t);
         }
     }
 

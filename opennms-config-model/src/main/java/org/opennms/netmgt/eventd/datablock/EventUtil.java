@@ -47,7 +47,8 @@ import java.util.regex.Pattern;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
@@ -67,6 +68,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class EventUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(EventUtil.class);
 	/**
 	 * The Event ID xml
 	 */
@@ -433,9 +435,7 @@ public final class EventUtil {
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
-				ThreadCategory log = ThreadCategory.getInstance();
-				log.error("could not parse event date \"" + eventTime + "\": ",
-						e);
+				LOG.error("could not parse event date '{}'", eventTime, e);
 
 				//Give up and just use the original string - don't bother with
 				// messing around
@@ -449,9 +449,7 @@ public final class EventUtil {
 								DateFormat.SHORT);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
-				ThreadCategory log = ThreadCategory.getInstance();
-				log.error("could not parse event date \"" + eventTime + "\": ",
-				        e);
+				LOG.error("could not parse event date '{}'", eventTime, e);
 				
 				//Give up and just use the original string - don't bother with
 				// messing around
@@ -478,7 +476,7 @@ public final class EventUtil {
 					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
-					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
+					LOG.info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), sqlE);
 				}
 			}
 			if (ifAlias != null)
@@ -1099,10 +1097,10 @@ public final class EventUtil {
 	            copy = (Event)in.readObject();
 	        }
 	        catch(IOException e) {
-	            ThreadCategory.getInstance(EventUtil.class).error("Exception cloning event", e);
+	            LOG.error("Exception cloning event", e);
 	        }
 	        catch(ClassNotFoundException cnfe) {
-	            ThreadCategory.getInstance(EventUtil.class).error("Exception cloning event", cnfe);
+	            LOG.error("Exception cloning event", cnfe);
 	        }
 	        return copy;
 	}	

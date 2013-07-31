@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.dbcp.PoolingConnection;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -36,6 +35,10 @@ public class EventdStresser {
     private static final String PROPERTY_PERSIST_WAIT = "persist.wait";
     private static final String PROPERTY_DELETE_ALL_EVENTS = "delete.all.events";
     private static final String PROPERTY_DELETE_TEST_EVENTS = "delete.test.events";
+    private static final String PROPERTY_DB_SVR = "db.server";
+    private static final String PROPERTY_DB_NAME = "db.name";
+    private static final String PROPERTY_DB_USER = "db.user";
+    private static final String PROPERTY_DB_PW = "db.password";
 
     private static InetAddress m_agentAddress;
     private static InetAddress m_trapSink;
@@ -49,6 +52,11 @@ public class EventdStresser {
     private static int m_persistWait = 60;
     private static boolean m_deleteAllEvents = false;
     private static boolean m_deleteTestEvents = false;
+    private static String m_dbSvr = "127.0.0.1";
+    private static String m_dbName = "opennms";
+    private static String m_dbUser = "opennms";
+    private static String m_dbPass = "opennms";
+    
     @SuppressWarnings("unused")
     private static long m_sleepMillis = 0;
 
@@ -58,8 +66,6 @@ public class EventdStresser {
      * @param args
      */
     public static void main(String[] args) {
-        LogUtils.logToConsole();
-        LogUtils.enableDebugging();
 
         parseArgs(args);
 
@@ -115,6 +121,10 @@ public class EventdStresser {
         System.out.println(REPORT_SPACING + PROPERTY_PERSIST_WAIT + printDefault(m_persistWait));
         System.out.println(REPORT_SPACING + PROPERTY_DELETE_ALL_EVENTS + printDefault(m_deleteAllEvents));
         System.out.println(REPORT_SPACING + PROPERTY_DELETE_TEST_EVENTS + printDefault(m_deleteTestEvents));
+        System.out.println(REPORT_SPACING + PROPERTY_DB_SVR + printDefault(m_dbSvr));
+        System.out.println(REPORT_SPACING + PROPERTY_DB_NAME + printDefault(m_dbName));
+        System.out.println(REPORT_SPACING + PROPERTY_DB_USER + printDefault(m_dbUser));
+        System.out.println(REPORT_SPACING + PROPERTY_DB_PW + printDefault(m_dbPass));
 
         System.out.println();
         System.out.println("Example:");
@@ -210,6 +220,27 @@ public class EventdStresser {
 
         m_batchCount = m_trapCount.intValue() / m_batchSize.intValue();
         System.out.println("Using batch count: " + m_batchCount);
+        
+        property = System.getProperty(PROPERTY_DB_SVR);
+        if (property != null) {
+        	m_dbSvr = property;
+        }
+        
+        property = System.getProperty(PROPERTY_DB_NAME);
+        if (property != null) {
+        	m_dbName = property;
+        }
+        
+        property = System.getProperty(PROPERTY_DB_USER);
+        if (property != null) {
+        	m_dbUser = property;
+        }
+        
+        property = System.getProperty(PROPERTY_DB_PW);
+        if (property != null) {
+        	m_dbPass = property;
+        }
+        
 
     }
 
@@ -391,7 +422,7 @@ public class EventdStresser {
     private static Connection createConnection() throws ClassNotFoundException, SQLException {
         Class.forName("org.postgresql.Driver");
 
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://" + m_trapSink.getHostAddress() + ":5432/opennms", "opennms", "opennms");
+        Connection connection = DriverManager.getConnection("jdbc:postgresql://" + m_dbSvr + ":5432/"+m_dbName, m_dbUser, m_dbPass);
         return connection;
     }
 

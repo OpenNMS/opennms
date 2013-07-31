@@ -23,107 +23,50 @@
 
   <build>
     <plugins>
-      <!-- Compiles your custom GWT components with the GWT compiler -->
-      <!-- A hosted mode browser for client-side widget debugging can be run with the goal gwt:run after uncommenting the
-	   correct line below. A remote debugger can then be connected to port 8998. Note that e.g. a Jetty server should be running
-	   with the server side parts - use the goal jetty:run . -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwtPluginVersion}</version>
-        <configuration>
-          <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
-          <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
-          <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>resources</goal>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwtVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwtVersion}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      
-      <plugin>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-maven-plugin</artifactId>
-        <version>1.0.2</version>
-        <executions>
-          <execution>
-            <configuration></configuration>
-            <goals>
-              <goal>update-widgetset</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+        <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.plugin.version}</version>
+            <configuration>
+                <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+                <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets
+                </webappDirectory>
+                <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets
+                </hostedWebapp>
+                <noServer>true</noServer>
+                <!-- Remove draftCompile when project is ready -->
+                <draftCompile>true</draftCompile>
+                <compileReport>true</compileReport>
+                <style>OBF</style>
+                <strict>true</strict>
+                <runTarget>http://localhost:8980/opennms/topology</runTarget>
+                <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+            </configuration>
+            <executions>
+                <execution>
+                    <configuration>
+                        <!-- if you don't specify any modules, the plugin will find them -->
+                        <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                            </modules> -->
+                    </configuration>
+                    <goals>
+                        <goal>resources</goal>
+                        <goal>update-widgetset</goal>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
       
     </plugins>
 
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.codehaus.mojo</groupId>
-    								<artifactId>
-    									gwt-maven-plugin
-    								</artifactId>
-    								<versionRange>
-    									[2.2.0,)
-    								</versionRange>
-    								<goals>
-    									<goal>resources</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
   </build>
 
   <dependencies>
-    <!--
-	| uncomment to add all imported (non-local) bundles to your compilation classpath
-	<dependency>
-	<type>pom</type>
-	<groupId>${parent.groupId}</groupId>
-	<artifactId>provision</artifactId>
-	<optional>true</optional>
-	</dependency>
-    -->
 
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
       <artifactId>vaadin</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     
@@ -132,39 +75,12 @@
       <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--     <dependency> -->
+<!--         <groupId>org.opennms.features.topology</groupId> -->
+<!--         <artifactId>ssh</artifactId> -->
+<!--         <version>${project.version}</version> -->
+<!--     </dependency> -->
     
-    <dependency>
-        <groupId>org.opennms.features.topology</groupId>
-        <artifactId>ssh</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    
-    <dependency>
-   		<groupId>org.vaadin.addons</groupId>
-   		<artifactId>contextmenu</artifactId>
-   		<version>3.1.0</version>
-	</dependency>
-   
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <classifier>sources</classifier>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- these are required in order to ensure that the TopologyComponent class can load to it can be checked for annotations -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
@@ -174,14 +90,4 @@
     </dependency>
 
   </dependencies>
-  
-  <repositories>
-      
-    <repository>
-   	  <id>vaadin-addons</id>
-   	  <url>http://maven.vaadin.com/vaadin-addons</url>
-	</repository>
-	
-  </repositories>
-  
 </project>

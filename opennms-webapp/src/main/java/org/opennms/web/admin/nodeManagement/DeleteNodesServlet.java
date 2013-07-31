@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
@@ -54,6 +53,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -64,6 +65,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class DeleteNodesServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DeleteNodesServlet.class);
+
     private static final long serialVersionUID = 573510937493956121L;
 
     private File m_snmpRrdDirectory;
@@ -85,10 +89,10 @@ public class DeleteNodesServlet extends HttpServlet {
         m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
 
         m_snmpRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
-        log().debug("SNMP RRD directory: " + m_snmpRrdDirectory);
+        LOG.debug("SNMP RRD directory: {}", m_snmpRrdDirectory);
 
         m_rtRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.RESPONSE_DIRECTORY);
-        log().debug("Response time RRD directory: " + m_rtRrdDirectory);
+        LOG.debug("Response time RRD directory: {}", m_rtRrdDirectory);
     }
 
     /** {@inheritDoc} */
@@ -105,11 +109,11 @@ public class DeleteNodesServlet extends HttpServlet {
             File nodeDir = new File(m_snmpRrdDirectory, nodeId.toString());
 
             if (nodeDir.exists() && nodeDir.isDirectory()) {
-                log().debug("Attempting to delete node data directory: " + nodeDir.getAbsolutePath());
+                LOG.debug("Attempting to delete node data directory: {}", nodeDir.getAbsolutePath());
                 if (deleteDir(nodeDir)) {
-                    log().info("Node SNMP data directory deleted successfully: " + nodeDir.getAbsolutePath());
+                    LOG.info("Node SNMP data directory deleted successfully: {}", nodeDir.getAbsolutePath());
                 } else {
-                    log().warn("Node SNMP data directory *not* deleted successfully: " + nodeDir.getAbsolutePath());
+                    LOG.warn("Node SNMP data directory *not* deleted successfully: {}", nodeDir.getAbsolutePath());
                 }
             }
             
@@ -118,11 +122,11 @@ public class DeleteNodesServlet extends HttpServlet {
                 File intfDir = new File(m_rtRrdDirectory, ipAddr);
 
                 if (intfDir.exists() && intfDir.isDirectory()) {
-                    log().debug("Attempting to delete node response time data directory: " + intfDir.getAbsolutePath());
+                    LOG.debug("Attempting to delete node response time data directory: {}", intfDir.getAbsolutePath());
                     if (deleteDir(intfDir)) {
-                        log().info("Node response time data directory deleted successfully: " + intfDir.getAbsolutePath());
+                        LOG.info("Node response time data directory deleted successfully: {}", intfDir.getAbsolutePath());
                     } else {
-                        log().warn("Node response time data directory *not* deleted successfully: " + intfDir.getAbsolutePath());
+                        LOG.warn("Node response time data directory *not* deleted successfully: {}", intfDir.getAbsolutePath());
                     }
                 }
             }
@@ -131,7 +135,7 @@ public class DeleteNodesServlet extends HttpServlet {
         // Now, tell capsd to delete the node from the database
         for (Integer nodeId : nodeList) {
             sendDeleteNodeEvent(nodeId);
-            log().debug("End of delete of node " + nodeId);
+            LOG.debug("End of delete of node {}", nodeId);
         }
 
         // forward the request for proper display
@@ -213,12 +217,9 @@ public class DeleteNodesServlet extends HttpServlet {
         // Delete the file/directory itself
         boolean successful = file.delete();
         if (!successful) {
-            log().warn("Failed to delete file: " + file.getAbsolutePath());
+            LOG.warn("Failed to delete file: {}", file.getAbsolutePath());
         }
         return successful;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }

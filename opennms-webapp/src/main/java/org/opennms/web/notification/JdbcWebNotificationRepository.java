@@ -36,11 +36,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
 import org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -61,6 +62,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @since 1.8.1
  */
 public class JdbcWebNotificationRepository implements WebNotificationRepository, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JdbcWebNotificationRepository.class);
+
     
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
@@ -127,7 +131,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
                 criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
                     @Override
                     public void visitFilter(org.opennms.web.filter.Filter filter) throws SQLException{
-                        LogUtils.infof(this, "filter sql: " + filter.getSql());
+                        LOG.info("filter sql: {}", filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });

@@ -45,9 +45,9 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -125,7 +125,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(final NodeDao nodeDao) {
         m_writeLock.lock();
@@ -139,7 +139,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(final CategoryDao categoryDao) {
         m_writeLock.lock();
@@ -153,7 +153,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
@@ -376,21 +376,19 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
     /** {@inheritDoc} */
     @Override
-    public void importProvisioningGroup(final String groupName) {
+    public void importProvisioningGroup(final String requisitionName) {
         m_writeLock.lock();
         
         try {
-            // first we update the import timestamp
-            final Requisition group = getProvisioningGroup(groupName);
-            group.updateDateStamp();
-            saveProvisioningGroup(groupName, group);
+            final Requisition requisition = getProvisioningGroup(requisitionName);
+            saveProvisioningGroup(requisitionName, requisition);
             
             // then we send an event to the importer
             final EventProxy proxy = Util.createEventProxy();
     
             m_pendingForeignSourceRepository.flush();
-            final String url = m_pendingForeignSourceRepository.getRequisitionURL(groupName).toString();
-            Assert.notNull(url, "Could not find url for group "+groupName+".  Does it exists?");
+            final String url = m_pendingForeignSourceRepository.getRequisitionURL(requisitionName).toString();
+            Assert.notNull(url, "Could not find url for group "+requisitionName+".  Does it exists?");
             
             final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
             bldr.addParam(EventConstants.PARM_URL, url);
@@ -398,7 +396,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             try {
                 proxy.send(bldr.getEvent());
             } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group "+groupName, e);
+                throw new DataAccessResourceFailureException("Unable to send event to import group "+requisitionName, e);
             }
         } finally {
             m_writeLock.unlock();

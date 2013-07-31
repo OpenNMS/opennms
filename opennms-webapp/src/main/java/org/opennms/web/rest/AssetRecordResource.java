@@ -41,12 +41,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("assetRecord")
 @Transactional
 public class AssetRecordResource extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AssetRecordResource.class);
+
     @Context 
     UriInfo m_uriInfo;
 
@@ -114,7 +119,7 @@ public class AssetRecordResource extends OnmsRestService {
             if (assetRecord == null) {
                 throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
             }
-            log().debug("updateAssetRecord: updating category " + assetRecord);
+            LOG.debug("updateAssetRecord: updating category {}", assetRecord);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -124,7 +129,7 @@ public class AssetRecordResource extends OnmsRestService {
                 }
             }
        
-            log().debug("updateAssetRecord: assetRecord " + assetRecord + " updated");
+            LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
             m_nodeDao.saveOrUpdate(node);
             
             try {

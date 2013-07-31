@@ -33,7 +33,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>AttributeGroup class.</p>
@@ -42,6 +43,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class AttributeGroup {
+    private static final Logger LOG = LoggerFactory.getLogger(AttributeGroup.class);
     
     private CollectionResource m_resource;
     private AttributeGroupType m_groupType;
@@ -100,9 +102,7 @@ public class AttributeGroup {
      * @param visitor a {@link org.opennms.netmgt.config.collector.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor) {
-        if (log().isDebugEnabled()) {
-            log().debug("Visiting Group "+this);
-        }
+        LOG.debug("Visiting Group {}", this);
         visitor.visitGroup(this);
         
         for(CollectionAttribute attr : getAttributes()) {
@@ -120,16 +120,10 @@ public class AttributeGroup {
      */
     public boolean shouldPersist(ServiceParameters params) {
         boolean shouldPersist = doShouldPersist();
-        if (log().isDebugEnabled()) {
-            log().debug(this+".shouldPersist = "+shouldPersist);
-        }
+        LOG.debug("{}.shouldPersist = {}", this, shouldPersist);
         return shouldPersist;   
  
         
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private boolean doShouldPersist() {

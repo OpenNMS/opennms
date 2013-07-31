@@ -28,21 +28,19 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smslib.AGateway;
-import org.smslib.GatewayException;
-import org.smslib.IGatewayStatusNotification;
-import org.smslib.IOutboundMessageNotification;
-import org.smslib.IUSSDNotification;
+import org.smslib.*;
 import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -54,8 +52,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class GatewayGroupListener implements InitializingBean {
-
-    private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
+    private static final Logger LOG = LoggerFactory.getLogger(GatewayGroupListener.class);
 
     private SmsServiceRegistrar m_smsServiceRegistrar;
     private Map<GatewayGroup, SmsServiceImpl> m_services = new HashMap<GatewayGroup, SmsServiceImpl>();
@@ -74,7 +71,7 @@ public class GatewayGroupListener implements InitializingBean {
         AGateway[] gateways = gatewayGroup.getGateways();
 
         if (gateways.length == 0) {
-            log.error("A Gateway group was registered with ZERO gateways!");
+            LOG.error("A Gateway group was registered with ZERO gateways!");
             return;
         }
 
@@ -92,8 +89,8 @@ public class GatewayGroupListener implements InitializingBean {
                 }
                 smsService.addGateway(gateways[i]);
 
-            } catch (final GatewayException e) {
-                LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
+            } catch (final Exception e) {
+                LOG.warn("Unable to add gateway ({}) to SMS service", gateways[i], e);
             }
         }
 
@@ -118,7 +115,11 @@ public class GatewayGroupListener implements InitializingBean {
 
         service.unregister(m_smsServiceRegistrar);
 
-        service.stop();
+        try {
+            service.stop();
+        } catch (Exception e) {
+            LOG.warn("Unable to stop SMS service: {}", gatewayGroup, e);
+        }
 
     }
 

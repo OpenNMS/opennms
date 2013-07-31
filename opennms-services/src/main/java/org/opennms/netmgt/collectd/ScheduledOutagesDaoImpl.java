@@ -33,8 +33,9 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ScheduledOutagesDaoImpl class.</p>
@@ -43,6 +44,8 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
  * @version $Id: $
  */
 public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduledOutagesDaoImpl.class);
 	
 	/**
 	 * <p>Constructor for ScheduledOutagesDaoImpl.</p>
@@ -51,22 +54,18 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 		loadScheduledOutagesConfigFactory();
 	}
 	
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
 	private void loadScheduledOutagesConfigFactory() {
 	    // Load up the configuration for the scheduled outages.
 	    try {
 	        PollOutagesConfigFactory.reload();
 	    } catch (MarshalException ex) {
-	        log().fatal("init: Failed to load poll-outage configuration", ex);
+	        LOG.error("init: Failed to load poll-outage configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    } catch (ValidationException ex) {
-	        log().fatal("init: Failed to load poll-outage configuration", ex);
+	        LOG.error("init: Failed to load poll-outage configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    } catch (IOException ex) {
-	        log().fatal("init: Failed to load poll-outage configuration", ex);
+	        LOG.error("init: Failed to load poll-outage configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    }
 	}

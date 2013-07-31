@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -57,6 +58,7 @@ import de.novanic.eventservice.service.EventExecutorService;
  * @since 1.8.1
  */
 public class LocationDataManager { //implements LocationStatusService {
+    private static final Logger LOG = LoggerFactory.getLogger(LocationDataManager.class);
     private LocationDataService m_locationDataService;
     private Set<String> m_activeApplications = new HashSet<String>();
     private Timer m_timer = new Timer();
@@ -162,7 +164,7 @@ public class LocationDataManager { //implements LocationStatusService {
     }
 
     private void pushApplicationData(final EventExecutorService service) {
-        LogUtils.debugf(this, "pushing initialized applications");
+        LOG.debug("pushing initialized applications");
         
         final List<ApplicationInfo> appInfos = getLocationDataService().getInfoForAllApplications();
         
@@ -170,11 +172,11 @@ public class LocationDataManager { //implements LocationStatusService {
             service.addEventUserSpecific(new ApplicationUpdatedRemoteEvent(appInfo));
         }
         
-        LogUtils.debugf(this, "finished pushing initialized applications");
+        LOG.debug("finished pushing initialized applications");
     }
 
     private void pushLocationData(final EventExecutorService service) {
-        LogUtils.debugf(this, "pushing initialized locations");
+        LOG.debug("pushing initialized locations");
         
         List<LocationInfo> locations = getLocationDataService().getInfoForAllLocations();
         
@@ -183,7 +185,7 @@ public class LocationDataManager { //implements LocationStatusService {
             service.addEventUserSpecific(event);
         }
         
-        LogUtils.debugf(this, "finished pushing initialized locations");
+        LOG.debug("finished pushing initialized locations");
     }
 
     void doInitialize(EventExecutorService service) {
@@ -193,18 +195,18 @@ public class LocationDataManager { //implements LocationStatusService {
     }
 
     void doUpdate(final Date startDate, final Date endDate, final EventExecutorService service) {
-        LogUtils.debugf(this, "pushing monitor status updates");
+        LOG.debug("pushing monitor status updates");
         service.addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(getLocationDataService().getUpdatedLocationsBetween(startDate, endDate)));
-        LogUtils.debugf(this, "finished pushing monitor status updates");
+        LOG.debug("finished pushing monitor status updates");
     
         // Every 5 minutes, update the application list too
-        LogUtils.debugf(this, "pushing application updates");
+        LOG.debug("pushing application updates");
         final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
         final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(getLocationDataService(), service, getActiveApplications());
         appHandlers.add(applicationHandler);
         getLocationDataService().handleAllApplications(appHandlers);
         setActiveApplications(applicationHandler.getApplicationNames());
-        LogUtils.debugf(this, "finished pushing application updates");
+        LOG.debug("finished pushing application updates");
     }
 
     void start(final EventExecutorService service) {

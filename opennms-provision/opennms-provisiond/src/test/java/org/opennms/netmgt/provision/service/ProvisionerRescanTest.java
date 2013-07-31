@@ -42,18 +42,16 @@ import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -64,8 +62,11 @@ import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -77,22 +78,20 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
 public class ProvisionerRescanTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanTest.class);
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -110,7 +109,8 @@ public class ProvisionerRescanTest implements InitializingBean {
     private ProvisionService m_provisionService;
 
     @Autowired
-    private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
+    @Qualifier("scheduledExecutor")
+    private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
@@ -161,7 +161,7 @@ public class ProvisionerRescanTest implements InitializingBean {
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
         
-        m_pausibleExecutor.pause();
+        m_scheduledExecutor.pause();
     }
     
     @After
@@ -217,9 +217,9 @@ public class ProvisionerRescanTest implements InitializingBean {
         assertEquals(2, getNodeDao().countAll());
 
         for (final OnmsNode n : getNodeDao().findAll()) {
-        	LogUtils.infof(this, "found node %s", n);
+        	LOG.info("found node {}", n);
         	for (final OnmsIpInterface iface : n.getIpInterfaces()) {
-        		LogUtils.infof(this, "  interface: %s", iface);
+        		LOG.info("  interface: {}", iface);
         	}
         }
         

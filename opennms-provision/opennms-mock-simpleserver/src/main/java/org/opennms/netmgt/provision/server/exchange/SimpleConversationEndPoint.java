@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.opennms.core.utils.LogUtils;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SimpleConversationEndPoint class.</p>
@@ -42,6 +42,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class SimpleConversationEndPoint {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleConversationEndPoint.class);
     
     public static class SimpleExchange implements Exchange{
         private ResponseHandler m_responseHandler;
@@ -61,7 +63,7 @@ public class SimpleConversationEndPoint {
         public boolean processResponse(BufferedReader in) throws IOException {
             String input = in.readLine();
             
-            LogUtils.infof(this, "SimpleExchange response: " + input);
+            LOG.info("SimpleExchange response: {}", input);
             if(input == null) { return false;}
             
             return matchResponseByString(input);

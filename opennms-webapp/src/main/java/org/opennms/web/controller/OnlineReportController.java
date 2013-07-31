@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.CategoryConfigService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -147,7 +147,7 @@ public class OnlineReportController extends SimpleFormController {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
     	m_categoryDao = categoryDao;

@@ -47,7 +47,8 @@ import org.drools.WorkingMemory;
 import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
@@ -59,6 +60,7 @@ import org.springframework.core.io.Resource;
  * @version $Id: $
  */
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
+    private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngine.class);
 
     private WorkingMemory m_workingMemory;
     private List<String> m_interestingEvents;
@@ -70,20 +72,20 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
-    	LogUtils.debugf(this, "Begin correlation for Event %d uei: %s", e.getDbid(), e.getUei());
+	LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
-    	LogUtils.debugf(this, "End correlation for Event %d uei: %s", e.getDbid(), e.getUei());
+	LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
     /** {@inheritDoc} */
     @Override
     protected synchronized void timerExpired(final Integer timerId) {
-    	LogUtils.infof(this, "Begin correlation for Timer %d", timerId);
+	LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.insert(expiration);
         m_workingMemory.fireAllRules();
-    	LogUtils.debugf(this, "Begin correlation for Timer %d", timerId);
+	LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
     /** {@inheritDoc} */
@@ -140,7 +142,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase( config );
 
         if (builder.hasErrors()) {
-            LogUtils.warnf(this, "Unable to initialize Drools engine: %s", builder.getErrors());
+            LOG.warn("Unable to initialize Drools engine: {}", builder.getErrors());
             throw new IllegalStateException("Unable to initialize Drools engine: " + builder.getErrors());
         }
 
@@ -160,7 +162,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         for (final Resource rulesFile : m_rules) {
             Reader rdr = null;
             try {
-                LogUtils.debugf(this, "Loading rules file: %s", rulesFile);
+                LOG.debug("Loading rules file: {}", rulesFile);
                 rdr = new InputStreamReader( rulesFile.getInputStream(), "UTF-8" );
                 builder.addPackageFromDrl( rdr );
             } finally {

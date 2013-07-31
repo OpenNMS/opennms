@@ -75,16 +75,17 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ackd.Parameter;
-import org.opennms.netmgt.dao.AckdConfigurationDao;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AckdConfigurationDao;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>HypericAckProcessor class.</p>
@@ -93,6 +94,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
  * @version $Id: $
  */
 public class HypericAckProcessor implements AckProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(HypericAckProcessor.class);
 
     /** Constant <code>READER_NAME_HYPERIC="HypericReader"</code> */
     public static final String READER_NAME_HYPERIC = "HypericReader";
@@ -237,19 +239,15 @@ public class HypericAckProcessor implements AckProcessor {
         }
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(HypericAckProcessor.class);
-    }
-
     /// TODO Verify that this works properly
     /**
      * <p>reloadConfigs</p>
      */
     @Override
     public void reloadConfigs() {
-        log().debug("reloadConfigs: reloading configuration...");
+        LOG.debug("reloadConfigs: reloading configuration...");
         m_ackdConfigDao.reloadConfiguration();
-        log().debug("reloadConfigs: configuration reloaded");
+        LOG.debug("reloadConfigs: configuration reloaded");
     }
 
     /**
@@ -309,7 +307,7 @@ public class HypericAckProcessor implements AckProcessor {
         List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
 
         try {
-            log().info("run: Processing Hyperic acknowledgments..." );
+            LOG.info("run: Processing Hyperic acknowledgments..." );
 
             // Query list of outstanding alerts with remote platform identifiers
             List<OnmsAlarm> unAckdAlarms = fetchUnclearedHypericAlarms();
@@ -332,7 +330,7 @@ public class HypericAckProcessor implements AckProcessor {
             }
 
             if (legacyAlarmCount > 0) {
-                log().info(String.valueOf(legacyAlarmCount) + " Hyperic alarms without an alert.source param found, these alarms will not be processed");
+                LOG.info("{} Hyperic alarms without an alert.source param found, these alarms will not be processed", String.valueOf(legacyAlarmCount));
             }
 
             // Connect to each Hyperic system and query for the status of corresponding alerts 
@@ -344,8 +342,8 @@ public class HypericAckProcessor implements AckProcessor {
                 String hypericUrl = getUrlForHypericSource(hypericSystem);
                 if (hypericUrl == null) {
                     // If the alert.source doesn't match anything in our current config, just ignore it, warn in the logs
-                    log().warn("Could not find Hyperic host URL for the following platform ID: " + hypericSystem);
-                    log().warn("Skipping processing of " + alarmsForSystem.size() + " alarms with that platform ID");
+                    LOG.warn("Could not find Hyperic host URL for the following platform ID: {}", hypericSystem);
+                    LOG.warn("Skipping processing of {} alarms with that platform ID", alarmsForSystem.size());
                     continue;
                 }
 
@@ -366,7 +364,7 @@ public class HypericAckProcessor implements AckProcessor {
                         OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
 
                         if (alarm == null) {
-                            log().warn("Could not find the OpenNMS alarm for the following Hyperic alert: URL: \"" + hypericUrl + "\", id: " + alert.getAlertId());
+                            LOG.warn("Could not find the OpenNMS alarm for the following Hyperic alert: URL: \"{}\", id: {}", hypericUrl, alert.getAlertId());
                         } else if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
                             // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
                             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", (alert.getFixTime() != null) ? alert.getFixTime() : new Date());
@@ -383,8 +381,8 @@ public class HypericAckProcessor implements AckProcessor {
 
                     }
                 } catch (Throwable e) {
-                    log().warn("run: threw exception when processing alarms for Hyperic system " + hypericSystem + ": " + e.getMessage());
-                    log().warn("run: " + acks.size() + " acknowledgements processed successfully before exception");
+                    LOG.warn("run: threw exception when processing alarms for Hyperic system {}", hypericSystem, e.getMessage());
+                    LOG.warn("run: {} acknowledgements processed successfully before exception", acks.size());
                 } finally {
                     if (acks.size() > 0) {
                         m_ackDao.processAcks(acks);
@@ -392,9 +390,9 @@ public class HypericAckProcessor implements AckProcessor {
                 }
             }
 
-            log().info("run: Finished processing Hyperic acknowledgments (" + acks.size() + " ack(s) processed for " + unAckdAlarms.size() + " alarm(s))" );
+            LOG.info("run: Finished processing Hyperic acknowledgments ({} ack(s) processed for {} alarm(s))", acks.size(), unAckdAlarms.size());
         } catch (Throwable e) {
-            log().warn("run: threw exception: " + e.getMessage(), e);
+            LOG.warn("run: threw exception", e);
         }
     }
 
@@ -515,7 +513,7 @@ public class HypericAckProcessor implements AckProcessor {
                 userinfo = hypericUri.getUserInfo();
                 // httpMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost("localhost", hypericUri.getPort()));
             } catch (URISyntaxException e) {
-                log().warn("Could not parse URI to get username/password stanza: " + hypericUrl, e);
+                LOG.warn("Could not parse URI to get username/password stanza: {}", hypericUrl, e);
             }
             if (userinfo != null && !"".equals(userinfo)) {
                 // Add the credentials to the HttpClient instance
@@ -541,8 +539,7 @@ public class HypericAckProcessor implements AckProcessor {
                             Credentials creds = credsProvider.getCredentials(authScope);
                             // If found, generate BasicScheme preemptively
                             if (creds != null) {
-                                authState.setAuthScheme(new BasicScheme());
-                                authState.setCredentials(creds);
+                                authState.update(new BasicScheme(), creds);
                             }
                         }
                     }
@@ -631,14 +628,14 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>setAckdConfigDao</p>
      *
-     * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     * @param configDao a {@link org.opennms.netmgt.dao.api.AckdConfigurationDao} object.
      */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdConfigDao = configDao;
     }
 
     /**
-     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.api.AcknowledgmentDao} object.
      */
     public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
@@ -656,7 +653,7 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>setAlarmDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public synchronized void setAlarmDao(final AlarmDao dao) {
         m_alarmDao = dao;

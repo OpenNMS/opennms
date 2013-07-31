@@ -45,15 +45,16 @@ import javax.servlet.http.HttpSession;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -68,6 +69,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class GroupController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(GroupController.class);
+
 
     @Autowired
     private OnmsMapDao m_onmsMapDao;
@@ -96,7 +100,7 @@ public class GroupController extends AbstractController implements InitializingB
         }
         
         
-        LogUtils.debugf(this, "!!!! Calling operation %s in GroupController", operation);
+        LOG.debug("!!!! Calling operation {} in GroupController", operation);
         
         if ("create".equalsIgnoreCase(operation)){
             return createGroup(request, response);

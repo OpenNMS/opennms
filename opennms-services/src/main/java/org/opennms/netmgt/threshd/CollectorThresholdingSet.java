@@ -40,6 +40,8 @@ import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>CollectorThresholdingSet class.</p>
@@ -48,7 +50,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class CollectorThresholdingSet extends ThresholdingSet {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorThresholdingSet.class);
+
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
     boolean storeByForeignSource = false;
@@ -66,7 +69,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
         String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
         storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
         storeByForeignSource = isStoreByForeignSource();
-        log().debug("storeByForeignSource = " + storeByForeignSource);
+        LOG.debug("storeByForeignSource = {}", storeByForeignSource);
     }
     
     public static boolean isStoreByForeignSource() {
@@ -98,7 +101,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     /** {@inheritDoc} */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
         if (!isCollectionEnabled(resource)) {
-            log().debug("applyThresholds: Ignoring resource " + resource + " because data collection is disabled for this resource.");
+            LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
             return new LinkedList<Event>();
         }
 		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
@@ -114,7 +117,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     @Override
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         if (resource.isAnInterfaceResource() && !resource.isValidInterfaceResource()) {
-            log().info("passedThresholdFilters: Could not get data interface information for '" + resource.getIfLabel() + "' or this interface has an invalid ifIndex.  Not evaluating threshold.");
+            LOG.info("passedThresholdFilters: Could not get data interface information for '{}' or this interface has an invalid ifIndex.  Not evaluating threshold.", resource.getIfLabel());
             return false;
         }
         return super.passedThresholdFilters(resource, thresholdEntity);

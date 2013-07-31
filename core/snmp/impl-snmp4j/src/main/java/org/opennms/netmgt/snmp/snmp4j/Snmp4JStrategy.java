@@ -251,7 +251,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         try {
             session = agentConfig.createSnmpSession();
         } catch (IOException e) {
-            LOG.error("send: Could not create SNMP session for agent {} : {}", agentConfig, e, e);
+            LOG.error("send: Could not create SNMP session for agent {}", agentConfig, e);
             return new SnmpValue[] { null };
         }
 
@@ -260,7 +260,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 try {
                     session.listen();
                 } catch (IOException e) {
-                    LOG.error("send: error setting up listener for SNMP responses: {}", e, e);
+                    LOG.error("send: error setting up listener for SNMP responses", e);
                     return new SnmpValue[] { null };
                 }
             }
@@ -274,10 +274,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
                     return null;
                 }
             } catch (IOException e) {
-                LOG.error("send: error during SNMP operation: " + e, e);
+                LOG.error("send: error during SNMP operation", e);
                 return new SnmpValue[] { null };
             } catch (Throwable e) {
-                LOG.error("send: unexpected error during SNMP operation: " + e, e);
+                LOG.error("send: unexpected error during SNMP operation", e);
                 return new SnmpValue[] { null };
             }
         } finally {
@@ -309,7 +309,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         // TODO should this throw an exception?  This situation is fairly bogus.
         if (pdu.getVariableBindings().size() != oids.length) {
             Exception e = new Exception("This is a bogus exception so we can get a stack backtrace");
-            LOG.error("Prepared PDU does not have as many variable bindings as there are OIDs.  There are " + oids.length + " OIDs and " + pdu.getVariableBindings() + " variable bindings.", e);
+            LOG.error("Prepared PDU does not have as many variable bindings as there are OIDs.  There are {} OIDs and {} variable bindings.", oids.length,pdu.getVariableBindings(), e);
             return null;
         }
         
@@ -323,15 +323,15 @@ public class Snmp4JStrategy implements SnmpStrategy {
         SnmpValue[] retvalues = { null };
 
         if (responseEvent.getResponse() == null) {
-            LOG.warn("processResponse: Timeout.  Agent: "+agentConfig);
+            LOG.warn("processResponse: Timeout.  Agent: {}", agentConfig);
         } else if (responseEvent.getError() != null) {
-            LOG.warn("processResponse: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
+            LOG.warn("processResponse: Error during get operation.  Error: {}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
-            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: "+responseEvent.getResponse().getVariableBindings());
+            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}", responseEvent.getResponse().getVariableBindings());
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
             LOG.warn("processResponse: Received PDU with 0 varbinds.");
         } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-            LOG.info("processResponse: Null value returned in varbind: " + responseEvent.getResponse().get(0));
+            LOG.info("processResponse: Null value returned in varbind: {}", responseEvent.getResponse().get(0));
         } else {
             retvalues = convertResponseToValues(responseEvent);
 
@@ -607,7 +607,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         try {
             session.close();
         } catch (IOException e) {
-            LOG.error("error closing SNMP connection: " + e, e);
+            LOG.error("error closing SNMP connection", e);
         }
     }
 

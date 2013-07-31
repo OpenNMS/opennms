@@ -3,6 +3,7 @@ package org.opennms.features.topology.plugins.status.internal;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.easymock.EasyMock;
@@ -13,11 +14,12 @@ import org.opennms.features.topology.api.topo.AbstractRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.vaadin.data.Item;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 public class AlarmStatusProviderTest {
     
@@ -113,7 +115,7 @@ public class AlarmStatusProviderTest {
         Vertex vertex = new TestVertex();
         
         
-        EasyMock.expect(m_alarmDao.findMatching(EasyMock.notNull(Criteria.class))).andReturn(createNormalStatusList());
+        EasyMock.expect(m_alarmDao.getNodeAlarmSummaries(EasyMock.anyInt())).andReturn(createNormalAlarmSummaryList());
         
         EasyMock.replay(m_alarmDao);
         
@@ -125,13 +127,10 @@ public class AlarmStatusProviderTest {
     }
 
 
-    private List<OnmsAlarm> createNormalStatusList() {
-        List<OnmsAlarm> alarms = new ArrayList<OnmsAlarm>();
-        OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setSeverity(OnmsSeverity.NORMAL);
-        alarms.add(onmsAlarm);
-        
-        return null;
+    private List<AlarmSummary> createNormalAlarmSummaryList() {
+        List<AlarmSummary> alarms = new ArrayList<AlarmSummary>();
+        alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.INDETERMINATE, 1L));
+        return alarms;
     }
 
 }

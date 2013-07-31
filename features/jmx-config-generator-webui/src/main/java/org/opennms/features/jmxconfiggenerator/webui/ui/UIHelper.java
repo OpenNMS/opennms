@@ -37,19 +37,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.jmxconfiggenerator.webui.ui.mbeans.ViewStateChangedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Notification.Type;
 
 /**
  * This class provides several helper methods for ui stuff, e.g. creating a
@@ -58,6 +60,8 @@ import com.vaadin.ui.Window.Notification;
  * @author Markus von Rüden
  */
 public class UIHelper {
+
+	private static final Logger LOG = LoggerFactory.getLogger(UIHelper.class);
 
 	/**
 	 * Helper to create a layout (Horizontal, Vertical, Form, ...) with none, one or
@@ -201,12 +205,12 @@ public class UIHelper {
 	 * {@link Closeable#close()} occurs, the IOException is catched and logged.
 	 * No further information is forwarded.
 	 */
-	public static final void closeSilently(Closeable closeable) {
+	public static void closeSilently(Closeable closeable) {
 		if (closeable == null) return; // prevent NPE
 		try {
 			closeable.close();
 		} catch (IOException e) {
-			LogUtils.warnf(UIHelper.class, e, "Error while closing resource '%s'.", closeable);
+			LOG.warn("Error while closing resource '{}'.", closeable, e);
 		}
 	}
 
@@ -226,15 +230,14 @@ public class UIHelper {
 	public static String loadContentFromFile(final Class<?> clazz, final String resourceName) {
 		// prevent NullPointerException
 		if (clazz == null || resourceName == null) {
-			LogUtils.warnf(UIHelper.class, "loadContentFromFile not invoked, due to null arguments");
+			LOG.warn("loadContentFromFile not invoked, due to null arguments");
 			return "";
 		}
 
 		// check if resource is there
 		final InputStream is = clazz.getResourceAsStream(resourceName);
 		if (is == null) {
-			LogUtils.warnf(UIHelper.class, "Resource '%s' couldn't be loaded from class '%s'", resourceName,
-					clazz.getName());
+			LOG.warn("Resource '{}' couldn't be loaded from class '{}'", resourceName, clazz.getName());
 			return "";
 		}
 
@@ -249,7 +252,7 @@ public class UIHelper {
 				result.append(System.getProperty("line.separator"));
 			}
 		} catch (IOException ioEx) {
-			LogUtils.errorf(clazz, ioEx, "Error while reading resource from '%s'.", resourceName);
+			LOG.error("Error while reading resource from '{}'.", resourceName, ioEx);
 		} finally {
 			closeSilently(bufferedReader);
 		}
@@ -262,10 +265,8 @@ public class UIHelper {
 	 * @param errorMessage
 	 *            the error message.
 	 */
-	public static void showValidationError(Window window, String errorMessage) {
-		if (window == null) return;
-		window.showNotification("Validation error.", errorMessage != null ? errorMessage : "An unknown error occured.",
-				Notification.TYPE_WARNING_MESSAGE);
+	public static void showValidationError(String errorMessage) {
+		Notification.show("Validation Error", errorMessage != null ? errorMessage : "An unknown error occured.", Type.WARNING_MESSAGE);
 
 	}
 }

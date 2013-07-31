@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -45,6 +44,8 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -54,6 +55,9 @@ import org.springframework.util.StringUtils;
  * <p>EventBuilder class.</p>
  */
 public class EventBuilder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(EventBuilder.class);
+
     
     private Event m_event;
     
@@ -518,7 +522,7 @@ public class EventBuilder {
             try {
                 w.setPropertyValue(name, val);
             } catch (final BeansException e) {
-                LogUtils.warnf(this, e, "Could not set field on event: %s", name);
+                LOG.warn("Could not set field on event: {}", name, e);
             }
         }
     }

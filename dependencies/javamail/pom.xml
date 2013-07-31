@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>javamail-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JavaMail Dependencies</name>
+  <name>OpenNMS Dependencies JavaMail</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JavaMail.

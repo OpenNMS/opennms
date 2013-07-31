@@ -19,7 +19,7 @@
 	</bean>
   
   <bean id="mockConfigDao" class="org.easymock.EasyMock" factory-method="createStrictMock">
-	<constructor-arg value="org.opennms.netmgt.dao.OnmsReportConfigDao"/>
+	<constructor-arg value="org.opennms.netmgt.dao.api.OnmsReportConfigDao"/>
   </bean>
   
   <bean id="mockCalendarCalculator" class="org.easymock.EasyMock" factory-method="createStrictMock">

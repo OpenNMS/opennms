@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrdtool-api</artifactId>
-  <name>OpenNMS RRDTool RRD Interface</name>
+  <name>OpenNMS RRD RRDTool Interface</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

@@ -43,7 +43,8 @@ import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
@@ -68,6 +69,7 @@ import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactor
  * @author Seth
  */
 public class JiraTicketerPlugin implements Plugin {
+    private static final Logger LOG = LoggerFactory.getLogger(JiraTicketerPlugin.class);
 
     protected final JiraRestClientFactory clientFactory = new JerseyJiraRestClientFactory();
 
@@ -81,9 +83,9 @@ public class JiraTicketerPlugin implements Plugin {
                 return clientFactory.createWithBasicHttpAuthentication(jiraUri, getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password"));
             }
         } catch (MalformedURLException e) {
-            log().error("Failed to parse URL: " + getProperties().getProperty("jira.host"));
+            LOG.error("Failed to parse URL: {}", getProperties().getProperty("jira.host"));
         } catch (URISyntaxException e) {
-            log().error("Failed to parse URI: " + getProperties().getProperty("jira.host"));
+            LOG.error("Failed to parse URI: {}", getProperties().getProperty("jira.host"));
         }
         return null;
     }
@@ -167,13 +169,13 @@ public class JiraTicketerPlugin implements Plugin {
             in = new FileInputStream(config);
             props.load(in);
         } catch (IOException e) {
-            log().error("Unable to load " + config + " ignoring.", e);
+            LOG.error("Unable to load {} ignoring.", config, e);
         } finally {
             IOUtils.closeQuietly(in);
         }
 
-        log().debug("Loaded user: " + props.getProperty("jira.username"));
-        log().debug("Loaded type: " + props.getProperty("jira.type"));
+        LOG.debug("Loaded user: {}", props.getProperty("jira.username"));
+        LOG.debug("Loaded type: {}", props.getProperty("jira.type"));
 
         return props;
 
@@ -200,7 +202,7 @@ public class JiraTicketerPlugin implements Plugin {
 
         } else {
             // Otherwise update the existing ticket
-            log().info("Received ticket: " + ticket.getId());
+            LOG.info("Received ticket: {}", ticket.getId());
 
             Issue issue = jira.getIssueClient().getIssue(ticket.getId(), new NullProgressMonitor());
 
@@ -209,36 +211,26 @@ public class JiraTicketerPlugin implements Plugin {
                 Comment comment = Comment.valueOf("Issue resolved by OpenNMS.");
                 for (Transition transition : transitions) {
                     if ("Resolve Issue".equals(transition.getName())) {
-                        log().info("Resolving ticket " + ticket.getId());
+                        LOG.info("Resolving ticket {}", ticket.getId());
                         // Resolve the issue
                         jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
                         return;
                     }
                 }
-                log().warn("Could not resolve ticket " + ticket.getId() + ", no \"Resolve Issue\" operation available.");
+                LOG.warn("Could not resolve ticket {}, no \"Resolve Issue\" operation available.", ticket.getId());
             } else if (Ticket.State.OPEN.equals(ticket.getState())) {
                 // This case is most likely never used.
                 Comment comment = Comment.valueOf("Issue reopened by OpenNMS.");
                 for (Transition transition : transitions) {
                     if ("Reopen Issue".equals(transition.getName())) {
-                        log().info("Reopening ticket " + ticket.getId());
+                        LOG.info("Reopening ticket {}", ticket.getId());
                         // Resolve the issue
                         jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
                         return;
                     }
                 }
-                log().warn("Could not reopen ticket " + ticket.getId() + ", no \"Reopen Issue\" operation available.");
+                LOG.warn("Could not reopen ticket {}, no \"Reopen Issue\" operation available.", ticket.getId());
             }
         }
     }
-
-    /**
-     * Convenience logging.
-     *
-     * @return a log4j Category for this class
-     */
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(JiraTicketerPlugin.class);
-    }
-
 }

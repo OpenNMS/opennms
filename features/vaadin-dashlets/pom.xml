@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.features</artifactId>
+        <version>1.13.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features</groupId>
+    <artifactId>vaadin-dashlets</artifactId>
+
+    <name>org.opennms.features.vaadin-dashlets</name>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>dashlet-alarms</module>
+        <module>dashlet-map</module>
+        <module>dashlet-summary</module>
+        <module>dashlet-image</module>
+        <module>dashlet-charts</module>
+        <module>dashlet-features</module>
+    </modules>
+</project>

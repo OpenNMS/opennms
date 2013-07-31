@@ -33,7 +33,8 @@ import java.net.DatagramSocket;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
 public final class SyslogHandler implements Fiber {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
     /**
      * The UDP receiver thread.
      */
@@ -206,10 +208,7 @@ public final class SyslogHandler implements Fiber {
         try {
             m_receiver.stop();
         } catch (InterruptedException e) {
-            ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-            log.warn(
-                    "The thread was interrupted while attempting to join sub-threads",
-                    e);
+            LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
 
         m_dgSock.close();

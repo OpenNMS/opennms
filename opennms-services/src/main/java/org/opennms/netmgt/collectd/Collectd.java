@@ -44,9 +44,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
@@ -58,9 +57,9 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.CollectorConfigDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CollectorConfigDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -74,8 +73,10 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -88,6 +89,8 @@ import org.springframework.util.ClassUtils;
  */
 public class Collectd extends AbstractServiceDaemon implements
         EventListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Collectd.class);
     
     private static CollectdInstrumentation s_instrumentation = null;
     
@@ -112,7 +115,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Log4j category
      */
-    private final static String LOG4J_CATEGORY = "OpenNMS.Collectd";
+    final static String LOG4J_CATEGORY = "collectd";
     
     /**
      * Instantiated service collectors specified in config file
@@ -179,7 +182,7 @@ public class Collectd extends AbstractServiceDaemon implements
         Assert.notNull(m_nodeDao, "nodeDao must not be null");
         
         
-        log().debug("init: Initializing collection daemon");
+        LOG.debug("init: Initializing collection daemon");
         
         // make sure the instrumentation gets initialized
         instrumentation();
@@ -268,37 +271,38 @@ public class Collectd extends AbstractServiceDaemon implements
 
             @Override
             public void run() {
-                final String prefix = ThreadCategory.getPrefix();
-                try {
-                    ThreadCategory.setPrefix(LOG4J_CATEGORY);
-                    scheduleExistingInterfaces();
-                } catch (SQLException e) {
-                    log().error(
-                                "start: Failed to schedule existing interfaces",
-                                e);
-                } finally {
-                    setSchedulingCompleted(true);
-                    ThreadCategory.setPrefix(prefix);
-                }
-
+                Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            scheduleExistingInterfaces();
+                        } catch (SQLException e) {
+                            LOG.error("start: Failed to schedule existing interfaces", e);
+                        } finally {
+                            setSchedulingCompleted(true);
+                        }
+                    }
+                    
+                });
             }
         };
         return interfaceScheduler;
     }
 
     private void createScheduler() {
-
-        // Create a scheduler
-        try {
-            log().debug("init: Creating collectd scheduler");
-
-            setScheduler(new LegacyScheduler(
-                                             "Collectd",
-                                             getCollectorConfigDao().getSchedulerThreads()));
-        } catch (RuntimeException e) {
-            log().fatal("init: Failed to create collectd scheduler", e);
-            throw e;
-        }
+        Logging.withPrefix("collectd", new Runnable() {
+            @Override
+            public void run() {
+                // Create a scheduler
+                try {
+                    LOG.debug("init: Creating collectd scheduler");
+                    setScheduler(new LegacyScheduler("Collectd", getCollectorConfigDao().getSchedulerThreads()));
+                } catch (final RuntimeException e) {
+                    LOG.error("init: Failed to create collectd scheduler", e);
+                    throw e;
+                }
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -306,11 +310,11 @@ public class Collectd extends AbstractServiceDaemon implements
     protected void onStart() {
         // start the scheduler
         try {
-            log().debug("start: Starting collectd scheduler");
+            LOG.debug("start: Starting collectd scheduler");
 
             getScheduler().start();
         } catch (RuntimeException e) {
-            log().fatal("start: Failed to start scheduler", e);
+            LOG.error("start: Failed to start scheduler", e);
             throw e;
         }
     }
@@ -347,16 +351,15 @@ public class Collectd extends AbstractServiceDaemon implements
         instrumentation().beginScheduleExistingInterfaces();
         try {
 
-            m_transTemplate.execute(new TransactionCallback<Object>() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
                 @Override
-                public Object doInTransaction(TransactionStatus status) {
+                public void doInTransactionWithoutResult(TransactionStatus status) {
                     
                     // Loop through collectors and schedule for each one present
                     for(String name : getCollectorNames()) {
                         scheduleInterfacesWithService(name);
                     }
-                    return null;
                 }
 
             });
@@ -369,7 +372,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void scheduleInterfacesWithService(String svcName) {
         instrumentation().beginScheduleInterfacesWithService(svcName);
         try {
-        log().info("scheduleInterfacesWithService: svcName = " + svcName);
+        LOG.info("scheduleInterfacesWithService: svcName = {}", svcName);
 
         Collection<OnmsIpInterface> ifsWithServices = findInterfacesWithService(svcName);
         for (OnmsIpInterface iface : ifsWithServices) {
@@ -412,13 +415,13 @@ public class Collectd extends AbstractServiceDaemon implements
         
         OnmsIpInterface iface = getIpInterface(nodeId, ipAddress);
         if (iface == null) {
-            log().error("Unable to find interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find interface with address {} on node {}", ipAddress, nodeId);
             return;
         }
         
         OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
         if (svc == null) {
-            log().error("Unable to find service "+svcName+" on interface with address "+ipAddress+" on node "+nodeId);
+            LOG.error("Unable to find service {} on interface with address {} on node {}", svcName, ipAddress, nodeId);
             return;
         }
         
@@ -451,7 +454,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         final String ipAddress = str(iface.getIpAddress());
         if (ipAddress == null) {
-        	LogUtils.warnf(this, "Unable to schedule interface %s, could not determine IP address.", iface);
+        	LOG.warn("Unable to schedule interface {}, could not determine IP address.", iface);
         	return;
         }
 
@@ -461,14 +464,7 @@ public class Collectd extends AbstractServiceDaemon implements
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
         StringBuffer sb;
         
-        if (log().isDebugEnabled()) {
-            sb = new StringBuffer();
-            sb.append("scheduleInterface: found ");
-            sb.append(Integer.toString(matchingSpecs.size()));
-            sb.append(" matching specs for interface: ");
-            sb.append(iface);
-            log().debug(sb.toString());
-        }
+        LOG.debug("scheduleInterface: found {} matching specs for interface: {}", matchingSpecs.size(), iface);
 
         for (CollectionSpecification spec : matchingSpecs) {
 
@@ -481,15 +477,7 @@ public class Collectd extends AbstractServiceDaemon implements
                  * does not already exist in the collectable services list.
                  */
                 if (alreadyScheduled(iface, spec)) {
-                    if (log().isDebugEnabled()) {
-                        sb = new StringBuffer();
-                        sb.append("scheduleInterface: svc/pkgName ");
-                        sb.append(iface);
-                        sb.append('/');
-                        sb.append(spec);
-                        sb.append(" already in collectable service list, skipping.");
-                        log().debug(sb.toString());
-                    }
+                    LOG.debug("scheduleInterface: svc/pkgName {}/{} already in collectable service list, skipping.", iface, spec);
                     continue;
                 }
             }
@@ -499,14 +487,7 @@ public class Collectd extends AbstractServiceDaemon implements
                  * Criteria checks have all passed. The interface/service pair
                  * can be scheduled.
                  */
-                if (log().isDebugEnabled()) {
-                    sb = new StringBuffer();
-                    sb.append("scheduleInterface: now scheduling interface: ");
-                    sb.append(iface);
-                    sb.append('/');
-                    sb.append(svcName);
-                    log().debug(sb.toString());
-                }
+                LOG.debug("scheduleInterface: now scheduling interface: {}/{}", iface, svcName);
                 CollectableService cSvc = null;
 
                 /*
@@ -524,15 +505,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Schedule the collectable service for immediate collection
                 getScheduler().schedule(0, cSvc.getReadyRunnable());
 
-                if (log().isDebugEnabled()) {
-                    sb = new StringBuffer();
-                    sb.append("scheduleInterface: ");
-                    sb.append(iface);
-                    sb.append('/');
-                    sb.append(svcName);
-                    sb.append(" collection, scheduled");
-                    log().debug(sb.toString());
-                }
+                LOG.debug("scheduleInterface: {}/{} collection, scheduled", iface, svcName);
             } catch (CollectionInitializationException e) {
                 sb = new StringBuffer();
                 sb.append("scheduleInterface: Unable to schedule ");
@@ -545,20 +518,13 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Only log the stack trace if TRACE level logging is enabled.
                 // Fixes bug NMS-3324.
                 // http://issues.opennms.org/browse/NMS-3324
-                if (log().isTraceEnabled()) {
-                    log().trace(sb.toString(), e);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace(sb.toString(), e);
                 } else {
-                    log().info(sb.toString());
+                    LOG.info(sb.toString());
                 }
             } catch (Throwable t) {
-                sb = new StringBuffer();
-                sb.append("scheduleInterface: Uncaught exception, failed to schedule interface ");
-                sb.append(iface);
-                sb.append('/');
-                sb.append(svcName);
-                sb.append(". ");
-                sb.append(t);
-                log().error(sb.toString(), t);
+                LOG.error("scheduleInterface: Uncaught exception, failed to schedule interface {}/{}.", iface, svcName, t);
             }
         } // end while more specifications exist
         
@@ -589,45 +555,18 @@ public class Collectd extends AbstractServiceDaemon implements
              * and enabled!
              */
             if (!wpkg.serviceInPackageAndEnabled(svcName)) {
-                if (log().isDebugEnabled()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("getSpecificationsForInterface: address/service: ");
-                    sb.append(iface);
-                    sb.append("/");
-                    sb.append(svcName);
-                    sb.append(" not scheduled, service is not enabled or does not exist in package: ");
-                    sb.append(wpkg.getName());
-                    log().debug(sb.toString());
-                }
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
 
             // Is the interface in the package?
             final String ipAddress = str(iface.getIpAddress());
 			if (!wpkg.interfaceInPackage(ipAddress)) {
-                if (log().isDebugEnabled()) {
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("getSpecificationsForInterface: address/service: ");
-                    sb.append(iface);
-                    sb.append("/");
-                    sb.append(svcName);
-                    sb.append(" not scheduled, interface does not belong to package: ");
-                    sb.append(wpkg.getName());
-                    log().debug(sb.toString());
-                }
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
                 continue;
             }
 
-            if (log().isDebugEnabled()) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("getSpecificationsForInterface: address/service: ");
-                sb.append(iface);
-                sb.append("/");
-                sb.append(svcName);
-                sb.append(" scheduled, interface does belong to package: ");
-                sb.append(wpkg.getName());
-                log().debug(sb.toString());
-            }
+            LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
             matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName)));
         }
@@ -649,8 +588,8 @@ public class Collectd extends AbstractServiceDaemon implements
         String ipAddress = str(iface.getIpAddress());
         
         if (ipAddress == null) {
-        	LogUtils.warnf(this, "Cannot determine if interface %s is already scheduled.  Unable to look up IP address.", iface);
-        	return false;
+            LOG.warn("Cannot determine if interface {} is already scheduled.  Unable to look up IP address.", iface);
+            return false;
         }
 
         String svcName = spec.getServiceName();
@@ -658,7 +597,7 @@ public class Collectd extends AbstractServiceDaemon implements
         StringBuffer sb;
         boolean isScheduled = false;
         
-        if (log().isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             sb = new StringBuffer();
             sb.append("alreadyScheduled: determining if interface: ");
             sb.append(iface);
@@ -677,7 +616,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-        if (log().isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             sb = new StringBuffer();
             sb.append("alreadyScheduled: interface ");
             sb.append(iface);
@@ -716,29 +655,29 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     @Override
     public void onEvent(final Event event) {
-    	
-    	String prefix = ThreadCategory.getPrefix();
-    	try {
-    		ThreadCategory.setPrefix(getName());
-    		m_transTemplate.execute(new TransactionCallback<Object>() {
 
-                            @Override
-    			public Object doInTransaction(TransactionStatus status) {
-    				onEventInTransaction(event);
-    				return null;
-    			}
+        Logging.withPrefix(getName(), new Runnable() {
 
-    		});
-    	} finally {
-    		ThreadCategory.setPrefix(prefix);
-    	}
+            @Override
+            public void run() {
+                m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                    @Override
+                    public void doInTransactionWithoutResult(TransactionStatus status) {
+                        onEventInTransaction(event);
+                    }
+
+                });
+            }
+
+        });
 
     }
 
     private void onEventInTransaction(Event event) {
         // print out the uei
         //
-        log().debug("received event, uei = " + event.getUei());
+        LOG.debug("received event, uei = {}", event.getUei());
 
         try {
             if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
@@ -777,7 +716,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param e a {@link org.opennms.netmgt.capsd.InsufficientInformationException} object.
      */
     protected void handleInsufficientInfo(InsufficientInformationException e) {
-        log().info(e.getMessage());
+        LOG.info(e.getMessage());
     }
 
     private void handleDupNodeDeleted(Event event)
@@ -787,13 +726,11 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void handleScheduledOutagesChanged(Event event) {
         try {
-            log().info("Reloading Collectd config factory");
+            LOG.info("Reloading Collectd config factory");
             CollectdConfigFactory.reload();
             refreshServicePackages();
         } catch (Throwable e) {
-            log().error(
-                        "Failed to reload CollectdConfigFactory because "
-                                + e.getMessage(), e);
+            LOG.error("Failed to reload CollectdConfigFactory", e);
         }
     }
 
@@ -815,26 +752,24 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      */
     private void handleConfigureSNMP(final Event event) {
-        if (log().isDebugEnabled()) {
-            log().debug("configureSNMPHandler: processing configure SNMP event..."+event);
-        }
+        LOG.debug("configureSNMPHandler: processing configure SNMP event...", event);
         
         SnmpEventInfo info = null;
         try {
             info = new SnmpEventInfo(event);
             
             if (StringUtils.isBlank(info.getFirstIPAddress())) {				
-                log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
+                LOG.error("configureSNMPHandler: event contained invalid firstIpAddress. {}", event);
                 return;
             }
             
-            log().debug("configureSNMPHandler: processing configure SNMP event: "+info);
+            LOG.debug("configureSNMPHandler: processing configure SNMP event: {}", info);
             SnmpPeerFactory.getInstance().define(info);
             SnmpPeerFactory.saveCurrent();
-            log().debug("configureSNMPHandler: process complete. "+info);
+            LOG.debug("configureSNMPHandler: process complete. {}", info);
             
         } catch (Throwable e) {
-            log().error("configureSNMPHandler: ",e);
+            LOG.error("configureSNMPHandler: ",e);
         }
     }
 
@@ -849,11 +784,9 @@ public class Collectd extends AbstractServiceDaemon implements
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
-        ThreadCategory log = log();
-        
         String ipAddr = event.getInterface();
         if(EventUtils.isNonIpInterface(ipAddr) ) {
-            log().debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
+            LOG.debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
             return;
         }
 
@@ -882,10 +815,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    log().debug("Marking CollectableService for deletion because an interface was deleted:  Service nodeid="+cSvc.getNodeId()+
-                                ", deleted node:"+nodeId+
-                                "service address:"+addr.getHostName()+
-                                "deleted interface:"+ipAddr);
+                    LOG.debug("Marking CollectableService for deletion because an interface was deleted:  Service nodeid={}, deleted node:{}service address:{}deleted interface:{}", cSvc.getNodeId(), nodeId, addr.getHostName(), ipAddr);
 
                     updates.markForDeletion();
                 }
@@ -896,9 +826,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceDeletedHandler: processing of interfaceDeleted event for "
-                    + nodeId + "/" + ipAddr + " completed.");
+            LOG.debug("interfaceDeletedHandler: processing of interfaceDeleted event for {}/{} completed", nodeId, ipAddr);
     }
 
     /**
@@ -921,10 +849,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        ThreadCategory log = log();
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for "
-                    + event.getInterface());
+        LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for {}", event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -959,7 +884,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // Only proceed provided we have both an old and a new nodeId
         //
         if (oldNodeIdStr == null || newNodeIdStr == null) {
-            log.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
+            LOG.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
             return;
         }
 
@@ -985,9 +910,7 @@ public class Collectd extends AbstractServiceDaemon implements
 				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: got a CollectableService match for "
-                                    + event.getInterface());
+                        LOG.debug("interfaceReparentedHandler: got a CollectableService match for {}", event.getInterface());
 
                         // Retrieve the CollectorUpdates object associated
                         // with
@@ -999,18 +922,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: marking "
-                                    + event.getInterface()
-                                    + " for reparenting for service SNMP.");
+                        LOG.debug("interfaceReparentedHandler: marking {} for reparenting for service SNMP.", event.getInterface());
                     }
                 }
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface "
-                    + event.getInterface() + " completed.");
+        LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface {} completed.", event.getInterface());
     }
 
     /**
@@ -1025,15 +943,11 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        ThreadCategory log = log();
-
         Long nodeId = event.getNodeid();
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        if (log.isDebugEnabled())
-            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
-                    + nodeId + " completed.");
+        LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid {} completed.", nodeId);
     }
 
     /**
@@ -1046,15 +960,11 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         
-        ThreadCategory log = log();
-
         Long nodeId = event.getNodeid();
 
         unscheduleNodeAndMarkForDeletion(nodeId);
 
-        if (log.isDebugEnabled()) {
-            log.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
-        }
+        LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
         scheduleNode(nodeId.intValue(), true);
         
@@ -1082,8 +992,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    log().debug("Marking CollectableService for deletion because a node was deleted:  Service nodeid="+cSvc.getNodeId()+
-                                ", deleted node:"+nodeId);
+                    LOG.debug("Marking CollectableService for deletion because a node was deleted:  Service nodeid={}, deleted node:{}", cSvc.getNodeId(), nodeId);
                     updates.markForDeletion();
                 }
 
@@ -1146,7 +1055,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
                 // Updating thresholding visitors to use the new configuration
-                log().debug("handleReloadDaemonConfig: Reloading thresholding configuration in collectd");
+                LOG.debug("handleReloadDaemonConfig: Reloading thresholding configuration in collectd");
                 synchronized (m_collectableServices) {
                     for(CollectableService service: m_collectableServices) {
                         service.reinitializeThresholding();
@@ -1158,7 +1067,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Throwable e) {
                 // Preparing failed event
-                log().error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: " + e.getMessage(), e);
+                LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: {}", e.getMessage(), e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
@@ -1202,10 +1111,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        ThreadCategory log = log();
-
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
+        LOG.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
         // Currently only support SNMP data collection.
         //
@@ -1264,10 +1170,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                             // Now set the deleted flag
                             updates.markForDeletion();
-                            if (log.isDebugEnabled())
-                                log.debug("primarySnmpInterfaceChangedHandler: marking "
-                                        + oldPrimaryIfAddr
-                                        + " as deleted for service SNMP.");
+                            LOG.debug("primarySnmpInterfaceChangedHandler: marking {} as deleted for service SNMP.", oldPrimaryIfAddr);
                         }
 
                         // Now safe to remove the collectable service from
@@ -1282,9 +1185,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //
         scheduleForCollection(event);
 
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid "
-                    + event.getNodeid() + " completed.");
+        LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid {} completed.", event.getNodeid());
     }
 
     /**
@@ -1322,8 +1223,6 @@ public class Collectd extends AbstractServiceDaemon implements
         // updates map and mark any which have the same interface
         // address for reinitialization
         //
-        ThreadCategory log = log();
-        
         OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
             Iterator<CollectableService> iter = getCollectableServices().iterator();
@@ -1332,11 +1231,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
-				if (log.isDebugEnabled())
-                    log.debug("Comparing CollectableService ip address = "
-                            + addrString
-                            + " and event ip interface = "
-                            + ipAddress);
+                LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
                 if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
@@ -1349,10 +1244,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
                         // Now set the reinitialization flag
                         updates.markForReinitialization(iface);
-                        if (log.isDebugEnabled())
-                            log.debug("reinitializePrimarySnmpInterfaceHandler: marking "
-                                    + ipAddress
-                                    + " for reinitialization for service SNMP.");
+                        LOG.debug("reinitializePrimarySnmpInterfaceHandler: marking {} for reinitialization for service SNMP.", ipAddress);
                     }
                 }
             }
@@ -1373,7 +1265,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
 
-        ThreadCategory log = log();
+        
 
         //INCORRECT; we now support all *sorts* of data collection.  This is *way* out of date
         // Currently only support SNMP data collection.
@@ -1413,13 +1305,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     // time it is selected for execution by the scheduler
                     // the collection will be skipped and the service will not
                     // be rescheduled.
-                    log().debug("Marking CollectableService for deletion because a service was deleted:  Service nodeid="+cSvc.getNodeId()+
-                                ", deleted node:"+nodeId+
-                                ", service address:"+addr.getHostName()+
-                                ", deleted interface:"+ipAddr+
-                                ", service servicename:"+cSvc.getServiceName()+
-                                ", deleted service name:"+svcName+
-                                ", event source "+event.getSource());
+                    LOG.debug("Marking CollectableService for deletion because a service was deleted:  Service nodeid={}, deleted node:{}, service address:{}, deleted interface:{}, service servicename:{}, deleted service name:{}, event source {}", cSvc.getNodeId(), nodeId, addr.getHostName(), ipAddr, cSvc.getServiceName(), svcName, event.getSource());
                     updates.markForDeletion();
                 }
 
@@ -1429,9 +1315,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("serviceDeletedHandler: processing of serviceDeleted event for "
-                    + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+        LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for {}/{}/{} completed.", nodeId, ipAddr, svcName);
     }
 
     /**
@@ -1453,7 +1337,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setCollectorConfigDao</p>
      *
-     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.api.CollectorConfigDao} object.
      */
     public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
         m_collectorConfigDao = collectorConfigDao;
@@ -1466,7 +1350,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setIpInterfaceDao</p>
      *
-     * @param ifSvcDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ifSvcDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
@@ -1488,7 +1372,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -1525,7 +1409,7 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void instantiateCollectors() {
-        log().debug("instantiateCollectors: Loading collectors");
+        LOG.debug("instantiateCollectors: Loading collectors");
 
         /*
          * Load up an instance of each collector from the config
@@ -1536,11 +1420,7 @@ public class Collectd extends AbstractServiceDaemon implements
         for (Collector collector : collectors) {
             String svcName = collector.getService();
             try {
-                if (log().isDebugEnabled()) {
-                    log().debug("instantiateCollectors: Loading collector " 
-                                + svcName + ", classname "
-                                + collector.getClassName());
-                }
+                LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
                 Class<?> cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
@@ -1548,11 +1428,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
                 setServiceCollector(svcName, sc);
             } catch (Throwable t) {
-                log().warn("instantiateCollectors: Failed to load collector "
-                           + collector.getClassName() + " for service "
-                           + svcName + ": " + t, t);
+                LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
             }
         }
     }
 
+    public static String getLoggingCategory() {
+    	return LOG4J_CATEGORY;
+    }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="walk">
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="empty">
 	<node node-label="walk-node" foreign-id="123">
 		<interface ip-addr="192.0.2.123" status="1" snmp-primary="P" descr="Management interface">
 			<monitored-service service-name="SNMP"/>

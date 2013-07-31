@@ -28,19 +28,6 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import org.hibernate.criterion.Order;
-import org.opennms.api.reporting.ReportException;
-import org.opennms.api.reporting.ReportFormat;
-import org.opennms.api.reporting.ReportService;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
-import org.opennms.features.reporting.repository.global.GlobalReportRepository;
-import org.opennms.netmgt.dao.ReportCatalogDao;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.ReportCatalogEntry;
-import org.opennms.reporting.core.svclayer.ReportServiceLocator;
-import org.opennms.reporting.core.svclayer.ReportStoreService;
-
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -48,28 +35,41 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Order;
+import org.opennms.api.reporting.ReportException;
+import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.ReportService;
+import org.opennms.core.logging.Logging;
+import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
+import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.opennms.reporting.core.svclayer.ReportServiceLocator;
+import org.opennms.reporting.core.svclayer.ReportStoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 /**
  * <p>DefaultReportStoreService class.</p>
  */
 public class DefaultReportStoreService implements ReportStoreService {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultReportStoreService.class);
     
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
     
     private GlobalReportRepository m_globalReportRepository;
     
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-    
-    private final ThreadCategory log;
+    private static final String LOG4J_CATEGORY = "reports";
     
     /**
      * <p>Constructor for DefaultReportStoreService.</p>
      */
     public DefaultReportStoreService () {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(DefaultReportStoreService.class);
-        ThreadCategory.setPrefix(oldPrefix);
+        // TODO this needs to wrap method calls
+        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -94,9 +94,9 @@ public class DefaultReportStoreService implements ReportStoreService {
         String deleteFile = new String(m_reportCatalogDao.get(id).getLocation());
         boolean success = (new File(deleteFile).delete());
         if (success) {
-            log().debug("deleted report XML file: " + deleteFile);
+            LOG.debug("deleted report XML file: {}", deleteFile);
         } else {
-            log().warn("unable to delete report XML file: " + deleteFile + " will delete reportCatalogEntry anyway");
+            LOG.warn("unable to delete report XML file: {} will delete reportCatalogEntry anyway", deleteFile);
         }
         m_reportCatalogDao.delete(id);
     }
@@ -141,18 +141,14 @@ public class DefaultReportStoreService implements ReportStoreService {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
         String reportServiceName = m_globalReportRepository.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
-        log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );
+        LOG.debug("attempting to rended the report as {} using {}", reportServiceName, format);
         try {
             reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
         } catch (ReportException e) {
-            log.error("unable to render report", e);
+            LOG.error("unable to render report", e);
         }
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /** {@inheritDoc} */
     @Override
     public void save(final ReportCatalogEntry reportCatalogEntry) {

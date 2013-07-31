@@ -35,8 +35,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A test network configuration
@@ -45,6 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockNetwork.class);
+
 
     /**
      * <p>createDownEvent</p>
@@ -306,7 +311,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService getService(int nodeid, String ipAddr, String svcName) {
     	final MockInterface iface = getInterface(nodeid, ipAddr);
-        LogUtils.debugf(this, "getService(%d, %s, %s) = %s", nodeid, ipAddr, svcName, iface);
+        LOG.debug("getService({}, {}, {}) = {}", nodeid, ipAddr, svcName, iface);
         return (iface == null ? null : iface.getService(svcName));
     }
 

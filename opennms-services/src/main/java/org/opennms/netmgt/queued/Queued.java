@@ -37,6 +37,8 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -47,6 +49,10 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class Queued extends AbstractServiceDaemon implements EventListener {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Queued.class);
+
+    private static final String LOG4J_CATEGORY = "queued";
     
     private volatile EventIpcManager m_eventMgr; 
 
@@ -62,7 +68,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
      * <p>Constructor for Queued.</p>
      */
     public Queued() {
-        super("OpenNMS.Queued");
+        super(LOG4J_CATEGORY);
     }
     
     /**
@@ -119,13 +125,16 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
     }
     
     private void logFilePromotion(Set<String> files) {
-        if (!log().isDebugEnabled()) {
+        if (!LOG.isDebugEnabled()) {
             return;
         }
         
         for(String file : files) {
-            debugf("Promoting file: %s", file);
+            LOG.debug("Promoting file: {}", file);
         }
     }
 
+    public static String getLoggingCateogy() {
+        return LOG4J_CATEGORY;
+    }
 }

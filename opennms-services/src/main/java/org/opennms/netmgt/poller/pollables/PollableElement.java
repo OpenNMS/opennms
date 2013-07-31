@@ -32,7 +32,8 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -43,7 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 abstract public class PollableElement {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PollableElement.class);
     private final Scope m_scope; 
 
     private volatile PollableContainer m_parent;
@@ -143,7 +144,7 @@ abstract public class PollableElement {
         PollStatus oldStatus = getStatus();
         if (!oldStatus.equals(newStatus)) {
             
-            ThreadCategory.getInstance(getClass()).info("Changing status of PollableElement "+this+" from "+oldStatus+" to "+newStatus);
+            LOG.info("Changing status of PollableElement {} from {} to {}", newStatus, this, oldStatus);
             setStatus(newStatus);
             setStatusChanged(true);
         }

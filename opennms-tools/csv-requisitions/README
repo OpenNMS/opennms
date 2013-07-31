@@ -1,4 +1,4 @@
-To build, run "mvn assembly:assembly".
+To build, run "../../compile.pl" and this will create the proper JARs in the target/ directory.
 
 This is a utility for creating OpenNMS provisioning requisitions from
 CSV files.  It is probably not yet suitable for production use.

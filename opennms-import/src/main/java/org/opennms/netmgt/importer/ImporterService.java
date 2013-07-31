@@ -32,7 +32,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
@@ -44,6 +45,8 @@ import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -56,8 +59,10 @@ import org.springframework.core.io.UrlResource;
  */
 public class ImporterService extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(ImporterService.class);
+
 	/** Constant <code>NAME="ModelImporter"</code> */
-	public static final String NAME = "ModelImporter";
+	public static final String NAME = "model-importer";
 
 	private volatile Resource m_importResource;
 	private volatile EventIpcManager m_eventManager;
@@ -85,15 +90,15 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
             resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : m_importResource); 
             sendImportStarted(resource);
 			importModelFromResource(resource, m_stats, event);
-            log().info("Finished Importing: "+m_stats);
+            LOG.info("Finished Importing: {}", m_stats);
             sendImportSuccessful(m_stats, resource);
         } catch (IOException e) {
             String msg = "IOException importing "+resource;
-			log().error(msg, e);
+			LOG.error(msg, e);
             sendImportFailed(msg+": "+e.getMessage(), resource);
         } catch (ModelImportException e) {
             String msg = "Error parsing import data from "+resource;
-			log().error(msg, e);
+			LOG.error(msg, e);
             sendImportFailed(msg+": "+e.getMessage(), resource);
         }
     }
@@ -198,17 +203,19 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	/** {@inheritDoc} */
         @Override
 	public void onEvent(Event e) {
-		String oldPrefix = ThreadCategory.getPrefix();
-		try {
-			ThreadCategory.setPrefix(NAME);
-			if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
-				return;
-			}
-			doImport(e);
-		} finally {
-			ThreadCategory.setPrefix(oldPrefix);
-		}
-	}
+        	
+            Map mdc = Logging.getCopyOfContextMap();
+            try {
+                Logging.putPrefix(NAME);
+
+                if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
+                    return;
+                }
+                doImport(e);
+            } finally {
+                Logging.setContextMap(mdc);
+            }
+        }
 
 	public class ImporterStats implements ImportStatistics {
 

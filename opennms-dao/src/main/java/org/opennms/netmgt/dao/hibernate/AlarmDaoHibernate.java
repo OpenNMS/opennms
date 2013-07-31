@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.core.utils.LogUtils;
 import java.util.List;
 
-import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -42,6 +44,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
  * @version $Id: $
  */
 public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> implements AlarmDao {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmDaoHibernate.class);
 	
 	/**
 	 * <p>Constructor for AlarmDaoHibernate.</p>
@@ -57,27 +60,41 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return super.findUnique(hql, reductionKey);
     }
 
-        @Override
-    public List<AlarmSummary> getNodeAlarmSummaries() {
-        return findObjects(
-            AlarmSummary.class,
-            "SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) " +
-            "FROM OnmsAlarm AS alarm " +
-            "LEFT JOIN alarm.node AS node " +
-            "WHERE node.id IS NOT NULL AND alarm.alarmAckTime IS NULL AND alarm.severity > 3 " +
-            "GROUP BY node.id, node.label " +
-            "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
-        );
-    }
     /** {@inheritDoc} */
-	public int deleteAlarmById(Integer alarmId) {
-		try{
-			String hql = "delete from OnmsAlarm where alarmid = ?";
-			Object[] values = {alarmId};
-			return bulkDelete(hql, values);
-		} catch (final Exception e) {
-			LogUtils.warnf(this, e, "Unable to delete an alarm with Id %d", alarmId);
-		}
-		return 0;
-	}
+    public int deleteAlarmById(Integer alarmId) {
+        try{
+            String hql = "delete from OnmsAlarm where alarmid = ?";
+            Object[] values = {alarmId};
+            return bulkDelete(hql, values);
+        } catch (final Exception e) {
+            LOG.warn("Unable to delete an alarm with Id {}", alarmId, e);
+        }
+        return 0;
+    }
+
+    @Override
+    public List<AlarmSummary> getNodeAlarmSummaries(Integer... nodeIds) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) ");
+        sql.append("FROM OnmsAlarm AS alarm ");
+        sql.append ("LEFT JOIN alarm.node AS node ");
+        sql.append("WHERE node.id IS NOT NULL AND alarm.alarmAckTime IS NULL AND alarm.severity > 3 ");
+
+        // optional
+        if (nodeIds != null && nodeIds.length > 0) {
+            if (nodeIds.length == 1) {
+                sql.append("AND node.id = " + nodeIds[0] + " ");
+            } else {
+                sql.append("AND node.id in (");
+                for (int i=0; i<nodeIds.length; i++) {
+                    sql.append(nodeIds[i]);
+                    if (i < nodeIds.length -1) sql.append(",");
+                }
+                sql.append(") ");
+            }
+        }
+        sql.append("GROUP BY node.id, node.label ");
+        sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
+        return findObjects(AlarmSummary.class,sql.toString());
+    }
 }

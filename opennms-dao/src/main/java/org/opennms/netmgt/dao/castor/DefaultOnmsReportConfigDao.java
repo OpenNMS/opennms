@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.netmgt.config.reporting.StringParm;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.reporting.opennms.Report;
-import org.opennms.netmgt.dao.OnmsReportConfigDao;
+import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 
 public class DefaultOnmsReportConfigDao extends AbstractCastorConfigDao<OpennmsReports, List<Report>>
 implements OnmsReportConfigDao {

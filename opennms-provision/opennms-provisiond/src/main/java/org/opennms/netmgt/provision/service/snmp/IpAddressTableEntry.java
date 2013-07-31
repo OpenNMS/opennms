@@ -33,7 +33,8 @@ import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.service.IPAddressTableTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public final class IpAddressTableEntry extends SnmpTableEntry {
+    private static final Logger LOG = LoggerFactory.getLogger(IpAddressTableEntry.class);
     // Lookup strings for specific table entries
 
     public final static String IP_ADDRESS_IF_INDEX = "ipAddressIfIndex";
@@ -125,11 +127,11 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
      */
     public InetAddress getIpAddressNetMask() {
     	final SnmpValue value = getValue(IP_ADDR_ENT_NETMASK);
-    	// LogUtils.debugf(this, "getIpAddressNetMask: value = %s", value.toDisplayString());
+    	// LOG.debug("getIpAddressNetMask: value = {}", value.toDisplayString());
     	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IPAddressTableTracker.IP_ADDRESS_PREFIX_ORIGIN_INDEX);
 
     	if (netmaskRef == null) {
-    	    LogUtils.warnf(this, "Unable to get netmask reference from instance.");
+    	    LOG.warn("Unable to get netmask reference from instance.");
     	    return null;
     	}
 
@@ -144,9 +146,9 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     	} else if (addressType == IPAddressTableTracker.TYPE_IPV6) {
     	    return InetAddressUtils.convertCidrToInetAddressV6(mask);
     	} else if (addressType == IPAddressTableTracker.TYPE_IPV6Z) {
-    	    LogUtils.debugf(this, "Got an IPv6z address, returning %s", address);
+    	    LOG.debug("Got an IPv6z address, returning {}", address);
     	} else {
-    	    LogUtils.warnf(this, "Unsure how to handle IP address type (%d)", addressType);
+    	    LOG.warn("Unsure how to handle IP address type ({})", addressType);
     	}
         return address;
     }
@@ -161,7 +163,7 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
 		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6 || addressType == IPAddressTableTracker.TYPE_IPV6Z) {
 			m_inetAddress = InetAddressUtils.getInetAddress(instanceIds, 2, addressType);
 		} else {
-			LogUtils.warnf(this, "Unable to determine IP address type (%d)", addressType);
+			LOG.warn("Unable to determine IP address type ({})", addressType);
 		}
 
     	super.storeResult(result);

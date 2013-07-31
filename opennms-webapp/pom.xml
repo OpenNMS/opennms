@@ -123,12 +123,6 @@
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
-          <systemProperties>
-            <systemProperty>
-              <name>log4j.configuration</name>
-              <value>file:${basedir}/runInPlace-log4j.properties</value>
-            </systemProperty>
-          </systemProperties>
         </configuration>
       </plugin>
 
@@ -210,7 +204,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.13.0-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.13.0-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-${project.version}/WEB-INF/lib/opennms-webapp-${project.version}.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
@@ -244,23 +238,6 @@
     						<pluginExecution>
     							<pluginExecutionFilter>
     								<groupId>
-    									org.opennms.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									castor-maven-plugin
-    								</artifactId>
-    								<versionRange>[1.0,)</versionRange>
-    								<goals>
-    									<goal>generate</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
     									org.apache.maven.plugins
     								</groupId>
     								<artifactId>
@@ -283,6 +260,39 @@
     </pluginManagement>
   </build>
   <profiles>
+    <profile>
+      <id>runInPlace</id>
+      <activation><activeByDefault>false</activeByDefault></activation>
+      <properties>
+    		<onmsLibScope>compile</onmsLibScope>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-api</artifactId>
+          <version>${log4j2Version}</version>
+          <scope>runtime</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-core</artifactId>
+          <version>${log4j2Version}</version>
+          <scope>runtime</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-1.2-api</artifactId>
+          <version>${log4j2Version}</version>
+          <scope>runtime</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-slf4j-impl</artifactId>
+          <version>${log4j2Version}</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>jspc</id>
       <activation><activeByDefault>true</activeByDefault></activation>
@@ -531,11 +541,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -550,6 +555,12 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
@@ -595,6 +606,12 @@
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!--
 
@@ -607,6 +624,16 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
@@ -644,6 +671,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

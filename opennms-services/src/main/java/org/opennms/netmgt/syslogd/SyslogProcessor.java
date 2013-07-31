@@ -35,7 +35,8 @@ import java.util.concurrent.Callable;
 
 import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
 final class SyslogProcessor implements EndOfTheWaterfall {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogProcessor.class);
 
     private final boolean m_NewSuspectOnMessage;
 
@@ -71,53 +73,41 @@ final class SyslogProcessor implements EndOfTheWaterfall {
     @Override
     public Callable<Void> call() {
         // get a logger
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isEnabledFor(ThreadCategory.Level.TRACE);
         try {
-            if (isTracing)  {
-                log.trace("Processing a syslog to event dispatch" + m_event.toString());
+            if (LOG.isTraceEnabled())  {
+                LOG.trace("Processing a syslog to event dispatch", m_event.toString());
                 String uuid = m_event.getEvent().getUuid();
-                log.trace("Event {");
-                log.trace("  uuid  = "
-                        + (uuid != null && uuid.length() > 0 ? uuid
-                        : "<not-set>"));
-                log.trace("  uei   = " + m_event.getEvent().getUei());
-                log.trace("  src   = " + m_event.getEvent().getSource());
-                log.trace("  iface = " + m_event.getEvent().getInterface());
-                log.trace("  time  = " + m_event.getEvent().getTime());
-                log.trace("  Msg   = "
-                        + m_event.getEvent().getLogmsg().getContent());
-                log.trace("  Dst   = "
-                        + m_event.getEvent().getLogmsg().getDest());
+                LOG.trace("Event {");
+                LOG.trace("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                LOG.trace("  uei   = {}", m_event.getEvent().getUei());
+                LOG.trace("  src   = {}", m_event.getEvent().getSource());
+                LOG.trace("  iface = {}", m_event.getEvent().getInterface());
+                LOG.trace("  time  = {}", m_event.getEvent().getTime());
+                LOG.trace("  Msg   = {}", m_event.getEvent().getLogmsg().getContent());
+                LOG.trace("  Dst   = {}", m_event.getEvent().getLogmsg().getDest());
                 List<Parm> parms = (m_event.getEvent().getParmCollection() == null ? null : m_event.getEvent().getParmCollection());
                 if (parms != null) {
-                    log.trace("  parms {");
+                    LOG.trace("  parms {");
                     for (Parm parm : parms) {
                         if ((parm.getParmName() != null)
                                 && (parm.getValue().getContent() != null)) {
-                            log.trace("    ("
-                                    + parm.getParmName().trim()
-                                    + ", "
-                                    + parm.getValue().getContent().trim()
-                                    + ")");
+                            LOG.trace("    ({}, {})", parm.getParmName().trim(), parm.getValue().getContent().trim());
                         }
                     }
-                    log.trace("  }");
+                    LOG.trace("  }");
                 }
-                log.trace("}");
+                LOG.trace("}");
             }
 
             EventIpcManagerFactory.getIpcManager().sendNow(m_event.getEvent());
 
             if (m_NewSuspectOnMessage && !m_event.getEvent().hasNodeid()) {
-                if (isTracing) {
-                    log.trace("Syslogd: Found a new suspect " + m_event.getEvent().getInterface());
-                }
+                LOG.trace("Syslogd: Found a new suspect {}", m_event.getEvent().getInterface());
                 sendNewSuspectEvent(m_localAddr, m_event.getEvent().getInterface());
             }
 
         } catch (Throwable t) {
-            log.error("Unexpected error processing SyslogMessage - Could not send", t);
+            LOG.error("Unexpected error processing SyslogMessage - Could not send", t);
         }
 
         // This task is the terminal task of syslogd so it doesn't return a Callable

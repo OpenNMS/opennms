@@ -30,23 +30,22 @@ package org.opennms.web.map;
 
 
 import java.io.BufferedWriter;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
-
-
-import org.opennms.web.map.view.*;
-
+import org.opennms.web.map.view.Manager;
+import org.opennms.web.map.view.VElement;
+import org.opennms.web.map.view.VMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
-
-import java.util.*;
 
 /**
  * <p>SaveMapController class.</p>
@@ -56,9 +55,9 @@ import java.util.*;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SaveMapController implements Controller {
-
-	ThreadCategory log;
+public class SaveMapController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SaveMapController.class);
 
 	private Manager manager;
 
@@ -85,11 +84,9 @@ public class SaveMapController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
 			
@@ -102,15 +99,15 @@ public class SaveMapController implements Controller {
 		String query = request.getQueryString();
 		String queryNodes = request.getParameter("Nodes");
 		
-		log.debug("Saving map " + mapName + " the query received is '" + query + "'");
-        log.debug("Saving map " + mapName + " the data received is '" + queryNodes + "'");
+		LOG.debug("Saving map {} the query received is '{}'", mapName, query);
+        LOG.debug("Saving map {} the data received is '{}'", mapName, queryNodes);
 
 		try {
 			VMap map = manager.openMap();
 			if (mapId != MapsConstants.NEW_MAP && map.isNew())
 				map = manager.openMap(mapId, request.getRemoteUser(), false);
 
-			log.debug("Instantiating new elems ArrayList");
+			LOG.debug("Instantiating new elems ArrayList");
 			elems = new ArrayList<VElement>();
 
 			StringTokenizer st = new StringTokenizer(queryNodes, "*");
@@ -151,7 +148,7 @@ public class SaveMapController implements Controller {
 				
 				String label=null;
                 if (map.getElement(id, type) != null && map.getElement(id, type).getLabel() != null) {
-                    log.debug("preserving the label: " + map.getElement(id, type).getLabel());
+                    LOG.debug("preserving the label: {}", map.getElement(id, type).getLabel());
                     label = map.getElement(id, type).getLabel();
                 }                
                 
@@ -159,7 +156,7 @@ public class SaveMapController implements Controller {
                 if (label != null )
                     ve.setLabel(label);                    
                 
-                log.debug("adding map element to map with id: " +id+type + " and label: " + ve.getLabel());
+                LOG.debug("adding map element to map with id: {}{} and label: {}", id, type, ve.getLabel());
 				elems.add(ve);
 			}
 
@@ -176,28 +173,28 @@ public class SaveMapController implements Controller {
 			map.setHeight(mapHeight);
 			
 			if (map.isNew()) {
-			    log.debug("Map is New Map");
+			    LOG.debug("Map is New Map");
 				map.setType(MapsConstants.USER_GENERATED_MAP);
 				map.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
 			}
 			else if (map.getType().trim().equalsIgnoreCase(MapsConstants.AUTOMATICALLY_GENERATED_MAP)) {
-                log.debug("Map is Automated Map, saving as Static");
+                LOG.debug("Map is Automated Map, saving as Static");
                 map.setType(MapsConstants.AUTOMATIC_SAVED_MAP);
 			}
 			mapId = manager.save(map);
 
-	        log.info(map.getName() + " Map saved. " + "With map id: " + mapId);
+	        LOG.info("{} Map saved. With map id: {}", map.getName(),  mapId);
 
 			if (map.isNew()) 
 			    map.setId(mapId);
 
 			bw.write(ResponseAssembler.getSaveMapResponse(map));
 		} catch (Throwable e) {
-			log.error("Map save error: " + e,e);
+			LOG.error("Map save error: {}", e,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));
 		} finally {
 			bw.close();
-			log.info("Sending response to the client");
+			LOG.info("Sending response to the client");
 		}
 		return null;
 	}

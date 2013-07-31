@@ -39,12 +39,15 @@ import javax.sql.DataSource;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public abstract class BaseConnectionFactory implements ClosableDataSource {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(BaseConnectionFactory.class);
 
     /**
      * @param stream A configuration file as an {@link InputStream}.
@@ -55,7 +58,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @throws java.sql.SQLException if any.
      */
     protected BaseConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        LogUtils.infof(this, "Setting up data source %s from input stream.", dsName);
+    	LOG.info("Setting up data source {} from input stream.", dsName);
         final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(stream, dsName);
         initializePool(ds);
     }
@@ -76,7 +79,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
          * positively identify the source of the error.
          */
     	final FileInputStream fileInputStream = new FileInputStream(configFile);
-        LogUtils.infof(this, "Setting up data sources from %s.", configFile);
+    	LOG.info("Setting up data sources from {}.", configFile);
         try {
         	final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(fileInputStream, dsName);
         	initializePool(ds);
@@ -175,7 +178,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
                 throw new IllegalArgumentException("JDBC URL cannot contain replacement tokens");
             }
         } catch (IllegalArgumentException e) {
-            LogUtils.errorf(e, e, "Invalid JDBC URL specified: %s", e.getMessage());
+        	LOG.error("Invalid JDBC URL specified: {}", e.getMessage(), e);
             throw e;
         }
     }

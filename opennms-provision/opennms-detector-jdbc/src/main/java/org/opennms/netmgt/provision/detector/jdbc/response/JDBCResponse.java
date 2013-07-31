@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>JDBCResponse class.</p>
@@ -43,6 +44,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class JDBCResponse {
     
+    private static final Logger LOG = LoggerFactory.getLogger(JDBCResponse.class);
     private ResultSet m_result;
     private boolean m_isValidProcedureCall = false;
     private boolean m_isValidQuery = false;
@@ -56,7 +58,7 @@ public class JDBCResponse {
     public void receive(Connection conn) throws SQLException {
         
         DatabaseMetaData metadata = conn.getMetaData();
-        log().debug("got database metadata");
+        LOG.debug("got database metadata");
 
         m_result = metadata.getCatalogs();
         
@@ -72,15 +74,13 @@ public class JDBCResponse {
             while (m_result.next())
             {
                 m_result.getString(1);
-                if (log().isDebugEnabled()) {
-                    log().debug("Metadata catalog: '" + m_result.getString(1) + "'");
-                }
+                LOG.debug("Metadata catalog: '{}'", m_result.getString(1));
             }
             
             m_result.close();
             return true;
         } catch (SQLException e) {
-            log().info("Unable to get result set", e);
+            LOG.info("Unable to get result set", e);
         }
 
         return false;
@@ -130,15 +130,6 @@ public class JDBCResponse {
      */
     public void setValidQuery(boolean isValidQuery) {
         m_isValidQuery = isValidQuery;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

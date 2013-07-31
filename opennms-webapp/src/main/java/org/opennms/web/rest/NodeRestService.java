@@ -52,14 +52,15 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("nodes")
 @Transactional
 public class NodeRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
+
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -170,7 +174,7 @@ public class NodeRestService extends OnmsRestService {
         writeLock();
         
         try {
-            LogUtils.debugf(this, "addNode: Adding node %s", node);
+            LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
             try {
                 sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
@@ -200,7 +204,7 @@ public class NodeRestService extends OnmsRestService {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) throw getException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
     
-            LogUtils.debugf(this, "updateNode: updating node %s", node);
+            LOG.debug("updateNode: updating node {}", node);
     
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
             for(final String key : params.keySet()) {
@@ -211,7 +215,7 @@ public class NodeRestService extends OnmsRestService {
                 }
             }
     
-            LogUtils.debugf(this, "updateNode: node %s updated", node);
+            LOG.debug("updateNode: node {} updated", node);
             m_nodeDao.saveOrUpdate(node);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
             // return Response.ok(node).build();
@@ -235,7 +239,7 @@ public class NodeRestService extends OnmsRestService {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) throw getException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
     
-            LogUtils.debugf(this, "deleteNode: deleting node %s", nodeCriteria);
+            LOG.debug("deleteNode: deleting node {}", nodeCriteria);
             m_nodeDao.delete(node);
             try {
                 sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());

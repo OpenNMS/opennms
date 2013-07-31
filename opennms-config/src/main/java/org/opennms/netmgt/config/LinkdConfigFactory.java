@@ -43,7 +43,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 
@@ -65,6 +66,7 @@ import org.opennms.netmgt.config.linkd.LinkdConfiguration;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class LinkdConfigFactory extends LinkdConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdConfigFactory.class);
     /**
      * The singleton instance of this factory
      */
@@ -116,7 +118,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
         }
 
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-        LogUtils.debugf(LinkdConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream stream = null;
         try {
@@ -133,12 +135,12 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-            LogUtils.debugf(LinkdConfigFactory.class, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+            LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
             final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
-            LogUtils.debugf(LinkdConfigFactory.class, "saveXml: finished saving config file: %s", cfgFile.getPath());
+            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
         }
     }
 
@@ -181,7 +183,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
-                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                LOG.debug("init: config file path: {}", cfgFile.getPath());
                 InputStream stream = null;
                 try {
                     stream = new FileInputStream(cfgFile);
@@ -191,7 +193,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
                         IOUtils.closeQuietly(stream);
                     }
                 }
-                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
+                LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
             }
         } finally {
             getWriteLock().unlock();

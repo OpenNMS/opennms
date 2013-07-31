@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,17 +36,21 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NodeSourceResourceType class.</p>
  */
 public class NodeSourceResourceType implements OnmsResourceType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NodeSourceResourceType.class);
+    
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
@@ -54,7 +58,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for NodeSourceResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      * @param nodeDao 
      */
     public NodeSourceResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
@@ -168,7 +172,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
                 for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, nodeSourceToNodeId())) {
                     resource.setParent(m_parent);
                     children.add(resource);
-                    log().debug("load: adding resource " + resource.toString());
+                    LOG.debug("load: adding resource {}", resource.toString());
                 }
             }
 
@@ -180,14 +184,11 @@ public class NodeSourceResourceType implements OnmsResourceType {
             for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
                 if (resourceType.isResourceTypeOnNodeSource(nodeSource, nodeSourceToNodeId())) {
                     resourceTypes.add(resourceType);
-                    log().debug("getResourceTypesForNodeSource: adding type " + resourceType.getName());
+                    LOG.debug("getResourceTypesForNodeSource: adding type {}", resourceType.getName());
                 }
             }
             return resourceTypes;
         }
-    }
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(NodeSourceResourceType.class);
     }
 
 

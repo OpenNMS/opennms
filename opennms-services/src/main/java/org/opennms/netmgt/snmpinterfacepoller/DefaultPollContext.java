@@ -28,21 +28,17 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
-
-import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.InetAddressUtils.*;
 
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
@@ -50,6 +46,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a DefaultPollContext
@@ -58,6 +56,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class DefaultPollContext implements PollContext {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
     
     private volatile EventIpcManager m_eventManager;
     private volatile String m_name;
@@ -70,7 +71,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>getIpInterfaceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
@@ -79,7 +80,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>setIpInterfaceDao</p>
      *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
@@ -88,7 +89,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>getSnmpInterfaceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SnmpInterfaceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.SnmpInterfaceDao} object.
      */
     public SnmpInterfaceDao getSnmpInterfaceDao() {
         return m_snmpInterfaceDao;
@@ -97,7 +98,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>setSnmpInterfaceDao</p>
      *
-     * @param snmpInterfaceDao a {@link org.opennms.netmgt.dao.SnmpInterfaceDao} object.
+     * @param snmpInterfaceDao a {@link org.opennms.netmgt.dao.api.SnmpInterfaceDao} object.
      */
     public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
@@ -185,8 +186,8 @@ public class DefaultPollContext implements PollContext {
         getEventManager().sendNow(event);
     }
 
-    ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private Logger log() {
+        return LOG;
     }
 
     /* (non-Javadoc)

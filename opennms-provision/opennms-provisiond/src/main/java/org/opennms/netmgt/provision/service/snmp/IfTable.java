@@ -32,7 +32,8 @@ import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public final class IfTable extends SnmpTable<IfTableEntry> {
+    private static final Logger LOG = LoggerFactory.getLogger(IfTable.class);
     
 
     /**
@@ -96,16 +98,6 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return new IfTableEntry();
     }
 
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IfTable.class);
-    }
-    
     /**
      * <p>getOperStatus</p>
      *
@@ -192,11 +184,11 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         }
         
         // IfTable Attributes
-		snmpIf.setIfType(getIfType(ifIndex));
-		snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-		snmpIf.setIfDescr(getIfDescr(ifIndex));
-		snmpIf.setIfSpeed(getIfSpeed(ifIndex));
-		snmpIf.setPhysAddr(getPhysAddr(ifIndex));
+        snmpIf.setIfType(getIfType(ifIndex));
+        snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+        snmpIf.setIfDescr(getIfDescr(ifIndex));
+        snmpIf.setIfSpeed(getIfSpeed(ifIndex));
+        snmpIf.setPhysAddr(getPhysAddr(ifIndex));
     }
 
     /**

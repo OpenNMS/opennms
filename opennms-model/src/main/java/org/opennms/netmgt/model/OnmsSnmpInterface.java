@@ -57,8 +57,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -68,6 +69,9 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name = "snmpInterface")
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
+
     
     /**
      * 
@@ -539,6 +543,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("snmpifalias", getIfAlias())
             .append("snmpCollect", getCollect())
             .append("snmpPoll", getPoll())
+            .append("nodeId", getNode() == null ? null : getNode().getId())
             .append("lastCapsdPoll", getLastCapsdPoll())
             .append("lastSnmpPoll", getLastSnmpPoll())
             .toString();
@@ -595,14 +600,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return getNode().getPrimaryInterface();
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     /**
      * <p>computePhysAddrForRRD</p>
@@ -622,17 +620,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             if (parsedPhysAddr.length() == 12) {
                 physAddrForRRD = parsedPhysAddr;
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug(
-                                "physAddrForRRD: physical address len "
-                                        + "is NOT 12, physAddr="
-                                        + parsedPhysAddr);
-                }
+                    LOG.debug("physAddrForRRD: physical address len is NOT 12, physAddr={}", parsedPhysAddr);
             }
         }
-        log().debug(
-                    "computed physAddr for " + this + " to be "
-                            + physAddrForRRD);
+        LOG.debug("computed physAddr for {} to be {}", this, physAddrForRRD);
         return physAddrForRRD;
     }
 
@@ -657,10 +648,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         } else if (getIfDescr() != null) {
             label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
         } else {
-            log().info(
-                       "Interface ("
-                               + this
-                               + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+            LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }
         return label;
@@ -681,6 +669,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     public void addIpInterface(OnmsIpInterface iface) {
+        iface.setSnmpInterface(this);
         m_ipInterfaces.add(iface);
     }
 

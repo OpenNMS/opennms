@@ -46,9 +46,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.smslib</groupId>
-      <artifactId>smslib</artifactId>
-      <version>3.4.3-20100302</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>smslib-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>

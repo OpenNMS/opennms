@@ -45,10 +45,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
@@ -59,11 +60,14 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
@@ -80,6 +84,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Transactional
 public class OnmsMonitoredServiceResource extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsMonitoredServiceResource.class);
+
     
     @Context 
     UriInfo m_uriInfo;
@@ -93,6 +100,9 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Autowired
     private MonitoredServiceDao m_serviceDao;
     
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
     
@@ -149,25 +159,35 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, OnmsMonitoredService service) {
+    public Response addService(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
         writeLock();
         
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) throw getException(Status.BAD_REQUEST, "addService: can't find node " + nodeCriteria);
-            OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
+            final OnmsIpInterface intf = node.getIpInterfaceByIpAddress(ipAddress);
             if (intf == null) throw getException(Status.BAD_REQUEST, "addService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
             if (service == null) throw getException(Status.BAD_REQUEST, "addService: service object cannot be null");
             if (service.getServiceName() == null) throw getException(Status.BAD_REQUEST, "addService: service must have a name");
-            OnmsServiceType serviceType = m_serviceTypeDao.findByName(service.getServiceName());
-            if (serviceType == null)  {
-                log().info("addService: creating service type " + service.getServiceName());
-                serviceType = new OnmsServiceType(service.getServiceName());
-                m_serviceTypeDao.save(serviceType);
-            }
+
+            final OnmsServiceType serviceType = new CreateIfNecessaryTemplate<OnmsServiceType, ServiceTypeDao>(m_transactionManager, m_serviceTypeDao) {
+                @Override
+                protected OnmsServiceType query() {
+                    return m_dao.findByName(service.getServiceName());
+                }
+
+                @Override
+                protected OnmsServiceType doInsert() {
+                    LOG.info("addService: creating service type {}", service.getServiceName());
+                    final OnmsServiceType s = new OnmsServiceType(service.getServiceName());
+                    m_dao.saveOrUpdate(s);
+                    return s;
+                }
+            }.execute();
+
             service.setServiceType(serviceType);
             service.setIpInterface(intf);
-            log().debug("addService: adding service " + service);
+            LOG.debug("addService: adding service {}", service);
             m_serviceDao.save(service);
             
             Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
@@ -206,7 +226,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
             if (service == null) throw getException(Status.BAD_REQUEST, "addService: can't find service " + serviceName + " on " + nodeCriteria + "@" + ipAddress);
     
-            log().debug("updateService: updating service " + service);
+            LOG.debug("updateService: updating service {}", service);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -215,7 +235,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            log().debug("updateSservice: service " + service + " updated");
+            LOG.debug("updateSservice: service {} updated", service);
             m_serviceDao.saveOrUpdate(service);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
@@ -243,7 +263,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             if (intf == null) throw getException(Status.BAD_REQUEST, "deleteService: can't find interface with ip address " + ipAddress + " for node " + nodeCriteria);
             OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
             if (service == null) throw getException(Status.CONFLICT, "deleteService: service " + serviceName + " not found on interface " + intf);
-            log().debug("deleteService: deleting service " + serviceName + " from node " + nodeCriteria);
+            LOG.debug("deleteService: deleting service {} from node {}", serviceName, nodeCriteria);
             intf.getMonitoredServices().remove(service);
             m_ipInterfaceDao.saveOrUpdate(intf);
             

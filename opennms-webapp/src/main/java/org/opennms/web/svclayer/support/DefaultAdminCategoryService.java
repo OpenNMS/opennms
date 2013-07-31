@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -67,7 +67,7 @@ public class DefaultAdminCategoryService implements
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -76,7 +76,7 @@ public class DefaultAdminCategoryService implements
     /**
      * <p>setCategoryDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
@@ -85,7 +85,7 @@ public class DefaultAdminCategoryService implements
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -94,7 +94,7 @@ public class DefaultAdminCategoryService implements
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -357,6 +357,11 @@ public class DefaultAdminCategoryService implements
         }
         
         OnmsNode node = findNode(nodeIdString);
+        if (node == null) {
+            throw new IllegalArgumentException("No 'node' with id '"
+                                               + nodeIdString
+                                               + "' could be found");
+        }
        
         if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
@@ -374,10 +379,10 @@ public class DefaultAdminCategoryService implements
                                                        + "' is not an integer");
                 }
                 OnmsCategory category = m_categoryDao.get(id);
-                if (node == null) {
+                if (category == null) {
                     throw new IllegalArgumentException("Category with "
                                                        + "id of " + id
-                                                       + "could not be found");
+                                                       + " could not be found");
                 }
                 if (node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("Category with "
@@ -406,10 +411,10 @@ public class DefaultAdminCategoryService implements
                                                        + "' is not an integer");
                 }
                 OnmsCategory category = m_categoryDao.get(id);
-                if (node == null) {
+                if (category == null) {
                     throw new IllegalArgumentException("Category with "
                                                        + "id of " + id
-                                                       + "could not be found");
+                                                       + " could not be found");
                 }
                 if (!node.getCategories().contains(category)) {
                     throw new IllegalArgumentException("Category with "

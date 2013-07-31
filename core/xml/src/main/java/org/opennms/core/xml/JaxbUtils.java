@@ -57,7 +57,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -66,16 +67,17 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
+	
     private static final class LoggingValidationEventHandler implements ValidationEventHandler {
-		private final Class<?> m_clazz;
 
-		private LoggingValidationEventHandler(Class<?> clazz) {
-			m_clazz = clazz;
+		private LoggingValidationEventHandler() {
 		}
 
 		@Override
 		public boolean handleEvent(final ValidationEvent event) {
-			LogUtils.tracef(m_clazz, event.getLinkedException(), "event = %s", event);
+			LOG.trace("event = {}", event, event.getLinkedException());
 			return false;
 		}
 	}
@@ -170,12 +172,12 @@ public abstract class JaxbUtils {
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate) {
 		final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 		
-		LogUtils.tracef(clazz, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
+		LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
 		try {
 			final XMLFilter filter = getXMLFilterForClass(clazz);
 			final SAXSource source = new SAXSource(filter, inputSource);
 
-			um.setEventHandler(new LoggingValidationEventHandler(clazz));
+			um.setEventHandler(new LoggingValidationEventHandler());
 
 			final JAXBElement<T> element = um.unmarshal(source, clazz);
 			return element.getValue();
@@ -192,7 +194,7 @@ public abstract class JaxbUtils {
 		if (schema != null) {
 			final String namespace = schema.namespace();
 			if (namespace != null && !"".equals(namespace)) {
-				LogUtils.tracef(clazz, "found namespace %s for class %s", namespace, clazz);
+				LOG.trace("found namespace {} for class {}", namespace, clazz);
 				filter = new SimpleNamespaceFilter(namespace, true);
 			} else {
 				filter = new SimpleNamespaceFilter("", false);
@@ -216,11 +218,11 @@ public abstract class JaxbUtils {
 				m_marshallers.set(marshallers);
 			}
 			if (marshallers.containsKey(clazz)) {
-				LogUtils.tracef(clazz, "found unmarshaller for %s", clazz);
+				LOG.trace("found unmarshaller for {}", clazz);
 				return marshallers.get(clazz);
 			}
 		}
-		LogUtils.tracef(clazz, "creating unmarshaller for %s", clazz);
+		LOG.trace("creating unmarshaller for {}", clazz);
 
 		try {
 			final JAXBContext context;
@@ -262,7 +264,7 @@ public abstract class JaxbUtils {
 				m_unMarshallers.set(unmarshallers);
 			}
 			if (unmarshallers.containsKey(clazz)) {
-				LogUtils.tracef(clazz, "found unmarshaller for %s", clazz);
+				LOG.trace("found unmarshaller for {}", clazz);
 				unmarshaller = unmarshallers.get(clazz);
 			}
 		}
@@ -281,12 +283,12 @@ public abstract class JaxbUtils {
             }
 		}
 
-		LogUtils.tracef(clazz, "created unmarshaller for %s", clazz);
+		LOG.trace("created unmarshaller for {}", clazz);
 
 		if (validate) {
             final Schema schema = getValidatorFor(clazz);
             if (schema == null) {
-                LogUtils.tracef(clazz, "Validation is enabled, but no XSD found for class %s", clazz.getSimpleName());
+            	LOG.trace("Validation is enabled, but no XSD found for class {}", clazz.getSimpleName());
             }
             unmarshaller.setSchema(schema);
 		}
@@ -308,7 +310,7 @@ public abstract class JaxbUtils {
 
 	private static Schema getValidatorFor(final Class<?> origClazz) {
 		final Class<?> clazz = (Class<?>)(origClazz instanceof Class<?> ? origClazz : origClazz.getClass());
-		LogUtils.tracef(clazz, "finding XSD for class %s", clazz);
+		LOG.trace("finding XSD for class {}", clazz);
 
 		if (m_schemas.containsKey(clazz)) {
 			return m_schemas.get(clazz);
@@ -326,35 +328,35 @@ public abstract class JaxbUtils {
 			if (schemaInputStream == null) {
 				final File schemaFile = new File(System.getProperty("opennms.home") + "/share/xsds/" + schemaFileName);
 				if (schemaFile.exists()) {
-					LogUtils.tracef(clazz, "using file %s", schemaFile);
+					LOG.trace("using file {}", schemaFile);
 					schemaInputStream = new FileInputStream(schemaFile);
 				};
 			}
 			if (schemaInputStream == null) {
 				final File schemaFile = new File("target/xsds/" + schemaFileName);
 				if (schemaFile.exists()) {
-					LogUtils.tracef(clazz, "using file %s", schemaFile);
+					LOG.trace("using file {}", schemaFile);
 					schemaInputStream = new FileInputStream(schemaFile);
 				};
 			}
 			if (schemaInputStream == null) {
 				final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
 				if (schemaResource == null) {
-					LogUtils.debugf(clazz, "Unable to load resource xsds/%s from the classpath.", schemaFileName);
+					LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
 				} else {
-					LogUtils.tracef(clazz, "using resource %s from classpath", schemaResource);
+					LOG.trace("using resource {} from classpath", schemaResource);
 					schemaInputStream = schemaResource.openStream();
 				}
 			}
 			if (schemaInputStream == null) {
-				LogUtils.tracef(clazz, "Did not find a suitable XSD.  Skipping.");
+				LOG.trace("Did not find a suitable XSD.  Skipping.");
 				return null;
 			}
 			final Schema schema = factory.newSchema(new StreamSource(schemaInputStream));
 			m_schemas.put(clazz, schema);
 			return schema;
 		} catch (final Throwable t) {
-			LogUtils.warnf(clazz, t, "an error occurred while attempting to load %s for validation", schemaFileName);
+			LOG.warn("an error occurred while attempting to load {} for validation", schemaFileName, t);
 			return null;
 		} finally {
 			IOUtils.closeQuietly(schemaInputStream);

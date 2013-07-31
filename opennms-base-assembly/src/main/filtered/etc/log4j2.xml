@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARN here is just for internal log4j messages and does not effect logging in general -->
+<configuration status="WARN" monitorInterval="60">
+
+  <!--
+      The logging in OpenNMS is designed to associate a 'prefix' with each thread that runs.
+      This prefix is used to indicate what 'subsystem' the thread is doing work for so that
+      logging for the subsystem can all be directed to the same log.  The way this needs to work 
+      in the code is that when a thread is doing work for subsystem (ie when it starts a method for
+      this system) it sets its prefix in a ThreadLocal way.  All logs on this thread will then
+      get logged to that 'prefix' file.  After the thread is done doing the work (that is before the 
+      method returns) the prefix needs to be set back to the prefix it had before.  Failure to do that 
+      will cause all subsequent work done by this thread to log to the wrong place.  
+    
+      If log messages are appearing in the wrong log, it is a bug on the part of the developers of the 
+      subsystem that is receiving the log messages because they are not restoring the log prefix 
+      correctly when their thread is finished. 
+
+      If your log messages are showing up in uncategorized.log, it indicates that the subsystem making calls
+      to your code is not properly setting a prefix when being called.
+  -->
+
+  <properties>
+    <property name="prefix">uncategorized</property>
+    <property name="logdir">${install.logs.dir}</property>
+  </properties>
+
+  <!-- Each category/log can be set to one of TRACE, INFO, DEBUG, WARN, ERROR -->
+  <!-- 
+       This section of the setting the log level based on Logging prefix. Log messages that are logged
+       without a prefix work as if the prefix were 'uncategorized'.
+
+       The KeyValuePair specifies a prefix and a log level for messages that have the prefix.
+
+       The defaultThreshold is for log messages that do not match any configured KeyValuePair.
+
+       None of the below of the KeyValuePairs are actually necessary but are just to indicate
+       some well known prefixes in the log or to override the defaultThreshold for a given prefix.
+  -->
+  <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG" onMatch="ACCEPT" onMismatch="DENY">
+    <KeyValuePair key="access-point-monitor" value="DEBUG" />
+    <KeyValuePair key="ackd"                 value="DEBUG" />
+    <KeyValuePair key="actiond"              value="DEBUG" />
+    <KeyValuePair key="alarmd"               value="DEBUG" />
+    <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
+    <KeyValuePair key="archiver"             value="DEBUG" />
+    <KeyValuePair key="capsd"                value="DEBUG" />
+    <KeyValuePair key="collectd"             value="DEBUG" />
+    <KeyValuePair key="correlator"           value="DEBUG" />
+    <KeyValuePair key="dhcpd"                value="DEBUG" />
+    <KeyValuePair key="discovery"            value="DEBUG" />
+    <KeyValuePair key="eventd"               value="DEBUG" />
+    <KeyValuePair key="event-translator"     value="DEBUG" />
+    <KeyValuePair key="instrumentation"      value="DEBUG" />
+    <KeyValuePair key="jetty-server"         value="DEBUG" />
+    <KeyValuePair key="linkd"                value="DEBUG" />
+    <KeyValuePair key="manager"              value="DEBUG" />
+    <KeyValuePair key="map"                  value="DEBUG" />
+    <KeyValuePair key="model-importer"       value="DEBUG" />
+    <KeyValuePair key="notifd"               value="DEBUG" />
+    <KeyValuePair key="oss-qosd"             value="DEBUG" />
+    <KeyValuePair key="oss-qosdrx"           value="DEBUG" />
+    <KeyValuePair key="passive"              value="DEBUG" />
+    <KeyValuePair key="poller"               value="DEBUG" />
+    <KeyValuePair key="provisiond"           value="DEBUG" />
+    <KeyValuePair key="queued"               value="DEBUG" />
+    <KeyValuePair key="reportd"              value="DEBUG" />
+    <KeyValuePair key="reports"              value="DEBUG" />
+    <KeyValuePair key="rtc"                  value="DEBUG" />
+    <KeyValuePair key="syslogd"              value="DEBUG" />
+    <KeyValuePair key="scriptd"              value="DEBUG" />
+    <KeyValuePair key="snmp-poller"          value="DEBUG" />
+    <KeyValuePair key="syslogd"              value="DEBUG" />
+    <KeyValuePair key="threshd"              value="DEBUG" />
+    <KeyValuePair key="tl1d"                 value="DEBUG" />
+    <KeyValuePair key="trapd"                value="DEBUG" />
+    <KeyValuePair key="vacuumd"              value="DEBUG" />
+    <KeyValuePair key="web"                  value="DEBUG" />
+    <KeyValuePair key="xmlrpcd"              value="DEBUG" />
+  </DynamicThresholdFilter>
+
+  <!--
+    This section specifes how log messages are directed to log files.  The below indicates
+    the log messages are sent to files of the form logs/${prefix}.log.  Each message is placed in 
+    a log file corresponding to its MDC prefix.  This happens even if the prefix is not specified
+    above.
+    It is possible to add additional appenders to this section while debugging if you would
+    like messages to be logged in some other way.  See http://logging.apache.org/log4j/2.x/ for details.
+  -->
+  <appenders>
+    <Routing name="RoutingAppender">
+      <Routes pattern="$${ctx:prefix}">
+        <Route>
+          <RollingFile name="Rolling-\${ctx:prefix}" fileName="\${logdir}/\${ctx:prefix}.log"
+                       filePattern="\${logdir}/\${ctx:prefix}.%i.log.gz">
+            <PatternLayout>
+              <pattern>%d %-5p [%t] %c{1.}: %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+      </Routes>
+    </Routing>
+  </appenders>
+
+  <loggers>
+    <root><appender-ref ref="RoutingAppender"/></root>
+  </loggers>
+
+</configuration>

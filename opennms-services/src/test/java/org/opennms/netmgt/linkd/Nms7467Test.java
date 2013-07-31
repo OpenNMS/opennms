@@ -58,14 +58,14 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.AtInterfaceDao;
-import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.IpRouteInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.StpInterfaceDao;
-import org.opennms.netmgt.dao.StpNodeDao;
-import org.opennms.netmgt.dao.VlanDao;
+import org.opennms.netmgt.dao.api.AtInterfaceDao;
+import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpInterfaceDao;
+import org.opennms.netmgt.dao.api.StpNodeDao;
+import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -86,12 +86,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml"
+        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
+        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 @Ignore
 public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBean {
@@ -273,7 +276,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(6,links.size());
+        assertEquals(9,links.size());
         //
         final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
         
@@ -356,7 +359,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         assertEquals("example1", packageName);
         
-        assertEquals(58,linkNode.getBridgeIdentifiers().size());
+        assertEquals(1,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
         assertEquals(CISCO_WS_C2948_BRIDGEID,linkNode.getBridgeIdentifier(1));
@@ -446,7 +449,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         assertEquals("example1", packageName);
         
-        assertEquals(6,linkNode.getBridgeIdentifiers().size());
+        assertEquals(1,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
         assertEquals(CISCO_C870_BRIDGEID,linkNode.getBridgeIdentifier(1));
@@ -562,7 +565,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
         assertEquals("example1", packageName);
         
-        assertEquals(9,linkNode.getBridgeIdentifiers().size());
+        assertEquals(1,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
         assertEquals(NETGEAR_SW_108_BRIDGEID,linkNode.getBridgeIdentifier(1));
@@ -896,7 +899,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         for (final DataLinkInterface link: links) {
         	printLink(link);
         }
-        assertEquals(1,links.size());
+        assertEquals(2,links.size());
         
         final DataLinkInterface ngsw108linktociscows = links.get(0);
         
@@ -940,7 +943,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(1,links.size());
+        assertEquals(2,links.size());
         
         final DataLinkInterface linuxubuntulinktociscows = links.get(0);
         
@@ -993,7 +996,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(1,links.size());
+        assertEquals(2,links.size());
         
         final DataLinkInterface workstationlinktociscows = links.get(0);
         

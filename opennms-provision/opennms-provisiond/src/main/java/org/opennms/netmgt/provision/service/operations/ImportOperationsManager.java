@@ -42,11 +42,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.RequisitionAccountant;
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.opennms.netmgt.provision.service.RequisitionAccountant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class tracks nodes that need to be deleted, inserted, or updated during
@@ -55,6 +56,7 @@ import org.opennms.netmgt.provision.service.ProvisionService;
  * @author david
  */
 public class ImportOperationsManager {
+    private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
 	public static final class NullUpdateOperation extends UpdateOperation {
 		public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService) {
 			super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
@@ -62,7 +64,7 @@ public class ImportOperationsManager {
 
 		@Override
 	    protected void doPersist() {
-			LogUtils.debugf(this, "Skipping persist for node %s: rescanExisting is false", getNode());
+			LOG.debug("Skipping persist for node {}: rescanExisting is false", getNode());
 		}
 	}
 
@@ -264,7 +266,7 @@ public class ImportOperationsManager {
                 // loop util the await returns false
             }
         } catch (final InterruptedException e) {
-            log().error(msg, e);
+            LOG.error(msg, e);
             Thread.currentThread().interrupt();
         }
     }
@@ -288,10 +290,6 @@ public class ImportOperationsManager {
             }
         };
     }
-
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 
     /**
      * <p>setForeignSource</p>
@@ -340,7 +338,7 @@ public class ImportOperationsManager {
         return new Runnable() {
             @Override
             public void run() {
-                log().info("Preprocess: "+oper);
+                LOG.info("Preprocess: {}", oper);
                 oper.scan();
             }
         };

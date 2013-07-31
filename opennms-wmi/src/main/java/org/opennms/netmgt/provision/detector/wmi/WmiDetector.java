@@ -38,12 +38,17 @@ import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
 import org.opennms.protocols.wmi.WmiResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
 public class WmiDetector extends SyncAbstractDetector {
+    
+    
+    public static final Logger LOG = LoggerFactory.getLogger(WmiDetector.class);
     
     private final static String PROTOCOL_NAME = "WMI";
 
@@ -141,21 +146,9 @@ public class WmiDetector extends SyncAbstractDetector {
                 // Perform the operation specified in the parameters.
                 result = mgr.performOp(params);
                 if(params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
-                    log().debug(
-                        "WmiPlugin: "
-                                + params.getWql()                               
-                                + " : "
-                                + WmiResult.convertStateToString(result
-                                        .getResultCode()));
+                    LOG.debug("WmiPlugin: {} : {}", params.getWql(), WmiResult.convertStateToString(result.getResultCode()));
                 } else {
-                    log().debug(
-                        "WmiPlugin: \\\\"
-                                + params.getWmiClass()
-                                + "\\"
-                                + params.getWmiObject()
-                                + " : "
-                                + WmiResult.convertStateToString(result
-                                        .getResultCode()));
+                    LOG.debug("WmiPlugin: \\\\{}\\{} : {}", params.getWmiClass(), params.getWmiObject(), WmiResult.convertStateToString(result.getResultCode()));
                 }
 
                 isAServer = true;
@@ -165,14 +158,14 @@ public class WmiDetector extends SyncAbstractDetector {
                 message.append(e.getMessage());
                 message.append(" : ");
                 message.append((e.getCause() == null ? "" : e.getCause().getMessage()));
-                log().info(message.toString());
+                LOG.info(message.toString());
                 isAServer = false;
             } finally {
                 if (mgr != null) {
                     try {
                         mgr.close();
                     } catch (WmiException e) {
-                        log().warn("an error occurred closing the WMI Manager", e);
+                        LOG.warn("an error occurred closing the WMI Manager", e);
                     }
                 }
             }

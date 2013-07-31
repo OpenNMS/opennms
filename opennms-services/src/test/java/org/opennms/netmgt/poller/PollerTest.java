@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -59,10 +58,10 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.datablock.EventUtil;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -71,12 +70,12 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
-import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -111,7 +110,6 @@ public class PollerTest {
 
 	private OutageAnticipator m_outageAnticipator;
 
-	private Level m_assertLevel;
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -121,7 +119,6 @@ public class PollerTest {
 
 	@Before
 	public void setUp() throws Exception {
-        m_assertLevel = Level.WARN;
 
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
@@ -225,9 +222,6 @@ public class PollerTest {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		if (m_assertLevel != null) {
-			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
-		}
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
@@ -265,6 +259,37 @@ public class PollerTest {
 //	}
 
     @Test
+    public void testNullInterfaceOnNodeDown() {
+        // NODE processing = true;
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        MockNode node = m_network.getNode(2);
+        MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
+        MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
+        MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
+
+        // start the poller
+        startDaemons();
+
+        anticipateDown(node);
+
+        icmpService.bringDown();
+        smtpService.bringDown();
+        snmpService.bringDown();
+
+        verifyAnticipated(10000);
+
+        // node is down at this point
+        boolean foundNodeDown = false;
+        for (final Event event : m_anticipator.getAnticipatedEventsRecieved()) {
+            if (EventConstants.NODE_DOWN_EVENT_UEI.equals(event.getUei())) {
+                foundNodeDown = true;
+                assertNull(event.getInterfaceAddress());
+            }
+        }
+        assertTrue(foundNodeDown);
+    }
+
+    @Test
     @Ignore
 	public void testBug1564() {
 		// NODE processing = true;
@@ -299,6 +324,7 @@ public class PollerTest {
 		snmpService.bringDown();
 
 		verifyAnticipated(10000);
+		
 		anticipateDown(smtpService);
 		verifyAnticipated(10000);
 		anticipateDown(snmpService);
@@ -599,7 +625,6 @@ public class PollerTest {
 	// interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     @Test
 	public void testInterfaceReparented() throws Exception {
-    	m_assertLevel = null;
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 

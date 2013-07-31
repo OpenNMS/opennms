@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.alarmd;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -45,6 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class AlarmPersisterImpl implements AlarmPersister {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
@@ -56,7 +58,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
-        log().debug("process: " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+        LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
 
         return addOrReduceEventAsAlarm(event);
     }
@@ -72,18 +74,18 @@ public class AlarmPersisterImpl implements AlarmPersister {
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
     
         String reductionKey = event.getAlarmData().getReductionKey();
-        log().debug("addOrReduceEventAsAlarm: looking for existing reduction key: "+reductionKey);
+        LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
     
         if (alarm == null) {
-            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" not found, instantiating new alarm");
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             alarm = createNewAlarm(e, event);
             
             //FIXME: this should be a cascaded save
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
         } else {
-            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" found, reducing event to existing alarm: "+alarm.getIpAddr());
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             reduceEvent(e, alarm, event);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
@@ -143,7 +145,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         alarm.setDescription(e.getEventDescr());
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
                     } else {
-                        log().warn("reduceEvent: The specified field: "+field.getFieldName()+", is not supported.");
+                        LOG.warn("reduceEvent: The specified field: {}, is not supported.", field.getFieldName());
                     }
 
                     /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
@@ -151,9 +153,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         final BeanWrapper ew = PropertyAccessorFactory.forBeanPropertyAccess(e);
                         final BeanWrapper aw = PropertyAccessorFactory.forBeanPropertyAccess(alarm);
                         aw.setPropertyValue(field.getFieldName(), ew.getPropertyValue(field.getFieldName()));
-                    } catch (BeansException be) {
-                        System.out.println(be);
-                        log().error("reduceEvent:", be);
+                    } catch (BeansException be) {                        
+                        LOG.error("reduceEvent", be);
                         continue;
                     }
                     */
@@ -203,25 +204,21 @@ public class AlarmPersisterImpl implements AlarmPersister {
         //Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");//TODO: figure out what happens when this exception is thrown
         
         if (event.getLogmsg() != null && event.getLogmsg().getDest() != null && "donotpersist".equals(event.getLogmsg().getDest())) {
-            log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' marked as 'donotpersist'; not processing event.");
+            LOG.debug("checkEventSanity: uei '{}' marked as 'donotpersist'; not processing event.", event.getUei());
             return false;
         }
         
         if (event.getAlarmData() == null) {
-            log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' has no alarm data; not processing event.");
+            LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
             return false;
         }
         return true;
     }
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(AlarmPersisterImpl.class);
-    }
-    
     /**
      * <p>setAlarmDao</p>
      *
-     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
@@ -230,7 +227,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     /**
      * <p>getAlarmDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
      */
     public AlarmDao getAlarmDao() {
         return m_alarmDao;
@@ -239,7 +236,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     /**
      * <p>setEventDao</p>
      *
-     * @param eventDao a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @param eventDao a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;
@@ -248,7 +245,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     /**
      * <p>getEventDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public EventDao getEventDao() {
         return m_eventDao;

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-northbounder-syslog</artifactId>
-  <name>OpenNMS Northbounder Syslog</name>
+  <name>OpenNMS Alarms Northbounder Syslog</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

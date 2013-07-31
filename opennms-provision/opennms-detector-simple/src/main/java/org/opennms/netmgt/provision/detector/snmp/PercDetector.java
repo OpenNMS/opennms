@@ -35,6 +35,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +50,9 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class PercDetector extends SnmpDetector {
 
-    /**
+	private static final Logger LOG = LoggerFactory.getLogger(PercDetector.class);
+
+	/**
      * Name of monitored service.
      */
     private static final String PROTOCOL_NAME = "PERC";
@@ -89,7 +93,7 @@ public class PercDetector extends SnmpDetector {
             SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + '.' + m_arrayNumber);
             SnmpValue value = SnmpUtils.get(agentConfig, snmpObjectId);
             if (value.toInt() != 2) {
-                log().debug("PercMonitor.poll: Bad Disk Found. Log vol(" + m_arrayNumber + ") degraded");
+                LOG.debug("PercMonitor.poll: Bad Disk Found. Log vol({}) degraded", m_arrayNumber);
                 return false;
             }
         } catch (Throwable t) {

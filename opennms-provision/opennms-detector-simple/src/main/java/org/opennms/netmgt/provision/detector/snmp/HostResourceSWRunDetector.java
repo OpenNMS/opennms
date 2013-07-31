@@ -38,6 +38,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +54,9 @@ import antlr.StringUtils;
  */
 @Scope("prototype")
 public class HostResourceSWRunDetector extends SnmpDetector {
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(HostResourceSWRunDetector.class);
+
     /**
      * The protocol supported by this detector
      */
@@ -109,18 +113,16 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         //
         configureAgentPTR(agentConfig);
 
-        if (log().isDebugEnabled()) log().debug("capsd: service= SNMP address= " + agentConfig);
+        LOG.debug("capsd: service= SNMP address={}", agentConfig);
 
         // Establish SNMP session with interface
         //
         final String hostAddress = InetAddressUtils.str(address);
 		try {
-            if (log().isDebugEnabled()) {
-                log().debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
-            }
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 
             if (serviceName == null) {
-                log().warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
+                LOG.warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
                 return status;
             }
 
@@ -133,18 +135,18 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
                 // See if the service name is in the list of running services
                 if (match(serviceName, stripExtraQuotes(value.toString())) && !status) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + value);
+                    LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={} service name={} value={}", hostAddress, serviceName, value);
                     status = true;
                     break;
                 }
             }
 
         } catch (NumberFormatException e) {
-            log().warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", hostAddress, t);
         }
 
         return status;

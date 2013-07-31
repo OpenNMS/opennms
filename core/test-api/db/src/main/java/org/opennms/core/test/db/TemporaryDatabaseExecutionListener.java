@@ -43,7 +43,8 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;
@@ -66,205 +67,206 @@ import com.mchange.v2.c3p0.PooledDataSource;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionListener {
+    private static final Logger LOG = LoggerFactory.getLogger(TemporaryDatabaseExecutionListener.class);
 
-	private boolean m_createNewDatabases = false;
-	private TemporaryDatabase m_database;
-	private final Queue<TemporaryDatabase> m_databases = new ConcurrentLinkedQueue<TemporaryDatabase>();
+    private boolean m_createNewDatabases = false;
+    private TemporaryDatabase m_database;
+    private final Queue<TemporaryDatabase> m_databases = new ConcurrentLinkedQueue<TemporaryDatabase>();
 
-	@Override
-	public void afterTestMethod(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
+    @Override
+    public void afterTestMethod(final TestContext testContext) throws Exception {
+        System.err.println(String.format("TemporaryDatabaseExecutionListener.afterTestMethod(%s)", testContext));
 
-		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
-		if (jtd == null) return;
+        final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+        if (jtd == null) return;
 
         final PooledDataSource pds = (PooledDataSource)testContext.getAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource");
         if (pds != null) pds.hardReset();
-        
-		try {
-			// DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
-			// otherwise you might remove the class-level database that is reused between tests.
-			// {@link TemporaryDatabase#createTestDatabase()}
-			if (m_createNewDatabases) {
-				final DataSource dataSource = DataSourceFactory.getInstance();
-				final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-				if (tempDb != null) {
-					tempDb.drop();
-				}
-			}
-		} finally {
-			// We must mark the application context as dirty so that the DataSourceFactoryBean is
-			// correctly pointed at the next temporary database.
-			//
-			// If the next database is the same as the current database, then do not rewire.
-			// NOTE: This does not work because the Hibernate objects need to be reinjected or they
-			// will reject database operations because they think that the database rows already
-			// exist even if they were rolled back after a previous test execution.
-			//
-			if (jtd.dirtiesContext()) {
-				testContext.markApplicationContextDirty();
-				testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
-			} else {
-				final DataSource dataSource = DataSourceFactory.getInstance();
-				final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-				if (tempDb != m_databases.peek()) {
-					testContext.markApplicationContextDirty();
-					testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
-				}
-			}
-		}
-	}
 
-	private static TemporaryDatabase findTemporaryDatabase(final DataSource dataSource) {
-		if (dataSource instanceof TemporaryDatabase) {
-			return (TemporaryDatabase) dataSource;
-		} else if (dataSource instanceof DelegatingDataSource) {
-			return findTemporaryDatabase(((DelegatingDataSource) dataSource).getTargetDataSource());
-		} else {
-			return null;
-		}
-	}
+        try {
+            // DON'T REMOVE THE DATABASE, just rely on the ShutdownHook to remove them instead
+            // otherwise you might remove the class-level database that is reused between tests.
+            // {@link TemporaryDatabase#createTestDatabase()}
+            if (m_createNewDatabases) {
+                final DataSource dataSource = DataSourceFactory.getInstance();
+                final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
+                if (tempDb != null) {
+                    tempDb.drop();
+                }
+            }
+        } finally {
+            // We must mark the application context as dirty so that the DataSourceFactoryBean is
+            // correctly pointed at the next temporary database.
+            //
+            // If the next database is the same as the current database, then do not rewire.
+            // NOTE: This does not work because the Hibernate objects need to be reinjected or they
+            // will reject database operations because they think that the database rows already
+            // exist even if they were rolled back after a previous test execution.
+            //
+            if (jtd.dirtiesContext()) {
+                testContext.markApplicationContextDirty();
+                testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+            } else {
+                final DataSource dataSource = DataSourceFactory.getInstance();
+                final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
+                if (tempDb != m_databases.peek()) {
+                    testContext.markApplicationContextDirty();
+                    testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+                }
+            }
+        }
+    }
 
-	private static JUnitTemporaryDatabase findAnnotation(final TestContext testContext) {
-		JUnitTemporaryDatabase jtd = null;
-		final Method testMethod = testContext.getTestMethod();
-		if (testMethod != null) {
-			jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
-		}
-		if (jtd == null) {
-			final Class<?> testClass = testContext.getTestClass();
-			jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
-		}
-		return jtd;
-	}
+    private static TemporaryDatabase findTemporaryDatabase(final DataSource dataSource) {
+        if (dataSource instanceof TemporaryDatabase) {
+            return (TemporaryDatabase) dataSource;
+        } else if (dataSource instanceof DelegatingDataSource) {
+            return findTemporaryDatabase(((DelegatingDataSource) dataSource).getTargetDataSource());
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public void beforeTestMethod(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
+    private static JUnitTemporaryDatabase findAnnotation(final TestContext testContext) {
+        JUnitTemporaryDatabase jtd = null;
+        final Method testMethod = testContext.getTestMethod();
+        if (testMethod != null) {
+            jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
+        }
+        if (jtd == null) {
+            final Class<?> testClass = testContext.getTestClass();
+            jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
+        }
+        return jtd;
+    }
 
-		// FIXME: Is there a better way to inject the instance into the test class?
-		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware<?>) {
-			System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: "
-							+ testContext.getTestInstance().getClass().getSimpleName() + "."
-							+ testContext.getTestMethod().getName());
-			injectTemporaryDatabase(testContext);
-		}
-	}
+    @Override
+    public void beforeTestMethod(final TestContext testContext) throws Exception {
+        System.err.println(String.format("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)", testContext));
 
-	@SuppressWarnings({ "unchecked" })
+        // FIXME: Is there a better way to inject the instance into the test class?
+        if (testContext.getTestInstance() instanceof TemporaryDatabaseAware<?>) {
+            System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: "
+                    + testContext.getTestInstance().getClass().getSimpleName() + "."
+                    + testContext.getTestMethod().getName());
+            injectTemporaryDatabase(testContext);
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void injectTemporaryDatabase(final TestContext testContext) {
-		((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
-	}
+        ((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
+    }
 
-	@Override
-	public void beforeTestClass(final TestContext testContext) throws Exception {
-				// Fire up a thread pool for each CPU to create test databases
-		ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		
-		final JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
+    @Override
+    public void beforeTestClass(final TestContext testContext) throws Exception {
+        // Fire up a thread pool for each CPU to create test databases
+        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-		final Future<TemporaryDatabase> classDs;
-		if (classJtd != null) {
-			classDs = pool.submit(new CreateNewDatabaseCallable(classJtd));
-			if (classJtd.reuseDatabase() == false) {
-				m_createNewDatabases = true;
-			}
-		} else {
-			classDs = null;
-		}
+        final JUnitTemporaryDatabase classJtd = testContext.getTestClass().getAnnotation(JUnitTemporaryDatabase.class);
 
-		List<Future<TemporaryDatabase>> futures = new ArrayList<Future<TemporaryDatabase>>();
-		for (Method method : testContext.getTestClass().getMethods()) {
-			if (method != null) {
-				final JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
-				boolean methodHasTest = method.getAnnotation(Test.class) != null;
-				if (methodHasTest) {
-					// If there is a method-specific annotation, use it to create the temporary database
-					if (methodJtd != null) {
-						// Create a new database based on the method-specific annotation
-						Future<TemporaryDatabase> submit = pool.submit(new CreateNewDatabaseCallable(methodJtd));
-						Assert.notNull(submit, "pool.submit(new CreateNewDatabaseCallable(methodJtd = " + methodJtd + ")");
-						futures.add(submit);
-					} else if (classJtd != null) {
-						if (m_createNewDatabases) {
-							// Create a new database based on the test class' annotation
-							Future<TemporaryDatabase> submit = pool.submit(new CreateNewDatabaseCallable(classJtd));
-							Assert.notNull(submit, "pool.submit(new CreateNewDatabaseCallable(classJtd = " + classJtd + ")");
-							futures.add(submit);
-						} else {
-							// Reuse the database based on the test class' annotation
-							Assert.notNull(classDs, "classDs");
-							futures.add(classDs);
-						}
-					}
-				}
-			}
-		}
+        final Future<TemporaryDatabase> classDs;
+        if (classJtd != null) {
+            classDs = pool.submit(new CreateNewDatabaseCallable(classJtd));
+            if (classJtd.reuseDatabase() == false) {
+                m_createNewDatabases = true;
+            }
+        } else {
+            classDs = null;
+        }
 
-		for (Future<TemporaryDatabase> db : futures) {
-			m_databases.add(db.get());
-		}
-	}
+        List<Future<TemporaryDatabase>> futures = new ArrayList<Future<TemporaryDatabase>>();
+        for (Method method : testContext.getTestClass().getMethods()) {
+            if (method != null) {
+                final JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
+                boolean methodHasTest = method.getAnnotation(Test.class) != null;
+                if (methodHasTest) {
+                    // If there is a method-specific annotation, use it to create the temporary database
+                    if (methodJtd != null) {
+                        // Create a new database based on the method-specific annotation
+                        Future<TemporaryDatabase> submit = pool.submit(new CreateNewDatabaseCallable(methodJtd));
+                        Assert.notNull(submit, "pool.submit(new CreateNewDatabaseCallable(methodJtd = " + methodJtd + ")");
+                        futures.add(submit);
+                    } else if (classJtd != null) {
+                        if (m_createNewDatabases) {
+                            // Create a new database based on the test class' annotation
+                            Future<TemporaryDatabase> submit = pool.submit(new CreateNewDatabaseCallable(classJtd));
+                            Assert.notNull(submit, "pool.submit(new CreateNewDatabaseCallable(classJtd = " + classJtd + ")");
+                            futures.add(submit);
+                        } else {
+                            // Reuse the database based on the test class' annotation
+                            Assert.notNull(classDs, "classDs");
+                            futures.add(classDs);
+                        }
+                    }
+                }
+            }
+        }
 
-	@Override
-	public void prepareTestInstance(final TestContext testContext) throws Exception {
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)", testContext));
-		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+        for (Future<TemporaryDatabase> db : futures) {
+            m_databases.add(db.get());
+        }
+    }
 
-		if (jtd == null) {
-			return;
-		}
+    @Override
+    public void prepareTestInstance(final TestContext testContext) throws Exception {
+        System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)", testContext));
+        final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
 
-		m_database = m_databases.remove();
-		final PooledDataSource pooledDataSource = (PooledDataSource)DataSources.pooledDataSource(m_database);
+        if (jtd == null) {
+            return;
+        }
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-		    @Override
-		    public void run() {
-		        try { pooledDataSource.close(); }
-		        catch (final Throwable t) { LogUtils.debugf(this, t, "failed to close pooled data source"); }
-		    }
-		});
+        m_database = m_databases.remove();
+        final PooledDataSource pooledDataSource = (PooledDataSource)DataSources.pooledDataSource(m_database);
 
-		final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
-		DataSourceFactory.setInstance(proxy);
-		
-		testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
-		System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try { pooledDataSource.close(); }
+                catch (final Throwable t) { LOG.debug("failed to close pooled data source", t); }
+            }
+        });
+
+        final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(pooledDataSource);
+        DataSourceFactory.setInstance(proxy);
+
+        testContext.setAttribute("org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener.pooledDataSource", pooledDataSource);
+        System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
         System.err.println("Temporary Database Name: " + m_database.getTestDatabase());
-	}
+    }
 
-	private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {
-		
-		private final JUnitTemporaryDatabase m_jtd;
-		
-		public CreateNewDatabaseCallable(JUnitTemporaryDatabase jtd) {
-			m_jtd = jtd;
-		}
-		
-		@Override
-		public TemporaryDatabase call() throws Exception {
-			return createNewDatabase(m_jtd);
-		}
-		
-	}
+    private static class CreateNewDatabaseCallable implements Callable<TemporaryDatabase> {
 
-	private static TemporaryDatabase createNewDatabase(JUnitTemporaryDatabase jtd) throws Exception {
-		boolean useExisting = false;
-		if (jtd.useExistingDatabase() != null) {
-			useExisting = !jtd.useExistingDatabase().equals("");
-		}
+        private final JUnitTemporaryDatabase m_jtd;
 
-		final String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(jtd);
+        public CreateNewDatabaseCallable(JUnitTemporaryDatabase jtd) {
+            m_jtd = jtd;
+        }
 
-		final TemporaryDatabase retval = ((jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
-		retval.setPopulateSchema(jtd.createSchema() && !useExisting);
-		retval.create();
-		return retval;
-	}
+        @Override
+        public TemporaryDatabase call() throws Exception {
+            return createNewDatabase(m_jtd);
+        }
 
-	private static String getDatabaseName(Object hashMe) {
-		// Append the current object's hashcode to make this value truly unique
-		return String.format("opennms_test_%s_%s", System.nanoTime(), Math.abs(hashMe.hashCode()));
-	}
+    }
+
+    private static TemporaryDatabase createNewDatabase(JUnitTemporaryDatabase jtd) throws Exception {
+        boolean useExisting = false;
+        if (jtd.useExistingDatabase() != null) {
+            useExisting = !jtd.useExistingDatabase().equals("");
+        }
+
+        final String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(jtd);
+
+        final TemporaryDatabase retval = ((jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
+        retval.setPopulateSchema(jtd.createSchema() && !useExisting);
+        retval.create();
+        return retval;
+    }
+
+    private static String getDatabaseName(Object hashMe) {
+        // Append the current object's hashcode to make this value truly unique
+        return String.format("opennms_test_%s_%s", System.nanoTime(), Math.abs(hashMe.hashCode()));
+    }
 }

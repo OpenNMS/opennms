@@ -47,7 +47,9 @@ import java.util.ListIterator;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -59,8 +61,8 @@ import org.opennms.reporting.datablock.OutageSvcTimesList;
 /**
  * <p>LegacyAvailabilityDataService class.</p>
  */
-public class LegacyAvailabilityDataService implements
-        AvailabilityDataService {
+public class LegacyAvailabilityDataService implements AvailabilityDataService {
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyAvailabilityDataService.class);
     
     CatFactory m_catFactory;
     
@@ -72,21 +74,16 @@ public class LegacyAvailabilityDataService implements
 
     private Connection m_availConn;
     
-    private final ThreadCategory log;
-    
     private List<Node> m_nodes;
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    private static final String LOG4J_CATEGORY = "reports";
     
     /**
      * <p>Constructor for LegacyAvailabilityDataService.</p>
      */
     public LegacyAvailabilityDataService() {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(LegacyAvailabilityDataService.class);
-        log.debug("initialised DefaultAvailablityReportService");
-        ThreadCategory.setPrefix(oldPrefix);
+        Logging.putPrefix(LOG4J_CATEGORY);
+        LOG.debug("initialised DefaultAvailablityReportService");
     }
 
     /** {@inheritDoc} */
@@ -104,13 +101,13 @@ public class LegacyAvailabilityDataService implements
             CategoryFactory.init();
             m_catFactory = CategoryFactory.getInstance();
         } catch (IOException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw new AvailabilityDataServiceException("faild to init catFactory");
         } catch (MarshalException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw new AvailabilityDataServiceException("faild to init catFactory");
         } catch (ValidationException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw new AvailabilityDataServiceException("faild to init catFactory");
         }
         
@@ -121,14 +118,12 @@ public class LegacyAvailabilityDataService implements
             
             List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(m_commonRule);
     
-            if (log.isDebugEnabled()) {
-                log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
-            }
+            LOG.debug("Number of IPs satisfying rule: {}", nodeIPs.size());
             
     
             List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());
             
-            log.debug("categories in monitoredServices = " + monitoredServices.toString());
+            LOG.debug("categories in monitoredServices = {}", monitoredServices);
             
             initialiseConnection();
             // Prepare the statement to get service entries for each IP
@@ -140,7 +135,7 @@ public class LegacyAvailabilityDataService implements
                 // Prepared statement to get outages entries
                 outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
             } catch (SQLException e) {
-                log.fatal("failed to setup prepared statement", e);
+                LOG.error("failed to setup prepared statement", e);
                 throw new AvailabilityDataServiceException("failed to setup prepared statement");
             }
             
@@ -156,7 +151,7 @@ public class LegacyAvailabilityDataService implements
                 ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
                 while (ipIter.hasNext()) {
                     ip = str(ipIter.next());
-                    log.debug("ecexuting " + AvailabilityConstants.DB_GET_INFO_FOR_IP + " for " + ip);
+                    LOG.debug("ecexuting {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
         
                     // get node info for this ip
                     ipInfoGetStmt.setString(1, ip);
@@ -202,7 +197,7 @@ public class LegacyAvailabilityDataService implements
                    
                 }
             } catch (SQLException e) {
-                log.fatal("failed to execute prepared statement", e);
+                LOG.error("failed to execute prepared statement", e);
                 throw new AvailabilityDataServiceException("failed to execute prepared statement");
             } finally {
                 try {
@@ -225,7 +220,7 @@ public class LegacyAvailabilityDataService implements
                         closeConnection();
                     }
                 } catch (SQLException e) {
-                    log.fatal("failed to close ipInfo prepared statement", e);
+                    LOG.error("failed to close ipInfo prepared statement", e);
                     throw new AvailabilityDataServiceException("failed to close ipInfo prepared statement");
                 } 
             }
@@ -279,7 +274,7 @@ public class LegacyAvailabilityDataService implements
                 Node newNode = new Node(nodeName, nodeid);
                 newNode.addInterface(ipaddr, serviceName);
                 if (m_nodes == null) {
-                    log.debug("NODES IS NULL");
+                    LOG.debug("NODES IS NULL");
                 }
                 m_nodes.add(newNode);
             }
@@ -314,7 +309,7 @@ public class LegacyAvailabilityDataService implements
             }
 
         } catch (SQLException e) {
-            log.fatal("SQL Error occured while getting the outages ", e);
+            LOG.error("SQL Error occured while getting the outages ", e);
             throw e;
         }
     }
@@ -332,13 +327,13 @@ public class LegacyAvailabilityDataService implements
     public void addNode(String nodeName, int nodeid, String ipaddr,
             String serviceid, long losttime, long regainedtime) {
         if (m_nodes == null) {
-            log.debug("adding new arraylis");
+            LOG.debug("adding new arraylis");
             m_nodes = new ArrayList<Node>();
         } else {
             if (m_nodes.size() <= 0) {
                 Node newNode = new Node(nodeName, nodeid);
                 // if(log.isDebugEnabled())
-                // log.debug("Created the new node.");
+                // LOG.debug("Created the new node.");
                 if (losttime > 0) {
                     if (regainedtime > 0) {
                         newNode.addInterface(ipaddr, serviceid, losttime,
@@ -405,32 +400,22 @@ public class LegacyAvailabilityDataService implements
             DataSourceFactory.init();
             m_availConn = DataSourceFactory.getInstance().getConnection();
         } catch (MarshalException e) {
-            log.fatal(
-                      "initialize: Failed to load data collection configuration",
-                      e);
+            LOG.error("initialize: Failed to load data collection configuration", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (ValidationException e) {
-            log.fatal(
-                      "initialize: Failed to load data collection configuration",
-                      e);
+            LOG.error("initialize: Failed to load data collection configuration", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (IOException e) {
-            log.fatal(
-                      "initialize: Failed to load data collection configuration",
-                      e);
+            LOG.error("initialize: Failed to load data collection configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-            log.fatal("initialize: Failed loading database driver.", e);
+            LOG.error("initialize: Failed loading database driver.", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (SQLException e) {
-            log.fatal(
-                      "initialize: Failed getting connection to the database.",
-                      e);
+            LOG.error("initialize: Failed getting connection to the database.", e);
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
         } catch (PropertyVetoException e) {
-            log.fatal(
-                      "initialize: Failed getting connection to the database.",
-                      e);
+            LOG.error("initialize: Failed getting connection to the database.", e);
             throw new AvailabilityDataServiceException("initialize: Failed getting connection to the database");
         }
     }
@@ -439,15 +424,12 @@ public class LegacyAvailabilityDataService implements
      * Closes the database connection.
      */
     private void closeConnection() {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (m_availConn != null) {
             try {
                 m_availConn.close();
                 m_availConn = null;
             } catch (Throwable t) {
-                log.warn(
-                         "initialize: an exception occured while closing the "
-                                 + "JDBC connection", t);
+                LOG.warn("initialize: an exception occured while closing the JDBC connection", t);
             }
         }
     }

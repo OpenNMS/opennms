@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.EventConstants;
@@ -54,14 +53,18 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventWriter;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class provides additional utility methods on top of the basic {@link TemporaryDatabase}
+ * This class provides additional utility methods on top of the basic {@link TemporaryDatabasePostgreSQL}
  * class. For instance, it can be populated from a {@link MockNetwork}.
  * 
  * @author brozow
  */
-public class MockDatabase extends TemporaryDatabase implements EventWriter {
+public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
+	
     public MockDatabase(String dbName) throws Exception {
         this(dbName, true);
     }
@@ -136,7 +139,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
             svc.setId(getNextServiceId());
             Object[] svcValues = { svc.getId(), svcName };
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
-            LogUtils.infof(this, "Inserting service \"%s\" into database with ID %d", svcName, svc.getId());
+            LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getId());
         } else {
             svc.setId(serviceId);
         }

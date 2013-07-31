@@ -37,13 +37,13 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.map.view.Command;
 import org.opennms.web.map.view.Manager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * <p>
@@ -55,8 +55,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.18
  */
-public class ExecCommandAjaxController extends AbstractController {
-    ThreadCategory log;
+public class ExecCommandAjaxController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ExecCommandAjaxController.class);
 
     private Manager manager;
 
@@ -70,11 +71,8 @@ public class ExecCommandAjaxController extends AbstractController {
 
     /** {@inheritDoc} */
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
+    protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(this.getClass());
-
 
         String id = request.getParameter("id");
 
@@ -107,29 +105,29 @@ public class ExecCommandAjaxController extends AbstractController {
                 } else {
                     String commandToExec = getCommandToExec(request,command,address);
                     p = new Command(commandToExec);
-                    log.info("Executing " + commandToExec);
+                    LOG.info("Executing {}", commandToExec);
                     os.write(manager.execCommand(p));
                 }
             } else {
-                log.info("Getting output for id: " + id);
+                LOG.info("Getting output for id: {}", id);
                 p=manager.getCommand(id);
                 String s = p.getNextLine();
                 if (p.runned() && s == null) {
-                    log.info("Process ended and no more output for id: " + id);
+                    LOG.info("Process ended and no more output for id: {}", id);
                     manager.removeCommand(id);
                     os.write("END");
                 } else {
                     if (s == null ) {
                         os.write("BLANCK");
-                        log.debug("no lines in buffer found");
+                        LOG.debug("no lines in buffer found");
                     } else {
                         os.write(s);
-                        log.debug("Got line: " + s);
+                        LOG.debug("Got line: {}", s);
                     }
                 }
             }
         } catch (Throwable e) {
-            log.error("An error occourred while executing command.", e);
+            LOG.error("An error occourred while executing command.", e);
             os.write("ERROR");
         } finally {
             os.flush();
@@ -203,9 +201,5 @@ public class ExecCommandAjaxController extends AbstractController {
         return commandToExec;
     }
     
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return handleRequest(request, response);
-    }
 
 }

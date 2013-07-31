@@ -348,11 +348,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
-    @OneToMany(mappedBy="ipInterface")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
-        public Set<OnmsMonitoredService> getMonitoredServices() {
+    @OneToMany(mappedBy="ipInterface",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
+    public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices ;
     }
 
@@ -396,6 +394,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
+        .append("id", m_id)
         .append("ipAddr", InetAddressUtils.str(m_ipAddress))
         .append("ipHostName", m_ipHostName)
         .append("isManaged", m_isManaged)

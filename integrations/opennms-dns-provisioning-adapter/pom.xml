@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dns-provisioning-adapter</artifactId>
-  <name>OpenNMS DNS Provisioning Adaptor</name>
+  <name>OpenNMS Integrations DNS Provisioning Adaptor</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -74,6 +74,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

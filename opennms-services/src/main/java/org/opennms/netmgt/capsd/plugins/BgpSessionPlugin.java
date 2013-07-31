@@ -32,12 +32,13 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -52,6 +53,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public final class BgpSessionPlugin extends SnmpPlugin {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BgpSessionPlugin.class);
+    
     /**
      * Name of monitored service.
      */
@@ -128,7 +132,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
             
             // If no parameter for bgpPeerIp, do not detect the protocol and quit
             if (bgpPeerIp == null) {
-                log().warn("poll: No BGP-Peer IP Defined! ");
+                LOG.warn("poll: No BGP-Peer IP Defined! ");
                 return false;
             }
             
@@ -179,12 +183,10 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                 // If no admin state received, do not detect the protocol and quit
                 if (bgpPeerAdminState == null)
                 {
-                    log().warn("Cannot receive bgpAdminState");
+                    LOG.warn("Cannot receive bgpAdminState");
                     return false;
                 } else {
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
-                    }
+                    LOG.debug("poll: bgpPeerAdminState: {}", bgpPeerAdminState);
                 }
                 
                 // If BGP peer session administratively STOP do not detect
@@ -199,12 +201,10 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                 
                 // If no peer state is received or SNMP is not possible, do not detect and quit
                 if (bgpPeerState == null) {
-                    log().warn("No BGP peer state received!");
+                    LOG.warn("No BGP peer state received!");
                     return false;
                 } else {
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: bgpPeerState: " + bgpPeerState);
-                    }
+                    LOG.debug("poll: bgpPeerState: {}", bgpPeerState);
                 }
 
                 // Validate sessions, check state is somewhere between IDLE and ESTABLISHED
@@ -212,32 +212,19 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     Integer.parseInt(bgpPeerState.toString()) <= BGP_PEER_STATE.ESTABLISHED.value())
                 {
                     // Session detected
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: bgpPeerState: "
-                                    + bgpPeerState
-                                    + " is valid, protocol supported.");
-                    }
+                    LOG.debug("poll: bgpPeerState: {} is valid, protocol supported.", bgpPeerState);
                     return true;
                 }
             }
         } catch (NullPointerException e) {
-            log().warn("SNMP not available or RFC1269-MIB not supported!");
+            LOG.warn("SNMP not available or RFC1269-MIB not supported!");
         } catch (NumberFormatException e) {
-            log().warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
+            LOG.warn("Unexpected exception during SNMP poll of interface {}", ipaddr, t);
         }
         return false;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public static ThreadCategory log() {
-        return ThreadCategory.getInstance(BgpSessionPlugin.class);
     }
 }

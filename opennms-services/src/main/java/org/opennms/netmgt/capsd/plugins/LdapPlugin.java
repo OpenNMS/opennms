@@ -42,7 +42,8 @@ import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutSocketFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
@@ -63,6 +64,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class LdapPlugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(LdapPlugin.class);
 
     private static final String PROTOCOL_NAME = "LDAP";
 
@@ -119,7 +121,6 @@ public class LdapPlugin extends AbstractPlugin {
      *         otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 
@@ -138,11 +139,11 @@ public class LdapPlugin extends AbstractPlugin {
             socket.connect(new InetSocketAddress(host, port), timeout);
             socket.setSoTimeout(timeout);
 
-            log.debug("LDAPPlugin.isServer: connect successful");
+            LOG.debug("LDAPPlugin.isServer: connect successful");
 
             // now go ahead and attempt to determine if LDAP is on this host
             for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
-                log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + InetAddressUtils.str(host));
+                LOG.debug("LDAPPlugin.isServer: attempt {} to connect host {}", InetAddressUtils.str(host), attempts);
                 LDAPConnection lc = null;
                 try {
                     lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
@@ -161,17 +162,17 @@ public class LdapPlugin extends AbstractPlugin {
         } catch (ConnectException e) {
             // Connection refused!! No need to perform retries.
             //
-            log.debug(getClass().getName() + ": connection refused to " + InetAddressUtils.str(host) + ":" + port);
+            LOG.debug("{}: connection refused to {}:{}", getClass().getName(), InetAddressUtils.str(host), port);
         } catch (NoRouteToHostException e) {
             // No route to host!! No need to perform retries.
             e.fillInStackTrace();
-            log.info(getClass().getName() + ": No route to host " + InetAddressUtils.str(host), e);
+            LOG.info("{}: No route to host {}", getClass().getName(), InetAddressUtils.str(host), e);
             throw new UndeclaredThrowableException(e);
         } catch (InterruptedIOException e) {
             // Connection failed, retry until attempts exceeded
-            log.debug("LDAPPlugin: failed to connect within specified timeout");
+            LOG.debug("LDAPPlugin: failed to connect within specified timeout");
         } catch (Throwable t) {
-            log.warn(getClass().getName() + ": An undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
+            LOG.warn("{}: An undeclared throwable exception caught contacting host {}", getClass().getName(), InetAddressUtils.str(host), t);
         } finally {
             try {
                 // close the socket channel

@@ -4,9 +4,12 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.vaadin.terminal.gwt.client.VConsole;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class SearchStateManager {
+    static Logger logger = Logger.getLogger(SearchStateManager.class.getName());
     private SearchState m_state;
     private ValueItem m_valueItem;
     private ValueItem m_history;
@@ -43,7 +46,7 @@ public abstract class SearchStateManager {
     public boolean handleAutocompleteEvent(final NativeEvent event) {
         final String eventType = event.getType();
         final int eventKeyCode = event.getKeyCode();
-        VConsole.log("handleAutocompleteEvent(" + m_state + "): received " + eventType + " (keyCode = " + eventKeyCode + ")");
+        logger.log(Level.INFO, "handleAutocompleteEvent(" + m_state + "): received " + eventType + " (keyCode = " + eventKeyCode + ")");
 
         if ("keydown".equals(eventType)) {
             switch (eventKeyCode) {
@@ -74,7 +77,7 @@ public abstract class SearchStateManager {
             });
             return true;
         } else {
-            VConsole.log("handleAutocompleteEvent(" + m_state + "): unhandled event: " + eventType);
+            logger.log(Level.INFO, "handleAutocompleteEvent(" + m_state + "): unhandled event: " + eventType);
             return true;
         }
         return false;
@@ -82,7 +85,7 @@ public abstract class SearchStateManager {
 
     public void handleSearchIconEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        VConsole.log("handleSearchIconEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        logger.log(Level.INFO, "handleSearchIconEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("click".equals(eventType) || "touchstart".equals(eventType)) {
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -92,13 +95,13 @@ public abstract class SearchStateManager {
                 }
             });
         } else {
-            VConsole.log("handleSearchIconEvent(" + m_state + "): unhandled event: " + eventType);
+            logger.log(Level.INFO, "handleSearchIconEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
     public void handleInputEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        VConsole.log("handleInputEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        logger.log(Level.INFO, "handleInputEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("keydown".equals(eventType)) {
             switch (event.getKeyCode()) {
@@ -151,7 +154,7 @@ public abstract class SearchStateManager {
                 });
             }
         } else {
-            VConsole.log("handleInputEvent(" + m_state + "): unhandled event: " + eventType);
+            logger.log(Level.INFO, "handleInputEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
@@ -191,7 +194,7 @@ public abstract class SearchStateManager {
                 // if we're not searching, starting navigation won't do
                 // anything because
                 // we don't have a search phrase yet
-                VConsole.log("WARNING: attempting to start autocomplete navigation, but we're not searching!");
+                logger.log(Level.INFO, "WARNING: attempting to start autocomplete navigation, but we're not searching!");
                 return this;
             }
 
@@ -205,20 +208,20 @@ public abstract class SearchStateManager {
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 // if we're not searching, we can't finish :)
-                VConsole.log("WARNING: attempting to finish, but we're not searching!");
+                logger.log(Level.INFO, "WARNING: attempting to finish, but we're not searching!");
                 return this;
             }
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // if we're not searching, we can't select an entry
-                VConsole.log("WARNING: attempting to finish, but we're not searching!");
+                logger.log(Level.INFO, "WARNING: attempting to finish, but we're not searching!");
                 return this;
             }
 
             @Override
             public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
-                VConsole.log("WARNING: match count updated, but we're not searching!");
+                logger.log(Level.INFO, "WARNING: match count updated, but we're not searching!");
                 return this;
             }
         },
@@ -327,7 +330,7 @@ public abstract class SearchStateManager {
             @Override
             public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
                 // navigation has already started
-                VConsole.log("WARNING: attempting to start navigation when it has already started");
+                logger.log(Level.INFO, "WARNING: attempting to start navigation when it has already started");
                 return this;
             }
 
@@ -385,7 +388,7 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
-                VConsole.log("Current entry got selected, but there is no current entry visible!");
+                logger.log(Level.INFO, "Current entry got selected, but there is no current entry visible!");
                 return this;
             }
 
@@ -398,7 +401,7 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
-                VConsole.log("Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
+                logger.log(Level.INFO, "Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
                 return this;
             }
 
@@ -454,13 +457,13 @@ public abstract class SearchStateManager {
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 // we're already finished searching... finish... again?
-                VConsole.log("WARNING: attempting to finish search, but we're already finished!");
+                logger.log(Level.INFO, "WARNING: attempting to finish search, but we're already finished!");
                 return this;
             }
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
-                VConsole.log("WARNING: attempting to select an entry, but we're already finished!");
+                logger.log(Level.INFO, "WARNING: attempting to select an entry, but we're already finished!");
                 return this;
             }
 

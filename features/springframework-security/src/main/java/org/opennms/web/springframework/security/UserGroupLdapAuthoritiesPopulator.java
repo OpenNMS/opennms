@@ -36,8 +36,8 @@ import java.util.Set;
 
 import javax.naming.directory.SearchControls;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
@@ -52,8 +52,7 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
  * property either in a Spring context file or by calling {@link #setGroupToRoleMap(Map)}.
  */
 public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
-
-	private final Log logger = LogFactory.getLog(UserGroupLdapAuthoritiesPopulator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UserGroupLdapAuthoritiesPopulator.class);
 
 	private final SearchControls searchControls = new SearchControls();
 
@@ -96,10 +95,7 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 			return authorities;
 		}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("Searching for roles for user '" + username + "', DN = " + "'" + userDn + "', with filter "
-					+ this.groupSearchFilter + " in search base '" + super.getGroupSearchBase() + "'");
-		}
+                LOG.debug("Searching for roles for user '{}', DN = '{}', with filter '{}' in search base '{}'", username, userDn, this.groupSearchFilter, super.getGroupSearchBase());
 
 		final Set<String> userRoles = ldapTemplate.searchForSingleAttributeValues(
 				super.getGroupSearchBase(), 
@@ -110,11 +106,11 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 
 		for(String group : userRoles) {
 			final List<String> rolesForGroup = this.groupToRoleMap.get(group);
-			logger.debug("Checking " + group + " for an associated role");
+			LOG.debug("Checking {} for an associated role", group);
 			if (rolesForGroup != null) {
 				for(String role : rolesForGroup) {
 					authorities.add(new SimpleGrantedAuthority(role));
-					logger.debug("Added role: " + role + " based on group " + group);
+					LOG.debug("Added role: {} based on group {}", role, group);
 				}
 			}
 		}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,9 @@ import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.web.request.WebRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>WebResponse class.</p>
@@ -43,7 +44,8 @@ import org.opennms.netmgt.provision.detector.web.request.WebRequest;
  * @version $Id: $
  */
 public class WebResponse {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(WebResponse.class);
     private String expectedRange;
     private String expectedText;
     private HttpResponse httpResponse;
@@ -62,14 +64,14 @@ public class WebResponse {
         }
 
         Integer statusCode = httpResponse.getStatusLine().getStatusCode();
-        log().debug("HTTP response status code: " + statusCode);
+        LOG.debug("HTTP response status code: {}", statusCode);
         boolean retval = inRange(expectedRange, statusCode);
 
         if (expectedText != null) {
             try {
                 String responseText = EntityUtils.toString(httpResponse.getEntity());
-                log().debug("HTTP response text: " + responseText);
-                log().debug("HTTP checking if output matches " + expectedText);
+                LOG.debug("HTTP response text: {}", responseText);
+                LOG.debug("HTTP checking if output matches {}", expectedText);
                 if (expectedText.charAt(0) == '~') {
                     final Pattern p = Pattern.compile(expectedText.substring(1), Pattern.MULTILINE);
                     final Matcher m = p.matcher(responseText);
@@ -78,12 +80,12 @@ public class WebResponse {
                     retval = responseText.equals(expectedText);
                 }
             } catch (Exception e) {
-                log().info(e.getMessage(), e);
+                LOG.info(e.getMessage(), e);
                 retval = false;
             }
         }
 
-        log().debug("HTTP detected ? " + retval);
+        LOG.debug("HTTP detected ? {}", retval);
         return retval;
     }
 
@@ -94,9 +96,5 @@ public class WebResponse {
         } else {
             return true;
         }
-    }
-
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

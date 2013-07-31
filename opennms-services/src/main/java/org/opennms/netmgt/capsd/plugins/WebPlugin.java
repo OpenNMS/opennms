@@ -46,7 +46,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -56,8 +56,9 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>WebPlugin class.</p>
@@ -66,6 +67,9 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @version $Id: $
  */
 public class WebPlugin extends AbstractPlugin {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(WebPlugin.class);
 
     static Integer DEFAULT_TIMEOUT = 3000;
     static Integer DEFAULT_PORT = 80;
@@ -98,14 +102,12 @@ public class WebPlugin extends AbstractPlugin {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         try {
-            HttpGet getMethod = new HttpGet(URIUtils.createURI(
-                                                    ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME), 
-                                                    InetAddressUtils.str(address), 
-                                                    ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
-                                                    ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
-                                                    null, 
-                                                    null
-            ));
+            URIBuilder ub = new URIBuilder();
+            ub.setScheme(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
+            ub.setHost(InetAddressUtils.str(address));
+            ub.setPort(ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT));
+            ub.setPath( ParameterMap.getKeyedString(map, "path", DEFAULT_PATH));
+            HttpGet getMethod = new HttpGet(ub.build());
             httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT));
@@ -147,8 +149,7 @@ public class WebPlugin extends AbstractPlugin {
                                 Credentials creds = credsProvider.getCredentials(authScope);
                                 // If found, generate BasicScheme preemptively
                                 if (creds != null) {
-                                    authState.setAuthScheme(new BasicScheme());
-                                    authState.setCredentials(creds);
+                                    authState.update(new BasicScheme(), creds);
                                 }
                             }
                         }
@@ -191,21 +192,18 @@ public class WebPlugin extends AbstractPlugin {
             }
 
         } catch (IOException e) {
-            log().info(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
             retval = false;
         } catch (URISyntaxException e) {
-            log().info(e.getMessage(), e);
+            LOG.info(e.getMessage(), e);
             retval = false;
         } finally{
-            // Do we need to do any cleanup?
-            // getMethod.releaseConnection();
+            if (httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
+            }
         }
 
         return retval;
-    }
-
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(WebPlugin.class);
     }
 
     private boolean inRange(String range,Integer val){

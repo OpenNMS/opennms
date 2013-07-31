@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>gwt-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS GWT Dependencies</name>
+  <name>OpenNMS Dependencies GWT</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use Google Web Toolkit

@@ -32,9 +32,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.CountedObject;
+import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.opennms.systemreport.dao.CountedObject;
-import org.opennms.systemreport.dao.EventCountDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;

@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -44,7 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorAbsoluteChange.class);
     private static final String TYPE = "absoluteChange";
 
     /** {@inheritDoc} */
@@ -106,7 +108,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
                     if (dsValue <= threshold) {
                         setPreviousTriggeringSample(getLastSample());
                         setLastSample(dsValue);
-                        log().debug("evaluate: absolute negative change threshold triggered");
+                        LOG.debug("evaluate: absolute negative change threshold triggered");
                         return Status.TRIGGERED;
                     }
                 } else {
@@ -114,7 +116,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
                     if (dsValue >= threshold) {
                         setPreviousTriggeringSample(getLastSample());
                         setLastSample(dsValue);
-                        log().debug("evaluate: absolute positive change threshold triggered");
+                        LOG.debug("evaluate: absolute positive change threshold triggered");
                         return Status.TRIGGERED;
                     }
                 }

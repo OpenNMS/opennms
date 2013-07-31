@@ -9,20 +9,13 @@
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>protocol-collectors</artifactId>
   <packaging>pom</packaging>
-  <name>NRTG ProtocolCollectors</name>
+  <name>OpenNMS Features NRTG ProtocolCollectors</name>
   <description>
     The ProtocolCollectors module contains ProtocolCollectors. These
     ProtocolCollectors are able to request values for metrics from agents
     on nodes.
   </description>
 
-  <repositories>
-    <repository>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-    </repository>
-  </repositories>
   <modules>
     <module>snmp</module>
     <module>tca</module>

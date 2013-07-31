@@ -30,11 +30,13 @@ package org.opennms.protocols.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -44,26 +46,47 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
+import org.apache.http.client.protocol.ResponseContentEncoding;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.protocols.xml.config.Content;
+import org.opennms.protocols.xml.config.Header;
+import org.opennms.protocols.xml.config.Request;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class for managing HTTP URL Connection using Apache HTTP Client
- * 
- * TODO Pending features:
- * 
- * 1) Support for HTTPS
- * 2) Support for POST with different content types
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class HttpUrlConnection extends URLConnection {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HttpUrlConnection.class);
+
     /** The URL. */
     private URL m_url;
+
+    /** The Request. */
+    private Request m_request;
 
     /** The HTTP Client. */
     private DefaultHttpClient m_client;
@@ -72,10 +95,12 @@ public class HttpUrlConnection extends URLConnection {
      * Instantiates a new SFTP URL connection.
      *
      * @param url the URL
+     * @param request 
      */
-    protected HttpUrlConnection(URL url) {
+    protected HttpUrlConnection(URL url, Request request) {
         super(url);
         m_url = url;
+        m_request = request;
     }
 
     /* (non-Javadoc)
@@ -86,35 +111,43 @@ public class HttpUrlConnection extends URLConnection {
         if (m_client != null) {
             return;
         }
-        m_client = new DefaultHttpClient();
-        m_client.addRequestInterceptor(new HttpRequestInterceptor() {
-            @Override
-            public void process(HttpRequest request, HttpContext context)
-                    throws HttpException, IOException {
-                if (!request.containsHeader("Accept-Encoding")) {
-                    request.addHeader("Accept-Encoding", "gzip");
-                }
+        final HttpParams httpParams = new BasicHttpParams();
+        if (m_request != null) {
+            int timeout = m_request.getParameterAsInt("timeout");
+            if (timeout > 0) {
+                HttpConnectionParams.setConnectionTimeout(httpParams, timeout);
+                HttpConnectionParams.setSoTimeout(httpParams, timeout);
             }
-        });
-        m_client.addResponseInterceptor(new HttpResponseInterceptor() {
-            @Override
-            public void process(final HttpResponse response, final HttpContext context)
-                    throws HttpException, IOException {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    Header ceheader = entity.getContentEncoding();
-                    if (ceheader != null) {
-                        HeaderElement[] codecs = ceheader.getElements();
-                        for (int i = 0; i < codecs.length; i++) {
-                            if (codecs[i].getName().equalsIgnoreCase("gzip")) {
-                                response.setEntity(new GzipDecompressingEntity(response.getEntity()));
-                                return;
-                            }
+        }
+        m_client = new DefaultHttpClient(httpParams);
+        m_client.addRequestInterceptor(new RequestAcceptEncoding());
+        m_client.addResponseInterceptor(new ResponseContentEncoding());
+        if (m_request != null) {
+            int retries = m_request.getParameterAsInt("retries");
+            if (retries > 0) {
+                m_client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler() {
+                    @Override
+                    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+                        if (executionCount <= getRetryCount() && (exception instanceof SocketTimeoutException || exception instanceof ConnectTimeoutException)) {
+                            return true;
                         }
+                        return super.retryRequest(exception, executionCount, context);
                     }
+                });
+            }
+            String disableSslVerification = m_request.getParameter("disable-ssl-verification");
+            if (Boolean.getBoolean(disableSslVerification)) {
+                final SchemeRegistry registry = m_client.getConnectionManager().getSchemeRegistry();
+                final Scheme https = registry.getScheme("https");
+                try {
+                    SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                    final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
+                    registry.register(lenient);
+                } catch (NoSuchAlgorithmException e) {
+                    LOG.warn(e.getMessage());
                 }
             }
-        });
+        }
     }
 
     /* (non-Javadoc)
@@ -126,14 +159,45 @@ public class HttpUrlConnection extends URLConnection {
             if (m_client == null) {
                 connect();
             }
+            // Build URL
             int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
+            URIBuilder ub = new URIBuilder();
+            ub.setPort(port);
+            ub.setScheme(m_url.getProtocol());
+            ub.setHost(m_url.getHost());
+            ub.setPath(m_url.getPath());
+            ub.setQuery(m_url.getQuery());
+            // Build Request
+            HttpRequestBase request = null;
+            if (m_request != null && m_request.getMethod().equalsIgnoreCase("post")) {
+                final Content cnt = m_request.getContent();
+                HttpPost post = new HttpPost(ub.build());
+                ContentType contentType = ContentType.create(cnt.getType());
+                LOG.info("Processing POST request for %s", contentType);
+                if (contentType.getMimeType().equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType())) {
+                    FormFields fields = JaxbUtils.unmarshal(FormFields.class, cnt.getData());
+                    post.setEntity(fields.getEntity());
+                } else {
+                    StringEntity entity = new StringEntity(cnt.getData(), contentType);
+                    post.setEntity(entity);
+                }
+                request = post;
+            } else {
+                request = new HttpGet(ub.build());
+            }
+            if (m_request != null) {
+                // Add Custom Headers
+                for (Header header : m_request.getHeaders()) {
+                    request.addHeader(header.getName(), header.getValue());
+                }
+            }
+            // Add User Authentication
             String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
-
-            HttpGet request = new HttpGet(URIUtils.createURI(m_url.getProtocol(), m_url.getHost(), port, m_url.getPath(), m_url.getQuery(), null));
             if (userInfo != null) {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(userInfo[0], userInfo[1]);
                 request.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
             }
+            // Get Response
             HttpResponse response = m_client.execute(request);
             return response.getEntity().getContent();
         } catch (Exception e) {
@@ -155,8 +219,5 @@ public class HttpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

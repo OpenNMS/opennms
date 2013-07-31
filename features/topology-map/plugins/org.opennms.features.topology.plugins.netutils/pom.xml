@@ -51,7 +51,7 @@
 	                <version>${gwtPluginVersion}</version>
 	                <configuration>
 	                    <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-	                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+	                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
 	                </configuration>
 	                <executions>
 	                    <execution>
@@ -153,53 +153,17 @@
 		          <extensions>true</extensions>
 		    </plugin>
 		</plugins>
-    </build>
-	
-
-	<repositories>
-		<repository>
-			<id>vaadin-snapshots</id>
-			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>		
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>codehaus-snapshots</id>
-			<url>http://nexus.codehaus.org/snapshots</url>
-			<snapshots>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>vaadin-snapshots</id>
-			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-			<snapshots>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
+	</build>
 
 	<dependencies>
 	<!-- NECESSARY DEPENDENCIES -->
-
 	    <dependency>
 	      <groupId>junit</groupId>
 	      <artifactId>junit</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.easymock</groupId>
+	      <artifactId>easymock</artifactId>
 	    </dependency>
 		<dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
@@ -207,18 +171,7 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwtVersion}</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-        
 		 <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>

@@ -32,7 +32,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
@@ -52,6 +53,7 @@ import org.springframework.remoting.RemoteAccessException;
  * @version $Id: $
  */
 public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionProtectedPollerBackEnd.class);
     
     private PollerBackEnd m_delegate;
     
@@ -72,7 +74,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             m_delegate.checkForDisconnectedMonitors();
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -85,7 +87,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             m_delegate.configurationUpdated();
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -96,7 +98,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.getMonitorName(locationMonitorId);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -111,7 +113,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.getMonitoringLocations();
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -122,7 +124,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -133,7 +135,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.getServiceMonitorLocators(context);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -144,7 +146,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -155,7 +157,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.pollerStarting(locationMonitorId, pollerDetails);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -166,7 +168,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             m_delegate.pollerStopping(locationMonitorId);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -177,7 +179,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             return m_delegate.registerLocationMonitor(monitoringLocationId);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -189,7 +191,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             m_delegate.reportResult(locationMonitorID, serviceId, status);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }
@@ -199,7 +201,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         try {
             m_delegate.saveResponseTimeData(locationMonitor, monSvc, responseTime, pkg);
         } catch (Throwable t) {
-            LogUtils.errorf(this, t, "Unexpected exception thrown in remote poller backend.");
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
         }
     }

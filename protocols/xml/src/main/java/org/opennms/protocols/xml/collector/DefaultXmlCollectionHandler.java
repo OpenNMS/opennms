@@ -36,6 +36,7 @@ import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
 
@@ -59,7 +60,8 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
         try {
             for (XmlSource source : collection.getXmlSources()) {
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Document doc = getXmlDocument(urlStr);
+                Request request = parseRequest(source.getRequest(), agent);
+                Document doc = getXmlDocument(urlStr, request);
                 fillCollectionSet(agent, collectionSet, source, doc);
             }
             collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);

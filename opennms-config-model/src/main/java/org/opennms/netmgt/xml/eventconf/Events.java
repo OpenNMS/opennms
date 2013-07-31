@@ -31,7 +31,6 @@ package org.opennms.netmgt.xml.eventconf;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Serializable;
@@ -46,20 +45,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.transform.stream.StreamSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -67,14 +59,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
-import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="events")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={})
 public class Events implements Serializable {
-	public interface EventCallback<T> {
+    public interface EventCallback<T> {
 		
 		public T process(T accum, Event event);
 
@@ -86,7 +77,7 @@ public class Events implements Serializable {
 
 	}
 
-	private static final long serialVersionUID = -49037181336311348L;
+	private static final long serialVersionUID = -3725006529763434264L;
 
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
@@ -187,11 +178,6 @@ public class Events implements Serializable {
      * @return true if this object is valid according to the schema
      */
     public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
         return true;
     }
 
@@ -203,12 +189,8 @@ public class Events implements Serializable {
         return m_eventFiles.iterator();
     }
 
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
+    public void marshal(final Writer out) {
+        JaxbUtils.marshal(this, out);
     }
 
     public void removeAllEvent() {
@@ -287,12 +269,8 @@ public class Events implements Serializable {
         m_global = global;
     }
 
-    public static Events unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Events) Unmarshaller.unmarshal(Events.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
+    public static Events unmarshal(final Reader reader) {
+        return JaxbUtils.unmarshal(Events.class, reader);
     }
 
 	@Override
@@ -344,12 +322,12 @@ public class Events implements Serializable {
 	}
 	
 
-	public void loadEventFiles(Resource configResource,	javax.xml.bind.Unmarshaller unmarshaller) throws IOException, JAXBException {
+	public void loadEventFiles(Resource configResource) throws IOException {
 		m_loadedEventFiles.clear();
 		
 		for(String eventFile : m_eventFiles) {
 			Resource eventResource = getRelative(configResource, eventFile);
-			Events events = load(unmarshaller, eventResource);
+			Events events = JaxbUtils.unmarshal(Events.class, eventResource);
 			if (events.getEventCount() <= 0) {
 				throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
 			}
@@ -364,27 +342,8 @@ public class Events implements Serializable {
 		}
 	}
 
-	private Events load(javax.xml.bind.Unmarshaller unmarshaller, Resource eventResource) throws JAXBException, IOException {
-		InputStream stream = null;
-		try {
-			stream = eventResource.getInputStream();
-			StreamSource source = new StreamSource(stream);
-			Events events = unmarshaller.unmarshal(source, Events.class).getValue();
-			
-			return events;
-		} finally {
-			if (stream != null) stream.close();
-		}
-
-	}
-
 	public boolean isSecureTag(String tag) {
 		return m_global == null ? false : m_global.isSecureTag(tag);
-	}
-	
-	public static interface Partition {
-		List<String> group(Event eventConf);
-		String group(org.opennms.netmgt.xml.event.Event matchingEvent);
 	}
 	
 	private void partitionEvents(Partition partition) {

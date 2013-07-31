@@ -31,7 +31,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.scheduler.Timer;
  * @version $Id: $
  */
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
+    private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
 
     private PollerConfig m_pollerConfig;
     private PollOutagesConfig m_pollOutagesConfig;
@@ -109,12 +111,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
         try {
             ServiceMonitor monitor = getServiceMonitor();
-            ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg " + packageName);
+            LOG.debug("Polling {} using pkg {}", packageName, m_service);
             PollStatus result = monitor.poll(m_service, getParameters());
-            ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg " + packageName + " result = "+result);
+            LOG.debug("Finish polling {} using pkg {} result = {}", result, m_service, packageName);
             return result;
         } catch (Throwable e) {
-            ThreadCategory.getInstance(getClass()).error("Unexpected exception while polling "+m_service+". Marking service as DOWN", e);
+            LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
             return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
         }
     }
@@ -136,7 +138,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     public synchronized void refresh() {
         Package newPkg = m_pollerConfig.getPackage(m_pkg.getName());
         if (newPkg == null) {
-            ThreadCategory.getInstance(PollableServiceConfig.class).warn("Package named "+m_pkg.getName()+" no longer exists.");
+            LOG.warn("Package named {} no longer exists.", m_pkg.getName());
         }
         m_pkg = newPkg;
         m_configService = findService(m_pkg);
@@ -223,7 +225,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 }
             }
             if (!matched) {
-                ThreadCategory.getInstance(getClass()).warn("getInterval: Could not locate downtime model, throwing runtime exception");
+                LOG.warn("getInterval: Could not locate downtime model, throwing runtime exception");
                 throw new RuntimeException("Downtime model is invalid, cannot schedule service " + m_service);
             }
         }
@@ -253,8 +255,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) || 
                     (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
                         (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
-                    if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
-                        ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, " + m_configService + " will not be polled.");
+                    LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
                 }
             }

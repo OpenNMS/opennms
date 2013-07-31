@@ -39,10 +39,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
@@ -55,8 +55,10 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class LoadNodesController implements Controller {
-	ThreadCategory log;
+public class LoadNodesController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(LoadNodesController.class);
+
 
 	private Manager manager;
 	
@@ -81,18 +83,16 @@ public class LoadNodesController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
-		log.debug("Loading Nodes" );
+		LOG.debug("Loading Nodes" );
 		
 		String user = request.getRemoteUser();
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			bw.write(ResponseAssembler.getLoadNodesResponse(manager.getElementInfo()));
 		} catch (Throwable e) {
-			log.error("Error while loading visible maps for user:"+user,e);
+			LOG.error("Error while loading visible maps for user:{}", user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADNODES_ACTION));
 		} finally {
 			bw.close();

@@ -32,12 +32,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
-import org.opennms.netmgt.dao.castor.statsd.PackageReport;
-import org.opennms.netmgt.dao.castor.statsd.Report;
-import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
+import org.opennms.netmgt.config.statsd.model.PackageReport;
+import org.opennms.netmgt.config.statsd.model.Report;
+import org.opennms.netmgt.config.statsd.model.StatsdPackage;
+import org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -52,6 +53,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ReportDefinitionBuilder implements InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ReportDefinitionBuilder.class);
+    
     private StatisticsDaemonConfigDao m_statsdConfigDao;
     
     /**
@@ -79,7 +83,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 Report report = packageReport.getReport();
 
                 if (!packageReport.isEnabled()) {
-                    log().debug("skipping report '" + report.getName() + "' in package '" + pkg.getName() + "' because the report is not enabled");
+                    LOG.debug("skipping report '{}' in package '{}' because the report is not enabled", report.getName(), pkg.getName());
                 }
                 
                 Class<? extends AttributeStatisticVisitorWithResults> clazz;
@@ -99,7 +103,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
                 try {
                     bw.setPropertyValues(packageReport.getAggregateParameters());
                 } catch (BeansException e) {
-                    log().error("Could not set properties on report definition: " + e.getMessage(), e);
+                    LOG.error("Could not set properties on report definition: {}", e.getMessage(), e);
                 }
                 
                 reportDef.afterPropertiesSet();
@@ -116,10 +120,6 @@ public class ReportDefinitionBuilder implements InitializingBean {
         return (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName(report.getClassName());
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>afterPropertiesSet</p>
      */
@@ -131,7 +131,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
     /**
      * <p>getStatsdConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.StatisticsDaemonConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao} object.
      */
     public StatisticsDaemonConfigDao getStatsdConfigDao() {
         return m_statsdConfigDao;
@@ -140,7 +140,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
     /**
      * <p>setStatsdConfigDao</p>
      *
-     * @param statsdConfigDao a {@link org.opennms.netmgt.dao.StatisticsDaemonConfigDao} object.
+     * @param statsdConfigDao a {@link org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao} object.
      */
     public void setStatsdConfigDao(StatisticsDaemonConfigDao statsdConfigDao) {
         m_statsdConfigDao = statsdConfigDao;

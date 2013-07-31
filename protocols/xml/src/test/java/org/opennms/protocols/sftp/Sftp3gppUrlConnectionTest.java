@@ -35,7 +35,8 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.protocols.xml.collector.UrlFactory;
 
 /**
@@ -44,6 +45,7 @@ import org.opennms.protocols.xml.collector.UrlFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppUrlConnectionTest {
+    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnectionTest.class);
 
     /**
      * Test path for Standard SFTP
@@ -52,7 +54,7 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathForSFTP() throws Exception {
-        URL url = UrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml");
+        URL url = UrlFactory.getUrl("sftp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5/data.xml", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof SftpUrlConnection);
         UrlFactory.disconnect(conn);
@@ -65,11 +67,11 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testPathFor3GPPA() throws Exception {
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?step=300&timezone=GMT-5&neId=MME00001");
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/hitachi/cnp/data/pm/reports/3gpp/5?step=300&timezone=GMT-5&neId=MME00001", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         String path = ((Sftp3gppUrlConnection) conn).getPath();
-        log().debug(path);
+        LOG.debug(path);
         UrlFactory.disconnect(conn);
     }
 
@@ -82,12 +84,12 @@ public class Sftp3gppUrlConnectionTest {
     public void testCustomPathFor3GPPA() throws Exception {
         long ts = 1320257100000l;
         Date date = new Date(ts);
-        log().debug("Timestamp = " + date);
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&timezone=GMT-5&neId=MME00001&referenceTimestamp=" + ts);
+        LOG.debug("Timestamp = {}", date);
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&timezone=GMT-5&neId=MME00001&referenceTimestamp=" + ts, null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         String path = ((Sftp3gppUrlConnection) conn).getPath();
-        log().debug(path);
+        LOG.debug(path);
         UrlFactory.disconnect(conn);
         Assert.assertEquals("/opt/3gpp/A20111102.1300-0500-1305-0500_MME00001", path);
     }
@@ -99,7 +101,7 @@ public class Sftp3gppUrlConnectionTest {
      */
     @Test
     public void testGetTimeStampFromFile() throws Exception {
-        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&neId=MME00001&deleteFile=true");
+        URL url = UrlFactory.getUrl("sftp.3gpp://admin:admin@192.168.1.1/opt/3gpp?step=300&neId=MME00001&deleteFile=true", null);
         URLConnection conn = url.openConnection();
         Assert.assertTrue(conn instanceof Sftp3gppUrlConnection);
         Sftp3gppUrlConnection c = (Sftp3gppUrlConnection) conn;
@@ -109,14 +111,4 @@ public class Sftp3gppUrlConnectionTest {
         Assert.assertTrue(t2 > t1);
         Assert.assertTrue(t2 - t1 == Long.parseLong(c.getQueryMap().get("step")) * 1000);
     }
-
-    /**
-     * Log.
-     *
-     * @return the thread category
-     */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

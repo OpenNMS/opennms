@@ -20,10 +20,6 @@
  */
 package org.opennms.nrtg.web.internal;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,17 +28,19 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -192,7 +190,6 @@ public class NrtController {
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
      */
-    @SuppressWarnings("unchecked")
     private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
@@ -304,37 +301,22 @@ public class NrtController {
         logger.debug("getMetaDataForReport: " + rrdGraphAttributes);
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
-        for (RrdGraphAttribute attr : rrdGraphAttributes) {
-            String fileName = null;
-            BufferedReader bf = null;
+        for (final RrdGraphAttribute attr : rrdGraphAttributes) {
+            final String rrdRelativePath = attr.getRrdRelativePath();
+            final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
 
-            try {
-                fileName = m_resourceDao.getRrdDirectory() + File.separator + attr.getRrdRelativePath();
+            final Set<Entry<String, String>> metaDataEntrySet = RrdUtils.readMetaDataFile(m_resourceDao.getRrdDirectory().getPath(), rrdName).entrySet();
+            if (metaDataEntrySet == null) continue;
 
-                //get meta files instead of rrd or jrb
-                fileName = fileName.substring(0, fileName.lastIndexOf("."));
-                fileName = fileName.concat(".meta");
-                bf = new BufferedReader(new FileReader(fileName));
+            final String attrName = attr.getName();
+            final String attrString = attr.toString();
 
-                String metaDataLine = "";
-                while (metaDataLine != null) {
-                    logger.debug("attr = " + attr.toString() + ", mappingLine = " + metaDataLine);
-                    if (metaDataLine.endsWith(attr.getName())) {
-                        metaData.put(attr.toString(), metaDataLine);
-                    }//Not the meta data line we are looking for, will happen if store by group is used
-                    metaDataLine = bf.readLine();
+            for (final Map.Entry<String,String> entry : metaDataEntrySet) {
+                final String line = entry.getKey() + '=' + entry.getValue();
+                if (line.endsWith(attrName)) {
+                    metaData.put(attrString, line);
                 }
-            } catch (Exception ex) {
-                logger.error("Problem by looking up meta data about metrics for RrdGraphAttributes in context of NRTG from meta file '{}' '{}'", fileName, ex.getMessage());
-            } finally {
-                if (bf != null) {
-                    try {
-                        bf.close();
-                    } catch (IOException ex) {
-                        logger.warn("problem by reader close", ex);
-                    }
-                }
-            }
+            };
         }
         
         return metaData;

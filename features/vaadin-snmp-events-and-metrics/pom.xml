@@ -20,8 +20,6 @@
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jsmiparser.version>0.13</jsmiparser.version>
-    <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
-    <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
   </properties>
 
   <build>
@@ -40,8 +38,6 @@
         <configuration>
           <bundles>
             <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/customfield/${vaadin.customfield.version}</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/messagebox/${vaadin.messagebox.version}</bundle>
           </bundles>
           <features>
             <feature>vaadin</feature>
@@ -51,42 +47,42 @@
     </plugins>
   </build>
  
-    <repositories>
-        <repository>
-            <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>vaadin-snapshots</id>
+      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+    </repository>
+  </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>codehaus-snapshots</id>
-            <url>http://nexus.codehaus.org/snapshots</url>
-            <snapshots>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-            <snapshots>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus-snapshots</id>
+      <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
+      <snapshots>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>vaadin-snapshots</id>
+      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+      <snapshots>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
 
     <dependencies>
 
@@ -96,25 +92,20 @@
             <artifactId>service</artifactId>
         </dependency>
         <dependency> <!-- Required by pax/vaadin -->
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>servlet-dependencies</artifactId>
+            <type>pom</type>
             <scope>provided</scope>
         </dependency>
 
+
         <!-- Vaadin Dependencies -->
+
         <dependency>
-            <groupId>com.vaadin</groupId>
+            <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>customfield</artifactId>
-            <version>${vaadin.customfield.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>messagebox</artifactId>
-            <version>${vaadin.messagebox.version}</version>
+            <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
 
         <!-- MIB Compiler Dependencies -->
@@ -174,7 +165,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
- 
+
     </dependencies>
 
 </project>

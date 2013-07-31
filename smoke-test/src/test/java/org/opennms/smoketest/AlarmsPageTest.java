@@ -29,9 +29,22 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
+    @BeforeClass
+    public static void createAlarm() throws Exception {
+        final EventProxy eventProxy = new TcpEventProxy();
+        final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
+        builder.setParam("importResource", "foo");
+        eventProxy.send(builder.getEvent());
+    }
+
     @Before
     public void setUp() throws Exception {
     	super.setUp();
@@ -60,7 +73,6 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
-        assertTrue(selenium.isTextPresent("alarm is outstanding"));
         assertTrue(selenium.isElementPresent("//input[@value='Go']"));
         assertTrue(selenium.isElementPresent("css=input[type='submit']"));
         selenium.click("css=a[title='Alarms System Page']");
@@ -85,4 +97,32 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
     }
 
+    @Test
+    public void testAlarmLink() throws Exception {
+        createAlarm();
+        selenium.click("link=All alarms (summary)");
+        waitForPageToLoad();
+        int waitTime = 300000; // 5 minutes
+        final int sleepTime = 10000; // 10 seconds
+
+        do {
+            selenium.refresh();
+            Thread.sleep(sleepTime);
+            waitTime -= sleepTime;
+        } while (!hasAlarmDetailLink() && waitTime != 0);
+
+        assertTrue(selenium.isTextPresent("alarm is outstanding"));
+        assertTrue(selenium.isElementPresent("//input[@value='Go']"));
+        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
+        assertTrue(hasAlarmDetailLink());
+        selenium.click("//a[contains(@href,'alarm/detail.htm')]");
+        waitForPageToLoad();
+        assertTrue(selenium.isTextPresent("Severity"));
+        assertTrue(selenium.isTextPresent("Ticket State"));
+        assertTrue(selenium.isTextPresent("Acknowledgment and Severity Actions"));
+    }
+
+    private boolean hasAlarmDetailLink() {
+        return selenium.isElementPresent("//a[contains(@href,'alarm/detail.htm')]");
+    }
 }

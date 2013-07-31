@@ -42,7 +42,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -53,6 +54,8 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultTaskCoordinator implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
 
     /**
      * A RunnableActor class is a thread that simple removes Future<Runnable> from a queue
@@ -80,12 +83,12 @@ public class DefaultTaskCoordinator implements InitializingBean {
                         sleep(m_loopDelay);
                     }
                 } catch (InterruptedException e) {
-                    log().warn("runnable actor interrupted", e);
+                	LOG.warn("runnable actor interrupted", e);
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-                    log().warn("runnable actor execution failed", e);
+                	LOG.warn("runnable actor execution failed", e);
                 } catch (Throwable e) {
-                    log().error("an unknown error occurred in the runnable actor", e);
+                	LOG.error("an unknown error occurred in the runnable actor", e);
                 }
             }
         }
@@ -451,10 +454,6 @@ public class DefaultTaskCoordinator implements InitializingBean {
         for (Map.Entry<String, Executor> e : executors.entrySet()) {
             addExecutor(e.getKey(), e.getValue());
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

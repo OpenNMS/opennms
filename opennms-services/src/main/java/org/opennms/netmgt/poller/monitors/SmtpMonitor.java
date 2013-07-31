@@ -40,7 +40,6 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Level;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.InetAddressUtils;
@@ -51,6 +50,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -66,6 +67,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 @Distributable
 public final class SmtpMonitor extends AbstractServiceMonitor {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(SmtpMonitor.class);
+    
 
     /**
      * Default SMTP port.
@@ -143,9 +147,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
         InetAddress ipAddr = iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
-        }
+        LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -160,7 +162,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                log().debug("SmtpMonitor: connected to host: " + ipAddr + " on port: " + port);
+                LOG.debug("SmtpMonitor: connected to host: {} on port: {}", ipAddr, port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -203,8 +205,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     }
                 }
 
-                if (log().isDebugEnabled())
-                    log().debug("poll: banner = " + banner);
+                LOG.debug("poll: banner = {}", banner);
 
                 StringTokenizer t = new StringTokenizer(banner);
                 int rc = Integer.parseInt(t.nextToken());
@@ -308,16 +309,26 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + hostAddress, e);
+            	String reason = "NumberFormatException while polling address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + hostAddress, e);
+            	String reason = "No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Did not receive expected response within timeout " + tracker);
+            	String reason = "Did not receive expected response within timeout " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + hostAddress, e);
+            	String reason = "Unable to connect to address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + hostAddress, e);
+            	String reason = "IOException while polling address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -326,9 +337,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     }
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log().isDebugEnabled()) {
-                        log().debug("poll: Error closing socket.", e);
-                    }
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

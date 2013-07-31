@@ -44,7 +44,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
@@ -56,10 +58,9 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @fiddler joed
  */
 class SyslogReceiver implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiver.class);
 
     private static final int SOCKET_TIMEOUT = 500;
-    
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
     /**
      * The Fiber's status.
@@ -75,11 +76,6 @@ class SyslogReceiver implements Runnable {
      * The context thread
      */
     private Thread m_context;
-
-    /**
-     * The log prefix
-     */
-    private String m_logPrefix;
 
     private final String m_matchPattern;
 
@@ -113,7 +109,6 @@ class SyslogReceiver implements Runnable {
         m_discardUei = discardUei;
         m_UeiList = ueiList;
         m_HideMessages = hideMessages;
-        m_logPrefix = LOG4J_CATEGORY;
 
         m_executors.add(new ThreadPoolExecutor(
             1,
@@ -148,11 +143,10 @@ class SyslogReceiver implements Runnable {
         }
 
         if (m_context != null) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
-            log.debug("Stopping and joining thread context " + m_context.getName());
+            LOG.debug("Stopping and joining thread context {}", m_context.getName());
             m_context.interrupt();
             m_context.join();
-            log.debug("Thread context stopped and joined");
+            LOG.debug("Thread context stopped and joined");
         }
     }
 
@@ -165,14 +159,13 @@ class SyslogReceiver implements Runnable {
         m_context = Thread.currentThread();
 
         // Get a log instance
-        ThreadCategory.setPrefix(m_logPrefix);
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+        Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
 
         if (m_stop) {
-            log.debug("Stop flag set before thread started, exiting");
+            LOG.debug("Stop flag set before thread started, exiting");
             return;
         } else
-            log.debug("Thread context started");
+            LOG.debug("Thread context started");
 
         // allocate a buffer
         final int length = 0xffff;
@@ -181,31 +174,31 @@ class SyslogReceiver implements Runnable {
         // set an SO timeout to make sure we don't block forever
         // if a socket is closed.
         try {
-            log.debug("Setting socket timeout to " + SOCKET_TIMEOUT + "ms");
+            LOG.debug("Setting socket timeout to {}ms", SOCKET_TIMEOUT);
             m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
         } catch (SocketException e) {
-            log.warn("An I/O error occured while trying to set the socket timeout", e);
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
         // Increase the receive buffer for the socket
         try {
-            log.debug("Setting receive buffer size to " + length);
+            LOG.debug("Setting receive buffer size to {}", length);
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            log.info("Failed to set the receive buffer to " + length, e);
+            LOG.info("Failed to set the receive buffer to {}", length, e);
         }
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
         // now start processing incoming requests
         while (!m_stop) {
             if (m_context.isInterrupted()) {
-                log.debug("Thread context interrupted");
+                LOG.debug("Thread context interrupted");
                 break;
             }
 
             try {
                 if (!ioInterrupted) {
-                    log.debug("Waiting on a datagram to arrive");
+                    LOG.debug("Waiting on a datagram to arrive");
                 }
 
                 DatagramPacket pkt = new DatagramPacket(buffer, length);
@@ -221,19 +214,19 @@ class SyslogReceiver implements Runnable {
                 ioInterrupted = true;
                 continue;
             } catch (ExecutionException e) {
-                log.error("Task execution failed in " + this.getClass().getSimpleName(), e);
+                LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (InterruptedException e) {
-                log.error("Task interrupted in " + this.getClass().getSimpleName(), e);
+                LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (IOException e) {
-                log.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;
             }
 
         } // end while status OK
 
-        log.debug("Thread context exiting");
+        LOG.debug("Thread context exiting");
 
     }
 
@@ -243,6 +236,5 @@ class SyslogReceiver implements Runnable {
      * @param prefix a {@link java.lang.String} object.
      */
     protected void setLogPrefix(String prefix) {
-        m_logPrefix = prefix;
     }
 }

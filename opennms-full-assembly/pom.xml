@@ -236,6 +236,7 @@
   </build>
 
   <modules>
+    <module>../container/features</module>
     <module>../core/build/keystore</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
@@ -315,7 +316,7 @@
       <artifactId>opennms-base-assembly</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
-      <classifier>log4j</classifier>
+      <classifier>log4j2</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -538,7 +539,7 @@
   <repositories>
     <repository>
        <id>vaadin-addons</id>
-       <url>http://maven.vaadin.com/vaadin-addons</url>
+       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
   </repositories>
 

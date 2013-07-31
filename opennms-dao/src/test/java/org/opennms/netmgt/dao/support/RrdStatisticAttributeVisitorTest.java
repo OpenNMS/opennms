@@ -34,7 +34,7 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;

@@ -36,7 +36,8 @@ import java.util.Collection;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @version $Id: $
  */
 public abstract class NotifdConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(NotifdConfigManager.class);
 
     /**
      * 
@@ -193,7 +195,6 @@ public abstract class NotifdConfigManager {
      * @return a boolean.
      */
     public boolean matchNotificationParameters(Event event, Notification notification) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean parmmatch = false;
         if (notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
@@ -203,9 +204,7 @@ public abstract class NotifdConfigManager {
             if (notification.getVarbind().getVbvalue() != null) {
                 notfValue = notification.getVarbind().getVbvalue();
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
-                }
+                LOG.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
                 parmmatch = true;
             }
 

@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>dbpool-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS DBPool Dependencies</name>
+  <name>OpenNMS Dependencies DBPool</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use DBPool.
@@ -19,6 +19,12 @@
       <groupId>net.snaq</groupId>
       <artifactId>dbpool</artifactId>
       <version>5.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <repositories>

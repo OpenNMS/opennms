@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,7 +56,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -79,29 +81,24 @@ public class MonitoredServiceDaoTest implements InitializingBean {
 
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testLazy() {
-
-        List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAll();
+        final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAll();
         assertTrue(allSvcs.size() > 1);
 
-        OnmsMonitoredService svc = allSvcs.iterator().next();
+        final OnmsMonitoredService svc = allSvcs.iterator().next();
         assertEquals(addr("192.168.1.1"), svc.getIpAddress());
         assertEquals(1, svc.getIfIndex().intValue());
-        assertEquals(1, svc.getIpInterface().getNode().getId().intValue());
+        assertEquals(m_databasePopulator.getNode1().getId(), svc.getIpInterface().getNode().getId());
         assertEquals("M", svc.getIpInterface().getIsManaged());
-        //assertEquals("SNMP", svc.getServiceType().getName());
-
     }
 
     @Test
     @Transactional
-    @JUnitTemporaryDatabase
     public void testGetByCompositeId() {
-        OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
+        final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
         assertNotNull(monSvc);
 
-        OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
+        final OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
         assertNotNull(monSvc2);
 
     }

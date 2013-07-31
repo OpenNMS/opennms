@@ -29,27 +29,19 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
-import org.opennms.netmgt.xml.eventconf.EventMatchers;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
-import org.opennms.netmgt.xml.eventconf.Events.Partition;
+import org.opennms.netmgt.xml.eventconf.Partition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -70,17 +62,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private Partition m_partition;
 
-    private static class EventLabelComparator implements Comparator<Event>, Serializable {
-
-        private static final long serialVersionUID = 7976730920523203921L;
-
-        @Override
-        public int compare(final Event e1, final Event e2) {
-            return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
-        }
-    }
-
-	public String getProgrammaticStoreRelativeUrl() {
+    public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
 	}
 
@@ -241,47 +223,15 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_configResource = configResource;
 	}
 	
-	private Events load(Unmarshaller unmarshaller) throws Exception {
-		InputStream stream = null;
-		try {
-			stream = m_configResource.getInputStream();
-			StreamSource source = new StreamSource(stream);
-			Events events = unmarshaller.unmarshal(source, Events.class).getValue();
-			
-			return events;
-		} finally {
-			if (stream != null) stream.close();
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
 		loadConfig();
 	}
 
-	private static class EnterpriseIdPartition implements Partition {
-
-		private Field m_field = EventMatchers.field("id");
-
-		@Override
-		public List<String> group(Event eventConf) {
-			return eventConf.getMaskElementValues("id");
-		}
-
-		@Override
-		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
-			return m_field.get(matchingEvent);
-		}
-		
-	}
-	
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
-			Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(Events.class, null, true);
-
-			Events events = load(unmarshaller);
-
-			events.loadEventFiles(m_configResource, unmarshaller);
+			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
+			events.loadEventFiles(m_configResource);
 			
 			m_partition = new EnterpriseIdPartition();
 			events.initialize(m_partition);

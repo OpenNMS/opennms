@@ -31,9 +31,9 @@ package org.opennms.features.poller.remote.gwt.server;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
@@ -53,6 +53,7 @@ import de.novanic.eventservice.service.RemoteEventServiceServlet;
  * @since 1.8.1
  */
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
+    private static final Logger LOG = LoggerFactory.getLogger(LocationStatusServiceImpl.class);
 
 	private static final long serialVersionUID = 7152723329766982720L;
 
@@ -64,15 +65,13 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
     private LocationDataManager m_locationDataManager;
 
     private void initialize() {
-        Logger.getLogger("com.google.gwt.user.client.rpc").setLevel(Level.TRACE);
-
         if (m_context == null) {
-            LogUtils.infof(this, "initializing context");
+            LOG.info("initializing context");
             m_context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
         }
 
         if (m_locationDataManager == null) {
-            LogUtils.infof(this, "initializing location data manager");
+            LOG.info("initializing location data manager");
             m_locationDataManager = m_context.getBean(LocationDataManager.class);
         }
 
@@ -92,7 +91,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
      */
         @Override
     public void start() {
-        LogUtils.debugf(this, "starting location status service");
+        LOG.debug("starting location status service");
         initialize();
         m_locationDataManager.start(EventExecutorServiceFactory.getInstance().getEventExecutorService(this.getRequest().getSession()));
     }

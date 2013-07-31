@@ -1,0 +1,106 @@
+@import "../reindeer/legacy-styles.css";
+
+.dashboard .v-portlet-slot {
+    background: #fff !important;
+    -webkit-border-radius: 4px !important;
+    -moz-border-radius: 4px !important;
+    border-radius: 4px !important;
+    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
+    -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
+}
+
+.dashboard .v-portlet-header {
+    color: #fff !important;
+    text-shadow: 0 1px 1px #000 !important;
+    background: #5d6167 !important;
+    background: -moz-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5d6167), color-stop(100%, #393939)) !important;
+    background: -webkit-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
+    background: -o-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
+    background: -ms-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
+}
+
+.dashboard .v-portlet-content-wrapper {
+    border: none !important;
+}
+
+.dashboard .v-portlet .v-portlet-header-button {
+    margin-right: 3px;
+    border-radius: 3px;
+}
+
+.dashboard.v-app {
+    background: #dfe0e1;
+    background: -moz-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #d8d9da), color-stop(10%, #e6e7e8), color-stop(100%, #e0e1e2));
+    background: -webkit-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
+    background: -o-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
+    background: -ms-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
+}
+
+.debug {
+    border: 1px dashed red;
+}
+
+.dashboard table td {
+    padding-right: 5px !important;
+}
+
+.dashboard .header {
+    background: #fff;
+    border-bottom: 2px solid #ccc;
+}
+
+.dashboard .wallboard-board {
+    color: #3ba300;
+    padding: 5px 5px;
+    margin: 1px;
+}
+
+.dashboard .wallboard-board {
+    font-size: 18px;
+    padding: 5px 5px;
+    margin: 1px;
+}
+
+.dashboard .wallboard-board .progress-paused {
+    font-size: 24px;
+    font-weight: bold;
+    background: orange;
+    border: 2px solid orangered;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    display: block;
+}
+
+.configuration-title {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: normal;
+}
+
+.help-title {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: normal;
+}
+
+.help-content {
+    font-size: 14px;
+    line-height: normal;
+}
+
+.help-table {
+    font-size: 14px;
+    width: 100%;
+    border: 1px solid;
+    line-height: normal;
+    vertical-align: top;
+}
+
+.help-table-cell {
+    vertical-align: top;
+}

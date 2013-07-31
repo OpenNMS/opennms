@@ -37,9 +37,13 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CriteriaBuilder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilder.class);
+	
     private Class<?> m_class;
 
     private OrderBuilder m_orderBuilder = new OrderBuilder();
@@ -109,6 +113,11 @@ public class CriteriaBuilder {
 
     public CriteriaBuilder alias(final String associationPath, final String alias) {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
+    }
+
+
+    public CriteriaBuilder createAlias(final String associationPath, final String alias) {
+        return alias(associationPath, alias);
     }
 
     public CriteriaBuilder join(final String associationPath, final String alias, final JoinType type) {
@@ -264,7 +273,7 @@ public class CriteriaBuilder {
         if (sql instanceof String) {
             addRestriction(Restrictions.sql((String) sql));
         } else {
-            LogUtils.warnf(this, "sql(): " + sql.getClass().getName() + " is not a string type, can't add");
+            LOG.warn("sql(): {} is not a string type, can't add", sql.getClass().getName());
         }
         return this;
     }

@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.tasks</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Tasks</name>
+  <name>OpenNMS Core Tasks</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -28,6 +28,11 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.lib</artifactId>
       <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
       <optional>true</optional>
     </dependency>
     <dependency>

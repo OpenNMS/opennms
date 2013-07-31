@@ -34,7 +34,6 @@ import java.util.Map;
 
 import jcifs.netbios.NbtAddress;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
@@ -43,6 +42,8 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -59,6 +60,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 // I this thise needs a jcifs.properties file so we can't distribute it now
 @Distributable(DistributionContext.DAEMON)
 final public class SmbMonitor extends AbstractServiceMonitor {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);
+    
     /**
      * Default retries.
      */
@@ -145,11 +149,15 @@ final public class SmbMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.available();
 
         } catch (UnknownHostException uhE) {
-        	serviceStatus = logDown(Level.DEBUG, "Unknown host exception generated for " + hostAddress + ", reason: " + uhE.getLocalizedMessage());
+        	String reason = "Unknown host exception generated for " + hostAddress + ", reason: " + uhE.getLocalizedMessage();
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         } catch (RuntimeException rE) {
-        	serviceStatus = logDown(Level.ERROR, "Unexpected runtime exception", rE);
+        	LOG.debug("Unexpected runtime exception", rE);
+            serviceStatus = PollStatus.unavailable("Unexpected runtime exception");
         } catch (Throwable e) {
-        	serviceStatus = logDown(Level.DEBUG, "Unexpected exception", e);
+        	LOG.debug("Unexpected exception", e);
+            serviceStatus = PollStatus.unavailable("Unexpected exception");
         }
 
         //

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,10 +38,11 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.opennms.netmgt.dao.AtInterfaceDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.AtInterfaceDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -51,6 +52,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 
 public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterface, Integer>  implements AtInterfaceDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AtInterfaceDaoHibernate.class);
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
@@ -191,8 +194,8 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
         List<OnmsAtInterface> interfaces = findMatching(criteria);
 
         if (interfaces.isEmpty()) {
-            LogUtils.debugf(this, "getAtInterfaceForAddress: No AtInterface matched address %s!", addressString);
-            LogUtils.debugf(this, "getAtInterfaceForAddress: search IpInterface for address %s!", addressString);
+            LOG.debug("getAtInterfaceForAddress: No AtInterface matched address {}!", addressString);
+            LOG.debug("getAtInterfaceForAddress: search IpInterface for address {}!", addressString);
 	        for ( final OnmsIpInterface iface : m_ipInterfaceDao.findByIpAddress(addressString)) {
 	            interfaces.add(new OnmsAtInterface(iface.getNode(), iface.getIpAddress()));
 	        }

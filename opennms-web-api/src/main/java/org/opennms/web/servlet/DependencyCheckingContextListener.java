@@ -32,7 +32,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>DependencyCheckingContextListener class.</p>
@@ -40,6 +42,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="dj@opennms.org">DJ Gregor</a>
  */
 public class DependencyCheckingContextListener implements ServletContextListener {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DependencyCheckingContextListener.class);
+
     private static final String IGNORE_ERRORS_PROPERTY = "dontBlameOpenNMS";
     private static final String IGNORE_ERRORS_MESSAGE = "but don't blame OpenNMS for any errors that occur without switching back to a supported JVM and setting the property back to 'false', first.";
     
@@ -74,7 +79,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
         }
 
         if (ok) {
-            log().info("System property '" + systemProperty + "' appears to contain a suitable JVM signature ('" + vmName + "') -- congratulations!  ;)");
+            LOG.info("System property '{}' appears to contain a suitable JVM signature ('{}') -- congratulations!  ;)", systemProperty, vmName);
         } else {
             logAndOrDie(context, "System property '" + systemProperty + "' does not contain a suitable JVM signature ('" + vmName + "').  OpenNMS recommends the official Sun JVM.");
         }
@@ -84,19 +89,16 @@ public class DependencyCheckingContextListener implements ServletContextListener
         String webXmlPath = context.getRealPath("/WEB-INF/web.xml");
         
         if (Boolean.parseBoolean(context.getInitParameter(IGNORE_ERRORS_PROPERTY))) {
-            log().warn(message);
-            log().warn("Context parameter '" + IGNORE_ERRORS_PROPERTY + "' is set in " + webXmlPath + ", so the above warning is not fatal,  " + IGNORE_ERRORS_MESSAGE);
+            LOG.warn(message);
+            LOG.warn("Context parameter '{}' is set in {}, so the above warning is not fatal,  {}", IGNORE_ERRORS_PROPERTY, webXmlPath, IGNORE_ERRORS_MESSAGE);
         } else {
             String howToFixMessage = "You can edit " + webXmlPath + " and change the value for the '" + IGNORE_ERRORS_PROPERTY + "' context parameter from 'false' to 'true', " + IGNORE_ERRORS_MESSAGE;
 
-            log().fatal(message);
-            log().fatal(howToFixMessage);
+            LOG.error(message);
+            LOG.error(howToFixMessage);
             
             throw new RuntimeException(message + "  " + howToFixMessage);
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }

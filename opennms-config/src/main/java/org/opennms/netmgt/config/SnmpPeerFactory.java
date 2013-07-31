@@ -48,7 +48,8 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
@@ -75,6 +76,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner</a>
  */
 public class SnmpPeerFactory implements SnmpAgentConfigFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpPeerFactory.class);
     private static final int DEFAULT_SNMP_PORT = 161;
     private static final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private static final Lock m_readLock = m_globalLock.readLock();
@@ -203,7 +205,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             }
     
             final File cfgFile = getFile();
-            LogUtils.debugf(SnmpPeerFactory.class, "init: config file path: %s", cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             m_singleton = new SnmpPeerFactory(cfgFile);
             m_loaded = true;
         } finally {
@@ -359,7 +361,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                             break DEFLOOP;
                         }
                     } catch (final IllegalArgumentException e) {
-                        LogUtils.debugf(this, e, "Error while reading SNMP config <specific> tag: %s", saddr);
+                        LOG.debug("Error while reading SNMP config <specific> tag: {}", saddr, e);
                     }
                 }
 
@@ -376,7 +378,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                     if (comparator.compare(begin, end) <= 0) {
                         inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
                     } else {
-                        LogUtils.warnf(this, "%s has an 'end' that is earlier than its 'beginning'!", rng);
+                        LOG.warn("{} has an 'end' that is earlier than its 'beginning'!", rng);
                         inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
                     }
                     if (inRange) {
@@ -454,7 +456,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             try {
                 inetAddr =  InetAddressUtils.addr(address);
             } catch (final IllegalArgumentException e) {
-                LogUtils.debugf(this, e, "Error while reading SNMP config proxy host: %s", address);
+                LOG.debug("Error while reading SNMP config proxy host: {}", address, e);
             }
         }
         return inetAddr;

@@ -34,7 +34,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
-import org.opennms.core.utils.ThreadCategory;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -86,6 +85,10 @@ public class SftpUrlConnection extends URLConnection {
         JSch jsch = new JSch();
         try {
             // TODO: Experimental authentication handling using Private/Public keys
+            // FIXME: We can include this property on the request object, for example:
+            // <request>
+            //   <parameter name='sftp.private-key.location' value='/opt/opennms/etc/private.key'/>
+            // </request>
             // http://wiki.jsch.org/index.php?Manual%2FExamples%2FJschPubkeyAuthExample
             String prvkey = System.getProperty("sftp.private-key.location");
             if (prvkey != null) {
@@ -162,8 +165,5 @@ public class SftpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

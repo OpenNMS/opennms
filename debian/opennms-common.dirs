@@ -2,6 +2,9 @@ etc/opennms
 usr/share/lintian/overrides
 usr/share/opennms
 usr/share/opennms/bin
+usr/share/opennms/data
+usr/share/opennms/deploy
+usr/share/opennms/system
 var/lib/opennms
 var/lib/opennms/reports
 var/log/opennms

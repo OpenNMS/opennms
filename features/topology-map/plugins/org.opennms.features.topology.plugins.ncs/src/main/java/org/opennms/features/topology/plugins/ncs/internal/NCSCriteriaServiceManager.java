@@ -107,11 +107,13 @@ public class NCSCriteriaServiceManager {
     public boolean isCriteriaRegistered(String namespace, String sessionId) {
         List<ServiceRegistration<Criteria>> registrationList = m_registrationMap.get(sessionId);
         
-        for(ServiceRegistration<Criteria> critRegistration : registrationList) {
-            String namespaceProperty = (String) critRegistration.getReference().getProperty("namespace");
-            if(namespaceProperty.equals( namespace )) {
-                return true;
-            }    
+        if(registrationList != null) {
+            for(ServiceRegistration<Criteria> critRegistration : registrationList) {
+                String namespaceProperty = (String) critRegistration.getReference().getProperty("namespace");
+                if(namespaceProperty.equals( namespace )) {
+                    return true;
+                }    
+            }
         }
         
         return false;

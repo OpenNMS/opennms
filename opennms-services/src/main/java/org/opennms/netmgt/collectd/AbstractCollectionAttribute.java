@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
 import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract AbstractCollectionAttribute class.</p>
@@ -43,15 +44,9 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
  * @version $Id: $
  */
 public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
     
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionAttribute.class);
+
     /**
      * <p>getAttributeType</p>
      *
@@ -105,7 +100,7 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
     /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {
-        log().debug("Visiting attribute "+this);
+        LOG.debug("Visiting attribute {}", this);
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);
     }   

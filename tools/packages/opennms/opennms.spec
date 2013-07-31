@@ -211,6 +211,12 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-ticketer-jira
+Requires:	opennms-plugin-ticketer-jira
+Requires(pre):	opennms-plugin-ticketer-otrs
+Requires:	opennms-plugin-ticketer-otrs
+Requires(pre):	opennms-plugin-ticketer-rt
+Requires:	opennms-plugin-ticketer-rt
 Requires(pre):	opennms-plugin-protocol-cifs
 Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
@@ -307,9 +313,55 @@ fields with data fetched from SNMP GET requests.
 %{extrainfo2}
 
 
+%package plugin-ticketer-jira
+Summary:       JIRA Ticketer Plugin for OpenNMS
+Group:         Applications/System
+Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
+Requires(pre): opennms-core = %{version}-%{release}
+Requires:      opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-jira
+The JIRA ticketer plugin provides the ability to automatically create JIRA
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-otrs
+Summary:       OTRS Ticketer Plugin for OpenNMS
+Group:         Applications/System
+Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
+Requires(pre): opennms-core = %{version}-%{release}
+Requires:      opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-otrs
+The OTRS ticketer plugin provides the ability to automatically create OTRS
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-rt
+Summary:       RT Ticketer Plugin for OpenNMS
+Group:         Applications/System
+Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
+Requires(pre): opennms-core = %{version}-%{release}
+Requires:      opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-rt
+The RT ticketer plugin provides the ability to automatically create RT
+tickets from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugin-protocol-cifs
 Summary:	CIFS Poller Plugin for OpenNMS
 Group:		Applications/System
+Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
 Requires(pre):	opennms-core = %{version}-%{release}
 Requires:	opennms-core = %{version}-%{release}
 
@@ -532,9 +584,8 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 %endif
 
 install -d -m 755 $RPM_BUILD_ROOT%{logdir}
-mv $RPM_BUILD_ROOT%{instprefix}/logs/* $RPM_BUILD_ROOT%{logdir}/
+mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
-install -d -m 755 $RPM_BUILD_ROOT%{logdir}/{controller,daemon,webapp}
 
 install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
 mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
@@ -560,10 +611,13 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -586,10 +640,13 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -626,10 +683,13 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
+	grep -v 'jira' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jradius' | \
+	grep -v 'opennms-integration-otrs' | \
+	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'xmp' | \
@@ -638,6 +698,11 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	sort >> %{_tmppath}/files.main
+find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
+	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v '/ncs/' | \
+	grep -v 'opennms-topology-runtime-ncs' | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
@@ -677,6 +742,15 @@ find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/snmp-asset-adapter-configuration.x
 find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/dhcp*.xml | \
      sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-dhcp
 
+find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/jira.* | \
+     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-jira
+
+find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/otrs.* | \
+     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-otrs
+
+find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/rt.* | \
+     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-rt
+
 find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/nsclient*.xml | \
      sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-nsclient
 
@@ -710,12 +784,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root) %{logdir}
-			%{logdir}/controller
-			%{logdir}/daemon
-			%{logdir}/webapp
 			%{instprefix}/data
 			%{instprefix}/deploy
-			%{instprefix}/system
 
 %if %{with_docs}
 %files docs
@@ -736,6 +806,8 @@ rm -rf $RPM_BUILD_ROOT
 %files ncs -f %{_tmppath}/files.pristine.opennms-ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
+%{instprefix}/system/org/opennms/features/topology/plugins/ncs
+%{instprefix}/system/org/opennms/osgi/features/topology/opennms-topology-runtime-ncs
 %{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
@@ -743,6 +815,7 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
 %config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
+%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
@@ -786,6 +859,24 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-cifs
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
+
+%files plugin-ticketer-jira -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-jira
+%defattr(664 root root 775)
+%{instprefix}/lib/jira-*.jar
+%config(noreplace) %{instprefix}/etc/jira.properties
+%{sharedir}/etc-pristine/jira.properties
+
+%files plugin-ticketer-otrs -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-otrs
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-otrs-*.jar
+%config(noreplace) %{instprefix}/etc/otrs.properties
+%{sharedir}/etc-pristine/otrs.properties
+
+%files plugin-ticketer-rt -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-rt
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-rt-*.jar
+%config(noreplace) %{instprefix}/etc/rt.properties
+%{sharedir}/etc-pristine/rt.properties
 
 %files plugin-protocol-dhcp -f %{_tmppath}/files.pristine.opennms-plugin-protocol-dhcp
 %defattr(664 root root 775)
@@ -912,16 +1003,6 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 		echo "done"
 	fi
 fi
-
-for dir in controller daemon webapp; do
-	if [ -f "$RPM_INSTALL_PREFIX2/$dir" ]; then
-		printf -- "ERROR: not sure what to do... $RPM_INSTALL_PREFIX2/$dir is a file, but it should be a directory or symlink.  Expect problems.  :)"
-	else
-		if [ ! -d "$RPM_INSTALL_PREFIX2/$dir" ]; then
-			mkdir -p "$RPM_INSTALL_PREFIX2/$dir"
-		fi
-	fi
-done
 
 if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
@@ -1237,6 +1318,93 @@ fi
 %posttrans plugin-provisioning-snmp-asset
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
 "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-ticketer-jira
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
+
+%pre plugin-ticketer-jira
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
+
+%post plugin-ticketer-jira
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-ticketer-jira
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-ticketer-otrs
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
+
+%pre plugin-ticketer-otrs
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
+
+%post plugin-ticketer-otrs
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-ticketer-otrs
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
+
+%pretrans plugin-ticketer-rt
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
+	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
+	# on a first install, if we're upgrading save etc/ for git-setup.pl
+	# this avoids anything in etc/ as being marked as .rpmnew
+	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
+		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
+		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
+		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
+			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
+			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
+			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
+		fi
+	fi
+	exit 0;
+fi
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
+
+%pre plugin-ticketer-rt
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
+
+%post plugin-ticketer-rt
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
+
+%posttrans plugin-ticketer-rt
+RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
+"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
 
 %pretrans plugin-protocol-dhcp
 RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`

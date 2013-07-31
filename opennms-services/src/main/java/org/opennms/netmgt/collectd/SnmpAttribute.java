@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.Persister;
@@ -36,6 +35,8 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SnmpAttribute class.</p>
@@ -44,6 +45,8 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public class SnmpAttribute extends AbstractCollectionAttribute {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(SnmpAttribute.class);
 
     private CollectionResource m_resource;
     private SnmpAttributeType m_type;
@@ -86,9 +89,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {
-        if (log().isDebugEnabled()) {
-            log().debug("Visiting attribute "+this);
-        }
+        LOG.debug("Visiting attribute {}", this);
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);
     }
@@ -101,16 +102,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     @Override
     public SnmpAttributeType getAttributeType() {
         return m_type;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    @Override
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -187,7 +178,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         }
         return "SNMP_"+SnmpObjId.get(m_type.getSnmpObjId(), instance);
     }
-
+    
     /**
      * <p>getNumericValue</p>
      *
@@ -196,7 +187,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     @Override
     public String getNumericValue() {
         if (getValue() == null) {
-            log().debug("No data collected for attribute "+this+". Skipping");
+            LOG.debug("No data collected for attribute {}. Skipping", this);
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());
@@ -206,9 +197,16 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
-                log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
-                return null;
-            }
+                LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
+		if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
+		    try {
+			return Long.valueOf(getValue().toHexString(), 16).toString();
+		    } catch(NumberFormatException ex) {
+			LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
+		    }
+		}
+	    }
+            return null;
         }
     }
     

@@ -46,6 +46,8 @@ import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.MimeMailMessage;
 
 /**
@@ -60,6 +62,9 @@ import org.springframework.mail.javamail.MimeMailMessage;
  * @version $Id: $
  */
 public class JavaSendMailer extends JavaMailer2 {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JavaSendMailer.class);
+
     
     private Properties m_properties;
     
@@ -82,7 +87,7 @@ public class JavaSendMailer extends JavaMailer2 {
             m_session = Session.getInstance(createProps(useJmProps), createAuthenticator());
             m_message = buildMimeMessage(config.getSendmailMessage());
             if (m_config.isDebug()) {
-                m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
+                m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream()));
             }
             m_session.setDebug(m_config.getDebug());
 
@@ -198,7 +203,7 @@ public class JavaSendMailer extends JavaMailer2 {
                 m_config.getSendmailProtocol().setSslEnable(PropertiesUtils.getProperty(props, "org.opennms.core.utils.smtpssl.enable", m_config.getSendmailProtocol().isSslEnable()));
             }
         } catch (IOException e) {
-            log().info("configureProperties: could not load javamail.properties, continuing for is no longer required", e);
+            LOG.info("configureProperties: could not load javamail.properties, continuing for is no longer required", e);
         }
         
         //this sets any javamail properties that were set in the SendmailConfig object
@@ -253,29 +258,29 @@ public class JavaSendMailer extends JavaMailer2 {
         try {
             SendmailProtocol protoConfig = m_config.getSendmailProtocol();
             t = m_session.getTransport(protoConfig.getTransport());
-            log().debug("for transport name '" + protoConfig.getTransport() + "' got: " + t.getClass().getName() + "@" + Integer.toHexString(t.hashCode()));
+            LOG.debug("for transport name '{}' got: {}@{}", protoConfig.getTransport(), t.getClass().getName(), Integer.toHexString(t.hashCode()));
 
-            LoggingTransportListener listener = new LoggingTransportListener(log());
+            LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
             if (t.getURLName().getProtocol().equals("mta")) {
                 // JMTA throws an AuthenticationFailedException if we call connect()
-                log().debug("transport is 'mta', not trying to connect()");
+                LOG.debug("transport is 'mta', not trying to connect()");
             } else if (m_config.isUseAuthentication()) {
-                log().debug("authenticating to " + m_config.getSendmailHost().getHost());
+                LOG.debug("authenticating to {}", m_config.getSendmailHost().getHost());
                 t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
             } else {
-                log().debug("not authenticating to " + m_config.getSendmailHost().getHost());
+                LOG.debug("not authenticating to {}", m_config.getSendmailHost().getHost());
                 t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), null, null);
             }
 
             t.sendMessage(message.getMimeMessage(), message.getMimeMessage().getAllRecipients());
             listener.assertAllMessagesDelivered();
         } catch (NoSuchProviderException e) {
-            log().error("Couldn't get a transport: " + e, e);
+            LOG.error("Couldn't get a transport: {}", e, e);
             throw new JavaMailerException("Couldn't get a transport: " + e, e);
         } catch (MessagingException e) {
-            log().error("Java Mailer messaging exception: " + e, e);
+            LOG.error("Java Mailer messaging exception: {}", e, e);
             throw new JavaMailerException("Java Mailer messaging exception: " + e, e);
         } finally {
             try {

@@ -52,9 +52,12 @@ import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -67,6 +70,9 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppXmlCollectionHandler.class);
+
 
     /** The Constant XML_LAST_FILENAME. */
     public static final String XML_LAST_FILENAME = "_xmlCollectorLastFilename";
@@ -92,13 +98,14 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                URL url = UrlFactory.getUrl(urlStr);
+                Request request = parseRequest(source.getRequest(), agent);
+                URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = getLastFilename(resourceDir, url.getPath());
                 Sftp3gppUrlConnection connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
-                    log().debug("collect(single): retrieving file from " + url.getPath() + File.separatorChar + lastFile + " from " + agent.getHostAddress());
-                    Document doc = getXmlDocument(urlStr);
+                    LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
+                    Document doc = getXmlDocument(urlStr, source.getRequest());
                     fillCollectionSet(agent, collectionSet, source, doc);
                     setLastFilename(resourceDir, url.getPath(), lastFile);
                     deleteFile(connection, lastFile);
@@ -112,7 +119,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                     boolean collected = false;
                     for (String fileName : files) {
                         if (connection.getTimeStampFromFile(fileName) > lastTs) {
-                            log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
+                            LOG.debug("collect(multiple): retrieving file {} from {}", fileName, agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
                             Document doc = builder.parse(is);
                             IOUtils.closeQuietly(is);
@@ -123,7 +130,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                         }
                     }
                     if (!collected) {
-                        log().warn("collect: could not find any file after " + lastFile + " on " + agent);
+                        LOG.warn("collect: could not find any file after {} on {}", lastFile, agent);
                     }
                     connection.disconnect();
                 }
@@ -149,7 +156,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         try {
             filename = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId(targetPath));
         } catch (Exception e) {
-            log().info("getLastFilename: creating a new filename tracker on " + resourceDir);
+            LOG.info("getLastFilename: creating a new filename tracker on {}", resourceDir);
         }
         return filename;
     }
@@ -186,7 +193,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
         try {
             connection.deleteFile(fileName);
         } catch (Exception e) {
-            log().warn("Can't delete file " + fileName + " from " +  connection.getURL().getHost() + " because " + e.getMessage());
+            LOG.warn("Can't delete file {} from {} because {}", fileName, connection.getURL().getHost(), e.getMessage());
         }
     }
 
@@ -231,7 +238,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
             try {
                 m_pmGroups.load(getClass().getResourceAsStream("/3gpp-pmgroups.properties"));
             } catch (IOException e) {
-                log().warn("Can't load 3GPP PM Groups formats because " + e.getMessage());
+                LOG.warn("Can't load 3GPP PM Groups formats because {}", e.getMessage());
             }
         }
         return m_pmGroups.getProperty(resourceType);

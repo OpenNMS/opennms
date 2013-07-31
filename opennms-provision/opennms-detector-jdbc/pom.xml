@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-jdbc</artifactId>
-  <name>OpenNMS JDBC Detector</name>
+  <name>OpenNMS Provision JDBC Detector</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>
@@ -55,6 +55,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

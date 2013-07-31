@@ -55,18 +55,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 class XmpCollectionResource extends AbstractCollectionResource 
 {
     /* class variables and methods *********************** */
+	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionResource.class);
+
 
     /* instance variables ******************************** */
     String nodeTypeName;
@@ -118,9 +122,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     }
 
     /* private methods *********************************** */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     /* public methods ************************************ */
 
@@ -255,7 +257,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     @Override
     public void visit(CollectionSetVisitor visitor) 
     { 
-        log().debug("XmpCollectionResource: visit starting with "+ getGroups().size()+" attribute groups");
+        LOG.debug("XmpCollectionResource: visit starting with {} attribute groups", getGroups().size());
 
         visitor.visitResource(this);
 
@@ -266,7 +268,7 @@ class XmpCollectionResource extends AbstractCollectionResource
 
         visitor.completeResource(this);
 
-        log().debug("XmpCollectionResource: visit finished for "+agent);
+        LOG.debug("XmpCollectionResource: visit finished for {}", agent);
 
     } /* visit */
 

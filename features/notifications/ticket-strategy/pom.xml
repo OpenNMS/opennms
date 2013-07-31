@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.notifications</groupId>
   <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
-  <name>OpenNMS Ticket Notification Strategy</name>
+  <name>OpenNMS Features Notification Ticket Strategy</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -32,6 +32,11 @@
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -40,11 +40,11 @@ public class OnmsServiceTypeGenerator implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property property = source.getContainerProperty(itemId, columnId);
+		Property<OnmsServiceType> property = source.getContainerProperty(itemId, columnId);
 		if (property == null || property.getValue() == null) {
 			return null;
 		} else {
-			return ((OnmsServiceType)property.getValue()).getName();
+			return property.getValue().getName();
 		}
 	}
 }

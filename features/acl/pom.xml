@@ -8,7 +8,7 @@
 	<groupId>org.opennms.features</groupId>
 	<artifactId>org.opennms.features.acl</artifactId>
 	<packaging>war</packaging>
-	<name>OpenNMS ACL Webapp</name>
+	<name>OpenNMS Features - ACL Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -95,12 +95,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>

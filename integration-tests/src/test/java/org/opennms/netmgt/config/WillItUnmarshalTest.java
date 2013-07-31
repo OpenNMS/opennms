@@ -1,71 +1,30 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
+import java.util.Collection;
 import junit.framework.AssertionFailedError;
-
+import org.apache.commons.io.FileUtils;
 import org.exolab.castor.util.LocalConfiguration;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
+import org.opennms.netmgt.config.actiond.ActiondConfiguration;
+import org.opennms.netmgt.config.ami.AmiConfig;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
-import org.opennms.netmgt.config.actiond.ActiondConfiguration;
-import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
@@ -126,676 +85,330 @@ import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.xml.eventconf.Events;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
-import org.xml.sax.InputSource;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
 
 /**
+ * This is an integration test checking if all provided example XML files can be
+ * unmarshalled.
+ * 
+ * For each file to test, an entry in the {@link #files()} list must exist.
+ * During test run, all tests methods are executed for each test.
+ * 
+ * To ensure, that all provided files are covered, a meta test is used
+ * ({@link WillItUnmarshalMetaTest}).
+ * 
  * The name of this class is a tribute to
  * <a href="http://www.willitblend.com/">www.willitblend.com</a>.
- *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * 
+ * @author Dustin Frisch<fooker@lab.sh>
+ * 
+ * @see WillItUnmarshalMetaTest
  */
+@RunWith(value = Parameterized.class)
 public class WillItUnmarshalTest {
     private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
-    private static Set<String> m_filesTested = new HashSet<String>();
-    private static Set<String> m_exampleFilesTested = new HashSet<String>();
+    
+    /**
+     * Possible implementations for resource loading.
+     */
+    public static enum Source {
+        CONFIG,
+        EXAMPLE,
+        SPRING,
+        ABSOLUTE,
+    }
+
+    /**
+     * Possible implementation used for unmarshalling.
+     */
+    public static enum Impl {
+        JAXB,
+        CASTOR
+    }
+    
+    /**
+     * A list of test parameters to execute.
+     * 
+     * See {@link #files()} for detailed information.
+     */
+    public static final ArrayList<Object[]> FILES = new ArrayList<Object[]>();
+    
+    private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient, final String exceptionMessage) {
+        FILES.add(new Object[] {source, file, clazz, impl, lenient, exceptionMessage});
+    }
+    
+    private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final String exceptionMessage) {
+        addFile(source, file, clazz, impl, false, exceptionMessage);
+    }
+    
+    private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl, final boolean lenient) {
+        addFile(source, file, clazz, impl, lenient, null);
+    }
+    
+    private static void addFile(final Source source, final String file, final Class<?> clazz, final Impl impl) {
+        addFile(source, file, clazz, impl, false, null);
+    }
+    
+    static {
+        addFile(Source.SPRING, "eventconf-good-ordering.xml", Events.class, Impl.JAXB);
+        addFile(Source.SPRING, "eventconf-bad-ordering.xml", Events.class, Impl.JAXB, true);
+
+        addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
+        
+        addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, Impl.JAXB);
+        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "events-archiver-configuration.xml", EventsArchiverConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
+        addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
+        addFile(Source.CONFIG, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "vmware-datacollection-config.xml", VmwareDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/JBoss/4/JBossBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
+        
+        // Add all event files
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    Events.class,
+                    Impl.CASTOR);
+        }
+        
+        // Add all datacollection group files
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "datacollection"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    DatacollectionGroup.class,
+                    Impl.JAXB);
+        }
+    }
+    
+    /**
+     * The list of files to test.
+     * 
+     * For each XML file to test, this method must return an entry in the list.
+     * Each entry consists of the following parts:
+     * <ul>
+     *   <li>The source to load the resource from</li>
+     *   <li>The file to test</li>
+     *   <li>The class used for unmarshaling</li>
+     *   <li>The implementation to use for unmarshalling</li>
+     *   <li>Flag for being lenient</li>
+     *   <li>An expected exception message</li>
+     * </ul>
+     * 
+     * The returned file list is stored in {@link #FILES} which is filled in the
+     * static constructor.
+     * 
+     * @return list of parameters for the test
+     */
+    @Parameterized.Parameters
+    public static Collection<Object[]> files() {
+        return FILES;
+    }
+    
+    private final Source source;
+    private final String file;
+    private final Class<?> clazz;
+    private final Impl impl;
+    private final boolean lenient;
+    private final String exception;
+    
+    public WillItUnmarshalTest(final Source source,
+                               final String file,
+                               final Class<?> clazz,
+                               final Impl impl,
+                               final boolean lenient,
+                               final String exception) {
+        this.source = source;
+        this.file = file;
+        this.clazz = clazz;
+        this.impl = impl;
+        this.lenient = lenient;
+        this.exception = exception;
+    }
     
     @Before
     public void setUp() throws Exception {
-        
-        MockLogAppender.setupLogging(true, "INFO");
-        
-        // Reload castor properties every time since some tests fiddle with them
+        // Reload castor properties every time
         LocalConfiguration.getInstance().getProperties().clear();
         LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
     }
-
-    @After
-    public void checkWarnings() {
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
-
-    @Test
-    public void testGoodOrdering() throws Exception {
-        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
-        System.out.println("Unmarshalling: " + resource.getURI());
-        JaxbUtils.unmarshal(Events.class, resource);
-    }
-
-    @Test
-    public void testLenientOrdering() throws Exception {
-        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
-        System.out.println("Unmarshalling: " + resource.getURI());
-        JaxbUtils.unmarshal(Events.class, resource);
-    }
     
     @Test
-    public void testUpdateFields() throws Exception {
-        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-update-fields.xml");
-        System.out.println("Unmarshalling: " + resource.getURI());
-        JaxbUtils.unmarshal(Events.class, resource);
-    }
-
-
-    @Test
-    public void testFailOnInvalidElement() throws Exception {
-        unmarshalAndAnticipateException("eventconf-bad-element.xml", "Invalid content was found starting with element 'bad-element'.");
-    }
-
-    @Test
-    public void testAccessPointMonitorConfiguration() throws Exception {
-        unmarshal("access-point-monitor-configuration.xml", AccessPointMonitorConfig.class);
-    }
-    @Test
-    public void testActiondConfiguration() throws Exception {
-        unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
-    }
-    @Test
-    public void testAmiConfig() throws Exception {
-        unmarshal("ami-config.xml", AmiConfig.class);
-    }
-    @Test
-    public void testAvailabilityReportsConfiguration() throws Exception {
-        unmarshal("availability-reports.xml", OpennmsReports.class);
-    }
-    @Test
-    public void testCapsdConfiguration() throws Exception {
-        unmarshal("capsd-configuration.xml", CapsdConfiguration.class);
-    }
-    @Test
-    public void testExampleCapsdConfiguration() throws Exception {
-        unmarshalExample("capsd-configuration.xml", CapsdConfiguration.class);
-    }
-    @Test
-    public void testCategories() throws Exception {
-        unmarshal("categories.xml", Catinfo.class);
-    }
-    @Test
-    public void testChartConfiguration() throws Exception {
-        unmarshal("chart-configuration.xml", ChartConfiguration.class);
-    }
-    @Test
-    public void testCollectdConfiguration() throws Exception {
-        unmarshal("collectd-configuration.xml", CollectdConfiguration.class);
-    }
-    @Test
-    public void testExampleCollectdConfiguration() throws Exception {
-        unmarshalExample("collectd-configuration.xml", CollectdConfiguration.class);
-    }
-    @Test
-    public void testDatabaseReportsConfiguration() throws Exception {
-        unmarshalJaxb("database-reports.xml", LegacyLocalReportsDefinition.class);
-    }
-    @Test
-    public void testDatabaseSchema() throws Exception {
-        unmarshal("database-schema.xml", DatabaseSchema.class);
-    }
-    @Test
-    public void testDataCollectionConfiguration() throws Exception {
-        unmarshalJaxb("datacollection-config.xml", DatacollectionConfig.class);
-    }
-    @Test
-    public void testExampleOldDataCollectionConfiguration() throws Exception {
-        unmarshalJaxbExample("old-datacollection-config.xml", DatacollectionConfig.class);
-    }
-    @Test
-    public void testDestinationPaths() throws Exception {
-        unmarshal("destinationPaths.xml", DestinationPaths.class);
-    }
-    @Test
-    public void testExampleDestinationPaths() throws Exception {
-        unmarshalExample("destinationPaths.xml", DestinationPaths.class);
-    }
-    @Test
-    public void testDiscoveryConfiguration() throws Exception {
-        unmarshal("discovery-configuration.xml", DiscoveryConfiguration.class);
-    }
-    @Test
-    public void testExampleDiscoveryConfiguration() throws Exception {
-        unmarshalExample("discovery-configuration.xml", DiscoveryConfiguration.class);
-    }
-    @Test
-    public void testEventconf() throws Exception {
-        unmarshal("eventconf.xml", Events.class);
-    }
-    @Test
-    public void testEventsArchiverConfiguration() throws Exception {
-        unmarshal("events-archiver-configuration.xml", EventsArchiverConfiguration.class);
-    }
-    @Test
-    public void testGroups() throws Exception {
-        unmarshal("groups.xml", Groupinfo.class);
-    }
-    @Test
-    public void testExampleGroups() throws Exception {
-        unmarshalExample("groups.xml", Groupinfo.class);
-    }
-    @Test
-    public void testHttpDataCollectionConfiguration() throws Exception {
-        unmarshal("http-datacollection-config.xml", HttpDatacollectionConfig.class);
-    }
-    @Test
-    public void testExampleHttpDataCollectionConfiguration() throws Exception {
-        unmarshalExample("devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class);
-    }
-    @Test
-    public void testJasperReportsConfiguration() throws Exception {
-        unmarshalJaxb("jasper-reports.xml", LocalJasperReports.class);
-    }
-    @Test
-    public void testJmxDataCollectionConfiguration() throws Exception {
-        unmarshal("jmx-datacollection-config.xml", JmxDatacollectionConfig.class);
-    }
-    @Test
-    public void testKscPerformanceReports() throws Exception {
-        unmarshal("ksc-performance-reports.xml", ReportsList.class);
-    }
-    @Test
-    public void testLinkdConfiguration() throws Exception {
-        unmarshal("linkd-configuration.xml", LinkdConfiguration.class);
-    }
-    @Test
-    public void testExampleLinkdConfiguration() throws Exception {
-        unmarshalExample("linkd-configuration.xml", LinkdConfiguration.class);
-    }
-    @Test
-    public void testExampleMailTransportTest() throws Exception {
-        unmarshalExample("mail-transport-test.xml", MailTransportTest.class);
-    }
-    @Test
-    public void testExampleHypericImportsHQ() throws Exception {
-        unmarshalJaxbExample("hyperic-integration/imports-HQ.xml", Requisition.class);
-    }
-    @Test
-    public void testExampleHypericImportsOpennmsAdmin() throws Exception {
-        unmarshalJaxbExample("hyperic-integration/imports-opennms-admin.xml", Requisition.class);
-    }
-    @Test
-    public void testMonitoringLocations() throws Exception {
-        unmarshal("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
-    }
-    @Test
-    public void testExampleMonitoringLocations() throws Exception {
-        unmarshalExample("monitoring-locations.xml", MonitoringLocationsConfiguration.class);
-    }
-    @Test
-    public void testNotifdConfiguration() throws Exception {
-        unmarshal("notifd-configuration.xml", NotifdConfiguration.class);
-    }
-    @Test
-    public void testNotificationCommands() throws Exception {
-        unmarshal("notificationCommands.xml", NotificationCommands.class);
-    }
-    @Test
-    public void testExampleNotificationCommands() throws Exception {
-        unmarshalExample("notificationCommands.xml", NotificationCommands.class);
-    }
-    @Test
-    public void testNotifications() throws Exception {
-        unmarshal("notifications.xml", Notifications.class);
-    }
-    @Test
-    public void testExampleNotifications() throws Exception {
-        unmarshalExample("notifications.xml", Notifications.class);
-    }
-    @Test
-    public void testOpennmsDatasources() throws Exception {
-        unmarshal("opennms-datasources.xml", DataSourceConfiguration.class);
-    }
-    @Test
-    public void testOpennmsServer() throws Exception {
-        unmarshal("opennms-server.xml", LocalServer.class);
-    }
-    @Test
-    public void testExampleOpennmsServer() throws Exception {
-        unmarshalExample("opennms-server.xml", LocalServer.class);
-    }
-    @Test
-    public void testPollOutages() throws Exception {
-        unmarshal("poll-outages.xml", Outages.class);
-    }
-    @Test
-    public void testExamplePollOutages() throws Exception {
-        unmarshalExample("poll-outages.xml", Outages.class);
-    }
-    @Test
-    public void testPollerConfiguration() throws Exception {
-        unmarshal("poller-configuration.xml", PollerConfiguration.class);
-    }
-    @Test
-    public void testExamplePollerConfiguration() throws Exception {
-        unmarshalExample("poller-configuration.xml", PollerConfiguration.class);
-    }
-    @Test
-    public void testRtcConfiguration() throws Exception {
-        unmarshal("rtc-configuration.xml", RTCConfiguration.class);
-    }
-    @Test
-    public void testScriptdConfiguration() throws Exception {
-        unmarshal("scriptd-configuration.xml", ScriptdConfiguration.class);
-    }
-    @Test
-    public void testSyslogNorthbounderConfiguration() throws Exception {
-        unmarshalJaxb("syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class);
-    }
-    @Test
-    public void testExampleScriptdConfiguration() throws Exception {
-        unmarshalExample("scriptd-configuration.xml", ScriptdConfiguration.class);
-    }
-    @Test
-    public void testExampleEventProxyProxyEvents() throws Exception {
-        unmarshalExample("event-proxy/Proxy.events.xml", Events.class);
-    }
-    @Test
-    public void testExampleEventProxyScriptdConfiguration() throws Exception {
-        unmarshalExample("event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class);
-    }
-    @Test
-    public void testExampleEventProxyVacuumdConfiguration() throws Exception {
-        unmarshalExample("event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class);
-    }
-    @Test
-    public void testSiteStatusViews() throws Exception {
-        unmarshal("site-status-views.xml", SiteStatusViewConfiguration.class);
-    }
-    @Test
-    public void testSnmpConfig() throws Exception {
-        unmarshalJaxb("snmp-config.xml", SnmpConfig.class);
-    }
-    @Test
-    public void testExampleSnmpConfig() throws Exception {
-        unmarshalJaxbExample("snmp-config.xml", SnmpConfig.class);
-    }
-    @Test
-    public void testSnmpInterfacePollerConfiguration() throws Exception {
-        unmarshal("snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class);
-    }
-    @Test
-    public void testStatsdConfiguration() throws Exception {
-        unmarshal("statsd-configuration.xml", StatisticsDaemonConfiguration.class);
-    }
-    @Test
-    public void testSurveillanceViews() throws Exception {
-        unmarshal("surveillance-views.xml", SurveillanceViewConfiguration.class);
-    }
-    @Test
-    public void testExampleSurveillanceViews() throws Exception {
-        unmarshalExample("surveillance-views.xml", SurveillanceViewConfiguration.class);
-    }
-    @Test
-    public void testSyslogdConfiguration() throws Exception {
-        unmarshal("syslogd-configuration.xml", SyslogdConfiguration.class);
-    }
-    @Test
-    public void testThreshdConfiguration() throws Exception {
-        unmarshal("threshd-configuration.xml", ThreshdConfiguration.class);
-    }
-    @Test
-    public void testExampleThreshdConfiguration() throws Exception {
-        unmarshalExample("threshd-configuration.xml", ThreshdConfiguration.class);
-    }
-    @Test
-    public void testThresholds() throws Exception {
-        unmarshal("thresholds.xml", ThresholdingConfig.class);
-    }
-    @Test
-    public void testExampleThresholds() throws Exception {
-        unmarshalExample("thresholds.xml", ThresholdingConfig.class);
-    }
-    @Test
-    public void testTl1dConfiguration() throws Exception {
-        unmarshal("tl1d-configuration.xml", Tl1dConfiguration.class);
-    }
-    @Test
-    public void testTranslatorConfiguration() throws Exception {
-        unmarshal("translator-configuration.xml", EventTranslatorConfiguration.class);
-    }
-    @Test
-    public void testTrapdonfiguration() throws Exception {
-        unmarshal("trapd-configuration.xml", TrapdConfiguration.class);
-    }
-    @Test
-    public void testUsers() throws Exception {
-        unmarshal("users.xml", Userinfo.class);
-    }
-    @Test
-    public void testVacuumdConfiguration() throws Exception {
-        unmarshal("vacuumd-configuration.xml", VacuumdConfiguration.class);
-    }
-    @Test
-    public void testXmlrpcdConfiguration() throws Exception {
-        unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
-    }
-    @Test
-    public void testExampleXmlrpcdConfiguration() throws Exception {
-        unmarshalExample("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
-    }
-    @Test
-    public void testEventdConfiguration() throws Exception {
-        unmarshal("eventd-configuration.xml", EventdConfiguration.class);
-    }
-    @Test
-    public void testServiceConfiguration() throws Exception {
-        unmarshal("service-configuration.xml", ServiceConfiguration.class);
-    }
-    @Test
-    public void testViewsDisplay() throws Exception {
-        unmarshal("viewsdisplay.xml", Viewinfo.class);
-    }
-    @Test
-    public void testExampleViewsDisplay() throws Exception {
-        unmarshalExample("viewsdisplay.xml", Viewinfo.class);
-    }
-    @Test
-    public void testExampleTl1dConfiguration() throws Exception {
-        unmarshalExample("tl1d-configuration.xml", Tl1dConfiguration.class);
-    }
-    @Test
-    public void testWmiConfiguration() throws Exception {
-        unmarshal("wmi-config.xml", WmiConfig.class);
-    }
-    @Test
-    public void testWmiDatacollectionConfiguration() throws Exception {
-        unmarshal("wmi-datacollection-config.xml", WmiDatacollectionConfig.class);
-    }
-    @Test
-    public void testJavaMailConfiguration() throws Exception {
-        unmarshal("javamail-configuration.xml", JavamailConfiguration.class);
-    }
-    @Test
-    public void testAckdConfiguration() throws Exception {
-        unmarshal("ackd-configuration.xml", AckdConfiguration.class);
-    }
-    @Test
-    public void provisiondConfiguration() throws Exception {
-        unmarshal("provisiond-configuration.xml", ProvisiondConfiguration.class);
-    }
-    @Test
-    public void testReportdConfiguration() throws Exception {
-        unmarshal("reportd-configuration.xml", ReportdConfiguration.class);
-    }
-    @Test
-    public void testRwsConfiguration() throws Exception {
-        unmarshal("rws-configuration.xml", RwsConfiguration.class);
-    }
-    @Test
-    public void testExampleRwsConfiguration() throws Exception {
-        unmarshalExample("rws-configuration.xml", RwsConfiguration.class);
-    }
-    @Test
-    public void testMapsAdapterConfiguration() throws Exception {
-        unmarshal("mapsadapter-configuration.xml", MapsAdapterConfiguration.class);
-    }
-    @Test
-    public void testExampleMapsAdapterConfiguration() throws Exception {
-        unmarshalExample("mapsadapter-configuration.xml", MapsAdapterConfiguration.class);
-    }
-    @Test
-    public void testRancidAdapterConfiguration() throws Exception {
-        unmarshal("rancid-configuration.xml", RancidConfiguration.class);
-    }
-    @Test
-    public void testExampleRancidAdapterConfiguration() throws Exception {
-        unmarshalExample("rancid-configuration.xml", RancidConfiguration.class);
-    }
-    @Test
-    public void testMicroblogConfiguration() throws Exception {
-        unmarshal("microblog-configuration.xml", MicroblogConfiguration.class);
-    }
-    @Test
-    public void testSnmpAssetAdapterConfiguration() throws Exception {
-        unmarshal("snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class);
-    }
-    @Test
-    public void testJdbcDataCollectionConfiguration() throws Exception {
-        unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
-    }
-    @Test
-    public void testRemoteRepositoryXmlConfiguration() throws Exception {
-        unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
-    }
-    @Test
-    public void testVmwareConfiguration() throws Exception {
-        unmarshalJaxb("vmware-config.xml", VmwareConfig.class);
-    }
-    @Test
-    public void testVmwareDatacollectionConfiguration() throws Exception {
-        unmarshalJaxb("vmware-datacollection-config.xml", VmwareDatacollectionConfig.class);
-    }
-    @Test
-    public void testVmwareCimDatacollectionConfiguration() throws Exception {
-        unmarshalJaxb("vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionCollectdConfiguration() throws Exception {
-        unmarshalExample("jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfig() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection-config.xml", JmxDatacollectionConfig.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigActiveMQ() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class);
-    }    
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigCassandra() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigJboss() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/JBoss/4/JBossBasic0.xml", Mbeans.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigJvmBasic() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmBasic0.xml", Mbeans.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigJvmLegacy() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigOpenNMSBasic() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class);
-    }
-    @Test
-    public void testExampleJvmDatacollectionJmxDatacollectionConfigOpenNMSLegacy() throws Exception {
-        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class);
-    }
-    
-    @Test
-    public void testCheckAllDaemonXmlConfigFilesTested() {
-        File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
-        File configDir = someConfigFile.getParentFile();
-        assertTrue("daemon configuration directory exists at " + configDir.getAbsolutePath(), configDir.exists());
-        assertTrue("daemon configuration directory is a directory at " + configDir.getAbsolutePath(), configDir.isDirectory());
-
-        String[] configFiles = configDir.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
-            } });
-        
-        Set<String> allXml = new HashSet<String>(Arrays.asList(configFiles));
-        
-        allXml.removeAll(m_filesTested);
-        
-        if (allXml.size() > 0) {
-            List<String> files = new ArrayList<String>(allXml);
-            Collections.sort(files);
-            fail("These files in " + configDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
-        }
-    }
-    
-    @Test
-    public void testCheckAllDaemonXmlExampleConfigFilesTested() {
-        File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
-        File examplesDir = new File(someConfigFile.getParentFile(), "examples");
-
-        Set<String> allXml = new HashSet<String>();
-        findConfigurationFilesInDirectory(examplesDir, null, allXml);
-        
-        allXml.removeAll(m_exampleFilesTested);
-        allXml.remove("correlation-engine.xml");
-        allXml.remove("drools-engine.xml");
-        allXml.remove("nodeParentRules-context.xml");
-        allXml.remove("nsclient-config.xml");
-
-        final Iterator<String> allIterator = allXml.iterator();
-        while (allIterator.hasNext()) {
-        	final String file = allIterator.next();
-        	if (file.startsWith("Juniper/mbg/")) {
-        		allIterator.remove();
-        	}
-        }
-
-        if (allXml.size() > 0) {
-            List<String> files = new ArrayList<String>(allXml);
-            Collections.sort(files);
-            fail("These files in " + examplesDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
-        }
-    }
-
-    private void findConfigurationFilesInDirectory(File directory, String directoryPrefix, Set<String> allXml) {
-        assertTrue("directory to search for configuration files in is not a directory at " + directory.getAbsolutePath(), directory.isDirectory());
-
-        String[] configFiles = directory.list(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
-            } });
-        for (String configFile : configFiles) {
-            allXml.add((directoryPrefix != null) ? (directoryPrefix + File.separator + configFile) : configFile);
-        }
-        
-        File[] subDirectories = directory.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.isDirectory() && !file.getName().startsWith(".");
-            }
-        });
-        
-        for (File subDirectory : subDirectories) {
-            String newPrefix = (directoryPrefix != null) ? (directoryPrefix + File.separator + subDirectory.getName()) : subDirectory.getName();
-            findConfigurationFilesInDirectory(subDirectory, newPrefix, allXml);
-        }
-    }
-    
-    @Test
-    public void testAllIncludedEventXml() throws Exception {
-        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
-        File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
-        assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
-        assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
-        
-        File[] includedEventFiles = eventsDirFile.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
-            } });
-        
-        for (File includedEventFile : includedEventFiles) {
-            try {
-                // Be conservative about what we ship, so don't be lenient
-                LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-                Resource resource = new FileSystemResource(includedEventFile);
-                System.out.println("Unmarshalling: " + resource.getURI());
-                CastorUtils.unmarshal(Events.class, resource);
-            } catch (Throwable t) {
-                throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
-            }
-        }
-    }
-
-    @Test
-    public void testAllIncludedDatacollectionGroups() throws Exception {
-        File dataCollectionConfFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
-        File groupDirFile = new File(dataCollectionConfFile.getParentFile(), "datacollection");
-        assertTrue("events directory exists at " + groupDirFile.getAbsolutePath(), groupDirFile.exists());
-        assertTrue("events directory is a directory at " + groupDirFile.getAbsolutePath(), groupDirFile.isDirectory());
-
-        File[] includedGroupFiles = groupDirFile.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                return name.endsWith(".xml");
-            } });
-
-        for (File includedGroupFile : includedGroupFiles) {
-            try {
-                // Be conservative about what we ship, so don't be lenient
-                Resource resource = new FileSystemResource(includedGroupFile);
-                System.out.println("Unmarshalling: " + resource.getURI());
-                JaxbUtils.unmarshal(DatacollectionGroup.class, resource);
-            } catch (Throwable t) {
-                throw new RuntimeException("Failed to unmarshal " + includedGroupFile + ": " + t, t);
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-	private static <T>T unmarshalJaxb(final Resource resource, final Class<T> clazz) throws JAXBException, IOException {
-    	final T obj = JaxbUtils.unmarshal(clazz, new InputSource(resource.getInputStream()));
-        assertNotNull("unmarshalled object should not be null after unmarshalling from " + resource, obj);
-        m_filesTested.add(resource.getURI().toString());
-        return obj;
-    }
-
-    private static <T>T unmarshalJaxb(final String configFile, final Class<T> clazz) throws JAXBException, IOException {
-        return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
-    }
-
-    private static <T>T unmarshalJaxbExample(final String configFile, final Class<T> clazz) throws JAXBException, IOException {
-        return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
-    }
-
-    private static <T> T unmarshalJaxb(final File file, final Class<T> clazz, final Set<String> testedSet, final String fileName) throws JAXBException, IOException {
-    	final T obj = JaxbUtils.unmarshal(clazz, file);
-        assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), obj);
-        testedSet.add(fileName);
-        return obj;
-    }
-
-    private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
-        return unmarshal(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
-    }
-
-    private static <T>T unmarshalExample(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
-        return unmarshal(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
-    }
-
-    private static <T>T unmarshal(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws MarshalException, ValidationException, IOException {
+    public void testUnmarshalling() {
         // Be conservative about what we ship, so don't be lenient
-        LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+        if (this.lenient == false) {
+            LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+        }
         
-        Resource resource = new FileSystemResource(file);
-        System.out.println("Unmarshalling: " + resource.getURI());
-        T config = CastorUtils.unmarshal(clazz, resource);
+        final Resource resource = this.createResource();
         
-        assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
-        testedSet.add(fileName);
+        // Assert that resource is valied
+        assertNotNull("Resource must not be null", resource);
         
-        return config;
-    }
-
-    private void unmarshalAndAnticipateException(final String file,  final String exceptionText) throws ValidationException, IOException, AssertionFailedError {
-        boolean gotException = false;
+        // Unmarshall the config file
+        Object result = null;
         try {
-            JaxbUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
-        } catch (final Exception e) {
-            if (e.getMessage().contains(exceptionText)) {
-                gotException = true;
+            switch (impl) {
+                case CASTOR:
+                    result = CastorUtils.unmarshal(this.clazz, resource);
+                    break;
+
+                case JAXB:
+                    result = JaxbUtils.unmarshal(this.clazz, resource);
+                    break;
+
+                default:
+                    fail("Implementation unknown: " + this.impl);
+            }
+        
+            // Assert that unmarshalling returned a valid result
+            assertNotNull("Unmarshalled instance must not be null", result);
+            
+        } catch(AssertionFailedError ex) {
+            throw ex;
+
+        } catch(Exception ex) {
+            // If we have an expected exception, the returned exception muss
+            // match - if not the test failed
+            if (this.exception != null) {
+                assertEquals(this.exception, exception.toString());
+                
             } else {
-                AssertionFailedError newE = new AssertionFailedError("unmarshal threw an exception but did not contain expected text: " + exceptionText);
-                newE.initCause(e);
-                throw newE;
+                fail("Unexpected exception: " + ex);
             }
         }
+    }
 
-        if (!gotException) {
-            fail("unmarshal did not throw exception containing expected text: " + exceptionText);
+    /**
+     * Create a resource for the config file to unmarshall using the configured
+     * source.
+     * 
+     * @return the Resource 
+     */
+    public final Resource createResource() {
+        // Create a resource for the config file to unmarshall using the
+        // configured source
+        switch (this.source) {
+            case CONFIG:
+                return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile(file));
+                
+            case EXAMPLE:
+                return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("examples/" + file));
+                
+            case SPRING:
+                return ConfigurationTestUtils.getSpringResourceForResource(this, this.file);
+                
+            case ABSOLUTE:
+                return new FileSystemResource(this.file);
+            
+            default:
+                throw new RuntimeException("Source unknown: " + this.source);
         }
     }
 }

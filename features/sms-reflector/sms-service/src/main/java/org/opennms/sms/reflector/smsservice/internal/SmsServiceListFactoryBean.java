@@ -28,8 +28,9 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.opennms.sms.reflector.smsservice.SmsService;
@@ -48,6 +49,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Id: $
  */
 public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SmsServiceListFactoryBean.class);
 	private GatewayGroup[] m_gatewayGroups;
 	private SmsService[] m_services;
 	
@@ -111,7 +113,7 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 			AGateway[] gateways = group.getGateways();
 			
 			if (gateways.length == 0) {
-				log().warn("A Gateway group was registered with ZERO gateways!");
+				LOG.warn("A Gateway group was registered with ZERO gateways!");
 			    return;
 			}
 			
@@ -128,8 +130,8 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 					}
 					smsService.addGateway(gateways[i]);
 					
-				} catch (final GatewayException e) {
-				    LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
+				} catch (final Exception e) {
+				    LOG.warn("Unable to add gateway ({}) to SMS service", gateways[i], e);
 				}
 			}
 			
@@ -139,10 +141,6 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 		}
 	}
 	
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
 	/**
 	 * <p>getObject</p>
 	 *

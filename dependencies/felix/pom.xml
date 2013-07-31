@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>felix-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Apache Felix Dependencies</name>
+  <name>OpenNMS Dependencies Apache Felix</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.felix</groupId>

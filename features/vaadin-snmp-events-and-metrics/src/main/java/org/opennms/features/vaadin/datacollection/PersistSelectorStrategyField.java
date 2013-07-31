@@ -29,13 +29,17 @@ package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.vaadin.addon.customfield.CustomField;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -51,25 +55,25 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class PersistSelectorStrategyField extends CustomField implements Button.ClickListener {
+public class PersistSelectorStrategyField extends CustomField<PersistenceSelectorStrategy> implements Button.ClickListener {
 
     /** The Combo Box. */
-    private ComboBox combo = new ComboBox();
+    private final ComboBox combo = new ComboBox();
 
     /** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
+    private final BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new persist selector strategy field.
@@ -110,27 +114,23 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+    }
 
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(combo);
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<?> getType() {
+    public Class<PersistenceSelectorStrategy> getType() {
         return PersistenceSelectorStrategy.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -146,11 +146,8 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
-    public Object getValue() {
+    public PersistenceSelectorStrategy getValue() {
         PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();
         dto.setClazz((String) combo.getValue());
         for (Object itemId: container.getItemIds()) {
@@ -199,9 +196,9 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a Parameter from the table.");
+            Notification.show("Please select a Parameter from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                     "Are you sure?",
                     MessageBox.Icon.QUESTION,
                     "Do you really want to remove the selected parameter ?<br/>This action cannot be undone.",

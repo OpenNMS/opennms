@@ -27,12 +27,9 @@
  *******************************************************************************/
 package org.opennms.features.jmxconfiggenerator.webui;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 public class JmxConfigToolApplicationFactory extends AbstractApplicationFactory {
 
@@ -40,7 +37,7 @@ public class JmxConfigToolApplicationFactory extends AbstractApplicationFactory 
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(HttpServletRequest arg0) throws ServletException {
+    public UI getUI() {
         return new JmxConfigGeneratorApplication();
     }
 
@@ -48,8 +45,7 @@ public class JmxConfigToolApplicationFactory extends AbstractApplicationFactory 
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getUIClass() {
         return JmxConfigGeneratorApplication.class;
     }
-
 }

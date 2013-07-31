@@ -36,7 +36,9 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The received messages are converted into XML and sent to eventd
@@ -57,10 +59,13 @@ import org.opennms.netmgt.dao.EventDao;
   * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
   */
  public class Syslogd extends AbstractServiceDaemon {
-    /**
+     
+     private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
+     
+     /**
      * The name of the logging category for Syslogd.
      */
-    static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    static final String LOG4J_CATEGORY = "syslogd";
 
     /**
      * The singleton instance.
@@ -84,7 +89,7 @@ import org.opennms.netmgt.dao.EventDao;
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
-        super("OpenNMS.Syslogd");
+        super(LOG4J_CATEGORY);
     }
 
     /**
@@ -94,16 +99,16 @@ import org.opennms.netmgt.dao.EventDao;
     protected void onInit() {
 
         try {
-            log().debug("start: Initializing the syslogd config factory");
+            LOG.debug("start: Initializing the syslogd config factory");
             SyslogdConfigFactory.init();
         } catch (MarshalException e) {
-            log().error("Failed to load configuration", e);
+            LOG.error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().error("Failed to load configuration", e);
+            LOG.error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log().error("Failed to load configuration", e);
+            LOG.error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -111,12 +116,12 @@ import org.opennms.netmgt.dao.EventDao;
             // clear out the known nodes
             SyslogdIPMgr.dataSourceSync();
         } catch (SQLException e) {
-            log().error("Failed to load known IP address list", e);
+            LOG.error("Failed to load known IP address list", e);
             throw new UndeclaredThrowableException(e);
         }
 
         SyslogHandler.setSyslogConfig(SyslogdConfigFactory.getInstance());
-        log().debug("Starting SyslogProcessor");
+        LOG.debug("Starting SyslogProcessor");
 
         m_udpEventReceiver = new SyslogHandler();
 
@@ -137,7 +142,7 @@ import org.opennms.netmgt.dao.EventDao;
         try {
             new BroadcastEventProcessor();
         } catch (Throwable ex) {
-            log().error("Failed to setup event reader", ex);
+            LOG.error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -148,20 +153,20 @@ import org.opennms.netmgt.dao.EventDao;
     @Override
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
-        log().debug("exit: closing communication paths.");
+        LOG.debug("exit: closing communication paths.");
 
         try {
-            log().debug("stop: Closing SYSLOGD message session.");
+            LOG.debug("stop: Closing SYSLOGD message session.");
 
-            log().debug("stop: Syslog message session closed.");
+            LOG.debug("stop: Syslog message session closed.");
         } catch (IllegalStateException e) {
-            log().debug("stop: The Syslog session was already closed");
+            LOG.debug("stop: The Syslog session was already closed");
         }
 
-        log().debug("stop: Stopping queue processor.");
+        LOG.debug("stop: Stopping queue processor.");
 
         m_udpEventReceiver.stop();
-        log().debug("Stopped the Syslog UDP Receiver");
+        LOG.debug("Stopped the Syslog UDP Receiver");
     }
 
     /**
@@ -180,7 +185,7 @@ import org.opennms.netmgt.dao.EventDao;
     /**
      * <p>getEventDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public EventDao getEventDao() {
         return m_eventDao;
@@ -189,10 +194,9 @@ import org.opennms.netmgt.dao.EventDao;
     /**
      * <p>setEventDao</p>
      *
-     * @param eventDao a {@link org.opennms.netmgt.dao.EventDao} object.
+     * @param eventDao a {@link org.opennms.netmgt.dao.api.EventDao} object.
      */
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;
     }
-
 }

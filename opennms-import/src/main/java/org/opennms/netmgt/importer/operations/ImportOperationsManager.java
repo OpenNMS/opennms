@@ -40,10 +40,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -55,6 +56,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @version $Id: $
  */
 public class ImportOperationsManager {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
+
     
 	private List<ImportOperation> m_inserts = new LinkedList<ImportOperation>();
     private List<ImportOperation> m_updates = new LinkedList<ImportOperation>();
@@ -234,7 +238,7 @@ public class ImportOperationsManager {
                 // loop util the await returns false
             }
         } catch (InterruptedException e) {
-            log().error(msg, e);
+            LOG.error(msg, e);
         }
     }
  
@@ -242,7 +246,7 @@ public class ImportOperationsManager {
      * <p>persistOperations</p>
      *
      * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.OnmsDao} object.
      */
     public void persistOperations(TransactionTemplate template, OnmsDao<?, ?> dao) {
     	m_stats.beginProcessingOps();
@@ -286,12 +290,12 @@ public class ImportOperationsManager {
 	 *
 	 * @param oper a {@link org.opennms.netmgt.importer.operations.ImportOperation} object.
 	 * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
-	 * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+	 * @param dao a {@link org.opennms.netmgt.dao.api.OnmsDao} object.
 	 * @param dbPool a {@link java.util.concurrent.ExecutorService} object.
 	 */
 	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao<?, ?> dao, final ExecutorService dbPool) {
 		m_stats.beginPreprocessing(oper);
-		log().info("Preprocess: "+oper);
+		LOG.info("Preprocess: {}", oper);
 		oper.gatherAdditionalData();
 		Runnable r = new Runnable() {
                         @Override
@@ -310,11 +314,11 @@ public class ImportOperationsManager {
 	 *
 	 * @param oper a {@link org.opennms.netmgt.importer.operations.ImportOperation} object.
 	 * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
-	 * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+	 * @param dao a {@link org.opennms.netmgt.dao.api.OnmsDao} object.
 	 */
 	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, final OnmsDao<?, ?> dao) {
 		m_stats.beginPersisting(oper);
-		log().info("Persist: "+oper);
+		LOG.info("Persist: {}", oper);
 
 		List<Event> events = persistToDatabase(oper, template);
 		
@@ -323,7 +327,7 @@ public class ImportOperationsManager {
 		
 		if (m_eventMgr != null && events != null) {
 			m_stats.beginSendingEvents(oper, events);
-			log().info("Send Events: "+oper);
+			LOG.info("Send Events: {}", oper);
 			// now send the events for the update
 			for (Iterator<Event> eventIt = events.iterator(); eventIt.hasNext();) {
 				Event event = eventIt.next();
@@ -332,7 +336,7 @@ public class ImportOperationsManager {
 			m_stats.finishSendingEvents(oper, events);
 		}
 
-		log().info("Clear cache: "+oper);
+		LOG.info("Clear cache: {}", oper);
 		// clear the cache to we don't use up all the memory
 		dao.clear();
 	}
@@ -355,9 +359,6 @@ public class ImportOperationsManager {
         return events;
     }
 
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 
 	/**
 	 * <p>setScanThreads</p>

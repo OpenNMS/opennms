@@ -42,11 +42,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("categories")
 @Transactional
 public class OnmsCategoryResource extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsCategoryResource.class);
+
     @Context 
     UriInfo m_uriInfo;
 
@@ -143,12 +148,12 @@ public class OnmsCategoryResource extends OnmsRestService {
             }
             OnmsCategory found = m_categoryDao.findByName(category.getName());
             if (found == null) {
-                log().debug("addCategory: Saving category " + category);
+                LOG.debug("addCategory: Saving category {}", category);
                 m_categoryDao.save(category);
             } else {
                 category = found;
             }
-            log().debug("addCategory: Adding category " + category + " to node " + nodeCriteria);
+            LOG.debug("addCategory: Adding category {} to node {}", category, nodeCriteria);
             node.addCategory(category);
             m_nodeDao.save(node);
             return Response.seeOther(getRedirectUri(m_uriInfo, category.getName())).build();
@@ -180,7 +185,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             if (category == null) {
                 throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
             }
-            log().debug("updateCategory: updating category " + category);
+            LOG.debug("updateCategory: updating category {}", category);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -189,7 +194,7 @@ public class OnmsCategoryResource extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            log().debug("updateCategory: category " + category + " updated");
+            LOG.debug("updateCategory: category {} updated", category);
             m_nodeDao.saveOrUpdate(node);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
@@ -218,7 +223,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             if (category == null) {
                 throw getException(Status.BAD_REQUEST, "deleteCaegory: Category " + categoryName + " not found on node " + nodeCriteria);
             }
-            log().debug("deleteCaegory: deleting category " + categoryName + " from node " + nodeCriteria);
+            LOG.debug("deleteCaegory: deleting category {} from node {}", categoryName, nodeCriteria);
             node.getCategories().remove(category);
             m_nodeDao.saveOrUpdate(node);
             return Response.ok().build();

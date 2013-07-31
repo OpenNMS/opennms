@@ -31,12 +31,11 @@ package org.opennms.web.svclayer.support;
 import java.io.File;
 import java.util.*;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -60,6 +59,9 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphResultsService.class);
+
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + DefaultGraphResultsService.class);
 
@@ -112,29 +114,29 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String parent = values[0];
             String childType = values[1];
             String childName = values[2];
-            log().debug("findResults: parent, childType, childName = " + values[0] + ", " + values[1] + ", " + values[2]);
+            LOG.debug("findResults: parent, childType, childName = {}, {}, {}", values[0], values[1], values[2]);
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
                 if (resourceList == null) {
-                    log().warn("findResults: zero child resources found for " + parent);
+                    LOG.warn("findResults: zero child resources found for {}", parent);
                 } else {
                     resourcesMap.put(parent, resourceList);
-                    log().debug("findResults: add resourceList to map for " + parent);
+                    LOG.debug("findResults: add resourceList to map for {}", parent);
                 }
             }
             for (OnmsResource r : resourcesMap.get(parent)) {
                 if (childType.equals(r.getResourceType().getName())
                         && childName.equals(r.getName())) {
                     resource = r;
-                    log().debug("findResults: found resource in map" + r.toString());
+                    LOG.debug("findResults: found resource in map{}", r.toString());
                     break;
                 }
             }
             try {
                 graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
             } catch (IllegalArgumentException e) {
-                log().warn(e.getMessage(), e);
+                LOG.warn(e.getMessage(), e);
                 continue;
             }
         }
@@ -161,7 +163,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String childName = child.substring(child.indexOf('[') + 1, child.indexOf(']'));
             return new String[]{parent, childType, childName};
         } catch (Throwable e) {
-            log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
+            LOG.warn("Illegally formatted resourceId found in DefaultGraphResultsService: {}", resourceId, e);
             return null;
         }
     }
@@ -228,23 +230,19 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException e) {
-            log().warn("Unable to send promotion event to opennms daemon", e);
+            LOG.warn("Unable to send promotion event to opennms daemon", e);
         }
 
     }
 
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultGraphResultsService.class);
-    }
+   
 
     private void getAttributeFiles(Graph graph, List<String> filesToPromote) {
 
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
 
         for(RrdGraphAttribute rrdAttr : attrs) {
-            log().debug("getAttributeFiles: ResourceType, ParentResourceType = "
-                        + rrdAttr.getResource().getResourceType().getLabel() + ", "
-                        + rrdAttr.getResource().getParent().getResourceType().getLabel());
+            LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}", rrdAttr.getResource().getResourceType().getLabel(), rrdAttr.getResource().getParent().getResourceType().getLabel());
             if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
                 filesToPromote.add(m_resourceDao.getRrdDirectory()+File.separator+"foreignSource"+File.separator+rrdAttr.getRrdRelativePath());
             } else {
@@ -268,7 +266,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>getResourceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -277,7 +275,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -286,7 +284,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -295,7 +293,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -304,7 +302,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>getGraphDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public GraphDao getGraphDao() {
         return m_graphDao;
@@ -313,7 +311,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>setGraphDao</p>
      *
-     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @param graphDao a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
@@ -322,7 +320,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>getRrdDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public RrdDao getRrdDao() {
         return m_rrdDao;
@@ -331,7 +329,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;

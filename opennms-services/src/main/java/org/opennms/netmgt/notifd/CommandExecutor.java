@@ -35,7 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a class to store and execute a console command
@@ -52,6 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class CommandExecutor implements ExecutorStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
     /**
      * {@inheritDoc}
      *
@@ -61,7 +63,6 @@ public class CommandExecutor implements ExecutorStrategy {
     @Override
     public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         List<String> commandList = new ArrayList<String>();
         commandList.add(commandLine);
@@ -81,16 +82,14 @@ public class CommandExecutor implements ExecutorStrategy {
                 }
             } else {
                 streamed = true;
-                log.debug("streamed argument found");
+                LOG.debug("streamed argument found");
 
                 if (curArg.getSubstitution() != null && !curArg.getSubstitution().trim().equals("")) {
                     streamBuffer.append(curArg.getSubstitution());
                 }
                 if (!curArg.getValue().trim().equals("")) {
                     streamBuffer.append(curArg.getValue());
-                    if (log.isDebugEnabled()) {
-                        log.debug("Streamed argument value: " + curArg.getValue());
-                    }
+                    LOG.debug("Streamed argument value: {}", curArg.getValue());
                 }
             }
         }
@@ -99,7 +98,7 @@ public class CommandExecutor implements ExecutorStrategy {
             // set up the process
             String commandArray[] = new String[commandList.size()];
             commandArray = commandList.toArray(commandArray);
-            if (log.isDebugEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 StringBuffer list = new StringBuffer();
                 list.append("{ ");
                 for (int i = 0; i < commandArray.length; i++) {
@@ -109,7 +108,7 @@ public class CommandExecutor implements ExecutorStrategy {
                     list.append(commandArray[i]);
                 }
                 list.append(" }");
-                log.debug(list.toString());
+                LOG.debug(list.toString());
             }
 
             Process command = Runtime.getRuntime().exec(commandArray);
@@ -120,9 +119,7 @@ public class CommandExecutor implements ExecutorStrategy {
                 BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 // put the streamed arguments into the stream
-                if (log.isDebugEnabled()) {
-                    log.debug("Streamed arguments: " + streamBuffer.toString());
-                }
+                LOG.debug("Streamed arguments: {}", streamBuffer);
 
                 processInput.write(streamBuffer.toString());
 
@@ -148,11 +145,11 @@ public class CommandExecutor implements ExecutorStrategy {
                 }
             }
 
-            log.debug(commandResult);
+            LOG.debug(commandResult);
         } catch (IOException e) {
-            log.error("Error executing command-line binary: " + commandLine, e);
+            LOG.error("Error executing command-line binary: {}", commandLine, e);
         } catch (InterruptedException e) {
-            log.error("Error executing command-line binary: " + commandLine, e);
+            LOG.error("Error executing command-line binary: {}", commandLine, e);
         }
 
         return returnCode;

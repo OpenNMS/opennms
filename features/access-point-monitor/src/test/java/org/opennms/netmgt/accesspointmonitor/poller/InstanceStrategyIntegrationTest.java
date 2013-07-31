@@ -41,28 +41,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.mock.snmp.responder.Sleeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAccessPoint;
@@ -72,6 +66,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -88,12 +84,13 @@ import org.springframework.transaction.PlatformTransactionManager;
     "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
     "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
     "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml",
-    "classpath:META-INF/opennms/smallEventConfDao.xml"
+    "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 @DirtiesContext
-public class InstanceStrategyIntegrationTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+public class InstanceStrategyIntegrationTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -120,7 +117,6 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
     private MockEventIpcManager m_eventMgr;
     private EventAnticipator m_anticipator;
-    private TemporaryDatabase m_database;
 
     private final static String AP1_MAC = "00:01:02:03:04:05";
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
@@ -134,11 +130,6 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
     private static final String SNMP_DATA_PATH = "/org/opennms/netmgt/accesspointmonitor/poller/instancestrategy/";
 
     @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
-
-    @Override
     public void afterPropertiesSet() {
         assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
@@ -150,14 +141,6 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
 
     @Before
     public void setUp() throws Exception {
-        // Initialize the JdbcFilterDao so that it will connect to the correct database
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        jdbcFilterDao.setDataSource(m_database);
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-
         // Initialise the SNMP peer
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
@@ -177,7 +160,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         Sleeper.getInstance().setSleepTime(0);
         if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
             m_apm.stop();
-            LogUtils.debugf(this, "AccessPointMonitor stopped");
+            LOG.debug("AccessPointMonitor stopped");
         }
     }
 
@@ -294,13 +277,13 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
         // Verify the state of the APs in the database
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
         assertTrue(ap1.getStatus() == AccessPointStatus.ONLINE);
 
-        OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        OnmsAccessPoint ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.OFFLINE);
 
-        OnmsAccessPoint ap3 = m_accessPointDao.findByPhysAddr(AP3_MAC);
+        OnmsAccessPoint ap3 = m_accessPointDao.get(AP3_MAC);
         assertTrue(ap3.getStatus() == AccessPointStatus.UNKNOWN);
 
         // Change AP3's package, the next poll should send an additional DOWN
@@ -327,13 +310,13 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
         // Verify the DB again, all APs should be DOWN now
-        ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        ap1 = m_accessPointDao.get(AP1_MAC);
         assertTrue(ap1.getStatus() == AccessPointStatus.OFFLINE);
 
-        ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.OFFLINE);
 
-        ap3 = m_accessPointDao.findByPhysAddr(AP3_MAC);
+        ap3 = m_accessPointDao.get(AP3_MAC);
         assertTrue(ap3.getStatus() == AccessPointStatus.OFFLINE);
 
         // Bring AP1 back UP
@@ -380,7 +363,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
             verifyAnticipated(POLLING_INTERVAL_DELTA + 2000);
 
             // Verify the state of the AP in the database
-            OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+            OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
             assertTrue(ap1.getStatus() == AccessPointStatus.OFFLINE);
         } finally {
             // Clear the timeout
@@ -417,14 +400,14 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         sleep(POLLING_INTERVAL_DELTA);
 
         // Verify the state of the APs in the database
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
-        LogUtils.debugf(this, ap1.getStatus().getLabel());
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
+        LOG.debug(ap1.getStatus().getLabel());
         assertTrue(ap1.getStatus() == AccessPointStatus.UNKNOWN);
 
-        OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        OnmsAccessPoint ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.UNKNOWN);
 
-        OnmsAccessPoint ap3 = m_accessPointDao.findByPhysAddr(AP3_MAC);
+        OnmsAccessPoint ap3 = m_accessPointDao.get(AP3_MAC);
         assertTrue(ap3.getStatus() == AccessPointStatus.UNKNOWN);
 
         // Anticipate the events
@@ -438,13 +421,13 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
         // Verify the state of the APs in the database
-        ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        ap1 = m_accessPointDao.get(AP1_MAC);
         assertTrue(ap1.getStatus() == AccessPointStatus.ONLINE);
 
-        ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.OFFLINE);
 
-        ap3 = m_accessPointDao.findByPhysAddr(AP3_MAC);
+        ap3 = m_accessPointDao.get(AP3_MAC);
         assertTrue(ap3.getStatus() == AccessPointStatus.UNKNOWN);
     }
 
@@ -493,11 +476,11 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         // Verify the events
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
         assertTrue(ap1.getStatus() == AccessPointStatus.ONLINE);
         assertEquals(InetAddressUtils.getInetAddress("10.1.1.2"), ap1.getControllerIpAddress());
 
-        OnmsAccessPoint ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        OnmsAccessPoint ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.ONLINE);
         assertEquals(InetAddressUtils.getInetAddress("10.1.2.2"), ap2.getControllerIpAddress());
 
@@ -517,11 +500,11 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
         // Verify the controller address in the database
-        ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        ap1 = m_accessPointDao.get(AP1_MAC);
         assertTrue(ap1.getStatus() == AccessPointStatus.ONLINE);
         assertEquals(InetAddressUtils.getInetAddress("10.1.2.2"), ap1.getControllerIpAddress());
 
-        ap2 = m_accessPointDao.findByPhysAddr(AP2_MAC);
+        ap2 = m_accessPointDao.get(AP2_MAC);
         assertTrue(ap2.getStatus() == AccessPointStatus.ONLINE);
         assertEquals(InetAddressUtils.getInetAddress("10.1.1.2"), ap2.getControllerIpAddress());
     }
@@ -601,7 +584,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
         verifyAnticipated(POLLING_INTERVAL_DELTA);
 
         // Delete AP1
-        OnmsAccessPoint ap1 = m_accessPointDao.findByPhysAddr(AP1_MAC);
+        OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
         m_accessPointDao.delete(ap1);
         m_accessPointDao.flush();
 
@@ -619,8 +602,8 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
 
     private void verifyAnticipated(long millis) {
         // Verify the AP UP/DOWN events
-        LogUtils.debugf(this, "Events we're still waiting for: " + m_anticipator.waitForAnticipated(millis));
-        LogUtils.debugf(this, "Unanticipated: ", m_anticipator.unanticipatedEvents());
+        LOG.debug("Events we're still waiting for: {}", m_anticipator.waitForAnticipated(millis));
+        LOG.debug("Unanticipated: {}", m_anticipator.unanticipatedEvents());
 
         assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
         sleep(200);

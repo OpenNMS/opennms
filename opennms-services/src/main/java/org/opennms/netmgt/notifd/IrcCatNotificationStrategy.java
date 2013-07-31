@@ -36,9 +36,10 @@ import java.util.List;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Send notifications to an IRCcat bot.
@@ -47,6 +48,9 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * @version $Id: $
  */
 public class IrcCatNotificationStrategy implements NotificationStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IrcCatNotificationStrategy.class);
+    
     /**
      * <p>Constructor for IrcCatNotificationStrategy.</p>
      */
@@ -63,7 +67,7 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
             stream.println(message);
             stream.close();
         } catch (Throwable e) {
-            log().error("send: Error sending IRCcat notification: " + e, e);
+            LOG.error("send: Error sending IRCcat notification", e);
             return 1;
         }
         return 0;
@@ -103,9 +107,5 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
         }
 
         return recipient + " " + message;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

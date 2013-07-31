@@ -40,10 +40,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.slf4j.MDC;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.MapsConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -57,12 +60,14 @@ import org.opennms.web.map.MapsConstants;
  * @since 1.8.1
  */
 public class ServerDataSource implements DataSourceInterface {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ServerDataSource.class);
+
 
 	private Map<?,?> params;
 	boolean initialized = false;
 	private Map<String, String> severityMapping = new HashMap<String, String>();
 
-	static ThreadCategory log;
 	
 	static final String STATUS_FIELD="ev_status";
 	static final String SEVERITY_FIELD="ev_severity";
@@ -85,17 +90,23 @@ public class ServerDataSource implements DataSourceInterface {
 	 * @param params a {@link java.util.Map} object.
 	 */
 	public ServerDataSource(Map<?,?> params){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
-		this.params = params;
-		init();
+	    this.params = params;
+	    Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                init();
+            }
+	        
+	    });
+		
 	}
 	
 	/**
 	 * Before invoking get() method, this method must be invoked.
 	 */
 	public void init(){
-		log.debug("Init...getting db connection");
+		LOG.debug("Init...getting db connection");
 	
 			try{
 				if(opennmsConn==null || opennmsConn.isClosed()){
@@ -107,13 +118,13 @@ public class ServerDataSource implements DataSourceInterface {
 				String password=(String)params.get("password");
 				//gets external connection 
 				if(externalConn==null || externalConn.isClosed()){
-					log.debug("getting external db connection with parameters url="+url+", driver="+driver+", user="+user+", password="+password);
+					LOG.debug("getting external db connection with parameters url={}, driver={}, user={}, password={}", url, driver, user, password);
 					SimpleDbConnectionFactory dbConnFactory = new SimpleDbConnectionFactory();
 					dbConnFactory.init(url,driver,user,password);
 					externalConn = dbConnFactory.getConnection();
 				}				
 			}catch(Throwable s){
-				log.error("Error while getting db Connection from Vault "+s);
+				LOG.error("Error while getting db Connection from Vault {}", s);
 				throw new RuntimeException(s);
 			}
 			
@@ -140,7 +151,7 @@ public class ServerDataSource implements DataSourceInterface {
 	 */
         @Override
 	protected void finalize() throws Throwable {
-		log.debug("Finalizing...closing db connections");
+		LOG.debug("Finalizing...closing db connections");
 		super.finalize();
 		if(opennmsConn!=null){
 			Vault.releaseDbConnection(opennmsConn);
@@ -160,7 +171,7 @@ public class ServerDataSource implements DataSourceInterface {
 		try {
 			if (!isInitialized()) init();
 		} catch (Throwable e) {
-			log.error("exiting: error found " + e);
+			LOG.error("exiting: error found {}", e);
 			return "-1";
 		}
 		
@@ -168,14 +179,14 @@ public class ServerDataSource implements DataSourceInterface {
 		Set<String> ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
 		if(ipAddrs.size()==0){
-			log.warn("No ip address found for node with id "+(Integer)id);
+			LOG.warn("No ip address found for node with id {}", (Integer)id);
 			return "-1";
 		}
 		// get the severity from external db
 		result = getSev(ipAddrs);
 		// if no severity is found...
 		if(result.equals("-1")){
-			log.warn("No severity found for element with id "+(Integer)id);
+			LOG.warn("No severity found for element with id {}", (Integer)id);
 		}
 		return result;
 	}
@@ -199,7 +210,7 @@ public class ServerDataSource implements DataSourceInterface {
 				rs.close();
 				ps.close();
 			} catch (SQLException e) {
-				log.error("Error while getting ipaddress by id "+e);
+				LOG.error("Error while getting ipaddress by id {}", e);
 			}
 		return ipAddrs;
 	}
@@ -216,7 +227,7 @@ public class ServerDataSource implements DataSourceInterface {
 			}
 		}
 		getDataQuery+=") and "+STATUS_FIELD+"!='"+CLOSED_STATUS+"'";
-		log.debug("get severity query is "+getDataQuery);
+		LOG.debug("get severity query is {}", getDataQuery);
 		String value=null;
 		try {
 			Statement stmt = externalConn.createStatement();
@@ -225,17 +236,17 @@ public class ServerDataSource implements DataSourceInterface {
 			
 			if(rs.next()){
 				value=rs.getString(1);
-				log.debug("found severity for ipaddresses "+ipAddrs+" with value "+value);
+				LOG.debug("found severity for ipaddresses {} with value {}", ipAddrs, value);
 			}
 			rs.close();
 			stmt.close();
 		} catch (SQLException e1) {
-			log.error("Exception while getting severity "+e1);
+			LOG.error("Exception while getting severity {}", e1);
 			return "-1";
 		}
 		
 		String sevLabel = (String)severityMapping.get(value);
-		log.debug("Getting severity mapping for key="+value+": sevLabel="+sevLabel);
+		LOG.debug("Getting severity mapping for key={}: sevLabel={}", value, sevLabel);
 		
 		return sevLabel;
 	}
@@ -250,7 +261,7 @@ public class ServerDataSource implements DataSourceInterface {
 		try {
 			if (!isInitialized()) init();
 		} catch (Throwable e) {
-			log.error("exiting: error found " + e);
+			LOG.error("exiting: error found {}", e);
 			return result;
 		}
 		
@@ -258,14 +269,14 @@ public class ServerDataSource implements DataSourceInterface {
 		Set<String> ipAddrs = getIpAddrById(id);
 		//If there is no ipaddress for the nodeid
 		if(ipAddrs.size()==0){
-			log.warn("No ip address found for node with id "+(Integer)id);
+			LOG.warn("No ip address found for node with id {}", (Integer)id);
 			return result;
 		}
 		// get the severity from external db
 		result = getSt(ipAddrs);
 		// if no severity is found...
 		if(result.equals("-1")){
-			log.warn("No severity found for element with id "+(Integer)id);
+			LOG.warn("No severity found for element with id {}", (Integer)id);
 		}
 		return result;
 
@@ -296,7 +307,7 @@ public class ServerDataSource implements DataSourceInterface {
 		innerQuery+=") and "+STATUS_FIELD+"!='"+CLOSED_STATUS+"'";
 		getDataQuery+=" and "+SEVERITY_FIELD+"=("+innerQuery+")" ;
 		
-		log.debug("get status query is "+getDataQuery);
+		LOG.debug("get status query is {}", getDataQuery);
 		String value=null;
 		try {
 			Statement stmt = externalConn.createStatement();
@@ -305,12 +316,12 @@ public class ServerDataSource implements DataSourceInterface {
 			
 			if(rs.next()){
 				value=rs.getString(1);
-				log.debug("found status for ipaddresses "+ipAddrs+" with value "+value);
+				LOG.debug("found status for ipaddresses {} with value {}", ipAddrs, value);
 			}
 			rs.close();
 			stmt.close();
 		} catch (SQLException e1) {
-			log.error("Exception while getting status "+e1);
+			LOG.error("Exception while getting status {}", e1);
 			return "-1";
 		}
 		

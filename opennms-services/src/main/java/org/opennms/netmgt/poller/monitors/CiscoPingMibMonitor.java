@@ -36,15 +36,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -75,6 +75,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 // so it is not distributable
 @Distributable(DistributionContext.DAEMON)
 public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(CiscoPingMibMonitor.class);
 	
     @SuppressWarnings("unused")
 	private static final class CiscoPingEntry {
@@ -367,7 +368,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         try {
             SnmpPeerFactory.init();
         } catch (final Throwable ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
+		LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -416,7 +417,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         try {
         	pingProtocol = determineAddrType(targetIpAddr);
         } catch (RuntimeException e) {
-        	return logDown(Level.ERROR, "Unknown address type - neither IPv4 nor IPv6", e);
+        	LOG.debug("Unknown address type - neither IPv4 nor IPv6", e);
+            return PollStatus.unavailable("Unknown address type - neither IPv4 nor IPv6");
         }
 
         // Get configuration parameters into a CiscoPingEntry object
@@ -442,13 +444,16 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         // Determine the node to use as our IOS ping proxy
         //
         InetAddress proxyIpAddr = determineProxyAddress(parameters, svc);
-        if (proxyIpAddr == null) return logDown(Level.ERROR, "Unable to determine proxy address for this service");
+        if (proxyIpAddr == null) {
+            LOG.debug("Unable to determine proxy address for this service");
+            return PollStatus.unavailable("Unable to determine proxy address for this service");
+        }
         
         // Retrieve the *proxy* interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(proxyIpAddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for proxy-ping interface " + proxyIpAddr);
-        LogUtils.debugf("poll: setting SNMP peer attribute for interface %s", proxyIpAddr.getHostAddress());
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", proxyIpAddr.getHostAddress());
 
         // set timeout and retries on SNMP peer object
         //
@@ -456,8 +461,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        LogUtils.debugf(getClass(), "Setting up CISCO-PING-MIB proxy poll for service %s on interface %s -- %s", 
-        							 svc.getSvcName(), targetIpAddr, pingEntry);
+        LOG.debug("Setting up CISCO-PING-MIB proxy poll for service {} on interface {} -- {}", svc.getSvcName(), targetIpAddr, pingEntry);
 
         PollStatus serviceStatus = null;
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -465,7 +469,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         // Send the SET-REQUEST PDU to create the ciscoPingEntry in createAndGo mode
         SnmpValue[] setResult = SnmpUtils.set(agentConfig, pingEntry.generateCreateOids(), pingEntry.generateCreateValues());
         if (setResult == null) {
-        	LogUtils.warnf(getClass(), "SNMP SET operation unsuccessful for proxy-ping entry for target %s -- %s", targetIpAddr, pingEntry);
+		LOG.warn("SNMP SET operation unsuccessful for proxy-ping entry for target {} -- {}", targetIpAddr, pingEntry);
         	return PollStatus.unknown("SNMP SET failed for ciscoPingTable entry on proxy interface " + proxyIpAddr + " with instance ID " + pingEntry.getCiscoPingSerialNumber());
         }
         
@@ -484,21 +488,21 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 
         // If we didn't get the results back, mark the service as unknown
         if (statusValues == null || (statusValues.length == 1 && statusValues[0] == null)) {
-        	LogUtils.warnf(getClass(), "SNMP GET operation unsuccessful for proxy-ping entry for target %s -- %s", targetIpAddr, pingEntry);
+		LOG.warn("SNMP GET operation unsuccessful for proxy-ping entry for target {} -- {}", targetIpAddr, pingEntry);
         	return PollStatus.unknown("SNMP GET failed for ciscoPingTable entry on proxy interface " + proxyIpAddr + " with instance ID " + pingEntry.getCiscoPingSerialNumber());
         }
         
         // If we got results back but they do not contain the pingCompleted column is missing,
         // mark the service unknown
         if (statusValues.length < 6) {
-        	LogUtils.warnf(getClass(), "Proxy-ping entry did not indicate whether ping completed after retries exhausted for target %s -- %s", targetIpAddr, pingEntry);
+		LOG.warn("Proxy-ping entry did not indicate whether ping completed after retries exhausted for target {} -- {}", targetIpAddr, pingEntry);
         	return PollStatus.unknown("ciscoPingTable entry is missing pingCompleted column on proxy interface " + proxyIpAddr + " with instance ID " + pingEntry.getCiscoPingSerialNumber());        	        	
         }
         
         // If we got the results back but they indicate that the ping still has not completed,
         // mark the service unknown
         if (statusValues[5].toInt() != 1) {
-        	LogUtils.warnf(getClass(), "Proxy-ping entry marked not completed after retries exhausted for target %s -- %s", targetIpAddr, pingEntry);
+		LOG.warn("Proxy-ping entry marked not completed after retries exhausted for target {} -- {}", targetIpAddr, pingEntry);
         	return PollStatus.unknown("ciscoPingTable entry marked not completed on proxy interface " + proxyIpAddr + " with instance ID " + pingEntry.getCiscoPingSerialNumber());        	
         }
         
@@ -508,11 +512,11 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         double receivedPings = statusValues[1].toInt();
         double successPct = receivedPings / sentPings * 100;
         if (receivedPings == 0) {
-        	LogUtils.infof(getClass(), "Proxy-ping entry indicates no pings succeeded for target %s -- %s", targetIpAddr, pingEntry);
+		LOG.info("Proxy-ping entry indicates no pings succeeded for target {} -- {}", targetIpAddr, pingEntry);
         	cleanupCurrentEntry(pingEntry, proxyIpAddr, agentConfig);
         	return PollStatus.unavailable("All remote pings (" + sentPings + " of " + sentPings + ") failed");
         } else if (successPct < minSuccessPercent) {
-        	LogUtils.infof(getClass(), "Proxy-ping entry indicates %f%% success, which misses the success-percent target of %d%% for target %s -- %s", successPct, minSuccessPercent, targetIpAddr, pingEntry);
+		LOG.info("Proxy-ping entry indicates {}% success, which misses the success-percent target of {}% for target {} -- {}", successPct, minSuccessPercent, targetIpAddr, pingEntry);
         	cleanupCurrentEntry(pingEntry, proxyIpAddr, agentConfig);
         	return PollStatus.unavailable(successPct + " percent (" + receivedPings + "/" + sentPings+ ") pings succeeded, less than target " + minSuccessPercent + " percent");
         }
@@ -522,7 +526,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         double minRtt = statusValues[2].toInt();
         double avgRtt = statusValues[3].toInt();
         double maxRtt = statusValues[4].toInt();
-        LogUtils.debugf(getClass(), "Logging successful poll: sent=%f, received=%f, minRtt=%f, avgRtt=%f, maxRtt=%f for proxy-ping of target %s -- %s", sentPings, receivedPings, minRtt, avgRtt, maxRtt, targetIpAddr, pingEntry);
+        LOG.debug("Logging successful poll: sent={}, received={}, minRtt={}, avgRtt={}, maxRtt={} for proxy-ping of target {} -- {}", sentPings, receivedPings, minRtt, avgRtt, maxRtt, targetIpAddr, pingEntry);
         pingProps.put("sent", sentPings);
         pingProps.put("received", receivedPings);
         pingProps.put("minRtt", minRtt);
@@ -543,8 +547,8 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 	private void cleanupCurrentEntry(CiscoPingEntry pingEntry, InetAddress proxyIpAddr, SnmpAgentConfig agentConfig) {
         pingEntry.setCiscoPingEntryStatus(ROWSTATUS_DESTROY);
         SnmpValue[] destroyValues = SnmpUtils.set(agentConfig, pingEntry.generateRowStatusOids(), pingEntry.generateRowStatusValues());
-        if (destroyValues == null) LogUtils.warnf(getClass(), "SNMP SET failed to delete just-used ciscoPingEntry on proxy interface %s with instance ID %d", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
-        if (destroyValues[0].toInt() != ROWSTATUS_DESTROY) LogUtils.warnf(getClass(), "SNMP SET to delete just-used ciscoPingEntry indicated row not deleted on proxy interface %s with instance ID %d", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());		
+        if (destroyValues == null) LOG.warn("SNMP SET failed to delete just-used ciscoPingEntry on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
+        if (destroyValues[0].toInt() != ROWSTATUS_DESTROY) LOG.warn("SNMP SET to delete just-used ciscoPingEntry indicated row not deleted on proxy interface {} with instance ID {}", proxyIpAddr, pingEntry.getCiscoPingSerialNumber());
 	}
 
 	private InetAddress determineTargetAddress(MonitoredService svc, Map<String, Object> parameters) {
@@ -552,23 +556,23 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		String overrideTarget = rawOverrideTarget;
 		if (rawOverrideTarget != null) {
 			overrideTarget = PropertiesUtils.substitute(rawOverrideTarget, getServiceProperties(svc));
-			LogUtils.debugf(getClass(), "Expanded value '%s' of parameter %s to '%s' for service %s on interface %s", rawOverrideTarget, PARM_TARGET_IP_ADDR, overrideTarget, svc.getSvcName(), svc.getAddress());
+			LOG.debug("Expanded value '{}' of parameter {} to '{}' for service {} on interface {}", rawOverrideTarget, PARM_TARGET_IP_ADDR, overrideTarget, svc.getSvcName(), svc.getAddress());
 		}
 		
 		if (overrideTarget == null) return svc.getAddress();
-		LogUtils.debugf(getClass(), "Using user-specified override target IP address %s instead of service address %s for service %s", overrideTarget, svc.getAddress(), svc.getSvcName());
+		LOG.debug("Using user-specified override target IP address {} instead of service address {} for service {}", overrideTarget, svc.getAddress(), svc.getSvcName());
 		try {
 			final InetAddress overrideAddr = InetAddressUtils.addr(overrideTarget);
-			LogUtils.debugf(getClass(), "Overriding service address (%s) with user-specified target address (%s) for service %s", svc.getAddress(), overrideAddr, svc.getSvcName());
+			LOG.debug("Overriding service address ({}) with user-specified target address ({}) for service {}", svc.getAddress(), overrideAddr, svc.getSvcName());
 			return overrideAddr;
 		} catch (final IllegalArgumentException e) {
-			LogUtils.warnf(getClass(), "Failed to look up %s override value %s for service %s. Using service interface %s instead", PARM_TARGET_IP_ADDR, overrideTarget, svc.getSvcName(), svc.getAddress());
+			LOG.warn("Failed to look up {} override value {} for service {}. Using service interface {} instead", PARM_TARGET_IP_ADDR, overrideTarget, svc.getSvcName(), svc.getAddress());
 		}
 		return svc.getAddress();
 	}
 
 	private InetAddress determineProxyAddress(Map<String, Object> parameters, MonitoredService svc) {
-		LogUtils.debugf(getClass(), "Determining the proxy address on which to set up the ciscoPingEntry for target interface %s", svc.getAddress());
+		LOG.debug("Determining the proxy address on which to set up the ciscoPingEntry for target interface {}", svc.getAddress());
 		OnmsNode proxyNode = null;
 		InetAddress proxyAddress = null;
 		String proxyNodeId = ParameterMap.getKeyedString(parameters, PARM_PROXY_NODE_ID, null);
@@ -579,57 +583,57 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		String proxyIpAddr = rawProxyIpAddr;
 		if (rawProxyIpAddr != null) {
 			proxyIpAddr = PropertiesUtils.substitute(rawProxyIpAddr, getServiceProperties(svc));
-			LogUtils.debugf(getClass(), "Expanded value '%s' of parameter %s to '%s' for service %s on interface %s", rawProxyIpAddr, PARM_PROXY_IP_ADDR, proxyIpAddr, svc.getSvcName(), svc.getAddress());
+			LOG.debug("Expanded value '{}' of parameter {} to '{}' for service {} on interface {}", rawProxyIpAddr, PARM_PROXY_IP_ADDR, proxyIpAddr, svc.getSvcName(), svc.getAddress());
 		}
 		
 		/* If we have a foreign-source and foreign-id, short circuit to use that */
 		if (proxyNodeFS != null && !proxyNodeFS.equals("") && proxyNodeFI != null && !proxyNodeFI.equals("")) {
-			LogUtils.debugf(getClass(), "Trying to look up proxy node with foreign-source %s, foreign-id %s for target interface %s", proxyNodeFS, proxyNodeFI, svc.getAddress());
+			LOG.debug("Trying to look up proxy node with foreign-source {}, foreign-id {} for target interface {}", proxyNodeFS, proxyNodeFI, svc.getAddress());
 			proxyNode = s_nodeDao.findByForeignId(proxyNodeFS, proxyNodeFI);
-			LogUtils.debugf(getClass(), "Found a node via foreign-source / foreign-id '%s'/'%s' to use as proxy", proxyNodeFS, proxyNodeFI);
+			LOG.debug("Found a node via foreign-source / foreign-id '{}'/'{}' to use as proxy", proxyNodeFS, proxyNodeFI);
 			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
 		}
 		if (proxyAddress != null) {
-			LogUtils.infof(getClass(), "Using address %s from node '%s':'%s' as proxy for service '%s' on interface %s", proxyAddress, proxyNodeFS, proxyNodeFI, svc.getSvcName(), svc.getIpAddr());
+			LOG.info("Using address {} from node '{}':'{}' as proxy for service '{}' on interface {}", proxyAddress, proxyNodeFS, proxyNodeFI, svc.getSvcName(), svc.getIpAddr());
 			return proxyAddress;
 		}
 		
 		/* No match with foreign-source / foreign-id?  Try with a node ID */
 		if (proxyNodeId != null && Integer.valueOf(proxyNodeId) != null) {
-			LogUtils.debugf(getClass(), "Trying to look up proxy node with database ID %d for target interface %s", proxyNodeId, svc.getAddress());
+			LOG.debug("Trying to look up proxy node with database ID {} for target interface {}", proxyNodeId, svc.getAddress());
 			proxyNode = s_nodeDao.get(Integer.valueOf(proxyNodeId));
 			if (proxyNode != null && proxyNode.getPrimaryInterface() != null) proxyAddress = proxyNode.getPrimaryInterface().getIpAddress();
 		}
 		if (proxyAddress != null) {
-			LogUtils.infof(getClass(), "Using address %s from node with DBID %s as proxy for service '%s' on interface %s", proxyAddress, proxyNodeId, svc.getSvcName(), svc.getIpAddr());
+			LOG.info("Using address {} from node with DBID {} as proxy for service '{}' on interface {}", proxyAddress, proxyNodeId, svc.getSvcName(), svc.getIpAddr());
 			return proxyAddress;
 		}
 		
 		/* No match with any node criteria?  Try for a plain old IP address. */
-		LogUtils.infof(getClass(), "Trying to use address %s as proxy-ping agent address for target interface %s", proxyIpAddr, svc.getAddress());
+		LOG.info("Trying to use address {} as proxy-ping agent address for target interface {}", proxyIpAddr, svc.getAddress());
 		try {
 			if (!"".equals(proxyIpAddr)) {
 				proxyAddress = InetAddressUtils.addr(proxyIpAddr);
 			}
 		} catch (final IllegalArgumentException e) {}
 		if (proxyAddress != null) {
-			LogUtils.infof(getClass(), "Using address %s (user-specified) as proxy for service '%s' on interface %s", proxyAddress, svc.getSvcName(), svc.getIpAddr());
+			LOG.info("Using address {} (user-specified) as proxy for service '{}' on interface {}", proxyAddress, svc.getSvcName(), svc.getIpAddr());
 			return proxyAddress;
 		}
 		
-		LogUtils.errorf(getClass(), "Unable to determine proxy address for service '%s' on interface '%s'. The poll will be unable to proceed.", svc.getSvcName(), svc.getIpAddr());
+		LOG.error("Unable to determine proxy address for service '{}' on interface '{}'. The poll will be unable to proceed.", svc.getSvcName(), svc.getIpAddr());
 		return null;
 	}
 
 	private int determineAddrType(InetAddress ipaddr) {
 		if (ipaddr instanceof Inet6Address) {
-			LogUtils.debugf(getClass(), "The address %s is IPv6", ipaddr);
+			LOG.debug("The address {} is IPv6", ipaddr);
 			return PING_PROTOCOL_IPV6;
 		} else if (ipaddr instanceof Inet4Address) {
-			LogUtils.debugf(getClass(), "The address %s is IPv4", ipaddr);
+			LOG.debug("The address {} is IPv4", ipaddr);
 			return PING_PROTOCOL_IPV4;
 		}
-		LogUtils.errorf(getClass(), "The address %s is neither IPv4 nor IPv6. Don't know how to proceed, giving up.", ipaddr);
+		LOG.error("The address {} is neither IPv4 nor IPv6. Don't know how to proceed, giving up.", ipaddr);
 		throw new RuntimeException("Cannot work with address " + ipaddr + " because it is neither IPv4 nor IPv6.");
 	}
 	

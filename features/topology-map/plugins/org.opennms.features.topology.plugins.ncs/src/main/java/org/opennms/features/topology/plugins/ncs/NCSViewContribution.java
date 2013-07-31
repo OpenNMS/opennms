@@ -19,7 +19,8 @@ import org.osgi.framework.ServiceListener;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 
@@ -40,13 +41,12 @@ public class NCSViewContribution implements IViewContribution {
 		final Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
-		tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
+		tree.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		tree.setItemCaptionPropertyId("name");
-		tree.addListener(new ValueChangeListener() {
+		tree.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -7443836886894714291L;
 			
-
-
-            @Override
 			public void valueChange(ValueChangeEvent event) {
 				Collection<Long> selectedIds = new HashSet<Long>( (Collection<Long>) event.getProperty().getValue() );
 				

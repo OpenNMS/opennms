@@ -132,7 +132,6 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         } catch (final IOException e) {
             throw new PermissionDeniedDataAccessException("Unable to write file "+importFile, e);
         }
-        group.updateDateStamp();
         CastorUtils.marshalWithTranslatedExceptions(group, writer);
     }
 

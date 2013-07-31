@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>snmp-test-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS SNMP Test Dependencies</name>
+  <name>OpenNMS Dependencies SNMP Test</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use SNMP

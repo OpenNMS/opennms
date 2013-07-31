@@ -30,9 +30,9 @@ package org.openoss.opennms.spring.dao;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.openoss.opennms.spring.qosd.QoSD;
@@ -56,21 +56,21 @@ public interface OssDao {
 	/**
 	 * Used by Spring Application context to pass in {@link AssetRecordDao}.
 	 *
-	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+	 * @param ar a {@link org.opennms.netmgt.dao.api.AssetRecordDao} object.
 	 */
 	void setAssetRecordDao(AssetRecordDao ar);
 
 	/**
 	 * Used by Spring Application context to pass in {@link NodeDao}.
 	 *
-	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 * @param nodedao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
 	 */
 	void setNodeDao(NodeDao nodedao);
 
 	/**
 	 * Used by Spring Application context to pass in {@link AlarmDao}.
 	 *
-	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.api.AlarmDao} object.
 	 */
 	void setAlarmDao(AlarmDao alarmDao);
 

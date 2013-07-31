@@ -35,14 +35,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.surveillanceViews.Category;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
 import org.opennms.netmgt.config.surveillanceViews.RowDef;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.api.Util;
@@ -51,6 +50,8 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
@@ -63,6 +64,9 @@ import org.springframework.util.StringUtils;
  * @since 1.8.1
  */
 public class DefaultSurveillanceService implements SurveillanceService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultSurveillanceService.class);
+
 
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
@@ -352,7 +356,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             	final SurveillanceStatus survStatus = cellStatus[rowIndex][colIndex];
 
                 final String text = survStatus.getDownEntityCount()+" of "+survStatus.getTotalEntityCount();
-				LogUtils.debugf(this, "Text: %s, Style %s", text, survStatus.getStatus());
+				LOG.debug("Text: {}, Style {}", text, survStatus.getStatus());
 				final SimpleWebTable.Cell cell = webTable.addCell(text, survStatus.getStatus());
 
                 if (survStatus.getDownEntityCount() > 0) {
@@ -392,13 +396,13 @@ public class DefaultSurveillanceService implements SurveillanceService {
     	try {
     		columns = view.getCategoriesForColumn(colIndex); 
     	} catch (final ObjectRetrievalFailureException e) {
-    		LogUtils.warnf(this, "An error occurred while getting categories for view %s, column %d", view, colIndex);
+    		LOG.warn("An error occurred while getting categories for view {}, column {}", view, colIndex);
     	}
 
     	try {
     		rows = view.getCategoriesForRow(rowIndex);
     	} catch (final ObjectRetrievalFailureException e) {
-    		LogUtils.warnf(this, "An error occurred while getting categories for view %s, row %d", view, rowIndex);
+    		LOG.warn("An error occurred while getting categories for view {}, row {}", view, rowIndex);
     	}
 
     	final List<String> params = new ArrayList<String>(columns.size() + rows.size());
@@ -415,7 +419,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -424,7 +428,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -433,7 +437,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -442,7 +446,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(final CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
@@ -451,7 +455,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>getSurveillanceConfigDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public SurveillanceViewConfigDao getSurveillanceConfigDao() {
         return m_surveillanceConfigDao;
@@ -460,7 +464,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>setSurveillanceConfigDao</p>
      *
-     * @param surveillanceConfigDao a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     * @param surveillanceConfigDao a {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} object.
      */
     public void setSurveillanceConfigDao(final SurveillanceViewConfigDao surveillanceConfigDao) {
         m_surveillanceConfigDao = surveillanceConfigDao;

@@ -33,7 +33,6 @@
             <manifest>
               <mainClass>org.opennms.install.Installer</mainClass>
               <packageName>org.opennms.install</packageName>
-              <addClasspath>true</addClasspath>
             </manifest>
           </archive>
         </configuration>

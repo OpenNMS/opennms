@@ -36,13 +36,15 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.Resource;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class XmlSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    private static final Logger LOG = LoggerFactory.getLogger(XmlSystemReportFormatter.class);
     private TransformerHandler m_handler = null;
 
     @Override
@@ -83,7 +85,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
                 serializer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "entry");
                 m_handler.setResult(streamResult);
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unable to create XML stream writer.");
+                LOG.error("Unable to create XML stream writer.", e);
                 m_handler = null;
             }
 
@@ -91,13 +93,13 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
                 m_handler.startDocument();
                 m_handler.startElement("", "", "systemReportPlugins", null);
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "Unable to start document.");
+                LOG.warn("Unable to start document.", e);
                 m_handler = null;
             }
         }
 
         if (m_handler == null) {
-            LogUtils.warnf(this, "Unable to write, no handler defined!");
+            LOG.warn("Unable to write, no handler defined!");
             return;
         }
         try {
@@ -128,7 +130,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
             }
             m_handler.endElement("", "", "plugin");
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "An error occurred while attempting to write XML data.");
+            LOG.warn("An error occurred while attempting to write XML data.", e);
         }
     }
     
@@ -139,7 +141,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
                 m_handler.endElement("", "", "systemReportPlugins");
                 m_handler.endDocument();
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "Unable to end document.");
+                LOG.warn("Unable to end document.", e);
             }
         }
     }

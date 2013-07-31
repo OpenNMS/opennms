@@ -52,7 +52,7 @@ public class AsteriskGateway extends AbstractServiceDaemon {
      * <p>Constructor for AsteriskGateway.</p>
      */
     protected AsteriskGateway() {
-        super("OpenNMS.AsteriskGateway");
+        super("asterisk-gateway");
     }
 
     /** {@inheritDoc} */

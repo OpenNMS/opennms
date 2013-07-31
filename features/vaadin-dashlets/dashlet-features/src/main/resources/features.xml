@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>
+
+    <feature name="dashlet-alarms" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${pom.version}</bundle>
+    </feature>
+    <feature name="dashlet-summary" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${pom.version}</bundle>
+    </feature>
+    <feature name="dashlet-map" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-map/${pom.version}</bundle>
+    </feature>
+    <feature name="dashlet-image" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${pom.version}</bundle>
+    </feature>
+    <feature name="dashlet-charts" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
+    </feature>
+
+</features>

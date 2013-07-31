@@ -40,7 +40,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -58,6 +59,7 @@ import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
  * @version $Id: $
  */
 public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,String> {
+    private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpRrdStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue = new LinkedBlockingQueue<PerformanceDataReading>(50000);
     private final ConsumerThread m_consumerThread;
@@ -109,9 +111,9 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
                     }
                 }
             } catch (InterruptedException e) {
-                ThreadCategory.getInstance(this.getClass()).warn("InterruptedException caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread");
+                LOG.warn("InterruptedException caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread");
             } catch (Throwable e) {
-                ThreadCategory.getInstance(this.getClass()).fatal("Unexpected exception caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread", e);
+                LOG.error("Unexpected exception caught in QueuingTcpRrdStrategy$ConsumerThread, closing thread", e);
             }
         }
     }
@@ -172,7 +174,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     public void updateFile(String fileName, String owner, String data) throws Exception {
         if (m_queue.offer(new PerformanceDataReading(fileName, owner, data), 500, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
-                ThreadCategory.getInstance().warn("Skipped " + m_skippedReadings + " performance data message(s) because of queue overflow");
+                LOG.warn("Skipped {} performance data message(s) because of queue overflow", m_skippedReadings);
                 m_skippedReadings = 0;
             }
         } else {

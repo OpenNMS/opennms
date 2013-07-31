@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jaxb-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS JAXB Dependencies</name>
+  <name>OpenNMS Dependencies JAXB</name>
   <properties>
     <!-- this has been moved to master pom so the version can be used in the karaf system exports -->
     <fastInfosetVersion>1.2.2</fastInfosetVersion>

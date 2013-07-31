@@ -1,33 +1,41 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
-					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
-					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+xsi:schemaLocation="
+	http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
 
-    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
-    <reference id="assetDao" interface="org.opennms.netmgt.dao.AssetRecordDao" availability="mandatory" />
-    <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
-    <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
-    <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+	<reference id="assetDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
+	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+	<reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 
-	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory">
-       <property name="nodeDao" ref="nodeDao" />
-       <property name="assetDao" ref="assetDao" />
-       <property name="alarmDao" ref="alarmDao" />
-       <property name="geocoderService" ref="geocoderService" />
-       <property name="transactionOperations" ref="transactionTemplate" />
-       <property name="headerProvider" ref="onmsHeaderProvider" />
+
+    <bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype" init-method="init">
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="assetRecordDao" ref="assetDao" />
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="geocoderService" ref="geocoderService" />
+        <property name="transactionOperations" ref="transactionTemplate" />
+    </bean>
+
+	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
+		<property name="headerProvider" ref="onmsHeaderProvider" />
+        <property name="mapWidgetComponent" ref="mapWidget" />
+	</bean>
+
+	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory" >
+		<!-- Blueprint container bean -->
+		<argument ref="blueprintContainer"/>
+		<!-- Bean id of the Vaadin application prototype -->
+		<argument value="nodeMapsApplication"/>
 	</bean>
 
 	<service id="nodeMapsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="nodeMapsApplicationFactory">
 		<service-properties>
 			<entry key="alias" value="/node-maps" />
-            <entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset"/>
+			<entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset"/>
 		</service-properties>
 	</service>
 

@@ -34,14 +34,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AliasBuilder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AliasBuilder.class);
+	
     final Map<String, Alias> m_aliases = new HashMap<String, Alias>();
 
     public AliasBuilder alias(final String associationPath, final String alias, final JoinType type) {
         if (m_aliases.containsKey(alias)) {
-            LogUtils.debugf(this, "alias '%s' already associated with associationPath '%s', skipping.", alias, associationPath);
+        	LOG.debug("alias '{}' already associated with associationPath '{}', skipping.", alias, associationPath);
         } else {
             m_aliases.put(alias, new Alias(associationPath, alias, type));
         }

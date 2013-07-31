@@ -28,13 +28,17 @@
 
 package org.opennms.core.xml;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 public class SimpleNamespaceFilter extends XMLFilterImpl {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SimpleNamespaceFilter.class);
+	
     private String m_namespaceUri;
     private boolean m_addNamespace = false;
     private boolean m_addedNamespace = false;
@@ -42,7 +46,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     public SimpleNamespaceFilter(final String namespaceUri, final boolean addNamespace) {
         super();
 
-        LogUtils.debugf(this, "SimpleNamespaceFilter initalized with namespace %s (%s)", namespaceUri, Boolean.valueOf(addNamespace));
+        LOG.debug("SimpleNamespaceFilter initalized with namespace {} ({})", namespaceUri, Boolean.valueOf(addNamespace));
         if (addNamespace) {
             this.m_namespaceUri = namespaceUri.intern();
         } else { 
@@ -61,7 +65,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
     	if (m_addNamespace) {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, m_namespaceUri, localName, qName, attributes);
+    		LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, m_namespaceUri, localName, qName, attributes);
 
         	final String type = attributes.getValue("http://www.w3.org/2001/XMLSchema-instance", "type");
 
@@ -79,7 +83,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
             	super.startElement(m_namespaceUri, localName, qName, attributes);
         	}
     	}  else {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, uri, localName, qName, attributes);
+    		LOG.trace("start: uri = {}, new uri = {}, localName = {}, qName = {}, attributes = {}", uri, uri, localName, qName, attributes);
     		super.startElement(uri, localName, qName, attributes);
     	}
     }
@@ -87,17 +91,17 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     @Override
     public void endElement(final String uri, final String localName, final String qName) throws SAXException {
     	if(m_addNamespace) {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, m_namespaceUri, localName, qName);
+    		LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, m_namespaceUri, localName, qName);
     		super.endElement(m_namespaceUri, localName, qName);
     	} else {
-        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, uri, localName, qName);
+    		LOG.trace("end:   uri = {}, new uri = {}, localName = {}, qName = {}", uri, uri, localName, qName);
     		super.endElement(uri, localName, qName);
     	}
     }
 
     @Override
     public void startPrefixMapping(final String prefix, final String url) throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startPrefixMapping: prefix = %s, url = %s", prefix, url);
+    	LOG.trace("startPrefixMapping: prefix = {}, url = {}", prefix, url);
         if (m_addNamespace) {
             this.startControlledPrefixMapping();
         } else {
@@ -107,7 +111,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     }
 
     private void startControlledPrefixMapping() throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startControlledPrefixMapping");
+    	LOG.trace("startControlledPrefixMapping");
         if (m_addNamespace && !m_addedNamespace) {
             //We should add namespace since it is set and has not yet been done.
             super.startPrefixMapping("".intern(), m_namespaceUri);

@@ -41,13 +41,15 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;
@@ -143,7 +145,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         TabSheet tabsheet = event.getTabSheet();
         Tab tab = tabsheet.getTab(tabsheet.getSelectedTab());
         if (tab != null) {
-            getWindow().showNotification("Selected tab: " + tab.getCaption());
+            Notification.show("Selected tab: " + tab.getCaption());
         }
     }    
 
@@ -187,7 +189,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to override the existig file?<br/>All current information will be lost.",
@@ -204,7 +206,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             });
         } else {
             if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
-                getApplication().getMainWindow().showNotification("There is a group with the same name, please pick another one.");
+                Notification.show("There is a group with the same name, please pick another one.");
             } else {
                 saveFile(file, dcGroup, logger);
             }

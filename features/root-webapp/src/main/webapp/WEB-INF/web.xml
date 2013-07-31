@@ -12,4 +12,8 @@
   </jsp-config>
 		 
   <display-name>OpenNMS ROOT</display-name>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/pagenotfound.jsp</location>
+  </error-page>
 </web-app>

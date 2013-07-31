@@ -38,7 +38,8 @@ import java.util.List;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a thread for launching and executing actions as they
@@ -54,6 +55,7 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 final class Executor implements Runnable, PausableFiber {
+    private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
     /**
      * The input queue of runnable commands.
      */
@@ -191,7 +193,6 @@ final class Executor implements Runnable, PausableFiber {
                 waitPeriod = 15000;
             }
 
-            ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
             // Begin the checking process.
             //
@@ -210,9 +211,7 @@ final class Executor implements Runnable, PausableFiber {
                         try {
                             int rc = dp.getProcess().exitValue();
 
-                            if (log.isDebugEnabled()) {
-                                log.debug("Process " + dp + " completed, rc = " + rc);
-                            }
+                            LOG.debug("Process {} completed, rc = {}", rc, dp);
 
                             i.remove();
                             continue;
@@ -220,8 +219,8 @@ final class Executor implements Runnable, PausableFiber {
                         } // still running
 
                         if (dp.getRunTime() > m_maxWait) {
-                            if (log.isInfoEnabled())
-                                log.info("Process " + dp + " did not complete in the alloted time, terminating.");
+
+                            LOG.info("Process {} did not complete in the alloted time, terminating.", dp);
 
                             dp.getProcess().destroy();
                             i.remove();
@@ -278,7 +277,6 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     private static String[] getExecArguments(String cmd) {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         // make sure we get rid of excess white space.
         //
@@ -309,9 +307,7 @@ final class Executor implements Runnable, PausableFiber {
             } else if (chars[x] == ' ') {
                 String arg = buf.toString().trim();
 
-                if (log.isDebugEnabled()) {
-                    log.debug("getExecArgument: adding argument: " + arg);
-                }
+                LOG.debug("getExecArgument: adding argument: {}", arg);
 
                 args.add(arg);
                 buf.delete(0, buf.length());
@@ -371,7 +367,6 @@ final class Executor implements Runnable, PausableFiber {
      */
     @Override
     public void run() {
-        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;
@@ -408,8 +403,8 @@ final class Executor implements Runnable, PausableFiber {
             // processes. Block until we can.
             //
             if (m_maxProcCount == m_processes.size()) {
-                if (log.isDebugEnabled())
-                    log.debug("Number of processes at " + m_maxProcCount + " - being wait for a process to finish or be reaped!");
+
+                LOG.debug("Number of processes at {} - being wait for a process to finish or be reaped!", m_maxProcCount);
 
                 synchronized (m_reaperRun) {
                     m_reaperRun.notifyAll();
@@ -435,21 +430,19 @@ final class Executor implements Runnable, PausableFiber {
             } catch (InterruptedException ex) {
                 break;
             } catch (FifoQueueException ex) {
-                log.warn("The input execution queue has errors, exiting...", ex);
+                LOG.warn("The input execution queue has errors, exiting...", ex);
                 break;
             }
 
             // start a new process
             //
-            if (log.isDebugEnabled()) {
-                log.debug("Parsing cmd args: " + cmd);
-            }
+            LOG.debug("Parsing cmd args: {}", cmd);
 
             String[] execArgs = getExecArguments(cmd);
             if (execArgs != null && execArgs.length > 0) {
                 try {
-                    if (log.isDebugEnabled())
-                        log.debug("Getting ready to execute \'" + cmd + "\'");
+
+                    LOG.debug("Getting ready to execute \'{}\'", cmd);
 
                     Process px = Runtime.getRuntime().exec(execArgs);
                     // Added by Nick Wesselman to attempt to workaround
@@ -462,9 +455,9 @@ final class Executor implements Runnable, PausableFiber {
                     }
                     m_processes.add(new DatedProc(cmd, px));
                 } catch (IOException ex) {
-                    log.warn("Failed to execute command: " + cmd, ex);
+                    LOG.warn("Failed to execute command: {}", cmd, ex);
                 } catch (SecurityException ex) {
-                    log.warn("Application not authorized to exec commands!", ex);
+                    LOG.warn("Application not authorized to exec commands!", ex);
                     break;
                 }
             }

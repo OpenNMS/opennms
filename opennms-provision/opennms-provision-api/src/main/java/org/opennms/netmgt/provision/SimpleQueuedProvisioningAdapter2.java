@@ -128,15 +128,17 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      */
     /** {@inheritDoc} */
     @Override
-    public final void addNode(int nodeId) {
+    public final ScheduledFuture<?> addNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.ADD));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
 
     /*
@@ -145,15 +147,17 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      */
     /** {@inheritDoc} */
     @Override
-    public final void updateNode(int nodeId) {
+    public final ScheduledFuture<?> updateNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
     
     /*
@@ -162,15 +166,17 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      */
     /** {@inheritDoc} */
     @Override
-    public final void deleteNode(int nodeId) {
+    public final ScheduledFuture<?> deleteNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.DELETE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
     
     /*
@@ -179,15 +185,17 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      */
     /** {@inheritDoc} */
     @Override
-    public final void nodeConfigChanged(int nodeId) {
+    public final ScheduledFuture<?> nodeConfigChanged(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
         
         synchronized (m_executorService) {
             if (!m_executorService.getQueue().contains(op)) {
-                op.schedule(m_executorService);
+                return op.schedule(m_executorService);
             }
         }
+        
+        return null;
     }
         
     /**

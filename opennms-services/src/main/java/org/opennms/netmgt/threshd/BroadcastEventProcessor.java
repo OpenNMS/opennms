@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
     /**
      * List of ThresholdableService objects.
      */
@@ -171,25 +173,22 @@ final class BroadcastEventProcessor implements EventListener {
      */
     @Override
     public void onEvent(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // print out the uei
         //
-        if (log.isDebugEnabled()) {
-            log.debug("received event, uei = " + event.getUei());
-        }
+        LOG.debug("received event, uei = {}", event.getUei());
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
 		m_threshd.refreshServicePackages();
         } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
             thresholdConfigurationChangedHandler(event);
 	} else if(!event.hasNodeid()) {
 	    // For all other events, if the event doesn't have a nodeId it can't be processed.
-            log.info("no database node id found, discarding event");
+            LOG.info("no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
             }
@@ -197,7 +196,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else {
                 primarySnmpInterfaceChangedHandler(event);
             }
@@ -205,7 +204,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else {
                 reinitializePrimarySnmpInterfaceHandler(event);
             }
@@ -213,7 +212,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else {
                 interfaceReparentedHandler(event);
             }
@@ -225,7 +224,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else {
                 interfaceDeletedHandler(event);
             }
@@ -233,11 +232,11 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null) {
-                log.info("no interface found, discarding event");
+                LOG.info("no interface found, discarding event");
             } else if (event.getService() == null || event.getService().length() == 0) {
                 // If there is no service then it cannot be processed
                 //
-                log.info("no service found, discarding event");
+                LOG.info("no service found, discarding event");
             } else {
                 serviceDeletedHandler(event);
             }
@@ -270,10 +269,9 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      */
     private void reinitializePrimarySnmpInterfaceHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (event.getInterface() == null) {
-            log.error("reinitializePrimarySnmpInterface event is missing an interface.");
+            LOG.error("reinitializePrimarySnmpInterface event is missing an interface.");
             return;
         }
         // Mark the primary SNMP interface for reinitialization in
@@ -295,8 +293,8 @@ final class BroadcastEventProcessor implements EventListener {
                         ThresholderUpdates updates = tSvc.getThresholderUpdates();
                         // Now set the reinitialization flag
                         updates.markForReinitialization();
-                        if (log.isDebugEnabled())
-                            log.debug("markServicesForReinit: marking " + event.getInterface() + " for reinitialization for service SNMP.");
+
+                        LOG.debug("markServicesForReinit: marking {} for reinitialization for service SNMP.", event.getInterface());
                     }
                 }
             }
@@ -327,12 +325,11 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      */
     private void thresholdConfigurationChangedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         //Force a reload of the configuration, then tell the thresholders to reinitialize
         try {
             ThresholdingConfigFactory.reload();
         } catch (Throwable e) {
-            log.error("thresholdConfigurationChangedHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
+            LOG.error("thresholdConfigurationChangedHandler: Failed to reload threshold configuration because {}", e.getMessage(), e);
             return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
         }
         //Tell the service thresholders to reinit 
@@ -345,8 +342,8 @@ final class BroadcastEventProcessor implements EventListener {
                 synchronized (tSvc) {
                     ThresholderUpdates updates = tSvc.getThresholderUpdates();
                     updates.markForReinitialization();
-                    if (log.isDebugEnabled())
-                        log.debug("thresholdConfigurationChangedHandler: marking " + InetAddressUtils.str(addr) + " for reinitialization for service SNMP.");
+
+                    LOG.debug("thresholdConfigurationChangedHandler: marking {} for reinitialization for service SNMP.", InetAddressUtils.str(addr));
                 }
             }
         }
@@ -393,9 +390,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void primarySnmpInterfaceChangedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
+
+        LOG.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
         // Extract the old and new primary SNMP interface addresses from the
         // event parms.
@@ -452,8 +448,8 @@ final class BroadcastEventProcessor implements EventListener {
 
                             // Now set the deleted flag
                             updates.markForDeletion();
-                            if (log.isDebugEnabled())
-                                log.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
+
+                            LOG.debug("primarySnmpInterfaceChangedHandler: marking {} as deleted for service SNMP.", oldPrimaryIfAddr);
                         }
 
                         // Now safe to remove the collectable service from
@@ -468,8 +464,8 @@ final class BroadcastEventProcessor implements EventListener {
         //
         m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
 
-        if (log.isDebugEnabled())
-            log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
+
+        LOG.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid {} completed.", event.getNodeid());
     }
 
     /**
@@ -488,9 +484,8 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
+
+        LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for {}", event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -525,7 +520,7 @@ final class BroadcastEventProcessor implements EventListener {
         // Only proceed provided we have both an old and a new nodeId
         //
         if (oldNodeIdStr == null || newNodeIdStr == null) {
-            log.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
+            LOG.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
             return;
         }
 
@@ -553,8 +548,8 @@ final class BroadcastEventProcessor implements EventListener {
                 if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (tSvc) {
                         // Got a match!
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: got a ThresholdableService match for " + event.getInterface());
+
+                        LOG.debug("interfaceReparentedHandler: got a ThresholdableService match for {}", event.getInterface());
 
                         // Retrieve the ThresholderUpdates object associated
                         // with this ThresholdableService.
@@ -562,15 +557,15 @@ final class BroadcastEventProcessor implements EventListener {
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
-                        if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
+
+                        LOG.debug("interfaceReparentedHandler: marking {} for reparenting for service SNMP.", event.getInterface());
                     }
                 }
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
+
+        LOG.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface {} completed.", event.getInterface());
     }
 
     /**
@@ -581,7 +576,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeDeletedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         long nodeId = event.getNodeid();
 
@@ -615,8 +609,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
+
+        LOG.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid {} completed.", nodeId);
     }
 
     /**
@@ -627,7 +621,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceDeletedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         long nodeId = event.getNodeid();
         InetAddress ipAddr = event.getInterfaceAddress();
@@ -664,8 +657,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceDeletedHandler: processing of interfaceDeleted event for " + nodeId + "/" + ipAddr + " completed.");
+
+        LOG.debug("interfaceDeletedHandler: processing of interfaceDeleted event for {}/{} completed.", nodeId, ipAddr);
     }
 
     /**
@@ -676,7 +669,6 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void serviceDeletedHandler(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Currently only support SNMP data thresholding.
         //
@@ -720,7 +712,7 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+
+        LOG.debug("serviceDeletedHandler: processing of serviceDeleted event for {}/{}/{} completed.", nodeId, ipAddr, svcName);
     }
 } // end class

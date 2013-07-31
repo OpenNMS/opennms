@@ -43,8 +43,9 @@ import java.util.List;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -67,6 +68,9 @@ import org.opennms.netmgt.EventConstants;
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  */
 public final class DbIpInterfaceEntry {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DbIpInterfaceEntry.class);
+
     /** Constant <code>SNMP_PRIMARY='P'</code> */
     public final static char SNMP_PRIMARY = 'P';
 
@@ -243,9 +247,7 @@ public final class DbIpInterfaceEntry {
         }
 
         names.append(") VALUES (").append(values).append(')');
-        if (log().isDebugEnabled()) {
-            log().debug("DbIpInterfaceEntry.insert: SQL insert statement for interface [" + m_nodeId + "," + m_ipAddr + "] = " + names.toString());
-        }
+            LOG.debug("DbIpInterfaceEntry.insert: SQL insert statement for interface [{},{}] = {}", m_nodeId, m_ipAddr, names.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
@@ -280,7 +282,7 @@ public final class DbIpInterfaceEntry {
             }
             // Run the insert
             int rc = stmt.executeUpdate();
-            log().debug("DbIpInterfaceEntry.insert: SQL update result = " + rc);
+            LOG.debug("DbIpInterfaceEntry.insert: SQL update result = {}", rc);
         } finally {
             d.cleanUp();
         }
@@ -350,7 +352,7 @@ public final class DbIpInterfaceEntry {
 
         sqlText.append(" AND isManaged <> 'D'");
 
-        log().debug("DbIpInterfaceEntry.update: SQL update statment = " + sqlText.toString());
+        LOG.debug("DbIpInterfaceEntry.update: SQL update statment = {}", sqlText.toString());
 
         // create the Prepared statement and then start setting the result values
         PreparedStatement stmt = null;
@@ -416,7 +418,7 @@ public final class DbIpInterfaceEntry {
             }
             // Run the insert
             int rc = stmt.executeUpdate();
-            log().debug("DbIpInterfaceEntry.update: update result = " + rc);
+            LOG.debug("DbIpInterfaceEntry.update: update result = {}", rc);
         } finally {
             d.cleanUp();
         }
@@ -869,7 +871,7 @@ public final class DbIpInterfaceEntry {
                         db.close();
                     }
                 } catch (SQLException e) {
-                    log().warn("Exception closing JDBC connection", e);
+                    LOG.warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -908,7 +910,7 @@ public final class DbIpInterfaceEntry {
                     db.close();
                 }
             } catch (SQLException e) {
-                log().warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
 
@@ -1022,7 +1024,7 @@ public final class DbIpInterfaceEntry {
                     db.close();
                 }
             } catch (SQLException e) {
-                ThreadCategory.getInstance(DbIpInterfaceEntry.class).warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
     }
@@ -1053,7 +1055,7 @@ public final class DbIpInterfaceEntry {
                     db.close();
                 }
             } catch (SQLException e) {
-                ThreadCategory.getInstance(DbIpInterfaceEntry.class).warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
     }
@@ -1148,10 +1150,6 @@ public final class DbIpInterfaceEntry {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

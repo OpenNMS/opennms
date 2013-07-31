@@ -58,7 +58,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.mock.web.MockFilterConfig;
@@ -80,6 +81,7 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
  *
  */
 public abstract class AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestTestCase.class);
 
     public static String GET = "GET";
     public static String POST = "POST";
@@ -116,7 +118,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "classpath:/META-INF/opennms/applicationContext-reportingCore.xml " +
                 "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml " +
                 "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml " +
-                "classpath:/org/opennms/web/rest/applicationContext-mockEventProxy.xml " +
+                "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml " +
                 "classpath:/applicationContext-jersey-test.xml " +
                 "classpath:/META-INF/opennms/applicationContext-reporting.xml " +
                 "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml " +
@@ -247,7 +249,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param statusCode
      */
     protected MockHttpServletResponse sendPost(String url, String xml, int statusCode, final String expectedUrlSuffix) throws Exception {
-        LogUtils.debugf(this, "POST %s, expected status code = %d, expected URL suffix = %s", url, statusCode, expectedUrlSuffix);
+        LOG.debug("POST {}, expected status code = {}, expected URL suffix = {}", url, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
@@ -284,7 +286,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param expectedUrlSuffix
      */
     protected MockHttpServletResponse sendPut(String url, String formData, int statusCode, final String expectedUrlSuffix) throws Exception {
-        LogUtils.debugf(this, "PUT %s, formData = %s, expected status code = %d, expected URL suffix = %s", url, formData, statusCode, expectedUrlSuffix);
+        LOG.debug("PUT {}, formData = {}, expected status code = {}, expected URL suffix = {}", url, formData, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
         if (expectedUrlSuffix != null) {
             final String location = response.getHeader("Location").toString();
@@ -324,7 +326,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = createResponse();
         dispatch(request, response);
 
-        LogUtils.debugf(this, "Received response: %s", stringifyResponse(response));
+        LOG.debug("Received response: {}", stringifyResponse(response));
         assertEquals(response.getErrorMessage(), statusCode, response.getStatus());
         
         return response;
@@ -347,7 +349,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 			}
 			string.append("]").append("]");
 		} catch (UnsupportedEncodingException e) {
-			LogUtils.warnf(this, e, "Unable to get response content");
+			LOG.warn("Unable to get response content", e);
 		}
     	return string.toString();
 	}
@@ -387,7 +389,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	    			} else if (value instanceof String) {
 	    				valueEntries = new String[] { (String)value };
 	    			} else {
-	    				LogUtils.warnf(this, "value was not a string or string array! (%s)", value);
+					LOG.warn("value was not a string or string array! ({})", value);
 	    				continue;
 	    			}
 
@@ -395,11 +397,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	    				sb.append(URLEncoder.encode((String)key, "UTF-8")).append("=").append(URLEncoder.encode((String)valueEntry, "UTF-8")).append("&");
 	    			}
 	    		} else {
-	    			LogUtils.warnf(this, "key was not a string! (%s)", key);
+				LOG.warn("key was not a string! ({})", key);
 	    		}
 	    	}
 		} catch (final UnsupportedEncodingException e) {
-			LogUtils.warnf(this, e, "unsupported encoding UTF-8?!?  WTF??!");
+			LOG.warn("unsupported encoding UTF-8?!?  WTF??!", e);
 		}
     	
     	return sb.toString();

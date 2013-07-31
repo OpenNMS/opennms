@@ -30,8 +30,10 @@ package org.opennms.report;
 
 import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 
@@ -42,10 +44,9 @@ import org.opennms.javamail.JavaMailerException;
  * @version $Id: $
  */
 public class ReportMailer {
-	
-	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-	
-	private final ThreadCategory log;
+    private static final Logger LOG = LoggerFactory.getLogger(ReportMailer.class);
+    
+	private static final String LOG4J_CATEGORY = "reports";
 	
 	private String m_filename;
 	
@@ -73,10 +74,8 @@ public class ReportMailer {
 		this.m_filename = filename;
 		this.m_subject = subject;
 		
-		String oldPrefix = ThreadCategory.getPrefix();
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ReportMailer.class);
-		ThreadCategory.setPrefix(oldPrefix);
+		// TODO wrap the methods is probably better
+		Logging.putPrefix(LOG4J_CATEGORY);
 	}
 	
 	/**
@@ -97,7 +96,7 @@ public class ReportMailer {
             jm.setMessageText(m_subject + " Mailed from JavaMailer class.");
             jm.mailSend();
         } catch (JavaMailerException e) {
-            log.error("Caught JavaMailer exception sending file: " + m_filename, e);
+            LOG.error("Caught JavaMailer exception sending file: {}", m_filename, e);
             throw new IOException("Error sending file: " + m_filename);
         }
     }

@@ -16,6 +16,379 @@
                         <mevalue>1</mevalue>
                 </maskelement>
                 <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU temperature trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUTempRising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUTempRising</event-label>
+        <descr>
+        &lt;p&gt;CPU temperature too high(mC):%parm[#5]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                       CPU temperature too high(mC):%parm[#5]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU temperature clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUTempCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUTempCleared</event-label>
+        <descr>
+        &lt;p&gt;CPU temperature is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      CPU temperature is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUTempRising:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU fan trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUFanRising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUFanRising</event-label>
+        <descr>
+        &lt;p&gt;CPU fan too slow (rpm):%parm[#5]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                       CPU fan too slow (rpm):%parm[#5]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU fan clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUFanCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUFanCleared</event-label>
+        <descr>
+        &lt;p&gt;CPU fan is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      CPU fan is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUFanRising:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU voltage trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUVlotRising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUVlotRising</event-label>
+        <descr>
+        &lt;p&gt;CPU voltage too low (mV):%parm[#5]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      CPU voltage too low (mV):%parm[#5]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU voltage clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUVoltCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPUVoltCleared</event-label>
+        <descr>
+        &lt;p&gt;CPU voltage is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      CPU voltage is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPUVlotRising:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
+</event>
+
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>Disk space usage trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceDiskUsageRising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceDiskUsageRising</event-label>
+        <descr>
+        &lt;p&gt;Disk usage threshold upper limit exceeded.%parm[#7]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                       Disk usage threshold upper limit exceeded.%parm[#7]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>Disk space usage clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceDiskUsageRisingCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceDiskUsageRisingcleared</event-label>
+        <descr>
+        &lt;p&gt;Disk usage is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                       Disk usage is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceDiskUsageRising:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>Swap memory trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceSwapUsageRising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceSwapUsageRising</event-label>
+        <descr>
+        &lt;p&gt;Swap memory usage threshold upper limit exceeded. %parm[#7]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      Swap memory usage threshold upper limit exceeded. %parm[#7]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>Swap memory clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceSwapUsageRisingCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceSwapUsageRisingCleared</event-label>
+        <descr>
+        &lt;p&gt;Swap memory usage is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                       Swap memory is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceSwapUsageRising:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU LA trigger</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPULARising</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPULARising</event-label>
+        <descr>
+        &lt;p&gt;CPU load average threshold upper limit exceeded. %parm[#7]%.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      Swap memory usage threshold upper limit exceeded. %parm[#7]%.&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+        <alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
+                        <vbnumber>1</vbnumber>
+                        <vbvalue>CPU LA clear</vbvalue>
+                </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPULARisingCleared</uei>
+        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceCPULARisingCleared</event-label>
+        <descr>
+        &lt;p&gt;CPU load average is normal.&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                      CPU load average is normal.&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceCPULARising:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
+</event>
+
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+                <varbind>
                         <vbnumber>5</vbnumber>
                         <vbvalue>101</vbvalue>
                 </varbind>
@@ -59,7 +432,7 @@
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Process WebProxy started trap received. &lt;/p&gt;
                 </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
 	<alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceWebpProxyProcessDown:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
@@ -121,7 +494,7 @@
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Process NMA started trap received. &lt;/p&gt;
                 </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
 	<alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceNMAProcessDown:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
@@ -183,7 +556,7 @@
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Process Jboss started trap received. &lt;/p&gt;
                 </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
 	<alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceJbossProcessDown:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
@@ -245,7 +618,7 @@
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Process Mysql started trap received. &lt;/p&gt;
                 </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
 	<alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceMysqlProcessDown:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
@@ -307,7 +680,7 @@
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Process Postgresql started trap received. &lt;/p&gt;
                 </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
 	<alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpacePostgresqlProcessDown:%dpname%:%nodeid%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
@@ -423,7 +796,7 @@ instances has fired, for triggers with mteTriggerType
         jnxSpaceNodeUp trap received
         jnxSpaceNodeIP=%parm[#1]%&lt;/p&gt;
         </logmsg>
-        <severity>Cleared</severity>
+        <severity>Normal</severity>
         <alarm-data auto-clean="true" clear-key="uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceNodeDown:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
     </event>
     <event>

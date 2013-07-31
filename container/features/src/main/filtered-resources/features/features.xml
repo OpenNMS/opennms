@@ -32,6 +32,10 @@
     <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
     <repository>mvn:org.opennms.features/jmxconfiggenerator.webui/${project.version}/xml/features</repository>
 
+    <!-- Vaadin Dashboard Feature-->
+    <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
+    <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
+
     <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
        <feature>opennms-topology-runtime-simple</feature>
        <feature>opennms-topology-runtime-linkd</feature>
@@ -43,6 +47,12 @@
        <feature>vaadin-snmp-events-and-metrics</feature>
        <feature>vaadin-node-maps</feature>
        <feature>jmxconfiggenerator.webui</feature>
+       <feature>vaadin-dashboard</feature>
+       <feature>dashlet-alarms</feature>
+       <feature>dashlet-summary</feature>
+       <feature>dashlet-map</feature>
+       <feature>dashlet-image</feature>
+       <feature>dashlet-charts</feature>
    </feature>
 
 </features>

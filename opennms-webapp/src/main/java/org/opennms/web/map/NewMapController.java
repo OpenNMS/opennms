@@ -39,14 +39,12 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
-
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VMap;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * <p>NewMapController class.</p>
@@ -58,9 +56,11 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class NewMapController implements Controller {
+public class NewMapController extends MapsLoggingController {
 	
-	ThreadCategory log;
+	private static final Logger LOG = LoggerFactory.getLogger(NewMapController.class);
+
+	
 
 	private Manager manager;
 	
@@ -85,32 +85,29 @@ public class NewMapController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+		
 
 		int mapWidth = WebSecurityUtils.safeParseInt(request
 				.getParameter("MapWidth"));
 		int mapHeight = WebSecurityUtils.safeParseInt(request
 					.getParameter("MapHeight"));
 
-		log.debug("Current mapWidth=" + mapWidth
-					+ " and MapHeight=" + mapHeight);
+		LOG.debug("Current mapWidth={} and MapHeight={}", mapWidth, mapHeight);
 			
 
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
 
 		try {				
-			log.info("New Map in admin mode: creating new map");
+			LOG.info("New Map in admin mode: creating new map");
 			VMap map = manager.newMap(request
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
 			bw.write(ResponseAssembler.getMapResponse(map));				
 		} catch (Throwable e) {
-			log.error("Error while creating new map for user:"+request.getRemoteUser(),e);
+			LOG.error("Error while creating new map for user:{}", request.getRemoteUser(),e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));
 		} finally {
 			bw.close();

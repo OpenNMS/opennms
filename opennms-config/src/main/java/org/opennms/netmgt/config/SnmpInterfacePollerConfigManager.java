@@ -49,7 +49,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @version $Id: $
  */
 abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfacePollerConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfacePollerConfigManager.class);
 
     /**
      * <p>Constructor for SnmpInterfacePollerConfigManager.</p>
@@ -300,16 +302,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             //
             try {
                 List<InetAddress> ipList = getIpList(pkg);
-                if (log().isDebugEnabled())
-                    log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
+                LOG.debug("createPackageIpMap: package {}: ipList size = {}", ipList.size(), pkg.getName());
     
                 if (ipList.size() > 0) {
-                    if (log().isDebugEnabled())
-                        log().debug("createPackageIpMap: package " + pkg.getName() + ". IpList size is " + ipList.size());
+                    LOG.debug("createPackageIpMap: package {}. IpList size is {}", ipList.size(), pkg.getName());
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                log().error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List: " + t, t);
+                LOG.error("createPackageIpMap: failed to map package: {} to an IP List", pkg.getName(), t);
             }
 
         }
@@ -330,14 +330,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             filterRules.append('\"');
             filterRules.append(")");
         }
-        if (log().isDebugEnabled())
-            log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
+        LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
         List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         return ipList;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
     }
 
     /**
@@ -370,7 +365,6 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
         final InetAddress ifaceAddr = addr(iface);
-        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -380,8 +374,8 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 			filterPassed = ipList.contains(ifaceAddr);
         }
     
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
+
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", filterPassed, iface, pkg.getName());
     
         if (!filterPassed)
             return false;

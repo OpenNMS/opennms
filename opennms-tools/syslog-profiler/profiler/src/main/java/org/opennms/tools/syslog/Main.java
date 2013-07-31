@@ -42,17 +42,19 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.vmmgr.Invoker;
 import org.opennms.netmgt.vmmgr.InvokerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Main {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    
     public static String OPENNMS_HOME;
 
     @SuppressWarnings({ "static-access", "deprecation" })
@@ -77,14 +79,13 @@ public final class Main {
                 System.exit(1);
             }
         } catch (Throwable e) {
-            LogUtils.warnf(Main.class, e, "An error occurred trying to parse the command-line.");
+            LOG.warn("An error occurred trying to parse the command-line.", e);
         }
         
         System.out.println("- using " + OPENNMS_HOME + "/etc for configuration files");
         System.setProperty("opennms.home", OPENNMS_HOME);
 
-        configureLog4j(OPENNMS_HOME);
-        
+
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
         List<Invoke> invokes = new ArrayList<Invoke>();
@@ -112,22 +113,4 @@ public final class Main {
     }
 
 
-    private static void configureLog4j(final String homeDir) {
-        File etcDir = new File(homeDir, "etc");
-        
-        File xmlFile = new File(etcDir, "log4j.xml");
-        if (xmlFile.exists()) {
-            DOMConfigurator.configureAndWatch(xmlFile.getAbsolutePath());
-        } else {
-            File propertiesFile = new File(etcDir, "log4j.properties");
-            if (propertiesFile.exists()) {
-                PropertyConfigurator.configureAndWatch(propertiesFile.getAbsolutePath());
-            } else {
-                System.err.println("Could not find a Log4j configuration file at "
-                        + xmlFile.getAbsolutePath() + " or "
-                        + propertiesFile.getAbsolutePath() + ".  Exiting.");
-                System.exit(1);
-            }
-        }
-    }
 }

@@ -39,10 +39,10 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
@@ -55,8 +55,10 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DeleteMapController implements Controller {
-	ThreadCategory log;
+public class DeleteMapController extends MapsLoggingController {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DeleteMapController.class);
+
 
 	private Manager manager;
 	
@@ -81,18 +83,16 @@ public class DeleteMapController implements Controller {
 
 	/** {@inheritDoc} */
         @Override
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
-		log.info("Deleting map");
+		LOG.info("Deleting map");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
 		try {
 			manager.deleteMap(); 
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.DELETEMAP_ACTION));
 		} catch (Throwable e) {
-			log.error("Error deleting map",e);
+			LOG.error("Error deleting map",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.DELETEMAP_ACTION));
 		} finally {
 			bw.close();

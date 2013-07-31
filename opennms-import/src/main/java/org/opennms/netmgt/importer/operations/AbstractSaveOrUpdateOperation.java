@@ -34,15 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.importer.config.types.InterfaceSnmpPrimaryType;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.DistPollerDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -51,6 +49,8 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -62,6 +62,9 @@ import org.springframework.beans.PropertyAccessorFactory;
  * @version $Id: $
  */
 public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperation implements SaveOrUpdateOperation {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractSaveOrUpdateOperation.class);
+
 
 	private final OnmsNode m_node;
     private NodeDao m_nodeDao;
@@ -114,7 +117,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	public void foundInterface(final String ipAddr, final Object descr, final InterfaceSnmpPrimaryType snmpPrimary, final boolean managed, final int status) {
 		
 		if ("".equals(ipAddr)) {
-			log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
+			LOG.error("Found interface on node {} with an empty ipaddr! Ignoring!", m_node.getLabel());
 			// create a bogus OnmsIpInterface and set it to current to services we run across get ignored as well
 			m_currentInterface = new OnmsIpInterface();
 			return;
@@ -128,7 +131,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
         	final InetAddress addr = InetAddressUtils.addr(ipAddr);
         	if (addr == null) {
-        		LogUtils.errorf(this, "Unable to resolve address of snmpPrimary interface for node %s", m_node.getLabel());
+        		LOG.error("Unable to resolve address of snmpPrimary interface for node {}", m_node.getLabel());
         	}
     		m_collector = new IfSnmpCollector(addr);
         }
@@ -190,7 +193,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	            
 	            if (ifIndex == null) continue;
 	            
-                log().debug("Updating SNMP Interface with ifIndex "+ifIndex);
+                LOG.debug("Updating SNMP Interface with ifIndex {}", ifIndex);
                 
 	            // first look to see if an snmpIf was created already
 	            OnmsSnmpInterface snmpIf = m_node.getSnmpInterfaceWithIfIndex(ifIndex);
@@ -248,7 +251,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	final InetAddress inetAddr = ipIf.getIpAddress();
     	final String ipAddr = InetAddressUtils.str(inetAddr);
 
-    	log().debug("Creating SNMP info for interface "+ipAddr);
+    	LOG.debug("Creating SNMP info for interface {}", ipAddr);
 
     	int ifIndex = m_collector.getIfIndex(inetAddr);
     	if (ifIndex == -1) {
@@ -338,7 +341,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         try {
             w.setPropertyValue(name, value);
         } catch (BeansException e) {
-            ThreadCategory.getInstance(this.getClass()).warn("Could not set property on asset: " + name, e);
+            LOG.warn("Could not set property on asset: {}", name, e);
         }
     }
     
@@ -389,7 +392,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     protected NodeDao getNodeDao() {
         return m_nodeDao;
@@ -398,7 +401,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getDistPollerDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     protected DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
@@ -454,7 +457,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>getCategoryDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
@@ -463,7 +466,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setCategoryDao</p>
      *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
      */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
@@ -472,7 +475,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setServiceTypeDao</p>
      *
-     * @param svcTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     * @param svcTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
     public void setServiceTypeDao(ServiceTypeDao svcTypeDao) {
         m_svcTypeDao = svcTypeDao;
@@ -481,7 +484,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -490,7 +493,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /**
      * <p>setDistPollerDao</p>
      *
-     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.api.DistPollerDao} object.
      */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
@@ -512,15 +515,6 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
      */
     public void setCategoryCache(ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
         m_categories = categoryCache;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 	/**

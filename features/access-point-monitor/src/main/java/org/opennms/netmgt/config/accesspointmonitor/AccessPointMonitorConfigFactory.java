@@ -33,13 +33,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -49,6 +48,8 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
 public class AccessPointMonitorConfigFactory {
+	private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitorConfigFactory.class);
+
     private static final String ACCESS_POINT_MONITOR_CONFIG_FILE_NAME = "access-point-monitor-configuration.xml";
 
     /**
@@ -80,7 +81,7 @@ public class AccessPointMonitorConfigFactory {
         m_loaded = true;
     }
 
-    public static synchronized void init() throws IOException, JAXBException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -88,7 +89,7 @@ public class AccessPointMonitorConfigFactory {
         }
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
-        log().debug("init: config file path: " + cfgFile.getPath());
+        LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         InputStream is = null;
         try {
@@ -101,16 +102,16 @@ public class AccessPointMonitorConfigFactory {
         }
     }
 
-    public static synchronized void reload() throws IOException, JAXBException {
+    public static synchronized void reload() throws IOException {
         init();
         getInstance().update();
     }
 
-    public synchronized void update() throws IOException, JAXBException {
+    public synchronized void update() throws IOException {
         File cfgFile = ConfigFileConstants.getConfigFileByName(ACCESS_POINT_MONITOR_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
-            log().debug("init: config file path: " + cfgFile.getPath());
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
             InputStream is = null;
             try {
                 is = new FileInputStream(cfgFile);
@@ -120,25 +121,17 @@ public class AccessPointMonitorConfigFactory {
                     IOUtils.closeQuietly(is);
                 }
             }
-            log().debug("init: finished loading config file: " + cfgFile.getPath());
+            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
         }
     }
 
-    public AccessPointMonitorConfigFactory(long currentVersion, InputStream is) throws JAXBException {
+    public AccessPointMonitorConfigFactory(long currentVersion, InputStream is) {
         m_accessPointMonitorConfig = unmarshall(is);
         m_currentVersion = currentVersion;
     }
 
-    private static AccessPointMonitorConfig unmarshall(InputStream is) throws JAXBException {
-        InputStream apmcStream = is;
-        JAXBContext context = JAXBContext.newInstance(AccessPointMonitorConfig.class);
-        Unmarshaller um = context.createUnmarshaller();
-        um.setSchema(null);
-        return (AccessPointMonitorConfig) um.unmarshal(apmcStream);
-    }
-
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(AccessPointMonitorConfigFactory.class);
+    private static AccessPointMonitorConfig unmarshall(InputStream is) {
+        return JaxbUtils.unmarshal(AccessPointMonitorConfig.class, new InputSource(is));
     }
 
     public AccessPointMonitorConfig getConfig() {

@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 		implements EventDao {
+    private static final Logger LOG = LoggerFactory.getLogger(EventDaoHibernate.class);
 
 	/**
 	 * <p>Constructor for EventDaoHibernate.</p>
@@ -58,7 +61,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
             Object[] values = {eventId};
             return bulkDelete(hql, values);
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to delete an event with Id %d", eventId);
+            LOG.warn("Unable to delete an event with Id {}", eventId, e);
         }
         return 0;
     }
@@ -70,7 +73,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
             Object[] values = {eventId};
             return bulkDelete(hql, values);
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to delete an event with Id %d", eventId);
+            LOG.warn("Unable to delete an event with Id {}", eventId, e);
         }
         return 0;
     }

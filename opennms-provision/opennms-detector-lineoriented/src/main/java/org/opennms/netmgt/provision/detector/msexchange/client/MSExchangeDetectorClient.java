@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,10 +37,11 @@ import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.msexchange.response.MSExchangeResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>MSExchangeDetectorClient class.</p>
@@ -50,6 +51,7 @@ import org.opennms.netmgt.provision.support.Client;
  */
 public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSExchangeResponse> {
     
+    private static final Logger LOG = LoggerFactory.getLogger(MSExchangeDetectorClient.class);
     private Integer m_imapPort;
     private Integer m_pop3Port;
     private String m_pop3Response;
@@ -96,14 +98,14 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
                 return banner;
                 
             }catch(final Exception e) {
-                LogUtils.debugf(this, e, "An error occurred while connecting to %s:%d", InetAddressUtils.str(address), port);
+                LOG.debug("An error occurred while connecting to {}:{}", InetAddressUtils.str(address), port, e);
                 IOUtils.closeQuietly(lineRdr);
                 IOUtils.closeQuietly(isr);
                 if(socket != null) {
                     try {
                         socket.close();
                     } catch (final IOException e1) {
-                        LogUtils.debugf(this, e, "Additionally, an exception occurred while trying to close the socket.");
+                        LOG.debug("Additionally, an exception occurred while trying to close the socket.", e);
                     }
                 }
             }

@@ -34,8 +34,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.dao.ApplicationDao;
-import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.web.svclayer.AdminApplicationService;
@@ -100,7 +100,7 @@ public class DefaultAdminApplicationService implements
     /**
      * <p>getApplicationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ApplicationDao} object.
      */
     public ApplicationDao getApplicationDao() {
         return m_applicationDao;
@@ -109,7 +109,7 @@ public class DefaultAdminApplicationService implements
     /**
      * <p>setApplicationDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.api.ApplicationDao} object.
      */
     public void setApplicationDao(ApplicationDao dao) {
         m_applicationDao = dao;
@@ -118,7 +118,7 @@ public class DefaultAdminApplicationService implements
     /**
      * <p>getMonitoredServiceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
@@ -127,7 +127,7 @@ public class DefaultAdminApplicationService implements
     /**
      * <p>setMonitoredServiceDao</p>
      *
-     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.api.MonitoredServiceDao} object.
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;

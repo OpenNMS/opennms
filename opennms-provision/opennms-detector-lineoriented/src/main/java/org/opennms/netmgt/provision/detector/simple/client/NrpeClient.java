@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,12 +35,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NrpeClient class.</p>
@@ -50,6 +51,7 @@ import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
  */
 public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrapper {
     
+    private static final Logger LOG = LoggerFactory.getLogger(NrpeClient.class);
     /** 
      * List of cipher suites to use when talking SSL to NRPE, which uses anonymous DH
      */
@@ -74,7 +76,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
             }
             
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "failed to close socket");
+            LOG.debug("failed to close socket", e);
         }
         
     }
@@ -103,7 +105,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
         try {
             return wrapSocket(socket);
         } catch (final IOException e) {
-            LogUtils.debugf(this, e, "an error occurred while SSL-wrapping a socket (%s:%d)", address, port);
+            LOG.debug("an error occurred while SSL-wrapping a socket ({}:{})", address, port, e);
             return null;
         }
     }
@@ -156,7 +158,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
     
     private NrpePacket receiveResponse() throws Exception {
         final NrpePacket response = NrpePacket.receivePacket(getInput(), getPadding());
-        LogUtils.infof(this, "what is response: " + response.getResultCode());
+        LOG.info("what is response: {}", response.getResultCode());
         return response;
     }
 

@@ -43,7 +43,8 @@ import java.util.StringTokenizer;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -59,6 +60,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class Pop3Plugin extends AbstractPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(Pop3Plugin.class);
 
     /**
      * <P>
@@ -101,7 +103,6 @@ public final class Pop3Plugin extends AbstractPlugin {
      * @return True if server is running MS Exchange, false otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -111,7 +112,7 @@ public final class Pop3Plugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("Pop3Plugin: connected to host: " + host + " on port: " + port);
+                LOG.debug("Pop3Plugin: connected to host: {} on port: {}", port, host);
 
                 // Allocate a line reader
                 //
@@ -141,25 +142,25 @@ public final class Pop3Plugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("Pop3Plugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
+                LOG.debug("Pop3Plugin: Connection refused to {}: {}", port, InetAddressUtils.str(host));
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("Pop3Plugin: No route to host " + InetAddressUtils.str(host) + " was available", e);
+                LOG.info("Pop3Plugin: No route to host {} was available", InetAddressUtils.str(host), e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // expected exception
-                log.debug("Pop3Plugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                LOG.debug("Pop3Plugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
                 isAServer = false;
             } catch (IOException e) {
                 isAServer = false;
-                log.info("Pop3Plugin: An unexpected I/O exception occured contacting host " + InetAddressUtils.str(host), e);
+                LOG.info("Pop3Plugin: An unexpected I/O exception occured contacting host {}", InetAddressUtils.str(host), e);
             } catch (Throwable t) {
                 isAServer = false;
-                log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + InetAddressUtils.str(host), t);
+                LOG.error("Pop3Plugin: An undeclared throwable exception was caught contacting host {}", InetAddressUtils.str(host), t);
             } finally {
                 try {
                     if (socket != null)

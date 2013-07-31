@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
-  <name>OpenNMS SNMP SNMP4J Implementation</name>
+  <name>OpenNMS Core SNMP SNMP4J Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -38,15 +38,15 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j</artifactId>
-      <version>1.11.1</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp4j-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j-agent</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp4j-agent-dependencies</artifactId>
       <scope>test</scope>
-      <version>1.4.1</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -55,19 +55,4 @@
       <type>pom</type>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>

@@ -1,0 +1,46 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+    <bean id="alarmsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmsDashletFactory" scope="singleton">
+        <argument ref="alarmDao"/>
+        <argument ref="nodeDao"/>
+        <property name="name" value="Alarms"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="boostSeverity" value="WARNING"/>
+                <entry key="criteria" value="Gt(severity,WARNING).OrderBy(lastEventTime).Limit(10)"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="boostSeverity" value="At which minimum severity level the dashlet is &quot;boosted&quot;"/>
+                <entry key="criteria" value="The list of restrictions used for searching for alarm entries"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="alarmDetailsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmDetailsDashletFactory" scope="singleton">
+        <argument ref="alarmDao"/>
+        <argument ref="nodeDao"/>
+        <property name="name" value="Alarm Details"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="boostSeverity" value="WARNING"/>
+                <entry key="criteria" value="Gt(severity,WARNING).OrderBy(lastEventTime).Limit(10)"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="boostSeverity" value="At which minimum severity level the dashlet is &quot;boosted&quot;"/>
+                <entry key="criteria" value="The list of restrictions used for searching for alarm entries"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="alarmsDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+    <service ref="alarmDetailsDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

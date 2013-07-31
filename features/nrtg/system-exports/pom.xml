@@ -12,7 +12,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.systemexports</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.nrtg.systemexports</bundle.namespace>
   </properties>
-  <name>NRTG System Exports</name>
+  <name>OpenNMS Features NRTG System Exports</name>
   <description>
     The API contains the models for the NRTG projects. It has models for
     collection jobs, measurements and protocol collectors.

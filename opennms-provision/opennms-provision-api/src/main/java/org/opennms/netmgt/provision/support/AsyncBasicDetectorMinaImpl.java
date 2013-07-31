@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,7 +48,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 import org.slf4j.Logger;
@@ -61,6 +60,8 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends AsyncBasicDetector<Request, Response> {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncBasicDetectorMinaImpl.class);
     
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging = null;
@@ -123,7 +124,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      */
     @Override
     public void dispose(){
-        LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
+        LOG.debug("calling dispose on detector {}", getServiceName());
         ConnectionFactory.dispose(m_connectionFactory);
     }
     
@@ -212,15 +213,15 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                
                 if (cause instanceof IOException) {
                     if(retryAttempt == 0) {
-                        LogUtils.infof(this, "Service %s detected false: %s: %s",getServiceName(), cause.getClass().getName(), cause.getMessage());
+                        LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
                         detectFuture.setServiceDetected(false);
                     }else {
-                        LogUtils.infof(this, "Connection exception occurred: %s for service %s, retrying attempt %d", cause, getServiceName(), retryAttempt);
+                        LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
                         future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
                         future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
                 }else if(cause instanceof Throwable) {
-                    LogUtils.infof(this, cause, "Threw a Throwable and detection is false for service %s", getServiceName());
+                    LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
                     detectFuture.setServiceDetected(false);
                 }
             }

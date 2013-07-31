@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.3.0/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
-    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
-    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
+    <!-- 
+          Compiler error: The Cross-Site-Iframe linker does not support <script> tags in the gwt.xml files, 
+          but the gwt.xml file (or the gwt.xml files which it includes) contains the following script tags: 
+    
+            http://maps.google.com/maps/api/js?sensor=false
+            openlayers/OpenLayers.js
+            Google.js
+            markercluster/leaflet.markercluster.js
+            libs/leaflet/c1d410f2703f0832618c997225e7360f6a292c58/leaflet-src.js
+    
+          In order for your application to run correctly, you will need to include these tags in your host 
+          page directly. In order to avoid this error, you will need to remove the script tags from the 
+          gwt.xml file, or add this property to the gwt.xml file:
+        -->
+    <set-configuration-property name="xsiframe.failIfScriptTag" value="false"/>
+    
+<!--	<set-property name="user.agent" value="safari"/> -->
+	
+    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 
-    <!-- This is required in order to use google map as base layer. -->
-    <script src="http://maps.google.com/maps/api/js?sensor=false" />
-    <script src="openlayers/OpenLayers.js" />
-    <script src="Google.js" />
-    <script src="markercluster/leaflet.markercluster.js" />
-    <!-- <script src="leaflet-search/leaflet-search.js" /> -->
-
-    <stylesheet src="markercluster/MarkerCluster.css" />
-    <stylesheet src="markercluster/MarkerCluster.Default.css" />
-    <!-- <stylesheet src="leaflet-search/leaflet-search.css" /> -->
-    <stylesheet src="node-maps.css" />
-
+    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 </module>

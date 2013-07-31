@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -49,6 +48,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a collection of utility methods used by the DeleteEvent Processor
@@ -57,6 +58,9 @@ import org.opennms.netmgt.xml.event.Value;
  * @author brozow
  */
 public abstract class EventUtils {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EventUtils.class);
 
     /**
      * Make the given listener object a listener for the list of events
@@ -498,14 +502,12 @@ public abstract class EventUtils {
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
-            if (log.isDebugEnabled())
-                log.debug("sendEvent: successfully sent event " + newEvent);
+            LOG.debug("sendEvent: successfully sent event {}", newEvent);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
             if (isXmlRpcEnabled) {
                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
                 XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, "caught unexpected throwable exception.", status, "OpenNMS.Capsd");

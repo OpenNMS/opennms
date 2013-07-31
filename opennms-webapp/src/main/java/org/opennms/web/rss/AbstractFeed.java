@@ -32,7 +32,9 @@ import java.io.StringWriter;
 
 import javax.servlet.ServletRequest;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -46,6 +48,9 @@ import com.sun.syndication.io.SyndFeedOutput;
  * @since 1.8.1
  */
 public class AbstractFeed implements Feed {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractFeed.class);
+
     protected int m_maxEntries = 20;
     protected String m_feedType = "rss_2.0";
     protected String m_urlBase = "";
@@ -155,7 +160,7 @@ public class AbstractFeed implements Feed {
             output.output(feed, writer);
             return writer.toString();
         } catch (Throwable e) {
-            log().warn("unable to render feed", e);
+            LOG.warn("unable to render feed", e);
             return "";
         }
     }
@@ -167,17 +172,6 @@ public class AbstractFeed implements Feed {
      * @return a {@link java.lang.String} object.
      */
     protected String sanitizeTitle(String title) {
-        title.replaceAll("<.*?>", "");
-        return title;
+        return title.replaceAll("<.*?>", "");
     }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
-
 }

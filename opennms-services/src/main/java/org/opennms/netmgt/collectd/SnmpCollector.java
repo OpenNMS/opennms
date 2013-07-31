@@ -38,7 +38,6 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -46,6 +45,8 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -55,6 +56,9 @@ import org.opennms.netmgt.model.events.EventProxy;
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  */
 public class SnmpCollector implements ServiceCollector {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpCollector.class);
+    
     /**
      * Name of monitored service.
      */
@@ -246,22 +250,22 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
         } catch (IOException e) {
-            log().fatal("initDatabaseConnectionFactory: IOException getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
-            log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-            log().fatal("initDatabaseConnectionFactory: Failed loading database driver: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed loading database driver", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -271,7 +275,7 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataCollectionConfigFactory.init();
         } catch (Throwable e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
+            log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -281,7 +285,7 @@ public class SnmpCollector implements ServiceCollector {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
+            LOG.error("initSnmpPeerFactory: Failed to load SNMP configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -381,7 +385,7 @@ public class SnmpCollector implements ServiceCollector {
             
             throw e;
         } catch (Throwable t) {
-            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress() + ": " + t, t);
+            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress(), t);
         }
     }
 
@@ -404,12 +408,10 @@ public class SnmpCollector implements ServiceCollector {
     }*/
 
     private void logNoDataToCollect(CollectionAgent agent) {
-        log().info("agent "+agent+" defines no data to collect.  Skipping.");
+        LOG.info("agent {} defines no data to collect.  Skipping.", agent);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
 
     // Unused
 //    int unexpected(CollectionAgent agent, Throwable t) {

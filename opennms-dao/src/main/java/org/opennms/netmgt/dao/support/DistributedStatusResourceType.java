@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,18 +38,22 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DistributedStatusResourceType implements OnmsResourceType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DistributedStatusResourceType.class);
+    
     /** Constant <code>DISTRIBUTED_DIRECTORY="distributed"</code> */
     public static final String DISTRIBUTED_DIRECTORY = "distributed";
     
@@ -59,8 +63,8 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for DistributedStatusResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
     public DistributedStatusResourceType(ResourceDao resourceDao, LocationMonitorDao locationMonitorDao) {
         m_resourceDao = resourceDao;
@@ -284,10 +288,6 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return locationMonitorDirectory;
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
-    }
-    
     public class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
         private String m_definitionName;
         private int m_locationMonitorId;
@@ -301,9 +301,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
 
         @Override
         public Set<OnmsAttribute> load() {
-            if (log().isDebugEnabled()) {
-                log().debug("lazy-loading attributes for distributed status resource " + (m_definitionName + "-" + m_locationMonitorId + "/" + m_intf));
-            }
+            LOG.debug("lazy-loading attributes for distributed status resource {}-{}/{}", m_definitionName, m_locationMonitorId, m_intf);
             
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_locationMonitorId, m_intf));
         }

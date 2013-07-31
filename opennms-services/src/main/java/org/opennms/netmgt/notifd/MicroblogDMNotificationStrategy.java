@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import twitter4j.DirectMessage;
@@ -45,6 +47,7 @@ import twitter4j.TwitterException;
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
  */
 public class MicroblogDMNotificationStrategy extends MicroblogNotificationStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(MicroblogDMNotificationStrategy.class);
     
     /**
      * <p>Constructor for MicroblogDMNotificationStrategy.</p>
@@ -72,7 +75,7 @@ public class MicroblogDMNotificationStrategy extends MicroblogNotificationStrate
         DirectMessage response;
 
         if (destUser == null || "".equals(destUser)) {
-            log().error("Cannot send a microblog DM notice to a user with no microblog username set. Either set a microblog username for this OpenNMS user or use the MicroblogUpdateNotificationStrategy instead.");
+            LOG.error("Cannot send a microblog DM notice to a user with no microblog username set. Either set a microblog username for this OpenNMS user or use the MicroblogUpdateNotificationStrategy instead.");
             return 1;
         }
         
@@ -82,18 +85,16 @@ public class MicroblogDMNotificationStrategy extends MicroblogNotificationStrate
         
         String fullMessage = buildMessageBody(arguments);
         
-        if (log().isDebugEnabled()) {
-            log().debug("Dispatching microblog DM notification for user '" + svc.getUserId() + "' at base URL '" + svc.getBaseURL() + "' with destination user '" + destUser + "' and message '" + fullMessage + "'");
-        }
+        LOG.debug("Dispatching microblog DM notification for user '{}' at base URL '{}' with destination user '{}' and message '{}'", svc.getUserId(), svc.getBaseURL(), destUser, fullMessage);
         try {
             response = svc.sendDirectMessage(destUser, fullMessage);
         } catch (TwitterException e) {
-            log().error("Microblog notification failed");
-            log().info("Failed to send DM for user '" + svc.getUserId() + "' at service URL '" + svc.getBaseURL() + "' to destination user '" + destUser + "', caught exception: " + e.getMessage());
+            LOG.error("Microblog notification failed");
+            LOG.info("Failed to send DM for user '{}' at service URL '{}' to destination user '{}', caught exception", svc.getUserId(), svc.getBaseURL(), destUser, e);
             return 1;
         }
         
-        log().info("Microblog DM notification succeeded: DM sent with ID " + response.getId());
+        LOG.info("Microblog DM notification succeeded: DM sent with ID {}", response.getId());
         return 0;
     }
 }

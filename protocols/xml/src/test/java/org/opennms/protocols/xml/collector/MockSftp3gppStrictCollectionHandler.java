@@ -38,7 +38,10 @@ import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -47,12 +50,15 @@ import org.w3c.dom.Document;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class MockSftp3gppStrictCollectionHandler extends Sftp3gppXmlCollectionHandler {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MockSftp3gppStrictCollectionHandler.class);
+
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlDocument(java.lang.String, org.opennms.protocols.xml.config.Request)
      */
     @Override
-    protected Document getXmlDocument(String urlString) {
+    protected Document getXmlDocument(String urlString, Request request) {
         return MockDocumentBuilder.getXmlDocument();
     }
 
@@ -61,7 +67,7 @@ public class MockSftp3gppStrictCollectionHandler extends Sftp3gppXmlCollectionHa
      */
     @Override
     protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep, long currentTimestamp) throws IllegalArgumentException {
-        log().info("parseUrl: reference timestamp is " + new Date(currentTimestamp));
+        LOG.info("parseUrl: reference timestamp is {}", new Date(currentTimestamp));
         return null;
     }
 

@@ -34,6 +34,8 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.OutageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
@@ -48,6 +50,9 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  * @since 1.8.1
  */
 public class OutageFeed extends AbstractFeed {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OutageFeed.class);
+
 
     /**
      * <p>Constructor for OutageFeed.</p>
@@ -114,7 +119,7 @@ public class OutageFeed extends AbstractFeed {
                 entries.add(entry);
             }
         } catch (SQLException e) {
-            log().warn("unable to get current outages", e);
+            LOG.warn("unable to get current outages", e);
         }
         
         feed.setEntries(entries);

@@ -32,11 +32,12 @@ import java.io.IOException;
 import java.util.Date;
 
 
-import org.apache.log4j.Logger;
 
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ConfigurationReportRunner class.</p>
@@ -45,6 +46,9 @@ import org.opennms.reporting.availability.render.ReportRenderer;
  * @version $Id: $
  */
 public class ConfigurationReportRunner implements Runnable {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigurationReportRunner.class);
+
         
     String theDate;
     String reportFormat;
@@ -208,8 +212,7 @@ public class ConfigurationReportRunner implements Runnable {
     @Override
     public void run() {
 
-        log().debug("run: getting configuration report on Date ["+ theDate +"]. Requested by User: " + user + "on Date " 
-                    + reportRequestDate.toString()); 
+        LOG.debug("run: getting configuration report on Date [{}]. Requested by User: {}on Date {}", theDate, user,  reportRequestDate.toString());
 
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);
@@ -217,11 +220,11 @@ public class ConfigurationReportRunner implements Runnable {
         calculator.setUser(user);
         
         if (reportFormat.compareTo("pdftype") == 0){
-            log().debug("run: generating pdf is still not supported :( sending xml");
+            LOG.debug("run: generating pdf is still not supported :( sending xml");
             
             renderer = m_nullReportRenderer;
         } else {
-            log().debug("runRancidListReport generating html");
+            LOG.debug("runRancidListReport generating html");
             renderer =  m_htmlReportRenderer;
         }
        
@@ -230,10 +233,9 @@ public class ConfigurationReportRunner implements Runnable {
             calculator.writeXML();
 
             String outputFile = calculator.getOutputFileName();
-            log().debug("Written Configuration Report as XML to " + outputFile);
+            LOG.debug("Written Configuration Report as XML to {}", outputFile);
             renderer.setInputFileName(outputFile);
-            log().debug("rendering XML " + outputFile + " as "
-                    + renderer.getOutputFileName());
+            LOG.debug("rendering XML {} as {}", outputFile, renderer.getOutputFileName());
             renderer.render();
             ReportMailer mailer = new ReportMailer(
                                                    reportEmail,
@@ -241,16 +243,12 @@ public class ConfigurationReportRunner implements Runnable {
                                                            + renderer.getOutputFileName(), "OpenNMS Configuration Report");
             mailer.send();
         } catch (ConfigurationCalculationException ce) {
-            log().fatal("Unable to calculate report data ", ce);
+            LOG.error("Unable to calculate report data ", ce);
         } catch (ReportRenderException re) {
-            log().fatal("Unable to render report ", re);
+            LOG.error("Unable to render report ", re);
         } catch (IOException ioe) {
-            log().fatal("Unable to render report ", ioe);
+            LOG.error("Unable to render report ", ioe);
         }
-    }
-        
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
     }
 
 }

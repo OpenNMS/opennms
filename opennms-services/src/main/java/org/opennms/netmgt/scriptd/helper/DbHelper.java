@@ -29,7 +29,7 @@
 package org.opennms.netmgt.scriptd.helper;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 
 public class DbHelper {

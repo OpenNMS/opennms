@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -32,11 +31,16 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 public class RequisitionAccessService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RequisitionAccessService.class);
+
 
     @Autowired
     @Qualifier("pending")
@@ -57,6 +61,9 @@ public class RequisitionAccessService {
     });
 
     static class RequisitionAccessor {
+    	
+    	private static final Logger LOG = LoggerFactory.getLogger(RequisitionAccessor.class);
+
         private final String m_foreignSource;
 
         private final ForeignSourceRepository m_pendingRepo;
@@ -84,13 +91,7 @@ public class RequisitionAccessService {
             return m_deployedRepo;
         }
 
-        public void debug(final String format, final Object... args) {
-            LogUtils.debugf(this, format, args);
-        }
-
-        public void warn(Throwable t, String format, Object... args) {
-            LogUtils.warnf(this, t, format, args);
-        }
+       
 
         public Requisition getActiveRequisition(boolean createIfMissing) {
 
@@ -121,6 +122,7 @@ public class RequisitionAccessService {
         void addOrReplaceNode(final RequisitionNode node) {
             Requisition req = getActiveRequisition(true);
             if (req != null) {
+                req.updateDateStamp();
                 req.putNode(node);
                 save(req);
             }
@@ -131,6 +133,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putInterface(iface);
                     save(req);
                 }
@@ -144,6 +147,7 @@ public class RequisitionAccessService {
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         iface.putMonitoredService(service);
                         save(req);
                     }
@@ -156,6 +160,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putCategory(category);
                     save(req);
                 }
@@ -167,6 +172,7 @@ public class RequisitionAccessService {
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.putAsset(asset);
                     save(req);
                 }
@@ -174,74 +180,82 @@ public class RequisitionAccessService {
         }
 
         void updateRequisition(final MultivaluedMapImpl params) {
-            String foreignSource = m_foreignSource;
-            debug("updateRequisition: Updating requisition with foreign source %s", foreignSource);
+            final String foreignSource = m_foreignSource;
+            LOG.debug("updateRequisition: Updating requisition with foreign source {}", foreignSource);
+            if (params.isEmpty()) return;
             Requisition req = getActiveRequisition(false);
             if (req != null) {
+                req.updateDateStamp();
                 RestUtils.setBeanProperties(req, params);
-                debug("updateRequisition: Requisition with foreign source %s updated", foreignSource);
                 save(req);
+                LOG.debug("updateRequisition: Requisition with foreign source {} updated", foreignSource);
             }
         }
 
-        void updateNode(String foreignId, MultivaluedMapImpl params) {
-            String foreignSource = m_foreignSource;
-            debug("updateNode: Updating node with foreign source %s and foreign id %s", foreignSource, foreignId);
+        void updateNode(final String foreignId, final MultivaluedMapImpl params) {
+            final String foreignSource = m_foreignSource;
+            LOG.debug("updateNode: Updating node with foreign source {} and foreign id {}", foreignSource, foreignId);
+            if (params.isEmpty()) return;
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     RestUtils.setBeanProperties(node, params);
-                    debug("updateNode: Node with foreign source %s and foreign id %s updated", foreignSource, foreignId);
                     save(req);
+                    LOG.debug("updateNode: Node with foreign source {} and foreign id {} updated", foreignSource, foreignId);
                 }
             }
         }
 
-        void updateInterface(String foreignId, String ipAddress, MultivaluedMapImpl params) {
+        void updateInterface(final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
             String foreignSource = m_foreignSource;
-            debug("updateInterface: Updating interface %s on node %s/%s", ipAddress, foreignSource, foreignId);
+            LOG.debug("updateInterface: Updating interface {} on node {}/{}", ipAddress, foreignSource, foreignId);
+            if (params.isEmpty()) return;
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         RestUtils.setBeanProperties(iface, params);
-                        debug("updateInterface: Interface %s on node %s/%s updated", ipAddress, foreignSource, foreignId);
                         save(req);
+                        LOG.debug("updateInterface: Interface {} on node {}/{} updated", ipAddress, foreignSource, foreignId);
                     }
                 }
             }
         }
 
         void deletePending() {
-            debug("deletePendingRequisition: deleting pending requisition with foreign source %s", getForeignSource());
+            LOG.debug("deletePendingRequisition: deleting pending requisition with foreign source {}", getForeignSource());
             Requisition req = getActiveRequisition(false);
             getPendingForeignSourceRepository().delete(req);
         }
 
         void deleteDeployed() {
-            debug("deleteDeployedRequisition: deleting pending requisition with foreign source %s", getForeignSource());
+            LOG.debug("deleteDeployedRequisition: deleting pending requisition with foreign source {}", getForeignSource());
             Requisition req = getActiveRequisition(false);
             getDeployedForeignSourceRepository().delete(req);
         }
 
         void deleteNode(String foreignId) {
-            debug("deleteNode: Deleting node %s from foreign source %s", foreignId, getForeignSource());
+            LOG.debug("deleteNode: Deleting node {} from foreign source {}", foreignId, getForeignSource());
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
+                req.updateDateStamp();
                 req.deleteNode(foreignId);
                 save(req);
             }
         }
 
         void deleteInterface(String foreignId, String ipAddress) {
-            debug("deleteInterface: Deleting interface %s from node %s/%s", ipAddress, getForeignSource(), foreignId);
+            LOG.debug("deleteInterface: Deleting interface {} from node {}/{}", ipAddress, getForeignSource(), foreignId);
             Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteInterface(ipAddress);
                     save(req);
                 }
@@ -249,13 +263,14 @@ public class RequisitionAccessService {
         }
 
         void deleteInterfaceService(String foreignId, String ipAddress, String service) {
-            debug("deleteInterfaceService: Deleting service %s from interface %s on node %s/%s", service, ipAddress, getForeignSource(), foreignId);
+            LOG.debug("deleteInterfaceService: Deleting service {} from interface {} on node {}/{}", service, ipAddress, getForeignSource(), foreignId);
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
                     RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
+                        req.updateDateStamp();
                         iface.deleteMonitoredService(service);
                         save(req);
                     }
@@ -264,11 +279,12 @@ public class RequisitionAccessService {
         }
 
         void deleteCategory(String foreignId, String category) {
-            debug("deleteCategory: Deleting category %s from node %s/%s", category, getForeignSource(), foreignId);
+            LOG.debug("deleteCategory: Deleting category {} from node {}/{}", category, getForeignSource(), foreignId);
             Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteCategory(category);
                     save(req);
                 }
@@ -276,11 +292,12 @@ public class RequisitionAccessService {
         }
 
         void deleteAssetParameter(String foreignId, String parameter) {
-            debug("deleteAssetParameter: Deleting asset parameter %s from node %s/%s", parameter, getForeignSource(), foreignId);
+            LOG.debug("deleteAssetParameter: Deleting asset parameter {} from node {}/{}", parameter, getForeignSource(), foreignId);
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
+                    req.updateDateStamp();
                     node.deleteAsset(parameter);
                     save(req);
                 }
@@ -384,10 +401,10 @@ public class RequisitionAccessService {
             Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
 
             URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
-                ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
-                : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
+                    ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
+                        : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
 
-            return activeUrl;
+                    return activeUrl;
         }
 
         private void flush() {
@@ -438,9 +455,7 @@ public class RequisitionAccessService {
 
     private <T> T submitAndWait(Callable<T> callable) {
         try {
-
             return m_executor.submit(callable).get();
-
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -450,7 +465,6 @@ public class RequisitionAccessService {
                 throw new RuntimeException(e.getCause());
             }
         }
-
     }
 
     private Future<?> submitWriteOp(Runnable r) {
@@ -710,7 +724,7 @@ public class RequisitionAccessService {
         URL activeUrl = createSnapshot(foreignSource);
 
         final String url = activeUrl.toString();
-        debug("importRequisition: Sending import event with URL %s", url);
+        LOG.debug("importRequisition: Sending import event with URL {}", url);
         final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
         bldr.addParam(EventConstants.PARM_URL, url);
         if (rescanExisting != null) {
@@ -846,12 +860,6 @@ public class RequisitionAccessService {
         });
     }
 
-    void debug(final String format, final Object... args) {
-        LogUtils.debugf(this, format, args);
-    }
-
-    void warn(Throwable t, String format, Object... args) {
-        LogUtils.warnf(this, t, format, args);
-    }
+    
 
 }

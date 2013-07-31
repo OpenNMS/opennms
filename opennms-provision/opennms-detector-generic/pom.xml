@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-generic</artifactId>
-  <name>OpenNMS Generic Detectors</name>
+  <name>OpenNMS Provision Generic Detectors</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>

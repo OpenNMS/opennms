@@ -28,27 +28,32 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -68,13 +73,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({
     JUnitCollectorExecutionListener.class
@@ -85,11 +83,12 @@ import static org.junit.Assert.assertNotNull;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
-public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase>, TestContextAware {
+public class SnmpCollectorTest implements InitializingBean, TestContextAware {
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -113,14 +112,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
     private CollectionAgent m_collectionAgent;
 
-    private TemporaryDatabase m_database;
-
-	private SnmpAgentConfig m_agentConfig;
-
-    @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
+    private SnmpAgentConfig m_agentConfig;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -130,14 +122,6 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
-        // Initialize the JdbcFilterDao so that it will connect to the correct database
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        jdbcFilterDao.setDataSource(m_database);
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
 
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
@@ -154,8 +138,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
             builder.addSnmpInterface(2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
             builder.addSnmpInterface(3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
-            InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setIsSnmpPrimary("P");
-            ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
+            builder.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true)
+                .addIpInterface(m_testHostName).setIsSnmpPrimary("P");
 
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);
@@ -187,34 +171,34 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
     @Test
     @JUnitCollector(
-            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
-            datacollectionType = "snmp",
-            anticipateFiles = {
-                    "1",
-                    "1/fw0"
-            },
-            anticipateRrds = {
-                    "1/tcpActiveOpens",
-                    "1/tcpAttemptFails",
-                    "1/tcpPassiveOpens",
-                    "1/tcpRetransSegs",
-                    "1/tcpCurrEstab",
-                    "1/tcpEstabResets",
-                    "1/tcpInErrors",
-                    "1/tcpInSegs",
-                    "1/tcpOutRsts",
-                    "1/tcpOutSegs",
-                    "1/fw0/ifInDiscards",
-                    "1/fw0/ifInErrors",
-                    "1/fw0/ifInNUcastpkts",
-                    "1/fw0/ifInOctets",
-                    "1/fw0/ifInUcastpkts",
-                    "1/fw0/ifOutErrors",
-                    "1/fw0/ifOutNUcastPkts",
-                    "1/fw0/ifOutOctets",
-                    "1/fw0/ifOutUcastPkts"
-            }
-    )
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
+                    datacollectionType = "snmp",
+                    anticipateFiles = {
+                            "1",
+                            "1/fw0"
+                    },
+                    anticipateRrds = {
+                            "1/tcpActiveOpens",
+                            "1/tcpAttemptFails",
+                            "1/tcpPassiveOpens",
+                            "1/tcpRetransSegs",
+                            "1/tcpCurrEstab",
+                            "1/tcpEstabResets",
+                            "1/tcpInErrors",
+                            "1/tcpInSegs",
+                            "1/tcpOutRsts",
+                            "1/tcpOutSegs",
+                            "1/fw0/ifInDiscards",
+                            "1/fw0/ifInErrors",
+                            "1/fw0/ifInNUcastpkts",
+                            "1/fw0/ifInOctets",
+                            "1/fw0/ifInUcastpkts",
+                            "1/fw0/ifOutErrors",
+                            "1/fw0/ifOutNUcastPkts",
+                            "1/fw0/ifOutOctets",
+                            "1/fw0/ifOutUcastPkts"
+                    }
+            )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
@@ -225,8 +209,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                collectionSet.getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
@@ -236,8 +220,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         // try collecting again
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                m_collectionSpecification.collect(m_collectionAgent).getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
@@ -248,17 +232,17 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Test
     @Transactional
     @JUnitCollector(
-            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
-            datacollectionType = "snmp",
-            anticipateFiles = {
-                    "1",
-                    "1/fw0"
-            },
-            anticipateRrds = {
-                    "1/tcpCurrEstab",
-                    "1/fw0/ifInOctets"
-            }
-    )
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
+                    datacollectionType = "snmp",
+                    anticipateFiles = {
+                            "1",
+                            "1/fw0"
+                    },
+                    anticipateRrds = {
+                            "1/tcpCurrEstab",
+                            "1/fw0/ifInOctets"
+                    }
+            )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
@@ -306,11 +290,12 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Test
     @Transactional
     @JUnitCollector(
-            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
-            datacollectionType = "snmp",
-            anticipateRrds = { "test" }
-    )
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
+                    datacollectionType = "snmp",
+                    anticipateRrds = { "test" }
+            )
     public void testUsingFetch() throws Exception {
+        System.err.println("=== testUsingFetch ===");
         File snmpDir = (File)m_context.getAttribute("rrdDirectory");
 
         // We initialize an empty attribute map, key=e.g OID; value=e.g. datasource name
@@ -341,47 +326,47 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Test
     @Transactional
     @JUnitCollector(
-            datacollectionConfig="/org/opennms/netmgt/config/datacollection-brocade-config.xml", 
-            datacollectionType="snmp",
-            anticipateRrds={ 
-                    "1/brocadeFCPortIndex/1/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/1/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/2/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/2/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/3/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/3/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/4/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/4/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/5/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/5/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/6/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/6/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/7/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/7/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/8/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/8/swFCPortRxWords"
-            }, 
-            anticipateFiles={ 
-                    "1",
-                    "1/brocadeFCPortIndex",
-                    "1/brocadeFCPortIndex/1/strings.properties",
-                    "1/brocadeFCPortIndex/1",
-                    "1/brocadeFCPortIndex/2/strings.properties",
-                    "1/brocadeFCPortIndex/2",
-                    "1/brocadeFCPortIndex/3/strings.properties",
-                    "1/brocadeFCPortIndex/3",
-                    "1/brocadeFCPortIndex/4/strings.properties",
-                    "1/brocadeFCPortIndex/4",
-                    "1/brocadeFCPortIndex/5/strings.properties",
-                    "1/brocadeFCPortIndex/5",
-                    "1/brocadeFCPortIndex/6/strings.properties",
-                    "1/brocadeFCPortIndex/6",
-                    "1/brocadeFCPortIndex/7/strings.properties",
-                    "1/brocadeFCPortIndex/7",
-                    "1/brocadeFCPortIndex/8/strings.properties",
-                    "1/brocadeFCPortIndex/8"
-            }
-    )
+                    datacollectionConfig="/org/opennms/netmgt/config/datacollection-brocade-config.xml", 
+                    datacollectionType="snmp",
+                    anticipateRrds={ 
+                            "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortRxWords"
+                    }, 
+                    anticipateFiles={ 
+                            "1",
+                            "1/brocadeFCPortIndex",
+                            "1/brocadeFCPortIndex/1/strings.properties",
+                            "1/brocadeFCPortIndex/1",
+                            "1/brocadeFCPortIndex/2/strings.properties",
+                            "1/brocadeFCPortIndex/2",
+                            "1/brocadeFCPortIndex/3/strings.properties",
+                            "1/brocadeFCPortIndex/3",
+                            "1/brocadeFCPortIndex/4/strings.properties",
+                            "1/brocadeFCPortIndex/4",
+                            "1/brocadeFCPortIndex/5/strings.properties",
+                            "1/brocadeFCPortIndex/5",
+                            "1/brocadeFCPortIndex/6/strings.properties",
+                            "1/brocadeFCPortIndex/6",
+                            "1/brocadeFCPortIndex/7/strings.properties",
+                            "1/brocadeFCPortIndex/7",
+                            "1/brocadeFCPortIndex/8/strings.properties",
+                            "1/brocadeFCPortIndex/8"
+                    }
+            )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBrocadeCollect() throws Exception {
         m_collectionSpecification.initialize(m_collectionAgent);
@@ -389,8 +374,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                collectionSet.getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
@@ -401,8 +386,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         // try collecting again
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                m_collectionSpecification.collect(m_collectionAgent).getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
@@ -413,47 +398,47 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
     @Test
     @Transactional
     @JUnitCollector(
-            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
-            datacollectionType = "snmp",
-            anticipateRrds={ 
-                    "1/brocadeFCPortIndex/1/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/1/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/2/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/2/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/3/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/3/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/4/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/4/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/5/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/5/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/6/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/6/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/7/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/7/swFCPortRxWords",
-                    "1/brocadeFCPortIndex/8/swFCPortTxWords",
-                    "1/brocadeFCPortIndex/8/swFCPortRxWords"
-            }, 
-            anticipateFiles={ 
-                    "1",
-                    "1/brocadeFCPortIndex",
-                    "1/brocadeFCPortIndex/1/strings.properties",
-                    "1/brocadeFCPortIndex/1",
-                    "1/brocadeFCPortIndex/2/strings.properties",
-                    "1/brocadeFCPortIndex/2",
-                    "1/brocadeFCPortIndex/3/strings.properties",
-                    "1/brocadeFCPortIndex/3",
-                    "1/brocadeFCPortIndex/4/strings.properties",
-                    "1/brocadeFCPortIndex/4",
-                    "1/brocadeFCPortIndex/5/strings.properties",
-                    "1/brocadeFCPortIndex/5",
-                    "1/brocadeFCPortIndex/6/strings.properties",
-                    "1/brocadeFCPortIndex/6",
-                    "1/brocadeFCPortIndex/7/strings.properties",
-                    "1/brocadeFCPortIndex/7",
-                    "1/brocadeFCPortIndex/8/strings.properties",
-                    "1/brocadeFCPortIndex/8"
-            }
-    )
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
+                    datacollectionType = "snmp",
+                    anticipateRrds={ 
+                            "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortRxWords"
+                    }, 
+                    anticipateFiles={ 
+                            "1",
+                            "1/brocadeFCPortIndex",
+                            "1/brocadeFCPortIndex/1/strings.properties",
+                            "1/brocadeFCPortIndex/1",
+                            "1/brocadeFCPortIndex/2/strings.properties",
+                            "1/brocadeFCPortIndex/2",
+                            "1/brocadeFCPortIndex/3/strings.properties",
+                            "1/brocadeFCPortIndex/3",
+                            "1/brocadeFCPortIndex/4/strings.properties",
+                            "1/brocadeFCPortIndex/4",
+                            "1/brocadeFCPortIndex/5/strings.properties",
+                            "1/brocadeFCPortIndex/5",
+                            "1/brocadeFCPortIndex/6/strings.properties",
+                            "1/brocadeFCPortIndex/6",
+                            "1/brocadeFCPortIndex/7/strings.properties",
+                            "1/brocadeFCPortIndex/7",
+                            "1/brocadeFCPortIndex/8/strings.properties",
+                            "1/brocadeFCPortIndex/8"
+                    }
+            )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
         // don't forget to initialize the agent
@@ -462,8 +447,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                collectionSet.getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
@@ -474,8 +459,8 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
         // try collecting again
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
-                m_collectionSpecification.collect(m_collectionAgent).getStatus());
+                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 

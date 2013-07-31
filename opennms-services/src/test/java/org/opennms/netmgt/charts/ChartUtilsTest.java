@@ -51,7 +51,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -61,11 +62,13 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class ChartUtilsTest {
+    private static final Logger LOG = LoggerFactory.getLogger(ChartUtilsTest.class);
     
     private static final String CHART_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<tns:chart-configuration xmlns:tns=\"http://xmlns.opennms.org/xsd/config/charts\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd \">\n" + 
@@ -170,7 +173,7 @@ public class ChartUtilsTest {
         try {
             chart = ChartUtils.getBarChart("opennms-rules!");
         } catch (IllegalArgumentException e) {
-            log().debug("testGetChartWithInvalidChartName: Good, this test is working.");
+            LOG.debug("testGetChartWithInvalidChartName: Good, this test is working.");
         }
         assertNull(chart);
     }
@@ -195,10 +198,6 @@ public class ChartUtilsTest {
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
 //        m_config = ChartConfigFactory.getInstance().getConfiguration();
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,10 +42,8 @@ import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -53,6 +51,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -61,6 +61,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * values.  See bug #1703.
  */
 public class InterfaceSnmpResourceType implements OnmsResourceType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(InterfaceSnmpResourceType.class);
 
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
@@ -68,8 +70,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     /**
      * <p>Constructor for InterfaceSnmpResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public InterfaceSnmpResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
@@ -267,9 +269,9 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
                 resource.setEntity(snmpInterface);
             } else {
-                log().debug("populateResourceList: snmpInterface is null");
+                LOG.debug("populateResourceList: snmpInterface is null");
             }
-            log().debug("populateResourceList: adding resource toString " + resource.toString());
+            LOG.debug("populateResourceList: adding resource toString {}", resource.toString());
             resources.add(resource);
         }
         
@@ -404,10 +406,6 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         File relPath = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, ident[0] + File.separator + ident[1]);
         File parent = getParentResourceDirectory(relPath.toString(), true);
         return OnmsResource.sortIntoResourceList(populateResourceList(parent, relPath, node, true));
-    }
-    
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(InterfaceSnmpResourceType.class);
     }
 
 }

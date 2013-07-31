@@ -28,11 +28,14 @@
 
 package org.opennms.smoketest;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
@@ -45,16 +48,22 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
 
-        // Google Chrome
-        // System.setProperty("webdriver.chrome.driver", "/Users/ranger/Downloads/chromedriver");
-        // WebDriver driver = new ChromeDriver();
+        WebDriver driver = null;
 
-        // Selenium remote server
-        // DesiredCapabilities capability = DesiredCapabilities.firefox();
-        // WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
-
-        // Firefox
-        WebDriver driver = new FirefoxDriver();
+        // Google Chrome if chrome driver property is set
+        final String chromeDriverLocation = System.getProperty("webdriver.chrome.driver");
+        if (chromeDriverLocation != null) {
+            final File chromeDriverFile = new File(chromeDriverLocation);
+            if (chromeDriverFile.exists() && chromeDriverFile.canExecute()) {
+                System.err.println("using chrome driver");
+                driver = new ChromeDriver();
+            }
+        }
+        
+        // otherwise, Firefox
+        if (driver == null) {
+            driver = new FirefoxDriver();
+        }
 
         String baseUrl = "http://localhost:8980/";
         selenium = new WebDriverBackedSelenium(driver, baseUrl);
@@ -67,7 +76,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @After
     public void tearDown() throws Exception {
-        selenium.stop();
+        if (selenium != null) selenium.stop();
     }
 
     protected void waitForPageToLoad() {

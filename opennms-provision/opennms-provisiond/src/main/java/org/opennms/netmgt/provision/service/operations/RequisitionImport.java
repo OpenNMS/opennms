@@ -30,10 +30,12 @@ package org.opennms.netmgt.provision.service.operations;
 
 import javax.xml.bind.ValidationException;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class RequisitionImport {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImport.class);
     private Requisition m_requisition;
     private Throwable m_throwable;
 
@@ -49,7 +51,7 @@ public class RequisitionImport {
             if (m_throwable == null) {
                 m_throwable = e;
             } else {
-                LogUtils.debugf(this, e, "Requisition %s did not validate, but we'll ignore the exception because we've previously aborted with: %s", requisition, m_throwable);
+                LOG.debug("Requisition {} did not validate, but we'll ignore the exception because we've previously aborted with: {}", requisition, m_throwable, e);
             }
         }
     }
@@ -62,7 +64,7 @@ public class RequisitionImport {
         if (m_throwable == null) {
             m_throwable = t;
         } else {
-            LogUtils.warnf(this, t, "Requisition %s has already been aborted, but we received another abort message.  Ignoring.", m_requisition);
+            LOG.warn("Requisition {} has already been aborted, but we received another abort message.  Ignoring.", m_requisition, t);
         }
     }
 

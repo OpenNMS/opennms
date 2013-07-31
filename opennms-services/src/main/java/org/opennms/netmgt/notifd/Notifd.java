@@ -41,8 +41,10 @@ import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to represent the notification execution service. When an
@@ -62,7 +64,9 @@ import org.opennms.netmgt.model.events.EventIpcManager;
  * @version $Id: $
  */
 public final class Notifd extends AbstractServiceDaemon {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Notifd.class);
+    
     /**
      * The singleton instance.
      */
@@ -106,7 +110,7 @@ public final class Notifd extends AbstractServiceDaemon {
      * Constructs a new Notifd service daemon.
      */
     protected Notifd() {
-    	super("OpenNMS.Notifd");
+    	super("notifd");
     }
 
     /**
@@ -118,7 +122,7 @@ public final class Notifd extends AbstractServiceDaemon {
         m_eventReader = new BroadcastEventProcessor();
 
         try {
-            log().info("Notification status = " + getConfigManager().getNotificationStatus());
+            LOG.info("Notification status = {}", getConfigManager().getNotificationStatus());
 
             Queue queues[] = getConfigManager().getConfiguration().getQueue();
             for (Queue queue : queues) {
@@ -135,7 +139,7 @@ public final class Notifd extends AbstractServiceDaemon {
                 m_queueHandlers.put(queue.getQueueId(), handlerQueue);
             }
         } catch (Throwable t) {
-            log().error("start: Failed to load notifd queue handlers.", t);
+            LOG.error("start: Failed to load notifd queue handlers.", t);
             throw new UndeclaredThrowableException(t);
         }
         
@@ -153,7 +157,7 @@ public final class Notifd extends AbstractServiceDaemon {
         try {
             m_eventReader.init();
         } catch (Throwable e) {
-            log().error("Failed to setup event receiver", e);
+            LOG.error("Failed to setup event receiver", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -373,7 +377,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>setNodeDao</p>
      *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -382,7 +386,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>getNodeDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
     public NodeDao getNodeDao() {
         return m_nodeDao;

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-qosdaemon</artifactId>
-  <name>OpenNMS OSS-J interface</name>
+  <name>OpenNMS QOS Daemon</name>
   <!--  <packaging>jar</packaging> -->
   <url>http://sourceforge.net/projects/opennms</url>
   <description>
@@ -214,16 +214,6 @@
   </reporting>
   <dependencies>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.openoss</groupId>
       <artifactId>OSSbeans-xml</artifactId>
       <scope>compile</scope>
@@ -231,6 +221,14 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -241,6 +239,14 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
       <scope>compile</scope>
@@ -427,7 +433,7 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </releases>
-      <id>sourceforge</id>
+      <id>openoss-repo</id>
       <name>Sourceforge OSSbeans Release Repository</name>
       <url>http://maven.opennms.org/content/groups/openoss.sourceforge.net-release</url>
     </repository>

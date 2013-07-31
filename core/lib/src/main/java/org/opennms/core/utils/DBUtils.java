@@ -35,6 +35,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>DBUtils class.</p>
@@ -42,6 +45,9 @@ import java.util.Set;
  * @author ranger
  */
 public class DBUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DBUtils.class);
+	
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
@@ -103,7 +109,7 @@ public class DBUtils {
                 try {
                     rs.close();
                 } catch (Throwable e) {
-                    log().warn("Unable to close result set", e);
+                    LOG.warn("Unable to close result set", e);
                 }
             }
         }
@@ -114,7 +120,7 @@ public class DBUtils {
                 try {
                     s.close();
                 } catch (Throwable e) {
-                    log().warn("Unable to close statement", e);
+                    LOG.warn("Unable to close statement", e);
                 }
             }
         }
@@ -125,19 +131,11 @@ public class DBUtils {
                 try {
                     c.close();
                 } catch (Throwable e) {
-                    log().warn("Unable to close connection", e);
+                    LOG.warn("Unable to close connection", e);
                 }
             }
         }
         m_connections.clear();
     }
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(m_loggingClass);
-    }
 }

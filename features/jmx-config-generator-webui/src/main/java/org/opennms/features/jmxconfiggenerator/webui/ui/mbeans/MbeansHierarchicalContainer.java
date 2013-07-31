@@ -28,20 +28,21 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.ui.mbeans;
 
-import com.google.common.base.Strings;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.features.jmxconfiggenerator.webui.data.MetaMBeanItem;
 import org.opennms.features.jmxconfiggenerator.webui.data.StringRenderer;
+import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+
+import com.google.common.base.Strings;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.server.Resource;
 
 /**
  *

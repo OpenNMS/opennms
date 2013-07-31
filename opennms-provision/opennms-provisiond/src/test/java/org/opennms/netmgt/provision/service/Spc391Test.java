@@ -30,32 +30,27 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -64,39 +59,39 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
+        "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class Spc391Test {
-    
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+public class Spc391Test extends ProvisioningTestCase {
+
     @Autowired
     private Provisioner m_provisioner;
-    
+
     @Autowired
     private ResourceLoader m_resourceLoader;
-    
+
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-    
+
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-    
+
     @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
-    private MockEventIpcManager m_eventSubscriber;
-    
+    private DatabasePopulator m_populator;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
         final ForeignSource fs = new ForeignSource();
@@ -105,6 +100,13 @@ public class Spc391Test {
         fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_provisioner.start();
+    }
+    
+    @After
+    public void tearDown() throws InterruptedException {
+        m_populator.resetDatabase();
+        waitForEverything();
     }
 
     @Test
@@ -119,45 +121,12 @@ public class Spc391Test {
         System.err.println("triggering import");
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-391.xml"), true);
         System.err.println("finished triggering imports");
-        
+        waitForEverything();
+
         eventReceived.await(5, TimeUnit.MINUTES);
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final List<OnmsNode> nodes = m_nodeDao.findAll();
         assertEquals(1, nodes.size());
     }
 
-    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
-        t.schedule();
-        t.waitFor();
-    }
-    
-    private CountDownLatch anticipateEvents(final int numberToMatch, final String... ueis) {
-        final CountDownLatch eventReceived = new CountDownLatch(numberToMatch);
-        m_eventSubscriber.addEventListener(new EventListener() {
-
-            @Override
-            public void onEvent(final Event e) {
-                eventReceived.countDown();
-            }
-
-            @Override
-            public String getName() {
-                return "Test Initial Setup";
-            }
-        }, Arrays.asList(ueis));
-        return eventReceived;
-    }
-
-    private NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    private IpInterfaceDao getInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-    
-    private SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
 }

@@ -31,7 +31,8 @@ package org.opennms.sms.monitor.internal.config;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract MobileSequenceOperation class.</p>
@@ -40,6 +41,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public abstract class MobileSequenceOperation {
+    private static final Logger LOG = LoggerFactory.getLogger(MobileSequenceOperation.class);
 	/**
 	 * <p>Constructor for MobileSequenceOperation.</p>
 	 */
@@ -105,15 +107,6 @@ public abstract class MobileSequenceOperation {
 	 */
 	public void setLabel(String label) {
 		m_label = label;
-	}
-
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	public ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 	/**

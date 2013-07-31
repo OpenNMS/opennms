@@ -32,9 +32,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public final class OrderBuilder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OrderBuilder.class);
+	
     private final LinkedHashSet<Order> m_orders = new LinkedHashSet<Order>();
 
     private String m_lastAttribute = null;
@@ -70,9 +75,9 @@ public final class OrderBuilder {
     public void asc() {
         synchronized (m_orders) {
             if (m_orders.isEmpty()) {
-                LogUtils.debugf(this, "asc() called, but no orderBy has been specified.");
+            	LOG.debug("asc() called, but no orderBy has been specified.");
             } else if (m_lastAttribute == null) {
-                LogUtils.debugf(this, "asc() called on an attribute that can't be changed.");
+            	LOG.debug("asc() called on an attribute that can't be changed.");
             } else {
                 for (final Order o : m_orders) {
                     if (o.getAttribute().equals(m_lastAttribute)) {
@@ -88,9 +93,9 @@ public final class OrderBuilder {
     public void desc() {
         synchronized (m_orders) {
             if (m_orders.isEmpty()) {
-                LogUtils.debugf(this, "desc() called, but no orderBy has been specified.");
+            	LOG.debug("desc() called, but no orderBy has been specified.");
             } else if (m_lastAttribute == null) {
-                LogUtils.debugf(this, "desc() called on an attribute that can't be changed.");
+            	LOG.debug("desc() called on an attribute that can't be changed.");
             } else {
                 for (final Order o : m_orders) {
                     if (o.getAttribute().equals(m_lastAttribute)) {

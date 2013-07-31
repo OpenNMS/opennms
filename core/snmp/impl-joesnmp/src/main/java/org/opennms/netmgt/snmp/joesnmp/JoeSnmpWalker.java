@@ -140,7 +140,7 @@ public class JoeSnmpWalker extends SnmpWalker {
             
             try {
                 SnmpPduRequest response = (SnmpPduRequest)pdu;
-                LOG.debug("Received a tracker pdu from "+getAddress()+" of size "+pdu.getLength()+" errorStatus = "+response.getErrorStatus()+", errorIndex = "+response.getErrorIndex());
+                LOG.debug("Received a tracker pdu from {} of size {} errorStatus = {}, errorIndex = {}", getAddress(), pdu.getLength(), response.getErrorStatus(), response.getErrorIndex());
                 if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
                     for(int i = 0; i < response.getLength(); i++) {
                         SnmpVarBind vb = response.getVarBindAt(i);
@@ -194,7 +194,7 @@ public class JoeSnmpWalker extends SnmpWalker {
 
         @Override
     public void start() {
-        LOG.info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
+        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), SnmpSMI.getVersionString(getVersion()), m_agentConfig);
         super.start();
     }
 
@@ -209,7 +209,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
         if (m_session == null) m_session = new SnmpSession(m_peer);
-        LOG.debug("Sending tracker pdu of size "+joePduBuilder.getPdu().getLength());
+        LOG.debug("Sending tracker pdu of size {}", joePduBuilder.getPdu().getLength());
         m_session.send(joePduBuilder.getPdu(), m_handler);
     }
     

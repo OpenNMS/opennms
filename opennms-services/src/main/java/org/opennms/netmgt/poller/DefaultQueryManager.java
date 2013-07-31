@@ -45,10 +45,11 @@ import javax.sql.DataSource;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.Updater;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultQueryManager class.</p>
@@ -60,6 +61,8 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  * @version $Id: $
  */
 public class DefaultQueryManager implements QueryManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultQueryManager.class);
 
     final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ? AND ifServices.status='A'";
 
@@ -115,7 +118,6 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
-        ThreadCategory log = log();
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -137,10 +139,9 @@ public class DefaultQueryManager implements QueryManager {
                 return rs.getInt(1) > 0;
             }
 
-            if (log.isDebugEnabled())
-                log.debug(whichEvent + nodeId + "/" + ipAddr + "/" + serviceName + " active");
+            LOG.debug("{} {}/{}/{} active", whichEvent, nodeId, ipAddr, serviceName);
         } catch (SQLException sqlE) {
-            log.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
+            LOG.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
         } finally {
             d.cleanUp();
         }
@@ -158,14 +159,12 @@ public class DefaultQueryManager implements QueryManager {
             dbConn = getConnection();
             d.watch(dbConn);
             List<Integer> serviceIds = new ArrayList<Integer>();
-            ThreadCategory log = log();
             stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
             d.watch(stmt);
             stmt.setString(1, ipaddr);
             rs = stmt.executeQuery();
             d.watch(rs);
-            if (log.isDebugEnabled())
-                log.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
+            LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: {}", ipaddr);
 
             while (rs.next()) {
                 serviceIds.add(rs.getInt(1));
@@ -179,8 +178,6 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public int getNodeIDForInterface(String ipaddr) throws SQLException {
-        ThreadCategory log = log();
-
         int nodeid = -1;
         java.sql.Connection dbConn = null;
         Statement stmt = null;
@@ -199,8 +196,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeid = rs.getInt(1);
-                if (log.isDebugEnabled())
-                    log.debug("getNodeLabel: ipaddr=" + ipaddr + " nodeid=" + nodeid);
+                LOG.debug("getNodeLabel: ipaddr={} nodeid={}", ipaddr, nodeid);
             }
         } finally {
             d.cleanUp();
@@ -212,8 +208,6 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public String getNodeLabel(int nodeId) throws SQLException {
-        ThreadCategory log = log();
-
         String nodeLabel = null;
         java.sql.Connection dbConn = null;
         Statement stmt = null;
@@ -231,8 +225,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             if (rs.next()) {
                 nodeLabel = (String) rs.getString("nodelabel");
-                if (log.isDebugEnabled())
-                    log.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
+                LOG.debug("getNodeLabel: nodeid={} nodelabel={}", nodeId, nodeLabel);
             }
         } finally {
             d.cleanUp();
@@ -244,7 +237,6 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
-        ThreadCategory log = log();
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -263,8 +255,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             while (rs.next()) {
                 count = rs.getInt(1);
-                if (log.isDebugEnabled())
-                    log.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: " + ipaddr);
+                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: {}", ipaddr);
             }
         } finally {
             d.cleanUp();
@@ -276,7 +267,6 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public List<IfKey> getInterfacesWithService(String svcName) throws SQLException {
         List<IfKey> ifkeys = new ArrayList<IfKey>();
-        ThreadCategory log = log();
         final DBUtils d = new DBUtils(getClass());
 
         try {
@@ -284,8 +274,7 @@ public class DefaultQueryManager implements QueryManager {
         java.sql.Connection dbConn = getConnection();
         d.watch(dbConn);
 
-        if (log.isDebugEnabled())
-            log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
+        LOG.debug("scheduleExistingInterfaces: dbConn = {}, svcName = {}", dbConn, svcName);
 
         PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_INTERFACES);
         d.watch(stmt);
@@ -312,14 +301,13 @@ public class DefaultQueryManager implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
-        ThreadCategory log = ThreadCategory.getInstance(Poller.class);
-        log.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
+        LOG.debug("getting last known status for address: {} service: {}", ipAddr, svcName);
 
         Date svcLostDate = null;
         // Convert service name to service identifier
         //
         if (serviceId < 0) {
-            log.warn("Failed to retrieve service identifier for interface " + ipAddr + " and service '" + svcName + "'");
+            LOG.warn("Failed to retrieve service identifier for interface {} and service '{}'", ipAddr, svcName);
             return svcLostDate;
         }
 
@@ -354,7 +342,7 @@ public class DefaultQueryManager implements QueryManager {
             if (outagesResult.next()) {
                 regainedDate = outagesResult.getTimestamp(1);
                 lostDate = outagesResult.getTimestamp(2);
-                log.debug("getServiceLastKnownStatus: lostDate: " + lostDate);
+                LOG.debug("getServiceLastKnownStatus: lostDate: {}", lostDate);
             }
             // the service has never been down, need to use current date for
             // both
@@ -364,7 +352,7 @@ public class DefaultQueryManager implements QueryManager {
                 lostDate = new Timestamp(currentDate.getTime());
             }
         } catch (SQLException sqlE) {
-            log.error("SQL exception while retrieving last known service status for " + ipAddr + "/" + svcName);
+            LOG.error("SQL exception while retrieving last known service status for {}/{}", ipAddr, svcName);
         } finally {
             d.cleanUp();
         }
@@ -379,7 +367,7 @@ public class DefaultQueryManager implements QueryManager {
             // assign the svc lost date.
             if (regainedDate == null) {
                 svcLostDate = new Date(lostDate.getTime());
-                log.debug("getServiceLastKnownStatus: svcLostDate: " + svcLostDate);
+                LOG.debug("getServiceLastKnownStatus: svcLostDate: {}", svcLostDate);
             }
         }
 
@@ -413,7 +401,7 @@ public class DefaultQueryManager implements QueryManager {
         
         while (attempt < 2 && notUpdated) {
             try {
-                log().info("openOutage: opening outage for "+nodeId+":"+ipAddr+":"+svcName+" with cause "+dbId+":"+time);
+                LOG.info("openOutage: opening outage for {}:{}:{} with cause {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 
                 SingleResultQuerier srq = new SingleResultQuerier(getDataSource(), outageIdSQL);
                 srq.execute();
@@ -438,9 +426,9 @@ public class DefaultQueryManager implements QueryManager {
                 notUpdated = false;
             } catch (Throwable e) {
                 if (attempt > 1) {
-                    log().fatal("openOutage: Second and final attempt failed opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.error("openOutage: Second and final attempt failed opening outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 } else {
-                    log().info("openOutage: First attempt failed opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.info("openOutage: First attempt failed opening outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 }
             }
             attempt++;
@@ -455,7 +443,7 @@ public class DefaultQueryManager implements QueryManager {
         
         while (attempt < 2 && notUpdated) {
             try {
-                log().info("resolving outage for "+nodeId+":"+ipAddr+":"+svcName+" with resolution "+dbId+":"+time);
+                LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, dbId, time);
                 int serviceId = getServiceID(svcName);
                 
                 String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
@@ -473,9 +461,9 @@ public class DefaultQueryManager implements QueryManager {
                 notUpdated = false;
             } catch (Throwable e) {
                 if (attempt > 1) {
-                    log().fatal("resolveOutage: Second and final attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.error("resolveOutage: Second and final attempt failed resolving outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 } else {
-                    log().info("resolveOutage: first attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                    LOG.info("resolveOutage: first attempt failed resolving outage for {}:{}:{}", nodeId, ipAddr, svcName, e);
                 }
             }
             attempt++;
@@ -486,7 +474,7 @@ public class DefaultQueryManager implements QueryManager {
     @Override
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
-            log().info("reparenting outages for "+oldNodeId+":"+ipAddr+" to new node "+newNodeId);
+            LOG.info("reparenting outages for {}:{} to new node {}", oldNodeId, ipAddr, newNodeId);
             String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
             
             Object[] values = {
@@ -498,7 +486,7 @@ public class DefaultQueryManager implements QueryManager {
             Updater updater = new Updater(getDataSource(), sql);
             updater.execute(values);
         } catch (Throwable e) {
-            log().fatal(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
+            LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
         }
         
     }
@@ -516,15 +504,6 @@ public class DefaultQueryManager implements QueryManager {
         querier.execute(serviceName);
         final Integer result = (Integer)querier.getResult();
         return result == null ? -1 : result.intValue();
-    }
-
-    /**
-     * Private helper method for getting a Category for logging.
-     * 
-     * @return A log <code>Category</code>
-     */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /** {@inheritDoc} */

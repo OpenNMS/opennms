@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -60,6 +59,8 @@ import org.opennms.netmgt.poller.remote.ServicePollState;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.opennms.netmgt.poller.remote.TimeAdjustment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -72,6 +73,7 @@ import org.springframework.util.ObjectUtils;
  * @version $Id: $
  */
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, DisposableBean {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerFrontEnd.class);
 
     private class Disconnected extends RunningState {
 
@@ -173,7 +175,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 doRegister(location);
                 setState(new Running());
             } catch (final Exception e) {
-                LogUtils.warnf(this, e, "Unable to register.");
+                LOG.warn("Unable to register.", e);
                 setState(new Disconnected());
             }
         }
@@ -205,16 +207,19 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                     case STARTED:
                         onStarted();
                         break;
+                    default:
+                        LOG.debug("Unhandled status on checkIn(): {}", status);
+                        break;
                 }
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred while checking in.");
+                LOG.error("Unexpected exception occurred while checking in.", e);
                 setState(new FatalExceptionOccurred());
             }
             final String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
             if (!"".equals(killSwitchFileName) && killSwitchFileName != null) {
                 final File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
                 if (!killSwitch.exists()) {
-                    LogUtils.infof(this, "Kill-switch file %s does not exist; stopping.", killSwitch.getPath());
+                    LOG.info("Kill-switch file {} does not exist; stopping.", killSwitch.getPath());
                     doStop();
                 }
             }
@@ -231,7 +236,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 doStop();
                 setState(new Registering());
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred while stopping.");
+                LOG.error("Unexpected exception occurred while stopping.", e);
                 setState(new FatalExceptionOccurred());
             }
         }
@@ -266,7 +271,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             try {
                 doPollService(polledServiceId);
             } catch (Throwable e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred while polling service ID %s.", polledServiceId);
+                LOG.error("Unexpected exception occurred while polling service ID {}.", polledServiceId, e);
                 setState(new FatalExceptionOccurred());
             }
 
@@ -762,7 +767,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
             fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
         } catch (final Exception e) {
-            LogUtils.warnf(this, e, "Unable to get updated poller configuration.");
+            LOG.warn("Unable to get updated poller configuration.", e);
             if (m_pollerConfiguration == null) {
                 m_pollerConfiguration = new EmptyPollerConfiguration();
             }

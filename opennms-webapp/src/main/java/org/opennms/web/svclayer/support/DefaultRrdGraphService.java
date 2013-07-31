@@ -29,29 +29,38 @@
 package org.opennms.web.svclayer.support;
 
 
+import java.io.File;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.AdhocGraphType;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.PrefabGraphType;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * <p>DefaultRrdGraphService class.</p>
@@ -60,6 +69,9 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class DefaultRrdGraphService implements RrdGraphService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultRrdGraphService.class);
+
 //    private static final String s_missingParamsPath = "/images/rrd/missingparams.png";
     private static final String s_rrdError = "/images/rrd/error.png";
     
@@ -108,10 +120,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         InputStream tempIn = null;
         try {
-            LogUtils.debugf(this, "Executing RRD command in directory '%s': %s", workDir, command);
+            LOG.debug("Executing RRD command in directory '{}': {}", workDir, command);
             tempIn = m_rrdDao.createGraph(command, workDir);
         } catch (final DataAccessException e) {
-        	LogUtils.warnf(this, e, "Exception while creating graph.");
+        	LOG.warn("Exception while creating graph.", e);
             if (debug) {
                 throw e;
             } else {
@@ -242,7 +254,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             buf.append(line);
         }
 
-        LogUtils.debugf(this, "formatting: %s, bogus-rrd, %s, %s, %s", buf, starttime, endtime, graphtitle);
+        LOG.debug("formatting: {}, bogus-rrd, {}, {}, {}", buf, starttime, endtime, graphtitle);
         return MessageFormat.format(buf.toString(), "bogus-rrd", starttime, endtime, graphtitle);
     }
 
@@ -349,7 +361,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                     fmt = new SimpleDateFormat(sdfPattern);
                     translationMap.put(RE.simplePatternToFullRegularExpression("{startTime:"+sdfPattern+"}"), fmt.format(new Date(startTime)).replace(":", "\\:"));
                 } catch (IllegalArgumentException e) {
-                    LogUtils.errorf(this, "Cannot parse date format '%s' for graph %s.", sdfPattern, reportName);
+                    LOG.error("Cannot parse date format '{}' for graph {}.", sdfPattern, reportName);
                 }
                 pos = pos + sdfPattern.length() + 1;
             }
@@ -368,7 +380,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                     fmt = new SimpleDateFormat(sdfPattern);
                     translationMap.put(RE.simplePatternToFullRegularExpression("{endTime:"+sdfPattern+"}"), fmt.format(new Date(endTime)).replace(":", "\\:"));
                 } catch (IllegalArgumentException e) {
-                    LogUtils.errorf(this, "Cannot parse date format '%s' for graph %s.", sdfPattern, reportName);
+                    LOG.error("Cannot parse date format '{}' for graph {}.", sdfPattern, reportName);
                 }
                 pos = pos + sdfPattern.length() + 1;
             }
@@ -378,7 +390,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));
             translationMap.putAll(getTranslationsForAttributes(graph.getResource().getStringPropertyAttributes(), prefabGraph.getPropertiesValues(), "string property attribute"));
         } catch (RuntimeException e) {
-            LogUtils.errorf(this, "Invalid attributes were found on resource '%s'", graph.getResource().getId());
+            LOG.error("Invalid attributes were found on resource '{}'", graph.getResource().getId());
             throw e;
         }
         
@@ -434,7 +446,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>getResourceDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
@@ -443,7 +455,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>setResourceDao</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
@@ -452,7 +464,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>getGraphDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public GraphDao getGraphDao() {
         return m_graphDao;
@@ -461,7 +473,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>setGraphDao</p>
      *
-     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     * @param graphDao a {@link org.opennms.netmgt.dao.api.GraphDao} object.
      */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
@@ -470,7 +482,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>getRrdDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public RrdDao getRrdDao() {
         return m_rrdDao;
@@ -479,7 +491,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>setRrdDao</p>
      *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
      */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;

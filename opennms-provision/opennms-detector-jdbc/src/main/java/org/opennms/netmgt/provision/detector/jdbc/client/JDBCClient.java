@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,11 +36,11 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.opennms.core.utils.DBTools;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>JDBCClient class.</p>
@@ -49,7 +49,8 @@ import org.opennms.netmgt.provision.support.Client;
  * @version $Id: $
  */
 public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(JDBCClient.class);
     private String m_dbDriver;
     private String m_user;
     private String m_password;
@@ -67,7 +68,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
             try {
                 m_connection.close();
             } catch (final SQLException e) {
-                LogUtils.debugf(this, e, "unable to close JDBC connection");
+                LOG.debug("unable to close JDBC connection", e);
             }
         }
     }
@@ -75,19 +76,13 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     /** {@inheritDoc} */
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        log().info("connecting to JDBC on " + address);
-        if (log().isDebugEnabled()) {
-            log().debug("Loading JDBC driver: '" + getDbDriver() + "'");
-        }
+        LOG.info("connecting to JDBC on {}", address);
+        LOG.debug("Loading JDBC driver: '{}'", getDbDriver());
         Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
-        if (log().isDebugEnabled()) {
-            log().debug("JDBC driver loaded: '" + getDbDriver() + "'");
-        }
+        LOG.debug("JDBC driver loaded: '{}'", getDbDriver());
 
         String url = DBTools.constructUrl(getUrl(), address.getCanonicalHostName());
-        if (log().isDebugEnabled()) {
-            log().debug("Constructed JDBC url: '" + url + "'");
-        }
+        LOG.debug("Constructed JDBC url: '{}'", url);
 
         Properties props = new Properties();
         props.setProperty("user", getUser());
@@ -95,9 +90,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         props.setProperty("timeout", String.valueOf(timeout/1000));
         m_connection = driver.connect(url, props);
 
-        if (log().isDebugEnabled()) {
-            log().debug("Got database connection: '" + m_connection + "' (" + url + ", " + getUser() + ", " + getPassword() + ")");
-        }
+        LOG.debug("Got database connection: '{}' ({}, {}, {})", m_connection, url, getUser(), getPassword());
     }
 
     /**
@@ -197,14 +190,5 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
      */
     public String getUrl() {
         return m_url;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

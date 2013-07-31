@@ -45,6 +45,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionAttributeType;
 import org.opennms.netmgt.collectd.vmware.cim.VmwareCimCollectionResource;
@@ -55,8 +56,8 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
-import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -328,7 +329,7 @@ public class VmwareCimCollector implements ServiceCollector {
                 if (!cimObjects.containsKey(cimClass)) {
                     List<CIMObject> cimList = null;
                     try {
-                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass);
+                        cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
                     } catch (RemoteException e) {
                         logger.warn("Error retrieving cim values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;

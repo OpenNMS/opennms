@@ -1,0 +1,17 @@
+<assembly>
+  <id>log4j2</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <filtered>false</filtered>
+      <outputDirectory>/</outputDirectory>
+      <directory>target/classes/etc</directory>
+      <includes><include>log4j2.xml</include></includes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -47,6 +47,8 @@ import javax.mail.search.SearchTerm;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /*
@@ -69,6 +71,9 @@ import org.opennms.netmgt.config.javamail.ReadmailConfig;
  * @version $Id: $
  */
 public class JavaReadMailer extends JavaMailer2 {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JavaReadMailer.class);
+
     
     private List<Message> m_messages;
     final private ReadmailConfig m_config;
@@ -85,7 +90,7 @@ public class JavaReadMailer extends JavaMailer2 {
      */
     @Override
     protected void finalize() throws Throwable {
-        log().debug("finalize: cleaning up mail folder an store connections...");
+        LOG.debug("finalize: cleaning up mail folder an store connections...");
         if (m_messages != null && !m_messages.isEmpty() && m_messages.get(0).getFolder() != null && m_messages.get(0).getFolder().isOpen()) {
             m_messages.get(0).getFolder().close(m_deleteOnClose);
         }
@@ -95,7 +100,7 @@ public class JavaReadMailer extends JavaMailer2 {
         }
         
         super.finalize();
-        log().debug("finalize: Mail folder and store connections closed.");
+        LOG.debug("finalize: Mail folder and store connections closed.");
     }
     
     //TODO figure out why need this throws here
@@ -238,7 +243,7 @@ public class JavaReadMailer extends JavaMailer2 {
         Object content = null;
         String text = null;
         
-        log().debug("getText: getting text of message from MimeType: text/*");
+        LOG.debug("getText: getting text of message from MimeType: text/*");
 
         try {
             text = (String)msg.getContent();
@@ -248,17 +253,17 @@ public class JavaReadMailer extends JavaMailer2 {
 
             if (content instanceof MimeMultipart) {
 
-                log().debug("getText: content is MimeMultipart, checking for text from each part...");
+                LOG.debug("getText: content is MimeMultipart, checking for text from each part...");
 
                 for (int cnt = 0; cnt < ((MimeMultipart)content).getCount(); cnt++) {
                     BodyPart bp = ((MimeMultipart)content).getBodyPart(cnt);
                     if (bp.isMimeType("text/*")) {
                         text = (String)bp.getContent();
-                        log().debug("getText: found text MIME type: "+text);
+                        LOG.debug("getText: found text MIME type: {}", text);
                         break;
                     }
                 }
-                log().debug("getText: did not find text within MimeMultipart message.");
+                LOG.debug("getText: did not find text within MimeMultipart message.");
             }
         }
         return string2Lines(text);

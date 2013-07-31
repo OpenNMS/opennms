@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>spring-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Spring Dependencies</name>
+  <name>OpenNMS Dependencies Spring</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the spring library.
@@ -203,6 +203,10 @@
           <groupId>cglib</groupId>
           <artifactId>cglib</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -376,9 +380,19 @@
       <artifactId>cglib-nodep</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+       <groupId>javassist</groupId>
+       <artifactId>javassist</artifactId>
+       <version>3.12.1.GA</version>
+    </dependency>
+
   </dependencies>
 </project>

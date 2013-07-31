@@ -59,8 +59,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.eventd.mock.EventAnticipator;
-import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -322,10 +322,10 @@ public class PollablesTest {
         PollableNode node = m_network.createNode(nodeId, "WebServer99");
         assertNotNull("node is null", node);
 
+        assertEquals(0, node.getMemberCount());
         assertEquals(99, node.getNodeId());
         assertEquals("WebServer99", node.getNodeLabel());
         assertEquals(node, m_network.getNode(nodeId));
-        
         assertEquals(m_network, node.getNetwork());
     }
     
@@ -627,7 +627,7 @@ public class PollablesTest {
 
     }
     
-    @Test
+    @Test(timeout=30000)
     public void testReparentStatusChanges() {
         
 

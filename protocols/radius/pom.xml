@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.radius</artifactId>
-  <name>OpenNMS RADIUS Support</name>
+  <name>OpenNMS Protocols RADIUS Support</name>
   <description>
     This module adds RADIUS support to OpenNMS.
   </description>

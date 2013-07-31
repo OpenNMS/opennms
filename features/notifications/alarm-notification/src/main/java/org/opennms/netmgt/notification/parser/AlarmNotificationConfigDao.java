@@ -30,13 +30,16 @@ import org.opennms.core.xml.JaxbUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import org.opennms.core.utils.LogUtils;
 
 public class AlarmNotificationConfigDao extends
 		AbstractJaxbConfigDao<AlarmNorthbounderConfig, AlarmNorthbounderConfig> {
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmNotificationConfigDao.class);
 
 	public AlarmNotificationConfigDao() {
 		super(AlarmNorthbounderConfig.class, "Config for Alarm Northbounder");
@@ -98,8 +101,7 @@ public class AlarmNotificationConfigDao extends
 						.getName();
 				if (availableconfig.getNotification().contains(
 						config.getNotification().get(0))) {
-					LogUtils.debugf(this, "Notification with name "
-							+ notificationName + " already exists.");
+					LOG.debug("Notification with name {} already exists.", notificationName);
 					return false;
 				}
 				availableconfig.getNotification().add(
@@ -111,25 +113,19 @@ public class AlarmNotificationConfigDao extends
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			jaxbMarshaller.marshal(availableconfig, file);
 		} catch (JAXBException e) {
-			LogUtils.errorf(this,
-					"Unable to add notification because of JAXBException ", e);
+			LOG.error("Unable to add notification because of JAXBException ", e);
 			return false;
 		} catch (FileNotFoundException e) {
-			LogUtils.errorf(
-					this,
-					"Unable to add notification because of FileNotFoundException ",
-					e);
+			LOG.error("Unable to add notification because of FileNotFoundException ", e);
 			return false;
 		} catch (IOException e) {
-			LogUtils.errorf(this,
-					"Unable to add notification because of IOException ", e);
+			LOG.error("Unable to add notification because of IOException ", e);
 			return false;
 		} catch (Exception e) {
-			LogUtils.errorf(this,
-					"Unable to add notification because of Exception ", e);
+			LOG.error("Unable to add notification because of Exception ", e);
 			return false;
 		}
-		LogUtils.debugf(this, "Notification added successfully");
+		LOG.debug("Notification added successfully");
 		return true;
 	}
 
@@ -170,8 +166,7 @@ public class AlarmNotificationConfigDao extends
 			boolean isRemoved = availableconfig.getNotification().remove(
 					config.getNotification().get(0));
 			if (isRemoved == false) {
-				LogUtils.debugf(this, "There is no Notification with name "
-						+ notificationName);
+				LOG.debug("There is no Notification with name " + notificationName);
 				return false;
 			}
 
@@ -180,22 +175,16 @@ public class AlarmNotificationConfigDao extends
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			jaxbMarshaller.marshal(availableconfig, file);
 		} catch (JAXBException e) {
-			LogUtils.errorf(this,
-					"Unable to delete notification because of JAXBException ",
-					e);
+			LOG.error("Unable to delete notification because of JAXBException ", e);
 			return false;
 		} catch (FileNotFoundException e) {
-			LogUtils.errorf(
-					this,
-					"Unable to delete notification because of FileNotFoundException ",
-					e);
+			LOG.error("Unable to delete notification because of FileNotFoundException ", e);
 			return false;
 		} catch (IOException e) {
-			LogUtils.errorf(this,
-					"Unable to delete notification because of IOException ", e);
+			LOG.error("Unable to delete notification because of IOException ", e);
 			return false;
 		}
-		LogUtils.debugf(this, "Notification deleted successfully");
+		LOG.debug("Notification deleted successfully");
 		return true;
 	}
 }

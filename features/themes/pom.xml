@@ -19,5 +19,6 @@
 
   <modules>
     <module>onms-default-theme</module>
+	<module>dashboard-theme</module>
   </modules>
 </project>
