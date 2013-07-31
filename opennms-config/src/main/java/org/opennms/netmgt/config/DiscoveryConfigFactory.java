@@ -539,20 +539,32 @@ public class DiscoveryConfigFactory {
     public String getForeignSource(InetAddress address) {
     	getReadLock().lock();
     	
-        final byte[] laddr = address.getAddress();
-
+    	LOG.debug("Looking for matching foreign source specific IP or IP range with address: {}...", address);
+    	
     	List<Specific> specificCollection = getConfiguration().getSpecificCollection();
     	for (Specific specific : specificCollection) {
 			String ipAddr = specific.getContent();
+	    	
 			if (ipAddr.equals(InetAddressUtils.str(address))) {
-				return specific.getForeignSource();
+				
+		    	String foreignSource = specific.getForeignSource();
+				LOG.debug("Matched foreign source {} matching address: {} against specific {}.", foreignSource, address, ipAddr);
+		    	getReadLock().unlock();
+				return foreignSource;
 			}
 		}
     	
+        final byte[] laddr = address.getAddress();
+        
     	List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRangeCollection();
     	for (IncludeRange range : includeRangeCollection) {
+    		
             if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
-    			range.getForeignSource();
+            	
+            	String foreignSource = range.getForeignSource();
+				LOG.debug("Found foreign source {} with address {} in the range begin: {} and end: {}.", foreignSource, address, range.getBegin(), range.getEnd());
+		    	getReadLock().unlock();
+    			return foreignSource;
             }
 		}
     	
@@ -560,11 +572,17 @@ public class DiscoveryConfigFactory {
     	for (IncludeUrl includeUrl : includeUrlCollection) {
     		String ipAddr = includeUrl.getContent();
 			if (ipAddr.equals(InetAddressUtils.str(address))) {
-				return includeUrl.getForeignSource();
+				
+		    	String foreignSource = includeUrl.getForeignSource();
+				LOG.debug("Matched foreign source {} matching address: {} in specified URL.", foreignSource, address);
+		    	getReadLock().unlock();
+				return foreignSource;
 			}
 		}
     	
-    	return getConfiguration().getForeignSource();
+    	String foreignSource = getConfiguration().getForeignSource();
+    	getReadLock().unlock();
+		return foreignSource;
     }
     	
 
