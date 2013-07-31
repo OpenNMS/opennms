@@ -387,11 +387,12 @@ public interface ProvisionService {
     /**
      * <p>createUndiscoveredNode</p>
      *
-     * @param ipAddress a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object representing the IP Address.
+     * @param foreignSource a {@link java.lang.String} object representing the foreign source.
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource);
 
     /**
      * <p>getNode</p>

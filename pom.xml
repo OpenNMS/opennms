@@ -858,7 +858,7 @@
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0-beta7</log4j2Version>
+    <log4j2Version>2.0-beta8</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -1574,6 +1574,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>smslib-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-security-core-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>

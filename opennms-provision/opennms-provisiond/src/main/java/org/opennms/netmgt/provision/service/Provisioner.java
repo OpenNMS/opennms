@@ -268,9 +268,9 @@ public class Provisioner implements SpringServiceDaemon {
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
      */
-    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress) {
-        LOG.info("createNewSuspectScan called");
-        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource) {
+        LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
     }
 
     //Helper functions for the schedule
@@ -541,6 +541,14 @@ public class Provisioner implements SpringServiceDaemon {
         
         final String uei = e.getUei();
         final String ip = e.getInterface();
+        
+        String foreignSource = null;
+        List<Parm> parmCollection = e.getParmCollection();
+        for (Parm parm : parmCollection) {
+			if (parm.getParmName().equals("foreignSource")) {
+				foreignSource = parm.getValue().getContent();
+			}
+		}
 
         if (ip == null) {
             LOG.error("Received a {} event with a null ipAddress", uei);
@@ -551,7 +559,8 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.info("Ignoring {} event for ip {} since discovery handling is disabled in provisiond", uei, ip);
             return;
         }
-        
+
+        final String fs = foreignSource;
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -561,7 +570,7 @@ public class Provisioner implements SpringServiceDaemon {
                     	LOG.error("Unable to convert {} to an InetAddress.", ip);
                     	return;
                     }
-                    NewSuspectScan scan = createNewSuspectScan(addr);
+                    NewSuspectScan scan = createNewSuspectScan(addr, fs);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();

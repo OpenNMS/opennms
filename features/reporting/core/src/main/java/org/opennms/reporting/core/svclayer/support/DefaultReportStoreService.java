@@ -31,7 +31,6 @@ package org.opennms.reporting.core.svclayer.support;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,6 @@ import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 /**
  * <p>DefaultReportStoreService class.</p>
@@ -68,8 +66,6 @@ public class DefaultReportStoreService implements ReportStoreService {
      * <p>Constructor for DefaultReportStoreService.</p>
      */
     public DefaultReportStoreService () {
-        // TODO this needs to wrap method calls
-        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -78,8 +74,8 @@ public class DefaultReportStoreService implements ReportStoreService {
      * @param ids an array of {@link java.lang.Integer} objects.
      */
     @Override
-    public void delete(Integer[] ids) {
-        for (Integer id : ids) {
+    public void delete(final Integer[] ids) {
+        for (final Integer id : ids) {
             delete(id); 
         }
     }
@@ -90,15 +86,19 @@ public class DefaultReportStoreService implements ReportStoreService {
      * @param id a {@link java.lang.Integer} object.
      */
     @Override
-    public void delete(Integer id) {
-        String deleteFile = new String(m_reportCatalogDao.get(id).getLocation());
-        boolean success = (new File(deleteFile).delete());
-        if (success) {
-            LOG.debug("deleted report XML file: {}", deleteFile);
-        } else {
-            LOG.warn("unable to delete report XML file: {} will delete reportCatalogEntry anyway", deleteFile);
-        }
-        m_reportCatalogDao.delete(id);
+    public void delete(final Integer id) {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+            @Override public void run() {
+                final String deleteFile = m_reportCatalogDao.get(id).getLocation();
+                final boolean success = (new File(deleteFile).delete());
+                if (success) {
+                    LOG.debug("deleted report XML file: {}", deleteFile);
+                } else {
+                    LOG.warn("unable to delete report XML file: {} will delete reportCatalogEntry anyway", deleteFile);
+                }
+                m_reportCatalogDao.delete(id);
+            }
+        });
     }
 
     /**
@@ -108,7 +108,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     @Override
     public List<ReportCatalogEntry> getAll() {
-        OnmsCriteria onmsCrit = new OnmsCriteria(ReportCatalogEntry.class);
+        final OnmsCriteria onmsCrit = new OnmsCriteria(ReportCatalogEntry.class);
         onmsCrit.addOrder(Order.desc("date"));
         return m_reportCatalogDao.findMatching(onmsCrit);
     }
@@ -120,33 +120,30 @@ public class DefaultReportStoreService implements ReportStoreService {
      */
     @Override
     public Map<String, Object> getFormatMap() {
-        HashMap <String, Object> formatMap = new HashMap<String, Object>();
-        //TODO Tak: This call will be heavy if many RemoteRepositories are involved. Is this method necessary?
-        //TODO Tak: Not working Repository By Repository
-        List <BasicReportDefinition> reports = m_globalReportRepository.getAllReports();
-        Iterator<BasicReportDefinition> reportIter = reports.iterator();
-        while (reportIter.hasNext()) {
-            BasicReportDefinition report = reportIter.next();
-            String id = report.getId();
-            String service = report.getReportService();
-            List <ReportFormat> formats = m_reportServiceLocator.getReportService(service).getFormats(id);
-            formatMap.put(id, formats);
+        final HashMap <String, Object> formatMap = new HashMap<String, Object>();
+        for (final BasicReportDefinition report : m_globalReportRepository.getAllReports()) {
+            final List <ReportFormat> formats = m_reportServiceLocator.getReportService(report.getReportService()).getFormats(report.getId());
+            formatMap.put(report.getId(), formats);
         }
         return formatMap;
     }
     
     /** {@inheritDoc} */
     @Override
-    public void render(Integer id, ReportFormat format, OutputStream outputStream) {
-        ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
-        String reportServiceName = m_globalReportRepository.getReportService(catalogEntry.getReportId());
-        ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
-        LOG.debug("attempting to rended the report as {} using {}", reportServiceName, format);
-        try {
-            reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
-        } catch (ReportException e) {
-            LOG.error("unable to render report", e);
-        }
+    public void render(final Integer id, final ReportFormat format, final OutputStream outputStream) {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+            @Override public void run() {
+                final ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
+                final String reportServiceName = m_globalReportRepository.getReportService(catalogEntry.getReportId());
+                final ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
+                LOG.debug("attempting to rended the report as {} using {}", reportServiceName, format);
+                try {
+                    reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
+                } catch (ReportException e) {
+                    LOG.error("unable to render report " + id, e);
+                }
+            }
+        });
     }
     
     /** {@inheritDoc} */
