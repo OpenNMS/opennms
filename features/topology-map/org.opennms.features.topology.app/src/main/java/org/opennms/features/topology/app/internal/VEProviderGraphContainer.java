@@ -502,7 +502,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public String getSessionId() {
         return m_sessionId;
     }
-    
+
+    @Override
     public void setSessionId(String sessionId) {
         m_sessionId = sessionId;
         buildServiceChangedEventHandlers();

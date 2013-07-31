@@ -28,21 +28,13 @@
 
 package org.opennms.features.topology.api.osgi;
 
-import org.osgi.framework.BundleContext;
-
 /**
- * An ApplicationContext for Vaadin-Applications. 
- * It should provide a Vaadin-Application with all needed information, such as sessionId, username and so on.
- * In addition it helps getting access to the underlying OSGi-Container and provide the application
- * with a session scope.
+ * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
  * 
  * @author Markus von Rüden
- *
+ * @see {@link EventRegistry}
  */
-public interface VaadinApplicationContext {
-    int getUiId();
-    String getSessionId();
-    String getUsername();
-    EventProxy getEventProxy(OnmsServiceManager serviceManager);
-    EventProxy getEventProxy(BundleContext bundleContext);
+public interface EventProxy {
+    <T> void fireEvent(T eventObject);
+    <T> void addPossibleEventConsumer(T possibleEventConsumer);
 }

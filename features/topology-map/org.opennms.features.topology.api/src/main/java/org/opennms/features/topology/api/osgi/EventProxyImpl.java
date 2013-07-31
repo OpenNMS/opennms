@@ -28,15 +28,18 @@
 
 package org.opennms.features.topology.api.osgi;
 
+import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.osgi.framework.BundleContext;
+
 import java.util.List;
 
-public class EventConsumerScopeImpl implements EventConsumerScope {
+public class EventProxyImpl implements EventProxy {
 
-    private final OnmsServiceManager serviceManager;
+    private final BundleContext bundleContext;
     private final VaadinApplicationContext applicationContext;
 
-    protected EventConsumerScopeImpl(OnmsServiceManager serviceManager, VaadinApplicationContext applicationContext) {
-        this.serviceManager = serviceManager;
+    protected EventProxyImpl(BundleContext bundleContext, VaadinApplicationContext applicationContext) {
+        this.bundleContext = bundleContext;
         this.applicationContext = applicationContext;
     }
 
@@ -50,7 +53,7 @@ public class EventConsumerScopeImpl implements EventConsumerScope {
     @Override
     public <T> void fireEvent(T eventObject) {
         if (eventObject == null) return;
-        List<EventListener> eventListeners = serviceManager.getServices(EventListener.class, applicationContext, EventListener.getProperties(eventObject.getClass()));
+        List<EventListener> eventListeners = getServiceManager().getServices(EventListener.class, applicationContext, EventListener.getProperties(eventObject.getClass()));
         for (EventListener eachListener : eventListeners) {
             eachListener.invoke(eventObject);
         }
@@ -58,6 +61,10 @@ public class EventConsumerScopeImpl implements EventConsumerScope {
 
     @Override
     public <T> void addPossibleEventConsumer(T possibleEventConsumer) {
-        serviceManager.getEventRegistry().addPossibleEventConsumer(possibleEventConsumer, applicationContext);
+        getServiceManager().getEventRegistry().addPossibleEventConsumer(possibleEventConsumer, applicationContext);
+    }
+
+    private OnmsServiceManager getServiceManager() {
+        return new OnmsServiceManagerLocator().lookup(bundleContext);
     }
 }

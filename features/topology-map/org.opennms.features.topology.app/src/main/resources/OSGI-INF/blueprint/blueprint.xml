@@ -16,8 +16,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
 
-    <reference id="serviceManager" interface="org.opennms.features.topology.api.osgi.OnmsServiceManager" availability="mandatory"/>
-
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
@@ -31,7 +29,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
-        <property name="serviceManager" ref="serviceManager"/>
+        <property name="serviceManager" ref="blueprintBundleContext"/>
     </bean>
     
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
@@ -43,19 +41,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
 
-    <bean id="topologyApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyApplicationFactory" >
+    <bean id="topologyUIFactory" class="org.opennms.features.topology.app.internal.TopologyUIFactory" >
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
         <argument value="topologyApplication"/>
     </bean>
 
-    <bean id="graphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer">
-        <argument ref="topologyProvider"/>
-        <argument ref="providerManager"/>
-    </bean>
-
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyApplicationFactory">
+    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
             <entry key="widgetset" value="${widgetset}"/>

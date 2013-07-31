@@ -29,11 +29,11 @@
 package org.opennms.features.topology.api.osgi.internal;
 
 
-import com.google.common.base.Strings;
 import org.opennms.features.topology.api.osgi.EventRegistry;
 import org.opennms.features.topology.api.osgi.OnmsServiceManager;
 import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.osgi.VaadinApplicationContextCreator;
+import org.opennms.features.topology.api.osgi.locator.EventRegistryLocator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -55,21 +55,21 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     }
 
     @Override
-    public <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext) {
-        registerAsService(clazz, object, applicationContext, new Properties());
+    public void registerAsService(Object object, VaadinApplicationContext applicationContext) {
+        registerAsService(object, applicationContext, new Properties());
     }
 
     @Override
-    public <T> void registerAsService(Class<T> clazz, T object, VaadinApplicationContext applicationContext, Properties additionalProperties) {
-        if (object == null || clazz == null) return;
+    public void registerAsService(Object object, VaadinApplicationContext applicationContext, Properties properties) {
+        if (object == null) return;
         ServiceRegistration serviceRegistration = bundleContext
-                .registerService(clazz.getName(), object, (Dictionary) getProperties(applicationContext, additionalProperties));
+                .registerService(object.getClass().getName(), object, (Dictionary) getProperties(applicationContext, properties));
         serviceRegistrations.put(object, serviceRegistration);
     }
 
     @Override
     public EventRegistry getEventRegistry() {
-        return getService(EventRegistry.class, null);
+        return new EventRegistryLocator().lookup(bundleContext);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
         List<T> services = new ArrayList<T>();
         try {
-            ServiceReference<?>[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
+            ServiceReference[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
             if (serviceReferences != null) {
                 for (ServiceReference eachServiceReference : serviceReferences) {
                     Object service = bundleContext.getService(eachServiceReference);
@@ -128,7 +128,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         VaadinApplicationContext newContext = creator.create(this);
         VaadinApplicationContext oldContext = getService(VaadinApplicationContext.class, newContext);
         if (oldContext != null) return oldContext;
-        registerAsService(VaadinApplicationContext.class, newContext, newContext);
+        registerAsService(newContext, newContext);
         return newContext;
     }
 
@@ -153,13 +153,9 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     private Properties getProperties(VaadinApplicationContext applicationContext, Properties properties) {
         if (properties == null) properties = new Properties();
-        if (!Strings.isNullOrEmpty(applicationContext.getSessionId())) properties.put("sessionId", applicationContext.getSessionId());
+        String sessionId = applicationContext.getSessionId();
+        if (sessionId != null && !sessionId.isEmpty()) properties.put("sessionId", applicationContext.getSessionId());
         if (applicationContext.getUiId() > -1) properties.put("uiId", applicationContext.getUiId());
         return properties;
-    }
-
-    protected Object getService(ServiceReference serviceReference) {
-        if (serviceReference == null) return null;
-        return bundleContext.getService(serviceReference);
     }
 }

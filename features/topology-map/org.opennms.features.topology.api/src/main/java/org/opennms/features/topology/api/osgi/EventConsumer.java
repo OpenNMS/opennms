@@ -52,7 +52,7 @@ import java.lang.annotation.RetentionPolicy;
  *     producer.fireEvent(new EventType());
  * </pre>
  *
- * @see {@link EventRegistry}, {@link EventConsumerScope}
+ * @see {@link EventRegistry}, {@link EventProxy}
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventConsumer {

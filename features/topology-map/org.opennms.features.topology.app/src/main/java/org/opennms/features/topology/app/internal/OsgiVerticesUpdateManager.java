@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.osgi.OnmsServiceManager;
 import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -47,9 +48,11 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
 
     // the session scope.
     private final VaadinApplicationContext applicationContext;
+    private final OnmsServiceManager serviceManager;
 
-    public OsgiVerticesUpdateManager(VaadinApplicationContext applicationContext) {
+    public OsgiVerticesUpdateManager(OnmsServiceManager serviceManager, VaadinApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+        this.serviceManager = serviceManager;
     }
 
     /**
@@ -136,6 +139,6 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
             nodeIdFocus.addAll(newNodeIdFocus);
         }
         final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableList(nodeIdFocus));
-        applicationContext.getEventStorage().fireEvent(updateEvent);
+        applicationContext.getEventProxy(serviceManager).fireEvent(updateEvent);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
+package org.opennms.features.topology.api.osgi.locator;
 
-/**
- * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
- * 
- * @author Markus von Rüden
- * @see {@link EventRegistry}
- */
-public interface EventConsumerScope {
-    <T> void fireEvent(T eventObject);
-    <T> void addPossibleEventConsumer(T possibleEventConsumer);
+import org.opennms.features.topology.api.osgi.OnmsServiceManager;
+import org.osgi.framework.BundleContext;
+
+public class OnmsServiceManagerLocator {
+
+    public OnmsServiceManager lookup(BundleContext bundleContext) {
+        return new ServiceLocator().lookup(OnmsServiceManager.class, bundleContext);
+    }
 }

@@ -47,15 +47,14 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContextCreator;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContextImpl;
+import org.opennms.features.topology.api.osgi.*;
+import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,14 +131,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_applicationContext = serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
             @Override
             public VaadinApplicationContext create(OnmsServiceManager manager) {
-                VaadinApplicationContextImpl context = new VaadinApplicationContextImpl(manager);
+                VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
                 context.setSessionId(request.getWrappedSession().getId());
                 context.setUiId(getUIId());
                 context.setUsername(request.getRemoteUser());
                 return context;
             }
         });
-        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
 
         loadUserSettings(request);
         setupListeners();
@@ -737,8 +736,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         super.detach();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    public void setServiceManager(OnmsServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
+    public void setServiceManager(BundleContext bundleContext) {
+        this.serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
     }
 
     public VaadinApplicationContext getApplicationContext() {
