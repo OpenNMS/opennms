@@ -84,6 +84,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -1262,8 +1263,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         OnmsNode nodeCopy = new OnmsNode();
         nodeCopy.setId(node.getId());
         nodeCopy.setLabel(OLD_LABEL);
-        // TODO: Replace with constant
-        nodeCopy.setLabelSource("U");
+        nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertNotSame(node, nodeCopy);
         assertEquals(OLD_LABEL, node.getLabel());
@@ -1288,8 +1288,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // Change the label of the node so that we can trigger a NODE_LABEL_CHANGED_EVENT_UEI event
         nodeCopy.setLabel(NEW_LABEL);
-        // TODO: Replace with constant
-        nodeCopy.setLabelSource("U");
+        nodeCopy.setLabelSource(NodeLabelSource.USER);
 
         assertFalse(node.getLabel().equals(nodeCopy.getLabel()));
 

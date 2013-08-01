@@ -704,7 +704,9 @@ public final class ReparentViaSmb {
         bldr.addParam(EventConstants.PARM_OLD_NODEID, oldNodeId);
         bldr.addParam(EventConstants.PARM_NEW_NODEID, newNodeId);
         bldr.addParam(EventConstants.PARM_NODE_LABEL, reparentNodeEntry.getLabel());
-        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, reparentNodeEntry.getLabelSource());
+        if (reparentNodeEntry.getLabelSource() != null) {
+            bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, reparentNodeEntry.getLabelSource().toString());
+        }
         
         if (reparentNodeEntry.getSystemName() != null) {
             bldr.addParam(EventConstants.PARM_NODE_SYSNAME, reparentNodeEntry.getSystemName());
