@@ -47,7 +47,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
+        super.setUp();
         selenium.click("link=Alarms");
         waitForPageToLoad();
     }
@@ -102,14 +102,16 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         createAlarm();
         selenium.click("link=All alarms (summary)");
         waitForPageToLoad();
-        int waitTime = 300000; // 5 minutes
-        final int sleepTime = 10000; // 10 seconds
 
-        do {
-            selenium.refresh();
+        final int sleepTime = 5000; // 5 seconds
+        final long end = System.currentTimeMillis() + 300000; // 5 minutes
+        while (!hasAlarmDetailLink() && (System.currentTimeMillis() < end)) {
             Thread.sleep(sleepTime);
-            waitTime -= sleepTime;
-        } while (!hasAlarmDetailLink() && waitTime != 0);
+            selenium.refresh();
+            waitForPageToLoad();
+        }
+
+        assertTrue(hasAlarmDetailLink());
 
         assertTrue(selenium.isTextPresent("alarm is outstanding"));
         assertTrue(selenium.isElementPresent("//input[@value='Go']"));
