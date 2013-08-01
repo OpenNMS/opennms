@@ -50,6 +50,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.MouseEventDetailsBuilder;
+import com.vaadin.client.TooltipInfo;
 import com.vaadin.shared.MouseEventDetails;
 import org.opennms.features.topology.app.internal.gwt.client.d3.*;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
@@ -562,9 +563,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
 					// TODO: Figure out how to do this in the new GWT
-                    //m_client.getVTooltip().setPopupPosition(event.getClientX(), event.getClientY());
-                    //m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
-                    //m_client.getVTooltip().show();
+                    m_client.getVTooltip().setPopupPosition(event.getClientX(), event.getClientY());
+                    m_client.getVTooltip().show();
 					event.stopPropagation();
 					event.preventDefault();
 				}
@@ -580,6 +580,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				if(m_client != null) {
 					Event event = D3.getEvent().cast();
 					// TODO: Figure out how to do this in the new GWT
+                    m_client.getVTooltip().updatePosition(event, false);
+
 					//m_client.handleTooltipEvent(event, VTopologyComponent.this, edge);
 					event.stopPropagation();
 					event.preventDefault();
@@ -752,6 +754,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             vertex.setStatus(sharedVertex.getStatus());
 
             vertex.setStatusCount(sharedVertex.getStatusCount());
+
+            vertex.setTooltipText(sharedVertex.getTooltipText());
 
             graph.addVertex(vertex);
 		}
