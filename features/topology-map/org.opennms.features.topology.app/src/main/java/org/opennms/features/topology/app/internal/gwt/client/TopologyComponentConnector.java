@@ -40,7 +40,7 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
            getWidget().injectSVGDefs(getConnection(), getState().getSVGDefFiles());
        }
 
-       if(event.hasPropertyChanged("ActiveTool")){
+       if(event.hasPropertyChanged("activeTool")){
            getWidget().setActiveTool(getState().getActiveTool());
        }
 
