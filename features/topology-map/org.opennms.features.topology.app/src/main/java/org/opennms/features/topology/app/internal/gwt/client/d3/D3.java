@@ -275,6 +275,10 @@ public class D3 extends JavaScriptObject {
 		
     }-*/;
 
+    public final native <T extends JavaScriptObject> D3 data() /*-{
+        return this.data();
+    }-*/;
+
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
     }-*/;
