@@ -5,10 +5,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.topo.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
+import org.osgi.framework.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,14 +173,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     }
 
-    private interface ServiceChangedEventHandler<T> {
-        void doRegistration(T service);
-        void doUnregistration(T service);
-    }
-
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
-    private final Map<Class<?>, ServiceChangedEventHandler> serviceChangedEventHandlers = new HashMap<Class<?>, ServiceChangedEventHandler>();
     private int m_semanticZoomLevel = 0;
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
@@ -506,33 +497,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setSessionId(String sessionId) {
         m_sessionId = sessionId;
-        buildServiceChangedEventHandlers();
-        registerServiceListener();
-    }
-
-    private void buildServiceChangedEventHandlers() {
-        serviceChangedEventHandlers.clear();
-        serviceChangedEventHandlers.put(Criteria.class, new ServiceChangedEventHandler<Criteria>() {
-
-            @Override
-            public void doRegistration(Criteria service) {
-                setCriteria(service);
-            }
-
-            @Override
-            public void doUnregistration(Criteria service) {
-                removeCriteria(service);
-            }
-        });
-    }
-
-    private void registerServiceListener() {
         try {
             m_bundleContext.removeServiceListener(this);
-            for (Class<?> eachClass : serviceChangedEventHandlers.keySet()) {
-                m_bundleContext.addServiceListener(this,
-                        String.format("(&(objectClass=%s)(sessionId=%s))", eachClass.getName(), m_sessionId));
-            }
+            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", m_sessionId));
         } catch (InvalidSyntaxException e) {
             LoggerFactory.getLogger(getClass()).error("registerServiceListener() failed", e);
         }
@@ -540,18 +507,20 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void serviceChanged(ServiceEvent event) {
-        Object service = m_bundleContext.getService(event.getServiceReference());
-        Class<?> serviceClass = service.getClass();
-        ServiceChangedEventHandler serviceChangedEventHandler = serviceChangedEventHandlers.get(serviceClass);
-        if (serviceChangedEventHandler != null) {
-            switch (event.getType()) {
-                case ServiceEvent.REGISTERED:
-                    serviceChangedEventHandler.doRegistration(service);
-                    break;
-                case ServiceEvent.UNREGISTERING:
-                    serviceChangedEventHandler.doUnregistration(service);
-                    break;
-            }
+        ServiceReference<Criteria> serviceReference;
+        Criteria criteria;
+        switch(event.getType()) {
+            case ServiceEvent.REGISTERED:
+                serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
+                criteria = m_bundleContext.getService(serviceReference);
+                setCriteria(criteria);
+                break;
+
+            case ServiceEvent.UNREGISTERING:
+                serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
+                criteria = m_bundleContext.getService(serviceReference);
+                removeCriteria(criteria);
+                break;
         }
     }
 }
