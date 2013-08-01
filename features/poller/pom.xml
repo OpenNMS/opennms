@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.poller</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Poller</name>
+  <name>OpenNMS Features Poller</name>
   <modules>
     <module>api</module>
     <module>runtime</module>

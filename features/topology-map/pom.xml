@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>topology</artifactId>
 
-  <name>org.opennms.features.topology (OSGi project)</name>
+  <name>OpenNMS Features Topology (OSGi project)</name>
 
   <!--
    | describe your project here

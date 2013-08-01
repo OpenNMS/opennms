@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
   <artifactId>ncs-test</artifactId>
-  <name>OpenNMS NCS Persistence</name>
+  <name>OpenNMS Features NCS Persistence</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

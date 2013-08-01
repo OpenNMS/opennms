@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS KSC GWT combobox</name>
+  <name>OpenNMS Features KSC GWT combobox</name>
 
   <dependencies>
     <dependency>
