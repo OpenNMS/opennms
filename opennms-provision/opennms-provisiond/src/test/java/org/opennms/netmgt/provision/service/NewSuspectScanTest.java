@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -267,9 +268,9 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        OnmsNode onmsNode = getNodeDao().get(1);
+        List<OnmsNode> onmsNodes = getNodeDao().findByLabel("172.20.2.201");
+        OnmsNode onmsNode = onmsNodes.get(0);
         assertEquals("Testie", onmsNode.getForeignSource());
-        assertEquals("1", onmsNode.getForeignId());
 
         final StringBuffer errorMsg = new StringBuffer();
         //Verify ipinterface count

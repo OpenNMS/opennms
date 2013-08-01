@@ -46,6 +46,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.MouseEventDetailsBuilder;
@@ -306,14 +307,15 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
 				@Override
 				public D3 run(D3 selection) {
-					return selection.on(D3Events.CLICK.event(), getClickHandler())
-							.on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler())
-							.on(D3Events.MOUSE_OVER.event(), getVertexTooltipHandler())
-							.on(D3Events.MOUSE_OUT.event(), getVertexTooltipHandler())
-							.on(D3Events.DOUBLE_CLICK.event(), getDblClickHandler())
-							.call(getDragBehavior());
-				}
-			};
+                    consoleLog(selection);
+                    return selection.on(D3Events.CLICK.event(), getClickHandler())
+                            .on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler())
+                            .on(D3Events.MOUSE_OVER.event(), getVertexTooltipHandler())
+                            .on(D3Events.MOUSE_OUT.event(), getVertexTooltipHandler())
+                            .on(D3Events.DOUBLE_CLICK.event(), getDblClickHandler())
+                            .call(getDragBehavior());
+                }
+            };
 		}
 
 		private Handler<GWTVertex> getVertexTooltipHandler(){
@@ -402,11 +404,17 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graph = GWTGraph.create();
 	}
 
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        boolean isAttached = this.isAttached();
+    }
+
     @SuppressWarnings("serial")
     @Override
 	protected void onLoad() {
 		super.onLoad();
-		
+		consoleLog("onLoad");
 		m_serviceRegistry = new DefaultServiceRegistry();
 		m_serviceRegistry.register(vertexClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexClick"); }}, Handler.class);
 		m_serviceRegistry.register(vertexDblClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexDblClick"); }}, Handler.class);
@@ -523,7 +531,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private Handler<GWTVertex> vertexContextMenuHandler() {
 		return new D3Events.Handler<GWTVertex>() {
 
-                        @Override
+            @Override
 			public void call(final GWTVertex vertex, int index) {
 				showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
 				D3.getEvent().preventDefault();
@@ -554,8 +562,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
 					// TODO: Figure out how to do this in the new GWT
-					//m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
-                    m_client.getVTooltip().show();
+                    //m_client.getVTooltip().setPopupPosition(event.getClientX(), event.getClientY());
+                    //m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
+                    //m_client.getVTooltip().show();
 					event.stopPropagation();
 					event.preventDefault();
 				}
@@ -711,15 +720,19 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			}
 		};
 	}
-	
-	 public void updateGraph(ApplicationConnection applicationConnection, TopologyComponentState componentState) {
+
+    public void injectSVGDefs(ApplicationConnection appConnection, List<String> svgDefFiles) {
+        for (String file : svgDefFiles) {
+            D3.d3().injectSVGDef(appConnection.translateVaadinUri(file));
+        }
+    }
+
+    public void updateGraph(ApplicationConnection applicationConnection, TopologyComponentState componentState) {
 	    
 		GWTGraph graph = GWTGraph.create();
 		
 		m_client = applicationConnection;
-		setActiveTool(componentState.getActiveTool());
         
-		GWTVertex.setBackgroundImage(applicationConnection.translateVaadinUri("theme://images/vertex_circle_selector.png"));
 		for(SharedVertex sharedVertex : componentState.getVertices()) {
 		    
 		    GWTVertex vertex = GWTVertex.create(sharedVertex.getKey(), sharedVertex.getX(), sharedVertex.getY());
@@ -731,6 +744,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             vertex.setSelected(selected);
 
             vertex.setIconUrl(applicationConnection.translateVaadinUri(sharedVertex.getIconUrl()));
+
+            vertex.setSVGIconId(sharedVertex.getSVGIconId());
 
             vertex.setLabel(sharedVertex.getLabel());
             
@@ -832,7 +847,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	    
 	}-*/;
 	
-    private void setActiveTool(String toolname) {
+    public void setActiveTool(String toolname) {
 	    if(toolname.equals("pan")) {
 	        m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 	        m_topologyView.getSVGElement().getStyle().setCursor(Cursor.MOVE);
@@ -855,8 +870,10 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		if(getViewRenderer() != m_graphDrawer) {
 		    setTopologyViewRenderer(m_graphDrawer);
 		}
-        
-        updateGraphUpdateListeners(oldBBox);
+
+        if(this.isAttached()){
+            updateGraphUpdateListeners(oldBBox);
+        }
 	}
 
     public ApplicationConnection getClient() {
@@ -901,7 +918,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         Map<String, Object> point = new HashMap<String, Object>();
         point.put("x", (int)Math.round(pos.getX()));
         point.put("y", (int)Math.round(pos.getY()));
-//        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
         m_serverRpc.clientCenterPoint((int)Math.round(pos.getX()) , (int)Math.round(pos.getY()));
     }
 
@@ -916,7 +932,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     @Override
     public void onBackgroundClick() {
-        //m_client.updateVariable(m_paintableId, "clickedBackground", true, true);
         m_serverRpc.backgroundClicked();
     }
 
