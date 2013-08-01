@@ -54,6 +54,9 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
 
     /**
      * Instantiates a new Event Generator window.
+     *
+     * @param caption the caption
+     * @param fieldLabel the field label
      */
     public PromptWindow(String caption, String fieldLabel) {
         setCaption(caption);

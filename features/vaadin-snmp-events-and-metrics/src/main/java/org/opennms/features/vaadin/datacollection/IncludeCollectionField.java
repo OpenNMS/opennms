@@ -57,10 +57,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField<IncludeCollectionField.IncludeCollectionArrayList> {
+public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollection>> {
 
-	public static class IncludeCollectionArrayList extends ArrayList<IncludeCollection> {}
-
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3677540981240383672L;
 
     /** The Include Field Table. */
@@ -142,6 +141,9 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
         setBuffered(true);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -151,12 +153,20 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
-    public Class<IncludeCollectionArrayList> getType() {
-        return IncludeCollectionArrayList.class;
+    @SuppressWarnings("unchecked")
+    public Class<ArrayList<IncludeCollection>> getType() {
+        return (Class<ArrayList<IncludeCollection>>) new ArrayList<IncludeCollection>().getClass();
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
@@ -175,9 +185,12 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public IncludeCollectionArrayList getValue() {
-        IncludeCollectionArrayList list = new IncludeCollectionArrayList();
+    public ArrayList<IncludeCollection> getValue() {
+        ArrayList<IncludeCollection> list = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
             IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
             list.add(obj.createIncludeCollection());

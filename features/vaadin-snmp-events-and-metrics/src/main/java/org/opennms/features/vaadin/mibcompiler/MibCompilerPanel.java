@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("serial")
 public class MibCompilerPanel extends Panel {
+
+    /** The Constant LOG. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibCompilerPanel.class);
 
     /** The Constant PENDING. */

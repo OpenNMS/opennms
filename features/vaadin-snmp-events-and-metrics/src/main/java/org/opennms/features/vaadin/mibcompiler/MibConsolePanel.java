@@ -48,6 +48,8 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 public class MibConsolePanel extends Panel implements Logger {
+
+    /** The Constant LOG. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibConsolePanel.class);
 
     /** The Constant ERROR. */

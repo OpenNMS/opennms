@@ -45,7 +45,7 @@ import com.vaadin.ui.themes.Runo;
 public abstract class SystemDefTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
+    public static final Object[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "System Definition", "OID", "# Groups" };

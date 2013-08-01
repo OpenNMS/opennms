@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class OnmsProblemEventHandler implements ProblemEventHandler {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(OnmsProblemEventHandler.class);
 
     /** The Constant FILE_PREFIX. */
@@ -136,7 +138,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     }
 
     /**
-     * Prints the error message
+     * Prints the error message.
      *
      * @param stream the stream
      * @param sev the severity
@@ -162,7 +164,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     }
 
     /**
-     * Process the error message
+     * Process the error message.
      *
      * @param stream the stream
      * @param sev the severity

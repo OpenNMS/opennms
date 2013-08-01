@@ -62,9 +62,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.VarbindsDecodeArrayList> implements Button.ClickListener {
-
-	public static class VarbindsDecodeArrayList extends ArrayList<Varbindsdecode> {};
+public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> implements Button.ClickListener {
 
     /** The Table. */
     private final Table table = new Table();
@@ -114,6 +112,9 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
         toolbar.setVisible(table.isEditable());
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -123,12 +124,20 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
-    public Class<VarbindsDecodeArrayList> getType() {
-        return VarbindsDecodeArrayList.class;
+    @SuppressWarnings("unchecked")
+    public Class<ArrayList<Varbindsdecode>> getType() {
+        return (Class<ArrayList<Varbindsdecode>>) new ArrayList<Varbindsdecode>().getClass();
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
@@ -143,9 +152,12 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public VarbindsDecodeArrayList getValue() {
-        VarbindsDecodeArrayList beans = new VarbindsDecodeArrayList(); 
+    public ArrayList<Varbindsdecode> getValue() {
+        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

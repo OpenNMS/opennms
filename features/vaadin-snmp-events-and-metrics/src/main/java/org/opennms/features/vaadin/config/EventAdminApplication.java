@@ -72,6 +72,8 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 @Title("Events Administration")
 @Theme(Reindeer.THEME_NAME)
 public class EventAdminApplication extends UI {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(EventAdminApplication.class);
 
 

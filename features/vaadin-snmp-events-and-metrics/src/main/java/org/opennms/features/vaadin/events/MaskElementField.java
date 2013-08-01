@@ -28,7 +28,6 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 
@@ -59,13 +58,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskElementField extends CustomField<MaskElementField.MaskElementArrayList> implements Button.ClickListener {
+public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
 
-	public static class MaskElementArrayList extends ArrayList<Maskelement> {}
-
-	private static final long serialVersionUID = -2755346278615977088L;
-
-	/** The Table. */
+    /** The Table. */
     private final Table table = new Table();
 
     /** The Container. */
@@ -113,6 +108,9 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
         toolbar.setVisible(table.isEditable());
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -122,17 +120,25 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
-    public Class<MaskElementArrayList> getType() {
-        return MaskElementArrayList.class;
+    @SuppressWarnings("unchecked")
+    public Class<? extends ArrayList<Maskelement>> getType() {
+        return (Class<? extends ArrayList<Maskelement>>) new ArrayList<Maskelement>().getClass();
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
-        if (value instanceof List<?>) {
+        if (value instanceof ArrayList<?>) {
             @SuppressWarnings("unchecked")
-            List<Maskelement> beans = (List<Maskelement>) value;
+            ArrayList<Maskelement> beans = (ArrayList<Maskelement>) value;
             container.removeAllItems();
             container.addAll(beans);
             table.setPageLength(beans.size());
@@ -142,9 +148,12 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public MaskElementArrayList getValue() {
-        MaskElementArrayList beans = new MaskElementArrayList();
+    public ArrayList<Maskelement> getValue() {
+        ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

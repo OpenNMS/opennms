@@ -116,6 +116,9 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
         toolbar.setVisible(table.isEditable());
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -126,12 +129,19 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     public Class<PersistenceSelectorStrategy> getType() {
         return PersistenceSelectorStrategy.class;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof PersistenceSelectorStrategy) {
@@ -146,6 +156,9 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
     public PersistenceSelectorStrategy getValue() {
         PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();

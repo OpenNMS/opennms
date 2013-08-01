@@ -64,8 +64,11 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 // TODO When deleting a group, all the SNMP collections UI components must be updated.
 @SuppressWarnings("serial")
 public class DataCollectionGroupAdminPanel extends VerticalLayout {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(DataCollectionGroupAdminPanel.class);
 
+    /** The m_selected group. */
     private String m_selectedGroup;
 
     /**

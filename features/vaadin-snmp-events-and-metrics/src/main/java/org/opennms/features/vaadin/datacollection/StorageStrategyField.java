@@ -118,6 +118,9 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         setBuffered(true);
     }
     
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -128,12 +131,19 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     public Class<StorageStrategy> getType() {
         return StorageStrategy.class;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof StorageStrategy) {
@@ -148,6 +158,9 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
     public StorageStrategy getValue() {
         StorageStrategy dto = new StorageStrategy();
