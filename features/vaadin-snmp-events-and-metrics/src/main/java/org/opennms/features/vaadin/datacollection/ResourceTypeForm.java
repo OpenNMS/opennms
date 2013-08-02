@@ -144,7 +144,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
             // FIXME You cannot delete a resource type if it is being used on any group
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the Resource Type " + getResourceType().getName() + "?<br/>This action cannot be undone.",
+                               "Do you really want to remove the Resource Type " + getResourceType().getName() + "?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

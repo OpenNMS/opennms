@@ -218,7 +218,7 @@ public abstract class EventPanel extends Panel {
         if (file.exists()) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to override the existig file?<br/>All current information will be lost.",
+                               "Do you really want to override the existig file?\nAll current information will be lost.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
@@ -251,7 +251,7 @@ public abstract class EventPanel extends Panel {
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",
+                               eventCount + " of the new events are already on the configuration files.\nDo you really want to override those events ?",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

@@ -186,7 +186,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         if (file.exists()) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to override the existig file?<br/>All current information will be lost.",
+                               "Do you really want to override the existig file?\nAll current information will be lost.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

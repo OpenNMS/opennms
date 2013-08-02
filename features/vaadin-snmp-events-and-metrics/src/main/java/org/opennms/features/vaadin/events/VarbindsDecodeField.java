@@ -70,10 +70,10 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete", this);
 
     /**
      * Instantiates a new varbinds decode field.
@@ -101,8 +101,6 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
@@ -203,7 +201,7 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected Varbinds Decode field?<br/>This action cannot be undone.",
+                               "Do you really want to remove the selected Varbinds Decode field?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

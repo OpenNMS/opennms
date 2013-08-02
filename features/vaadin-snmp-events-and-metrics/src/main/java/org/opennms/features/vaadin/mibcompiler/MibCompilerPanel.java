@@ -236,7 +236,7 @@ public class MibCompilerPanel extends Panel {
                 if (action == ACTION_DELETE) {
                     ConfirmDialog.show(getUI(),
                                        "Are you sure?",
-                                       "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",
+                                       "Do you really want to delete " + fileName + "?\nThis cannot be undone.",
                                        "Yes",
                                        "No",
                                        new ConfirmDialog.Listener() {

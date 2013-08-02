@@ -138,7 +138,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 final File file = (File) dcGroupSource.getValue();
                 ConfirmDialog.show(getUI(),
                                    "Are you sure?",
-                                   "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
+                                   "Do you really want to remove the file " + file.getName() + "?\nThis cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
                                    "Yes",
                                    "No",
                                    new ConfirmDialog.Listener() {

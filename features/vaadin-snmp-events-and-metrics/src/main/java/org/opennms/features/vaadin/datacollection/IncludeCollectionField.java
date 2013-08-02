@@ -214,7 +214,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
         }
         ConfirmDialog.show(getUI(),
                            "Are you sure?",
-                           "Do you really want to remove the selected Include Collection field<br/>This action cannot be undone.",
+                           "Do you really want to remove the selected Include Collection field?\nThis action cannot be undone.",
                            "Yes",
                            "No",
                            new ConfirmDialog.Listener() {

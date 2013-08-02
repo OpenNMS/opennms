@@ -68,10 +68,10 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete", this);
 
     /**
      * Instantiates a new storage strategy field.
@@ -106,14 +106,12 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         table.setHeight("125px");
         table.setWidth("100%");
 
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
         setBuffered(true);
     }
-    
+
     /* (non-Javadoc)
      * @see com.vaadin.ui.CustomField#initContent()
      */
@@ -211,7 +209,7 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected Storage Strategy?<br/>This action cannot be undone.",
+                               "Do you really want to remove the selected parameter from the Storage Strategy?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

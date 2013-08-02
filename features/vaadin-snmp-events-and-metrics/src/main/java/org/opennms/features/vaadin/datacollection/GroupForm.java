@@ -166,7 +166,7 @@ public abstract class GroupForm extends Form implements ClickListener {
             // FIXME You cannot delete a group if it is being used on any systemDef
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the Group " + getGroup().getName() + "?<br/>This action cannot be undone.",
+                               "Do you really want to remove the Group " + getGroup().getName() + "?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

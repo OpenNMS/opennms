@@ -171,7 +171,7 @@ public class EventAdminApplication extends UI {
                 final File file = (File) eventSource.getValue();
                 ConfirmDialog.show(getUI(),
                                    "Are you sure?",
-                                   "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                   "Do you really want to remove the file " + file.getName() + "?\nThis cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
                                    "Yes",
                                    "No",
                                    new ConfirmDialog.Listener() {

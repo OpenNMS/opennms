@@ -160,7 +160,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
         if (source == delete) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the System Definition" + getSystemDef().getName() + "?<br/>This action cannot be undone.",
+                               "Do you really want to remove the System Definition" + getSystemDef().getName() + "?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
