@@ -154,7 +154,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             vertex.setLocked(false);
             vertex.setSelected(false);
             vertex.setIconKey(element.getIconName());
-            vertex.setParent(parent);
+            if (!vertex.equals(parent)) vertex.setParent(parent);
             vertexes.add(vertex);
         }
         
@@ -163,7 +163,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             vertex.setLocked(false);
             vertex.setSelected(false);
             vertex.setIconKey(element.getIconName());
-            vertex.setParent(parent);
+            if (!vertex.equals(parent)) vertex.setParent(parent);
             vertexes.add(vertex);
             vertexes.addAll(getVertex(element.getElementId(),vertex));
         }

@@ -282,7 +282,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     newVertex.setIpAddress(vertex.ipAddr);
                     newVertex.setLocked(vertex.locked);
                     if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
-                    newVertex.setParent(vertex.parent);
+                    if (! newVertex.equals(vertex.parent)) newVertex.setParent(vertex.parent);
                     newVertex.setSelected(vertex.selected);
                     newVertex.setStyleName(vertex.styleName);
                     newVertex.setTooltipText(vertex.tooltipText);
@@ -293,7 +293,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             
             for (Vertex vertex: getVertices()) {
-                if (vertex.getParent() != null) {
+                if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
                     log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
                     setParent(vertex, vertex.getParent());
                 }
