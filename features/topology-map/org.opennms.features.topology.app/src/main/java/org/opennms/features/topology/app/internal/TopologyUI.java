@@ -588,7 +588,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
 		m_menuBar.setWidth(100, Unit.PERCENTAGE);
 		// Set expand ratio so that extra space is not allocated to this vertical component
-		m_rootLayout.addComponent(m_menuBar, 1);
+        if (m_showHeader) {
+            m_rootLayout.addComponent(m_menuBar, 1);
+        } else {
+            m_rootLayout.addComponent(m_menuBar, 0);
+        }
+
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
 		m_contextMenu.setAsContextMenuOf(this);
