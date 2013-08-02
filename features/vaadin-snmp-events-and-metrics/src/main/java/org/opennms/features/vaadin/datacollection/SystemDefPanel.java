@@ -41,7 +41,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class System Definition Panel.
@@ -71,7 +70,7 @@ public class SystemDefPanel extends VerticalLayout {
      * @param logger the logger object
      */
     public SystemDefPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         form = new SystemDefForm(dataCollectionConfigDao, source) {
             @Override

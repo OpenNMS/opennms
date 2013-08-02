@@ -33,7 +33,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Prompt Window.
@@ -65,7 +64,7 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
         setHeight("150px");
         setResizable(false);
         setClosable(false);
-        addStyleName(Runo.WINDOW_DIALOG);
+        addStyleName("dialog");
 
         fileName = new TextField(fieldLabel);
         fileName.setNullSettingAllowed(false);

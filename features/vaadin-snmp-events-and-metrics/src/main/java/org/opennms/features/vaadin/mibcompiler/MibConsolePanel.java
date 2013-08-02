@@ -39,7 +39,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class MIB Console Panel.
@@ -75,7 +74,7 @@ public class MibConsolePanel extends Panel implements Logger {
      */
     public MibConsolePanel() {
         super("MIB Console");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         clearButton = new Button("Clear Log");
         clearButton.addClickListener(new Button.ClickListener() {

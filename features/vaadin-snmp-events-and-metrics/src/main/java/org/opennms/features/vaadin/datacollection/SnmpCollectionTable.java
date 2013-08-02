@@ -35,7 +35,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class SNMP Collection Table.
@@ -67,7 +66,7 @@ public abstract class SnmpCollectionTable extends Table {
         container.setBeanIdProperty("name");
         refreshSnmpCollections();
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
         setVisibleColumns(COLUMN_NAMES);

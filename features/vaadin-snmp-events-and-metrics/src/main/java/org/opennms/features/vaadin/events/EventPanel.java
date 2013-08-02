@@ -41,6 +41,7 @@ import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -48,11 +49,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Panel.
@@ -104,7 +100,7 @@ public abstract class EventPanel extends Panel {
         this.fileName = fileName;
 
         setCaption("Events");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
@@ -220,17 +216,14 @@ public abstract class EventPanel extends Panel {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
         final File file = new File(configDir, fileName);
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to override the existig file?<br/>All current information will be lost.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to override the existig file?<br/>All current information will be lost.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         validateFile(file, events, logger);
                     }
                 }
@@ -256,17 +249,14 @@ public abstract class EventPanel extends Panel {
         if (eventCount == 0) {
             saveFile(file, events, logger);
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         saveFile(file, events, logger);
                     }
                 }

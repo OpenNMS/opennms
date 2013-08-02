@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -43,11 +44,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The MIB Object Field.
@@ -83,7 +79,7 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
     public MibObjField(final List<String> resourceTypes) {
         container.setBeanIdProperty("oid");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
         table.setColumnHeader("oid", "OID");
         table.setColumnHeader("instance", "Instance");
@@ -205,17 +201,14 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         if (itemId == null) {
             Notification.show("Please select a MIB Object from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

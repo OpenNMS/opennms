@@ -36,14 +36,13 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class SNMP Collection Administration Application.
  */
-@SuppressWarnings("serial")
+@Theme("opennms")
 @Title("SNMP Collection Administration")
-@Theme(Reindeer.THEME_NAME)
+@SuppressWarnings("serial")
 public class SnmpCollectionAdminApplication extends UI {
 
     /** The OpenNMS Data Collection Configuration DAO. */
@@ -71,7 +70,7 @@ public class SnmpCollectionAdminApplication extends UI {
         DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
 
         TabSheet tabs = new TabSheet();
-        tabs.setStyleName(Reindeer.TABSHEET_SMALL);
+        tabs.addStyleName("light");
         tabs.setSizeFull();
         tabs.addTab(scAdmin);
         tabs.addTab(dcgAdmin);
