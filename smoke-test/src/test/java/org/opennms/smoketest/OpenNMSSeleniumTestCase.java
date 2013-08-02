@@ -32,6 +32,7 @@ import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
@@ -41,8 +42,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import com.thoughtworks.selenium.SeleneseTestBase;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-
-    protected static final String LOAD_TIMEOUT = "60000";
+    protected static final long LOAD_TIMEOUT = 60000;
 
     @Before
     public void setUp() throws Exception {
@@ -60,6 +60,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         
+        final String driverClass = System.getProperty("webdriver.class");
+        if (driverClass != null) {
+            driver = (WebDriver)Class.forName(driverClass).newInstance();
+        }
+
         // otherwise, Firefox
         if (driver == null) {
             driver = new FirefoxDriver();
@@ -79,8 +84,88 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         if (selenium != null) selenium.stop();
     }
 
+    protected void clickAndWait(final String pattern) {
+        selenium.click(pattern);
+        waitForPageToLoad();
+    }
+
+    protected void clickAndVerifyText(final String pattern, final String expectedText) {
+        clickAndWait(pattern);
+        assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
+    }
+
+    protected void goBack() {
+        selenium.goBack();
+        waitForPageToLoad();
+    }
+
     protected void waitForPageToLoad() {
-        selenium.waitForPageToLoad(LOAD_TIMEOUT);
+        selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
+    }
+    
+    protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
+        final long timeoutTime = System.currentTimeMillis() + timeout;
+        while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+            Thread.sleep(timeout / 10);
+        }
+        assertTrue(selenium.isTextPresent(expectedText));
+    }
+
+    @Test
+    public void testHeaderMenuLinks() throws Exception {
+        clickAndWait("link=Node List");
+        clickAndVerifyText("link=Search", "Search for Nodes");
+        clickAndVerifyText("link=Outages", "Outage Menu");
+        clickAndVerifyText("link=Path Outages", "All path outages");
+        clickAndWait("link=Dashboard");
+        waitForText("Surveillance View:", LOAD_TIMEOUT);
+        clickAndVerifyText("link=Events", "Event Queries");
+        clickAndVerifyText("link=Alarms", "Alarm Queries");
+        clickAndVerifyText("link=Notifications", "Notification queries");
+        clickAndVerifyText("link=Assets", "Search Asset Information");
+        clickAndVerifyText("link=Reports", "Resource Graphs");
+        clickAndVerifyText("link=Charts", "/ Charts");
+        clickAndWait("link=Surveillance");
+        assertTrue(selenium.isTextPresent("Surveillance View:") || selenium.isTextPresent("Finding status for nodes"));
+        clickAndWait("link=Distributed Status");
+        assertTrue(selenium.isTextPresent("Distributed Poller Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
+        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
+        clickAndVerifyText("//div[@id='content']//a[contains(text(), 'Distributed')]", "clear selected tags");
+        goBack();
+
+        // the vaadin apps are finicky
+        clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
+        Thread.sleep(1000);
+        assertTrue(selenium.getHtmlSource().contains("vaadin.initApplication(\"opennmstopology"));
+        handleVaadinErrorButtons();
+        goBack();
+        goBack();
+
+        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
+        clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
+        Thread.sleep(1000);
+        assertTrue(selenium.getHtmlSource().contains("vaadin.initApplication(\"opennmsnodemaps"));
+        handleVaadinErrorButtons();
+
+        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
+        clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
+        waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
+
+        clickAndVerifyText("link=Add Node", "Community String:");
+        clickAndVerifyText("link=Admin", "Configure Users, Groups and On-Call Roles");
+        clickAndVerifyText("link=Support", "Enter your OpenNMS Group commercial support login");
+    }
+
+    protected void handleVaadinErrorButtons() throws InterruptedException {
+        if (selenium.isAlertPresent()) {
+            selenium.keyPressNative("10");
+            Thread.sleep(1000);
+        }
+        if (selenium.isElementPresent("//input[@type='button' and @value='OK']")) {
+            selenium.click("//input[@type='button' and @value='OK']");
+        } else if (selenium.isElementPresent("//button[contains(text(), 'OK')]")) {
+            selenium.click("//button[contains(text(), 'OK')]");
+        }
     }
 
 }
