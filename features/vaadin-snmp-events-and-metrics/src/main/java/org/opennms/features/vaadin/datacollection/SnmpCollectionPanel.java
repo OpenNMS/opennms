@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
@@ -47,11 +48,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class SNMP Collection Panel.
@@ -78,7 +74,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
      */
     public SnmpCollectionPanel(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         setCaption("SNMP Collections");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         form = new SnmpCollectionForm(dataCollectionConfigDao) {
             @Override
@@ -134,21 +130,17 @@ public class SnmpCollectionPanel extends VerticalLayout {
         final Button refresh = new Button("Refresh SNMP Collections", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                               "Are you sure?",
-                                               MessageBox.Icon.QUESTION,
-                                               "By doing this all unsafed changes in SNMP collection will be lost.",
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                mb.addStyleName(Runo.WINDOW_DIALOG);
-                mb.show(new EventListener() {
-                    @Override
-                    public void buttonClicked(ButtonType buttonType) {
-                        if (buttonType == MessageBox.ButtonType.YES) {
+                ConfirmDialog.show(getUI(),
+                                   "Are you sure?",
+                                   "By doing this all unsafed changes in SNMP collection will be lost.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
                             table.refreshSnmpCollections();
                             table.select(null);
                             form.setVisible(false);
-
                         }
                     }
                 });

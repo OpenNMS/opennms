@@ -36,6 +36,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.ui.Alignment;
@@ -49,11 +50,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class DataCollectionGroupPanel.
@@ -85,7 +81,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     public DataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup group, final Logger logger) {
         setCaption("Data Collection");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         // Data Collection Group - Main Fields
 
@@ -118,7 +114,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         // Tab Panel
 
         final TabSheet tabs = new TabSheet();
-        tabs.setStyleName(Runo.TABSHEET_SMALL);
+        tabs.addStyleName("light");
         tabs.setSizeFull();
         tabs.addTab(resourceTypes, "Resource Types");
         tabs.addTab(groups, "MIB Groups");
@@ -188,17 +184,14 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to override the existig file?<br/>All current information will be lost.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to override the existig file?<br/>All current information will be lost.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         saveFile(file, dcGroup, logger);
                     }
                 }

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -47,11 +48,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /*
  * TODO How to change the rendering of a field.
@@ -85,7 +81,7 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
     public VarbindsDecodeField() {
         container.setBeanIdProperty("parmid");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
         table.setColumnHeader("parmid", "Parameter ID");
         table.setColumnHeader("decodeCollection", "Decode Values");
@@ -205,17 +201,14 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
         if (itemId == null) {
             Notification.show("Please select a Varbind Decode from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected Varbinds Decode field?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected Varbinds Decode field?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

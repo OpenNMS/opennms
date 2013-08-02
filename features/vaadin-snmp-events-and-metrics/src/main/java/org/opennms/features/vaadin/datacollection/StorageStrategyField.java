@@ -31,6 +31,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -45,11 +46,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Storage Strategy Field.
@@ -100,7 +96,7 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         container.setBeanIdProperty("key");
         table.setCaption("Parameters");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"key", "value"});
         table.setColumnHeader("key", "Parameter Name");
         table.setColumnHeader("value", "Parameter Value");
@@ -213,17 +209,14 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         if (itemId == null) {
             Notification.show("Please select a Parameter from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected Storage Strategy?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected Storage Strategy?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

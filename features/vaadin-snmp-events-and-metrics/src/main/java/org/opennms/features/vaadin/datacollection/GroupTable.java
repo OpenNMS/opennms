@@ -34,7 +34,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Resource Type Table.
@@ -60,7 +59,7 @@ public abstract class GroupTable extends Table {
         container.setBeanIdProperty("name");
         container.addAll(source.getGroupCollection());
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
         setWidth("100%");

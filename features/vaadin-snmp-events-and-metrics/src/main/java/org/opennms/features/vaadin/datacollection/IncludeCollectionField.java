@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
@@ -45,11 +46,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Include Collection Field.
@@ -88,7 +84,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
     public IncludeCollectionField(final DataCollectionConfigDao dataCollectionConfigDao) {
         table.setCaption("Includes List");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
         table.setSelectable(true);
@@ -216,17 +212,14 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
             Notification.show("Please select a IncludeCollection from the table.");
             return;
         }
-        MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                       "Are you sure?",
-                                       MessageBox.Icon.QUESTION,
-                                       "Do you really want to remove the selected Include Collection field<br/>This action cannot be undone.",
-                                       new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                       new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-        mb.addStyleName(Runo.WINDOW_DIALOG);
-        mb.show(new EventListener() {
-            @Override
-            public void buttonClicked(ButtonType buttonType) {
-                if (buttonType == MessageBox.ButtonType.YES) {
+        ConfirmDialog.show(getUI(),
+                           "Are you sure?",
+                           "Do you really want to remove the selected Include Collection field<br/>This action cannot be undone.",
+                           "Yes",
+                           "No",
+                           new ConfirmDialog.Listener() {
+            public void onClose(ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
                     table.removeItem(itemId);
                 }
             }
