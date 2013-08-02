@@ -598,30 +598,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         @Override
 	public void show(Object target, int left, int top) {
 		updateContextMenuItems(target, m_contextMenu.getItems());
-		updateSubMenuDisplay(m_contextMenu.getItems());
 		m_contextMenu.setTarget(target);
 		m_contextMenu.open(left, top);
 	}
-
-
-	private static void updateSubMenuDisplay(List<TopoContextMenuItem> items) {
-		for (TopoContextMenuItem item : items) {
-			if (!item.hasChildren()) continue;
-			else updateSubMenuDisplay(item.getChildren());
-			// TODO: Figure out how to do this in the new contextmenu
-			/*
-			boolean shouldDisplay = false;
-			for (TopoContextMenuItem child : item.getChildren()) {
-				if (child.getItem().isVisible()) {
-					shouldDisplay = true;
-					break;
-				}
-			}
-			item.getItem().setVisible(shouldDisplay);
-			*/
-		}
-	}
-
 
     public WidgetManager getWidgetManager() {
         return m_widgetManager;
