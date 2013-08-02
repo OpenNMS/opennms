@@ -213,10 +213,25 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
+        final Set<OnmsCategory> existingCategories = dbNode.getCategories();
+        final Set<OnmsCategory> newCategories = node.getCategories();
+
         dbNode.mergeNode(node, m_eventForwarder, false);
-    
+
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
+
+        boolean categoriesChanged = false;
+        if (existingCategories.size() != newCategories.size()) categoriesChanged = true;
+        if (!categoriesChanged && !existingCategories.containsAll(newCategories)) categoriesChanged = true;
+        if (!categoriesChanged && !newCategories.containsAll(existingCategories)) categoriesChanged = true;
+
+        if (categoriesChanged) {
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            bldr.setNode(dbNode);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, dbNode.getLabel());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
 
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder);
 

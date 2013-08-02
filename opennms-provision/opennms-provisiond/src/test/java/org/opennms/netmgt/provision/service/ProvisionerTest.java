@@ -437,7 +437,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     }
 
-
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", true);
@@ -1322,6 +1321,22 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals("admin", node.getParent().getLabel());
         assertEquals("192.168.1.12", node.getPathElement().getIpAddress());
         assertEquals("ICMP", node.getPathElement().getServiceName());
+    }
+
+    @Test(timeout=300000)
+    @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
+    public void testImportWithNodeCategoryEvents() throws Exception {
+        final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(1, "test");
+        network.addInterface("172.16.1.1");
+        network.addService("ICMP");
+        anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(1).getEvent());
+        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(1).getEvent());
+        importFromResource("classpath:/requisition_with_node_categories.xml", true);
+        importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
+
+        m_eventAnticipator.verifyAnticipated();
     }
 
     private static Event nodeDeleted(int nodeid) {
