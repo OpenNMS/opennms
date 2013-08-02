@@ -46,7 +46,7 @@ import com.vaadin.ui.themes.Runo;
 public abstract class SnmpCollectionTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name", "snmpStorageFlag" };
+    public static final Object[] COLUMN_NAMES = new String[] { "name", "snmpStorageFlag" };
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "SNMP Collection Name", "SNMP Storage Flag" };

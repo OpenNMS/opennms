@@ -52,7 +52,7 @@ public class GWTVertex extends JavaScriptObject {
     public static native GWTVertex create(String id, int x, int y) /*-{
     	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
-    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48};
+    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":""};
 	}-*/;
 
     public final native String getId()/*-{
@@ -139,10 +139,13 @@ public class GWTVertex extends JavaScriptObject {
     	this.initialY = initialY;
 	}-*/;
 
-    public final String getTooltipText() {
-        return getLabel();
-    }
+    public final native void setTooltipText(String tooltipText) /*-{
+        this.tooltipText = tooltipText;
+    }-*/;
 
+    public final native String getTooltipText() /*-{
+        return this.tooltipText;
+    }-*/;
 
     public final native String getIconUrl() /*-{
         return this.iconUrl;
@@ -325,6 +328,7 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+
     static native SVGRect getHiddenIconElement(String iconId) /*-{
         var existingUseElem = $wnd.d3.select("#hiddenIconContainer #" + iconId + "-icon");
         if(existingUseElem[0][0] == null){
@@ -337,7 +341,6 @@ public class GWTVertex extends JavaScriptObject {
 
 
     }-*/;
-
 
     static Func<String, GWTVertex> calculateOverlayWidth(){
         return new Func<String, GWTVertex>() {
@@ -466,7 +469,6 @@ public class GWTVertex extends JavaScriptObject {
             }
         };
     }
-
     public static final native void logDocument(Object doc)/*-{
         $wnd.console.log(doc)
     }-*/;

@@ -44,6 +44,8 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,51 +81,6 @@ import org.slf4j.LoggerFactory;
 public final class DbNodeEntry {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DbNodeEntry.class);
-
-    /**
-     * The character returned if the node is active
-     */
-    public static final char NODE_TYPE_ACTIVE = 'A';
-
-    /**
-     * The character returned if the node is deleted
-     */
-    public static final char NODE_TYPE_DELETED = 'D';
-
-    /**
-     * The character returned if the node type is unset/unknown.
-     */
-    public static final char NODE_TYPE_UNKNOWN = ' ';
-
-    /**
-     * Label source set by user
-     */
-    public static final char LABEL_SOURCE_USER = 'U';
-
-    /**
-     * Label source set by netbios
-     */
-    public static final char LABEL_SOURCE_NETBIOS = 'N';
-
-    /**
-     * Label source set by hostname
-     */
-    public static final char LABEL_SOURCE_HOSTNAME = 'H';
-
-    /**
-     * Label source set by SNMP sysname
-     */
-    public static final char LABEL_SOURCE_SYSNAME = 'S';
-
-    /**
-     * Label source set by IP Address
-     */
-    public static final char LABEL_SOURCE_ADDRESS = 'A';
-
-    /**
-     * Label source unset/unknown
-     */
-    public static final char LABEL_SOURCE_UNKNOWN = ' ';
 
     /**
      * The default distributed poller name to use if one is not supplied
@@ -188,7 +145,7 @@ public final class DbNodeEntry {
     /**
      * The type of node, active or deleted.
      */
-    private char m_type;
+    private NodeType m_type;
 
     /**
      * SNMP system object identifier
@@ -223,7 +180,7 @@ public final class DbNodeEntry {
     /**
      * Source of the label
      */
-    private char m_labelSource;
+    private NodeLabelSource m_labelSource;
 
     /**
      * The netbios name
@@ -439,7 +396,7 @@ public final class DbNodeEntry {
                     stmt.setInt(ndx++, m_parentId);
 
             if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-                stmt.setString(ndx++, new String(new char[] { m_type }));
+                stmt.setString(ndx++, m_type.toString());
 
             if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
                 stmt.setTimestamp(ndx++, m_createTime);
@@ -464,7 +421,7 @@ public final class DbNodeEntry {
                 stmt.setString(ndx++, m_label);
 
             if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE)
-                stmt.setString(ndx++, new String(new char[] { m_labelSource }));
+                stmt.setString(ndx++, m_labelSource.toString());
 
             if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME)
                 stmt.setString(ndx++, m_nbName);
@@ -485,7 +442,7 @@ public final class DbNodeEntry {
             if ((m_changed & CHANGED_FOREIGN_ID) == CHANGED_FOREIGN_ID)
                 stmt.setString(ndx++, m_foreignId);
 
-                LOG.debug("nodeid='{}' nodetype='{}' createTime='{}' lastPoll='{}' dpName='{}' sysname='{}' sysoid='{}' sysdescr='{}' syslocation='{}' syscontact='{}' label='{}' labelsource='{}' netbios='{}' domain='{}' os='{}'", m_nodeId, new String(new char[] { m_type }), m_createTime, m_lastPoll, m_dpName, m_sysname, m_sysoid, m_sysdescr, m_syslocation, m_syscontact, m_label, new String(new char[] { m_labelSource }), m_nbName, m_nbDomainName, m_os); 
+                LOG.debug("nodeid='{}' nodetype='{}' createTime='{}' lastPoll='{}' dpName='{}' sysname='{}' sysoid='{}' sysdescr='{}' syslocation='{}' syscontact='{}' label='{}' labelsource='{}' netbios='{}' domain='{}' os='{}'", m_nodeId, m_type.toString(), m_createTime, m_lastPoll, m_dpName, m_sysname, m_sysoid, m_sysdescr, m_syslocation, m_syscontact, m_label, m_labelSource.toString(), m_nbName, m_nbDomainName, m_os); 
 
             // Run the insert
             //
@@ -624,7 +581,7 @@ public final class DbNodeEntry {
                     stmt.setInt(ndx++, m_parentId);
 
             if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-                stmt.setString(ndx++, new String(new char[] { m_type }));
+                stmt.setString(ndx++, m_type.toString());
 
             if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
                 if (m_createTime == null) {
@@ -677,7 +634,7 @@ public final class DbNodeEntry {
             }
 
             if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE) {
-                stmt.setString(ndx++, new String(new char[] { m_labelSource }));
+                stmt.setString(ndx++, m_labelSource.toString());
             }
 
             if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME) {
@@ -789,10 +746,17 @@ public final class DbNodeEntry {
             // the node type
             //
             String str = rset.getString(ndx++);
-            if (str != null && !rset.wasNull())
-                m_type = str.charAt(0);
-            else
-                m_type = NODE_TYPE_UNKNOWN;
+            if (str != null && !rset.wasNull()) {
+                if (NodeType.ACTIVE.toString().equals(str)) {
+                    m_type = NodeType.ACTIVE;
+                } else if (NodeType.DELETED.toString().equals(str)) {
+                    m_type = NodeType.DELETED;
+                } else {
+                    m_type = NodeType.UNKNOWN;
+                }
+            } else {
+                m_type = NodeType.UNKNOWN;
+            }
 
             // the sysoid
             //
@@ -833,10 +797,23 @@ public final class DbNodeEntry {
             // the label type
             //
             str = rset.getString(ndx++);
-            if (rset.wasNull() || str == null)
-                m_labelSource = LABEL_SOURCE_UNKNOWN;
-            else
-                m_labelSource = str.charAt(0);
+            if (rset.wasNull()) {
+                m_labelSource = NodeLabelSource.UNKNOWN;
+            } else if (NodeLabelSource.ADDRESS.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.ADDRESS;
+            } else if (NodeLabelSource.HOSTNAME.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.HOSTNAME;
+            } else if (NodeLabelSource.NETBIOS.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.NETBIOS;
+            } else if (NodeLabelSource.SYSNAME.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.SYSNAME;
+            } else if (NodeLabelSource.UNKNOWN.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.UNKNOWN;
+            } else if (NodeLabelSource.USER.toString().equals(str)) {
+                m_labelSource = NodeLabelSource.USER;
+            } else {
+                m_labelSource = NodeLabelSource.UNKNOWN;
+            }
 
             // the netbios name
             //
@@ -895,14 +872,14 @@ public final class DbNodeEntry {
         m_dpName = poller;
         m_createTime = null;
         m_parentId = -1;
-        m_type = NODE_TYPE_UNKNOWN;
+        m_type = NodeType.UNKNOWN;
         m_sysoid = null;
         m_sysname = null;
         m_sysdescr = null;
         m_syslocation = null;
         m_syscontact = null;
         m_label = null;
-        m_labelSource = LABEL_SOURCE_UNKNOWN;
+        m_labelSource = NodeLabelSource.UNKNOWN;
         m_nbName = null;
         m_nbDomainName = null;
         m_os = null;
@@ -1068,7 +1045,7 @@ public     String getDistributedPollerName() {
     /**
      * Returns the current node type
      */
-    public char getNodeType() {
+    public NodeType getNodeType() {
         return m_type;
     }
 
@@ -1079,7 +1056,7 @@ public     String getDistributedPollerName() {
      *            The new node type.
      * 
      */
-    public void setNodeType(char type) {
+    public void setNodeType(NodeType type) {
         m_type = type;
         m_changed |= CHANGED_TYPE;
     }
@@ -1091,7 +1068,7 @@ public     String getDistributedPollerName() {
             return false;
     }
 
-    public boolean updateNodeType(char newtype) {
+    public boolean updateNodeType(NodeType newtype) {
         if (newtype != m_type) {
             setNodeType(newtype);
             return true;
@@ -1316,7 +1293,7 @@ public     String getDistributedPollerName() {
     /**
      * Returns the current label source.
      */
-    public char getLabelSource() {
+    public NodeLabelSource getLabelSource() {
         return m_labelSource;
     }
 
@@ -1326,7 +1303,7 @@ public     String getDistributedPollerName() {
      * @param src
      *            The new label source.
      */
-    public void setLabelSource(char src) {
+    public void setLabelSource(NodeLabelSource src) {
         m_labelSource = src;
         m_changed |= CHANGED_LABEL_SOURCE;
     }
@@ -1338,7 +1315,7 @@ public     String getDistributedPollerName() {
             return false;
     }
 
-    public boolean updateLabelSource(char newlabelSource) {
+    public boolean updateLabelSource(NodeLabelSource newlabelSource) {
         if (newlabelSource != m_labelSource) {
             setLabelSource(newlabelSource);
             return true;
@@ -2011,7 +1988,7 @@ public     String getDistributedPollerName() {
         buf.append("node identifier          = ").append(m_nodeId).append(sep);
         buf.append("distributed poller       = ").append(m_dpName).append(sep);
         buf.append("creation time            = ").append(m_createTime).append(sep);
-        buf.append("parent identfier         = ").append(m_parentId).append(sep);
+        buf.append("parent identifier        = ").append(m_parentId).append(sep);
         buf.append("node type                = ").append(m_type).append(sep);
         buf.append("snmp system oid          = ").append(m_sysoid).append(sep);
         buf.append("snmp system name         = ").append(m_sysname).append(sep);

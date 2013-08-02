@@ -142,7 +142,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
 
-        loadUserSettings(request);
+        loadUserSettings(m_applicationContext);
         setupListeners();
         createLayouts();
         setupErrorHandler();
@@ -338,9 +338,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     }
 
-    private void loadUserSettings(VaadinRequest request) {
-        m_userName = request.getRemoteUser();
+    private void loadUserSettings(VaadinApplicationContext context) {
+        m_userName = context.getUsername();
         m_graphContainer.setUserName(m_userName);
+        m_graphContainer.setSessionId(context.getSessionId());
 
         // See if the history manager has an existing fragment stored for
         // this user. Do this before laying out the UI because the history

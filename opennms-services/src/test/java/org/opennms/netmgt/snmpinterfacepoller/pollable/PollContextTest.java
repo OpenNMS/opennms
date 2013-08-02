@@ -35,7 +35,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -44,8 +43,8 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -78,7 +77,7 @@ public class PollContextTest {
 
         NetworkBuilder nb = new NetworkBuilder();
 
-        nb.addNode("cisco2691").setForeignSource("linkd").setForeignId("cisco2691").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
+        nb.addNode("cisco2691").setForeignSource("linkd").setForeignId("cisco2691").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType(NodeType.ACTIVE);
         OnmsSnmpInterface null0 = new OnmsSnmpInterface(nb.getCurrentNode(), 4);
         null0.setIfSpeed(10000000l);
         null0.setPoll("P");
@@ -105,7 +104,7 @@ public class PollContextTest {
         nb.addInterface("10.1.7.1", eth0).setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
-        nb.addNode("cisco1700").setForeignSource("linkd").setForeignId("cisco1700").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
+        nb.addNode("cisco1700").setForeignSource("linkd").setForeignId("cisco1700").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType(NodeType.ACTIVE);
         OnmsSnmpInterface eth1 = new OnmsSnmpInterface(nb.getCurrentNode(), 2);
         eth1.setIfSpeed(100000000l);
         eth1.setPoll("P");

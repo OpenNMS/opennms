@@ -114,6 +114,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
                 for (ServiceReference eachReference : allServiceReferences) {
                     Object service = bundleContext.getService(eachReference);
                     if (service == null) continue;
+                    if (serviceRegistrations.get(service) == null) continue; // wrong bundleContext/OnmsServiceManager
                     serviceRegistrations.get(service).unregister();
                     serviceRegistrations.remove(service);
                 }

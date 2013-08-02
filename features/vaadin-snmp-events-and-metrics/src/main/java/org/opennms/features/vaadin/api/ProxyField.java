@@ -39,8 +39,9 @@ import com.vaadin.ui.VerticalLayout;
 // TODO: I'm not sure if this is the best way to do that but it works
 /**
  * The Proxy Field Class.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ *
+ * @param <T> the generic type
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @SuppressWarnings("serial")
 public class ProxyField<T> extends VerticalLayout implements Field<T> {
@@ -61,6 +62,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      *
      * @return the field
      */
+    @SuppressWarnings("unchecked")
     public Field<T> getField() {
         return (Field<T>)getComponent(0);
     }
@@ -97,11 +99,17 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
         getField().discard();
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.Buffered#isBuffered()
+     */
     @Override
     public boolean isBuffered() {
         return getField().isBuffered();
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.Buffered#setBuffered(boolean)
+     */
     @Override
     public void setBuffered(boolean writeThrough) throws SourceException, InvalidValueException {
         getField().setBuffered(writeThrough);
@@ -246,9 +254,9 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
     /* (non-Javadoc)
      * @see com.vaadin.data.Property.Viewer#setPropertyDataSource(com.vaadin.data.Property)
      */
-    @Override
     // Because of {@link com.vaadin.data.Property.Viewer#setPropertyDataSource(com.vaadin.data.Property)} API
-    @SuppressWarnings("unchecked") 
+    @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         getField().setPropertyDataSource(newDataSource);
     }

@@ -59,9 +59,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayList> implements Button.ClickListener {
-
-	public static class VarbindArrayList extends ArrayList<Varbind> {}
+public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements Button.ClickListener {
 
     /** The Table. */
     private final Table table = new Table();
@@ -111,6 +109,9 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         toolbar.setVisible(table.isEditable());
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -120,13 +121,20 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         return layout;
     }
 
-    @Override
-    public Class<VarbindArrayList> getType() {
-        return VarbindArrayList.class;
-    }
-
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     @SuppressWarnings("unchecked")
+    public Class<ArrayList<Varbind>> getType() {
+        return (Class<ArrayList<Varbind>>) new ArrayList<Varbind>().getClass();
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
@@ -140,9 +148,12 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public VarbindArrayList getValue() {
-        VarbindArrayList beans = new VarbindArrayList();
+    public ArrayList<Varbind> getValue() {
+        ArrayList<Varbind> beans = new ArrayList<Varbind>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

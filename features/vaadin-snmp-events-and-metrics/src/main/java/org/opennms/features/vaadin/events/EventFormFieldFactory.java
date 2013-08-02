@@ -124,12 +124,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
             return descr;
         }
         if ("operinstruct".equals(propertyId)) {
-            final TextArea oper = new TextArea("Operator Instructions") {
-                @Override
-                public String getValue() { // This is because of the intern usage on Event.setOperInstruct()
-                    return super.getValue() == null ? "" : super.getValue();
-                }
-            };
+            final TextArea oper = new TextArea("Operator Instructions");
             oper.setWidth("100%");
             oper.setRows(10);
             oper.setNullRepresentation("");

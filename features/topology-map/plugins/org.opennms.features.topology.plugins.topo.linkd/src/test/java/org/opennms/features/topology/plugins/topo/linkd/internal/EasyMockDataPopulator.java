@@ -47,10 +47,11 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -121,7 +122,7 @@ public class EasyMockDataPopulator {
         
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
         builder.setBuilding("HQ");
         builder.addSnmpInterface(1)
@@ -158,7 +159,7 @@ public class EasyMockDataPopulator {
         final OnmsNode node1 = builder.getCurrentNode();
         setNode1(node1);
         
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType("A");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(NodeType.ACTIVE);
         builder.setBuilding("HQ");
         builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
@@ -172,7 +173,7 @@ public class EasyMockDataPopulator {
         OnmsNode node2 = builder.getCurrentNode();
         setNode2(node2);
         
-        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType("A");
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType(NodeType.ACTIVE);
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
@@ -184,7 +185,7 @@ public class EasyMockDataPopulator {
         OnmsNode node3 = builder.getCurrentNode();
         setNode3(node3);
         
-        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType("A");
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType(NodeType.ACTIVE);
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
@@ -197,7 +198,7 @@ public class EasyMockDataPopulator {
         setNode4(node4);
         
         //This node purposely doesn't have a foreignId style assetNumber
-        builder.addNode("alternate-node1").setType("A").getAssetRecord().setAssetNumber("5");
+        builder.addNode("alternate-node1").setType(NodeType.ACTIVE).getAssetRecord().setAssetNumber("5");
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
@@ -210,7 +211,7 @@ public class EasyMockDataPopulator {
         setNode5(node5);
         
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
-        builder.addNode("alternate-node2").setType("A").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node2").setType(NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
         builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
@@ -222,7 +223,7 @@ public class EasyMockDataPopulator {
         OnmsNode node6 = builder.getCurrentNode();
         setNode6(node6);
         
-        builder.addNode("alternate-node3").setType("A").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node3").setType(NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
         builder.addInterface("10.1.3.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);
@@ -234,7 +235,7 @@ public class EasyMockDataPopulator {
         OnmsNode node7 = builder.getCurrentNode();
         setNode7(node7);
 
-        builder.addNode("alternate-node4").setType("A").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node4").setType(NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
         builder.addInterface("10.1.4.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(icmp);
         builder.addService(snmp);

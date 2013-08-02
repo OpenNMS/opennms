@@ -58,6 +58,9 @@ public class SnmpCollectionAdminApplication extends UI {
         this.dataCollectionDao = dataCollectionDao;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.UI#init(com.vaadin.server.VaadinRequest)
+     */
     @Override
     public void init(VaadinRequest request) {
         if (dataCollectionDao == null)

@@ -89,6 +89,9 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         setBuffered(true);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         HorizontalLayout layout = new HorizontalLayout();
@@ -98,12 +101,19 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     public Class<Collect> getType() {
         return Collect.class;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof Collect) {
@@ -118,6 +128,9 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
     public Collect getValue() {
         Collect dto = new Collect();
@@ -127,6 +140,9 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         return dto;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setReadOnly(boolean)
+     */
     @Override
     public void setReadOnly(boolean readOnly) {
         listField.setReadOnly(readOnly);
@@ -134,6 +150,9 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         super.setReadOnly(readOnly);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     */
     @Override
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();

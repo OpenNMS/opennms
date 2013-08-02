@@ -82,6 +82,9 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         setBuffered(true);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         HorizontalLayout layout = new HorizontalLayout();
@@ -93,12 +96,19 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         return layout;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     public Class<SystemDefChoice> getType() {
         return SystemDefChoice.class;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof SystemDefChoice) {
@@ -111,6 +121,9 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
     public SystemDefChoice getValue() {
         SystemDefChoice dto = new SystemDefChoice();
