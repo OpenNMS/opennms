@@ -56,7 +56,7 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
         if(className.equals("svgIconOverlay")) {
             GWTVertex vertex = getVertexForSelection(D3.d3().select(element));
             tooltipInfo = new TooltipInfo(vertex.getTooltipText());
-        } else if(className.equals("edge")){
+        } else if(className.contains("edge")){
             GWTEdge edge = getEdgeForSelection(D3.d3().select(element));
             tooltipInfo = new TooltipInfo(edge.getTooltipText());
         }
