@@ -393,9 +393,10 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         m_populator.resetDatabase();
 
         final int nextNodeId = m_nodeDao.getNextNodeId();
+        final String nodeLabel = "node1";
 
         final MockNetwork network = new MockNetwork();
-        final MockNode node = network.addNode(nextNodeId, "node1");
+        final MockNode node = network.addNode(nextNodeId, nodeLabel);
         network.addInterface("172.20.1.204");
         network.addService("ICMP");
         network.addService("HTTP");
@@ -404,6 +405,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         network.addService("SNMP");
 
         anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, nodeLabel));
 
         importFromResource("classpath:/tec_dump.xml", true);
 
@@ -1334,13 +1336,16 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     @Test(timeout=300000)
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testImportWithNodeCategoryEvents() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
         final MockNetwork network = new MockNetwork();
-        final MockNode node = network.addNode(1, "test");
+        final MockNode node = network.addNode(nextNodeId, "test");
         network.addInterface("172.16.1.1");
         network.addService("ICMP");
         anticpateCreationEvents(node);
-        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(1).getEvent());
-        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(1).getEvent());
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
         importFromResource("classpath:/requisition_with_node_categories.xml", true);
         importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
 
@@ -1389,8 +1394,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         return bldr.getEvent();
     }
 
-
-
+    private Event getNodeCategoryEvent(final int nodeId, final String nodeLabel) {
+        return new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(nodeId).setParam(EventConstants.PARM_NODE_LABEL, nodeLabel).getEvent();
+    }
 
     private OnmsNode createNode(final String foreignSource) {
         OnmsNode node = new OnmsNode();
