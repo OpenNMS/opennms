@@ -430,7 +430,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         });
     }
 
-
     @Test(timeout=300000)
     public void testNonSnmpImportAndScan() throws Exception {
         importFromResource("classpath:/import_localhost.xml", true);
