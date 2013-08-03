@@ -378,7 +378,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testSendEventsOnImport() throws Exception {
     	final MockNetwork network = new MockNetwork();
-        final MockNode node = network.addNode(1, "node1");
+        final String nodeLabel = "node1";
+        final MockNode node = network.addNode(1, nodeLabel);
         network.addInterface("172.20.1.204");
         network.addService("ICMP");
         network.addService("HTTP");
@@ -387,7 +388,8 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         network.addService("SNMP");
         
         anticpateCreationEvents(node);
-        
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, nodeLabel));
+
         importFromResource("classpath:/tec_dump.xml", true);
         
         m_eventAnticipator.verifyAnticipated();
@@ -1334,8 +1336,9 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         network.addInterface("172.16.1.1");
         network.addService("ICMP");
         anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, "test"));
         m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(1).getEvent());
-        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(1).getEvent());
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(1, "test"));
         importFromResource("classpath:/requisition_with_node_categories.xml", true);
         importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
 
@@ -1384,9 +1387,10 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         return bldr.getEvent();
     }
 
+    private Event getNodeCategoryEvent(final int nodeId, final String nodeLabel) {
+        return new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "Test").setNodeid(nodeId).setParam(EventConstants.PARM_NODE_LABEL, nodeLabel).getEvent();
+    }
 
-    
-    
     private OnmsNode createNode() {
         OnmsNode node = new OnmsNode();
         //node.setId(nodeId);
