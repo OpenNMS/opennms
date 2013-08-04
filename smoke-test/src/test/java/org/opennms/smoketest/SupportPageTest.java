@@ -35,8 +35,7 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Support");
-        waitForPageToLoad();
+    	clickAndWait("link=Support");
     }
 
     @Test
@@ -65,30 +64,25 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     }
     @Test
     public void testAllLinks() {
-        selenium.click("link=About the OpenNMS Web Console");
-        waitForPageToLoad();
+        clickAndWait("link=About the OpenNMS Web Console");
         assertTrue(selenium.isTextPresent("OpenNMS Web Console"));
         assertTrue(selenium.isTextPresent("License and Copyright"));
         assertTrue(selenium.isTextPresent("OSI Certified Open Source Software"));
         assertTrue(selenium.isTextPresent("Version:"));
-        selenium.goBack();
-        waitForPageToLoad();
+        goBack();
         assertTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new']"));
         assertTrue(selenium.isElementPresent("//a[@href='http://www.opennms.org/wiki/']"));
-        selenium.click("link=Generate a System Report");
-        waitForPageToLoad();
+
+        clickAndWait("link=Generate a System Report");
         assertTrue(selenium.isTextPresent("Plugins"));
         assertTrue(selenium.isTextPresent("Report Type"));
         assertTrue(selenium.isElementPresent("name=formatter"));
         assertEquals("", selenium.getValue("css=input[type=submit]"));
         assertTrue(selenium.isTextPresent("Output"));
         assertTrue(selenium.isTextPresent("Choose which plugins to enable:"));
-        selenium.goBack();
-        waitForPageToLoad();
+        goBack();
         assertTrue(selenium.isElementPresent("//a[@href='http://issues.opennms.org/']"));
         assertTrue(selenium.isElementPresent("//a[@href='irc://irc.freenode.net/%23opennms']"));
-        selenium.click("link=Log out");
-        waitForPageToLoad();
     }
 
 }
