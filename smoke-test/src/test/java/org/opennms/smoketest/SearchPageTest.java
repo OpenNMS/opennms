@@ -47,46 +47,31 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Search Options"));
         assertTrue(selenium.isTextPresent("MAC Address"));
     }
-        
-     @Test
-     public void testAllLinksArePresent() {
+
+    @Test
+    public void testAllLinksArePresent() {
         assertTrue(selenium.isElementPresent("link=All nodes"));
         assertTrue(selenium.isElementPresent("link=All nodes and their interfaces"));
         assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
-     }
-      
-     @Test 
-     public void testAllFormsArePresent() {
+    }
+
+    @Test 
+    public void testAllFormsArePresent() {
         assertTrue(selenium.isElementPresent("css=input[type=submit]"));
         assertEquals("Search", selenium.getValue("css=input[type=submit]"));
-     }
-      
-     @Test
-     public void testAllLinks() {
-        selenium.click("link=All nodes");
-        waitForPageToLoad();
-        long endTime = System.currentTimeMillis() + 30000;
-        while(System.currentTimeMillis() < endTime){
-            if(selenium.isTextPresent("Nodes")){
-                break;
-            }
-            if(endTime - System.currentTimeMillis() < 5000){
-                fail ("25 second timeout trying to reach \"Search/All nodes\" Page");
-            }
-        }
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=All nodes and their interfaces");
-        waitForPageToLoad();
+    }
+
+    @Test
+    public void testAllLinks() throws InterruptedException {
+        clickAndWait("link=All nodes");
+        waitForText("Nodes", LOAD_TIMEOUT);
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=All nodes and their interfaces");
         assertTrue(selenium.isTextPresent("Nodes and their interfaces"));
         assertTrue(selenium.isElementPresent("link=Hide interfaces"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=All nodes with asset info");
-        waitForPageToLoad();
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=All nodes with asset info");
         assertTrue(selenium.isTextPresent("Assets"));
-        selenium.click("link=Log out");
-        waitForPageToLoad();
     }
 
 }
