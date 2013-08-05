@@ -16,6 +16,8 @@ Var OnmsWebappServer
 Var OnmsWebappPort
 Var OnmsWebappPath
 
+Var POLLER_SERVICE_FILE_NAME
+Var POLLER_TRAY_FILE_NAME
 Var UNINSTALLER_FILE_NAME
 Var GUI_POLLER_JNLP
 Var HEADLESS_POLLER_JNLP
@@ -84,9 +86,12 @@ UserLocal:
   Pop $1
   StrCmp $1 "0" GotNoJava GotJava
 GotNoJava:
-  MessageBox MB_OK|MB_ICONEXCLAMATION "A Java 5 or Java 6 runtime environment or development kit with support$\r$\nfor Java Web Start is required, but none was found on this system.$\r$\n$\r$\nPlease download and install an appropriate Java distribution$\r$\nfrom http://java.sun.com/ and run the installer again."
+  MessageBox MB_OK|MB_ICONEXCLAMATION "A Java 6 or Java 7 runtime environment or development kit with support$\r$\nfor Java Web Start is required, but none was found on this system.$\r$\n$\r$\nPlease download and install an appropriate Java distribution$\r$\nfrom http://java.sun.com/ and run the installer again."
   Abort
 GotJava:
+
+  StrCpy $POLLER_SERVICE_FILE_NAME "poller.exe"
+  StrCpy $POLLER_TRAY_FILE_NAME "polltray.exe"
 
   StrCpy $UNINSTALLER_FILE_NAME "uninstall-remote-poller.exe"
   StrCpy $GUI_POLLER_JNLP "app.jnlp"
@@ -101,7 +106,7 @@ GotJava:
   StrCpy $DEFAULT_WEBUI_PORT "8980"
   StrCpy $DEFAULT_WEBUI_PATH "/opennms"
   StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
-  StrCpy $VBS_KILL_SCRIPT "rmkillfile.vbs"
+  StrCpy $VBS_KILL_SCRIPT "pollkill.vbs"
 FunctionEnd
 
 
@@ -125,6 +130,9 @@ Function un.onInit
 
   ReadRegStr $ServiceUser HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceUser"
   ReadRegStr $ServiceDomain HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceDomain"
+
+  StrCpy $POLLER_SERVICE_FILE_NAME "poller.exe"
+  StrCpy $POLLER_TRAY_FILE_NAME "polltray.exe"
 
   StrCpy $UNINSTALLER_FILE_NAME "uninstall-remote-poller.exe"
   StrCpy $GUI_POLLER_JNLP "app.jnlp"
@@ -207,7 +215,7 @@ UninstPage instfiles
 Name "OpenNMS Remote Poller Service"
 Icon resources\big-o-install.ico
 UninstallIcon resources\big-o-uninstall.ico
-OutFile opennms-remote-poller-service-windows-inst.exe
+OutFile opennms-remote-poller.exe
 
 # Where we want to be installed
 InstallDir "$PROGRAMFILES\OpenNMS Remote Poller"
@@ -221,7 +229,7 @@ RequestExecutionLevel admin
 # Include an XP manifest
 XPStyle On
 
-BrandingText "© 2008 The OpenNMS Group, Inc.  Installer made with NSIS."
+BrandingText "© 2013 The OpenNMS Group, Inc.  Installer made with NSIS."
 
 #AddBrandingImage top 110
 
@@ -279,12 +287,12 @@ Section "-Files"
   Call MkJavaPath
   Pop $PROFILEJAVA
   File resources\GPL.TXT
-  File /nonfatal /r /x .svn etc
+  File /nonfatal /r /x .svn /x .git etc
   DetailPrint "Customizing log file location"
   Call WriteCustomLogPropsFile
-  File /nonfatal /r /x .svn logs
+  File /nonfatal /r /x .svn /x .git logs
   SetOutPath $INSTDIR\bin
-  File bin\rmkillfile.vbs
+  # File bin\$VBS_KILL_SCRIPT
   DetailPrint "Customizing service stop script"
   Call WriteCustomVbsKillScript
 
@@ -293,14 +301,15 @@ Section "-Files"
   Delete "$PROFILE\.opennms\$KILL_SWITCH_FILE_NAME"
   MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is stopping the $POLLER_SVC_DISP_NAME service.$\r$\n$\r$\nIf you abort the installer, you will need to restart the service manually."
   SkipSvcStopNotify:
-  IfFileExists "$INSTDIR\bin\opennmsremotepollerw.exe" 0 SkipStopSystray
+  IfFileExists "$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" 0 SkipStopSystray
   Call StopSysTrayMonitor
   DetailPrint "Pausing 30 seconds to give $POLLER_SVC_DISP_NAME service and/or system tray monitor time to stop..."
   Sleep 30000
   SkipStopSystray:
 
-  File /oname=opennmsremotepoller.exe bin\opennms.exe
-  File /oname=opennmsremotepollerw.exe bin\opennmsw.exe
+  # Rename the commons-daemon executables to nicer names
+  File /oname=$POLLER_SERVICE_FILE_NAME bin\prunsrv.exe
+  File /oname=$POLLER_TRAY_FILE_NAME bin\prunmgr.exe
 
   DetailPrint "Setting user Web Start properties"
   SetOutPath $APPDATA\Sun\Java\Deployment
@@ -316,7 +325,7 @@ Section "-Files"
 SectionEnd
 
 Section "System Tray Icon" SecSystray
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "OpenNMSRemotePoller" '"$INSTDIR\bin\opennmsremotepollerw.exe" //MS//OpenNMSRemotePoller'
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "$POLLER_SVC_NAME" '"$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" //MS//$POLLER_SVC_NAME'
   StrCpy $WantSystray "TRUE"
 SectionEnd
 
@@ -324,12 +333,12 @@ Section "Uninstall"
   # Deleting the kill-switch file will stop the service
   Delete "$PROFILE\.opennms\$KILL_SWITCH_FILE_NAME"
   # Try to stop the systray monitor if possible
-  IfFileExists "$INSTDIR\bin\opennmsremotepollerw.exe" 0 SkipStopSysTray
-  Exec '"$INSTDIR\bin\opennmsremotepollerw.exe" //MQ//$POLLER_SVC_NAME'
+  IfFileExists "$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" 0 SkipStopSysTray
+  Exec '"$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" //MQ//$POLLER_SVC_NAME'
   DetailPrint "Pausing 30 seconds to give $POLLER_SVC_DISP_NAME service and/or system tray monitor time to stop..."
   Sleep 30000
   SkipStopSysTray:
-  IfFileExists "$INSTDIR\bin\opennmsremotepoller.exe" 0 SkipRemoveService
+  IfFileExists "$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME" 0 SkipRemoveService
   Call un.RemovePollerSvc
   SkipRemoveService:
   Push $ServiceUser
@@ -344,8 +353,8 @@ Section "Uninstall"
   RightRemovedOK:
   Call un.RemoveSystrayMonitorStartup
   Delete "$INSTDIR\resources\GPL.TXT"
-  Delete "$INSTDIR\bin\opennmsremotepoller.exe"
-  Delete "$INSTDIR\bin\opennmsremotepollerw.exe"
+  Delete "$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME"
+  Delete "$INSTDIR\bin\$POLLER_TRAY_FILE_NAME"
   Delete "$INSTDIR\$UNINSTALLER_FILE_NAME"
   Sleep 1000
   RMDir /r "$INSTDIR\etc"
@@ -395,7 +404,7 @@ Function onmsServerInfoPage
   ${NSD_CreateText} 51u 19u 100u 12u "$OnmsWebappServer"
   Pop $ServerText
 
-  ${NSD_CreateLabel} 160u 20u 40u 12u "Web UI Port"
+  ${NSD_CreateLabel} 160u 20u 40u 12u "Web UI port"
   Pop $PortLabel
 
   ${NSD_CreateText} 205u 19u 30u 12u "$OnmsWebappPort"
@@ -946,14 +955,14 @@ VerbUpdate:
   StrCpy $1 "US"
   Goto DoService
 DoService:
-  ExecWait '"$INSTDIR\bin\opennmsremotepoller.exe" //$1//$POLLER_SVC_NAME --DisplayName="$POLLER_SVC_DISP_NAME" --Description="$POLLER_SVC_DESCRIPTION"  --DependsOn="Tcpip" --StartMode exe --StopMode exe --ServiceUser=".\$ServiceUser" --ServicePassword="$ServicePassword" --StartImage="$JWSEXE" --StartParams="-Xnosplash#$ExtraJWSOpts$JnlpUrl"' $1
+  ExecWait '"$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME" //$1//$POLLER_SVC_NAME --DisplayName="$POLLER_SVC_DISP_NAME" --Description="$POLLER_SVC_DESCRIPTION"  --DependsOn="Tcpip" --StartMode exe --StopMode exe --ServiceUser=".\$ServiceUser" --ServicePassword="$ServicePassword" --StartImage="$JWSEXE" --StartParams="-Xnosplash#$ExtraJWSOpts$JnlpUrl"' $1
   IntCmp $1 0 CreateOK CreateFail CreateFail
 CreateFail:
   Push "NOK"
   Return
 CreateOK:
   GetFullPathName /SHORT $1 "$INSTDIR\bin\$VBS_KILL_SCRIPT"
-  ExecWait '"$INSTDIR\bin\opennmsremotepoller.exe" //US//$POLLER_SVC_NAME  --StopImage="$SYSDIR\wscript.exe" --StopParams="//B#//NOLOGO#$1" --LogLevel=DEBUG --LogPath="$INSTDIR\logs" --LogPrefix=procrun.log --Startup=auto' $1
+  ExecWait '"$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME" //US//$POLLER_SVC_NAME  --StopImage="$SYSDIR\wscript.exe" --StopParams="//B#//NOLOGO#$1" --LogLevel=DEBUG --LogPath="$INSTDIR\logs" --LogPrefix=procrun.log --Startup=auto' $1
   #IntCmp $1 0 UpdateOK UpdateFail UpdateFail
   Goto UpdateOK
 UpdateFail:
@@ -973,7 +982,7 @@ Function un.RemovePollerSvc
   Call un.CheckSvcExists
   Pop $1
   StrCmp $1 "OK" 0 SkipRemoval
-  ExecWait '"$INSTDIR\bin\opennmsremotepoller.exe" //DS//$POLLER_SVC_NAME'
+  ExecWait '"$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME" //DS//$POLLER_SVC_NAME'
   SkipRemoval:
 FunctionEnd
 
@@ -981,7 +990,7 @@ FunctionEnd
 #----------------------
 # Function that launches the systray monitor if it is not already running
 Function LaunchSystrayMonitor
-  Exec '"$INSTDIR\bin\opennmsremotepollerw.exe" //MS//OpenNMSRemotePoller'
+  Exec '"$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" //MS//$POLLER_SVC_NAME'
 FunctionEnd
 
 
@@ -989,7 +998,7 @@ FunctionEnd
 #----------------------
 # Function that stops the systray monitor if it is running
 Function StopSystrayMonitor
-  Exec '"$INSTDIR\bin\opennmsremotepollerw.exe" //MQ//$POLLER_SVC_NAME'
+  Exec '"$INSTDIR\bin\$POLLER_TRAY_FILE_NAME" //MQ//$POLLER_SVC_NAME'
 FunctionEnd
 
 
@@ -997,7 +1006,7 @@ FunctionEnd
 #----------------------
 # Function that removes the systray monitor from Windows startup
 Function un.RemoveSystrayMonitorStartup
-  DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "OpenNMSRemotePoller"
+  DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "$POLLER_SVC_NAME"
 FunctionEnd
 
 
@@ -1163,7 +1172,7 @@ Function WriteAddRemProgEntry
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "DisplayName" "$POLLER_SVC_DISP_NAME Service"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "UninstallString" '"$INSTDIR\$UNINSTALLER_FILE_NAME"'
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "DisplayIcon" "$INSTDIR\bin\opennmsremotepoller.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "DisplayIcon" "$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "Publisher" "The OpenNMS Group, Inc."
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "HelpLink" "http://www.opennms.org/"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$POLLER_SVC_NAME" "NoModify" 1
