@@ -81,6 +81,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @After
     public void tearDown() throws Exception {
+        if (selenium.isTextPresent("Log out")) clickAndWait("link=Log out");
         if (selenium != null) selenium.stop();
     }
 
@@ -125,8 +126,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         clickAndVerifyText("link=Assets", "Search Asset Information");
         clickAndVerifyText("link=Reports", "Resource Graphs");
         clickAndVerifyText("link=Charts", "/ Charts");
-        clickAndWait("link=Surveillance");
-        assertTrue(selenium.isTextPresent("Surveillance View:") || selenium.isTextPresent("Finding status for nodes"));
+        clickAndVerifyText("link=Surveillance", "/ Surveillance");
         clickAndWait("link=Distributed Status");
         assertTrue(selenium.isTextPresent("Distributed Poller Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
