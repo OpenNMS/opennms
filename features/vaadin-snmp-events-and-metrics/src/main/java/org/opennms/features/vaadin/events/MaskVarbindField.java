@@ -57,11 +57,11 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements Button.ClickListener {
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
     private final BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -77,7 +77,6 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
      */
     public MaskVarbindField() {
         container.setBeanIdProperty("vbnumber");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
         table.setColumnHeader("vbnumber", "Varbind Number");

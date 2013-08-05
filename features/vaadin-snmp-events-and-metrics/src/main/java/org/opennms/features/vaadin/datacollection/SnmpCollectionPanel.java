@@ -57,9 +57,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class SnmpCollectionPanel extends VerticalLayout {
 
-    /** The form. */
-    private final SnmpCollectionForm form;
-
     /** The table. */
     private final SnmpCollectionTable table;
 
@@ -76,7 +73,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
         setCaption("SNMP Collections");
         addStyleName("light");
 
-        form = new SnmpCollectionForm(dataCollectionConfigDao) {
+        final SnmpCollectionForm form = new SnmpCollectionForm(dataCollectionConfigDao) {
             @Override
             public void saveSnmpCollection(SnmpCollection snmpCollection) {
                 if (isNew) {
@@ -91,6 +88,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
             @Override
             public void deleteSnmpCollection(SnmpCollection snmpCollection) {
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been removed.");
+                table.select(null);
                 table.removeItem(snmpCollection.getName());
                 table.refreshRowCache();
                 saveSnmpCollections(dataCollectionConfigDao, logger);
@@ -147,15 +145,15 @@ public class SnmpCollectionPanel extends VerticalLayout {
             }
         });
 
-        setSpacing(true);
-        setMargin(true);
-        addComponent(table);
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(add);
         toolbar.addComponent(refresh);
+
+        setSpacing(true);
+        setMargin(true);
+        addComponent(table);
         addComponent(toolbar);
         addComponent(form);
-
         setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
     }
 

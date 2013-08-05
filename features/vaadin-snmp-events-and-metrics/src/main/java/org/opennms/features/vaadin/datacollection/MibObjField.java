@@ -56,11 +56,11 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3665919460707298011L;
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
     private final BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -78,7 +78,6 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      */
     public MibObjField(final List<String> resourceTypes) {
         container.setBeanIdProperty("oid");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
         table.setColumnHeader("oid", "OID");

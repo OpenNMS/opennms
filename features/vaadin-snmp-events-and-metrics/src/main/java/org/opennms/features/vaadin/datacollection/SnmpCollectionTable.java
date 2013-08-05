@@ -73,13 +73,12 @@ public abstract class SnmpCollectionTable extends Table {
         setColumnHeaders(COLUMN_LABELS);
         setWidth("100%");
         setHeight("250px");
+
         addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
-                    BeanItem<SnmpCollection> item = (BeanItem<SnmpCollection>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
+                    updateExternalSource(container.getItem(getValue()));
                 }
             }
         });
@@ -97,9 +96,8 @@ public abstract class SnmpCollectionTable extends Table {
      *
      * @param snmpCollection the SNMP collection
      */
-    @SuppressWarnings("unchecked")
     public void addSnmpCollection(SnmpCollection snmpCollection) {
-        ((BeanContainer<String,SnmpCollection>) getContainerDataSource()).addBean(snmpCollection);
+        container.addBean(snmpCollection);
     }
 
     /**

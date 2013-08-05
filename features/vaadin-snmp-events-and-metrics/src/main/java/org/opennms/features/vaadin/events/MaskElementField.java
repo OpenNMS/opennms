@@ -56,11 +56,11 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
     private final BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -76,7 +76,6 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     public MaskElementField() {
         container.setBeanIdProperty("mename");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
         table.setColumnHeader("mename", "Element Name");

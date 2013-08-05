@@ -50,14 +50,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class SystemDefPanel extends VerticalLayout {
 
-    /** The form. */
-    private final SystemDefForm form;
-
     /** The table. */
     private final SystemDefTable table;
-
-    /** The add button. */
-    private final Button add;
 
     /** The isNew flag. True, if the system definition is new. */
     private boolean isNew = false;
@@ -72,7 +66,7 @@ public class SystemDefPanel extends VerticalLayout {
     public SystemDefPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
         addStyleName("light");
 
-        form = new SystemDefForm(dataCollectionConfigDao, source) {
+        final SystemDefForm form = new SystemDefForm(dataCollectionConfigDao, source) {
             @Override
             public void saveSystemDef(SystemDef systemDef) {
                 if (isNew) {
@@ -101,7 +95,7 @@ public class SystemDefPanel extends VerticalLayout {
             }
         };
 
-        add = new Button("Add System Definition", new Button.ClickListener() {
+        final Button add = new Button("Add System Definition", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 SystemDef sysDef = new SystemDef();

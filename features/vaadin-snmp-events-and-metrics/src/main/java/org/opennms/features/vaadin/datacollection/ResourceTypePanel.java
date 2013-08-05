@@ -52,14 +52,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class ResourceTypePanel extends VerticalLayout {
 
-    /** The form. */
-    private final ResourceTypeForm form;
-
     /** The table. */
     private final ResourceTypeTable table;
-
-    /** The add button. */
-    private final Button add;
 
     /** The isNew flag. True, if the resource type is new. */
     private boolean isNew;
@@ -73,8 +67,8 @@ public class ResourceTypePanel extends VerticalLayout {
      */
     public ResourceTypePanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
         addStyleName("light");
-        
-        form = new ResourceTypeForm() {
+
+        final ResourceTypeForm form = new ResourceTypeForm() {
             @Override
             public void saveResourceType(ResourceType resourceType) {
                 if (isNew) {
@@ -103,7 +97,7 @@ public class ResourceTypePanel extends VerticalLayout {
             }
         };
 
-        add = new Button("Add Resource Type", new Button.ClickListener() {
+        final Button add = new Button("Add Resource Type", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 ResourceType rt = new ResourceType();

@@ -54,13 +54,13 @@ import com.vaadin.ui.AbstractSelect.NewItemHandler;
 public class PersistSelectorStrategyField extends CustomField<PersistenceSelectorStrategy> implements Button.ClickListener {
 
     /** The Combo Box. */
-    private final ComboBox combo = new ComboBox();
-
-    /** The Table. */
-    private final Table table = new Table();
+    private final ComboBox combo = new ComboBox("Class Name");
 
     /** The Container. */
     private final BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
+
+    /** The Table. */
+    private final Table table = new Table("Parameters", container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -75,7 +75,6 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
      * Instantiates a new persist selector strategy field.
      */
     public PersistSelectorStrategyField() {
-        combo.setCaption("Class Name");
         combo.addItem("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
         combo.addItem("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy"); // To avoid requires opennms-services
         combo.setNullSelectionAllowed(false);
@@ -93,8 +92,6 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
         });
 
         container.setBeanIdProperty("key");
-        table.setCaption("Parameters");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"key", "value"});
         table.setColumnHeader("key", "Parameter Name");

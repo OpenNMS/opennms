@@ -61,13 +61,13 @@ import com.vaadin.ui.VerticalLayout;
 public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
 
     /** The Step. */
-    private final TextField step = new TextField();
-
-    /** The RRA Table. */
-    private final Table table = new Table();
+    private final TextField step = new TextField("RRD Step (in seconds)");
 
     /** The Container. */
     private final BeanItemContainer<RRA> container = new BeanItemContainer<RRA>(RRA.class);
+
+    /** The RRA Table. */
+    private final Table table = new Table("RRA List", container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -82,15 +82,12 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
      * Instantiates a new RRD field.
      */
     public RrdField() {
-        step.setCaption("RRD Step (in seconds)");
         step.setRequired(true);
         step.setImmediate(true);
         step.setValidationVisible(true);
         step.setNullSettingAllowed(false);
         step.setConverter(new StringToIntegerConverter());
 
-        table.setCaption("RRA List");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"cf", "xff", "steps", "rows"});
         table.setColumnHeaders(new String[]{"Consolidation Function", "XFF", "Steps", "Rows"});

@@ -58,10 +58,10 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
     private final Form form = new Form();
 
     /** The OK button. */
-    private final Button okButton;
+    private final Button okButton = new Button("Update", this);
 
     /** The CANCEL button. */
-    private final Button cancelButton;
+    private final Button cancelButton = new Button("Cancel", this);
 
     /**
      * Instantiates a new include collection window.
@@ -139,12 +139,6 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                 return null;
             }
         });
-
-        okButton = new Button("Update");
-        okButton.addClickListener(this);
-
-        cancelButton = new Button("Cancel");
-        cancelButton.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);

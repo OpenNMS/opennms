@@ -56,13 +56,13 @@ import com.vaadin.ui.AbstractSelect.NewItemHandler;
 public class StorageStrategyField extends CustomField<StorageStrategy> implements Button.ClickListener {
 
     /** The Combo Box. */
-    private final ComboBox combo = new ComboBox();
-
-    /** The Table. */
-    private final Table table = new Table();
+    private final ComboBox combo = new ComboBox("Class Name");
 
     /** The Container. */
     private final BeanContainer<String,Parameter> container = new BeanContainer<String,Parameter>(Parameter.class);
+
+    /** The Table. */
+    private final Table table = new Table("Parameters", container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -77,7 +77,6 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
      * Instantiates a new storage strategy field.
      */
     public StorageStrategyField() {
-        combo.setCaption("Class Name");
         combo.addItem(IndexStorageStrategy.class.getName());
         combo.addItem(SiblingColumnStorageStrategy.class.getName());
         combo.setNullSelectionAllowed(false);
@@ -94,8 +93,6 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         });
 
         container.setBeanIdProperty("key");
-        table.setCaption("Parameters");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"key", "value"});
         table.setColumnHeader("key", "Parameter Name");

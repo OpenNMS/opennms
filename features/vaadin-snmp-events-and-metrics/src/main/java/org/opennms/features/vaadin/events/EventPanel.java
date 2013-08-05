@@ -61,12 +61,6 @@ public abstract class EventPanel extends Panel {
     /** The event table. */
     private final EventTable eventTable;
 
-    /** The event form. */
-    private final EventForm eventForm;
-
-    /** The add button. */
-    private final Button add;
-
     /** The isNew flag. True, if the group is new. */
     private boolean isNew = false;
 
@@ -102,10 +96,6 @@ public abstract class EventPanel extends Panel {
         setCaption("Events");
         addStyleName("light");
 
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             @Override
@@ -122,43 +112,8 @@ public abstract class EventPanel extends Panel {
                 cancel();
             }
         }));
-        mainLayout.addComponent(toolbar);
-        mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        eventTable = new EventTable(events) {
-            @Override
-            public void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event) {
-                eventForm.setEventDataSource(event);
-                eventForm.setVisible(true);
-                eventForm.setReadOnly(true);
-                setIsNew(false);
-            }
-        };
-        mainLayout.addComponent(eventTable);
-
-        add = new Button("Add Event");
-        add.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
-                e.setUei("uei.opennms.org/newEvent");
-                e.setEventLabel("New Event");
-                e.setDescr("New Event Description");
-                e.setLogmsg(new Logmsg());
-                e.getLogmsg().setContent("New Event Log Message");
-                e.getLogmsg().setDest("logndisplay");
-                e.setSeverity("Indeterminate");
-                e.setMask(new Mask());
-                e.setAlarmData(new AlarmData());
-                eventTable.updateExternalSource(e);
-                eventForm.setReadOnly(false);
-                setIsNew(true);
-            }
-        });
-        mainLayout.addComponent(add);
-        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
-
-        eventForm = new EventForm() {
+        final EventForm eventForm = new EventForm() {
             @Override
             public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 if (isNew) {
@@ -177,7 +132,45 @@ public abstract class EventPanel extends Panel {
                 eventTable.refreshRowCache();
             }
         };
+
+        eventTable = new EventTable(events) {
+            @Override
+            public void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event) {
+                eventForm.setEventDataSource(event);
+                eventForm.setVisible(true);
+                eventForm.setReadOnly(true);
+                setIsNew(false);
+            }
+        };
+
+        final Button add = new Button("Add Event", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
+                e.setUei("uei.opennms.org/newEvent");
+                e.setEventLabel("New Event");
+                e.setDescr("New Event Description");
+                e.setLogmsg(new Logmsg());
+                e.getLogmsg().setContent("New Event Log Message");
+                e.getLogmsg().setDest("logndisplay");
+                e.setSeverity("Indeterminate");
+                e.setMask(new Mask());
+                e.setAlarmData(new AlarmData());
+                eventTable.updateExternalSource(e);
+                eventForm.setReadOnly(false);
+                setIsNew(true);
+            }
+        });
+
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.addComponent(toolbar);
+        mainLayout.addComponent(eventTable);
+        mainLayout.addComponent(add);
         mainLayout.addComponent(eventForm);
+        mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
+        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         setContent(mainLayout);
     }

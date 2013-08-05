@@ -49,14 +49,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class GroupPanel extends VerticalLayout {
 
-    /** The group form. */
-    private final GroupForm form;
-
     /** The group table. */
     private final GroupTable table;
-
-    /** The add button. */
-    private final Button add;
 
     /** The isNew flag. True, if the group is new. */
     private boolean isNew = false;
@@ -71,7 +65,7 @@ public class GroupPanel extends VerticalLayout {
     public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
         addStyleName("light");
 
-        form = new GroupForm(dataCollectionConfigDao, source) {
+        final GroupForm form = new GroupForm(dataCollectionConfigDao, source) {
             @Override
             public void saveGroup(Group group) {
                 if (isNew) {
@@ -100,7 +94,7 @@ public class GroupPanel extends VerticalLayout {
             }
         };
 
-        add = new Button("Add Group", new Button.ClickListener() {
+        final Button add = new Button("Add Group", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Group group = new Group();

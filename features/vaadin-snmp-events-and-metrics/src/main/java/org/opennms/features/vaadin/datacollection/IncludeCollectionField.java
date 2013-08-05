@@ -58,23 +58,14 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3677540981240383672L;
 
-    /** The Include Field Table. */
-    private final Table table = new Table();
-
     /** The Container. */
     private final BeanItemContainer<IncludeCollectionWrapper> container = new BeanItemContainer<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
 
+    /** The Include Field Table. */
+    private final Table table = new Table("Includes List", container);
+
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
-
-    /** The add button. */
-    private final Button add;
-
-    /** The edit button. */
-    private final Button edit;
-
-    /** The delete button. */
-    private final Button delete;
 
     /**
      * Instantiates a new include collection field.
@@ -82,8 +73,6 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      * @param dataCollectionConfigDao the data collection configuration DAO
      */
     public IncludeCollectionField(final DataCollectionConfigDao dataCollectionConfigDao) {
-        table.setCaption("Includes List");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
@@ -91,7 +80,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
         table.setImmediate(true);
         table.setHeight("125px");
         table.setWidth("100%");
-        add = new Button("Add", new Button.ClickListener() {
+        final Button add = new Button("Add", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 final IncludeCollectionWrapper obj = new IncludeCollectionWrapper();
@@ -105,7 +94,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
                 getUI().addWindow(w);
             }
         });
-        edit = new Button("Edit", new Button.ClickListener() {
+        final Button edit = new Button("Edit", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 final Object value = table.getValue();
@@ -122,7 +111,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
                 getUI().addWindow(w);
             }
         });
-        delete = new Button("Delete", new Button.ClickListener() {
+        final Button delete = new Button("Delete", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 deleteHandler();

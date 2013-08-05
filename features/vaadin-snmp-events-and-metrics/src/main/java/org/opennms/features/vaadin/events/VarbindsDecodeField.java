@@ -60,11 +60,11 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> implements Button.ClickListener {
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
     private final BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -80,7 +80,6 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
      */
     public VarbindsDecodeField() {
         container.setBeanIdProperty("parmid");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
         table.setColumnHeader("parmid", "Parameter ID");

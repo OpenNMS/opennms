@@ -61,7 +61,7 @@ import com.vaadin.ui.TabSheet.Tab;
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
     /** The group name. */
-    private final TextField groupName;
+    private final TextField groupName = new TextField("Data Collection Group Name");
 
     /** The resource types. */
     private final ResourceTypePanel resourceTypes;
@@ -85,7 +85,6 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
 
         // Data Collection Group - Main Fields
 
-        groupName = new TextField("Data Collection Group Name");
         groupName.setPropertyDataSource(new ObjectProperty<String>(group.getName()));
         groupName.setNullSettingAllowed(false);
         groupName.setImmediate(true);

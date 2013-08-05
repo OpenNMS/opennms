@@ -59,20 +59,18 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
     private static final List<String> OPTIONS = Arrays.asList(new String[] { SINGLE, MASK });
 
     /** The OID type. */
-    private final OptionGroup oidType;
+    private final OptionGroup oidType = new OptionGroup("OID Type", OPTIONS);
 
     /** The OID value. */
-    private final TextField oidValue;
+    private final TextField oidValue = new TextField("OID Value");
 
     /**
      * Instantiates a new system definition choice field.
      */
     public SystemDefChoiceField() {
-        oidType = new OptionGroup("OID Type", OPTIONS);
         oidType.setNullSelectionAllowed(false);
         oidType.select("Single");
 
-        oidValue = new TextField("OID Value");
         oidValue.setWidth("100%");
         oidValue.setNullSettingAllowed(false);
         oidValue.setRequired(true);
