@@ -29,18 +29,15 @@
 package org.opennms.netmgt.jetty;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
