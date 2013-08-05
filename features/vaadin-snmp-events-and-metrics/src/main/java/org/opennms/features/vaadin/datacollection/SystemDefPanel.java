@@ -100,7 +100,7 @@ public class SystemDefPanel extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 SystemDef sysDef = new SystemDef();
                 sysDef.setName("New System Definition");
-                sysDef.setSysoidMask(".1.3.4.1.4.1.");
+                sysDef.setSysoidMask(".1.3.6.1.4.1.");
                 sysDef.setCollect(new Collect());
                 table.updateExternalSource(new BeanItem<SystemDef>(sysDef));
                 form.setReadOnly(false);
