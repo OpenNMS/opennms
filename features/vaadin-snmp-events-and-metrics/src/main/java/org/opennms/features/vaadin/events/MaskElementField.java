@@ -83,6 +83,7 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
         table.setColumnExpandRatio("mevalueCollection", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
+        table.setBuffered(false);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {

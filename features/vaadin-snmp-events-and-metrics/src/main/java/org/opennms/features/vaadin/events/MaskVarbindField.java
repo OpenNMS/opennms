@@ -84,6 +84,7 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
         table.setColumnExpandRatio("vbvalueCollection", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
+        table.setBuffered(false);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {

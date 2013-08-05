@@ -49,15 +49,19 @@ public class DecodeListConverter implements Converter<String, ArrayList<Decode>>
      */
     @Override
     public ArrayList<Decode> convertToModel(String fieldValue, Class<? extends ArrayList<Decode>> targetType, Locale locale) throws ConversionException {
+        if (fieldValue == null) {
+            return null;
+        }
         ArrayList<Decode> list = new ArrayList<Decode>();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
-            Decode d = new Decode();
-            d.setVarbindvalue(parts[0].trim());
-            d.setVarbinddecodedstring(parts[1].trim());
-            list.add(d);
+            if (parts.length == 2) {
+                Decode d = new Decode();
+                d.setVarbindvalue(parts[0].trim());
+                d.setVarbinddecodedstring(parts[1].trim());
+                list.add(d);
+            }
         }
-
         return list;
     }
 
@@ -66,6 +70,9 @@ public class DecodeListConverter implements Converter<String, ArrayList<Decode>>
      */
     @Override
     public String convertToPresentation(ArrayList<Decode> propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+        if (propertyValue == null) {
+            return null;
+        }
         final List<String> values = new ArrayList<String>();
         for (Decode d : propertyValue) {
             values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());

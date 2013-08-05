@@ -77,16 +77,16 @@ public abstract class EventForm extends Form implements ClickListener {
     };
 
     /** The Edit button. */
-    private final Button edit = new Button("Edit");
+    private final Button edit = new Button("Edit", this);
 
     /** The Delete button. */
-    private final Button delete = new Button("Delete");
+    private final Button delete = new Button("Delete", this);
 
     /** The Save button. */
-    private final Button save = new Button("Save");
+    private final Button save = new Button("Save", this);
 
     /** The Cancel button. */
-    private final Button cancel = new Button("Cancel");
+    private final Button cancel = new Button("Cancel", this);
 
     /**
      * Instantiates a new event form.
@@ -96,19 +96,8 @@ public abstract class EventForm extends Form implements ClickListener {
         setBuffered(true);
         setVisible(false);
         setFormFieldFactory(new EventFormFieldFactory());
-        initToolbar();
-    }
 
-    /**
-     * Initialize the Toolbar.
-     */
-    private void initToolbar() {
-        save.addClickListener(this);
-        cancel.addClickListener(this);
-        edit.addClickListener(this);
-        delete.addClickListener(this);
-
-        HorizontalLayout toolbar = new HorizontalLayout();
+        final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
         toolbar.addComponent(edit);
         toolbar.addComponent(delete);

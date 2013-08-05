@@ -47,6 +47,9 @@ public class CsvListConverter implements Converter<String, ArrayList<String>> {
      */
     @Override
     public ArrayList<String> convertToModel(String fieldValue, Class<? extends ArrayList<String>> targetType, Locale locale) throws ConversionException {
+        if (fieldValue == null) {
+            return null;
+        }
         ArrayList<String> list = new ArrayList<String>();
         if (fieldValue != null) {
             for (String s : fieldValue.split(",")) {
