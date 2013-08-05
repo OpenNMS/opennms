@@ -48,6 +48,7 @@ import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
@@ -552,6 +553,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
         @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
     })
     @Transactional
+    @Ignore
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", true);
 
