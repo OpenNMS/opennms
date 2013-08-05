@@ -52,7 +52,7 @@ public class GWTVertex extends JavaScriptObject {
     public static native GWTVertex create(String id, int x, int y) /*-{
     	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
-    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":""};
+    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", "severityArray":null};
 	}-*/;
 
     public final native String getId()/*-{
@@ -472,5 +472,88 @@ public class GWTVertex extends JavaScriptObject {
     public static final native void logDocument(Object doc)/*-{
         $wnd.console.log(doc)
     }-*/;
+    
+    //support for creating a node-chart
+    //segmentWidth defines how thick the donut ring will be (in pixels)
+    final static Func<String, GWTVertex> makeChart(final double r, final double segmentWidth, final double[] dataArray, final String[] classArray, final double total){
+    	return new Func<String, GWTVertex>(){
+    		
+    		
+			@Override
+			public String call(GWTVertex vertex, int index) {
+				
+				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
+				double r = vertex.getIconHeight()/2.0;
+			
+				double innerR = r - segmentWidth;
+				double cx = vertex.getIconWidth() - r;
+				double cy = 0.0;
+				
+				
+				double startangle = 0;
+				for (int i = 0; i < dataArray.length; i++) {
+
+					if (dataArray[i] > 0) {
+
+						double endangle = startangle + (((dataArray[i]) / total) * Math.PI
+								* 2.0);
+
+						String path = "<path d=\"";
+
+						double x1 = cx + (r * Math.sin(startangle));
+						double y1 = cy - (r * Math.cos(startangle));
+						double X1 = cx + (innerR * Math.sin(startangle));
+						double Y1 = cy - (innerR * Math.cos(startangle));
+
+						double x2 = cx + (r * Math.sin(endangle));
+						double y2 = cy - (r * Math.cos(endangle));
+						double X2 = cx + (innerR * Math.sin(endangle));
+						double Y2 = cy - (innerR * Math.cos(endangle));
+
+						int big = 0;
+						if (endangle - startangle > Math.PI)
+							big = 1;
+
+						String d;
+						// this branch is if one data value comprises 100% of the data
+						if (dataArray[i] >= total) {
+
+							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
+									+ " 0 " + "1" + " 0 " + X1 + ","
+									+ (Y1 + (2 * innerR)) + " A " + innerR + ","
+									+ innerR + " 0 " + big + " 0 " + X1 + "," + Y1
+									+ " M " + x1 + "," + y1 + " A " + r + "," + r
+									+ " 0 " + big + " 1 " + x1 + "," + (y1 + (2 * r))
+									+ " A " + r + "," + r + " 0 " + big + " 1 " + x1
+									+ "," + y1;
+
+						} else {
+							// path string
+							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
+									+ " 0 " + big + " 1 " + X2 + "," + Y2 + " L " + x2
+									+ "," + y2 + " A " + r + "," + r + " 0 " + big
+									+ " 0 " + x1 + "," + y1 + " Z";
+						}
+						path = path.concat(d + "\"" + " class =");
+			            
+			            path = path.concat(classArray[i]);
+//			            path = path.concat(" stroke= \"black\"");
+			            path = path.concat(" stroke-width= \"0\"/>");
+			            
+			            svg = svg.concat(path);
+			            startangle = endangle;
+
+					}
+					
+					
+				}
+						
+				svg = svg.concat("</svg>");
+			    
+			    return svg;
+			}
+    		
+    	};
+    }
 
 }
