@@ -81,7 +81,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @After
     public void tearDown() throws Exception {
-        clickAndWait("link=Log out");
+        if (selenium.isTextPresent("Log out")) clickAndWait("link=Log out");
         if (selenium != null) selenium.stop();
     }
 
