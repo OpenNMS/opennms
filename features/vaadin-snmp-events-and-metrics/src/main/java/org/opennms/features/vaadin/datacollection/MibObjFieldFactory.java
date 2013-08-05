@@ -61,6 +61,9 @@ public class MibObjFieldFactory implements TableFieldFactory {
         this.resourceTypes = resourceTypes;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.TableFieldFactory#createField(com.vaadin.data.Container, java.lang.Object, java.lang.Object, com.vaadin.ui.Component)
+     */
     @Override
     public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
         if (propertyId.equals("oid")) {

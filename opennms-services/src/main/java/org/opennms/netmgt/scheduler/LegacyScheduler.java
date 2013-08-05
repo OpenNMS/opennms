@@ -121,12 +121,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * @param maxSize
      *            The maximum size of the thread pool.
      */
-    public LegacyScheduler(String parent, int maxSize) {
+    public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
-        m_runner = Executors.newFixedThreadPool(
-            maxSize,
-            new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, false)
-        );
+        m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize, false));
         m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;

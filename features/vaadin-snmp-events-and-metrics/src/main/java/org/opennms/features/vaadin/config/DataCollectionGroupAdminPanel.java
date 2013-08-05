@@ -34,6 +34,7 @@ import java.util.Iterator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
@@ -52,11 +53,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Data Collection Group Administration Panel.
@@ -64,8 +60,11 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 // TODO When deleting a group, all the SNMP collections UI components must be updated.
 @SuppressWarnings("serial")
 public class DataCollectionGroupAdminPanel extends VerticalLayout {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(DataCollectionGroupAdminPanel.class);
 
+    /** The m_selected group. */
     private String m_selectedGroup;
 
     /**
@@ -137,17 +136,14 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     return;
                 }
                 final File file = (File) dcGroupSource.getValue();
-                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                               "Are you sure?",
-                                               MessageBox.Icon.QUESTION,
-                                               "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                mb.addStyleName(Runo.WINDOW_DIALOG);
-                mb.show(new EventListener() {
-                    @Override
-                    public void buttonClicked(ButtonType buttonType) {
-                        if (buttonType == MessageBox.ButtonType.YES) {
+                ConfirmDialog.show(getUI(),
+                                   "Are you sure?",
+                                   "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to collect the metrics defined on this file.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
                             LOG.info("deleting file {}", file);
                             if (file.delete()) {
                                 try {

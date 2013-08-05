@@ -107,6 +107,11 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>onms-default-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- MIB Compiler Dependencies -->
         <dependency>

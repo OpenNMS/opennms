@@ -37,11 +37,15 @@ import java.util.Vector;
 
 import liquibase.resource.ResourceAccessor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public class SpringResourceAccessor implements ResourceAccessor {
+    private static final Logger LOG = LoggerFactory.getLogger(SpringResourceAccessor.class);
+
     private ResourceLoader m_resourceLoader = new DefaultResourceLoader();
 
     public SpringResourceAccessor() {
@@ -60,7 +64,7 @@ public class SpringResourceAccessor implements ResourceAccessor {
     public Enumeration<URL> getResources(final String packageName) throws IOException {
     	final Vector<URL> tmp = new Vector<URL>();
         tmp.add(getResource(packageName).getURL());
-        System.err.println("getResources(" + packageName + ") returning: " + tmp);
+        LOG.debug("resources for {}: {}", packageName, tmp);
         return tmp.elements();
     }
 

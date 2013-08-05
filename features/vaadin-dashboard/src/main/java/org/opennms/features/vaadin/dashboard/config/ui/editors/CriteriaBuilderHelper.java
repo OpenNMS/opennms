@@ -27,18 +27,27 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.google.gwt.thirdparty.guava.common.primitives.Primitives;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.slf4j.LoggerFactory;
-
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gwt.thirdparty.guava.common.primitives.Primitives;
 
 /**
  * This class is used to construct a criteria model based on the OpenNMS' model classes.
@@ -46,6 +55,8 @@ import java.util.*;
  * @author Christian Pape
  */
 public class CriteriaBuilderHelper {
+    private static final Logger LOG = LoggerFactory.getLogger(CriteriaBuilderHelper.class);
+
     /**
      * the map of properties
      */
@@ -231,8 +242,8 @@ public class CriteriaBuilderHelper {
      * Dumps all the entities data to System.out.
      */
     public void dump() {
-        for (Map.Entry<String, Class> entry : m_entities.entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue().getSimpleName());
+        for (final Map.Entry<String, Class> entry : m_entities.entrySet()) {
+            LOG.debug("{} {}", entry.getKey(), entry.getValue().getSimpleName());
         }
     }
 

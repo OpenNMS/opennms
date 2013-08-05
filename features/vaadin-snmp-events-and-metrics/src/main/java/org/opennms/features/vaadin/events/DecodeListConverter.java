@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import com.vaadin.data.util.converter.Converter;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.xml.eventconf.Decode;
 
@@ -41,16 +42,14 @@ import java.util.Locale;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class DecodeListConverter implements Converter<String, DecodeListConverter.DecodeList> {
+public class DecodeListConverter implements Converter<String, ArrayList<Decode>> {
 
-    /**
-     * The Class DecodeList.
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#convertToModel(java.lang.Object, java.lang.Class, java.util.Locale)
      */
-    public static class DecodeList extends ArrayList<Decode> {}
-
     @Override
-    public DecodeList convertToModel(String fieldValue, Class<? extends DecodeList> targetType, Locale locale) throws ConversionException {
-        DecodeList list = new DecodeList();
+    public ArrayList<Decode> convertToModel(String fieldValue, Class<? extends ArrayList<Decode>> targetType, Locale locale) throws ConversionException {
+        ArrayList<Decode> list = new ArrayList<Decode>();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
             Decode d = new Decode();
@@ -58,12 +57,15 @@ public class DecodeListConverter implements Converter<String, DecodeListConverte
             d.setVarbinddecodedstring(parts[1].trim());
             list.add(d);
         }
-        
+
         return list;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#convertToPresentation(java.lang.Object, java.lang.Class, java.util.Locale)
+     */
     @Override
-    public String convertToPresentation(DecodeList propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+    public String convertToPresentation(ArrayList<Decode> propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
         final List<String> values = new ArrayList<String>();
         for (Decode d : propertyValue) {
             values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
@@ -71,14 +73,22 @@ public class DecodeListConverter implements Converter<String, DecodeListConverte
         return StringUtils.join(values, ',');
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#getModelType()
+     */
     @Override
-	public Class<DecodeList> getModelType() {
-		return DecodeList.class;
-	}
+    @SuppressWarnings("unchecked")
+    public Class<ArrayList<Decode>> getModelType() {
+        return (Class<ArrayList<Decode>>) new ArrayList<Decode>().getClass();
 
-	@Override
-	public Class<String> getPresentationType() {
-		return String.class;
-	}
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#getPresentationType()
+     */
+    @Override
+    public Class<String> getPresentationType() {
+        return String.class;
+    }
 
 }

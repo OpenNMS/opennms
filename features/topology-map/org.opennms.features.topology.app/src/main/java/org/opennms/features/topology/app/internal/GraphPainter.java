@@ -57,7 +57,10 @@ public class GraphPainter extends BaseGraphVisitor {
             v.setStatus(getStatus(vertex));
             v.setStatusCount(getStatusCount(vertex));
         }
-        v.setIconUrl(m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
+        //TODO: remove setIconURL, we no longer are using bitmaps
+        //v.setIconUrl(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
+
+        v.setSVGIconId(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
 		m_vertices.add(v);

@@ -45,7 +45,6 @@ import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Include Collection Field.
@@ -81,7 +80,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         setHeight("180px");
         setResizable(false);
         setClosable(false);
-        addStyleName(Runo.WINDOW_DIALOG);
+        addStyleName("dialog");
 
         form.setImmediate(true);
         form.setWidth("100%");

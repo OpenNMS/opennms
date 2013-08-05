@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -43,11 +44,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The MIB Object Field.
@@ -55,10 +51,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implements Button.ClickListener {
+public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
 	
-	public static class MibObjArrayList extends ArrayList<MibObj> {}
-
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3665919460707298011L;
 
     /** The Table. */
@@ -84,7 +79,7 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
     public MibObjField(final List<String> resourceTypes) {
         container.setBeanIdProperty("oid");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
         table.setColumnHeader("oid", "OID");
         table.setColumnHeader("instance", "Instance");
@@ -106,6 +101,9 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         setValidationVisible(true);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -115,13 +113,20 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         return layout;
     }
 
-    @Override
-    public Class<MibObjArrayList> getType() {
-        return MibObjArrayList.class;
-    }
-
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     @SuppressWarnings("unchecked")
+    public Class<ArrayList<MibObj>> getType() {
+        return (Class<ArrayList<MibObj>>) new ArrayList<MibObj>().getClass();
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
@@ -135,9 +140,12 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public MibObjArrayList getValue() {
-        MibObjArrayList beans = new MibObjArrayList(); 
+    public ArrayList<MibObj> getValue() {
+        ArrayList<MibObj> beans = new ArrayList<MibObj>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -193,17 +201,14 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         if (itemId == null) {
             Notification.show("Please select a MIB Object from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

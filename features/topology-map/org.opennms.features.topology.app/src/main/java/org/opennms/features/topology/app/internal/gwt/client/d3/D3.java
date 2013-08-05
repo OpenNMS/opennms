@@ -39,6 +39,8 @@ import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 
+import java.util.List;
+
 public class D3 extends JavaScriptObject {
     
     protected D3() {};
@@ -273,6 +275,10 @@ public class D3 extends JavaScriptObject {
 		
     }-*/;
 
+    public final native <T extends JavaScriptObject> D3 data() /*-{
+        return this.data();
+    }-*/;
+
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
     }-*/;
@@ -437,5 +443,13 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    public final native void injectSVGDef(String file) /*-{
+         $wnd.d3.xml(file, function(svg){
 
+            var newSVG = $wnd.document.importNode(svg.documentElement, true);
+            var defsTag = $wnd.document.getElementsByTagName("defs")[0];
+            defsTag.appendChild(newSVG);
+
+        });
+    }-*/;
 }

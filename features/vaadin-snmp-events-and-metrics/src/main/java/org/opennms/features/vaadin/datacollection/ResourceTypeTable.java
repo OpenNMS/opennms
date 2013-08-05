@@ -34,7 +34,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Resource Type Table.
@@ -45,7 +44,7 @@ import com.vaadin.ui.themes.Runo;
 public abstract class ResourceTypeTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "label", "name" };
+    public static final Object[] COLUMN_NAMES = new String[] { "label", "name" };
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "Resource Type Label", "Resource Type Name" };
@@ -60,7 +59,7 @@ public abstract class ResourceTypeTable extends Table {
         container.setBeanIdProperty("name");
         container.addAll(group.getResourceTypeCollection());
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
         setVisibleColumns(COLUMN_NAMES);

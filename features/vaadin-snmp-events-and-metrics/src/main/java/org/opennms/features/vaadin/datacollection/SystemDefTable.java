@@ -34,7 +34,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class System Definition Table.
@@ -45,7 +44,7 @@ import com.vaadin.ui.themes.Runo;
 public abstract class SystemDefTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
+    public static final Object[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "System Definition", "OID", "# Groups" };
@@ -60,7 +59,7 @@ public abstract class SystemDefTable extends Table {
         container.setBeanIdProperty("name");
         container.addAll(group.getSystemDefCollection());
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
         setWidth("100%");

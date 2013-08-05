@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Varbind;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -47,11 +48,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Event's MaskVarbind Field.
@@ -59,9 +55,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayList> implements Button.ClickListener {
-
-	public static class VarbindArrayList extends ArrayList<Varbind> {}
+public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements Button.ClickListener {
 
     /** The Table. */
     private final Table table = new Table();
@@ -84,7 +78,7 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
     public MaskVarbindField() {
         container.setBeanIdProperty("vbnumber");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
         table.setColumnHeader("vbnumber", "Varbind Number");
         table.setColumnHeader("vbvalueCollection", "Varbind Values");
@@ -111,6 +105,9 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         toolbar.setVisible(table.isEditable());
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -120,13 +117,20 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         return layout;
     }
 
-    @Override
-    public Class<VarbindArrayList> getType() {
-        return VarbindArrayList.class;
-    }
-
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     @SuppressWarnings("unchecked")
+    public Class<ArrayList<Varbind>> getType() {
+        return (Class<ArrayList<Varbind>>) new ArrayList<Varbind>().getClass();
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof List<?>) {
@@ -140,9 +144,12 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
-    public VarbindArrayList getValue() {
-        VarbindArrayList beans = new VarbindArrayList();
+    public ArrayList<Varbind> getValue() {
+        ArrayList<Varbind> beans = new ArrayList<Varbind>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -190,17 +197,14 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         if (itemId == null) {
             Notification.show("Please select a Mask Varbind from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected Mask Varbind field?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected Mask Varbind field?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

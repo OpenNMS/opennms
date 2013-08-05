@@ -335,7 +335,9 @@
         ServiceRegistry registry = webappContext.getBean(ServiceRegistry.class);
         Collection<PageNavEntry> navEntries = registry.findProviders(PageNavEntry.class, queryString);
         for (PageNavEntry navEntry : navEntries) {
-            retVal += "<li><a href=\"" + navEntry.getUrl() + "\" >" + navEntry.getName() + "</a></li>";
+            if (navEntry.getName().equals("SNMP MIB Compiler")) {
+                retVal += "<li><a href=\"" + navEntry.getUrl() + "\" >" + navEntry.getName() + "</a></li>";
+            }
         }
         return retVal;
     }

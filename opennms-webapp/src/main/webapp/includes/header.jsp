@@ -128,7 +128,7 @@ final String baseHref = Util.calculateUrlBase( request );
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
     </c:when>
   </c:choose>
-  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>

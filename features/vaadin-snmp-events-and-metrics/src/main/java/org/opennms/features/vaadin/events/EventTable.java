@@ -37,7 +37,6 @@ import org.opennms.netmgt.xml.eventconf.Mask;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Event Table.
@@ -48,7 +47,7 @@ import com.vaadin.ui.themes.Runo;
 public abstract class EventTable extends Table {
 
     /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "eventLabel", "uei" };
+    public static final Object[] COLUMN_NAMES = new String[] { "eventLabel", "uei" };
 
     /** The Constant COLUMN_LABELS. */
     public static final String[] COLUMN_LABELS = new String[] { "Event Label", "Event UEI" };
@@ -66,7 +65,7 @@ public abstract class EventTable extends Table {
         container.setBeanIdProperty("uei");
         container.addAll(events.getEventCollection());
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
+        addStyleName("light");
         setImmediate(true);
         setSelectable(true);
         setVisibleColumns(COLUMN_NAMES);

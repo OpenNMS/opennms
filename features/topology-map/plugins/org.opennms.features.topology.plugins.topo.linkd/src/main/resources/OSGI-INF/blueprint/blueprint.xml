@@ -75,13 +75,14 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
-                    <entry key="linkd:group" value="theme://images/cloud.png"/>
-                    <entry key="linkd:system" value="theme://images/generic-device.png"/>
+                    <entry key="linkd:group" value="cloud"/>
+                    <entry key="linkd:system" value="generic"/>
                     <!-- 
                     set this for icons that are snmp enabled but whose oid we don't recognize
                     defaults 'link:system'
                     <entry key="linkd:system:snmp" value="theme://images/generic-device.png"/>
                      -->
+                    <!--
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.21" value="theme://images/MX960.png"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.25" value="theme://images/MX480.png"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.29" value="theme://images/MX240.png"/>
@@ -94,6 +95,19 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.57" value="theme://images/mx80.png"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.76" value="theme://images/ex3300-vc.png"/>
                     <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.92" value="theme://images/ex4550.png"/>
+                    -->
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.21" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.25" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.29" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.30" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.31" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.32" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.33" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.43" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.44" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.57" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.76" value="mx9600_external"/>
+                    <entry key="linkd:system:snmp:.1.3.6.1.4.1.2636.1.1.1.2.92" value="mx9600_external"/>
                 </map>
             </property>
         </bean>

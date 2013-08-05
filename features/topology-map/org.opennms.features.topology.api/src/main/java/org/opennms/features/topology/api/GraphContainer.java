@@ -71,11 +71,15 @@ public interface GraphContainer extends DisplayState {
 
     void setStatusProvider(StatusProvider statusProvider);
 
+    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getUserName();
 
+    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
     void setUserName(String userName);
-    
+
+    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();
-    
+
+    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     void setSessionId(String sessionId);
 }

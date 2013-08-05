@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Rrd;
+import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -50,11 +51,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The RRD Field.
@@ -95,7 +91,7 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
 
         table.setCaption("RRA List");
         table.setContainerDataSource(container);
-        table.setStyleName(Runo.TABLE_SMALL);
+        table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"cf", "xff", "steps", "rows"});
         table.setColumnHeaders(new String[]{"Consolidation Function", "XFF", "Steps", "Rows"});
         table.setEditable(!isReadOnly());
@@ -145,6 +141,9 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         setBuffered(true);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.CustomField#initContent()
+     */
     @Override
     public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
@@ -157,7 +156,8 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
 
     /**
      * Instantiates a new RRD field.
-     * 
+     *
+     * @param caption the caption
      * @Param caption the field's caption
      */
     public RrdField(String caption) {
@@ -165,12 +165,19 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         setCaption(caption);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getType()
+     */
     @Override
     public Class<Rrd> getType() {
         return Rrd.class;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     */
     @Override
+    @SuppressWarnings("rawtypes")
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
         if (value instanceof Rrd) {
@@ -189,6 +196,9 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         super.setPropertyDataSource(newDataSource);
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getValue()
+     */
     @Override
     public Rrd getValue() {
         Rrd dto = new Rrd();
@@ -239,17 +249,14 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         if (itemId == null) {
             Notification.show("Please select a RRA from the table.");
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to remove the selected RRA?<br/>This action cannot be undone.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to remove the selected RRA?<br/>This action cannot be undone.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         table.removeItem(itemId);
                     }
                 }

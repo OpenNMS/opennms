@@ -160,15 +160,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     }
 
-    private double getViewPortScale() {
-        D3Transform transform = D3.getTransform(D3.d3().select(getSVGViewPort()).attr("transform"));
-        return transform.getScale().get(0);
-    }
-
-    private native void consoleLog(Object obj) /*-{
-        $wnd.console.log(obj);
-    }-*/;
-
     @Override
     public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
         if(m_presenter.getViewRenderer() != null){
@@ -201,31 +192,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return transform;
     }
     
-    private Tween<String, GWTEdge> edgeStrokeWidthTween(final double scale) {
-        return new Tween<String, GWTEdge>() {
-
-            @Override
-            public String call(GWTEdge edge, int index, String a) {
-                
-                final double strokeWidth = 5/scale;
-                consoleLog("scale: " + scale + " strokeWidth: " + strokeWidth);
-                consoleLog("a: " + a);
-                return scale + "px";
-            }
-            
-        };
-    }       
-    
-    String matrixTransform(SVGMatrix matrix) {
-        String m = "matrix(" + matrix.getA() +
-                ", " + matrix.getB() +
-                ", " + matrix.getC() + 
-                ", " + matrix.getD() +
-                ", " + matrix.getE() + 
-                ", " + matrix.getF() + ")";
-        return D3.getTransform( m ).toString();
-    }
-
     @Override
     public SVGPoint getCenterPos(GWTBoundingBox box) {
         SVGGElement g = getSVGViewPort().cast();

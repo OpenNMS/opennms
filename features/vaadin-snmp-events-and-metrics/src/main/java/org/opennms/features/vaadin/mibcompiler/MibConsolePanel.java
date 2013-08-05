@@ -39,7 +39,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class MIB Console Panel.
@@ -48,6 +47,8 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 public class MibConsolePanel extends Panel implements Logger {
+
+    /** The Constant LOG. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibConsolePanel.class);
 
     /** The Constant ERROR. */
@@ -73,7 +74,7 @@ public class MibConsolePanel extends Panel implements Logger {
      */
     public MibConsolePanel() {
         super("MIB Console");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
         clearButton = new Button("Clear Log");
         clearButton.addClickListener(new Button.ClickListener() {

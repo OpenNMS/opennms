@@ -32,20 +32,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.concurrent.Callable;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +73,6 @@ public class HTMLReportRenderer implements ReportRenderer {
      * <p>Constructor for HTMLReportRenderer.</p>
      */
     public HTMLReportRenderer() {
-        // TODO This shoud wrap the methods I think
-        Logging.putPrefix(LOG4J_CATEGORY);
     }
 
     /**
@@ -90,123 +87,123 @@ public class HTMLReportRenderer implements ReportRenderer {
 
     /** {@inheritDoc} */
     @Override
-    public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
-
-
-        LOG.debug("Rendering {} with XSL File {} to byte array", inputFileName, xsltResource.getDescription());
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        this.render(inputFileName, outputStream, xsltResource);
-
-        return outputStream.toByteArray();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-
-        LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
-
-        FileInputStream in = null, xslt = null;
+    public byte[] render(final String inputFileName, final Resource xsltResource) throws ReportRenderException {
         try {
-            in = new FileInputStream(xsltResource.getFile());
-            Reader xsl = new InputStreamReader(in, "UTF-8");
-            xslt = new FileInputStream(inputFileName);
-            Reader xml = new InputStreamReader(xslt, "UTF-8");
+            return Logging.withPrefix(LOG4J_CATEGORY, new Callable<byte[]>() {
+                @Override public byte[] call() throws Exception {
+                    LOG.debug("Rendering {} with XSL File {} to byte array", inputFileName, xsltResource.getDescription());
 
-            this.render(xml, outputStream, xsl);
-        } catch (IOException ioe) {
-            LOG.error("IOException ", ioe);
-            throw new ReportRenderException(ioe);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing XML stream: {}", e.getMessage());
+                    ByteArrayOutputStream outputStream = null;
+                    try {
+                        outputStream = new ByteArrayOutputStream();
+                        render(inputFileName, outputStream, xsltResource);
+                        return outputStream.toByteArray();
+                    } finally {
+                        IOUtils.closeQuietly(outputStream);
+                    }
                 }
-            }
-            if (xslt != null) {
-                try {
-                    xslt.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
-                }
-            }
+            });
+        } catch (final Exception e) {
+            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
+            throw new ReportRenderException("Failed to render " + inputFileName, e);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-
-        LOG.debug("Rendering InputStream with XSL File {} to OutputStream", xsltResource.getDescription());
-
-        FileInputStream xslt = null;
+    public void render(final String inputFileName, final OutputStream outputStream, final Resource xsltResource) throws ReportRenderException {
         try {
-            xslt = new FileInputStream(xsltResource.getFile());
-            Reader xsl = new InputStreamReader(xslt, "UTF-8");
-            Reader xml = new InputStreamReader(inputStream, "UTF-8");
+            Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
 
-            this.render(xml, outputStream, xsl);
-        } catch (IOException ioe) {
-            LOG.error("IOException ", ioe);
-            throw new ReportRenderException(ioe);
-        } finally {
-            if (xslt != null) {
-                try {
-                    xslt.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
+                    FileInputStream in = null, xslt = null;
+                    try {
+                        in = new FileInputStream(xsltResource.getFile());
+                        Reader xsl = new InputStreamReader(in, "UTF-8");
+                        xslt = new FileInputStream(inputFileName);
+                        Reader xml = new InputStreamReader(xslt, "UTF-8");
+
+                        render(xml, outputStream, xsl);
+                    } finally {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(xslt);
+                    }
+                    return null;
                 }
-            }
+            });
+        } catch (final Exception e) {
+            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
+            throw new ReportRenderException("Failed to render " + inputFileName, e);
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void render(final InputStream inputStream, final OutputStream outputStream, final Resource xsltResource) throws ReportRenderException {
+        try {
+            Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    LOG.debug("Rendering InputStream with XSL File {} to OutputStream", xsltResource.getDescription());
+
+                    FileInputStream xslt = null;
+                    Reader xsl = null;
+                    Reader xml = null;
+                    try {
+                        xslt = new FileInputStream(xsltResource.getFile());
+                        xsl = new InputStreamReader(xslt, "UTF-8");
+                        xml = new InputStreamReader(inputStream, "UTF-8");
+                        render(xml, outputStream, xsl);
+                        return null;
+                    } finally {
+                        IOUtils.closeQuietly(xml);
+                        IOUtils.closeQuietly(xsl);
+                        IOUtils.closeQuietly(xslt);
+                    }
+                }
+            });
+        } catch (final Exception e) {
+            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
+            throw new ReportRenderException(e);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
-
-        LOG.debug("Rendering {} with XSL File {} to {} with base directory of {}", m_baseDir, inputFileName, xsltResource.getDescription(), outputFileName);
-
-        FileInputStream in = null, xslt = null;
-        FileOutputStream out = null;
+    public void render(final String inputFileName, final String outputFileName, final Resource xsltResource) throws ReportRenderException {
         try {
+            Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
+                @Override public Void call() throws Exception {
 
-            xslt = new FileInputStream(xsltResource.getFile());
-            Reader xsl = new InputStreamReader(xslt, "UTF-8");
-            in = new FileInputStream(m_baseDir + "/" + inputFileName);
-            Reader xml = new InputStreamReader(in, "UTF-8");
+                    LOG.debug("Rendering {} with XSL File {} to {} with base directory of {}", m_baseDir, inputFileName, xsltResource.getDescription(), outputFileName);
 
-            out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
-            
-            this.render(xml, out, xsl);
+                    FileInputStream in = null, xslt = null;
+                    FileOutputStream out = null;
+                    Reader xsl = null, xml = null;
+                    try {
 
-        } catch (IOException ioe) {
-            LOG.error("IOException ", ioe);
-            throw new ReportRenderException(ioe);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing XML stream: {}", e.getMessage());
+                        xslt = new FileInputStream(xsltResource.getFile());
+                        xsl = new InputStreamReader(xslt, "UTF-8");
+                        in = new FileInputStream(m_baseDir + "/" + inputFileName);
+                        xml = new InputStreamReader(in, "UTF-8");
+
+                        out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
+
+                        render(xml, out, xsl);
+                        return null;
+                    } finally {
+                        IOUtils.closeQuietly(xml);
+                        IOUtils.closeQuietly(xsl);
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        IOUtils.closeQuietly(xslt);
+                    }
                 }
-            }
-            if (xslt != null) {
-                try {
-                    xslt.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing XSLT stream: {}", e.getMessage());
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    LOG.warn("Error while closing PDF stream: {}", e.getMessage());
-                }
-            }
+            });
+        } catch (final Exception e) {
+            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
+            throw new ReportRenderException(e);
         }
     }
 
@@ -218,18 +215,15 @@ public class HTMLReportRenderer implements ReportRenderer {
      * @param xslt a {@link java.io.Reader} object.
      * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
      */
-    public void render(Reader in, OutputStream out, Reader xslt) throws ReportRenderException {
+    public void render(final Reader in, final OutputStream out, final Reader xslt) throws ReportRenderException {
         try {
             TransformerFactory tfact = TransformerFactory.newInstance();
             Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.transform(new StreamSource(in), new StreamResult(out));
-        } catch (TransformerConfigurationException tce) {
-            LOG.error("TransformerConfigurationException", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            LOG.error("TransformerException", te);
-            throw new ReportRenderException(te);
+        } catch (final Exception e) {
+            if (e instanceof ReportRenderException) throw (ReportRenderException)e;
+            throw new ReportRenderException(e);
         }
     }
 
