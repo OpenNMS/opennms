@@ -831,7 +831,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -843,6 +842,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -906,10 +906,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" 
-                auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -921,6 +917,10 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" 
+                auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -984,7 +984,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -996,6 +995,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1059,7 +1059,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -1071,6 +1070,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1134,7 +1134,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -1146,6 +1145,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1209,7 +1209,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -1221,6 +1220,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1284,7 +1284,6 @@ string. &lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -1296,6 +1295,7 @@ string. &lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1612,7 +1612,6 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="noLoopback" varbindvalue="1"/>
@@ -1622,6 +1621,7 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
       <decode varbinddecodedstring="localLoopback" varbindvalue="5"/>
       <decode varbinddecodedstring="unknown" varbindvalue="6"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1670,10 +1670,6 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered:%dpname%:%nodeid%:%parm[#1]%" 
-                auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="noLoopback" varbindvalue="1"/>
@@ -1683,6 +1679,10 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
       <decode varbinddecodedstring="localLoopback" varbindvalue="5"/>
       <decode varbinddecodedstring="unknown" varbindvalue="6"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered:%dpname%:%nodeid%:%parm[#1]%" 
+                auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1721,12 +1721,12 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
 	snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#1]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
       <decode varbinddecodedstring="trial" varbindvalue="2"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1765,12 +1765,12 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p&gt;&lt;t
 	snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#1]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
       <decode varbinddecodedstring="trial" varbindvalue="2"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1810,12 +1810,12 @@ daily for last 3 days and every 2 hours on the last day of expire.&lt;/p&gt;&lt;
 	snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#1]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
       <decode varbinddecodedstring="trial" varbindvalue="2"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1854,12 +1854,12 @@ daily for last 3 days and every 2 hours on the last day of expire.&lt;/p&gt;&lt;
 	snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#1]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
       <decode varbinddecodedstring="trial" varbindvalue="2"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -1946,7 +1946,6 @@ daily for last 3 days and every 2 hours on the last day of expire.&lt;/p&gt;&lt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="rMepIdle" varbindvalue="1"/>
@@ -1954,6 +1953,7 @@ daily for last 3 days and every 2 hours on the last day of expire.&lt;/p&gt;&lt;
       <decode varbinddecodedstring="rMepFailed" varbindvalue="3"/>
       <decode varbinddecodedstring="rMepOk" varbindvalue="4"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -2103,7 +2103,6 @@ that conflicts with local MEP Id.&lt;/p&gt;&lt;table&gt;
 	snAgGblTrapMessage=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#3]</parmid>
       <decode varbinddecodedstring="rMepIdle" varbindvalue="1"/>
@@ -2111,6 +2110,7 @@ that conflicts with local MEP Id.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="rMepFailed" varbindvalue="3"/>
       <decode varbinddecodedstring="rMepOk" varbindvalue="4"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -2898,7 +2898,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -2910,6 +2909,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -2965,10 +2965,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" 
-                auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -2980,6 +2976,10 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" 
+                auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3035,7 +3035,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3047,6 +3046,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3102,7 +3102,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3114,6 +3113,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3235,7 +3235,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3247,6 +3246,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3302,7 +3302,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3314,6 +3313,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3365,7 +3365,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3377,6 +3376,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3430,7 +3430,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3442,6 +3441,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3495,10 +3495,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" 
-                auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3510,6 +3506,10 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" 
+                alarm-type="2" 
+                clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" 
+                auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3563,7 +3563,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3575,6 +3574,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3628,7 +3628,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3640,6 +3639,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3693,7 +3693,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3705,6 +3704,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
@@ -3886,7 +3886,6 @@ of the Switch Fabric Module (SFM). For example,
 	snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="moduleEmpty" varbindvalue="0"/>
@@ -3898,6 +3897,7 @@ of the Switch Fabric Module (SFM). For example,
       <decode varbinddecodedstring="moduleRunning" varbindvalue="10"/>
       <decode varbinddecodedstring="moduleBlocked" varbindvalue="11"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <mask>
