@@ -98,8 +98,8 @@ public class RequisitionAccessService {
                 return m_pending;
             }
 
-            Requisition pending = getPendingForeignSourceRepository().getRequisition(m_foreignSource);
-            Requisition deployed = getDeployedForeignSourceRepository().getRequisition(m_foreignSource);
+            final Requisition pending = RequisitionFileUtils.getLatestPendingOrSnapshotRequisition(getPendingForeignSourceRepository(), m_foreignSource);
+            final Requisition deployed = getDeployedForeignSourceRepository().getRequisition(m_foreignSource);
 
             if (pending == null && deployed == null && createIfMissing) {
                 return new Requisition(m_foreignSource);
@@ -107,7 +107,7 @@ public class RequisitionAccessService {
                 return deployed;
             } else if (deployed == null) {
                 return pending;
-            } else if (deployed.getDateStamp().compare(pending.getDateStamp()) > -1) {
+            } else if (deployed.getDate().after(pending.getDate())) {
                 // deployed is newer than pending
                 return deployed;
             }

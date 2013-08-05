@@ -387,11 +387,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final Requisition requisition = getRequisition(foreignSource);
-            if (requisition == null) {
-                return null;
-            }
-            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition).toURI().toURL();
+            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, foreignSource).toURI().toURL();
         } catch (final MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         } finally {
