@@ -126,7 +126,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         clickAndVerifyText("link=Assets", "Search Asset Information");
         clickAndVerifyText("link=Reports", "Resource Graphs");
         clickAndVerifyText("link=Charts", "/ Charts");
-        clickAndVerifyText("link=Surveillance", "/ Surveillance");
+        clickAndWait("link=Surveillance");
+        waitForText("Surveillance View:", LOAD_TIMEOUT);
         clickAndWait("link=Distributed Status");
         assertTrue(selenium.isTextPresent("Distributed Poller Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
