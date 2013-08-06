@@ -31,85 +31,48 @@ package org.opennms.netmgt.linkd;
 import java.net.InetAddress;
 
 public class AtInterface {
+
     Integer m_nodeid;
     Integer m_ifIndex;
-    String m_macAddress;
-    InetAddress m_ipAddress;
-
-    public AtInterface(final Integer nodeid, final String macAddress, final InetAddress ipAddress) {
-        m_nodeid = nodeid;
-        m_macAddress = macAddress;
-        m_ipAddress = ipAddress;
-    }
-
     public Integer getIfIndex() {
         return m_ifIndex;
     }
-    public void setIfIndex(final Integer ifIndex) {
+    public void setIfIndex(Integer ifIndex) {
         m_ifIndex = ifIndex;
     }
 
+
+
+    String m_macAddress;
+    InetAddress m_ipAddress;
     public Integer getNodeid() {
         return m_nodeid;
     }
-    public void setNodeid(final Integer nodeid) {
+    public void setNodeid(Integer nodeid) {
         m_nodeid = nodeid;
     }
-
     public String getMacAddress() {
         return m_macAddress;
     }
-    public void setMacAddress(final String macAddress) {
+    public void setMacAddress(String macAddress) {
         m_macAddress = macAddress;
     }
-
+    
     public InetAddress getIpAddress() {
         return m_ipAddress;
     }
-    public void setIpAddress(final InetAddress ipAddress) {
+    public void setIpAddress(InetAddress ipAddress) {
         m_ipAddress = ipAddress;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 1117;
-        int result = 1;
-        result = prime * result + ((m_ifIndex == null) ? 0 : m_ifIndex.hashCode());
-        result = prime * result + ((m_ipAddress == null) ? 0 : m_ipAddress.hashCode());
-        result = prime * result + ((m_macAddress == null) ? 0 : m_macAddress.hashCode());
-        result = prime * result + ((m_nodeid == null) ? 0 : m_nodeid.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (!(obj instanceof AtInterface)) return false;
-        final AtInterface other = (AtInterface) obj;
-        if (m_ifIndex == null) {
-            if (other.m_ifIndex != null) return false;
-        } else if (!m_ifIndex.equals(other.m_ifIndex)) {
-            return false;
-        }
-        if (m_ipAddress == null) {
-            if (other.m_ipAddress != null) return false;
-        } else if (!m_ipAddress.equals(other.m_ipAddress)) {
-            return false;
-        }
-        if (m_macAddress == null) {
-            if (other.m_macAddress != null) return false;
-        } else if (!m_macAddress.equals(other.m_macAddress)) {
-            return false;
-        }
-        if (m_nodeid == null) {
-            if (other.m_nodeid != null) return false;
-        } else if (!m_nodeid.equals(other.m_nodeid)) {
-            return false;
-        }
-        return true;
-    }
     
+    
+    
+    public AtInterface(Integer nodeid, String macAddress, InetAddress ipAddress) {
+        super();
+        m_nodeid = nodeid;
+        m_macAddress = macAddress;
+        m_ipAddress = ipAddress;
+    }
     
     
 }

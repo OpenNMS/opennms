@@ -35,13 +35,13 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.TreeSet;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
@@ -134,20 +134,21 @@ public class Linkd extends AbstractServiceDaemon {
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
+        Assert.state(m_eventForwarder != null,
+                     "must set the eventForwarder property");
 
         // FIXME: circular dependency
         m_queryMgr.setLinkd(this);
 
-        m_activepackages = new CopyOnWriteArrayList<String>();
+        m_activepackages = Collections.synchronizedList(new ArrayList<String>());
 
         // initialize the ipaddrsentevents
-        m_newSuspectEventsIpAddr = new ConcurrentSkipListSet<InetAddress>(new InetAddressComparator());
+        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
         try {
-            m_nodes = new CopyOnWriteArrayList<LinkableNode>(m_queryMgr.getSnmpNodeList());
+            m_nodes = Collections.synchronizedList(m_queryMgr.getSnmpNodeList());
             m_queryMgr.updateDeletedNodes();
         } catch (SQLException e) {
             LogUtils.errorf(this, e, "SQL exception executing on database");
@@ -177,13 +178,18 @@ public class Linkd extends AbstractServiceDaemon {
      */
     private void scheduleCollectionForNode(final LinkableNode node) {
 
-        final List<SnmpCollection> snmpCollections = getSnmpCollections(node.getNodeId(), node.getSnmpPrimaryIpAddr(), node.getSysoid());
-        for (final SnmpCollection snmpcoll : snmpCollections) {
+        for (final SnmpCollection snmpcoll : getSnmpCollections(node.getNodeId(),
+                                                                node.getSnmpPrimaryIpAddr(),
+                                                                node.getSysoid())) {
             if (m_activepackages.contains(snmpcoll.getPackageName())) {
-                LogUtils.debugf(this, "ScheduleCollectionForNode: package active: %s", snmpcoll.getPackageName());
+                LogUtils.debugf(this,
+                                "ScheduleCollectionForNode: package active: %s",
+                                snmpcoll.getPackageName());
             } else {
                 // schedule discovery link
-                LogUtils.debugf(this, "ScheduleCollectionForNode: Scheduling Discovery Link for Active Package: %s", snmpcoll.getPackageName());
+                LogUtils.debugf(this,
+                                "ScheduleCollectionForNode: Scheduling Discovery Link for Active Package: %s",
+                                snmpcoll.getPackageName());
                 final DiscoveryLink discovery = this.getDiscoveryLink(snmpcoll.getPackageName());
                 if (discovery.getScheduler() == null) {
                     discovery.setScheduler(m_scheduler);
@@ -959,24 +965,28 @@ public class Linkd extends AbstractServiceDaemon {
     // mapping between ipaddress and mac address is stored
     // also the correlated ifindex is found
     public void addAtInterface(final AtInterface atinterface) {
-        for (final String packageName : m_activepackages) {
+        for (String packageName : m_activepackages) {
             if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
+                List<AtInterface> atis = new ArrayList<AtInterface>();
                 if (!m_macToAtinterface.containsKey(packageName)) {
-                    m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
+                    m_macToAtinterface.put(packageName,
+                                           new HashMap<String, List<AtInterface>>());
                 }
-
-                final List<AtInterface> atis;
                 if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
                     atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
-                } else {
-                    atis = new CopyOnWriteArrayList<AtInterface>();
                 }
-
-                if (!atis.contains(atinterface)) {
+                boolean add = true;
+                for (AtInterface at : atis) {
+                    if (at.getNodeid() == atinterface.getNodeid()
+                            && at.getIpAddress().equals(atinterface.getIpAddress()))
+                        add = false;
+                }
+                if (add) {
                     atis.add(atinterface);
+                    m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
+                                                            atis);
                 }
 
-                m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(), atis);
             }
 
         }
