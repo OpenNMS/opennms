@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.events;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -37,6 +39,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -71,9 +74,6 @@ public abstract class EventPanel extends Panel {
     /** The Events File name. */
     private String fileName;
 
-    /** The Event form. */
-    private final EventForm eventForm = new EventForm();
-
     /**
      * Instantiates a new event panel.
      *
@@ -97,13 +97,11 @@ public abstract class EventPanel extends Panel {
 
         setCaption("Events");
         addStyleName("light");
-        eventForm.setVisible(false);
 
         final HorizontalLayout topToolbar = new HorizontalLayout();
         topToolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                logger.info("The events have been saved.");
                 processEvents(events, logger);
             }
         }));
@@ -116,6 +114,9 @@ public abstract class EventPanel extends Panel {
         }));
 
         final EventTable eventTable = new EventTable(events);
+
+        final EventForm eventForm = new EventForm();
+        eventForm.setVisible(false);
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
@@ -280,14 +281,16 @@ public abstract class EventPanel extends Panel {
      */
     private void saveFile(final File file, final Events events, final Logger logger) {
         try {
-            logger.info("Saving XML data into " + file.getAbsolutePath());
-            // Normalize the Event Content (required to avoid marshalling problems)
+            // Normalize the Event Content (required to avoid marshaling problems)
             // TODO Are other normalizations required ?
             for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
-                if (event.getAlarmData().getReductionKey() == null)
+                logger.debug("Normalizing event " + event.getUei());
+                AlarmData ad = event.getAlarmData();
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty()))
                     event.setAlarmData(null);
             }
             // Save the XML of the new events
+            logger.info("Saving XML data into " + file.getAbsolutePath());
             FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(events, writer);
             writer.close();
@@ -304,7 +307,11 @@ public abstract class EventPanel extends Panel {
             logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            logger.error(e.getClass() + ": " + (e.getMessage() == null ? "[No Details]" : e.getMessage()));
+            logger.error(sw.toString());
             failure(e.getMessage());
         }
     }
