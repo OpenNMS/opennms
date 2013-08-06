@@ -1,3 +1,28 @@
+#----------------------
+# Include modern UI 2.0, sections, and nsDialogs plugins
+!include "MUI2.nsh"
+!include "Sections.nsh"
+!include "nsDialogs.nsh"
+# If we're building inside Maven, this include file will be present
+!include /NONFATAL "target\project.nsh"
+
+# Define any variables if they were not defined by Maven
+!ifndef PROJECT_VERSION
+  !define PROJECT_VERSION ""
+!endif
+!ifndef PROJECT_NAME
+  !define PROJECT_NAME "OpenNMS Remote Poller"
+!endif
+
+# Configure the interface
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP "resources\opennms-nsis-brand.bmp"
+!define MUI_ABORTWARNING
+
+# Include WinMessages.nsh so that we can send messages
+# using symbolic names
+!include "WinMessages.nsh"
+
 !define POLICY_LOOKUP_NAMES 0x00000800
 !define POLICY_LOOKUP_NAMES_CREATE_ACCOUNT 0x00000810
 !define strLSA_OBJECT_ATTRIBUTES '(i,i,w,i,i,i)i'
@@ -98,7 +123,7 @@ GotJava:
   StrCpy $HEADLESS_POLLER_JNLP "headless.jnlp"
   StrCpy $POLLER_SVC_NAME "OpenNMSRemotePoller"
   StrCpy $GUI_POLLER_SVC_NAME "OpenNMSRemotePollerGUI"
-  StrCpy $POLLER_SVC_DISP_NAME "OpenNMS Remote Poller"
+  StrCpy $POLLER_SVC_DISP_NAME "${PROJECT_NAME}"
   StrCpy $POLLER_SVC_DESCRIPTION "Measures uptime and latency of services from remote locations, sending the data back to an OpenNMS server"
   StrCpy $POLLER_PROPS_FILE "$PROFILE\.opennms\remote-poller.properties"
   StrCpy $DEFAULT_WEBUI_PROTOCOL "http"
@@ -128,8 +153,8 @@ Function un.onInit
   Abort
   IsAdmin:
 
-  ReadRegStr $ServiceUser HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceUser"
-  ReadRegStr $ServiceDomain HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceDomain"
+  ReadRegStr $ServiceUser HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "ServiceUser"
+  ReadRegStr $ServiceDomain HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "ServiceDomain"
 
   StrCpy $POLLER_SERVICE_FILE_NAME "poller.exe"
   StrCpy $POLLER_TRAY_FILE_NAME "polltray.exe"
@@ -139,9 +164,9 @@ Function un.onInit
   StrCpy $HEADLESS_POLLER_JNLP "headless.jnlp"
   StrCpy $POLLER_SVC_NAME "OpenNMSRemotePoller"
   StrCpy $GUI_POLLER_SVC_NAME "OpenNMSRemotePollerGUI"
-  StrCpy $POLLER_SVC_DISP_NAME "OpenNMS Remote Poller"
+  StrCpy $POLLER_SVC_DISP_NAME "${PROJECT_NAME}"
   StrCpy $POLLER_SVC_DESCRIPTION "Measures uptime and latency of services from remote locations, sending the data back to an OpenNMS server"
-  ReadRegStr $POLLER_PROPS_FILE HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "PollerPropsFile"
+  ReadRegStr $POLLER_PROPS_FILE HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "PollerPropsFile"
 
   StrCpy $DEFAULT_WEBUI_PROTOCOL "http"
   StrCpy $DEFAULT_WEBUI_HOST "<IP Address or Hostname>"
@@ -149,22 +174,6 @@ Function un.onInit
   StrCpy $DEFAULT_WEBUI_PATH "/opennms"
   StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
 FunctionEnd
-
-
-#----------------------
-# Include modern UI 2.0, sections, and nsDialogs plugins
-!include "MUI2.nsh"
-!include "Sections.nsh"
-!include "nsDialogs.nsh"
-
-# Configure the interface
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "resources\opennms-nsis-brand.bmp"
-!define MUI_ABORTWARNING
-
-# Include WinMessages.nsh so that we can send messages
-# using symbolic names
-!include "WinMessages.nsh"
 
 
 # Pages
@@ -178,7 +187,7 @@ Page custom javaCheckPage javaCheckPageLeave
 !insertmacro MUI_PAGE_COMPONENTS
 
 PageEx instfiles
-  CompletedText "Click Next to configure the OpenNMS Remote Poller on your system."
+  CompletedText "Click Next to configure the ${PROJECT_NAME} on your system."
 PageExEnd
 
 Page custom onmsSvcUserPage onmsSvcUserPageLeave
@@ -212,16 +221,29 @@ UninstPage instfiles
 
 #----------------------
 # Basic attributes of this installer
-Name "OpenNMS Remote Poller Service"
+Name "${PROJECT_NAME} Installer"
 Icon resources\big-o-install.ico
 UninstallIcon resources\big-o-uninstall.ico
-OutFile opennms-remote-poller.exe
+# If this is a Maven build, leave OutFile undefined
+!ifndef PROJECT_GROUP_ID
+  OutFile opennms-remote-poller.exe
+!endif
+
+# File attributes for the installer EXE
+# VIProductVersion                 "1.13.0.0"
+VIAddVersionKey FileDescription  "${PROJECT_NAME} Installer"
+VIAddVersionKey FileVersion      1
+VIAddVersionKey ProductName      "${PROJECT_NAME}"
+VIAddVersionKey ProductVersion   "${PROJECT_VERSION}"
+VIAddVersionKey LegalCopyright   "© 2008-2013 The OpenNMS Group, Inc."
+VIAddVersionKey Comments         ""
+VIAddVersionKey CompanyName      "The OpenNMS Group, Inc."
 
 # Where we want to be installed
-InstallDir "$PROGRAMFILES\OpenNMS Remote Poller"
+InstallDir "$PROGRAMFILES\${PROJECT_NAME}"
 
 # If set in a previous install, use that instead of InstallDir
-InstallDirRegKey HKLM "SOFTWARE\The OpenNMS Group\OpenNMS Remote Poller" InstallLocation
+InstallDirRegKey HKLM "SOFTWARE\The OpenNMS Group\${PROJECT_NAME}" InstallLocation
 
 # On Vista and later, request administrator privilege
 RequestExecutionLevel admin
@@ -229,7 +251,7 @@ RequestExecutionLevel admin
 # Include an XP manifest
 XPStyle On
 
-BrandingText "© 2013 The OpenNMS Group, Inc.  Installer made with NSIS."
+BrandingText "© 2008-2013 The OpenNMS Group, Inc.  Installer made with NSIS."
 
 #AddBrandingImage top 110
 
@@ -316,10 +338,10 @@ Section "-Files"
   File etc\deployment.properties
   SetOutPath $PROFILE\.opennms
 
-  WriteRegStr HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "PollerPropsFile" "$POLLER_PROPS_FILE"
-  WriteRegStr HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceUser" "$ServiceUser"
-  WriteRegStr HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "ServiceDomain" "$ServiceDomain"
+  WriteRegStr HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "PollerPropsFile" "$POLLER_PROPS_FILE"
+  WriteRegStr HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "ServiceUser" "$ServiceUser"
+  WriteRegStr HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "ServiceDomain" "$ServiceDomain"
   WriteUninstaller "$INSTDIR\$UNINSTALLER_FILE_NAME"
   Call WriteAddRemProgEntry
 SectionEnd
@@ -365,8 +387,8 @@ Section "Uninstall"
   StrCmp $ShouldRemovePollerProps "true" 0 SkipDeletePollerProps
   Delete $POLLER_PROPS_FILE
   SkipDeletePollerProps:
-  DeleteRegValue HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller" "InstallLocation"
-  DeleteRegKey /ifempty HKLM "Software\The OpenNMS Group\OpenNMS Remote Poller"
+  DeleteRegValue HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "InstallLocation"
+  DeleteRegKey /ifempty HKLM "Software\The OpenNMS Group\${PROJECT_NAME}"
   DeleteRegKey /ifempty HKLM "Software\The OpenNMS Group"
   DeleteRegKey /ifempty HKLM "Software\Apache Software Foundation"
   Call un.RemoveAddRemProgEntry
@@ -504,7 +526,7 @@ Function onmsSvcUserPage
     Abort
   ${EndIf}
 
-  ${NSD_CreateLabel} 0 0 100% 24u "Please provide the password for the local Windows account under which the OpenNMS Remote Poller service will run."
+  ${NSD_CreateLabel} 0 0 100% 24u "Please provide the password for the local Windows account under which the ${PROJECT_NAME} service will run."
   Pop $TopLabel
 
   ${NSD_CreateLabel} 0 40u 40u 12u "Username"
