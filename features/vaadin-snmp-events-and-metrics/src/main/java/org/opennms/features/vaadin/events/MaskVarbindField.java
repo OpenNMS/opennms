@@ -28,15 +28,12 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -74,8 +71,11 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
 
     /**
      * Instantiates a new mask varbind field.
+     *
+     * @param caption the caption
      */
-    public MaskVarbindField() {
+    public MaskVarbindField(String caption) {
+        setCaption(caption);
         container.setBeanIdProperty("vbnumber");
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
@@ -84,7 +84,6 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
         table.setColumnExpandRatio("vbvalueCollection", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
-        table.setBuffered(false);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
@@ -125,33 +124,25 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof List<?>) {
-            List<Varbind> beans = (List<Varbind>) value;
-            container.removeAllItems();
-            container.addAll(beans);
-            table.setPageLength(beans.size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
-     */
-    @Override
-    public ArrayList<Varbind> getValue() {
+    protected ArrayList<Varbind> getInternalValue() {
         ArrayList<Varbind> beans = new ArrayList<Varbind>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
         return beans;
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
+     */
+    @Override
+    protected void setInternalValue(ArrayList<Varbind> varbinds) {
+        super.setInternalValue(varbinds);  // TODO Is this required ?
+        container.removeAllItems();
+        container.addAll(varbinds);
     }
 
     /* (non-Javadoc)

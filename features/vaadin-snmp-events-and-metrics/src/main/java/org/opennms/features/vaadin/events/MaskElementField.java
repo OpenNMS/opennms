@@ -33,9 +33,7 @@ import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -73,8 +71,11 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
 
     /**
      * Instantiates a new mask element field.
+     *
+     * @param caption the caption
      */
-    public MaskElementField() {
+    public MaskElementField(String caption) {
+        setCaption(caption);
         container.setBeanIdProperty("mename");
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
@@ -83,7 +84,6 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
         table.setColumnExpandRatio("mevalueCollection", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
-        table.setBuffered(false);
         table.setHeight("125px");
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
@@ -107,7 +107,7 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     @Override
     public Component initContent() {
-        VerticalLayout layout = new VerticalLayout();
+        final VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
@@ -124,29 +124,20 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof ArrayList<?>) {
-            @SuppressWarnings("unchecked")
-            ArrayList<Maskelement> beans = (ArrayList<Maskelement>) value;
-            container.removeAllItems();
-            container.addAll(beans);
-            table.setPageLength(beans.size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
+    protected void setInternalValue(ArrayList<Maskelement> maskElements) {
+        super.setInternalValue(maskElements); // TODO Is this required ?
+        container.removeAllItems();
+        container.addAll(maskElements);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public ArrayList<Maskelement> getValue() {
+    protected ArrayList<Maskelement> getInternalValue() {
         ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
