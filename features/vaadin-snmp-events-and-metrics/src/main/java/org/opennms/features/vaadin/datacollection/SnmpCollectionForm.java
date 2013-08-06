@@ -28,15 +28,16 @@
 package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.TextField;
 
 /**
  * The Class SNMP Collection Form.
@@ -44,7 +45,7 @@ import com.vaadin.ui.Button.ClickListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class SnmpCollectionForm extends Form implements ClickListener {
+public class SnmpCollectionForm extends CustomComponent {
 
     /** The Constant FORM_ITEMS. */
     public static final String[] FORM_ITEMS = new String[] {
@@ -54,17 +55,23 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
         "includeCollectionCollection"
     };
 
-    /** The Edit button. */
-    private final Button edit = new Button("Edit");
+    @PropertyId("name")
+    final TextField name = new TextField("SNMP Collection Name");
 
-    /** The Delete button. */
-    private final Button delete = new Button("Delete");
+    @PropertyId("snmpStorageFlag")
+    final ComboBox snmpStorageFlag = new ComboBox("SNMP Storage Flag");
 
-    /** The Save button. */
-    private final Button save = new Button("Save");
+    @PropertyId("rrd")
+    final RrdField rrd = new RrdField("RRD");
 
-    /** The Cancel button. */
-    private final Button cancel = new Button("Cancel");
+    @PropertyId("includeCollectionCollection") 
+    final IncludeCollectionField includeCollections;
+
+    /** The Event editor. */
+    private final FieldGroup snmpCollectionEditor = new FieldGroup();
+
+    /** The event layout. */
+    private final FormLayout snmpCollectionLayout = new FormLayout();
 
     /**
      * Instantiates a new SNMP collection form.
@@ -73,29 +80,28 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
      */
     public SnmpCollectionForm(final DataCollectionConfigDao dataCollectionConfigDao) {
         setCaption("SNMP Collection Detail");
-        setBuffered(true);
-        setVisible(false);
-        setFormFieldFactory(new SnmpCollectionFieldFactory(dataCollectionConfigDao));
-        initToolbar();
-    }
+        snmpCollectionLayout.setMargin(true);
 
-    /**
-     * Initialize the Toolbar.
-     */
-    private void initToolbar() {
-        save.addClickListener(this);
-        cancel.addClickListener(this);
-        edit.addClickListener(this);
-        delete.addClickListener(this);
+        name.setRequired(true);
+        name.setWidth("100%");
+        snmpCollectionLayout.addComponent(name);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.setSpacing(true);
-        toolbar.addComponent(edit);
-        toolbar.addComponent(delete);
-        toolbar.addComponent(save);
-        toolbar.addComponent(cancel);
+        snmpStorageFlag.setRequired(true);
+        snmpStorageFlag.addItem("select");
+        snmpStorageFlag.addItem("all");
+        snmpCollectionLayout.addComponent(snmpStorageFlag);
 
-        setFooter(toolbar);
+        rrd.setRequired(true);
+        rrd.setWidth("100%");
+        snmpCollectionLayout.addComponent(rrd);
+
+        includeCollections = new IncludeCollectionField(dataCollectionConfigDao);
+        snmpCollectionLayout.addComponent(includeCollections);
+
+        setSnmpCollection(createBasicSnmpCollection());
+        snmpCollectionEditor.bindMemberFields(this);
+
+        setCompositionRoot(snmpCollectionLayout);
     }
 
     /**
@@ -104,73 +110,63 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
      * @return the SNMP Collection
      */
     @SuppressWarnings("unchecked")
-    private SnmpCollection getSnmpCollection() {
-        if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<SnmpCollection> item = (BeanItem<SnmpCollection>) getItemDataSource();
-            return item.getBean();
-        }
-        return null;
+    public SnmpCollection getSnmpCollection() {
+        return ((BeanItem<SnmpCollection>) snmpCollectionEditor.getItemDataSource()).getBean();
+    }
+
+    /**
+     * Sets the SNMP Collection.
+     *
+     * @param snmpCollection the new SNMP collection
+     */
+    public void setSnmpCollection(SnmpCollection snmpCollection) {
+        snmpCollectionEditor.setItemDataSource(new BeanItem<SnmpCollection>(snmpCollection));
+    }
+
+    /**
+     * Creates the basic SNMP collection.
+     *
+     * @return the basic example SNMP collection
+     */
+    public SnmpCollection createBasicSnmpCollection() {
+        SnmpCollection collection = new SnmpCollection();
+        collection.setName("New Collection");
+        collection.setSnmpStorageFlag("select");
+        Rrd rrd = new Rrd();
+        rrd.setStep(300);
+        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        rrd.addRra("RRA:AVERAGE:0.5:12:1488");
+        rrd.addRra("RRA:AVERAGE:0.5:288:366");
+        rrd.addRra("RRA:MAX:0.5:288:366");
+        rrd.addRra("RRA:MIN:0.5:288:366");
+        collection.setRrd(rrd);
+        return collection;
+    }
+
+    /**
+     * Gets the field group.
+     *
+     * @return the field group
+     */
+    public FieldGroup getFieldGroup() {
+        return snmpCollectionEditor;
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Form#setReadOnly(boolean)
+     * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
      */
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        save.setVisible(!readOnly);
-        cancel.setVisible(!readOnly);
-        edit.setVisible(readOnly);
-        delete.setVisible(readOnly);
+        snmpCollectionEditor.setReadOnly(readOnly);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     * @see com.vaadin.ui.AbstractComponent#isReadOnly()
      */
     @Override
-    public void buttonClick(ClickEvent event) {
-        Button source = event.getButton();
-        if (source == save) {
-            commit();
-            setReadOnly(true);
-            saveSnmpCollection(getSnmpCollection());
-        }
-        if (source == cancel) {
-            discard();
-            setReadOnly(true);
-        }
-        if (source == edit) {
-            setReadOnly(false);
-        }
-        if (source == delete) {
-            ConfirmDialog.show(getUI(),
-                               "Are you sure?",
-                               "Do you really want to remove the selected SNMP Collection?\nThis action cannot be undone.",
-                               "Yes",
-                               "No",
-                               new ConfirmDialog.Listener() {
-                public void onClose(ConfirmDialog dialog) {
-                    if (dialog.isConfirmed()) {
-                        setVisible(false);
-                        deleteSnmpCollection(getSnmpCollection());
-                    }
-                }
-            });
-        }
+    public boolean isReadOnly() {
+        return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
     }
-
-    /**
-     * Save SNMP collection.
-     *
-     * @param snmpCollection the SNMP collection
-     */
-    public abstract void saveSnmpCollection(SnmpCollection snmpCollection);
-
-    /**
-     * Delete SNMP collection.
-     *
-     * @param snmpCollection the SNMP collection
-     */
-    public abstract void deleteSnmpCollection(SnmpCollection snmpCollection);
 
 }

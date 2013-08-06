@@ -28,17 +28,14 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -133,7 +130,6 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
-        setBuffered(true);
     }
 
     /* (non-Javadoc)
@@ -169,39 +165,41 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof Rrd) {
-            Rrd dto = (Rrd) value;
-            step.setValue(dto.getStep().toString());
-            container.removeAllItems();
-            List<RRA> rras = new ArrayList<RRA>();
-            for (String rra : dto.getRraCollection()) {
-                rras.add(new RRA(rra));
-            }
-            container.addAll(rras);
-            table.setPageLength(dto.getRraCount());
+    protected void setInternalValue(Rrd rrd) {
+        super.setInternalValue(rrd); // TODO Is this required ?
+        if (step.isReadOnly()) { // TODO Otherwise, I'm getting ReadOnlyExceptions
+            step.setReadOnly(false);
+            step.setValue(rrd.getStep().toString());
+            step.setReadOnly(true);
         } else {
-            throw new ConversionException("Invalid type");
+            step.setValue(rrd.getStep().toString());
         }
-        super.setPropertyDataSource(newDataSource);
+        ArrayList<RRA> rras = new ArrayList<RRA>();
+        for (String rra : rrd.getRraCollection()) {
+            rras.add(new RRA(rra));
+        }
+        container.removeAllItems();
+        container.addAll(rras);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public Rrd getValue() {
-        Rrd dto = new Rrd();
-        dto.setStep(new Integer((String) step.getValue()));
-        for (Object itemId: container.getItemIds()) {
-            dto.addRra(container.getItem(itemId).getBean().getRra());
+    protected Rrd getInternalValue() {
+        Rrd rrd = new Rrd();
+        try {
+            rrd.setStep(new Integer((String) step.getValue()));
+        } catch (NumberFormatException e) {
+            rrd.setStep(null);
         }
-        return dto;
+        for (Object itemId: container.getItemIds()) {
+            rrd.addRra(container.getItem(itemId).getBean().getRra());
+        }
+        return rrd;
     }
 
     /* (non-Javadoc)
