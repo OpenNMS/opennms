@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rangerrick" id="1.11.95-increase-reduction-key-columns">
+      <modifyDataType tableName="alarms" columnName="reductionkey" newDataType="text" />
+      <modifyDataType tableName="alarms" columnName="clearkey"     newDataType="text" />
+      <rollback>
+        <modifyDataType tableName="alarms" columnName="reductionkey" newDataType="varchar(256)" />
+        <modifyDataType tableName="alarms" columnName="clearkey"     newDataType="varchar(256)" />
+      </rollback>
+    </changeSet>
+
+</databaseChangeLog>
