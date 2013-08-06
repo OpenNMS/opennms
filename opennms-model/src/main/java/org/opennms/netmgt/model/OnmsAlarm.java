@@ -363,7 +363,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="reductionKey", unique=true, length=256)
+    @Column(name="reductionKey", unique=true)
     @XmlElement(name="reductionKey")
     public String getReductionKey() {
         return this.m_reductionKey;
@@ -728,7 +728,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.String} object.
      */
     @XmlElement(name="clearKey")
-    @Column(name="clearKey", length=256)
+    @Column(name="clearKey")
     public String getClearKey() {
         return this.m_clearKey;
     }
