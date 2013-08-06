@@ -59,24 +59,24 @@ public abstract class BasicScheduleUtils {
     /**
      * The day of the week values to name mapping
      */
-    protected static Map<String,Integer> m_dayOfWeekMap;
+    protected static ThreadLocal<Map<String,Integer>> m_dayOfWeekMap = new ThreadLocal<Map<String,Integer>>() {
+        @Override protected Map<String,Integer> initialValue() {
+            final Map<String,Integer> map = new HashMap<String,Integer>();
+            map.put("sunday", Calendar.SUNDAY);
+            map.put("monday", Calendar.MONDAY);
+            map.put("tuesday", Calendar.TUESDAY);
+            map.put("wednesday", Calendar.WEDNESDAY);
+            map.put("thursday", Calendar.THURSDAY);
+            map.put("friday", Calendar.FRIDAY);
+            map.put("saturday", Calendar.SATURDAY);
+            return map;
+        };
+    };
+
     /** Constant <code>FORMAT1="dd-MMM-yyyy HH:mm:ss"</code> */
     public static String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
     /** Constant <code>FORMAT2="HH:mm:ss"</code> */
     public static String FORMAT2 = "HH:mm:ss";
-
-    static {
-        if (m_dayOfWeekMap == null) {
-            m_dayOfWeekMap = new HashMap<String,Integer>();
-            m_dayOfWeekMap.put("sunday", Calendar.SUNDAY);
-            m_dayOfWeekMap.put("monday", Calendar.MONDAY);
-            m_dayOfWeekMap.put("tuesday", Calendar.TUESDAY);
-            m_dayOfWeekMap.put("wednesday", Calendar.WEDNESDAY);
-            m_dayOfWeekMap.put("thursday", Calendar.THURSDAY);
-            m_dayOfWeekMap.put("friday", Calendar.FRIDAY);
-            m_dayOfWeekMap.put("saturday", Calendar.SATURDAY);
-        }
-    }
 
     /**
      * <p>isTimeInSchedule</p>
@@ -230,7 +230,7 @@ public abstract class BasicScheduleUtils {
      */
     public static Integer getDayOfWeekIndex(final String dayName) {
         if (dayName == null) return null;
-        return (Integer)m_dayOfWeekMap.get(dayName.toLowerCase());
+        return m_dayOfWeekMap.get().get(dayName.toLowerCase());
     }
     
     /**
