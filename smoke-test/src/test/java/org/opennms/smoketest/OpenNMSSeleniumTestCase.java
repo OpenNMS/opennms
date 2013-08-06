@@ -144,7 +144,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         // the vaadin apps are finicky
         clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
         Thread.sleep(1000);
-        assertTrue(selenium.getHtmlSource().contains("vaadin.initApplication(\"opennmstopology"));
+        assertTrue(selenium.getHtmlSource().contains("vaadin"));
+        assertTrue(selenium.getHtmlSource().contains("opennmstopology"));
         handleVaadinErrorButtons();
         goBack();
         goBack();
@@ -152,7 +153,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
         clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
         Thread.sleep(1000);
-        assertTrue(selenium.getHtmlSource().contains("vaadin.initApplication(\"opennmsnodemaps"));
+        assertTrue(selenium.getHtmlSource().contains("vaadin"));
+        assertTrue(selenium.getHtmlSource().contains("opennmsnodemaps"));
         handleVaadinErrorButtons();
 
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
