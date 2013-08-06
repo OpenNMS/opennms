@@ -38,6 +38,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +51,10 @@ import org.opennms.netmgt.config.poller.Outage;
 
 /**
  * <p>BasicScheduleUtils class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public abstract class BasicScheduleUtils {
     private static final Logger LOG = LoggerFactory.getLogger(BasicScheduleUtils.class);
+    private static final Pattern SPECIFIC_DATE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d-\\d\\d-\\d\\d|\\d\\d-...-\\d\\d\\d\\d) .*$");
 
     /**
      * The day of the week values to name mapping
@@ -65,6 +64,19 @@ public abstract class BasicScheduleUtils {
     public static String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
     /** Constant <code>FORMAT2="HH:mm:ss"</code> */
     public static String FORMAT2 = "HH:mm:ss";
+
+    static {
+        if (m_dayOfWeekMap == null) {
+            m_dayOfWeekMap = new HashMap<String,Integer>();
+            m_dayOfWeekMap.put("sunday", Calendar.SUNDAY);
+            m_dayOfWeekMap.put("monday", Calendar.MONDAY);
+            m_dayOfWeekMap.put("tuesday", Calendar.TUESDAY);
+            m_dayOfWeekMap.put("wednesday", Calendar.WEDNESDAY);
+            m_dayOfWeekMap.put("thursday", Calendar.THURSDAY);
+            m_dayOfWeekMap.put("friday", Calendar.FRIDAY);
+            m_dayOfWeekMap.put("saturday", Calendar.SATURDAY);
+        }
+    }
 
     /**
      * <p>isTimeInSchedule</p>
@@ -216,9 +228,9 @@ public abstract class BasicScheduleUtils {
      * @param dayName a {@link java.lang.String} object.
      * @return a {@link java.lang.Integer} object.
      */
-    public static Integer getDayOfWeekIndex(String dayName) {
-        createDayOfWeekMapping();
-        return (Integer)m_dayOfWeekMap.get(dayName);
+    public static Integer getDayOfWeekIndex(final String dayName) {
+        if (dayName == null) return null;
+        return (Integer)m_dayOfWeekMap.get(dayName.toLowerCase());
     }
     
     /**
@@ -228,75 +240,59 @@ public abstract class BasicScheduleUtils {
      * @return a {@link java.util.Calendar} object.
      */
     public static Calendar getEndOfSchedule(final BasicSchedule out) {
-        long curCalTime = System.currentTimeMillis();
-        Calendar cal = new GregorianCalendar();
+        final long curCalTime = System.currentTimeMillis();
+        final Calendar cal = new GregorianCalendar();
         cal.setTimeInMillis(curCalTime);
+
         // check if day is part of outage
         boolean inOutage = false;
-        Enumeration<Time> en = out.enumerateTime();
+        
+        final Enumeration<Time> en = out.enumerateTime();
         while (en.hasMoreElements() && !inOutage) {
-            Calendar outCalBegin = new GregorianCalendar();
-            Calendar outCalEnd = new GregorianCalendar();
-    
-            Time oTime = (Time) en.nextElement();
-    
-            String oTimeDay = oTime.getDay();
-            String begins = oTime.getBegins();
-            String ends = oTime.getEnds();
-    
+            final Calendar outCalBegin = new GregorianCalendar();
+            final Calendar outCalEnd = new GregorianCalendar();
+
+            final Time oTime = en.nextElement();
+
+            final String oTimeDay = oTime.getDay();
+            final String begins = oTime.getBegins();
+            final String ends = oTime.getEnds();
+
             if (oTimeDay != null) {
                 // see if outage time was specified as sunday/monday..
-                Integer dayInMap = getDayOfWeekIndex(oTimeDay);
+                final Integer dayInMap = getDayOfWeekIndex(oTimeDay);
                 if (dayInMap != null) {
                     // check if value specified matches current date
-                    if (cal.get(Calendar.DAY_OF_WEEK) == dayInMap.intValue())
-                        inOutage = true;
-    
+                    if (cal.get(Calendar.DAY_OF_WEEK) == dayInMap.intValue()) inOutage = true;
                     outCalBegin.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
                     outCalEnd.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
-                } // else see if outage time was specified as day of month
+                }
+                // else see if outage time was specified as day of month
                 else {
-                    int intOTimeDay = (new Integer(oTimeDay)).intValue();
+                    final int intOTimeDay = Integer.valueOf(oTimeDay).intValue();
     
-                    if (cal.get(Calendar.DAY_OF_MONTH) == intOTimeDay)
-                        inOutage = true;
+                    if (cal.get(Calendar.DAY_OF_MONTH) == intOTimeDay) inOutage = true;
     
                     outCalBegin.set(Calendar.DAY_OF_MONTH, intOTimeDay);
                     outCalEnd.set(Calendar.DAY_OF_MONTH, intOTimeDay);
                 }
             }
-    
+
             // if time of day was specified and did not match, continue
             if (oTimeDay != null && !inOutage) {
                 continue;
             }
+
             // set time in out calendars
             setOutCalTime(outCalBegin, begins);
             setOutCalTime(outCalEnd, ends);
-    
-            long outCalBeginTime = outCalBegin.getTime().getTime() / 1000 * 1000;
-            long outCalEndTime = (outCalEnd.getTime().getTime() / 1000 + 1) * 1000;
-    
-            if (curCalTime >= outCalBeginTime && curCalTime < outCalEndTime)
-                return outCalEnd;
+
+            final long outCalBeginTime = outCalBegin.getTime().getTime() / 1000 * 1000;
+            final long outCalEndTime = (outCalEnd.getTime().getTime() / 1000 + 1) * 1000;
+
+            if (curCalTime >= outCalBeginTime && curCalTime < outCalEndTime) return outCalEnd;
         }
         return null; // Couldn't find a time period that matches
-    }
-
-    /**
-     * Create the day of week mapping
-     */
-    private static void createDayOfWeekMapping() {
-        if (BasicScheduleUtils.m_dayOfWeekMap == null) {
-            BasicScheduleUtils.m_dayOfWeekMap = new HashMap<String,Integer>();
-            BasicScheduleUtils.m_dayOfWeekMap.put("sunday", Calendar.SUNDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("monday", Calendar.MONDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("tuesday", Calendar.TUESDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("wednesday", Calendar.WEDNESDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("thursday", Calendar.THURSDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("friday", Calendar.FRIDAY);
-            BasicScheduleUtils.m_dayOfWeekMap.put("saturday", Calendar.SATURDAY);
-        }
     }
 
     /**
@@ -350,11 +346,7 @@ public abstract class BasicScheduleUtils {
      */
     public static boolean isSpecific(final Time time) {
         if (time.getDay() == null) {
-            if (time.getBegins().matches("^\\d\\d\\d\\d-\\d\\d-\\d\\d .*$")) {
-                return true;
-            } else if (time.getBegins().matches("^\\d\\d-...-\\d\\d\\d\\d .*$")) {
-                return true;
-            }
+            return SPECIFIC_DATE_PATTERN.matcher(time.getBegins()).matches();
         }
         return false;
     }
