@@ -121,8 +121,8 @@ public class EventForm extends CustomComponent {
      * Instantiates a new event form.
      */
     public EventForm() {
+        setCaption("Event Detail");
         eventLayout.setSpacing(true);
-        eventLayout.setCaption("Event Detail");
 
         eventUei.setRequired(true);
         eventUei.setWidth("100%");

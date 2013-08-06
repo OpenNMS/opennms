@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import org.opennms.netmgt.xml.eventconf.Events;
+import java.util.List;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
@@ -48,17 +48,17 @@ public class EventTable extends Table {
     public static final String[] COLUMN_LABELS = new String[] { "Event Label", "Event UEI" };
 
     /** The Table Container for Events. */
-    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container;
+    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container =
+            new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /**
      * Instantiates a new event table.
      *
      * @param events the OpenNMS events
      */
-    public EventTable(final Events events) {
-        container = new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
+    public EventTable(final List<org.opennms.netmgt.xml.eventconf.Event> events) {
         container.setBeanIdProperty("uei");
-        container.addAll(events.getEventCollection());
+        container.addAll(events);
         setContainerDataSource(container);
         setImmediate(true);
         setSelectable(true);
