@@ -240,8 +240,8 @@ public class EventAdminApplication extends UI {
                 this.setVisible(false);
             }
             @Override
-            public void failure() {
-                Notification.show("Event file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
+            public void failure(String reason) {
+                Notification.show("Event file " + file.getName() + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
             }
         };
         eventPanel.setCaption("Events from " + file.getName());

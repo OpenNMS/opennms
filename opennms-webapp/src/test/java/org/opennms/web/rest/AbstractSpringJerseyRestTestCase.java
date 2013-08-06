@@ -432,6 +432,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
             final String location = response.getHeader("Location").toString();
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
+        Thread.sleep(50);
         return xml;
     }
     
