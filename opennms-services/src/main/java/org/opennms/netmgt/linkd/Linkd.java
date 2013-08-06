@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -161,14 +162,14 @@ public class Linkd extends AbstractServiceDaemon {
         // FIXME: circular dependency
         m_queryMgr.setLinkd(this);
 
-        m_activepackages = new ArrayList<String>();
+        m_activepackages = Collections.synchronizedList(new ArrayList<String>());
 
         // initialize the ipaddrsentevents
-        m_newSuspectEventsIpAddr = new TreeSet<InetAddress>(new InetAddressComparator());
+        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
-        m_nodes = m_queryMgr.getSnmpNodeList();
+        m_nodes = Collections.synchronizedList(m_queryMgr.getSnmpNodeList());
         m_queryMgr.updateDeletedNodes();
 
         Assert.notNull(m_nodes);
@@ -664,7 +665,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     @Transactional
     public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
-        LOG.debug("Updating SNMP collection for {}", InetAddressUtils.str(snmpcoll.getTarget()));
+        LOG.debug("Updating SNMP collection for {}", str(snmpcoll.getTarget()));
         LinkableNode node = removeNode(snmpcoll.getTarget());
         if (node == null) {
             LOG.error("No node found for SNMP collection: {} unscheduling!", snmpcoll.getInfo());
@@ -866,7 +867,7 @@ public class Linkd extends AbstractServiceDaemon {
 
     // Here all the information related to the
     // mapping between ipaddress and mac address are stored
-    public void addAtInterface(AtInterface atinterface) {
+    public void addAtInterface(final AtInterface atinterface) {
         LOG.debug("addAtInterface: adding at interface {}/{}", atinterface.getIpAddress().getHostAddress(),atinterface.getMacAddress());
         for (String packageName : m_activepackages) {
         	if (!m_macToAtinterface.containsKey(packageName)) {
