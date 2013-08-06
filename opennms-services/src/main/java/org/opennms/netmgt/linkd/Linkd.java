@@ -135,12 +135,12 @@ public class Linkd extends AbstractServiceDaemon {
         BeanUtils.assertAutowiring(this);
 
         Assert.state(m_eventForwarder != null,
-                     "must set the eventForwarder property");
+                "must set the eventForwarder property");
 
         // FIXME: circular dependency
         m_queryMgr.setLinkd(this);
 
-        m_activepackages = Collections.synchronizedList(new ArrayList<String>());
+        m_activepackages = new ArrayList<String>();
 
         // initialize the ipaddrsentevents
         m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
@@ -148,7 +148,7 @@ public class Linkd extends AbstractServiceDaemon {
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
         try {
-            m_nodes = Collections.synchronizedList(m_queryMgr.getSnmpNodeList());
+            m_nodes = m_queryMgr.getSnmpNodeList();
             m_queryMgr.updateDeletedNodes();
         } catch (SQLException e) {
             LogUtils.errorf(this, e, "SQL exception executing on database");
@@ -181,7 +181,8 @@ public class Linkd extends AbstractServiceDaemon {
         for (final SnmpCollection snmpcoll : getSnmpCollections(node.getNodeId(),
                                                                 node.getSnmpPrimaryIpAddr(),
                                                                 node.getSysoid())) {
-            if (m_activepackages.contains(snmpcoll.getPackageName())) {
+            final List<String> activePackages = getActivePackages();
+            if (activePackages.contains(snmpcoll.getPackageName())) {
                 LogUtils.debugf(this,
                                 "ScheduleCollectionForNode: package active: %s",
                                 snmpcoll.getPackageName());
@@ -195,7 +196,7 @@ public class Linkd extends AbstractServiceDaemon {
                     discovery.setScheduler(m_scheduler);
                 }
                 discovery.schedule();
-                m_activepackages.add(snmpcoll.getPackageName());
+                addPackage(snmpcoll.getPackageName());
 
             }
             if (snmpcoll.getScheduler() == null) {
@@ -222,23 +223,23 @@ public class Linkd extends AbstractServiceDaemon {
         discoveryLink.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
 
         discoveryLink.setSnmpPollInterval(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
-                                                                     : m_linkdConfig.getSnmpPollInterval());
+            : m_linkdConfig.getSnmpPollInterval());
         discoveryLink.setDiscoveryInterval(pkg.hasDiscovery_link_interval() ? pkg.getDiscovery_link_interval()
-                                                                           : m_linkdConfig.getDiscoveryLinkInterval());
+            : m_linkdConfig.getDiscoveryLinkInterval());
         discoveryLink.setDiscoveryUsingBridge(pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
-                                                                         : m_linkdConfig.useBridgeDiscovery());
+            : m_linkdConfig.useBridgeDiscovery());
         discoveryLink.setDiscoveryUsingCdp(pkg.hasUseCdpDiscovery() ? pkg.getUseCdpDiscovery()
-                                                                   : m_linkdConfig.useCdpDiscovery());
+            : m_linkdConfig.useCdpDiscovery());
         discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
-                                                                          : m_linkdConfig.useIpRouteDiscovery());
+            : m_linkdConfig.useIpRouteDiscovery());
         discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload() ? pkg.getEnableDiscoveryDownload()
-                                                                                 : m_linkdConfig.enableDiscoveryDownload());
+            : m_linkdConfig.enableDiscoveryDownload());
         discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
-                                                                                                 : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
+            : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
         discoveryLink.setDiscoveryUsingLldp(pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
-                                                                     : m_linkdConfig.useLldpDiscovery());
+            : m_linkdConfig.useLldpDiscovery());
         discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
-                                                                     : m_linkdConfig.useOspfDiscovery());
+            : m_linkdConfig.useOspfDiscovery());
         return discoveryLink;
     }
 
@@ -265,7 +266,7 @@ public class Linkd extends AbstractServiceDaemon {
      * @param nodeid
      */
     public List<SnmpCollection> getSnmpCollections(int nodeid,
-            final InetAddress ipaddr, final String sysoid) {
+                                                   final InetAddress ipaddr, final String sysoid) {
         List<SnmpCollection> snmpcolls = new ArrayList<SnmpCollection>();
 
         for (final String pkgName : m_linkdConfig.getAllPackageMatches(ipaddr)) {
@@ -286,7 +287,7 @@ public class Linkd extends AbstractServiceDaemon {
         } catch (final Throwable t) {
             LogUtils.errorf(this,
                             t,
-                            "getSnmpCollection: Failed to load snmpcollection parameter from SNMP configuration file");
+                    "getSnmpCollection: Failed to load snmpcollection parameter from SNMP configuration file");
         }
 
         return coll;
@@ -295,7 +296,7 @@ public class Linkd extends AbstractServiceDaemon {
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {
         coll.setPackageName(pkg.getName());
-        
+
         String ipRouteClassName =  m_linkdConfig.getDefaultIpRouteClassName();
         if (m_linkdConfig.hasIpRouteClassName(sysoid)) {
             ipRouteClassName = m_linkdConfig.getIpRouteClassName(sysoid);
@@ -310,23 +311,23 @@ public class Linkd extends AbstractServiceDaemon {
 
         final long initialSleepTime = m_linkdConfig.getInitialSleepTime();
         final long snmpPollInterval =(pkg.hasSnmp_poll_interval() ? pkg.getSnmp_poll_interval()
-                                                             : m_linkdConfig.getSnmpPollInterval()); 
+            : m_linkdConfig.getSnmpPollInterval()); 
         final boolean useCdpDiscovery = (pkg.hasUseCdpDiscovery() ? pkg.getUseCdpDiscovery()
-                                                                 : m_linkdConfig.useCdpDiscovery());
+            : m_linkdConfig.useCdpDiscovery());
         final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
-                                                                         : m_linkdConfig.useIpRouteDiscovery());
+            : m_linkdConfig.useIpRouteDiscovery());
         final boolean saveRouteTable = (pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
-                                                               : m_linkdConfig.saveRouteTable());
+            : m_linkdConfig.saveRouteTable());
         final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
-                                                                   : m_linkdConfig.useLldpDiscovery());
+            : m_linkdConfig.useLldpDiscovery());
         final boolean useOspfDiscovery = (pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
-                                                                    : m_linkdConfig.useOspfDiscovery());
+            : m_linkdConfig.useOspfDiscovery());
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
-                                                                       : m_linkdConfig.useBridgeDiscovery());
+            : m_linkdConfig.useBridgeDiscovery());
         final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
-                                                                   : m_linkdConfig.saveStpNodeTable());
+            : m_linkdConfig.saveStpNodeTable());
         final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
-                                                                             : m_linkdConfig.saveStpInterfaceTable());
+            : m_linkdConfig.saveStpInterfaceTable());
 
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
@@ -340,11 +341,11 @@ public class Linkd extends AbstractServiceDaemon {
         coll.saveStpNodeTable(saveStpNodeTable);
         coll.collectStp(useBridgeDiscovery || saveStpNodeTable || saveStpInterfaceTable);
         coll.saveStpInterfaceTable(saveStpInterfaceTable);
- 
+
         if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
                 || 
-             (!pkg.hasEnableVlanDiscovery() && m_linkdConfig.isVlanDiscoveryEnabled())
-           && m_linkdConfig.hasClassName(sysoid)) {
+                (!pkg.hasEnableVlanDiscovery() && m_linkdConfig.isVlanDiscoveryEnabled())
+                && m_linkdConfig.hasClassName(sysoid)) {
             coll.setVlanClass(m_linkdConfig.getVlanClassName(sysoid));
             LogUtils.debugf(this,
                             "populateSnmpCollection: found class to get Vlans: %s",
@@ -595,7 +596,7 @@ public class Linkd extends AbstractServiceDaemon {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LogUtils.warnf(this,
-                                   "wakeUpNodeCollection: found null ReadyRunnable");
+                            "wakeUpNodeCollection: found null ReadyRunnable");
                     return;
                 } else {
                     rr.wakeUp();
@@ -615,7 +616,7 @@ public class Linkd extends AbstractServiceDaemon {
         } catch (SQLException sqlE) {
             LogUtils.errorf(this,
                             sqlE,
-                            "deleteNode: SQL Exception while syncing node object with database information.");
+                    "deleteNode: SQL Exception while syncing node object with database information.");
         }
 
         LinkableNode node = removeNode(nodeid);
@@ -634,7 +635,7 @@ public class Linkd extends AbstractServiceDaemon {
 
                 if (rr == null) {
                     LogUtils.warnf(this,
-                                   "deleteNode: found null ReadyRunnable");
+                            "deleteNode: found null ReadyRunnable");
                     return;
                 } else {
                     rr.unschedule();
@@ -670,7 +671,7 @@ public class Linkd extends AbstractServiceDaemon {
                                           QueryManager.ACTION_DELETE);
         } catch (SQLException sqlE) {
             LogUtils.errorf(this, sqlE,
-                            "deleteInterface: SQL Exception while updating database.");
+                    "deleteInterface: SQL Exception while updating database.");
         }
 
         // database changed need reload packageiplist
@@ -688,14 +689,14 @@ public class Linkd extends AbstractServiceDaemon {
         } catch (SQLException sqlE) {
             LogUtils.errorf(this,
                             sqlE,
-                            "suspendNodeCollection: SQL Exception while syncing node object with database information.");
+                    "suspendNodeCollection: SQL Exception while syncing node object with database information.");
         }
 
         LinkableNode node = getNode(nodeid);
 
         if (node == null) {
             LogUtils.warnf(this,
-                           "suspendNodeCollection: found null ReadyRunnable");
+                    "suspendNodeCollection: found null ReadyRunnable");
         } else {
             // get collections
             // get readyRunnuble
@@ -801,13 +802,13 @@ public class Linkd extends AbstractServiceDaemon {
     void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner,
             String pkgName) {
 
-    	if (ipaddress == null) {
+        if (ipaddress == null) {
             LogUtils.infof(this,
                     "sendNewSuspectEvent: nothing to send,  IP addressis null");
             return;    		
-    	}
+        }
 
-    	if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
+        if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
             LogUtils.infof(this,
                            "sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: %s",
                            str(ipaddress));
@@ -831,7 +832,7 @@ public class Linkd extends AbstractServiceDaemon {
 
             EventBuilder bldr = new EventBuilder(
                                                  EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI,
-                                                 "linkd");
+                    "linkd");
 
             bldr.setHost(str(ipowner));
             bldr.setInterface(ipaddress);
@@ -960,48 +961,77 @@ public class Linkd extends AbstractServiceDaemon {
     public void setEventForwarder(EventForwarder eventForwarder) {
         this.m_eventForwarder = eventForwarder;
     }
+    
+    public List<String> getActivePackages() {
+        synchronized (m_activepackages) {
+            return Collections.unmodifiableList(m_activepackages);
+        }
+    }
+    
+    public void addPackage(final String packageName) {
+        synchronized (m_activepackages) {
+            m_activepackages.add(packageName);
+        }
+    }
 
     // Here all the information related to the
     // mapping between ipaddress and mac address is stored
     // also the correlated ifindex is found
     public void addAtInterface(final AtInterface atinterface) {
-        for (String packageName : m_activepackages) {
-            if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
-                List<AtInterface> atis = new ArrayList<AtInterface>();
+        for (final String packageName : getActivePackages()) {
+            final String macAddress = atinterface.getMacAddress();
+            final InetAddress ipAddress = atinterface.getIpAddress();
+
+            if (!isInterfaceInPackage(ipAddress, packageName)) continue;
+
+            synchronized (m_macToAtinterface) {
                 if (!m_macToAtinterface.containsKey(packageName)) {
-                    m_macToAtinterface.put(packageName,
-                                           new HashMap<String, List<AtInterface>>());
+                    m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
                 }
-                if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
-                    atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
+
+                final List<AtInterface> atis;
+                if (m_macToAtinterface.get(packageName).containsKey(macAddress)) {
+                    atis = m_macToAtinterface.get(packageName).get(macAddress);
+                } else {
+                    atis = new ArrayList<AtInterface>();
                 }
-                boolean add = true;
-                for (AtInterface at : atis) {
-                    if (at.getNodeid() == atinterface.getNodeid()
-                            && at.getIpAddress().equals(atinterface.getIpAddress()))
-                        add = false;
-                }
-                if (add) {
+
+                if (atis.contains(atinterface)) {
+                } else {
                     atis.add(atinterface);
-                    m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
-                                                            atis);
+                    m_macToAtinterface.get(packageName).put(macAddress, atis);
                 }
-
             }
-
         }
-
     }
 
-    public void clearAtInterfaces(String packageName) {
-        m_macToAtinterface.get(packageName).clear();
+    public Set<String> getMacAddressesForPackage(final String packageName) {
+        synchronized(m_macToAtinterface) {
+            final Map<String, List<AtInterface>> interfaceMaps = m_macToAtinterface.get(packageName);
+            if (interfaceMaps != null) return Collections.unmodifiableSet(interfaceMaps.keySet());
+        }
+        return Collections.emptySet();
     }
 
-    public Map<String, List<AtInterface>> getAtInterfaces(String packageName) {
-        return m_macToAtinterface.get(packageName);
+    public List<AtInterface> getAtInterfaces(final String packageName, final String macAddress) {
+        synchronized (m_macToAtinterface) {
+            final Map<String, List<AtInterface>> interfaceMaps = m_macToAtinterface.get(packageName);
+            if (interfaceMaps != null) {
+                final List<AtInterface> interfaces = interfaceMaps.get(macAddress);
+                if (interfaces != null) return Collections.unmodifiableList(interfaces);
+            }
+        }
+        return Collections.emptyList();
     }
 
-	public String getSource() {
-		return "linkd";
-	}
+    public void clearAtInterfaces(final String packageName) {
+        synchronized (m_macToAtinterface) {
+            final Map<String, List<AtInterface>> interfaces = m_macToAtinterface.get(packageName);
+            if (interfaces != null) interfaces.clear();
+        }
+    }
+
+    public String getSource() {
+        return "linkd";
+    }
 }
