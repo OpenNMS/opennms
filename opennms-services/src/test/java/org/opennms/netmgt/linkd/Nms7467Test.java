@@ -29,7 +29,9 @@
 package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -37,8 +39,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -381,8 +383,10 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
-        AtInterface at = m_linkd.getAtInterfaces(packageName).get("0002baaacffe").get(0);
+        final List<AtInterface> atInterfaces = m_linkd.getAtInterfaces(packageName, "0002baaacffe");
+        assertNotNull(atInterfaces);
+        assertEquals(1, atInterfaces.size());
+        AtInterface at = atInterfaces.get(0);
         assertEquals(CISCO_WS_C2948_IP,at.getIpAddress().getHostAddress());
         assertEquals(3, at.getIfIndex().intValue());
         // Now Let's test the database
@@ -473,12 +477,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
         */
+
+        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        assertEquals(2, macAddresses.size());
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "001f6cd034e7");
+        assertNotNull(ats);
         
-        assertEquals("should have saved 2 ip to mac",2, m_linkd.getAtInterfaces(packageName).size());        
-        
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("001f6cd034e7");
         assertEquals(3, ats.size());
-        for (AtInterface at :ats) {
+        for (final AtInterface at :ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.1"))
                 assertEquals(12, at.getIfIndex().intValue());
             else if( at.getIpAddress().getHostAddress().equals("172.20.2.1"))
@@ -489,7 +495,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
         }
 
-        ats = m_linkd.getAtInterfaces(packageName).get("00000c03b09e");
+        ats = m_linkd.getAtInterfaces(packageName, "00000c03b09e");
         assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("65.41.39.146"))
@@ -590,15 +596,16 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * Transparent Bridge
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "00223ff00b7b");
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("00223ff00b7b");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.8"))
                 assertTrue(at.getIfIndex().intValue() == -1);
             else 
-                assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
+                fail("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address");
         }
 
         
@@ -679,10 +686,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         * 
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "406186e28b53");
+        assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("406186e28b53");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.14"))
                 assertTrue(at.getIfIndex().intValue() == 4);
@@ -766,10 +776,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         *  
         */
         
-        assertEquals("should have saved 1 ip to mac",1, m_linkd.getAtInterfaces(packageName).size());        
+        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage(packageName);
+        assertNotNull(macAddresses);
+        assertEquals(1, macAddresses.size());
+
+        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "0026b0ed8fb8");
+        assertNotNull(ats);
+        assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
-        List<AtInterface> ats = m_linkd.getAtInterfaces(packageName).get("0026b0ed8fb8");
-        assertEquals(1, ats.size());
         for (AtInterface at : ats) {
             if( at.getIpAddress().getHostAddress().equals("172.20.1.28"))
                 assertTrue(at.getIfIndex().intValue() == 4);
@@ -980,10 +994,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // linkable node is not null
         assertTrue(linkNode != null);
         
-        final Map<String, List<AtInterface>> mactoatinterfacemap = m_linkd.getAtInterfaces("example1");
-        assertEquals(2,mactoatinterfacemap.size());
-        
-        assertEquals(1, mactoatinterfacemap.get(WORKSTATION_MAC).size());
+        final Set<String> macAddresses = m_linkd.getMacAddressesForPackage("example1");
+        assertEquals(2, macAddresses.size());
+
+        //final Map<String, List<AtInterface>> mactoatinterfacemap = m_linkd.getAtInterfaces("example1");
+        //assertEquals(2,mactoatinterfacemap.size());
+
+        final List<AtInterface> ats = m_linkd.getAtInterfaces("example1", WORKSTATION_MAC);
+        assertEquals(1, ats.size());
         
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
