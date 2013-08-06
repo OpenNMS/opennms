@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -36,6 +35,7 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,15 +140,15 @@ public class Linkd extends AbstractServiceDaemon {
         // FIXME: circular dependency
         m_queryMgr.setLinkd(this);
 
-        m_activepackages = new ArrayList<String>();
+        m_activepackages = Collections.synchronizedList(new ArrayList<String>());
 
         // initialize the ipaddrsentevents
-        m_newSuspectEventsIpAddr = new TreeSet<InetAddress>(new InetAddressComparator());
+        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
         try {
-            m_nodes = m_queryMgr.getSnmpNodeList();
+            m_nodes = Collections.synchronizedList(m_queryMgr.getSnmpNodeList());
             m_queryMgr.updateDeletedNodes();
         } catch (SQLException e) {
             LogUtils.errorf(this, e, "SQL exception executing on database");
@@ -739,8 +739,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     @Transactional
     public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
-        LogUtils.debugf(this, "Updating SNMP collection for %s",
-                        InetAddressUtils.str(snmpcoll.getTarget()));
+        LogUtils.debugf(this, "Updating SNMP collection for %s", str(snmpcoll.getTarget()));
         LinkableNode node = removeNode(snmpcoll.getTarget());
         if (node == null) {
             LogUtils.errorf(this,
@@ -965,7 +964,7 @@ public class Linkd extends AbstractServiceDaemon {
     // Here all the information related to the
     // mapping between ipaddress and mac address is stored
     // also the correlated ifindex is found
-    public void addAtInterface(AtInterface atinterface) {
+    public void addAtInterface(final AtInterface atinterface) {
         for (String packageName : m_activepackages) {
             if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
                 List<AtInterface> atis = new ArrayList<AtInterface>();
