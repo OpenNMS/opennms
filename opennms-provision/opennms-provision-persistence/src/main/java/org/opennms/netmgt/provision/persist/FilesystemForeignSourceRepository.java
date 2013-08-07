@@ -350,7 +350,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                     throw new ForeignSourceRepositoryException("Unable to delete requisition file " + fileToDelete);
                 }
             } else {
-                LogUtils.debugf(this, "File %s does not exist.", fileToDelete);
+                LOG.debug("File {} does not exist.", fileToDelete);
             }
         } finally {
             m_writeLock.unlock();
