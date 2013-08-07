@@ -175,6 +175,7 @@ public abstract class EventPanel extends Panel {
                 eventTable.getContainer().addBean(e);
                 eventTable.select(e.getUei());
                 eventForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });

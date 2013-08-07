@@ -41,12 +41,6 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 public class EventTable extends Table {
 
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "eventLabel", "uei" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "Event Label", "Event UEI" };
-
     /** The Table Container for Events. */
     private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container =
             new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
@@ -63,8 +57,8 @@ public class EventTable extends Table {
         setImmediate(true);
         setSelectable(true);
         addStyleName("light");
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "eventLabel", "uei" });
+        setColumnHeaders(new String[] { "Event Label", "Event UEI" });
         setWidth("100%");
         setHeight("250px");
     }
