@@ -154,6 +154,9 @@ public abstract class AbstractStrategyField<T> extends CustomField<T> implements
     protected void setComboValue(String value) {
         boolean comboState = combo.isReadOnly();
         combo.setReadOnly(false);
+        if (!combo.containsId(value)) {
+            combo.addItem(value);
+        }
         combo.setValue(value);
         if (comboState)
             combo.setReadOnly(true);

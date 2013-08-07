@@ -43,7 +43,8 @@ public class PersistSelectorStrategyField extends AbstractStrategyField<Persiste
      * @param caption the caption
      */
     public PersistSelectorStrategyField(String caption) {
-        // To avoid requires opennms-services
+        // If the strategy from the XML is different, it will be added automatically to the combo-box
+        // The following list is not using class references to avoid add a dependency against opennms-services
         super(caption, new String[] {
                 "org.opennms.netmgt.collectd.PersistAllSelectorStrategy",
                 "org.opennms.netmgt.collectd.PersistRegexSelectorStrategy"

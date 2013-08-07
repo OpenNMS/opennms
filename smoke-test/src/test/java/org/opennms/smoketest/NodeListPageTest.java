@@ -35,8 +35,7 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Node List");
-        waitForPageToLoad();
+        clickAndWait("link=Node List");
     }
 
     @Test
@@ -45,14 +44,13 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     }
     
     @Test
-    public void testAllLinksArePresent() {
-        assertTrue("Could not find nodeList.htm link", selenium.isElementPresent("//a[@href='element/nodeList.htm?listInterfaces=true']"));
+    public void testAllLinksArePresent() throws InterruptedException {
+        waitForElement("//a[@href='element/nodeList.htm?listInterfaces=true']");
     }
     
     @Test
-    public void testAllLinks() {
-        selenium.click("link=Show interfaces");
-        waitForPageToLoad();
-        assertTrue("Could not find string 'interfaces' in response", selenium.isTextPresent("interfaces"));
+    public void testAllLinks() throws InterruptedException {
+        clickAndWait("link=Show interfaces");
+        waitForText("interfaces");
     }
 }
