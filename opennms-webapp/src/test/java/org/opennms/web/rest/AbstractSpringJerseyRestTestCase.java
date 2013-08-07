@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -54,6 +55,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
@@ -151,6 +153,13 @@ public abstract class AbstractSpringJerseyRestTestCase {
         setWebAppContext(WebApplicationContextUtils.getWebApplicationContext(getServletContext()));
         afterServletStart();
         System.err.println("------------------------------------------------------------------------------");
+    }
+
+    protected void cleanUpImports() {
+        final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
+        while (fileIterator.hasNext()) {
+            fileIterator.next().delete();
+        }
     }
 
     protected MockServletContext getServletContext() {
@@ -416,8 +425,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected String sendRequest(MockHttpServletRequest request, int expectedStatus, final String expectedUrlSuffix) throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
-        String xml = response.getContentAsString();
-        if (xml != null) {
+        final String xml = response.getContentAsString();
+        if (xml != null && !xml.isEmpty()) {
             try {
                 System.err.println(StringUtils.prettyXml(xml));
             } catch (Exception e) {

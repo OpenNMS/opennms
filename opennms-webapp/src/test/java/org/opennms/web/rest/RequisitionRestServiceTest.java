@@ -59,6 +59,8 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     
     @Test
     public void testRequisition() throws Exception {
+        cleanUpImports();
+
         createRequisition();
         String url = "/requisitions";
         String xml = sendRequest(GET, url, 200);
