@@ -32,11 +32,11 @@ import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 /**
- * This class implements a factory used for instantiating new dashlet instances.
+ * This class implements a {@link Dashlet} for displaying the RTC console.
  *
  * @author Christian Pape
  */
-public class MapDashletFactory extends AbstractDashletFactory {
+public class RtcDashletFactory extends AbstractDashletFactory {
     /**
      * Method for creating a new {@link Dashlet} instance.
      *
@@ -44,7 +44,7 @@ public class MapDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new MapDashlet(getName(), dashletSpec);
+        return new RtcDashlet(getName(), dashletSpec);
     }
 
     /**
@@ -54,8 +54,7 @@ public class MapDashletFactory extends AbstractDashletFactory {
      */
     @Override
     public String getHelpContentHTML() {
-        return "This Dashlet provides a view to the vaadin-node-maps page of OpenNMS included in an iFrame. \n" +
-                " The only configurable parameter is the \"search\" parameter that is passed to the \n" +
-                " iFrame's URL of the node map.";
+        return "This Dashlet provides a view to the OpenNMS RTC console in an iFrame. \n" +
+                " The are no configurable parameters for this dashlet.";
     }
 }

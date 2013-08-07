@@ -16,5 +16,8 @@
     <feature name="dashlet-charts" version="${pom.version}">
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
     </feature>
+    <feature name="dashlet-rtc" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${pom.version}</bundle>
+    </feature>
 
 </features>

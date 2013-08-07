@@ -483,6 +483,29 @@
         <property name="mapMenuEntries" ref="mapMenuEntries" />
     </bean>
 
+    <bean name="dashboardMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+        <property name="name" value="Dashboards" />
+        <property name="url" value="dashboards.htm" />
+        <property name="entries">
+            <list>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Dashboard"/>
+                    <property name="url" value="dashboard.jsp"/>
+                    <property name="locationMatch" value="dashboard"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Wallboard"/>
+                    <property name="url" value="vaadin-wallboard"/>
+                    <property name="locationMatch" value="vaadin-wallboard"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="/dashboards.htm" class="org.opennms.web.controller.DashboardController">
+        <property name="dashboardMenuEntries" ref="dashboardMenuEntries" />
+    </bean>
+
     <!--  "includes" -->
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems">
@@ -511,11 +534,15 @@
                     <property name="locationMatch" value="pathOutage"/>
                 </bean>
 
+                <!--
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Dashboard"/>
                     <property name="url" value="dashboard.jsp"/>
                     <property name="locationMatch" value="dashboard"/>
                 </bean>
+                -->
+
+                <ref bean="dashboardMenuEntries" />
 
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Events"/>

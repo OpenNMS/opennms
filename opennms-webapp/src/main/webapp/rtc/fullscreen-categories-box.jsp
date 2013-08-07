@@ -1,3 +1,4 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -25,37 +26,54 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.dashboard.dashlets;
 
-import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
-import org.opennms.features.vaadin.dashboard.model.Dashlet;
-import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+--%>
 
-/**
- * This class implements a factory used for instantiating new dashlet instances.
- *
- * @author Christian Pape
- */
-public class MapDashletFactory extends AbstractDashletFactory {
-    /**
-     * Method for creating a new {@link Dashlet} instance.
-     *
-     * @param dashletSpec the {@link DashletSpec} to use
-     * @return a new {@link Dashlet} instance
-     */
-    public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new MapDashlet(getName(), dashletSpec);
-    }
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+        import="org.opennms.web.api.Util"
+        %>
 
-    /**
-     * Returns the help content {@link String}
-     *
-     * @return the help content
-     */
-    @Override
-    public String getHelpContentHTML() {
-        return "This Dashlet provides a view to the vaadin-node-maps page of OpenNMS included in an iFrame. \n" +
-                " The only configurable parameter is the \"search\" parameter that is passed to the \n" +
-                " iFrame's URL of the node map.";
-    }
-}
+<%
+    final String baseHref = Util.calculateUrlBase(request);
+%>
+
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=8"/>
+
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen"/>
+
+    <title>RTC Console</title>
+
+    <style type="text/css">
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            height: 100%;
+            width: 100%;
+            display: table;
+            vertical-align: middle;
+            font-size: 24px;
+        }
+
+        #vert-align {
+            padding: 10px;
+            display: table-cell;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="vert-align">
+        <jsp:include page="/includes/categories-box.jsp" flush="false"/>
+    </div>
+</body>
+</html>
