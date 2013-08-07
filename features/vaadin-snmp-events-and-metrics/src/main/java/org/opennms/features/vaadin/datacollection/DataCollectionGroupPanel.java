@@ -153,7 +153,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         dto.setName((String) groupName.getValue());
         dto.getGroupCollection().addAll(groups.getGroups());
         dto.getResourceTypeCollection().addAll(resourceTypes.getResourceTypes());
-        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefinitions());
+        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefs());
         return dto;
     }
 

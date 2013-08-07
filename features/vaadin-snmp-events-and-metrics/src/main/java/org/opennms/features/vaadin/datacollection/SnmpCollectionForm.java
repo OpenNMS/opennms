@@ -55,15 +55,19 @@ public class SnmpCollectionForm extends CustomComponent {
         "includeCollectionCollection"
     };
 
+    /** The name. */
     @PropertyId("name")
     final TextField name = new TextField("SNMP Collection Name");
 
+    /** The snmp storage flag. */
     @PropertyId("snmpStorageFlag")
     final ComboBox snmpStorageFlag = new ComboBox("SNMP Storage Flag");
 
+    /** The rrd. */
     @PropertyId("rrd")
     final RrdField rrd = new RrdField("RRD");
 
+    /** The include collections. */
     @PropertyId("includeCollectionCollection") 
     final IncludeCollectionField includeCollections;
 

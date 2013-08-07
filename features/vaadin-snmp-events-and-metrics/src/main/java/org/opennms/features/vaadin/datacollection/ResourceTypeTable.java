@@ -27,10 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
@@ -41,58 +42,59 @@ import com.vaadin.ui.Table;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class ResourceTypeTable extends Table {
-
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "label", "name" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "Resource Type Label", "Resource Type Name" };
+public class ResourceTypeTable extends Table {
 
     /**
      * Instantiates a new resource type table.
      *
-     * @param group the OpenNMS Data Collection Group
+     * @param resourceTypes the resource types
      */
-    public ResourceTypeTable(final DatacollectionGroup group) {
+    public ResourceTypeTable(final List<ResourceType> resourceTypes) {
         BeanContainer<String,ResourceType> container = new BeanContainer<String,ResourceType>(ResourceType.class);
         container.setBeanIdProperty("name");
-        container.addAll(group.getResourceTypeCollection());
+        container.addAll(resourceTypes);
         setContainerDataSource(container);
         addStyleName("light");
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "label", "name" });
+        setColumnHeaders(new String[] { "Resource Type Label", "Resource Type Name" });
         setWidth("100%");
         setHeight("250px");
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    BeanItem<ResourceType> item = (BeanItem<ResourceType>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
-                }
-            }
-        });
     }
 
     /**
-     * Update external source.
+     * Gets the resource type.
      *
-     * @param item the item
-     */
-    public abstract void updateExternalSource(BeanItem<ResourceType> item);
-
-    /**
-     * Adds a resource type.
-     *
-     * @param resourceType the resource type
+     * @param resourceTypeId the resourceType ID (the Item ID associated with the container, in this case, the ResourceType's name)
+     * @return the resource type
      */
     @SuppressWarnings("unchecked")
-    public void addResourceType(ResourceType resourceType) {
-        ((BeanContainer<String,ResourceType>) getContainerDataSource()).addBean(resourceType);
+    public ResourceType getResourceType(Object resourceTypeId) {
+        return ((BeanItem<ResourceType>)getItem(resourceTypeId)).getBean();
+    }
+
+    /**
+     * Gets the container.
+     *
+     * @return the container
+     */
+    @SuppressWarnings("unchecked")
+    public BeanContainer<String, ResourceType> getContainer() {
+        return (BeanContainer<String, ResourceType>) getContainerDataSource();
+    }
+
+    /**
+     * Gets the resource type.
+     *
+     * @return the resource type
+     */
+    public List<ResourceType> getResourceTypes() {
+        List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
+        for (String itemId : getContainer().getItemIds()) {
+            resourceTypes.add(getContainer().getItem(itemId).getBean());
+        }
+        return resourceTypes;
     }
 
 }

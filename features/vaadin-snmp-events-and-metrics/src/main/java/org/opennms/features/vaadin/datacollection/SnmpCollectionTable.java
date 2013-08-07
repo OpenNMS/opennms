@@ -44,19 +44,13 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 public class SnmpCollectionTable extends Table {
 
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "name", "snmpStorageFlag" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "SNMP Collection Name", "SNMP Storage Flag" };
-
     /** The SNMP Collection Container. */
     private BeanContainer<String, SnmpCollection> container = new BeanContainer<String, SnmpCollection>(SnmpCollection.class);
 
     /**
      * Instantiates a new SNMP collection table.
      *
-     * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
+     * @param snmpCollections the snmp collections
      */
     public SnmpCollectionTable(final List<SnmpCollection> snmpCollections) {
         container.setBeanIdProperty("name");
@@ -65,8 +59,8 @@ public class SnmpCollectionTable extends Table {
         addStyleName("light");
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "name", "snmpStorageFlag" });
+        setColumnHeaders(new String[] { "SNMP Collection Name", "SNMP Storage Flag" });
         setWidth("100%");
         setHeight("250px");
     }

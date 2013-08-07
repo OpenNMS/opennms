@@ -28,15 +28,12 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -73,6 +70,8 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      * @param dataCollectionConfigDao the data collection configuration DAO
      */
     public IncludeCollectionField(final DataCollectionConfigDao dataCollectionConfigDao) {
+        setCaption("Include Collections");
+
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
@@ -104,9 +103,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
                 }
                 IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
                     @Override
-                    public void fieldChanged() {
-                        table.refreshRowCache();
-                    }
+                    public void fieldChanged() {}
                 };
                 getUI().addWindow(w);
             }
@@ -122,8 +119,6 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
         toolbar.addComponent(edit);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
-
-        setBuffered(true);
     }
 
     /* (non-Javadoc)
@@ -148,39 +143,27 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof List<?>) {
-            @SuppressWarnings("unchecked")
-            List<IncludeCollection> list = (List<IncludeCollection>) value;
-            List<IncludeCollectionWrapper> groups = new ArrayList<IncludeCollectionWrapper>();
-            for (IncludeCollection ic : list) {
-                groups.add(new IncludeCollectionWrapper(ic));
-            }
-            container.removeAllItems();
-            container.addAll(groups);
-            table.setPageLength(groups.size());
-        } else {
-            throw new ConversionException("Invalid type");
+    protected void setInternalValue(ArrayList<IncludeCollection> includeCollections) {
+        super.setInternalValue(includeCollections); // TODO Is this required ?
+        container.removeAllItems();
+        for (IncludeCollection ic : includeCollections) {
+            container.addBean(new IncludeCollectionWrapper(ic));
         }
-        super.setPropertyDataSource(newDataSource);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public ArrayList<IncludeCollection> getValue() {
-        ArrayList<IncludeCollection> list = new ArrayList<IncludeCollection>();
+    protected ArrayList<IncludeCollection> getInternalValue() {
+        ArrayList<IncludeCollection> beans = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
-            IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
-            list.add(obj.createIncludeCollection());
+            beans.add(container.getItem(itemId).getBean().createIncludeCollection());
         }
-        return list;
+        return beans;
     }
 
     /* (non-Javadoc)

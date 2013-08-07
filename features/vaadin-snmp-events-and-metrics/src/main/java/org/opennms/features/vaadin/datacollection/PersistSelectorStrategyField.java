@@ -31,9 +31,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -73,8 +71,11 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
 
     /**
      * Instantiates a new persist selector strategy field.
+     *
+     * @param caption the caption
      */
-    public PersistSelectorStrategyField() {
+    public PersistSelectorStrategyField(String caption) {
+        setCaption(caption);
         combo.addItem("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
         combo.addItem("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy"); // To avoid requires opennms-services
         combo.setNullSelectionAllowed(false);
@@ -129,35 +130,29 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof PersistenceSelectorStrategy) {
-            PersistenceSelectorStrategy dto = (PersistenceSelectorStrategy) value;
-            combo.setValue(dto.getClazz());
-            container.removeAllItems();
-            container.addAll(dto.getParameterCollection());
-            table.setPageLength(dto.getParameterCollection() == null ? 0 : dto.getParameterCollection().size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
+    protected void setInternalValue(PersistenceSelectorStrategy strategy) {
+        super.setInternalValue(strategy); // TODO Is this required ?
+        combo.setValue(strategy.getClazz());
+        container.removeAllItems();
+        container.addAll(strategy.getParameterCollection());
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public PersistenceSelectorStrategy getValue() {
-        PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();
-        dto.setClazz((String) combo.getValue());
-        for (Object itemId: container.getItemIds()) {
-            dto.getParameterCollection().add(container.getItem(itemId).getBean());
+    protected PersistenceSelectorStrategy getInternalValue() {
+        PersistenceSelectorStrategy strategy = new PersistenceSelectorStrategy();
+        if (combo.getValue() != null) {
+            strategy.setClazz((String) combo.getValue());
         }
-        return dto;
+        for (Object itemId: container.getItemIds()) {
+            strategy.addParameter(container.getItem(itemId).getBean());
+        }
+        return strategy;
     }
 
     /* (non-Javadoc)

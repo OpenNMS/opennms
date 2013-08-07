@@ -70,9 +70,11 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     /**
      * Instantiates a new collect field.
      *
+     * @param caption the caption
      * @param groups the available groups
      */
-    public CollectField(List<String> groups) {
+    public CollectField(String caption, List<String> groups) {
+        setCaption(caption);
         listField.setRows(10);
 
         for (String group : groups) {
@@ -83,8 +85,6 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         toolbar.addComponent(groupField);
         toolbar.addComponent(add);
         toolbar.setVisible(listField.isReadOnly());
-
-        setBuffered(true);
     }
 
     /* (non-Javadoc)

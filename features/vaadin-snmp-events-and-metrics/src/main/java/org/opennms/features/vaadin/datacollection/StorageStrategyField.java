@@ -33,9 +33,7 @@ import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -75,8 +73,11 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
 
     /**
      * Instantiates a new storage strategy field.
+     *
+     * @param caption the caption
      */
-    public StorageStrategyField() {
+    public StorageStrategyField(String caption) {
+        setCaption(caption);
         combo.addItem(IndexStorageStrategy.class.getName());
         combo.addItem(SiblingColumnStorageStrategy.class.getName());
         combo.setNullSelectionAllowed(false);
@@ -106,7 +107,6 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
-        setBuffered(true);
     }
 
     /* (non-Javadoc)
@@ -131,35 +131,29 @@ public class StorageStrategyField extends CustomField<StorageStrategy> implement
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof StorageStrategy) {
-            StorageStrategy dto = (StorageStrategy) value;
-            combo.setValue(dto.getClazz());
-            container.removeAllItems();
-            container.addAll(dto.getParameterCollection());
-            table.setPageLength(dto.getParameterCollection() == null ? 0 : dto.getParameterCollection().size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
+    protected void setInternalValue(StorageStrategy strategy) {
+        super.setInternalValue(strategy); // TODO Is this required ?
+        combo.setValue(strategy.getClazz());
+        container.removeAllItems();
+        container.addAll(strategy.getParameterCollection());
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public StorageStrategy getValue() {
-        StorageStrategy dto = new StorageStrategy();
-        dto.setClazz((String) combo.getValue());
-        for (Object itemId: container.getItemIds()) {
-            dto.getParameterCollection().add(container.getItem(itemId).getBean());
+    protected StorageStrategy getInternalValue() {
+        StorageStrategy strategy = new StorageStrategy();
+        if (combo.getValue() != null) {
+            strategy.setClazz((String) combo.getValue());
         }
-        return dto;
+        for (Object itemId: container.getItemIds()) {
+            strategy.addParameter(container.getItem(itemId).getBean());
+        }
+        return strategy;
     }
 
     /* (non-Javadoc)

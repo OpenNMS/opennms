@@ -147,6 +147,7 @@ public class SnmpCollectionPanel extends Panel {
                 snmpCollectionTable.getContainer().addBean(snmpCollection);
                 snmpCollectionTable.select(snmpCollection.getName());
                 snmpCollectionForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });
