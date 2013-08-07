@@ -204,8 +204,9 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 this.setVisible(false);
             }
             @Override
-            public void failure() {
-                Notification.show("Data collection group file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
+            public void failure(String reason) {
+                String msg = reason == null ? "." : ", because" + reason;
+                Notification.show("Data collection group file " + file.getName() + " cannot be saved" + msg, Notification.Type.ERROR_MESSAGE);
             }
         };
         panel.setCaption("Data Collection from " + file.getName());

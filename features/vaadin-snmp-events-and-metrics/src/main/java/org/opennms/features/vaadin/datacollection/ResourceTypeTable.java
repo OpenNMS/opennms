@@ -30,10 +30,9 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 
 /**
@@ -44,14 +43,15 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 public class ResourceTypeTable extends Table {
 
+    /** The Resource Type Container. */
+    private OnmsBeanContainer<ResourceType> container = new OnmsBeanContainer<ResourceType>(ResourceType.class);
+
     /**
      * Instantiates a new resource type table.
      *
      * @param resourceTypes the resource types
      */
     public ResourceTypeTable(final List<ResourceType> resourceTypes) {
-        BeanContainer<String,ResourceType> container = new BeanContainer<String,ResourceType>(ResourceType.class);
-        container.setBeanIdProperty("name");
         container.addAll(resourceTypes);
         setContainerDataSource(container);
         addStyleName("light");
@@ -66,22 +66,24 @@ public class ResourceTypeTable extends Table {
     /**
      * Gets the resource type.
      *
-     * @param resourceTypeId the resourceType ID (the Item ID associated with the container, in this case, the ResourceType's name)
+     * @param resourceTypeId the resourceType ID (the Item ID associated with the container)
      * @return the resource type
      */
-    @SuppressWarnings("unchecked")
     public ResourceType getResourceType(Object resourceTypeId) {
-        return ((BeanItem<ResourceType>)getItem(resourceTypeId)).getBean();
+        return container.getItem(resourceTypeId).getBean();
     }
 
     /**
-     * Gets the container.
+     * Adds the resource type.
      *
-     * @return the container
+     * @param resourceType the new resource type
+     * @return the resourceTypeId
      */
-    @SuppressWarnings("unchecked")
-    public BeanContainer<String, ResourceType> getContainer() {
-        return (BeanContainer<String, ResourceType>) getContainerDataSource();
+    public Object addResourceType(ResourceType resourceType) {
+        Object resourceTypeId = container.addOnmsBean(resourceType);
+        select(resourceTypeId);
+        return resourceTypeId;
+
     }
 
     /**
@@ -91,8 +93,8 @@ public class ResourceTypeTable extends Table {
      */
     public List<ResourceType> getResourceTypes() {
         List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
-        for (String itemId : getContainer().getItemIds()) {
-            resourceTypes.add(getContainer().getItem(itemId).getBean());
+        for (Object itemId : container.getItemIds()) {
+            resourceTypes.add(container.getItem(itemId).getBean());
         }
         return resourceTypes;
     }

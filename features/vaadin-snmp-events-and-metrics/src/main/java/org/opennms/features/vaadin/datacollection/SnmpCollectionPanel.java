@@ -107,12 +107,15 @@ public class SnmpCollectionPanel extends Panel {
             }
             @Override
             public void delete() {
-                SnmpCollection snmpCollection = snmpCollectionForm.getSnmpCollection();
-                logger.info("SNMP Collection " + snmpCollection.getName() + " has been removed.");
-                snmpCollectionTable.select(null);
-                snmpCollectionTable.removeItem(snmpCollection.getName());
-                snmpCollectionTable.refreshRowCache();
-                saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
+                Object snmpCollectionId = snmpCollectionTable.getValue();
+                if (snmpCollectionId != null) {
+                    SnmpCollection snmpCollection = snmpCollectionTable.getSnmpCollection(snmpCollectionId);
+                    logger.info("SNMP Collection " + snmpCollection.getName() + " has been removed.");
+                    snmpCollectionTable.select(null);
+                    snmpCollectionTable.removeItem(snmpCollectionId);
+                    snmpCollectionTable.refreshRowCache();
+                    saveSnmpCollections(snmpCollectionTable.getSnmpCollections(), logger);
+                }
             }
             @Override
             public void edit() {
@@ -143,9 +146,7 @@ public class SnmpCollectionPanel extends Panel {
         final Button add = new Button("Add SNMP Collection", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                SnmpCollection snmpCollection = snmpCollectionForm.createBasicSnmpCollection();
-                snmpCollectionTable.getContainer().addBean(snmpCollection);
-                snmpCollectionTable.select(snmpCollection.getName());
+                snmpCollectionTable.addSnmpCollection(snmpCollectionForm.createBasicSnmpCollection());
                 snmpCollectionForm.setReadOnly(false);
                 bottomToolbar.setReadOnly(false);
                 setIsNew(true);

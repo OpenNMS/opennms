@@ -25,40 +25,40 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.events;
-
-import java.util.ArrayList;
+package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
-import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.config.datacollection.Parameter;
+
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Container;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.AbstractSelect.NewItemHandler;
 
 /**
- * The Event's MaskElement Field.
+ * The Abstract Strategy Field.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
+public abstract class AbstractStrategyField<T> extends CustomField<T> implements Button.ClickListener {
+
+    /** The Combo Box. */
+    protected final ComboBox combo = new ComboBox("Class Name");
 
     /** The Container. */
-    private final OnmsBeanContainer<Maskelement> container = new OnmsBeanContainer<Maskelement>(Maskelement.class);
+    protected final OnmsBeanContainer<Parameter> container = new OnmsBeanContainer<Parameter>(Parameter.class);
 
     /** The Table. */
-    private final Table table = new Table(null, container);
+    private final Table table = new Table("Parameters", container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
@@ -70,32 +70,39 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     private final Button delete = new Button("Delete", this);
 
     /**
-     * Instantiates a new mask element field.
+     * Instantiates a new abstract strategy field.
      *
      * @param caption the caption
      */
-    public MaskElementField(String caption) {
+    public AbstractStrategyField(String caption, String[] strategies) {
         setCaption(caption);
+        for (String strategy : strategies) {
+            combo.addItem(strategy);
+        }
+        combo.setNullSelectionAllowed(false);
+        combo.setRequired(true);
+        combo.setImmediate(true);
+        combo.setNewItemsAllowed(true);
+        combo.setNewItemHandler(new NewItemHandler() {
+            @Override
+            public void addNewItem(String newItemCaption) {
+                if (!combo.containsId(newItemCaption)) {
+                    combo.addItem(newItemCaption);
+                    combo.setValue(newItemCaption);
+                }
+            }
+        });
+
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
-        table.setColumnHeader("mename", "Element Name");
-        table.setColumnHeader("mevalueCollection", "Element Values");
-        table.setColumnExpandRatio("mevalueCollection", 1);
+        table.setVisibleColumns(new Object[]{"key", "value"});
+        table.setColumnHeader("key", "Parameter Name");
+        table.setColumnHeader("value", "Parameter Value");
+        table.setColumnExpandRatio("value", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
         table.setWidth("100%");
-        table.setTableFieldFactory(new DefaultFieldFactory() {
-            @Override
-            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("mevalueCollection")) {
-                    final TextField field = new TextField();
-                    field.setConverter(new CsvListConverter());
-                    return field;
-                }
-                return super.createField(container, itemId, propertyId, uiContext);
-            }
-        });
+
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
@@ -106,7 +113,8 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     @Override
     public Component initContent() {
-        final VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(combo);
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
@@ -114,41 +122,11 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getType()
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ArrayList<Maskelement>> getType() {
-        return (Class<? extends ArrayList<Maskelement>>) new ArrayList<Maskelement>().getClass();
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
-     */
-    @Override
-    protected void setInternalValue(ArrayList<Maskelement> maskElements) {
-        super.setInternalValue(maskElements); // TODO Is this required ?
-        container.removeAllItems();
-        container.addAll(maskElements);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getInternalValue()
-     */
-    @Override
-    protected ArrayList<Maskelement> getInternalValue() {
-        ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
-    }
-
-    /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
      */
     @Override
     public void setReadOnly(boolean readOnly) {
+        combo.setReadOnly(readOnly);
         table.setEditable(!readOnly);
         toolbar.setVisible(!readOnly);
         super.setReadOnly(readOnly);
@@ -169,12 +147,26 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     }
 
     /**
+     * Sets the combo value.
+     *
+     * @param value the new combo value
+     */
+    protected void setComboValue(String value) {
+        boolean comboState = combo.isReadOnly();
+        combo.setReadOnly(false);
+        combo.setValue(value);
+        if (comboState)
+            combo.setReadOnly(true);
+    }
+
+    /**
      * Adds the handler.
      */
     private void addHandler() {
-        Maskelement e = new Maskelement();
-        e.setMename("??");
-        container.addOnmsBean(e);
+        Parameter p = new Parameter();
+        p.setKey("New Parameter");
+        p.setValue("New Value");
+        table.select(container.addOnmsBean(p));
     }
 
     /**
@@ -183,11 +175,11 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            Notification.show("Please select a Mask Element from the table.");
+            Notification.show("Please select a Parameter from the table.");
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected Mask Element field ?\nThis action cannot be undone.",
+                               "Do you really want to remove the selected parameter from the strategy?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

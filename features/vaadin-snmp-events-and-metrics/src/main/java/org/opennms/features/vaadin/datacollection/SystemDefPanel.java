@@ -108,11 +108,14 @@ public class SystemDefPanel extends Panel {
             }
             @Override
             public void delete() {
-                SystemDef systemDef = systemDefForm.getSystemDef();
-                logger.info("SNMP SystemDef " + systemDef.getName() + " has been removed.");
-                systemDefTable.select(null);
-                systemDefTable.removeItem(systemDef.getName());
-                systemDefTable.refreshRowCache();
+                Object systemDefId = systemDefTable.getValue();
+                if (systemDefId != null) {
+                    SystemDef systemDef = systemDefTable.getSystemDef(systemDefId);
+                    logger.info("SNMP SystemDef " + systemDef.getName() + " has been removed.");
+                    systemDefTable.select(null);
+                    systemDefTable.removeItem(systemDefId);
+                    systemDefTable.refreshRowCache();
+                }
             }
             @Override
             public void edit() {
@@ -143,9 +146,7 @@ public class SystemDefPanel extends Panel {
         final Button add = new Button("Add SNMP SystemDef", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                SystemDef systemDef = systemDefForm.createBasicSystemDef();
-                systemDefTable.getContainer().addBean(systemDef);
-                systemDefTable.select(systemDef.getName());
+                systemDefTable.addSystemDef(systemDefForm.createBasicSystemDef());
                 systemDefForm.setReadOnly(false);
                 bottomToolbar.setReadOnly(false);
                 setIsNew(true);

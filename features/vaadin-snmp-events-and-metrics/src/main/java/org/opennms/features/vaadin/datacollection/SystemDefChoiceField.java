@@ -109,8 +109,16 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
     @Override
     protected void setInternalValue(SystemDefChoice systemDef) {
         super.setInternalValue(systemDef); // TODO Is this required ?
+        boolean oidTypeState = oidType.isReadOnly();
+        oidType.setReadOnly(false);
         oidType.select(systemDef.getSysoid() == null ? MASK : SINGLE);
+        if (oidTypeState)
+            oidType.setReadOnly(true);
+        boolean oidValueState = oidValue.isReadOnly();
+        oidValue.setReadOnly(false);
         oidValue.setValue(systemDef.getSysoid() == null ? systemDef.getSysoidMask() : systemDef.getSysoid());
+        if (oidValueState)
+            oidValue.setReadOnly(true);
     }
 
     /* (non-Javadoc)

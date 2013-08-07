@@ -29,11 +29,11 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.ui.Alignment;
@@ -61,7 +61,7 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
     private final TextField step = new TextField("RRD Step (in seconds)");
 
     /** The Container. */
-    private final BeanItemContainer<RRA> container = new BeanItemContainer<RRA>(RRA.class);
+    private final OnmsBeanContainer<RRA> container = new OnmsBeanContainer<RRA>(RRA.class);
 
     /** The RRA Table. */
     private final Table table = new Table("RRA List", container);
@@ -170,13 +170,11 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
     @Override
     protected void setInternalValue(Rrd rrd) {
         super.setInternalValue(rrd); // TODO Is this required ?
-        if (step.isReadOnly()) { // TODO Otherwise, I'm getting ReadOnlyExceptions
-            step.setReadOnly(false);
-            step.setValue(rrd.getStep().toString());
+        boolean stepState = step.isReadOnly();
+        step.setReadOnly(false);
+        step.setValue(rrd.getStep().toString());
+        if (stepState)
             step.setReadOnly(true);
-        } else {
-            step.setValue(rrd.getStep().toString());
-        }
         ArrayList<RRA> rras = new ArrayList<RRA>();
         for (String rra : rrd.getRraCollection()) {
             rras.add(new RRA(rra));
@@ -231,7 +229,12 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
      * Adds the handler.
      */
     private void addHandler() {
-        container.addBean(new RRA());
+        RRA rra = new RRA();
+        rra.setCf("AVERAGE");
+        rra.setXff(0.5);
+        rra.setSteps(0);
+        rra.setRows(0);
+        container.addOnmsBean(rra);
     }
 
     /**

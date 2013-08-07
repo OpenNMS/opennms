@@ -29,11 +29,11 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -55,7 +55,7 @@ import com.vaadin.ui.VerticalLayout;
 public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements Button.ClickListener {
 
     /** The Container. */
-    private final BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
+    private final OnmsBeanContainer<Varbind> container = new OnmsBeanContainer<Varbind>(Varbind.class);
 
     /** The Table. */
     private final Table table = new Table(null, container);
@@ -76,7 +76,6 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
      */
     public MaskVarbindField(String caption) {
         setCaption(caption);
-        container.setBeanIdProperty("vbnumber");
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
         table.setColumnHeader("vbnumber", "Varbind Number");
@@ -174,8 +173,8 @@ public class MaskVarbindField extends CustomField<ArrayList<Varbind>> implements
      */
     private void addHandler() {
         Varbind v = new Varbind();
-        v.setVbnumber(1); // A non null value is required here.
-        container.addBean(v);
+        v.setVbnumber(0);
+        container.addOnmsBean(v);
     }
 
     /**

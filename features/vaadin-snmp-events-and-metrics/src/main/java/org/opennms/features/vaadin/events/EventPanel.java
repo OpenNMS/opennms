@@ -136,11 +136,14 @@ public abstract class EventPanel extends Panel {
             }
             @Override
             public void delete() {
-                org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
-                logger.info("Event " + event.getUei() + " has been removed.");
-                eventTable.select(null);
-                eventTable.removeItem(event.getUei());
-                eventTable.refreshRowCache();
+                Object eventId = eventTable.getValue();
+                if (eventId != null) {
+                    org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
+                    logger.info("Event " + event.getUei() + " has been removed.");
+                    eventTable.select(null);
+                    eventTable.removeItem(eventId);
+                    eventTable.refreshRowCache();
+                }
             }
             @Override
             public void edit() {
@@ -171,9 +174,7 @@ public abstract class EventPanel extends Panel {
         final Button add = new Button("Add Event", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                org.opennms.netmgt.xml.eventconf.Event e = eventForm.createBasicEvent();
-                eventTable.getContainer().addBean(e);
-                eventTable.select(e.getUei());
+                eventTable.addEvent(eventForm.createBasicEvent());
                 eventForm.setReadOnly(false);
                 bottomToolbar.setReadOnly(false);
                 setIsNew(true);
@@ -215,6 +216,8 @@ public abstract class EventPanel extends Panel {
 
     /**
      * Failure.
+     *
+     * @param reason the reason
      */
     public abstract void failure(String reason);
 

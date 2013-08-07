@@ -29,8 +29,8 @@ package org.opennms.features.vaadin.events;
 
 import java.util.List;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
+
 import com.vaadin.ui.Table;
 
 /**
@@ -42,8 +42,8 @@ import com.vaadin.ui.Table;
 public class EventTable extends Table {
 
     /** The Table Container for Events. */
-    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container =
-            new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
+    private final OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event> container =
+            new OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /**
      * Instantiates a new event table.
@@ -51,7 +51,6 @@ public class EventTable extends Table {
      * @param events the OpenNMS events
      */
     public EventTable(final List<org.opennms.netmgt.xml.eventconf.Event> events) {
-        container.setBeanIdProperty("uei");
         container.addAll(events);
         setContainerDataSource(container);
         setImmediate(true);
@@ -66,22 +65,22 @@ public class EventTable extends Table {
     /**
      * Gets the event.
      *
-     * @param eventId the event ID (the Item ID associated with the container, in this case, the Event's UEI)
+     * @param eventId the event ID (the Item ID associated with the container)
      * @return the event
      */
-    @SuppressWarnings("unchecked")
     public org.opennms.netmgt.xml.eventconf.Event getEvent(Object eventId) {
-        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>)getItem(eventId)).getBean();
+        return container.getItem(eventId).getBean();
     }
 
     /**
-     * Gets the event container.
+     * Adds the event.
      *
-     * @return the event container
+     * @param event the new event
+     * @return the eventId
      */
-    @SuppressWarnings("unchecked")
-    public BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> getContainer() {
-        return (BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>) getContainerDataSource();
+    public Object addEvent(org.opennms.netmgt.xml.eventconf.Event event) {
+        Object eventId = container.addOnmsBean(event);
+        select(eventId);
+        return eventId;
     }
-
 }

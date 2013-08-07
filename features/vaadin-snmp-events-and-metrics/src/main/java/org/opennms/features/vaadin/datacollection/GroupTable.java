@@ -30,10 +30,9 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Group;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 
 /**
@@ -44,14 +43,15 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 public class GroupTable extends Table {
 
+    /** The SNMP Group Container. */
+    private OnmsBeanContainer<Group> container = new OnmsBeanContainer<Group>(Group.class);
+
     /**
      * Instantiates a new group table.
      *
      * @param groups the groups
      */
     public GroupTable(final List<Group> groups) {
-        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
-        container.setBeanIdProperty("name");
         container.addAll(groups);
         setContainerDataSource(container);
         addStyleName("light");
@@ -62,8 +62,7 @@ public class GroupTable extends Table {
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<Group> item = getContainer().getItem(itemId);
-                return item.getBean().getMibObjCount();
+                return container.getItem(itemId).getBean().getMibObjCount();
             }
         });
         setVisibleColumns(new Object[] { "name", "count" });
@@ -73,22 +72,23 @@ public class GroupTable extends Table {
     /**
      * Gets the group.
      *
-     * @param groupId the group ID (the Item ID associated with the container, in this case, the Group's name)
+     * @param groupId the group ID (the Item ID associated with the container)
      * @return the event
      */
-    @SuppressWarnings("unchecked")
     public Group getGroup(Object groupId) {
-        return ((BeanItem<Group>)getItem(groupId)).getBean();
+        return container.getItem(groupId).getBean();
     }
 
     /**
-     * Gets the event container.
+     * Adds the group.
      *
-     * @return the event container
+     * @param group the new group
+     * @return the groupId
      */
-    @SuppressWarnings("unchecked")
-    public BeanContainer<String, Group> getContainer() {
-        return (BeanContainer<String, Group>) getContainerDataSource();
+    public Object addGroup(Group group) {
+        Object groupId = container.addOnmsBean(group);
+        select(groupId);
+        return groupId;
     }
 
     /**
@@ -98,8 +98,8 @@ public class GroupTable extends Table {
      */
     public List<Group> getGroups() {
         List<Group> groups = new ArrayList<Group>();
-        for (String itemId : getContainer().getItemIds()) {
-            groups.add(getContainer().getItem(itemId).getBean());
+        for (Object itemId : container.getItemIds()) {
+            groups.add(container.getItem(itemId).getBean());
         }
         return groups;
     }

@@ -30,10 +30,9 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 
 /**
@@ -45,7 +44,7 @@ import com.vaadin.ui.Table;
 public class SnmpCollectionTable extends Table {
 
     /** The SNMP Collection Container. */
-    private BeanContainer<String, SnmpCollection> container = new BeanContainer<String, SnmpCollection>(SnmpCollection.class);
+    private OnmsBeanContainer<SnmpCollection> container = new OnmsBeanContainer<SnmpCollection>(SnmpCollection.class);
 
     /**
      * Instantiates a new SNMP collection table.
@@ -53,7 +52,6 @@ public class SnmpCollectionTable extends Table {
      * @param snmpCollections the snmp collections
      */
     public SnmpCollectionTable(final List<SnmpCollection> snmpCollections) {
-        container.setBeanIdProperty("name");
         setSnmpCollections(snmpCollections);
         setContainerDataSource(container);
         addStyleName("light");
@@ -68,22 +66,23 @@ public class SnmpCollectionTable extends Table {
     /**
      * Gets the SNMP collection.
      *
-     * @param snmpCollectionId the SNMP collection ID (the Item ID associated with the container, in this case, the SnmpCollection's name)
+     * @param snmpCollectionId the SNMP collection ID (the Item ID associated with the container)
      * @return the SNMP collection
      */
-    @SuppressWarnings("unchecked")
     public SnmpCollection getSnmpCollection(Object snmpCollectionId) {
-        return ((BeanItem<SnmpCollection>)getItem(snmpCollectionId)).getBean();
+        return container.getItem(snmpCollectionId).getBean();
     }
 
     /**
-     * Gets the container.
+     * Adds the SNMP Collection.
      *
-     * @return the container
+     * @param snmpCollection the new SNMP Collection
+     * @return the snmpCollectionId
      */
-    @SuppressWarnings("unchecked")
-    public BeanContainer<String, SnmpCollection> getContainer() {
-        return (BeanContainer<String, SnmpCollection>) getContainerDataSource();
+    public Object addSnmpCollection(SnmpCollection snmpCollection) {
+        Object snmpCollectionId = container.addOnmsBean(snmpCollection);
+        select(snmpCollectionId);
+        return snmpCollectionId;
     }
 
     /**
@@ -93,8 +92,12 @@ public class SnmpCollectionTable extends Table {
      */
     public void setSnmpCollections(List<SnmpCollection> snmpCollections) {
         container.removeAllItems();
-        container.addAll(snmpCollections);
-        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
+        for (SnmpCollection sc : snmpCollections) {
+            // Ignoring an internal collection created to handle resource types only if exist
+            if (!sc.getName().equals("__resource_type_collection")) {
+                container.addOnmsBean(sc);
+            }
+        }
     }
 
     /**
@@ -104,7 +107,7 @@ public class SnmpCollectionTable extends Table {
      */
     public List<SnmpCollection> getSnmpCollections() {
         List<SnmpCollection> snmpCollections = new ArrayList<SnmpCollection>();
-        for (String itemId : container.getItemIds()) {
+        for (Object itemId : container.getItemIds()) {
             snmpCollections.add(container.getItem(itemId).getBean());
         }
         return snmpCollections;

@@ -98,11 +98,14 @@ public class ResourceTypePanel extends Panel {
             }
             @Override
             public void delete() {
-                ResourceType resourceType = resourceTypeForm.getResourceType();
-                logger.info("SNMP ResourceType " + resourceType.getName() + " has been removed.");
-                resourceTypeTable.select(null);
-                resourceTypeTable.removeItem(resourceType.getName());
-                resourceTypeTable.refreshRowCache();
+                Object resourceTypeId = resourceTypeTable.getValue();
+                if (resourceTypeId != null) {
+                    ResourceType resourceType = resourceTypeTable.getResourceType(resourceTypeId);
+                    logger.info("SNMP ResourceType " + resourceType.getName() + " has been removed.");
+                    resourceTypeTable.select(null);
+                    resourceTypeTable.removeItem(resourceTypeId);
+                    resourceTypeTable.refreshRowCache();
+                }
             }
             @Override
             public void edit() {
@@ -133,9 +136,7 @@ public class ResourceTypePanel extends Panel {
         final Button add = new Button("Add Resource Type", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                ResourceType resourceType = resourceTypeForm.createBasicResourceType();
-                resourceTypeTable.getContainer().addBean(resourceType);
-                resourceTypeTable.select(resourceType.getName());
+                resourceTypeTable.addResourceType(resourceTypeForm.createBasicResourceType());
                 resourceTypeForm.setReadOnly(false);
                 bottomToolbar.setReadOnly(false);
                 setIsNew(true);

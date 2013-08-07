@@ -47,14 +47,6 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class SnmpCollectionForm extends CustomComponent {
 
-    /** The Constant FORM_ITEMS. */
-    public static final String[] FORM_ITEMS = new String[] {
-        "name",
-        "snmpStorageFlag",
-        "rrd",
-        "includeCollectionCollection"
-    };
-
     /** The name. */
     @PropertyId("name")
     final TextField name = new TextField("SNMP Collection Name");

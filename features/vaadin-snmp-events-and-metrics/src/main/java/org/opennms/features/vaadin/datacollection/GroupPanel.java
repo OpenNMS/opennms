@@ -109,11 +109,14 @@ public class GroupPanel extends Panel {
             }
             @Override
             public void delete() {
-                Group group = groupForm.getGroup();
-                logger.info("SNMP Group " + group.getName() + " has been removed.");
-                groupTable.select(null);
-                groupTable.removeItem(group.getName());
-                groupTable.refreshRowCache();
+                Object groupId = groupTable.getValue();
+                if (groupId != null) {
+                    Group group = groupTable.getGroup(groupId);
+                    logger.info("SNMP Group " + group.getName() + " has been removed.");
+                    groupTable.select(null);
+                    groupTable.removeItem(groupId);
+                    groupTable.refreshRowCache();
+                }
             }
             @Override
             public void edit() {
@@ -144,9 +147,7 @@ public class GroupPanel extends Panel {
         final Button add = new Button("Add SNMP Group", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                Group group = groupForm.createBasicGroup();
-                groupTable.getContainer().addBean(group);
-                groupTable.select(group.getName());
+                groupTable.addGroup(groupForm.createBasicGroup());
                 groupForm.setReadOnly(false);
                 bottomToolbar.setReadOnly(false);
                 setIsNew(true);

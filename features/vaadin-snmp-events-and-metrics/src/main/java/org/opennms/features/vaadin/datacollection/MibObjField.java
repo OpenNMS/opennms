@@ -30,10 +30,10 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -51,11 +51,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 3665919460707298011L;
-
     /** The Container. */
-    private final BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+    private final OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
 
     /** The Table. */
     private final Table table = new Table(null, container);
@@ -75,7 +72,6 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @param resourceTypes the available resource types
      */
     public MibObjField(final List<String> resourceTypes) {
-        container.setBeanIdProperty("oid");
         table.addStyleName("light");
         table.setVisibleColumns(new Object[] { "oid", "instance", "alias", "type" });
         table.setColumnHeaders(new String[] { "OID", "Instance", "Alias", "Type" });
@@ -176,7 +172,7 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         obj.setInstance("0");
         obj.setType("gauge");
         obj.setAlias("test");
-        container.addBean(obj);
+        table.select(container.addOnmsBean(obj));
     }
 
     /**

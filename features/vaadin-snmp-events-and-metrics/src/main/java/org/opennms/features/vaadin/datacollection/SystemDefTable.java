@@ -30,10 +30,9 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 
 /**
@@ -44,14 +43,15 @@ import com.vaadin.ui.Table;
 @SuppressWarnings("serial")
 public class SystemDefTable extends Table {
 
+    /** The SNMP System Definitions Container. */
+    private OnmsBeanContainer<SystemDef> container = new OnmsBeanContainer<SystemDef>(SystemDef.class);
+
     /**
      * Instantiates a new system definition table.
      *
      * @param systemDefs the system definitions
      */
     public SystemDefTable(final List<SystemDef> systemDefs) {
-        BeanContainer<String,SystemDef> container = new BeanContainer<String,SystemDef>(SystemDef.class);
-        container.setBeanIdProperty("name");
         container.addAll(systemDefs);
         setContainerDataSource(container);
         addStyleName("light");
@@ -61,18 +61,15 @@ public class SystemDefTable extends Table {
         setHeight("250px");
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
-            @SuppressWarnings("unchecked")
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
-                return item.getBean().getCollect() == null ? 0 : item.getBean().getCollect().getIncludeGroupCount();
+                final SystemDef s = container.getItem(itemId).getBean();
+                return s.getCollect() == null ? 0 : s.getCollect().getIncludeGroupCount();
             }
         });
         addGeneratedColumn("oid", new ColumnGenerator() {
             @Override
-            @SuppressWarnings("unchecked")
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
-                final SystemDef s = item.getBean();
+                final SystemDef s = container.getItem(itemId).getBean();
                 final String value = s.getSysoid() == null ? s.getSysoidMask() : s.getSysoid();
                 return value == null ? "N/A" : value;
             }
@@ -84,22 +81,23 @@ public class SystemDefTable extends Table {
     /**
      * Gets the systemDef.
      *
-     * @param systemDefId the systemDef ID (the Item ID associated with the container, in this case, the SystemDef's name)
+     * @param systemDefId the systemDef ID (the Item ID associated with the container)
      * @return the event
      */
-    @SuppressWarnings("unchecked")
     public SystemDef getSystemDef(Object systemDefId) {
-        return ((BeanItem<SystemDef>)getItem(systemDefId)).getBean();
+        return container.getItem(systemDefId).getBean();
     }
 
     /**
-     * Gets the event container.
+     * Adds the system definition.
      *
-     * @return the event container
+     * @param systemDef the new system definition
+     * @return the systemDefId
      */
-    @SuppressWarnings("unchecked")
-    public BeanContainer<String, SystemDef> getContainer() {
-        return (BeanContainer<String, SystemDef>) getContainerDataSource();
+    public Object addSystemDef(SystemDef systemDef) {
+        Object systemDefId = container.addOnmsBean(systemDef);
+        select(systemDefId);
+        return systemDefId;
     }
 
     /**
@@ -109,8 +107,8 @@ public class SystemDefTable extends Table {
      */
     public List<SystemDef> getSystemDefs() {
         List<SystemDef> systemDefs = new ArrayList<SystemDef>();
-        for (String itemId : getContainer().getItemIds()) {
-            systemDefs.add(getContainer().getItem(itemId).getBean());
+        for (Object itemId : container.getItemIds()) {
+            systemDefs.add(container.getItem(itemId).getBean());
         }
         return systemDefs;
     }
