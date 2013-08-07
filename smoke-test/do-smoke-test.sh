@@ -87,6 +87,10 @@ clean_yum() {
 reset_database() {
 	banner "Resetting OpenNMS Database"
 
+	# easy way to make sure no one is holding on to any pg sockets
+	do_log "/etc/init.d/postgresql restart"
+	/etc/init.d/postgresql restart
+
 	do_log "dropdb -U postgres opennms"
 	dropdb -U postgres opennms
 }
@@ -107,18 +111,23 @@ reset_opennms() {
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
 
-	do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
-	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
-
-	do_log "yum -y install $PACKAGES"
-	yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+	if [ `ls "$ME"/../target/rpms/*.rpm | wc -l` -gt 0 ]; then
+		do_log "rpm -Uvh $ME/../target/rpms/*.rpm"
+		rpm -Uvh "$ME"/../target/rpms/*.rpm
+	else
+		do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
+		rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
+	
+		do_log "yum -y install $PACKAGES"
+		yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+	fi
 }
 
 get_source() {
 	banner "Getting OpenNMS Source"
 
 	do_log "rsync source from $ME to $SOURCEDIR"
-	rsync -avr --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
+	rsync -ar --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
 
 	pushd "$SOURCEDIR"
 		do_log "cleaning git"
