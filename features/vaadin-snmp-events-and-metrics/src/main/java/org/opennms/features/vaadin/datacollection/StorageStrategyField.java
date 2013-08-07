@@ -45,6 +45,7 @@ public class StorageStrategyField extends AbstractStrategyField<StorageStrategy>
      * @param caption the caption
      */
     public StorageStrategyField(String caption) {
+        // If the strategy from the XML is different, it will be added automatically to the combo-box
         super(caption, new String[] {
                 IndexStorageStrategy.class.getName(),
                 SiblingColumnStorageStrategy.class.getName()
