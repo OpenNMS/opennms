@@ -29,8 +29,6 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
-import org.opennms.features.vaadin.api.ProxyField;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -72,7 +70,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setRequired(true);
             field.setImmediate(true);
             field.addValidator(new RegexpValidator("^\\.[.\\d]+$", "Invalid OID {0}"));
-            return new ProxyField<String>(field);
+            return field;
         }
         if (propertyId.equals("instance")) {
             final ComboBox field = new ComboBox();
@@ -103,7 +101,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setRequired(true);
             field.setImmediate(true);
             field.addValidator(new StringLengthValidator("Invalid alias. It should not contain more than 19 characters.", 1, 19, false));
-            return new ProxyField<String>(field);
+            return field;
         }
         if (propertyId.equals("type")) {
             final TextField field = new TextField();
@@ -112,7 +110,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setImmediate(true);
             field.addValidator(new RegexpValidator("^(?i)(counter|gauge|timeticks|integer|octetstring|string)?\\d*$", // Based on NumericAttributeType and StringAttributeType
                     "Invalid type {0}. Valid types are: counter, gauge, timeticks, integer, octetstring, string"));
-            return new ProxyField<String>(field);
+            return field;
         }
         return null;
     }

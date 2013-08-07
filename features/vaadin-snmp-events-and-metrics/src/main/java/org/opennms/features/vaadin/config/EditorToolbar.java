@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.events;
+package org.opennms.features.vaadin.config;
 
 import org.vaadin.dialogs.ConfirmDialog;
 

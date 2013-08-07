@@ -66,8 +66,11 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
 
     /**
      * Instantiates a new system definition choice field.
+     *
+     * @param caption the caption
      */
-    public SystemDefChoiceField() {
+    public SystemDefChoiceField(String caption) {
+        setCaption(caption);
         oidType.setNullSelectionAllowed(false);
         oidType.select("Single");
 
@@ -76,8 +79,6 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         oidValue.setRequired(true);
         oidValue.setImmediate(true);
         oidValue.addValidator(new RegexpValidator("^\\.[.\\d]+$", "Invalid OID {0}"));
-
-        setBuffered(true);
     }
 
     /* (non-Javadoc)
@@ -103,6 +104,39 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
     }
 
     /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
+     */
+    @Override
+    protected void setInternalValue(SystemDefChoice systemDef) {
+        super.setInternalValue(systemDef); // TODO Is this required ?
+        boolean oidTypeState = oidType.isReadOnly();
+        oidType.setReadOnly(false);
+        oidType.select(systemDef.getSysoid() == null ? MASK : SINGLE);
+        if (oidTypeState)
+            oidType.setReadOnly(true);
+        boolean oidValueState = oidValue.isReadOnly();
+        oidValue.setReadOnly(false);
+        oidValue.setValue(systemDef.getSysoid() == null ? systemDef.getSysoidMask() : systemDef.getSysoid());
+        if (oidValueState)
+            oidValue.setReadOnly(true);
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
+     */
+    @Override
+    protected SystemDefChoice getInternalValue() {
+        SystemDefChoice systemDef = new SystemDefChoice();
+        String type = (String) oidType.getValue();
+        if (type.equals(SINGLE)) {
+            systemDef.setSysoid((String) oidValue.getValue());
+        } else {
+            systemDef.setSysoidMask((String) oidValue.getValue());
+        }
+        return systemDef;
+    }
+
+    /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
      */
     @Override
@@ -117,21 +151,6 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
             throw new ConversionException("Invalid type");
         }
         super.setPropertyDataSource(newDataSource);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
-     */
-    @Override
-    public SystemDefChoice getValue() {
-        SystemDefChoice dto = new SystemDefChoice();
-        String type = (String) oidType.getValue();
-        if (type.equals(SINGLE)) {
-            dto.setSysoid((String) oidValue.getValue());
-        } else {
-            dto.setSysoidMask((String) oidValue.getValue());
-        }
-        return dto;
     }
 
     /* (non-Javadoc)

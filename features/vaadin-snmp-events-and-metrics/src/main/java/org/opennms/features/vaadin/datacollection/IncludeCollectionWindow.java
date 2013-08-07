@@ -29,20 +29,19 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.FormFieldFactory;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -54,9 +53,12 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public abstract class IncludeCollectionWindow extends Window implements Button.ClickListener {
 
-    /** The Include Field Form. */
-    private final Form form = new Form();
-
+    /** The form layout. */
+    private final FormLayout formLayout = new FormLayout();
+    
+    /** The form editor. */
+    private final FieldGroup formEditor = new FieldGroup();
+    
     /** The OK button. */
     private final Button okButton = new Button("Update", this);
 
@@ -71,7 +73,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
      * @param wrapper the current selected value
      */
     public IncludeCollectionWindow(final DataCollectionConfigDao dataCollectionConfigDao,
-            final BeanItemContainer<IncludeCollectionWrapper> container,
+            final OnmsBeanContainer<IncludeCollectionWrapper> container,
             final IncludeCollectionWrapper wrapper) {
 
         setCaption("Include SystemDef/DataCollectionGroup");
@@ -81,10 +83,6 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         setResizable(false);
         setClosable(false);
         addStyleName("dialog");
-
-        form.setImmediate(true);
-        form.setWidth("100%");
-        form.setBuffered(true);
 
         final ComboBox valueField = new ComboBox("Value");
         valueField.setEnabled(false);
@@ -112,7 +110,8 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                     : dataCollectionConfigDao.getAvailableDataCollectionGroups();
                 // Remove already selected
-                for (IncludeCollectionWrapper obj : container.getItemIds()) {
+                for (Object itemId : container.getItemIds()) {
+                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
                     if (obj.getType().equals(selected)) {
                         values.remove(obj.getValue());
                     }
@@ -129,29 +128,25 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
             }
         });
 
-        form.setFormFieldFactory(new FormFieldFactory() {
-            @Override
-            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
-                if (propertyId.equals("type"))
-                    return typeField;
-                if (propertyId.equals("value"))
-                    return valueField;
-                return null;
-            }
-        });
+        formLayout.setImmediate(true);
+        formLayout.setWidth("100%");
+        formLayout.addComponent(typeField);
+        formLayout.addComponent(valueField);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
+        formEditor.bind(typeField, "type");
+        formEditor.bind(valueField, "value");
+        formEditor.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(wrapper));
+
+        final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(form);
+        final VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(formLayout);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
         layout.setMargin(true);
         setContent(layout);
-
-        form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(wrapper));
     }
 
     /* (non-Javadoc)
@@ -161,8 +156,12 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();
         if (btn == okButton) {
-            form.commit();
-            fieldChanged();
+            try {
+                formEditor.commit();
+                fieldChanged();
+            } catch (CommitException e) {
+                Notification.show("Can't save include collection because " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            }
         }
         close();
     }

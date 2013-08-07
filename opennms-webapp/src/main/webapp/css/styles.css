@@ -528,7 +528,7 @@
 /* --------------------------------------------------
     :: Pagination
     -------------------------------------------------- */
-	pagination {
+	.pagination {
 	        height: 1%; /* IE tweak (holly hack) */
 	        width: auto;
 	        text-align: right;
@@ -727,7 +727,15 @@
 #notificationOn{
 	color: #73d216;
 }
-	
+
+/* --------------------------------------------------
+    :: Style was marked as deprecated and should be
+    -------------------------------------------------- */
+#graph-results
+{
+	text-align: center;
+}
+
 /* --------------------------------------------------
     :: Deprecated Styles, Please do not uncomment, these
        will eventually be removed after testing.

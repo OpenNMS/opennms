@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
 
-import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
@@ -51,7 +50,7 @@ public class SnmpCollectionAdminApplication extends UI {
     /**
      * Sets the OpenNMS Data Collection Configuration DAO.
      *
-     * @param dataCollectionDao the new data collection DAO
+     * @param dataCollectionDao the new OpenNMS data collection DAO
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;
@@ -65,15 +64,11 @@ public class SnmpCollectionAdminApplication extends UI {
         if (dataCollectionDao == null)
             throw new RuntimeException("dataCollectionDao cannot be null.");
 
-        Logger logger = new SimpleLogger();
-        SnmpCollectionPanel scAdmin = new SnmpCollectionPanel(dataCollectionDao, logger);
-        DataCollectionGroupAdminPanel dcgAdmin = new DataCollectionGroupAdminPanel(dataCollectionDao);
-
         TabSheet tabs = new TabSheet();
         tabs.addStyleName("light");
         tabs.setSizeFull();
-        tabs.addTab(scAdmin);
-        tabs.addTab(dcgAdmin);
+        tabs.addTab(new SnmpCollectionPanel(dataCollectionDao, new SimpleLogger()));
+        tabs.addTab(new DataCollectionGroupAdminPanel(dataCollectionDao));
 
         setContent(tabs);
     }

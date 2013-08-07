@@ -35,6 +35,7 @@ import java.io.StringWriter;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
+import org.opennms.features.vaadin.config.EditorToolbar;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -113,7 +114,7 @@ public abstract class EventPanel extends Panel {
             }
         }));
 
-        final EventTable eventTable = new EventTable(events);
+        final EventTable eventTable = new EventTable(events.getEventCollection());
 
         final EventForm eventForm = new EventForm();
         eventForm.setVisible(false);
@@ -126,6 +127,7 @@ public abstract class EventPanel extends Panel {
                 try {
                     eventForm.getFieldGroup().commit();
                     eventForm.setReadOnly(true);
+                    eventTable.refreshRowCache();
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
@@ -134,10 +136,14 @@ public abstract class EventPanel extends Panel {
             }
             @Override
             public void delete() {
-                org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
-                logger.info("Event " + event.getUei() + " has been removed.");
-                eventTable.select(null);
-                eventTable.removeItem(event.getUei());
+                Object eventId = eventTable.getValue();
+                if (eventId != null) {
+                    org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
+                    logger.info("Event " + event.getUei() + " has been removed.");
+                    eventTable.select(null);
+                    eventTable.removeItem(eventId);
+                    eventTable.refreshRowCache();
+                }
             }
             @Override
             public void edit() {
@@ -168,15 +174,14 @@ public abstract class EventPanel extends Panel {
         final Button add = new Button("Add Event", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                org.opennms.netmgt.xml.eventconf.Event e = eventForm.createBasicEvent();
-                eventTable.getContainer().addBean(e);
-                eventTable.select(e.getUei());
+                eventTable.addEvent(eventForm.createBasicEvent());
                 eventForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });
 
-        VerticalLayout mainLayout = new VerticalLayout();
+        final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         mainLayout.addComponent(topToolbar);
@@ -211,6 +216,8 @@ public abstract class EventPanel extends Panel {
 
     /**
      * Failure.
+     *
+     * @param reason the reason
      */
     public abstract void failure(String reason);
 
@@ -307,11 +314,13 @@ public abstract class EventPanel extends Panel {
             logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
             logger.error(e.getClass() + ": " + (e.getMessage() == null ? "[No Details]" : e.getMessage()));
-            logger.error(sw.toString());
+            if (e.getMessage() == null) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                logger.error(sw.toString());
+            }
             failure(e.getMessage());
         }
     }

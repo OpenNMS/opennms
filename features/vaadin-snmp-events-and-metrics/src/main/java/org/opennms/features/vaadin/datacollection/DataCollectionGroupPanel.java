@@ -30,6 +30,8 @@ package org.opennms.features.vaadin.datacollection;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -153,7 +155,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         dto.setName((String) groupName.getValue());
         dto.getGroupCollection().addAll(groups.getGroups());
         dto.getResourceTypeCollection().addAll(resourceTypes.getResourceTypes());
-        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefinitions());
+        dto.getSystemDefCollection().addAll(systemDefs.getSystemDefs());
         return dto;
     }
 
@@ -169,8 +171,10 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
 
     /**
      * Failure.
+     *
+     * @param reason the reason
      */
-    public abstract void failure();
+    public abstract void failure(String reason);
 
     /**
      * Process data collection.
@@ -226,8 +230,14 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             }
             success();
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            failure();
+            logger.error(e.getClass() + ": " + (e.getMessage() == null ? "[No Details]" : e.getMessage()));
+            if (e.getMessage() == null) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                logger.error(sw.toString());
+            }
+            failure(e.getMessage());
         }
     }
 }

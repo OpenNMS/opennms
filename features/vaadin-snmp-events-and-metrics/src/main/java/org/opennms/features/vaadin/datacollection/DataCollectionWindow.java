@@ -90,7 +90,7 @@ public class DataCollectionWindow extends Window {
                 });
             }
             @Override
-            public void failure() {
+            public void failure(String reason) {
                 close();
             }
         });
