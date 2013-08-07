@@ -38,10 +38,14 @@ import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
+    protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
 
     @Before
@@ -110,13 +114,44 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
     }
     
-    protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
-        final long timeoutTime = System.currentTimeMillis() + timeout;
-        while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
-            Thread.sleep(timeout / 10);
-        }
-        assertTrue(selenium.isTextPresent(expectedText));
+    protected void waitForText(final String expectedText) throws InterruptedException {
+        waitForText(expectedText, LOAD_TIMEOUT);
     }
+
+    protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
+        if (!selenium.isTextPresent(expectedText)) {
+            final long timeoutTime = System.currentTimeMillis() + timeout;
+            while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+                Thread.sleep(timeout / 10);
+            }
+        }
+        try {
+            assertTrue(selenium.isTextPresent(expectedText));
+        } catch (final AssertionError e) {
+            LOG.error("Failed to find text {} after {} milliseconds.", expectedText, timeout);
+            LOG.error("Page body was:\n{}", selenium.getBodyText());
+        }
+    }
+
+    protected void waitForElement(final String specification) throws InterruptedException {
+        waitForElement(specification, LOAD_TIMEOUT);
+    }
+
+    protected void waitForElement(final String specification, final long timeout) throws InterruptedException {
+        if (!selenium.isElementPresent(specification)) {
+            final long timeoutTime = System.currentTimeMillis() + timeout;
+            while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
+                Thread.sleep(timeout / 10);
+            }
+        }
+        try {
+            assertTrue(selenium.isElementPresent(specification));
+        } catch (final AssertionError e) {
+            LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
+            LOG.error("Page body was:\n{}", selenium.getBodyText());
+        }
+    }
+
 
     protected void handleVaadinErrorButtons() throws InterruptedException {
         if (selenium.isAlertPresent()) {
