@@ -95,9 +95,13 @@ public class SnmpCollectionPanel extends VerticalLayout {
             @Override
             public void deleteSnmpCollection(SnmpCollection snmpCollection) {
                 logger.info("SNMP Collection " + snmpCollection.getName() + " has been removed.");
-                table.removeItem(snmpCollection.getName());
-                table.refreshRowCache();
-                saveSnmpCollections(dataCollectionConfigDao, logger);
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.select(null);
+                    table.removeItem(itemId);
+                    table.refreshRowCache();
+                    saveSnmpCollections(dataCollectionConfigDao, logger);
+                }
             }
         };
 

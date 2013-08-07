@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
@@ -55,7 +55,7 @@ public abstract class SnmpCollectionTable extends Table {
     private final DataCollectionConfigDao dataCollectionConfigDao;
 
     /** The SNMP Collection Container. */
-    private BeanContainer<String,SnmpCollection> container = new BeanContainer<String,SnmpCollection>(SnmpCollection.class);
+    private OnmsBeanContainer<SnmpCollection> container = new OnmsBeanContainer<SnmpCollection>(SnmpCollection.class);
 
     /**
      * Instantiates a new SNMP collection table.
@@ -99,7 +99,7 @@ public abstract class SnmpCollectionTable extends Table {
      */
     @SuppressWarnings("unchecked")
     public void addSnmpCollection(SnmpCollection snmpCollection) {
-        ((BeanContainer<String,SnmpCollection>) getContainerDataSource()).addBean(snmpCollection);
+        ((OnmsBeanContainer<SnmpCollection>) getContainerDataSource()).addOnmsBean(snmpCollection);
     }
 
     /**
@@ -108,8 +108,12 @@ public abstract class SnmpCollectionTable extends Table {
     public void refreshSnmpCollections() {
         final DatacollectionConfig dataCollectionConfig = dataCollectionConfigDao.getRootDataCollection();
         container.removeAllItems();
-        container.addAll(dataCollectionConfig.getSnmpCollectionCollection());
-        container.removeItem("__resource_type_collection"); // This is a protected collection and should not be edited.
+        for (SnmpCollection sc : dataCollectionConfig.getSnmpCollectionCollection()) {
+            // Ignoring an internal collection created to handle resource types only if exist
+            if (!sc.getName().equals("__resource_type_collection")) {
+                container.addOnmsBean(sc);
+            }
+        }
     }
 
 }

@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.DoubleValidator;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.ui.Alignment;
@@ -69,7 +69,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
     private Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<RRA> container = new BeanItemContainer<RRA>(RRA.class);
+    private OnmsBeanContainer<RRA> container = new OnmsBeanContainer<RRA>(RRA.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -119,6 +119,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     final TextField field = new TextField();
                     field.setImmediate(true);
                     field.setRequired(true);
+                    field.setNullRepresentation("");
                     field.setNullSettingAllowed(false);
                     field.addValidator(new IntegerValidator("Invalid integer {0}"));
                     return field;
@@ -127,6 +128,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     final TextField field = new TextField();
                     field.setImmediate(true);
                     field.setRequired(true);
+                    field.setNullRepresentation("");
                     field.setNullSettingAllowed(false);
                     field.addValidator(new DoubleValidator("Invalid double {0}"));
                     return field;
@@ -181,7 +183,9 @@ public class RrdField extends CustomField implements Button.ClickListener {
             container.removeAllItems();
             List<RRA> rras = new ArrayList<RRA>();
             for (String rra : dto.getRraCollection()) {
-                rras.add(new RRA(rra));
+                try {
+                    rras.add(new RRA(rra));
+                } catch (Exception e) {} // Silently discard any bad RRAs.
             }
             container.addAll(rras);
             table.setPageLength(dto.getRraCount());
@@ -232,7 +236,13 @@ public class RrdField extends CustomField implements Button.ClickListener {
      * Adds the handler.
      */
     private void addHandler() {
-        container.addBean(new RRA());
+        RRA rra = new RRA();
+        rra.setCf("AVERAGE");
+        rra.setXff(0.5);
+        rra.setSteps(0);
+        rra.setRows(0);
+        container.addOnmsBean(rra);
+        table.setCurrentPageFirstItemIndex(container.size());
     }
 
     /**

@@ -87,8 +87,12 @@ public class SystemDefPanel extends VerticalLayout {
             @Override
             public void deleteSystemDef(SystemDef systemDef) {
                 logger.info("System Definition " + systemDef.getName() + " has been removed.");
-                table.removeItem(systemDef.getName());
-                table.refreshRowCache();
+                Object itemId = table.getValue();
+                if (itemId != null) {
+                    table.select(null);
+                    table.removeItem(itemId);
+                    table.refreshRowCache();
+                }
             }
         };
 

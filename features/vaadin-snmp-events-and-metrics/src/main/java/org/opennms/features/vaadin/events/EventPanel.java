@@ -171,9 +171,12 @@ public abstract class EventPanel extends Panel {
             }
             public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been removed.");
-                eventTable.select(null);
-                eventTable.removeItem(event.getUei());
-                eventTable.refreshRowCache();
+                Object itemId = eventTable.getValue();
+                if (itemId != null) {
+                    eventTable.select(null);
+                    eventTable.removeItem(itemId);
+                    eventTable.refreshRowCache();
+                }
             }
         };
         mainLayout.addComponent(eventForm);

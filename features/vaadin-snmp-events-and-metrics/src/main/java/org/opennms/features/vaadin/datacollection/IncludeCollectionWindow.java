@@ -29,12 +29,12 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -72,7 +72,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
      * @param wrapper the current selected value
      */
     public IncludeCollectionWindow(final DataCollectionConfigDao dataCollectionConfigDao,
-            final BeanItemContainer<IncludeCollectionWrapper> container,
+            final OnmsBeanContainer<IncludeCollectionWrapper> container,
             final IncludeCollectionWrapper wrapper) {
 
         setCaption("Include SystemDef/DataCollectionGroup");
@@ -114,7 +114,8 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                     : dataCollectionConfigDao.getAvailableDataCollectionGroups();
                 // Remove already selected
-                for (IncludeCollectionWrapper obj : container.getItemIds()) {
+                for (Object itemId : container.getItemIds()) {
+                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
                     if (obj.getType().equals(selected)) {
                         values.remove(obj.getValue());
                     }

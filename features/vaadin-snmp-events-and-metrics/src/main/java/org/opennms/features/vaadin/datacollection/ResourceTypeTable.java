@@ -27,11 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
@@ -56,8 +56,7 @@ public abstract class ResourceTypeTable extends Table {
      * @param group the OpenNMS Data Collection Group
      */
     public ResourceTypeTable(final DatacollectionGroup group) {
-        BeanContainer<String,ResourceType> container = new BeanContainer<String,ResourceType>(ResourceType.class);
-        container.setBeanIdProperty("name");
+        OnmsBeanContainer<ResourceType> container = new OnmsBeanContainer<ResourceType>(ResourceType.class);
         container.addAll(group.getResourceTypeCollection());
         setContainerDataSource(container);
         setStyleName(Runo.TABLE_SMALL);
@@ -92,7 +91,7 @@ public abstract class ResourceTypeTable extends Table {
      */
     @SuppressWarnings("unchecked")
     public void addResourceType(ResourceType resourceType) {
-        ((BeanContainer<String,ResourceType>) getContainerDataSource()).addBean(resourceType);
+        ((OnmsBeanContainer<ResourceType>) getContainerDataSource()).addOnmsBean(resourceType);
     }
 
 }

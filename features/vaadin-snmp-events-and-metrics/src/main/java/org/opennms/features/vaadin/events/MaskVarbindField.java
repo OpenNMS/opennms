@@ -30,13 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbind;
-
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,7 +62,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
     private Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
+    private OnmsBeanContainer<Varbind> container = new OnmsBeanContainer<Varbind>(Varbind.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -78,7 +77,6 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * Instantiates a new mask varbind field.
      */
     public MaskVarbindField() {
-        container.setBeanIdProperty("vbnumber");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
@@ -177,7 +175,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
     private void addHandler() {
         Varbind v = new Varbind();
         v.setVbnumber(1); // A non null value is required here.
-        container.addBean(v);
+        container.addOnmsBean(v);
     }
 
     /**

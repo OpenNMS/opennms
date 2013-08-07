@@ -30,12 +30,12 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -62,7 +62,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
     private Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
+    private OnmsBeanContainer<Maskelement> container = new OnmsBeanContainer<Maskelement>(Maskelement.class);
 
     /** The Toolbar. */
     private HorizontalLayout toolbar = new HorizontalLayout();
@@ -77,7 +77,6 @@ public class MaskElementField extends CustomField implements Button.ClickListene
      * Instantiates a new mask element field.
      */
     public MaskElementField() {
-        container.setBeanIdProperty("mename");
         table.setContainerDataSource(container);
         table.setStyleName(Runo.TABLE_SMALL);
         table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
@@ -176,7 +175,7 @@ public class MaskElementField extends CustomField implements Button.ClickListene
     private void addHandler() {
         Maskelement e = new Maskelement();
         e.setMename("??"); // A non null value is required here.
-        container.addBean(e);
+        container.addOnmsBean(e);
     }
 
     /**

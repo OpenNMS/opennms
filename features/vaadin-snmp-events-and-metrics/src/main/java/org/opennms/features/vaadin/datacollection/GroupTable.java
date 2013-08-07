@@ -27,11 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.Runo;
@@ -56,7 +56,7 @@ public abstract class GroupTable extends Table {
      * @param source the OpenNMS Data Collection Group
      */
     public GroupTable(final DatacollectionGroup source) {
-        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
+        OnmsBeanContainer<Group> container = new OnmsBeanContainer<Group>(Group.class);
         container.setBeanIdProperty("name");
         container.addAll(source.getGroupCollection());
         setContainerDataSource(container);
@@ -100,7 +100,7 @@ public abstract class GroupTable extends Table {
      */
     @SuppressWarnings("unchecked")
     public void addGroup(Group group) {
-        ((BeanContainer<String,Group>) getContainerDataSource()).addBean(group);
+        ((OnmsBeanContainer<Group>) getContainerDataSource()).addOnmsBean(group);
     }
 
 }
