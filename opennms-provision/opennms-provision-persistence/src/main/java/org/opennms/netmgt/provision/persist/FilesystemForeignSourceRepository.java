@@ -344,11 +344,13 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_writeLock.lock();
         try {
             LOG.debug("Deleting requisition {} from {} (if necessary)", requisition.getForeignSource(), m_requisitionPath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("Unable to delete requisition file " + fileToDelete);
                 }
+            } else {
+                LogUtils.debugf(this, "File %s does not exist.", fileToDelete);
             }
         } finally {
             m_writeLock.unlock();
