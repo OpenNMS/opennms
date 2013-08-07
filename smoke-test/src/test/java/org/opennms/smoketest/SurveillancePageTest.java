@@ -36,15 +36,14 @@ public class SurveillancePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        selenium.click("link=Surveillance");
-        waitForPageToLoad();
+        clickAndWait("link=Surveillance");
     }
 
     @Test
     public void testSurveillancePage() throws Exception {
-        waitForText("Surveillance View:", LOAD_TIMEOUT);
-        assertTrue(selenium.isTextPresent("Routers"));
-        assertTrue(selenium.isTextPresent("Nodes Down"));
-        assertTrue(selenium.isTextPresent("DEV"));
+        waitForText("Surveillance View:");
+        waitForText("Routers");
+        waitForText("Nodes Down");
+        waitForText("DEV");
     }
 }

@@ -36,28 +36,27 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        selenium.click("link=Search");
-        waitForPageToLoad();
+        clickAndWait("link=Search");
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertTrue(selenium.isTextPresent("Search for Nodes"));
-        assertTrue(selenium.isTextPresent("Search Asset Information"));
-        assertTrue(selenium.isTextPresent("Search Options"));
-        assertTrue(selenium.isTextPresent("MAC Address"));
+        waitForText("Search for Nodes");
+        waitForText("Search Asset Information");
+        waitForText("Search Options");
+        waitForText("MAC Address");
     }
 
     @Test
-    public void testAllLinksArePresent() {
-        assertTrue(selenium.isElementPresent("link=All nodes"));
-        assertTrue(selenium.isElementPresent("link=All nodes and their interfaces"));
-        assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
+    public void testAllLinksArePresent() throws InterruptedException {
+        waitForElement("link=All nodes");
+        waitForElement("link=All nodes and their interfaces");
+        waitForElement("link=All nodes with asset info");
     }
 
     @Test 
-    public void testAllFormsArePresent() {
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
+    public void testAllFormsArePresent() throws InterruptedException {
+        waitForElement("css=input[type=submit]");
         assertEquals("Search", selenium.getValue("css=input[type=submit]"));
     }
 
@@ -67,11 +66,11 @@ public class SearchPageTest extends OpenNMSSeleniumTestCase {
         waitForText("Nodes", LOAD_TIMEOUT);
         clickAndWait("//div[@id='content']/div/h2/a[2]");
         clickAndWait("link=All nodes and their interfaces");
-        assertTrue(selenium.isTextPresent("Nodes and their interfaces"));
-        assertTrue(selenium.isElementPresent("link=Hide interfaces"));
+        waitForText("Nodes and their interfaces");
+        waitForElement("link=Hide interfaces");
         clickAndWait("//div[@id='content']/div/h2/a[2]");
         clickAndWait("link=All nodes with asset info");
-        assertTrue(selenium.isTextPresent("Assets"));
+        waitForText("Assets");
     }
 
 }

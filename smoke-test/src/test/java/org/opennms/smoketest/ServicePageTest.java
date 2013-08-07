@@ -119,7 +119,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testCreateUser() { 
+    public void testCreateUser() throws InterruptedException { 
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Users");
@@ -129,11 +129,11 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.type("id=pass2", "SmokeTestPassword");
         clickAndWait("id=doOK");
         clickAndWait("id=saveUserButton");
-        assertTrue(selenium.isElementPresent("id=users(SmokeTestUser).doDetails"));
+        waitForElement("id=users(SmokeTestUser).doDetails");
     }
 
     @Test  
-    public void testCreateGroup() {
+    public void testCreateGroup() throws InterruptedException {
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");
@@ -147,7 +147,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
         clickAndWait("name=finish");
         clickAndWait("link=SmokeTestGroup");
-        assertTrue(selenium.isTextPresent("SmokeTestUser"));
+        waitForText("SmokeTestUser");
     }
 
     @Test
@@ -161,9 +161,9 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         if(selenium.isElementPresent("link=ICMP")){
             clickAndWait("link=ICMP");
-            assertTrue("Managed text not found", selenium.isTextPresent("regexp:(Managed|Not Monitored)"));
-            assertTrue("IP text not found", selenium.isTextPresent("regexp:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0*1"));
-            assertTrue("localNode text not found", selenium.isTextPresent("localNode"));
+            waitForText("regexp:(Managed|Not Monitored)");
+            waitForText("regexp:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0+\\:0*1");
+            waitForText("localNode");
         } else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
         }
@@ -184,57 +184,57 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
             }
         }
         clickAndWait("link=Search");
-        assertTrue(selenium.isTextPresent("Search for Nodes"));
-        assertTrue(selenium.isTextPresent("Search Asset Information"));
-        assertTrue(selenium.isTextPresent("Search Options"));
-        assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
+        waitForText("Search for Nodes");
+        waitForText("Search Asset Information");
+        waitForText("Search Options");
+        waitForText("link=All nodes with asset info");
         clickAndWait("link=Outages");
-        assertTrue(selenium.isElementPresent("link=Current outages"));
-        assertTrue(selenium.isTextPresent("Outages and Service Level Availability"));
-        assertTrue(selenium.isTextPresent("Outage Menu"));
+        waitForElement("link=Current outages");
+        waitForText("Outages and Service Level Availability");
+        waitForText("Outage Menu");
         clickAndWait("link=Path Outages");
-        assertTrue(selenium.isTextPresent("All path outages"));
-        assertTrue(selenium.isTextPresent("Critical Path Service"));
+        waitForText("All path outages");
+        waitForText("Critical Path Service");
         clickAndWait("link=Dashboard");
-        assertTrue(selenium.isTextPresent("Node Status"));
-        assertTrue(selenium.isTextPresent("24 Hour Availability"));
+        waitForText("Node Status");
+        waitForText("24 Hour Availability");
         clickAndWait("link=Alarms");
-        assertTrue(selenium.isTextPresent("Alarm Queries"));
-        assertTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
-        assertTrue(selenium.isTextPresent("Alarm ID:"));
+        waitForText("Alarm Queries");
+        waitForText("Outstanding and acknowledged alarms");
+        waitForText("Alarm ID:");
         clickAndWait("link=Events");
-        assertTrue(selenium.isTextPresent("Event Queries"));
-        assertTrue(selenium.isTextPresent("Outstanding and acknowledged events"));     
+        waitForText("Event Queries");
+        waitForText("Outstanding and acknowledged events");
         clickAndWait("link=Notifications");
-        assertTrue(selenium.isTextPresent("Notification queries"));
-        assertTrue(selenium.isTextPresent("Outstanding and Acknowledged Notices"));
-        assertTrue(selenium.isTextPresent("Notification Escalation"));
+        waitForText("Notification queries");
+        waitForText("Outstanding and Acknowledged Notices");
+        waitForText("Notification Escalation");
         clickAndWait("link=Assets");
-        assertTrue(selenium.isTextPresent("Search Asset Information"));
-        assertTrue(selenium.isTextPresent("Assets with asset numbers"));
-        assertTrue(selenium.isTextPresent("Assets Inventory"));
+        waitForText("Search Asset Information");
+        waitForText("Assets with asset numbers");
+        waitForText("Assets Inventory");
         clickAndWait("link=Reports");
-        assertTrue(selenium.isTextPresent("Reports"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
+        waitForText("Reports");
+        waitForText("Descriptions");
         clickAndWait("link=Charts");
         selenium.click("link=Surveillance");
         waitForText("Surveillance View:", LOAD_TIMEOUT);
 
-        assertTrue(selenium.isTextPresent("Routers"));
-        assertTrue(selenium.isTextPresent("Surveillance View: default"));
+        waitForText("Routers");
+        waitForText("Surveillance View: default");
         clickAndWait("//a[@href='maps.htm']");
         clickAndWait("//div[@id='content']//a[contains(@href,'RemotePollerMap')]");
-        assertTrue(selenium.isElementPresent("link=Applications"));
+        waitForElement("link=Applications");
         goBack();
         clickAndWait("link=Add Node");
-        assertTrue(selenium.isTextPresent("Node Quick-Add"));
-        assertTrue(selenium.isTextPresent("CLI Authentication Parameters"));
+        waitForText("Node Quick-Add");
+        waitForText("CLI Authentication Parameters");
         clickAndWait("link=Admin");
-        assertTrue(selenium.isTextPresent("OpenNMS System"));
-        assertTrue(selenium.isTextPresent("Operations"));
-        assertTrue(selenium.isTextPresent("Nodes"));
-        assertTrue(selenium.isTextPresent("Distributed Monitoring"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
+        waitForText("OpenNMS System");
+        waitForText("Operations");
+        waitForText("Nodes");
+        waitForText("Distributed Monitoring");
+        waitForText("Descriptions");
     }
 
     @Test
