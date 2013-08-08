@@ -2005,13 +2005,6 @@
         <artifactId>opennms-webapp</artifactId>
         <version>${project.version}</version>
         <type>tar.gz</type>
-        <classifier>web-inf</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>tar.gz</type>
         <classifier>lib</classifier>
       </dependency>
       <dependency>
