@@ -12,7 +12,7 @@ if [ -z "$YUMDIR" ]; then
 	YUMDIR="/var/www/sites/opennms.org/site/yum"
 fi
 
-if [ ! -d "$YUMDIR" ]; then
+if [ ! -d "$YUMDIR" ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo "YUM repository at $YUMDIR does not exist!"
 	exit 1
 fi
@@ -24,19 +24,19 @@ if [ $? != 0 ]; then
 fi
 
 UPDATE_SF_REPO=`which update-sourceforge-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-sourceforge-repo.pl!'
 	exit 1
 fi
 
 UPDATE_REPO=`which update-yum-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-yum-repo.pl!'
 	exit 1
 fi
 
 GENERATE=`which generate-yum-repo-html.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate generate-yum-repo-html.pl!'
 	exit 1
 fi
