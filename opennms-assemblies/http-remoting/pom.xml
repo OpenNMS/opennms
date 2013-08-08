@@ -10,6 +10,84 @@
   <artifactId>org.opennms.assemblies.http-remoting</artifactId>
   <packaging>war</packaging>
   <name>OpenNMS HTTP Remoting Backend</name>
+  <!-- 
+    On Windows and Linux, we should be able to build the opennms-remote-poller-windows EXE installer
+    so include the installer EXE in the webapp on those platforms.
+
+    If you edit the profile's <build>, make sure to change both profiles since they are identical.
+  -->
+  <profiles>
+    <profile>
+      <id>linux</id>
+      <activation>
+        <os>
+          <name>Linux</name>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.opennms.assemblies</groupId>
+                      <artifactId>opennms-remote-poller-windows</artifactId>
+                      <version>${project.version}</version>
+                      <type>exe</type>
+                      <overWrite>true</overWrite>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.opennms.assemblies</groupId>
+                      <artifactId>opennms-remote-poller-windows</artifactId>
+                      <version>${project.version}</version>
+                      <type>exe</type>
+                      <overWrite>true</overWrite>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -19,46 +97,29 @@
         </configuration>
       </plugin>
       <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-dependency-plugin</artifactId>
-               <executions>
-                       <execution>
-                               <id>copy</id>
-                               <goals>
-                                       <goal>copy</goal>
-                               </goals>
-                               <configuration>
-                                       <artifactItems>
-                                               <artifactItem>
-                                                       <groupId>org.opennms.assemblies</groupId>
-                                                       <artifactId>opennms-remote-poller-windows</artifactId>
-                                                       <version>${project.version}</version>
-                                                       <type>exe</type>
-                                                       <overWrite>true</overWrite>
-                                               </artifactItem>
-                                       </artifactItems>
-                               </configuration>
-                       </execution>
-                       <execution>
-                               <id>unpack</id>
-                               <goals>
-                                       <goal>unpack</goal>
-                               </goals>
-                               <configuration>
-                                       <artifactItems>
-                                               <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
-                                                       <groupId>org.opennms.features</groupId>
-                                                       <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-                                                       <version>${project.version}</version>
-                                                       <classifier>jnlp</classifier>
-                                                       <type>tar.gz</type>
-                                                       <overWrite>true</overWrite>
-                                                       <outputDirectory>${project.build.directory}/dependency/webstart</outputDirectory>
-                                               </artifactItem>
-                                       </artifactItems>
-                               </configuration>
-                       </execution>
-               </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>jnlp</classifier>
+                  <type>tar.gz</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/dependency/webstart</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <!--
            Add the dependency directory to the list of webapp resources so that the
