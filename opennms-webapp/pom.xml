@@ -158,7 +158,6 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/meta-inf.xml</descriptor>
-            <descriptor>src/assembly/web-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
         </configuration>
