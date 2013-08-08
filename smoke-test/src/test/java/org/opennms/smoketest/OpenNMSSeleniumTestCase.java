@@ -60,7 +60,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 driver = new ChromeDriver();
             }
         }
-        
+
         final String driverClass = System.getProperty("webdriver.class");
         if (driverClass != null) {
             driver = (WebDriver)Class.forName(driverClass).newInstance();
@@ -110,7 +110,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void waitForPageToLoad() {
         selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
     }
-    
+
     protected void waitForText(final String expectedText) throws InterruptedException {
         waitForText(expectedText, LOAD_TIMEOUT);
     }

@@ -11,7 +11,7 @@ if [ $? != 0 ]; then
 fi
 
 UPDATE_REPO=`which update-sourceforge-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-sourceforge-repo.pl!'
 	exit 1
 fi

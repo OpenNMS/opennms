@@ -28,28 +28,104 @@
 
 package org.opennms.smoketest;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        selenium.open("/opennms/");
+        waitForPageToLoad();
+    }
 
     @Test
-    public void testHeaderMenuLinks() throws Exception {
+    public void testNodeLink() throws Exception {
         clickAndWait("link=Node List");
+        assertTrue(selenium.isTextPresent("/ Node List") || selenium.isTextPresent("Node Interfaces"));
+    }
+
+    @Test
+    public void testSearchLink() throws Exception {
         clickAndVerifyText("link=Search", "Search for Nodes");
+    }
+
+    @Test
+    public void testOutagesLink() throws Exception {
         clickAndVerifyText("link=Outages", "Outage Menu");
+    }
+
+    @Test
+    public void testPathOutagesLink() throws Exception {
         clickAndVerifyText("link=Path Outages", "All path outages");
-        clickAndWait("link=Dashboard");
-        waitForText("Surveillance View:", LOAD_TIMEOUT);
+    }
+
+    @Test
+    public void testDashboardLink() throws Exception {
+        if (selenium.isElementPresent("//a[@href='dashboards.htm']")) {
+            // new style dashboard menu
+            clickAndWait("//a[@href='dashboards.htm']");
+            waitForText("OpenNMS Dashboards");
+
+            clickAndWait("//div[@id='content']//a[@href='dashboard.jsp']");
+            waitForText("Surveillance View:", LOAD_TIMEOUT);
+            goBack();
+
+            clickAndWait("//div[@id='content']//a[@href='vaadin-wallboard']");
+            waitForElement("//span[@class='v-button-caption' and text() = 'Wallboard']");
+        } else if (selenium.isElementPresent("//a[@href='dashboard.jsp']")) {
+            // old style dashboard menu
+            clickAndWait("//a[@href='dashboard.jsp']");
+            waitForText("Surveillance View:", LOAD_TIMEOUT);
+        } else {
+            fail("No dashboard link found.");
+        }
+    }
+
+    @Test
+    public void testEventsLink() {
         clickAndVerifyText("link=Events", "Event Queries");
+    }
+
+    @Test
+    public void testAlarmsLink() {
         clickAndVerifyText("link=Alarms", "Alarm Queries");
+    }
+
+    @Test
+    public void testNotificationsLink() {
         clickAndVerifyText("link=Notifications", "Notification queries");
+    }
+
+    @Test
+    public void testAssetsLink() {
         clickAndVerifyText("link=Assets", "Search Asset Information");
+    }
+
+    @Test
+    public void testReportsLink() {
         clickAndVerifyText("link=Reports", "Resource Graphs");
+    }
+
+    @Test
+    public void testChartsLink() {
         clickAndVerifyText("link=Charts", "/ Charts");
+    }
+
+    @Test
+    public void testSurveillanceLink() throws InterruptedException {
         clickAndWait("link=Surveillance");
         waitForText("Surveillance View:", LOAD_TIMEOUT);
+    }
+
+    @Test
+    public void testDistributedStatusLink() {
         clickAndWait("link=Distributed Status");
         assertTrue(selenium.isTextPresent("Distributed Poller Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
+    }
+
+    @Test
+    public void testMapLinks() throws InterruptedException {
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
         clickAndVerifyText("//div[@id='content']//a[contains(text(), 'Distributed')]", "clear selected tags");
         goBack();
@@ -73,9 +149,20 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
         clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
         waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
+    }
 
+    @Test
+    public void testAddNodeLink() {
         clickAndVerifyText("link=Add Node", "Community String:");
+    }
+
+    @Test
+    public void testAdminLink() {
         clickAndVerifyText("link=Admin", "Configure Users, Groups and On-Call Roles");
+    }
+
+    @Test
+    public void testSupportLink() throws Exception {
         clickAndVerifyText("link=Support", "Enter your OpenNMS Group commercial support login");
     }
 
