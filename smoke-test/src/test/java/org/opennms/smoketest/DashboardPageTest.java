@@ -34,8 +34,9 @@ import org.junit.Test;
 public class DashboardPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-        clickAndWait("link=Dashboard");
+        super.setUp();
+        selenium.open("/opennms/dashboard.jsp");
+        waitForPageToLoad();
     }
 
     @Test
