@@ -11,6 +11,16 @@
   <description>
     OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.
   </description>
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <comments>
+        This Maven metadata is provided for informational purposes only. For specific licensing 
+        questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
+      </comments>
+    </license>
+  </licenses>
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
