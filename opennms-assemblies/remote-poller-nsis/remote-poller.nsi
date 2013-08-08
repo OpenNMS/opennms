@@ -230,7 +230,7 @@ UninstallIcon resources\big-o-uninstall.ico
 !endif
 
 # File attributes for the installer EXE
-# VIProductVersion                 "1.13.0.0"
+VIProductVersion                 "1.0.0.0"
 VIAddVersionKey FileDescription  "${PROJECT_NAME} Installer"
 VIAddVersionKey FileVersion      1
 VIAddVersionKey ProductName      "${PROJECT_NAME}"
