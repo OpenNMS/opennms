@@ -12,7 +12,7 @@ if [ -z "$APTDIR" ]; then
 	APTDIR="/var/ftp/pub/releases/opennms/debian"
 fi
 
-if [ ! -d "$APTDIR" ]; then
+if [ ! -d "$APTDIR" ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo "APT repository at $APTDIR does not exist!"
 	exit 1
 fi
@@ -24,7 +24,7 @@ if [ $? != 0 ]; then
 fi
 
 UPDATE_REPO=`which update-apt-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-apt-repo.pl!'
 	exit 1
 fi
