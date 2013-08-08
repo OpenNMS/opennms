@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -51,39 +52,39 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "element")
 public class OnmsMapElement implements Serializable {
-    /**
-     * Constant <code>MAP_TYPE="M"</code>
-     */
-    public static final String MAP_TYPE = "M";
-    /**
-     * Constant <code>MAP_HIDE_TYPE="W"</code>
-     */
-    public static final String MAP_HIDE_TYPE = "W";
-    /**
-     * Constant <code>NODE_TYPE="N"</code>
-     */
-    public static final String NODE_TYPE = "N";
-    /**
-     * Constant <code>NODE_HIDE_TYPE="H"</code>
-     */
-    public static final String NODE_HIDE_TYPE = "H";
-    /**
-     * Constant <code>defaultNodeIcon="unspecified"</code>
-     */
-    public static final String defaultNodeIcon = "unspecified";
-    /**
-     * Constant <code>defaultMapIcon="map"</code>
-     */
-    public static final String defaultMapIcon = "map";
     private static final long serialVersionUID = 1594163211618494443L;
+    
+    /** Constant <code>MAP_TYPE="M"</code> */
+    public static final String MAP_TYPE = "M";
+    /** Constant <code>MAP_HIDE_TYPE="W"</code> */
+    public static final String MAP_HIDE_TYPE = "W";
+    /** Constant <code>NODE_TYPE="N"</code> */
+    public static final String NODE_TYPE = "N";
+    /** Constant <code>NODE_HIDE_TYPE="H"</code> */
+    public static final String NODE_HIDE_TYPE = "H";
+    /** Constant <code>defaultNodeIcon="unspecified"</code> */
+    public static final String defaultNodeIcon = "unspecified";
+    /** Constant <code>defaultMapIcon="map"</code> */
+    public static final String defaultMapIcon = "map";
+
     private int id;
+
     private int elementId;
+
+    @XmlTransient
+    @ManyToOne
+    @JoinColumn(name = "mapId")
     private OnmsMap map;
-    private String label;
-    private String iconName;
-    private int x;
-    private int y;
+
     protected String type;
+
+    private String label;
+
+    private String iconName;
+
+    private int x;
+
+    private int y;
 
     /**
      * <p>Constructor for OnmsMapElement.</p>
@@ -104,16 +105,17 @@ public class OnmsMapElement implements Serializable {
     /**
      * <p>Constructor for OnmsMapElement.</p>
      *
-     * @param map       a {@link org.opennms.netmgt.model.OnmsMap} object.
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
      * @param elementId a int.
-     * @param type      a {@link java.lang.String} object.
-     * @param label     a {@link java.lang.String} object.
-     * @param iconName  a {@link java.lang.String} object.
-     * @param x         a int.
-     * @param y         a int.
-     * @param id        a int.
+     * @param type a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param iconName a {@link java.lang.String} object.
+     * @param x a int.
+     * @param y a int.
+     * @param id a int.
      */
-    public OnmsMapElement(OnmsMap map, int elementId, String type, String label, String iconName, int x, int y, int id) {
+    public OnmsMapElement(OnmsMap map, int elementId, String type, String label,
+            String iconName, int x, int y, int id) {
         this.map = map;
         this.id = id;
         this.elementId = elementId;
@@ -122,20 +124,22 @@ public class OnmsMapElement implements Serializable {
         setIconName(iconName);
         this.x = x;
         this.y = y;
+        
     }
 
     /**
      * <p>Constructor for OnmsMapElement.</p>
      *
-     * @param map       a {@link org.opennms.netmgt.model.OnmsMap} object.
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
      * @param elementId a int.
-     * @param type      a {@link java.lang.String} object.
-     * @param label     a {@link java.lang.String} object.
-     * @param iconName  a {@link java.lang.String} object.
-     * @param x         a int.
-     * @param y         a int.
+     * @param type a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param iconName a {@link java.lang.String} object.
+     * @param x a int.
+     * @param y a int.
      */
-    public OnmsMapElement(OnmsMap map, int elementId, String type, String label, String iconName, int x, int y) {
+    public OnmsMapElement(OnmsMap map, int elementId, String type, String label,
+            String iconName, int x, int y) {
         this.map = map;
         this.elementId = elementId;
         setType(type);
@@ -152,7 +156,7 @@ public class OnmsMapElement implements Serializable {
      */
     @XmlTransient
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name="id", nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
     public int getId() {
@@ -178,6 +182,7 @@ public class OnmsMapElement implements Serializable {
     public String getMapElementId() {
         return Integer.toString(id);
     }
+
 
     /**
      * <p>Getter for the field <code>elementId</code>.</p>
@@ -214,9 +219,8 @@ public class OnmsMapElement implements Serializable {
      * @param type a {@link java.lang.String} object.
      */
     public void setType(String type) {
-        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE) || type.equals(MAP_HIDE_TYPE)) {
+        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE) || type.equals(MAP_HIDE_TYPE))
             this.type = type;
-        }
     }
 
     /**
@@ -254,9 +258,9 @@ public class OnmsMapElement implements Serializable {
      * @param iconName a {@link java.lang.String} object.
      */
     public void setIconName(String iconName) {
-        if (iconName == null) {
-            iconName = defaultNodeIcon;
-        }
+        if(iconName==null){
+    		iconName=defaultNodeIcon;
+    	}
         this.iconName = iconName;
     }
 
@@ -303,10 +307,9 @@ public class OnmsMapElement implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsMap} object.
      */
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mapId")
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="mapId")
     @XmlIDREF
-    @XmlTransient
     public OnmsMap getMap() {
         return map;
     }

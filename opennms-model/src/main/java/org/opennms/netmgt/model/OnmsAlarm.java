@@ -39,7 +39,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -224,7 +223,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
-    @GeneratedValue(generator="alarmSequence",strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator="alarmSequence")    
     @Column(name="alarmId", nullable=false)
     @XmlAttribute(name="id")
     public Integer getId() {
