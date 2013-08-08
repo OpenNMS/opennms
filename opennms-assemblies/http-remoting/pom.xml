@@ -18,6 +18,64 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <executions>
+                       <execution>
+                               <id>copy</id>
+                               <goals>
+                                       <goal>copy</goal>
+                               </goals>
+                               <configuration>
+                                       <artifactItems>
+                                               <artifactItem>
+                                                       <groupId>org.opennms.assemblies</groupId>
+                                                       <artifactId>opennms-remote-poller-windows</artifactId>
+                                                       <version>${project.version}</version>
+                                                       <type>exe</type>
+                                                       <overWrite>true</overWrite>
+                                               </artifactItem>
+                                       </artifactItems>
+                               </configuration>
+                       </execution>
+                       <execution>
+                               <id>unpack</id>
+                               <goals>
+                                       <goal>unpack</goal>
+                               </goals>
+                               <configuration>
+                                       <artifactItems>
+                                               <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
+                                                       <groupId>org.opennms.features</groupId>
+                                                       <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+                                                       <version>${project.version}</version>
+                                                       <classifier>jnlp</classifier>
+                                                       <type>tar.gz</type>
+                                                       <overWrite>true</overWrite>
+                                                       <outputDirectory>${project.build.directory}/dependency/webstart</outputDirectory>
+                                               </artifactItem>
+                                       </artifactItems>
+                               </configuration>
+                       </execution>
+               </executions>
+      </plugin>
+      <!--
+           Add the dependency directory to the list of webapp resources so that the
+           installer EXE and JNLP files are included in the webapp.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>${project.build.directory}/dependency</directory>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
