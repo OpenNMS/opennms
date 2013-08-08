@@ -95,6 +95,13 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       auth-passphrase=\"0p3nNMSv3\" >\n" +
                 "       <range begin=\"1.1.1.1\" end=\"1.1.1.100\"/>\n" +
                 "   </definition>\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsContextUser\" \n" + 
+                "       context-name=\"testContext\" \n" +
+                "       engine-id=\"testEngineId\" \n" +
+                "       context-engine-id=\"testContextEngineId\" >\n" +
+                "       <specific>1.1.1.101</specific>" +
+                "   </definition>\n" + 
                 "\n" + 
                 "   <definition version=\"v1\" read-community=\"rangev1\" max-vars-per-pdu=\"55\"> \n" + 
                 "       <range begin=\"10.0.0.101\" end=\"10.0.0.200\"/>\n" +
@@ -258,6 +265,19 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("opennmsRangeUser", agentConfig.getSecurityName());
     }
     
+    /**
+     * This tests for context-name configured for v3 node
+     * @throws UnknownHostException 
+     */
+    public void testGetv3ConfigWithContextNameAndMore() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("1.1.1.101"));
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION3, agentConfig.getVersion());
+        assertEquals("opennmsContextUser", agentConfig.getSecurityName());
+        assertEquals("testContext", agentConfig.getContextName());
+        assertEquals("testEngineId", agentConfig.getEngineId());
+        assertEquals("testContextEngineId", agentConfig.getContextEngineId());
+    }
     /**
      * This tests getting a v1 config
      * @throws UnknownHostException

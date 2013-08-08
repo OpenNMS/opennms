@@ -118,6 +118,12 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setPrivProtocol(value);
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
+            } else if ("context-name".equalsIgnoreCase(key)) {
+                agentConfig.setContextName(value);
+            } else if ("engine-id".equalsIgnoreCase(key)) {
+                agentConfig.setEngineId(value);
+            } else if ("context-engine-id".equalsIgnoreCase(key)) {
+                agentConfig.setContextEngineId(value);
             } else {
                 s_logger.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
@@ -144,6 +150,9 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(",auth-protocol=" + getAuthProtocol());
             buff.append(",priv-passprhase=" + getPrivPassPhrase());
             buff.append(",priv-protocol=" + getPrivProtocol());
+            if (getContextName() != null) buff.append(",context-name=" + getContextName());
+            if (getEngineId() != null) buff.append(",engine-id=" + getEngineId());
+            if (getContextEngineId() != null) buff.append(",context-engine-id=" + getContextEngineId());
         } else {
             buff.append(",read-community=" + getReadCommunity());
         }
@@ -170,6 +179,9 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", auth-protocol: " + getAuthProtocol());
             buff.append(", priv-passprhase: " + getPrivPassPhrase());
             buff.append(", priv-protocol: " + getPrivProtocol());
+            buff.append(", Context name: " + getContextName());
+            buff.append(", Engine ID: " + getEngineId());
+            buff.append(", Context Engine ID: " + getContextEngineId());
         }
         buff.append("]");
         return buff.toString();

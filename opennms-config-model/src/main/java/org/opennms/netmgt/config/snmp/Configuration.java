@@ -231,7 +231,7 @@ public class Configuration implements Serializable {
     	setSecurityLevel(securityLevel);
     	setAuthPassphrase(authPassphrase);
     	setAuthProtocol(authProtocol);
-    	setEngineId(contextEngineId);
+    	setEngineId(engineId);
     	setContextEngineId(contextEngineId);
     	setContextName(contextName);
     	setPrivacyPassphrase(privacyPassphrase);

@@ -417,6 +417,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
+        agentConfig.setContextName(determineContextName(def));
+        agentConfig.setEngineId(determineEngineId(def));
+        agentConfig.setContextEngineId(determineContextEngineId(def));
     }
     
     /**
@@ -612,6 +615,45 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return securityLevel;
     }
 
+    /**
+     * Helper method to find a context name to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextName(final Definition def) {
+        final String contextName = (def.getContextName() == null ? m_config.getContextName() : def.getContextName());
+        if (contextName == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_NAME;
+        }
+        return contextName;
+    }
+    
+    /**
+     * Helper method to find an engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineEngineId(final Definition def) {
+        final String engineId = (def.getEngineId() == null ? m_config.getEngineId() : def.getEngineId());
+        if (engineId == null) {
+            return SnmpAgentConfig.DEFAULT_ENGINE_ID;
+        }
+        return engineId;
+    }
+
+    /**
+     * Helper method to find a context engine ID to use from the snmp-config.
+     * @param def
+     * @return
+     */
+    private String determineContextEngineId(final Definition def) {
+        final String contextEngineId = (def.getContextEngineId() == null ? m_config.getContextEngineId() : def.getContextEngineId());
+        if (contextEngineId == null) {
+            return SnmpAgentConfig.DEFAULT_CONTEXT_ENGINE_ID;
+        }
+        return contextEngineId;
+    }
+    
     /**
      * Helper method to search the snmp-config for a port
      * @param def
