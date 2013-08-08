@@ -35,6 +35,9 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayNumber;
+
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 
@@ -46,13 +49,17 @@ public class GWTVertex extends JavaScriptObject {
     public static final String VERTEX_CLASS_NAME = ".vertex";
     public static final String SELECTED_VERTEX_CLASS_NAME = ".vertex.selected";
     private static final int VERTEX_STATUS_CHAR_SIZE = 7;
+    
+    //Array of CSS classes for constructing radial chart
+    private static final String[] classArray = {"Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical"};
 
     protected GWTVertex() {};
 
     public static native GWTVertex create(String id, int x, int y) /*-{
     	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
-    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", "severityArray":null};
+    	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
+    	        "severityArray":[], "total": 0, "isGroup": true};
 	}-*/;
 
     public final native String getId()/*-{
@@ -186,6 +193,37 @@ public class GWTVertex extends JavaScriptObject {
     public final native void setIconWidth(double iconWidth)/*-{
         this.iconWidth = iconWidth
     }-*/;
+    
+    public final native JsArrayNumber getSeverityArray() /*-{
+     	return this.severityArray;
+     
+    }-*/;
+    
+    public final native void setSeverityArray(JsArrayNumber array) /*-{
+    	this.severityArray = array;
+    }-*/;
+    
+    public final native boolean isGroup() /*-{
+    	return this.isGroup;
+    }-*/;
+    
+    public final native void setIsGroup(boolean group) /*-{
+    	this.isGroup = group;
+    }-*/;
+    
+    public final String[] getClassArray() {
+    	return classArray;
+    }
+    
+    public final native int getTotal() /*-{
+    	return this.total;
+    }-*/;
+    
+    public final native void setTotal(int newTotal) /*-{
+    	this.total = newTotal;
+    }-*/;
+    
+    
 
     static Func<String, GWTVertex> selectedFill() {
     	return new Func<String, GWTVertex>(){
@@ -392,17 +430,43 @@ public class GWTVertex extends JavaScriptObject {
 
                 selection.select(".status").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
                         .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass(false));
-
-                selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount())
-                    .select("rect").attr("class", getStatusClass(true));
-                selection.select(".status-counter").text(getStatusCountText());
+                
+               
+//            	selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount()).html(makeStatusCounter());
+                	
+//            
+            	
+            	 selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount())
+                 .select("rect").attr("class", getStatusClass(true));
+             
+            	
+            	selection.select(".status-counter").text(getStatusCountText());
+            
 
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
         };
     }
 
-    public static D3Behavior create() {
+    protected static Func<String, GWTVertex> makeStatusCounter() {
+		// TODO Auto-generated method stub
+		return new Func<String, GWTVertex>(){
+
+			@Override
+			public String call(GWTVertex vertex, int index) {
+				if(vertex.isGroup()){
+					return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
+				}
+				else{
+					
+				}
+				return null;
+			}
+			
+		};
+	}
+
+	public static D3Behavior create() {
         return new D3Behavior() {
 
             @Override
@@ -449,13 +513,14 @@ public class GWTVertex extends JavaScriptObject {
                 svgIcon.attr("xlink:href", svgIconId("")).attr("class", "upIcon");
                 svgIconRollover.attr("xlink:href", svgIconId("_rollover")).attr("class", "overIcon").attr("opacity", 0);
                 svgIconActive.attr("xlink:href", svgIconId("_active")).attr("class", "activeIcon").attr("opacity", 0);
+                
+ 
+            	statusCounter.attr("class", "node-status-counter")
+                    	.append("svg:rect").attr("height", 20).attr("width", 20).attr("rx", 10).attr("ry", 10);
 
-                statusCounter.attr("class", "node-status-counter")
-                        .append("svg:rect").attr("height", 20).attr("width", 20).attr("rx", 10).attr("ry", 10);
-
-                statusCounter.append("text").attr("x", "7px").attr("y","3px").attr("alignment-baseline", "text-before-edge")
-                        .attr("class", "status-counter").text("2");
-
+            	statusCounter.append("text").attr("x", "7px").attr("y","3px").attr("alignment-baseline", "text-before-edge")
+                    	.attr("class", "status-counter").text("2");
+            
 
                 textSelection.text(label())
                     .attr("class", "vertex-label")
@@ -475,27 +540,21 @@ public class GWTVertex extends JavaScriptObject {
     
     //support for creating a node-chart
     //segmentWidth defines how thick the donut ring will be (in pixels)
-    final static Func<String, GWTVertex> makeChart(final double r, final double segmentWidth, final double[] dataArray, final String[] classArray, final double total){
-    	return new Func<String, GWTVertex>(){
-    		
-    		
-			@Override
-			public String call(GWTVertex vertex, int index) {
+    final static String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
 				
 				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-				double r = vertex.getIconHeight()/2.0;
+				
 			
 				double innerR = r - segmentWidth;
-				double cx = vertex.getIconWidth() - r;
-				double cy = 0.0;
+				
 				
 				
 				double startangle = 0;
-				for (int i = 0; i < dataArray.length; i++) {
+				for (int i = 0; i < dataArray.length(); i++) {
 
-					if (dataArray[i] > 0) {
+					if (dataArray.get(i) > 0) {
 
-						double endangle = startangle + (((dataArray[i]) / total) * Math.PI
+						double endangle = startangle + (((dataArray.get(i)) / total) * Math.PI
 								* 2.0);
 
 						String path = "<path d=\"";
@@ -516,7 +575,7 @@ public class GWTVertex extends JavaScriptObject {
 
 						String d;
 						// this branch is if one data value comprises 100% of the data
-						if (dataArray[i] >= total) {
+						if (dataArray.get(i) >= total) {
 
 							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
 									+ " 0 " + "1" + " 0 " + X1 + ","
@@ -551,9 +610,9 @@ public class GWTVertex extends JavaScriptObject {
 				svg = svg.concat("</svg>");
 			    
 			    return svg;
-			}
     		
-    	};
     }
+    
+    
 
 }
