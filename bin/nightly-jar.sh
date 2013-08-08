@@ -31,11 +31,16 @@ rm -rf "${HOME}"/.m2/repository/org/opennms
 
 RELEASE=`cat "${TOPDIR}"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
-cd "${TOPDIR}/.."
-./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}" || exit 1
+if [ -n "$ONLY_PACKAGE" ]; then
+	cd "${TOPDIR}/.."
+	./make-installer.sh -m "${TIMESTAMP}" -u "${REVISION}" || exit 1
+else
+	cd "${TOPDIR}/.."
+	./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}" || exit 1
 
-# copy the source to SourceForge
-echo $UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
-$UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip || exit 1
+	# copy the source to SourceForge
+	echo $UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip
+	$UPDATE_REPO "${RELEASE}" standalone-opennms-installer*${TIMESTAMP}.${REVISION}.zip || exit 1
+fi
 
 $BUILDTOOL nightly-jar save
