@@ -1273,6 +1273,12 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>opennms-remote-poller-windows</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
         <version>${project.version}</version>

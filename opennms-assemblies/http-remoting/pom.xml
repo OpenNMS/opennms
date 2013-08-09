@@ -146,6 +146,13 @@
       <artifactId>jnlp-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <!-- Make sure that the Windows EXE installer builds before this assembly -->
+    <dependency>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>opennms-remote-poller-windows</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- dependencies that should exist in $OPENNMS_HOME/lib -->
     <dependency>
