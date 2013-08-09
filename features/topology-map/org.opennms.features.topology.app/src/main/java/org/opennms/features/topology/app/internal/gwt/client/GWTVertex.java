@@ -251,11 +251,11 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public String call(GWTVertex vertex, int index) {
-                if(!isCounterIndicator){
+                /*if(!isCounterIndicator){
                     if(vertex.isSelected()){
                         return "status selected";
                     }
-                }
+                }*/
                 return "status " + vertex.getStatus();
             }
 
