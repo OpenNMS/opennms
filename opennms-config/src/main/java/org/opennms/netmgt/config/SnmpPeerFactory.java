@@ -662,39 +662,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
-     * Helper method to search the snmp-config for a engineId
-     * @param def
-     * @return
-     */
-	private String determineEngineId(Definition def) {
-		if (def.getEngineId() != null) return def.getEngineId();
-		if (m_config.getEngineId() != null) return m_config.getEngineId();
-		return null;
-	}
-    
-	 /**
-     * Helper method to search the snmp-config for a contextEngineId
-     * @param def
-     * @return 
-     */
-    private String determineContextEngineId(Definition def) {
-    	if (def.getContextEngineId() != null) return def.getContextEngineId();
-    	if (m_config.getContextEngineId() != null) return m_config.getContextEngineId();
-    	return null;
-	}
-    
-    /**
-     * Helper method to search the snmp-config for a contextName
-     * @param def
-     * @return 
-     */
-    private String determineContextName(Definition def) {
-    	if (def.getContextName() != null) return def.getContextName();
-    	if (m_config.getContextName() != null) return m_config.getContextName();
-    	return null;
-	}
-    
-    /**
      * Helper method to search the snmp-config for a enterpriseId
      * @param def
      * @return 
