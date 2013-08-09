@@ -66,6 +66,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 /**
  * <p>Poller class.</p>
@@ -73,12 +74,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author ranger
  * @version $Id: $
  */
+@Scope(value="singleton")
 public class Poller extends AbstractServiceDaemon {
     
     private final static Logger LOG = LoggerFactory.getLogger(Poller.class);
 
     private final static String LOG4J_CATEGORY = "poller";
 
+    @Autowired
     private final static Poller m_singleton = new Poller();
 
     private boolean m_initialized = false;
@@ -242,6 +245,15 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
+    }
+
+    public OutageDaoHibernate getOutageDao() {
+        return m_outageDao;
+    }
+    
+    @Autowired
+    public void setOutageDao(OutageDaoHibernate outageDao) {
+        m_outageDao = outageDao;
     }
 
     /**
@@ -724,10 +736,4 @@ public class Poller extends AbstractServiceDaemon {
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
 	}
-
-    @Autowired
-    public void setOutageDao(OutageDaoHibernate outageDao) {
-        m_outageDao = outageDao;
-    }
-
 }    
