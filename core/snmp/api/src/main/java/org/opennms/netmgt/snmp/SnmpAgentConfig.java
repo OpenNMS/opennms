@@ -116,12 +116,12 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setPrivProtocol(value);
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
+            } else if ("context-name".equalsIgnoreCase(key)) {
+            	agentConfig.setContextName(value);
             } else if ("engine-id".equalsIgnoreCase(key)) {
             	agentConfig.setEngineId(value);
             } else if ("context-engine-id".equalsIgnoreCase(key)) {
             	agentConfig.setContextEngineId(value);
-            } else if ("context-name".equalsIgnoreCase(key)) {
-            	agentConfig.setContextName(value);
             } else if ("enterprise-id".equalsIgnoreCase(key)) {
             	agentConfig.setEnterpriseId(value);
             } else if ("write-community".equalsIgnoreCase(key)) {
@@ -150,10 +150,10 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(",auth-protocol=" + getAuthProtocol());
             buff.append(",priv-passphrase=" + getPrivPassPhrase());
             buff.append(",priv-protocol=" + getPrivProtocol());
-            buff.append(",engine-id=" + getEngineId());
-            buff.append(",context-engine-id=" + getContextEngineId());
-            buff.append(",context-name=" + getContextName());
-            buff.append(",enterprise-id=" + getEnterpriseId());
+            if (getContextName() != null) buff.append(",context-name=" + getContextName());
+            if (getEngineId() != null) buff.append(",engine-id=" + getEngineId());
+            if (getContextEngineId() != null) buff.append(",context-engine-id=" + getContextEngineId());
+            if (getEnterpriseId() != null) buff.append(",enterprise-id=" + getEnterpriseId());
         } else {
             buff.append(",read-community=" + getReadCommunity());
             buff.append(",write-community=" + getWriteCommunity());
@@ -174,16 +174,16 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         buff.append(", MaxRequestSize: " + getMaxRequestSize());
         buff.append(", Version: " + versionToString(getVersion()));
         if (isVersion3()) {
-            buff.append(", SecurityLevel: " + getSecurityLevel());
-            buff.append(", SecurityName: " + getSecurityName());
-            buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
-            buff.append(", AuthProtocol: " + getAuthProtocol());
-            buff.append(", PrivPassprhase: " + getPrivPassPhrase());
-            buff.append(", PrivProtocol: " + getPrivProtocol());
-            buff.append(", EngineId: " + getEngineId());
-            buff.append(", ContextEngineId: " + getContextEngineId());
-            buff.append(", ContextName: " + getContextName());
-            buff.append(", EnterpriseId:" + getEnterpriseId());
+            buff.append(", Security level: " + getSecurityLevel());
+            buff.append(", Security name: " + getSecurityName());
+            buff.append(", auth-passphrase: " + getAuthPassPhrase());
+            buff.append(", auth-protocol: " + getAuthProtocol());
+            buff.append(", priv-passprhase: " + getPrivPassPhrase());
+            buff.append(", priv-protocol: " + getPrivProtocol());
+            buff.append(", Context name: " + getContextName());
+            buff.append(", Engine ID: " + getEngineId());
+            buff.append(", Context Engine ID: " + getContextEngineId());
+            buff.append(", Enterprise ID:" + getEnterpriseId());
         } else {
         	buff.append(", ReadCommunity: " + getReadCommunity());
         	buff.append(", WriteCommunity: " + getWriteCommunity());
