@@ -718,7 +718,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644 root root 755)
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
-%config %{jettydir}/opennms-remoting/WEB-INF/*.properties
 
 %files plugins
 
