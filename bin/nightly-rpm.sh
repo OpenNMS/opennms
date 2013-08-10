@@ -62,13 +62,10 @@ rm -rf "${HOME}"/.m2/repository/org/opennms
 
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
-if [ -n "$ONLY_PACKAGE" ]; then
-	# create the RPM
-	./makerpm.sh -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
-else
-	# create the RPM
-	./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+# create the RPM
+./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
 
+if [ -z "$ONLY_PACKAGE" ]; then
 	# copy the source to SourceForge
 	echo $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
 	$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz || exit 1

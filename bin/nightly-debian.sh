@@ -52,12 +52,10 @@ rm -rf "${TOPDIR}"/../*opennms*.{changes,deb,dsc,tar.gz}
 VERSION=`grep '<version>' pom.xml | head -n 1 | sed -e 's,^.*<version>,,' -e 's,<.version>.*$,,' | cut -d. -f1-2`
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
-if [ -n "$ONLY_PACKAGE" ]; then
-	./makedeb.sh -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
-else
-	# create the package 
-	./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+# create the package 
+./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
 
+if [ -z "$ONLY_PACKAGE" ]; then
 	# update the $RELEASE repo, and sync it to anything later in the hierarchy
 	$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb || exit 1
 	find ../*opennms*.{changes,deb,dsc,tar.gz} -maxdepth 0 -type f -exec rm -rf {} \;
