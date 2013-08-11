@@ -680,7 +680,7 @@ public class DatacollectionGroup implements Serializable {
      * @param resourceTypes the Vector to copy.
      */
     public void setResourceType(final List<ResourceType> resourceTypes) {
-        if (m_resourceTypes == resourceTypes);
+        if (m_resourceTypes == resourceTypes) return;
         m_resourceTypes.clear();
         m_resourceTypes.addAll(resourceTypes);
     }
