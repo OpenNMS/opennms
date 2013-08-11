@@ -28,9 +28,7 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -57,8 +55,8 @@ public class NCSEdgeProvider implements EdgeProvider {
 	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
 		
-		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
-			super("ncs", source.getId() + ":::" + target.getId(), source, target);
+		public NCSEdge(String serviceId, String serviceName, NCSVertex source, NCSVertex target) {
+			super("ncs", serviceId + "::" + source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
 			setStyleName("ncs edge");
 		}
@@ -146,7 +144,8 @@ public class NCSEdgeProvider implements EdgeProvider {
 			if (service == null) {
 				LoggerFactory.getLogger(this.getClass()).warn("NCSComponent not found for ID {}", id);
 			} else {
-				NCSComponent[] subs = service.getSubcomponents().toArray(new NCSComponent[0]);
+                //Check foreignsource of the subcomponents to make sure it matches the Service's foreignsource
+				NCSComponent[] subs = checkForeignSource(service.getForeignSource(), service.getSubcomponents());
 				// Connect all of the ServiceElements to one another
 				for (int i = 0; i < subs.length; i++) {
 					for (int j = i + 1; j < subs.length; j++) {
@@ -179,7 +178,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 							}
 						}
 						
-						retval.add(new NCSEdge(service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
+						retval.add(new NCSEdge(subs[i].getForeignId(), service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
 					}
 				}
 			}
@@ -187,7 +186,17 @@ public class NCSEdgeProvider implements EdgeProvider {
 		return retval;
 	}
 
-	@Override
+    private NCSComponent[] checkForeignSource(String foreignSource, Set<NCSComponent> subcomponents) {
+        Set<NCSComponent> retVal = new HashSet<NCSComponent>();
+        for(NCSComponent component : subcomponents) {
+            if(component.getForeignSource().equals(foreignSource)){
+                retVal.add(component);
+            }
+        }
+        return retVal.toArray(new NCSComponent[0]);
+    }
+
+    @Override
 	public List<Edge> getEdges() {
 		throw new UnsupportedOperationException("Not implemented");
 		// TODO: Implement me

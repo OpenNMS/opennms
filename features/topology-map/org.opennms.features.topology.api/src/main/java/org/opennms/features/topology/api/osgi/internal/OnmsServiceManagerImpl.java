@@ -29,11 +29,11 @@
 package org.opennms.features.topology.api.osgi.internal;
 
 
-import com.google.common.base.Strings;
 import org.opennms.features.topology.api.osgi.EventRegistry;
 import org.opennms.features.topology.api.osgi.OnmsServiceManager;
 import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.osgi.VaadinApplicationContextCreator;
+import org.opennms.features.topology.api.osgi.locator.EventRegistryLocator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -69,7 +69,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     @Override
     public EventRegistry getEventRegistry() {
-        return getService(EventRegistry.class, null);
+        return new EventRegistryLocator().lookup(bundleContext);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
         List<T> services = new ArrayList<T>();
         try {
-            ServiceReference<?>[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
+            ServiceReference[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
             if (serviceReferences != null) {
                 for (ServiceReference eachServiceReference : serviceReferences) {
                     Object service = bundleContext.getService(eachServiceReference);
@@ -114,6 +114,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
                 for (ServiceReference eachReference : allServiceReferences) {
                     Object service = bundleContext.getService(eachReference);
                     if (service == null) continue;
+                    if (serviceRegistrations.get(service) == null) continue; // wrong bundleContext/OnmsServiceManager
                     serviceRegistrations.get(service).unregister();
                     serviceRegistrations.remove(service);
                 }
@@ -153,13 +154,9 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     private Properties getProperties(VaadinApplicationContext applicationContext, Properties properties) {
         if (properties == null) properties = new Properties();
-        if (!Strings.isNullOrEmpty(applicationContext.getSessionId())) properties.put("sessionId", applicationContext.getSessionId());
+        String sessionId = applicationContext.getSessionId();
+        if (sessionId != null && !sessionId.isEmpty()) properties.put("sessionId", applicationContext.getSessionId());
         if (applicationContext.getUiId() > -1) properties.put("uiId", applicationContext.getUiId());
         return properties;
-    }
-
-    protected Object getService(ServiceReference serviceReference) {
-        if (serviceReference == null) return null;
-        return bundleContext.getService(serviceReference);
     }
 }

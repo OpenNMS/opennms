@@ -71,13 +71,12 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -338,7 +337,7 @@ public class DatabasePopulator {
     }
 
     private OnmsNode buildNode1(final NetworkBuilder builder) {
-        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType("A").getNode());
+        setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).getNode());
         builder.addCategory(getCategory("DEV_AC"));
         builder.addCategory(getCategory("IMP_mid"));
         builder.addCategory(getCategory("OPS_Online"));
@@ -382,7 +381,7 @@ public class DatabasePopulator {
     }
 
     private OnmsNode buildNode2(final NetworkBuilder builder) {
-        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType("A");
+        builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("IMP_mid"));
         builder.addCategory(getCategory("Servers"));
         builder.setBuilding("HQ");
@@ -400,7 +399,7 @@ public class DatabasePopulator {
     }
 
     private OnmsNode buildNode3(final NetworkBuilder builder) {
-        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType("A");
+        builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("OPS_Online"));
         builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));
@@ -415,7 +414,7 @@ public class DatabasePopulator {
     }
 
     private OnmsNode buildNode4(final NetworkBuilder builder) {
-        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType("A");
+        builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType(NodeType.ACTIVE);
         builder.addCategory(getCategory("DEV_AC"));
         builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));
@@ -431,7 +430,7 @@ public class DatabasePopulator {
 
     private OnmsNode buildNode5(final NetworkBuilder builder) {
         //This node purposely doesn't have a foreignId style assetNumber
-        builder.addNode("alternate-node1").setType("A").getAssetRecord().setAssetNumber("5");
+        builder.addNode("alternate-node1").setType(NodeType.ACTIVE).getAssetRecord().setAssetNumber("5");
         builder.addCategory(getCategory("DEV_AC"));
         builder.addCategory(getCategory("Switches"));
         builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P");
@@ -448,7 +447,7 @@ public class DatabasePopulator {
 
     private OnmsNode buildNode6(final NetworkBuilder builder) {
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
-        builder.addNode("alternate-node2").setType("A").getAssetRecord().setDisplayCategory("category1");
+        builder.addNode("alternate-node2").setType(NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
         builder.addCategory(getCategory("DEV_AC"));
         builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P");
         builder.addService(getService("ICMP"));

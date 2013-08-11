@@ -47,8 +47,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 
 public class XmlrpcdTest extends OpenNMSTestCase {
-    private static final int m_port1 = 9000;
-    private static final int m_port2 = 9001;
+    private static final int m_port1 = 59000;
+    private static final int m_port2 = 59001;
     
     private Xmlrpcd m_xmlrpcd;
     private XmlrpcAnticipator m_anticipator1;

@@ -473,6 +473,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	 */
 	@Override
 	public boolean setParent(VertexRef vertexId, VertexRef parentId) {
+		if (vertexId.equals(parentId)) return false;
 		return m_baseGraphProvider.setParent(vertexId, parentId);
 	}
 

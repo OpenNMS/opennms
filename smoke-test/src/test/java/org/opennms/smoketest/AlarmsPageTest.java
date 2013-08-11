@@ -47,79 +47,72 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-        selenium.click("link=Alarms");
-        waitForPageToLoad();
+        super.setUp();
+        clickAndWait("link=Alarms");
     }
 
     @Test
-    public void testAllTextIsPresent() {
-        assertTrue(selenium.isTextPresent("Alarm Queries"));
-        assertTrue(selenium.isTextPresent("Outstanding and acknowledged alarms"));
-        assertTrue(selenium.isTextPresent("To view acknowledged alarms"));
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
-        assertTrue(selenium.isTextPresent("Alarm ID:"));
+    public void testAllTextIsPresent() throws InterruptedException {
+        waitForText("Alarm Queries");
+        waitForText("Outstanding and acknowledged alarms");
+        waitForText("To view acknowledged alarms");
+        waitForElement("css=input[type=submit]");
+        waitForText("Alarm ID:");
     }
 
     @Test
-    public void testAllLinksArePresent() { 
-        assertTrue(selenium.isElementPresent("link=All alarms (summary)"));
-        assertTrue(selenium.isElementPresent("link=All alarms (detail)"));
-        assertTrue(selenium.isElementPresent("link=Advanced Search"));
+    public void testAllLinksArePresent() throws InterruptedException { 
+        waitForElement("link=All alarms (summary)");
+        waitForElement("link=All alarms (detail)");
+        waitForElement("link=Advanced Search");
     }
 
     @Test
-    public void testAllLinks(){
-        selenium.click("link=All alarms (summary)");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("alarm is outstanding"));
-        assertTrue(selenium.isElementPresent("//input[@value='Go']"));
-        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
-        selenium.click("css=a[title='Alarms System Page']");
-        waitForPageToLoad();
-        selenium.click("link=All alarms (detail)");
-        waitForPageToLoad();
-        assertTrue(selenium.isElementPresent("link=First Event Time"));
-        assertTrue(selenium.isElementPresent("link=Last Event Time"));
-        assertTrue(selenium.isElementPresent("css=input[type='reset']"));
-        assertTrue(selenium.isTextPresent("Ack"));
-        selenium.click("css=a[title='Alarms System Page']");
-        waitForPageToLoad();
-        selenium.click("link=Advanced Search");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Alarm Text Contains:"));
-        assertTrue(selenium.isTextPresent("Advanced Alarm Search"));
+    public void testAllLinks() throws InterruptedException{
+        clickAndWait("link=All alarms (summary)");
+        waitForText("alarm is outstanding");
+        waitForElement("//input[@value='Go']");
+        waitForElement("css=input[type='submit']");
+        clickAndWait("css=a[title='Alarms System Page']");
+        clickAndWait("link=All alarms (detail)");
+        waitForElement("link=First Event Time");
+        waitForElement("link=Last Event Time");
+        waitForElement("css=input[type='reset']");
+        waitForText("Ack");
+        clickAndWait("css=a[title='Alarms System Page']");
+        clickAndWait("link=Advanced Search");
+        waitForText("Alarm Text Contains:");
+        waitForText("Advanced Alarm Search");
         selenium.open("/opennms/alarm/advsearch.jsp");
-        assertTrue(selenium.isTextPresent("Advanced Alarm Search page"));
-        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
-        assertTrue(selenium.isElementPresent("name=beforefirsteventtimemonth"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
+        waitForText("Advanced Alarm Search page");
+        waitForElement("css=input[type='submit']");
+        waitForElement("name=beforefirsteventtimemonth");
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
     }
 
     @Test
     public void testAlarmLink() throws Exception {
         createAlarm();
-        selenium.click("link=All alarms (summary)");
-        waitForPageToLoad();
-        int waitTime = 300000; // 5 minutes
-        final int sleepTime = 10000; // 10 seconds
+        clickAndWait("link=All alarms (summary)");
 
-        do {
-            selenium.refresh();
+        final int sleepTime = 5000; // 5 seconds
+        final long end = System.currentTimeMillis() + 300000; // 5 minutes
+        while (!hasAlarmDetailLink() && (System.currentTimeMillis() < end)) {
             Thread.sleep(sleepTime);
-            waitTime -= sleepTime;
-        } while (!hasAlarmDetailLink() && waitTime != 0);
+            selenium.refresh();
+            waitForPageToLoad();
+        }
 
-        assertTrue(selenium.isTextPresent("alarm is outstanding"));
-        assertTrue(selenium.isElementPresent("//input[@value='Go']"));
-        assertTrue(selenium.isElementPresent("css=input[type='submit']"));
         assertTrue(hasAlarmDetailLink());
-        selenium.click("//a[contains(@href,'alarm/detail.htm')]");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Severity"));
-        assertTrue(selenium.isTextPresent("Ticket State"));
-        assertTrue(selenium.isTextPresent("Acknowledgment and Severity Actions"));
+
+        waitForText("alarm is outstanding");
+        waitForElement("//input[@value='Go']");
+        waitForElement("css=input[type='submit']");
+        assertTrue(hasAlarmDetailLink());
+        clickAndWait("//a[contains(@href,'alarm/detail.htm')]");
+        waitForText("Severity");
+        waitForText("Ticket State");
+        waitForText("Acknowledgment and Severity Actions");
     }
 
     private boolean hasAlarmDetailLink() {

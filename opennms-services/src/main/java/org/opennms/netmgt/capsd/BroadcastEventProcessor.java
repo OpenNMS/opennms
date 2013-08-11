@@ -60,6 +60,8 @@ import org.opennms.netmgt.model.OnmsServerMap;
 import org.opennms.netmgt.model.OnmsServiceMap;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -154,7 +156,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         List<OnmsNode> nodeList = m_nodeDao.findByLabel(nodeLabel);
         for(OnmsNode node : nodeList) {
-            if (node.getType() == "D") {
+            if (node.getType() == NodeType.DELETED) {
                 nodeList.remove(node);
             }
         }
@@ -216,9 +218,9 @@ public class BroadcastEventProcessor implements InitializingBean {
         DbNodeEntry node = DbNodeEntry.create();
         Date now = new Date();
         node.setCreationTime(now);
-        node.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
+        node.setNodeType(NodeType.ACTIVE);
         node.setLabel(nodeLabel);
-        node.setLabelSource(DbNodeEntry.LABEL_SOURCE_USER);
+        node.setLabelSource(NodeLabelSource.USER);
         node.store(conn);
 
         Event newEvent = EventUtils.createNodeAddedEvent(node);
@@ -1690,8 +1692,8 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<OnmsNode> nodeList = m_nodeDao.findByLabel(label);
         int count = 0;
         for(OnmsNode node : nodeList) {
-            if(node.getType() != "D") {
-                node.setType("D");
+            if(node.getType() != NodeType.DELETED) {
+                node.setType(NodeType.DELETED);
                 m_nodeDao.update(node);
                 count++;
             }
@@ -1750,7 +1752,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         List<OnmsNode> nodeList = m_nodeDao.findByLabel(nodeLabel);
         if (nodeList != null) {
             for(OnmsNode node : nodeList) {
-                if (node.getType() == "D") {
+                if (node.getType() == NodeType.DELETED) {
                     nodeList.remove(node);
                 }
             }

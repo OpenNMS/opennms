@@ -34,6 +34,7 @@ import java.util.Iterator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.EventConstants;
@@ -56,22 +57,18 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Reindeer;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Administration Application.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-@SuppressWarnings("serial")
+@Theme("opennms")
 @Title("Events Administration")
-@Theme(Reindeer.THEME_NAME)
+@SuppressWarnings("serial")
 public class EventAdminApplication extends UI {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(EventAdminApplication.class);
 
 
@@ -172,17 +169,14 @@ public class EventAdminApplication extends UI {
                     return;
                 }
                 final File file = (File) eventSource.getValue();
-                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                               "Are you sure?",
-                                               MessageBox.Icon.QUESTION,
-                                               "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                               new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                mb.addStyleName(Runo.WINDOW_DIALOG);
-                mb.show(new EventListener() {
-                    @Override
-                    public void buttonClicked(ButtonType buttonType) {
-                        if (buttonType == MessageBox.ButtonType.YES) {
+                ConfirmDialog.show(getUI(),
+                                   "Are you sure?",
+                                   "Do you really want to remove the file " + file.getName() + "?\nThis cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
                             LOG.info("deleting file {}", file);
                             if (file.delete()) {
                                 try {
@@ -246,8 +240,8 @@ public class EventAdminApplication extends UI {
                 this.setVisible(false);
             }
             @Override
-            public void failure() {
-                Notification.show("Event file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
+            public void failure(String reason) {
+                Notification.show("Event file " + file.getName() + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
             }
         };
         eventPanel.setCaption("Events from " + file.getName());

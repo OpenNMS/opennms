@@ -34,7 +34,7 @@
 	    pageEncoding="UTF-8"
 %>
 
-<%@ page import="org.opennms.netmgt.charts.ChartUtils" %>
+<%@ page import="org.opennms.web.charts.ChartUtils" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="org.opennms.netmgt.config.charts.BarChart" %>
 

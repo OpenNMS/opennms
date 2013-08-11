@@ -41,95 +41,78 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractFormController;
+import org.springframework.web.servlet.view.AbstractView;
 
 /**
  * <p>RrdSummaryController class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
+@SuppressWarnings("deprecation")
 public class RrdSummaryController extends AbstractFormController implements InitializingBean {
-	
-	static class MarshalledView implements View {
+    private static class MarshalledView extends AbstractView {
+        public String getContentType() { return "text/xml"; }
 
-                @Override
-		public String getContentType() {
-			return "text/xml";
-		}
+        @Override
+        protected void renderMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+            Assert.notNull(model.get("summary"), "summary must not be null.. unable to marshall xml");
+            Marshaller.marshal(model.get("summary"), response.getWriter());
+        }
+    }
 
-                @Override
-		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-			Assert.notNull(model.get("summary"), "summary must not be null.. unable to marshall xml");
-			Marshaller.marshal(model.get("summary"), response.getWriter());
-		}
-		
-	}
-	
-	private RrdSummaryService m_rrdSummaryService;
-	
+    private RrdSummaryService m_rrdSummaryService;
 
-	/**
-	 * <p>Constructor for RrdSummaryController.</p>
-	 */
-	public RrdSummaryController() {
-	    super();
-	    setCommandClass(SummarySpecification.class);
-	}
+    /**
+     * <p>Constructor for RrdSummaryController.</p>
+     */
+    public RrdSummaryController() {
+        super();
+        setCommandClass(SummarySpecification.class);
+    }
 
-    private ModelAndView getSummary(SummarySpecification spec) {
-        Summary summary = m_rrdSummaryService.getSummary(spec);
+    private ModelAndView getSummary(final SummarySpecification spec) {
+        final Summary summary = m_rrdSummaryService.getSummary(spec);
         return new ModelAndView(new MarshalledView(), "summary", summary);
     }
-	
-	
 
-
-	/**
-	 * <p>afterPropertiesSet</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @Override
-	public void afterPropertiesSet() throws Exception {
-		Assert.state(m_rrdSummaryService != null, "rrdSummaryService must be set");
-	}
+    public void afterPropertiesSet() throws Exception {
+        Assert.state(m_rrdSummaryService != null, "rrdSummaryService must be set");
+    }
 
-
-	/**
-	 * <p>setRrdSummaryService</p>
-	 *
-	 * @param rrdSummaryService a {@link org.opennms.web.svclayer.RrdSummaryService} object.
-	 */
-	public void setRrdSummaryService(RrdSummaryService rrdSummaryService) {
-		m_rrdSummaryService = rrdSummaryService;
-	}
+    /**
+     * <p>setRrdSummaryService</p>
+     *
+     * @param rrdSummaryService a {@link org.opennms.web.svclayer.RrdSummaryService} object.
+     */
+    public void setRrdSummaryService(final RrdSummaryService rrdSummaryService) {
+        m_rrdSummaryService = rrdSummaryService;
+    }
 
     /** {@inheritDoc} */
     @Override
-    protected boolean isFormSubmission(HttpServletRequest request) {
+    protected boolean isFormSubmission(final HttpServletRequest request) {
         return true;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ModelAndView processFormSubmission(HttpServletRequest request,
-            HttpServletResponse response, Object command, BindException errors)
-            throws Exception {
-        return getSummary((SummarySpecification)command);
-        
+    protected ModelAndView processFormSubmission(final HttpServletRequest request, final HttpServletResponse response, final Object command, final BindException errors) throws Exception {
+        final ModelAndView summary = getSummary((SummarySpecification)command);
+        response.setContentType(summary.getView().getContentType());
+        return summary;
+
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ModelAndView showForm(HttpServletRequest request,
-            HttpServletResponse response, BindException errors)
-            throws Exception {
+    protected ModelAndView showForm(final HttpServletRequest request, final HttpServletResponse response, final BindException errors) throws Exception {
         throw new UnsupportedOperationException("RrdSummaryController.showForm is not yet implemented");
     }
-
-
-
 }

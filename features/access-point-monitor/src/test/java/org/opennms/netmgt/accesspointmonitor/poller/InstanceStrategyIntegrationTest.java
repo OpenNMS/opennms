@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAccessPoint;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -229,7 +230,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
     private void addNewController(String nodeName, String ipAddress, String pollerCategory) {
         NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode(nodeName).setForeignSource("apmd").setForeignId(nodeName).setType("A");
+        nb.addNode(nodeName).setForeignSource("apmd").setForeignId(nodeName).setType(NodeType.ACTIVE);
         nb.setAssetAttribute("pollerCategory", pollerCategory);
         nb.addInterface(ipAddress).setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());

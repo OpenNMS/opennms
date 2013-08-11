@@ -34,7 +34,11 @@
 #
 # put an '@' here so we don't break maven substition
 
-opennms_home="${install.dir}"
+opennms_home='${install.dir}'
+if [ ! -d "${opennms_home}" ]; then
+    opennms_home="$OPENNMS_HOME"
+fi
+
 searchdirs="/usr /opt /Library"
 dryrun=0
 
@@ -268,6 +272,7 @@ javaFind() {
 # Is quiet and returns 0 if things look good.
 #
 checkConfiguredJava() {
+    local verbose="$1"
     mantra="run \"$opennms_home/bin/runjava -s\" to setup java.conf"
 
     if [ ! -f $java_conf ]; then
@@ -295,6 +300,10 @@ checkConfiguredJava() {
         warn "$mantra"
 
         return 1
+    fi
+
+    if [ $verbose ]; then
+        echo "$JP"
     fi
 
     return 0
@@ -439,6 +448,7 @@ saveJava() {
 parseArgsAndDoStuff() {
     exclusive=0
     
+    verbose=0
     check=0
     force=0
     quiet=0
@@ -446,7 +456,7 @@ parseArgsAndDoStuff() {
     search=0
     location=""
     
-    while getopts cfhnqrsS: c
+    while getopts vcfhnqrsS: c
     do
       case $c in
           c)
@@ -486,6 +496,10 @@ parseArgsAndDoStuff() {
               exclusive=`expr $exclusive + 1`
               ;;
     
+          v)
+              verbose=1
+              ;;
+    
           \?)
               die "Invalid option.  Use \"-h\" for help."
               ;;
@@ -510,7 +524,7 @@ parseArgsAndDoStuff() {
     fi
     
     if [ $check -gt 0 ]; then
-        checkConfiguredJava
+        checkConfiguredJava $verbose
         exit $?
     fi
     

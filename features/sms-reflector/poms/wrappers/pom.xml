@@ -15,9 +15,6 @@
   <description>
     Simple OSGi wrapper around third-party jar(s)
   </description>
-  <licenses>
-    <license/>
-  </licenses>
   <packaging>pom</packaging>
   <build>
     <plugins>

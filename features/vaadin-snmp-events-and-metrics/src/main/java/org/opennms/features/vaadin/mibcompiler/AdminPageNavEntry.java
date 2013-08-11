@@ -28,28 +28,48 @@ package org.opennms.features.vaadin.mibcompiler;
 import org.opennms.web.navigate.PageNavEntry;
 
 /**
+ * The Class AdminPageNavEntry.
  *
  * @author Markus von Rüden <mvr@opennms.com>
  */
 public class AdminPageNavEntry implements PageNavEntry {
 
+    /** The name. */
     private String name;
+
+    /** The url. */
     private String url;
 
+    /* (non-Javadoc)
+     * @see org.opennms.web.navigate.PageNavEntry#getName()
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name.
+     *
+     * @param name the new name
+     */
     public void setName(final String name) {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.web.navigate.PageNavEntry#getUrl()
+     */
     @Override
     public String getUrl() {
         return url;
     }
 
+    /**
+     * Sets the url.
+     *
+     * @param url the new url
+     */
     public void setUrl(final String url) {
         this.url = url;
     }

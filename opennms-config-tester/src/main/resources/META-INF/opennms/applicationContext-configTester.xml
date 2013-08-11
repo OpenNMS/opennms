@@ -185,11 +185,13 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
   
+<!-- not part of the standard build
   <bean id="dhcpdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DhcpdConfigFactory.init</value></property>
   </bean>
 
   <bean id="dhcpdConfigFactory" class="org.opennms.netmgt.config.DhcpdConfigFactory" depends-on="dhcpdConfigFactory-init" factory-method="getInstance"/>
+-->
   
   <bean id="discoveryConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>

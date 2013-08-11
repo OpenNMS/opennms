@@ -167,14 +167,15 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                     computeBoundsForSelected(selectionContext);
                 }
                 updateGraph();
-              }
+                }
 		});
 		
 		m_graphContainer.getMapViewManager().addListener(this);
 		m_graphContainer.addChangeListener(this);
 		
 		setScaleDataSource(m_graphContainer.getScaleProperty());
-		
+
+        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconDefs());
 		updateGraph();
 	}
 	
@@ -236,6 +237,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         m_graphContainer.getSelectionManager().deselectAll();
         m_graphContainer.getSelectionManager().selectVertexRefs( m_graphContainer.getVertexRefForest(vertexRefsToSelect) );
         m_blockSelectionEvents = false;
+        updateMenuItems();
     }
     
 	private void selectEdge(String edgeKey) {

@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.util.Assert;
 
@@ -55,7 +57,7 @@ public abstract class ElementUtil {
      * Do not use directly. Call {@link #getNodeStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static final Map<Character, String> m_nodeStatusMap;
+    private static final EnumMap<NodeType, String> m_nodeStatusMap;
 
     /**
      * Do not use directly. Call {@link #getInterfaceStatusMap 
@@ -76,10 +78,10 @@ public abstract class ElementUtil {
     private static final Map<Character, String> m_serviceStatusMap;
 
     static {
-        m_nodeStatusMap = new HashMap<Character, String>();
-        m_nodeStatusMap.put('A', "Active");
-        m_nodeStatusMap.put(' ', "Unknown");
-        m_nodeStatusMap.put('D', "Deleted");
+        m_nodeStatusMap = new EnumMap<NodeType,String>(NodeType.class);
+        m_nodeStatusMap.put(NodeType.ACTIVE, "Active");
+        m_nodeStatusMap.put(NodeType.UNKNOWN, "Unknown");
+        m_nodeStatusMap.put(NodeType.DELETED, "Deleted");
         
         m_interfaceStatusMap = new HashMap<Character, String>();
         m_interfaceStatusMap.put('M', "Managed");
@@ -439,7 +441,7 @@ public abstract class ElementUtil {
     public static String getNodeStatusString(OnmsNode node) {
         Assert.notNull(node, "node argument cannot be null");
 
-        return getNodeStatusString(node.getType().charAt(0));
+        return getNodeStatusString(node.getType());
     }
 
     /**
@@ -449,7 +451,7 @@ public abstract class ElementUtil {
      * @param c a char.
      * @return a {@link java.lang.String} object.
      */
-    public static String getNodeStatusString(char c) {
+    public static String getNodeStatusString(NodeType c) {
         return m_nodeStatusMap.get(c);
     }
     

@@ -49,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
-
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
@@ -249,18 +248,18 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         // set the parent vertex
         // hostSystemVertex.setParent(datacenterVertex);
-        setParent(hostSystemVertex, datacenterVertex);
+        if (!hostSystemVertex.equals(datacenterVertex)) setParent(hostSystemVertex, datacenterVertex);
 
         for (String network : networks) {
             AbstractVertex networkVertex = addNetworkVertex(vmwareManagementServer + "/" + network, moIdToName.get(network));
             // networkVertex.setParent(datacenterVertex);
-            setParent(networkVertex, datacenterVertex);
+            if (!networkVertex.equals(datacenterVertex)) setParent(networkVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + network, hostSystemVertex, networkVertex);
         }
         for (String datastore : datastores) {
             AbstractVertex datastoreVertex = addDatastoreVertex(vmwareManagementServer + "/" + datastore, moIdToName.get(datastore));
             // datastoreVertex.setParent(datacenterVertex);
-            setParent(datastoreVertex, datacenterVertex);
+            if (!datastoreVertex.equals(datacenterVertex)) setParent(datastoreVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + datastore, hostSystemVertex, datastoreVertex);
         }
     }
@@ -325,7 +324,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         if (vmwareHostSystemId == null) {
-            System.err.println("Cannot find host system id for virtual machine " + vmwareManagementServer + "/" + vmwareManagedObjectId);
+            LOG.warn("Cannot find host system id for virtual machine {}/{}", vmwareManagementServer, vmwareManagedObjectId);
         }
 
         AbstractVertex datacenterVertex = addDatacenterGroup(vmwareManagementServer, datacenterName);
@@ -346,7 +345,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         if (containsVertexId(vmwareManagementServer + "/" + vmwareHostSystemId)) {
             // and set the parent vertex
             // virtualMachineVertex.setParent(datacenterVertex);
-            setParent(virtualMachineVertex, datacenterVertex);
+            if (!virtualMachineVertex.equals(datacenterVertex)) setParent(virtualMachineVertex, datacenterVertex);
         } else {
             addHostSystemVertex(vmwareManagementServer + "/" + vmwareHostSystemId, moIdToName.get(vmwareHostSystemId) + " (not in database)", "", -1, "unknown");
         }

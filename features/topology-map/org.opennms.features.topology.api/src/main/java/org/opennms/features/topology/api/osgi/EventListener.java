@@ -41,7 +41,7 @@ import java.util.Properties;
  * OSGi-container and there could be an infinite amount of event listeners registered
  * we need a simple way of getting all event listeners which are listening to specific events.<br/><br/>
  * 
- * So the {@link EventListener} provides this functionality. 
+ * So the {@link org.opennms.features.topology.api.osgi.EventListener} provides this functionality.
  * 
  * 
  * @author Markus von Rüden
@@ -55,7 +55,7 @@ public class EventListener {
      * for a specific event type, we need to set this so called "consumingType" during registration.
      * This method adds a Property "consumingType" to group the EventListeners.
      * 
-     * @param consumingType Means this {@link EventListener} consumes Events of type 'consumingType'
+     * @param consumingType Means this {@link org.opennms.features.topology.api.osgi.EventListener} consumes Events of type 'consumingType'
      * @return
      */
     public static Properties getProperties(Class<?> consumingType) {

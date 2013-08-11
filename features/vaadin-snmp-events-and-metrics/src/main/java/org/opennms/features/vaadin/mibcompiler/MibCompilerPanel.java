@@ -50,13 +50,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
 /**
  * The Class MIB Compiler Panel.
@@ -65,6 +61,8 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("serial")
 public class MibCompilerPanel extends Panel {
+
+    /** The Constant LOG. */
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibCompilerPanel.class);
 
     /** The Constant PENDING. */
@@ -186,7 +184,7 @@ public class MibCompilerPanel extends Panel {
 
         // Panel Setup
         setSizeFull();
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
         layout.setComponentAlignment(upload, Alignment.TOP_RIGHT);
         layout.setExpandRatio(mibsTree, 1);
 
@@ -236,17 +234,14 @@ public class MibCompilerPanel extends Panel {
             public void handleAction(Action action, Object sender, Object target) {
                 final String fileName = (String) target;
                 if (action == ACTION_DELETE) {
-                    MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                                   "Are you sure?",
-                                                   MessageBox.Icon.QUESTION,
-                                                   "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",
-                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                                   new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                    mb.addStyleName(Runo.WINDOW_DIALOG);
-                    mb.show(new EventListener() {
-                        @Override
-                        public void buttonClicked(ButtonType buttonType) {
-                            if (buttonType == MessageBox.ButtonType.YES) {
+                    ConfirmDialog.show(getUI(),
+                                       "Are you sure?",
+                                       "Do you really want to delete " + fileName + "?\nThis cannot be undone.",
+                                       "Yes",
+                                       "No",
+                                       new ConfirmDialog.Listener() {
+                        public void onClose(ConfirmDialog dialog) {
+                            if (dialog.isConfirmed()) {
                                 String source = mibsTree.getParent(fileName).toString();
                                 File file = new File(PENDING.equals(source) ? MIBS_PENDING_DIR : MIBS_COMPILED_DIR, fileName);
                                 if (file.delete()) {

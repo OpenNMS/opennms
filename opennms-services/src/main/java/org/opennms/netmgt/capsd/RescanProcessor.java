@@ -67,6 +67,8 @@ import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -262,7 +264,7 @@ public final class RescanProcessor implements Runnable {
          * information in the collector for this node
          */
         DbNodeEntry currNodeEntry = DbNodeEntry.create();
-        currNodeEntry.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
+        currNodeEntry.setNodeType(NodeType.ACTIVE);
 
         // Set node label and SMB info based on latest collection
         setNodeLabelAndSmbInfo(collectorMap, dbNodeEntry, currNodeEntry, currPrimarySnmpIf);
@@ -359,7 +361,7 @@ public final class RescanProcessor implements Runnable {
          * Only update node label/source if original node entry is
          * not set to user-defined.
          */
-        if (dbNodeEntry.getLabelSource() != DbNodeEntry.LABEL_SOURCE_USER) {
+        if (dbNodeEntry.getLabelSource() != NodeLabelSource.USER) {
             dbNodeEntry.updateLabel(currNodeEntry.getLabel());
             dbNodeEntry.updateLabelSource(currNodeEntry.getLabelSource());
         }
@@ -1005,7 +1007,7 @@ public final class RescanProcessor implements Runnable {
             svcStmt.executeUpdate();
             snmpStmt.executeUpdate();
 
-            duplicateNode.setNodeType(DbNodeEntry.NODE_TYPE_DELETED);
+            duplicateNode.setNodeType(NodeType.DELETED);
             duplicateNode.store(dbc);
         } catch (SQLException sqlE) {
             LOG.error("deleteDuplicateNode  SQLException while deleting duplicate node: {}", duplicateNode.getNodeId());
@@ -2234,7 +2236,7 @@ public final class RescanProcessor implements Runnable {
                     labelSet = true;
 
                     currNodeEntry.setLabel(hostName);
-                    currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_HOSTNAME);
+                    currNodeEntry.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
             }
         }
@@ -2267,7 +2269,7 @@ public final class RescanProcessor implements Runnable {
                             labelSet = true;
 
                             currNodeEntry.setLabel(netbiosName);
-                            currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_NETBIOS);
+                            currNodeEntry.setLabelSource(NodeLabelSource.NETBIOS);
                             currNodeEntry.setNetBIOSName(netbiosName);
 
                             if (smbc.getDomainName() != null) {
@@ -2302,7 +2304,7 @@ public final class RescanProcessor implements Runnable {
             labelSet = true;
 
             currNodeEntry.setLabel(savedSmbcRef.getNbtName());
-            currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_NETBIOS);
+            currNodeEntry.setLabelSource(NodeLabelSource.NETBIOS);
             currNodeEntry.setNetBIOSName(currNodeEntry.getLabel());
 
             if (savedSmbcRef.getDomainName() != null) {
@@ -2348,7 +2350,7 @@ public final class RescanProcessor implements Runnable {
                 if (str != null && str.length() > 0) {
                     labelSet = true;
                     currNodeEntry.setLabel(str);
-                    currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_SYSNAME);
+                    currNodeEntry.setLabelSource(NodeLabelSource.SYSNAME);
                 }
             }
         }
@@ -2360,7 +2362,7 @@ public final class RescanProcessor implements Runnable {
              */
             if (primaryIf != null) {
                 currNodeEntry.setLabel(str(primaryIf));
-                currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_ADDRESS);
+                currNodeEntry.setLabelSource(NodeLabelSource.ADDRESS);
             } else {
                 /*
                  * If all else fails, just use the current values from
@@ -2402,7 +2404,7 @@ public final class RescanProcessor implements Runnable {
             String nodeTypeStr = rs.getString(1);
             if (!rs.wasNull()) {
                 char nodeType = nodeTypeStr.charAt(0);
-                if (nodeType == DbNodeEntry.NODE_TYPE_DELETED) {
+                if (NodeType.DELETED.toString().equals(nodeType)) {
                     nodeDeleted = true;
                 }
             }
@@ -3041,12 +3043,16 @@ public final class RescanProcessor implements Runnable {
 
         if (originalEntry.getLabel() != null) {
             bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, originalEntry.getLabel());
-            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, originalEntry.getLabelSource());
+            if (originalEntry.getLabelSource() != null) {
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, originalEntry.getLabelSource().toString());
+            }
         }
 
         if (updatedEntry.getLabel() != null) {
             bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, updatedEntry.getLabel());
-            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, updatedEntry.getLabelSource());
+            if (updatedEntry.getLabelSource() != null) {
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, updatedEntry.getLabelSource().toString());
+            }
         }
 
         LOG.debug("createNodeLabelChangedEvent: successfully created nodeLabelChanged event for nodeid: {}", updatedEntry.getNodeId());
@@ -3242,7 +3248,9 @@ public final class RescanProcessor implements Runnable {
         // Add node label and node label source
         if (newNode.getLabel() != null) {
             bldr.addParam(EventConstants.PARM_NODE_LABEL, newNode.getLabel());
-            bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, newNode.getLabelSource());
+            if (newNode.getLabelSource() != null) {
+                bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, newNode.getLabelSource().toString());
+            }
         }
 
         // Add nodeSysName

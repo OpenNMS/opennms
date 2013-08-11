@@ -33,7 +33,6 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Event Window.
@@ -61,7 +60,7 @@ public class EventWindow extends Window {
         setClosable(false);
         setDraggable(false);
         setResizable(false);
-        addStyleName(Runo.WINDOW_DIALOG);
+        addStyleName("dialog");
         setSizeFull();
         setContent(new EventPanel(eventConfDao, eventProxy, fileName, events, logger) {
             @Override
@@ -73,7 +72,7 @@ public class EventWindow extends Window {
                 close();
             }
             @Override
-            public void failure() {
+            public void failure(String reason) {
                 close();
             }
         });

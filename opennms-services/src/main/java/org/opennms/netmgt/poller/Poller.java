@@ -74,15 +74,13 @@ import org.springframework.context.annotation.Scope;
  * @author ranger
  * @version $Id: $
  */
-@Scope(value="singleton")
 public class Poller extends AbstractServiceDaemon {
     
     private final static Logger LOG = LoggerFactory.getLogger(Poller.class);
 
     private final static String LOG4J_CATEGORY = "poller";
 
-    @Autowired
-    private final static Poller m_singleton = new Poller();
+//    private final static Poller m_singleton = new Poller();
 
     private boolean m_initialized = false;
 
@@ -266,7 +264,6 @@ public class Poller extends AbstractServiceDaemon {
         LOG.debug("init: serviceUnresponsive behavior: {}", (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
-        
         try {
             LOG.debug("init: Closing outages for unmanaged services");
             
@@ -312,7 +309,7 @@ public class Poller extends AbstractServiceDaemon {
         
         OnmsOutage outage = m_outageDao.findByServiceStatus();
         outage.setIfRegainedService(closeTime);
-        
+        LOG.info("******************************CLEARED******************");
         outage = m_outageDao.findByIpInterfaceIsManaged();
         outage.setIfRegainedService(closeTime);
     }
@@ -446,14 +443,14 @@ public class Poller extends AbstractServiceDaemon {
 		getScheduler().resume();
 	}
 
-    /**
-     * <p>getInstance</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.Poller} object.
-     */
-    public static Poller getInstance() {
-        return m_singleton;
-    }
+//    /**
+//     * <p>getInstance</p>
+//     *
+//     * @return a {@link org.opennms.netmgt.poller.Poller} object.
+//     */
+//    public static Poller getInstance() {
+//        return m_singleton;
+//    }
 
     /**
      * <p>getServiceMonitor</p>

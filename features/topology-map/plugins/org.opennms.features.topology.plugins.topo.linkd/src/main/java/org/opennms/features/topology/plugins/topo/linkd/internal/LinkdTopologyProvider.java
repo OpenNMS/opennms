@@ -32,9 +32,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -61,6 +60,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.LoggerFactory;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
@@ -229,13 +229,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
      * Do not use directly. Call {@link #getNodeStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static final Map<Character, String> m_nodeStatusMap;
+    private static final EnumMap<NodeType, String> m_nodeStatusMap;
 
     static {
-        m_nodeStatusMap = new HashMap<Character, String>();
-        m_nodeStatusMap.put('A', "Active");
-        m_nodeStatusMap.put(' ', "Unknown");
-        m_nodeStatusMap.put('D', "Deleted");                        
+        m_nodeStatusMap = new EnumMap<NodeType, String>(NodeType.class);
+        m_nodeStatusMap.put(NodeType.ACTIVE, "Active");
+        m_nodeStatusMap.put(NodeType.UNKNOWN, "Unknown");
+        m_nodeStatusMap.put(NodeType.DELETED, "Deleted");                        
     }
     
      static final String[] OPER_ADMIN_STATUS = new String[] {
@@ -400,7 +400,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
                     newGroupVertex.setLocked(eachVertexInFile.locked);
                     if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                    newGroupVertex.setParent(eachVertexInFile.parent);
+                    if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
                     newGroupVertex.setSelected(eachVertexInFile.selected);
                     newGroupVertex.setStyleName(eachVertexInFile.styleName);
                     newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
@@ -409,7 +409,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 }
             }
             for (Vertex vertex: getVertices()) {
-                if (vertex.getParent() != null) {
+                if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
                     log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
                     setParent(vertex, vertex.getParent());
                 }
@@ -422,7 +422,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     final Vertex parent = getVertex(eachVertexInFile.parent);
                     if (child == null || parent == null) continue;
                     log("loadtopology: setting parent of " + child + " to " + parent);
-                    setParent(child, parent);
+                    if (!child.equals(parent)) setParent(child, parent);
                 }
             }
         } else {
@@ -540,7 +540,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
         
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Status: " +getNodeStatusString(node.getType().charAt(0)));
+        tooltipText.append( "Status: " +getNodeStatusString(node.getType()));
         if (ip != null && ip.isManaged()) {
             tooltipText.append( " / Managed");
         } else {
@@ -594,7 +594,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
      * @param c a char.
      * @return a {@link java.lang.String} object.
      */
-    private static String getNodeStatusString(char c) {
+    private static String getNodeStatusString(NodeType c) {
         return m_nodeStatusMap.get(c);
     }
     

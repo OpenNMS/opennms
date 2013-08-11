@@ -81,6 +81,7 @@
         color: #999;
         font-size: 11px;
         line-height: 1.25em;
+        text-align: left;
     }
     
     .navbar a{
@@ -92,11 +93,13 @@
     #linkbar li{ list-style: none; display: inline; padding-right: 0.75em; }
     
     #headernavbarright {
-        /*
+        
         position: relative;
-        float: right;
-        */
+        
+/*         float: right;  */
+        
         padding: 2px 0px 5px 0px;
+        text-align: right;
     }
 
 	div.nav-dropdown {

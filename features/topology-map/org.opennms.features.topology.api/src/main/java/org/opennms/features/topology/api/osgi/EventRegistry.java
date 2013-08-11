@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.api.osgi;
 
+import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +46,11 @@ import java.util.List;
  */
 public class EventRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventRegistry.class);
+    private final Logger LOG = LoggerFactory.getLogger(getClass());
+    private final BundleContext bundleContext;
 
-    private final OnmsServiceManager serviceManager;
-
-    public EventRegistry(OnmsServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
+    public EventRegistry(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     /**
@@ -103,13 +104,17 @@ public class EventRegistry {
                 listener.setEventMethod(eachEventConsumerMethod);
 
                 // register as event listener for session scope
-                serviceManager.registerAsService(listener, applicationContext, EventListener.getProperties(eachEventConsumerMethod.getParameterTypes()[0]));
+                getOnmsServiceManager().registerAsService(listener, applicationContext, EventListener.getProperties(eachEventConsumerMethod.getParameterTypes()[0]));
             }
         }
     }
     
-    public EventConsumerScope getScope(VaadinApplicationContext vaadinApplicationContext) {
-        return new EventConsumerScopeImpl(serviceManager, vaadinApplicationContext);
+    public EventProxy getScope(VaadinApplicationContext vaadinApplicationContext) {
+        return new EventProxyImpl(bundleContext, vaadinApplicationContext);
+    }
+
+    private OnmsServiceManager getOnmsServiceManager() {
+        return new OnmsServiceManagerLocator().lookup(bundleContext);
     }
 
     private boolean isPossibleEventConsumer(Object possibleEventConsumer) {

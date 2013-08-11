@@ -37,16 +37,15 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class MIB Compiler Application.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-@SuppressWarnings("serial")
+@Theme("opennms")
 @Title("MIB Compiler Application")
-@Theme(Reindeer.THEME_NAME)
+@SuppressWarnings("serial")
 public class MibCompilerApplication extends UI {
 
     /** The OpenNMS Event Proxy. */
@@ -64,7 +63,7 @@ public class MibCompilerApplication extends UI {
     /**
      * Sets the OpenNMS Event Proxy.
      *
-     * @param eventConfDao the new OpenNMS Event Proxy
+     * @param eventProxy the new OpenNMS event proxy
      */
     public void setEventProxy(EventProxy eventProxy) {
         this.eventProxy = eventProxy;
@@ -91,7 +90,7 @@ public class MibCompilerApplication extends UI {
     /**
      * Sets the OpenNMS Data Collection Configuration DAO.
      *
-     * @param eventConfDao the new OpenNMS Data Collection Configuration DAO
+     * @param dataCollectionDao the new OpenNMS Data Collection Configuration DAO
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;
