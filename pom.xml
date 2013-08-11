@@ -300,6 +300,17 @@
         <version>1.4</version>
       </plugin>
       <plugin>
+        <groupId>com.atlassian.bamboo.maven.sharing</groupId>
+        <artifactId>bamboo-artifact-sharing-maven-plugin</artifactId>
+        <version>5.0</version>
+        <executions>
+          <execution>
+            <id>sharing</id>
+            <goals><goal>share</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>2.3</version>
@@ -2758,6 +2769,13 @@
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
       <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>atlassian-repo</id>
+      <name>Atlassian Maven Repository</name>
+      <url>https://maven.atlassian.com/content/repositories/atlassian-public</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
