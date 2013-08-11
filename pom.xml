@@ -465,17 +465,6 @@
     </pluginManagement>
     <plugins>
       <plugin>
-        <groupId>com.atlassian.bamboo.maven.sharing</groupId>
-        <artifactId>bamboo-artifact-sharing-maven-plugin</artifactId>
-        <version>5.0</version>
-        <executions>
-          <execution>
-            <id>sharing</id>
-            <goals><goal>share</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
@@ -2328,13 +2317,6 @@
       <id>java-net-repo</id>
       <name>Java.net Repository</name>
       <url>http://maven.opennms.org/content/groups/java.net-release</url>
-    </pluginRepository>
-    <pluginRepository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>atlassian-repo</id>
-      <name>Atlassian Maven Repository</name>
-      <url>https://maven.atlassian.com/content/repositories/atlassian-public</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
