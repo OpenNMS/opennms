@@ -14,13 +14,18 @@
         border-radius: 6px 6px 6px 6px;
         box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2), 0 -1px 0 0 rgba(0, 0, 0, 0.3) inset;
         color: #FFFFFF;
-        display: inline-block;
         font-size: 16px;
         font-weight: normal;
         padding: 5px;
         text-align: left;
         text-decoration: none;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+		display: none;
+    }
+    .download-link.unavailable {
+        background-color: #656565;
+        background-image: linear-gradient(#818181, #656565);
+        background-repeat: repeat-x;
     }
     .download-link P {
         font-size: 12px;
@@ -28,6 +33,7 @@
         margin: 0px;
     }
   </style>
+  <script type="text/javascript" src="js/jquery-2.0.3.js"></script>
  </head>
  <body>
   <div id='header'>
@@ -61,22 +67,40 @@
     <p>After configuring the OpenNMS yum repository, you can install the <code>opennms-remote-poller</code> package via yum.</p>
     <h2>APT-based Linux (Debian, Ubuntu)</h2>
     <p>After configuring the OpenNMS apt repository, you can install the <code>opennms-remote-poller</code> package via apt-get.</p>
-    <!--
+	<!-- Check to see if the installer EXE is present on the system; if so, show the download link. -->
+	<script type="text/javascript">
+		$.ajax({
+			url:'opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe',
+			method: 'HEAD',
+			error: function()
+			{
+				$('#download-unavailable').show();
+			},
+			success: function()
+			{
+				$('#download-local').show();
+			}
+		});
+	</script>
     <h2>Microsoft Windows</h2>
+	<!--
     <p>
       There are two ways to install the OpenNMS remote poller on Windows. You can either install it as a Windows service that 
       wraps Java Web Start or you can install it with a local copy of the JAR. Both install options are available from the following
       installer package.
     </p>
+	-->
     <p>
       The following installer package can be used to register the Java Web Start version of the remote poller as a Windows service.
     </p>
-    <div class="download-link">
-      <span>&#x25BC; <a href="installer.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
+    <div id="download-local" class="download-link">
+      <span>&#x25BC; <a href="opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
       <p>Windows 2000, XP, 2003, Vista, 2008, 7, 8, 2012</p>
-      <p>Version ${project.version}</p>
+      <p>Version 1.13.0-SNAPSHOT</p>
     </div>
-    -->
+    <div id="download-unavailable" class="download-link unavailable">
+      <span>The Windows installer is not available for download on this system.</span>
+    </div>
   </div>
  </body>
 </html>
