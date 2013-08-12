@@ -179,8 +179,10 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Integer getNodeId(String endPoint) {
+        if (endPoint == null){
+            return null;
+        }
         Collection<OnmsNode> nodes = m_nodeDao.findByLabel(endPoint);
-        
         if(nodes.size() > 0){
             return nodes.iterator().next().getId();
         }
