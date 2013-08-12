@@ -64,7 +64,7 @@
 <%
     XssRequestWrapper req = new XssRequestWrapper(request);
     OnmsAlarm alarm = (OnmsAlarm) request.getAttribute("alarm");
-    final String alarmId = (String)request.getAttribute("alarm");
+    final String alarmId = (String)request.getAttribute("alarmId");
 
     if (alarm == null) {
         throw new AlarmIdNotFoundException("Missing alarm request attribute.", alarmId);
@@ -113,7 +113,7 @@
         <td class="divider" width="28%"><%=alarm.getSeverity().getLabel()%></td>
         <th width="100em">Node</th>
         <td class="divider" width="28%">
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="nodeLink" value="element/node.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
             </c:url>
@@ -129,7 +129,7 @@
         <th>Interface</th>
         <td>
             <% if (alarm.getIpAddr() != null) {%>
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
                 <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>

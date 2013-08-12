@@ -77,7 +77,7 @@ public abstract class Util extends Object {
      * <p>
      * If this guess is wrong, you can override it by setting the property
      * <code>opennms.web.base-url</code> in opennms.properties
-     * (for embedded Jetty) or WEB-INF/configuration.properties (for Tomcat).
+     * (for embedded Jetty).
      * </p>
      *
      * @param request

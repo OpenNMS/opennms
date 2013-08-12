@@ -31,6 +31,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
@@ -286,6 +287,17 @@ final class CollectableService implements ReadyRunnable {
      */
     @Override
     public void run() {
+        Logging.withPrefix(Collectd.LOG4J_CATEGORY, new Runnable() {
+
+            @Override
+            public void run() {
+                doRun();
+            }
+            
+        });
+    }
+
+    private void doRun() {
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
             LOG.debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for {}", this);
@@ -303,12 +315,14 @@ final class CollectableService implements ReadyRunnable {
             try {
                 doCollection();
                 updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
+            } catch (CollectionTimedOut e) {
+                LOG.info(e.getMessage());
+                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+            } catch (CollectionWarning e) {
+                LOG.warn(e.getMessage(), e);
+                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
             } catch (CollectionException e) {
-                if (e instanceof CollectionWarning) {
-                    LOG.warn(e.getMessage(), e);
-                } else {
-                    LOG.error(e.getMessage(), e);
-                }
+                LOG.error(e.getMessage(), e);
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
             } catch (Throwable e) {
                 LOG.error(e.getMessage(), e);

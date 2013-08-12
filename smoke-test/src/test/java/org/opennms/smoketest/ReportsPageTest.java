@@ -38,90 +38,77 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        selenium.click("link=Reports");
-        waitForPageToLoad();
+        clickAndWait("link=Reports");
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertTrue(selenium.isTextPresent("Reports"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
-        assertTrue(selenium.isTextPresent("Key SNMP Customized"));
-        assertTrue(selenium.isTextPresent("Name contains"));
+        waitForText("Reports");
+        waitForText("Descriptions");
+        waitForText("Key SNMP Customized");
+        waitForText("Name contains");
     }
      
     @Test
-    public void testAllLinksArePresent() {
-        assertTrue(selenium.isElementPresent("link=Resource Graphs"));
-        assertTrue(selenium.isElementPresent("link=KSC Performance, Nodes, Domains"));
-        assertTrue(selenium.isElementPresent("link=Database Reports"));
-        assertTrue(selenium.isElementPresent("link=Statistics Reports"));
+    public void testAllLinksArePresent() throws InterruptedException {
+        waitForElement("link=Resource Graphs");
+        waitForElement("link=KSC Performance, Nodes, Domains");
+        waitForElement("link=Database Reports");
+        waitForElement("link=Statistics Reports");
     }
         
      @Test
-     public void testAllFormsArePresent() {
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
-        assertTrue(selenium.isElementPresent("//input[@value='KSC Reports']"));
+     public void testAllFormsArePresent() throws InterruptedException {
+        waitForElement("css=input[type=submit]");
+        waitForElement("//input[@value='KSC Reports']");
      }
 //TODO Tak: Build report download test
      @Ignore
      @Test
-     public void testDownloadSampleReport() {
-    	 selenium.click("link=Database Reports");
-         assertTrue(selenium.isElementPresent("link=Online reports"));
-    	 selenium.click("link=Online reports");
-    	 assertTrue(selenium.isTextPresent("Kochwurst sample JasperReport"));
-    	 selenium.click("link=execute");
+     public void testDownloadSampleReport() throws InterruptedException {
+    	 clickAndWait("link=Database Reports");
+         waitForElement("link=Online reports");
+    	 clickAndWait("link=Online reports");
+    	 waitForText("Kochwurst sample JasperReport");
+    	 clickAndWait("link=execute");
     	 selenium.click("id=run");
     	 selenium.waitForPageToLoad("300000");
-    	 selenium.goBack();
+    	 goBack();
      }
      
       @Test
-      public void testAllLinks() {
-        selenium.click("link=Resource Graphs");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Standard Resource"));
-        assertTrue(selenium.isTextPresent("Performance Reports"));
-        assertTrue(selenium.isTextPresent("Custom Resource"));
-        assertTrue(selenium.isTextPresent("Performance Reports"));
-        assertTrue(selenium.isTextPresent("Network Performance Data"));
-        assertTrue(selenium.isTextPresent("The Standard Performance"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=KSC Performance, Nodes, Domains");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Customized Reports"));
-        assertTrue("no Node & Domain Interface Reports found, content is: " + selenium.getHtmlSource(), selenium.isTextPresent("Node & Domain Interface Reports"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=Database Reports");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Database Reports"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
-        assertTrue(selenium.isTextPresent("You may run or schedule"));
-        assertTrue(selenium.isElementPresent("link=List reports"));
-        assertTrue(selenium.isElementPresent("link=View and manage pre-run reports"));
-        assertTrue(selenium.isElementPresent("link=Manage the batch report schedule"));
-        selenium.goBack();
+      public void testAllLinks() throws InterruptedException {
+        clickAndWait("link=Resource Graphs");
+        waitForText("Standard Resource");
+        waitForText("Performance Reports");
+        waitForText("Custom Resource");
+        waitForText("Performance Reports");
+        waitForText("Network Performance Data");
+        waitForText("The Standard Performance");
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=KSC Performance, Nodes, Domains");
+        waitForText("Customized Reports");
+        waitForText("Node & Domain Interface Reports");
+        waitForText("Descriptions");
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
+        clickAndWait("link=Database Reports");
+        waitForText("Database Reports");
+        waitForText("Descriptions");
+        waitForText("You may run or schedule");
+        waitForElement("link=List reports");
+        waitForElement("link=View and manage pre-run reports");
+        waitForElement("link=Manage the batch report schedule");
+        goBack();
         
-        waitForPageToLoad();
-        selenium.click("link=Statistics Reports");
-        waitForPageToLoad();
+        clickAndWait("link=Statistics Reports");
         assertEquals("Statistics Reports List | OpenNMS Web Console", selenium.getTitle());
-        selenium.click("link=Log out");
-        waitForPageToLoad();
-        selenium.click("css=strong");
-        waitForPageToLoad();
+        clickAndWait("link=Log out");
+        clickAndWait("css=strong");
         selenium.type("id=input_j_username", "admin");
         selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
-        waitForPageToLoad();
-        selenium.click("link=Log out");
-        waitForPageToLoad();
-        selenium.click("css=strong");
-        waitForPageToLoad();
+        clickAndWait("name=Login");
+        clickAndWait("link=Log out");
+        clickAndWait("css=strong");
     }
 
 }

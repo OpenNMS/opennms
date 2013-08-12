@@ -53,6 +53,9 @@ public class DefaultParameterConversionService implements
 
         ReportParameters reportParameters = new ReportParameters();
         
+        if (configParameters == null) {
+            return reportParameters;
+        }
         
         // add date parms to criteria
         

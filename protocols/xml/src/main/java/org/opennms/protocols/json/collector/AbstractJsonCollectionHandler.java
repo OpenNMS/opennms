@@ -29,6 +29,7 @@
 package org.opennms.protocols.json.collector;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -173,7 +174,9 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             URL url = UrlFactory.getUrl(urlString, request);
             URLConnection c = url.openConnection();
             is = c.getInputStream();
-            JSONObject jsonObject = JSONObject.fromObject( is.toString() );
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(is, writer);
+            JSONObject jsonObject = JSONObject.fromObject(writer.toString());
             UrlFactory.disconnect(c);
             return jsonObject;
         } catch (Exception e) {

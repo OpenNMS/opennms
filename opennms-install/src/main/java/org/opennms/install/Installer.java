@@ -59,7 +59,6 @@ import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.ConnectionFactoryUtil;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
-import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
@@ -942,7 +941,6 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] argv) throws Exception {
-        Logging.configureInstallerLogging();
         new Installer().install(argv);
     }
 

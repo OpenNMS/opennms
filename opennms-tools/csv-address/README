@@ -1,0 +1,6 @@
+This project was created to provide an external tool for users 
+that want to update the Assets table from a CSV file export.  
+
+This current implementation allows up to bulk-update asset records 
+by provisioning group.  Next improvement would be to have a
+a one-for-one update (row for rec).

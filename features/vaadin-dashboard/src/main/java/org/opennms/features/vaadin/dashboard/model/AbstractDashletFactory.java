@@ -31,6 +31,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.config.ui.PropertiesWindow;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -121,7 +122,7 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * @param requiredParameters the parameter {@link Map} to be set
      */
     public void setRequiredParameters(Map<String, String> requiredParameters) {
-        m_requiredParameters = requiredParameters;
+        m_requiredParameters = new TreeMap<String, String>(requiredParameters);
     }
 
     /**
@@ -206,5 +207,15 @@ public abstract class AbstractDashletFactory implements DashletFactory {
         stringBuilder.append("</table>");
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Returns the window used for configuring a {@link DashletSpec} instance.
+     *
+     * @param dashletSpec the {@link DashletSpec} instance
+     * @return the {@link DashletConfigurationWindow}
+     */
+    public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec) {
+        return new PropertiesWindow(dashletSpec, this);
     }
 }

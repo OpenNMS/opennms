@@ -42,47 +42,47 @@ public class MainTest {
     }
     @Test
     public void testParseTotalCollectionSortFlag() {
-        setup("TestLogFile.log", "-tc");
+        setup("target/test-classes/TestLogFile.log", "-tc");
         assertEquals("TOTALCOLLECTS", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseAverageCollectionTime() {
-        setup("TestLogFile.log", "-act");
+        setup("target/test-classes/TestLogFile.log", "-act");
         assertEquals("AVGCOLLECTTIME", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseTotalCollectionTime(){
-        setup("TestLogFile.log", "-tct");
+        setup("target/test-classes/TestLogFile.log", "-tct");
         assertEquals("TOTALCOLLECTTIME", main.getCollector().m_sortColumn.toString());
     }
     @Test
     public void testParseAverageTimeBetweenCollection() {
-        setup("TestLogFile.log","-atbc");
+        setup("target/test-classes/TestLogFile.log","-atbc");
         assertEquals("AVGTIMEBETWEENCOLLECTS", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseAverageSuccessfulCollectionTime() {
-        setup("TestLogFile.log","-asct");
+        setup("target/test-classes/TestLogFile.log","-asct");
         assertEquals("AVGSUCCESSCOLLECTTIME", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseSuccessfulPercentage() {
-        setup("TestLogFile.log","-sp");
+        setup("target/test-classes/TestLogFile.log","-sp");
         assertEquals("SUCCESSPERCENTAGE", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseAverageUnsuccessfulCollectionTime() {
-        setup("TestLogFile.log","-auct");
+        setup("target/test-classes/TestLogFile.log","-auct");
         assertEquals("AVGUNSUCCESSCOLLECTTIME", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseUnsuccessfulPercentage() {
-        setup("TestLogFile.log","-up");
+        setup("target/test-classes/TestLogFile.log","-up");
         assertEquals("UNSUCCESSPERCENTAGE", main.getCollector().m_sortColumn.toString());
      }
     @Test
     public void testParseTotalPersistTime() {
-        setup("TestLogFile.log","-tpt");
+        setup("target/test-classes/TestLogFile.log","-tpt");
         assertEquals("TOTALPERSISTTIME", main.getCollector().m_sortColumn.toString());
      }
 }

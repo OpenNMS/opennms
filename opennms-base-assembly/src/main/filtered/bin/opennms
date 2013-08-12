@@ -316,6 +316,13 @@ doStart(){
 		APP_PARMS_BEFORE="start $SERVICE"
 	fi
 
+	JAVA_EXE=`$OPENNMS_HOME/bin/runjava -c -v`
+	JAVA_EXE_BINDIR=`dirname $JAVA_EXE`
+	if [ ! -x "$JAVA_EXE_BINDIR"/javac ]; then
+		# this is a JRE, try to use ECJ for Jetty compilation instead
+		APP_VM_PARMS="-Dorg.apache.jasper.compiler.disablejsr199=true $APP_VM_PARMS"
+	fi
+
 	if [ -z "$NOEXECUTE" ]; then
 		echo "------------------------------------------------------------------------------" >> "$REDIRECT"
 		date >> "$REDIRECT"

@@ -6,11 +6,15 @@
         <property name="requiredParameters">
             <map>
                 <entry key="imageUrl" value=""/>
+                <entry key="maximizeHeight" value="false"/>
+                <entry key="maximizeWidth" value="false"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">
             <map>
                 <entry key="imageUrl" value="The URL of the image to be displayed"/>
+                <entry key="maximizeHeight" value="Indicates whether image height should be maximized"/>
+                <entry key="maximizeWidth" value="Indicates whether image width should be maximized"/>
             </map>
         </property>
 

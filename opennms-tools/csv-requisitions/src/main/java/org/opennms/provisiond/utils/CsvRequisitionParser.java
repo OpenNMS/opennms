@@ -88,9 +88,9 @@ public class CsvRequisitionParser {
     private static String m_dbUser = "opennms";
     private static String m_dbPass = "opennms";
 	private static Boolean m_useNodeId = false;
-	private static List<String> m_categoryList = null;
+	private static List<String> m_categoryList = new ArrayList<String>();
 	private static Boolean m_categoryAddExisting = true;
-	private static List<String> m_serviceList = null;
+	private static List<String> m_serviceList = new ArrayList<String>();
 	private static Boolean m_addOnly = true;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
@@ -371,17 +371,15 @@ public class CsvRequisitionParser {
 		if (categories != null) {
 			System.out.println("\t"+PROPERTY_CATEGORY_LIST+":"+categories);
 			String[] cats = categories.split(",");
-			m_categoryList = new ArrayList<String>();
 			for (String cat : cats) {
 				m_categoryList.add(cat);
 			}
 		}
 		
 		String services = System.getProperty(PROPERTY_SERVICE_LIST);
-		if (categories != null) {
+		if (services != null) {
 			System.out.println("\t"+PROPERTY_SERVICE_LIST+":"+services);
 			String[] srvs = services.split(",");
-			m_serviceList = new ArrayList<String>();
 			for (String srv : srvs) {
 				m_serviceList.add(srv);
 			}
@@ -498,9 +496,8 @@ public class CsvRequisitionParser {
 		ric.add(iface);
 				
 		//add categories requisition level categories
-		RequisitionCategoryCollection rcc = null;
+		RequisitionCategoryCollection rcc = new RequisitionCategoryCollection();
 		if (m_categoryList != null && m_categoryList.size() > 0) {
-			rcc = new RequisitionCategoryCollection();
 			for (String cat : m_categoryList) {
 				rcc.add(new RequisitionCategory(cat));
 			}
@@ -514,7 +511,11 @@ public class CsvRequisitionParser {
 		}
 		
 		rn.setBuilding(foreignSource);
-		rn.setCategories(rcc);
+		
+		if (rcc.size() >= 1) {
+			rn.setCategories(rcc);
+		}
+		
 		rn.setForeignId(rd.getForeignId());
 		rn.setInterfaces(ric);
 		

@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -51,11 +50,9 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class Nms5414Test {
+public class Nms5414Test extends ProvisioningTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(Nms5414Test.class);
     
     @Autowired
@@ -120,10 +117,11 @@ public class Nms5414Test {
     public void testScanIPV6z() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
+        final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
 
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
-        
+        waitForEverything();
+
         final OnmsNode node = getNodeDao().get(nextNodeId);
         
         eventRecieved.await();
@@ -152,23 +150,7 @@ public class Nms5414Test {
     	final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
-    }
-    
-    private CountDownLatch anticipateEvents(String... ueis) {
-        final CountDownLatch eventRecieved = new CountDownLatch(1);
-        m_eventSubscriber.addEventListener(new EventListener() {
-
-            @Override
-            public void onEvent(Event e) {
-                eventRecieved.countDown();
-            }
-
-            @Override
-            public String getName() {
-                return "Test Initial Setup";
-            }
-        }, Arrays.asList(ueis));
-        return eventRecieved;
+        waitForEverything();
     }
     
     private NodeDao getNodeDao() {

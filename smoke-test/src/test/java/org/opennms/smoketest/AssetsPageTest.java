@@ -35,34 +35,29 @@ public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Assets");
-        waitForPageToLoad();
+        clickAndWait("link=Assets");
     }
 
     @Test
-    public void testAllTextIsPresent() { 
-        assertTrue(selenium.isTextPresent("Search Asset Information"));
-        assertTrue(selenium.isTextPresent("Assets Inventory"));
-        assertTrue(selenium.isTextPresent("nter the data by hand"));
-        assertTrue(selenium.isTextPresent("Assets with asset numbers"));
-        assertTrue(selenium.isTextPresent("Assets in category"));
+    public void testAllTextIsPresent() throws InterruptedException { 
+        waitForText("Search Asset Information");
+        waitForText("Assets Inventory");
+        waitForText("nter the data by hand");
+        waitForText("Assets with asset numbers");
+        waitForText("Assets in category");
     }    
 
     @Test 
-    public void testAllLinksArePresent() {
-        assertTrue(selenium.isElementPresent("css=input[type=submit]"));
-        assertTrue(selenium.isElementPresent("name=searchvalue"));
-        assertTrue(selenium.isElementPresent("link=All nodes with asset info"));
+    public void testAllLinksArePresent() throws InterruptedException {
+        waitForElement("css=input[type=submit]");
+        waitForElement("name=searchvalue");
+        waitForElement("link=All nodes with asset info");
     }
     @Test
-    public void testAllLinks() {
-        selenium.click("link=All nodes with asset info");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Assets"));
-        selenium.click("//div[@id='content']/div/h2/a[2]");
-        waitForPageToLoad();
-        selenium.click("link=Log out");
-        waitForPageToLoad();
+    public void testAllLinks() throws InterruptedException {
+        clickAndWait("link=All nodes with asset info");
+        waitForText("Assets");
+        clickAndWait("//div[@id='content']/div/h2/a[2]");
     }
 
 }

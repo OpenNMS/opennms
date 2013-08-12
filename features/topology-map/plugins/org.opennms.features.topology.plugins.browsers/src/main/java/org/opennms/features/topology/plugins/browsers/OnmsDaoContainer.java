@@ -28,34 +28,24 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import org.apache.commons.lang.UnhandledException;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.api.SelectionListener;
+//import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.LoggerFactory;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, SelectionNotifier, SelectionListener {
+import java.io.Serializable;
+import java.util.*;
+
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener
+{
 
     private static final long serialVersionUID = -9131723065433979979L;
 
@@ -402,9 +392,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         return sortEntries;
     }
 
-    @Override
-	public abstract void selectionChanged(SelectionContext selectionContext);
-
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
 		addItemSetChangeListener(listener);
@@ -448,23 +435,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         return Collections.unmodifiableList(m_restrictions);
     }
 
-	@Override
-	public void addSelectionListener(SelectionListener listener) {
-		if (listener != null) {
-			m_selectionListeners.add(listener);
-		}
-	}
-	
-	@Override
-	public void setSelectionListeners(Set<SelectionListener> listeners) {
-		m_selectionListeners = listeners;
-	}
-	
-	@Override
-	public void removeSelectionListener(SelectionListener listener) {
-		m_selectionListeners.remove(listener);
-	}
-
     public void addBeanToHibernatePropertyMapping(final String key, final String value) {
         m_beanToHibernatePropertyMapping.put(key, value);
     }
@@ -477,16 +447,10 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     @Override
     public List<?> getItemIds(int startIndex, int numberOfItems) {
         int endIndex = startIndex + numberOfItems;
-        if (endIndex >= size()) endIndex = size() - 1;
-        Page page = new Page(1000, size);  // only get 10000 items at once
-        page.offset = startIndex;
+        if (endIndex > size()) endIndex = size() - 1;
         List<K> itemIds = new ArrayList<K>();
-        for (int i=startIndex; i<endIndex; i+=page.length) {
-            List<T> tmpItems = m_dao.findMatching(getCriteria(page, false));
-            for (T eachItem : tmpItems) {
-                itemIds.add(getId(eachItem));
-            }
-            page.updateOffset(page.offset + page.length);
+        for (int i=startIndex; i<endIndex; i++) {
+            itemIds.add((K)getIdByIndex(i));
         }
         return itemIds;
     }

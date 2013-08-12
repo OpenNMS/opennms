@@ -75,7 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
 @Transactional
-public class InvalidRequisitionDataTest implements InitializingBean {
+public class InvalidRequisitionDataTest extends ProvisioningTestCase implements InitializingBean {
     
     @Autowired
     private MockNodeDao m_nodeDao;
@@ -119,13 +119,17 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         m_eventManager.setEventAnticipator(m_anticipator);
         m_eventManager.setSynchronous(true);
         m_provisioner.start();
+
+        // make sure node scan scheduler is running initially
+        getScanExecutor().resume();
+        getScheduledExecutor().resume();
     }
 
     @After
     public void tearDown() throws Exception {
+        waitForEverything();
         m_anticipator.verifyAnticipated();
         m_populator.resetDatabase();
-        m_provisioner.waitFor();
     }
 
     @Test
@@ -140,10 +144,12 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         m_anticipator.anticipateEvent(getNodeAdded(nextNodeId));
         m_anticipator.anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_anticipator.anticipateEvent(getNodeGainedService(nextNodeId));
+        m_anticipator.anticipateEvent(getNodeScanCompleted(nextNodeId));
 
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
         m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), true);
+        waitForEverything();
         m_anticipator.verifyAnticipated();
 
         // should still import the node, just skip the asset field
@@ -169,11 +175,13 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         m_anticipator.anticipateEvent(getNodeAdded(nextNodeId));
         m_anticipator.anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_anticipator.anticipateEvent(getNodeGainedService(nextNodeId));
+        m_anticipator.anticipateEvent(getNodeScanCompleted(nextNodeId));
 
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
         m_provisioner.doImport(resource.getURL().toString(), true);
+        waitForEverything();
         m_anticipator.verifyAnticipated();
 
         // should still import the node, just skip the asset field
@@ -195,6 +203,7 @@ public class InvalidRequisitionDataTest implements InitializingBean {
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
         m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), true);
+        waitForEverything();
         m_anticipator.verifyAnticipated();
 
         // should fail to import the node, it should bomb if the requisition is unparseable
@@ -233,6 +242,11 @@ public class InvalidRequisitionDataTest implements InitializingBean {
     private Event getNodeGainedService(final int nodeId) {
         return new EventBuilder( EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond" )
         .setNodeid(nodeId).setInterface(InetAddressUtils.addr("10.0.0.1")).setService("ICMP").getEvent();
+    }
+
+    private Event getNodeScanCompleted(final int nodeId) {
+        return new EventBuilder( EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond" )
+        .setNodeid(nodeId).getEvent();
     }
 
     protected Resource getResource(final String location) {

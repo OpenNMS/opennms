@@ -92,17 +92,14 @@ public class NCSCriteriaServiceManager {
 
             @Override
             public void bundleChanged(BundleEvent event) {
-                // TODO Auto-generated method stub
                 switch(event.getType()) {
                     case BundleEvent.STOPPING:
                         removeAllServices();
                 }
-                
             }
             
         });
     }
-
 
     public boolean isCriteriaRegistered(String namespace, String sessionId) {
         List<ServiceRegistration<Criteria>> registrationList = m_registrationMap.get(sessionId);
@@ -115,10 +112,8 @@ public class NCSCriteriaServiceManager {
                 }    
             }
         }
-        
         return false;
     }
-
 
     public void unregisterCriteria(String namespace, String sessionId) {
         List<ServiceRegistration<Criteria>> registrationList = m_registrationMap.get(sessionId);
@@ -138,16 +133,13 @@ public class NCSCriteriaServiceManager {
         
     }
 
-
     public void addCriteriaServiceListener(ServiceListener listener, String sessionId, String namespace) {
         try {
             m_bundleContext.addServiceListener( listener, 
                     "(&(objectClass=org.opennms.features.topology.api.topo.Criteria)(sessionId=" + sessionId + ")(namespace=" + namespace + "))");
         } catch (InvalidSyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerFactory.getLogger(getClass()).error("addCriteriaServiceListener() failed", e);
         }
-        
     }
     
     public void removeCriteriaServiceListener(ServiceListener listener) {

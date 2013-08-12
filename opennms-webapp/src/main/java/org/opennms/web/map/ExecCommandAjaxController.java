@@ -37,8 +37,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.MDC;
-import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.map.view.Command;
@@ -46,7 +44,6 @@ import org.opennms.web.map.view.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * <p>
@@ -58,7 +55,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.18
  */
-public class ExecCommandAjaxController extends AbstractController {
+public class ExecCommandAjaxController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ExecCommandAjaxController.class);
 
@@ -74,9 +71,8 @@ public class ExecCommandAjaxController extends AbstractController {
 
     /** {@inheritDoc} */
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
+    protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        Logging.putPrefix(MapsConstants.LOG4J_CATEGORY);
 
         String id = request.getParameter("id");
 
@@ -205,9 +201,5 @@ public class ExecCommandAjaxController extends AbstractController {
         return commandToExec;
     }
     
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return handleRequest(request, response);
-    }
 
 }

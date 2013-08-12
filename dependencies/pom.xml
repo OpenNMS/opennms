@@ -43,14 +43,15 @@
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
-    <!-- <module>rrd4j</module> -->
     <module>rxtx</module>
     <module>servlet</module>
+    <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>
     <module>snmp</module>
     <module>snmp-test</module>
     <module>spring</module>
+    <module>spring-security-core</module>
     <module>spring-security</module>
     <module>spring-test</module>
     <module>spring-web</module>

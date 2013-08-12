@@ -62,7 +62,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemForeignSourceRepository.class);
     private String m_requisitionPath;
     private String m_foreignSourcePath;
-    private boolean m_updateDateStamps = true;
     
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -115,20 +114,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    /**
-     * <p>setUpdateDateStamps</p>
-     *
-     * @param update a boolean.
-     */
-    public void setUpdateDateStamps(final boolean update) {
-        m_writeLock.lock();
-        try {
-            m_updateDateStamps = update;
-        } finally {
-            m_writeLock.unlock();
-        }
-    }
-    
     /**
      * <p>getForeignSourceCount</p>
      *
@@ -211,9 +196,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             OutputStream outputStream = null;
             Writer writer = null;
             try {
-                if (m_updateDateStamps) {
-                    foreignSource.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(foreignSource, writer);
@@ -334,9 +316,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             Writer writer = null;
             OutputStream outputStream = null;
             try {
-                if (m_updateDateStamps) {
-                    requisition.updateDateStamp();
-                }
                 outputStream = new FileOutputStream(outputFile);
                 writer = new OutputStreamWriter(outputStream, "UTF-8");
                 JaxbUtils.marshal(requisition, writer);
@@ -365,11 +344,13 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_writeLock.lock();
         try {
             LOG.debug("Deleting requisition {} from {} (if necessary)", requisition.getForeignSource(), m_requisitionPath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("Unable to delete requisition file " + fileToDelete);
                 }
+            } else {
+                LOG.debug("File {} does not exist.", fileToDelete);
             }
         } finally {
             m_writeLock.unlock();
@@ -423,11 +404,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            final Requisition requisition = getRequisition(foreignSource);
-            if (requisition == null) {
-                return null;
-            }
-            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition).toURI().toURL();
+            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, foreignSource).toURI().toURL();
         } catch (final MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         } finally {

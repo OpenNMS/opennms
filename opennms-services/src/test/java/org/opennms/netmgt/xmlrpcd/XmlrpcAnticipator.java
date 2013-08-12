@@ -168,7 +168,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     private int m_port;
 
     /** default port number */
-    private static final int DEFAULT_PORT_NUMBER = 9000;
+    private static final int DEFAULT_PORT_NUMBER = 59000;
 
     /** logger */
     private Logger m_logger = LoggerFactory.getLogger(getClass());

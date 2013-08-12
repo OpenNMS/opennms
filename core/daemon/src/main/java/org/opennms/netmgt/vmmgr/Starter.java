@@ -75,19 +75,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @version $Id: $
  */
 public class Starter {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Starter.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(Starter.class);
+
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -101,63 +92,63 @@ public class Starter {
      * <p>startDaemon</p>
      */
     public void startDaemon() {
-    	try {
-    		configureLog4j();
+        try {
+            configureLog4j();
 
-    		setLogPrefix();
+            setLogPrefix();
 
-    		setupMx4jLogger();
+            setupMx4jLogger();
 
-    		loadGlobalProperties();
+            loadGlobalProperties();
 
-    		setDefaultProperties();
+            setDefaultProperties();
 
-    		start();
-    	} catch(Exception e) {
-    		die("Exception during startup: " + e.getMessage(), e);
-    	}
+            start();
+        } catch(Exception e) {
+            die("Exception during startup: " + e.getMessage(), e);
+        }
     }
-    
-    
-    private static class Mx4jSlf4JLogger extends mx4j.log.Logger {
-    	
-    	Logger m_slf4jLogger;
 
-		@Override
-		protected void log(int priority, Object msg, Throwable t) {
-			switch(priority) {
-			case mx4j.log.Logger.DEBUG:
-				m_slf4jLogger.debug(msg == null ? "" : msg.toString(), t);
-			case mx4j.log.Logger.ERROR:
-				m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
-			case mx4j.log.Logger.FATAL:
-				m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
-			case mx4j.log.Logger.INFO:
-				m_slf4jLogger.info(msg == null ? "" : msg.toString(), t);
-			case mx4j.log.Logger.TRACE:
-				m_slf4jLogger.trace(msg == null ? "" : msg.toString(), t);
-			case mx4j.log.Logger.WARN:
-				m_slf4jLogger.warn(msg == null ? "" : msg.toString(), t);
-			}
-		}
 
-		@Override
-		protected void setCategory(String category) {
-			super.setCategory(category);
-			m_slf4jLogger = LoggerFactory.getLogger(category);
-		}
-    	
+    public static class Mx4jSlf4JLogger extends mx4j.log.Logger {
+
+        Logger m_slf4jLogger;
+
+        @Override
+        protected void log(int priority, Object msg, Throwable t) {
+            switch(priority) {
+            case mx4j.log.Logger.DEBUG:
+                m_slf4jLogger.debug(msg == null ? "" : msg.toString(), t);
+            case mx4j.log.Logger.ERROR:
+                m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
+            case mx4j.log.Logger.FATAL:
+                m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
+            case mx4j.log.Logger.INFO:
+                m_slf4jLogger.info(msg == null ? "" : msg.toString(), t);
+            case mx4j.log.Logger.TRACE:
+                m_slf4jLogger.trace(msg == null ? "" : msg.toString(), t);
+            case mx4j.log.Logger.WARN:
+                m_slf4jLogger.warn(msg == null ? "" : msg.toString(), t);
+            }
+        }
+
+        @Override
+        protected void setCategory(String category) {
+            super.setCategory(category);
+            m_slf4jLogger = LoggerFactory.getLogger(category);
+        }
+
     }
 
     private void setupMx4jLogger() {
         mx4j.log.Log.redirectTo(new Mx4jSlf4JLogger());
     }
-    
+
     private void configureLog4j() {
 
     }
 
-	private void setDefaultProperties() {
+    private void setDefaultProperties() {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
         setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
         setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
@@ -184,13 +175,13 @@ public class Starter {
         for (Entry<Object, Object> entry : sortedProps.entrySet()) {
             LOG.debug("System property '{}' already set to value '{}'.", entry.getKey(), entry.getValue());
         }
-        
+
         File propertiesFile = getPropertiesFile();
         if (!propertiesFile.exists()) {
             // don't require the file
             return;
         }
-        
+
         Properties props = new Properties();
         InputStream in = null;
         try {
@@ -211,7 +202,7 @@ public class Starter {
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
         }
-        
+
         if (props.containsKey("networkaddress.cache.ttl")) {
             java.security.Security.setProperty("networkaddress.cache.ttl", props.getProperty("networkaddress.cache.ttl"));
         } else {
@@ -227,7 +218,7 @@ public class Starter {
      * @param t Throwable for which to print a stack trace
      */
     private void die(String message, Throwable  t) {
-    	LOG.error(message, t);
+        LOG.error(message, t);
         System.exit(1);
     }
 
@@ -246,7 +237,7 @@ public class Starter {
         LOG.debug("Beginning startup");
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        
+
         Invoker invoker = new Invoker();
         invoker.setServer(server);
         invoker.setAtType(InvokeAtType.START);
@@ -263,9 +254,9 @@ public class Starter {
                 String className = service.getClassName();
 
                 String message =
-                    "An error occurred while attempting to start the \"" +
-                    name + "\" service (class " + className + ").  "
-                    + "Shutting down and exiting.";
+                        "An error occurred while attempting to start the \"" +
+                                name + "\" service (class " + className + ").  "
+                                + "Shutting down and exiting.";
                 LOG.error(message, result.getThrowable());
                 System.err.println(message);
                 result.getThrowable().printStackTrace();
@@ -278,7 +269,7 @@ public class Starter {
                 return;
             }
         }
-        
+
         LOG.debug("Startup complete");
     }
 }

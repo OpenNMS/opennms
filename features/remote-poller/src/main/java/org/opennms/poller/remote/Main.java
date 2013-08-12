@@ -159,7 +159,7 @@ public class Main {
         options.addOption("d", "debug", false, "write debug messages to the log");
         options.addOption("g", "gui", false, "start a GUI (default: false)");
         options.addOption("l", "location", true, "the location name of this remote poller");
-        options.addOption("u", "url", true, "the URL for OpenNMS (default: rmi://server-name/)");
+        options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
         options.addOption("n", "name", true, "the name of the user to connect as");
         options.addOption("p", "password", true, "the password to use when connecting");
 
@@ -206,7 +206,7 @@ public class Main {
 
     private void usage(Options o) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(HelpFormatter.DEFAULT_SYNTAX_PREFIX, o);
+        formatter.printHelp(getClass().getName() + " -u [URL] [options]", o);
     }
     
     private void registerShutDownHook() {

@@ -50,7 +50,7 @@ import com.vaadin.server.VaadinRequest;
 /**
  * This class creates an {@link HttpServletRequest} object that delegates all calls to
  * a {@link VaadinRequest} instance. This is used so that we can fetch the header HTML
- * from an {@link OnmsHeaderProvider} in {@link TopologyWidgetTestApplication}.
+ * from an {@link OnmsHeaderProvider} in {@link TopologyUI}.
  */
 public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 

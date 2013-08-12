@@ -37,6 +37,7 @@
 <%@page import="org.opennms.util.ilr.Collector"%>
 <%@page import="org.opennms.util.ilr.Filter"%>
 <%@page import="java.io.*"%>
+<%@page import="org.slf4j.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -55,6 +56,8 @@
 
 <%
 
+final Logger LOG = LoggerFactory.getLogger("instrumentationLogReader.jsp");
+
 String opennmsHome = System.getProperty("opennms.home");
 
 Collector c = new Collector();
@@ -72,26 +75,42 @@ if(sortOrder!=null) {
 if(searchString != null) {
 	c.setSearchString(searchString);
 }
-String baseFileName = opennmsHome + "/logs/daemon/instrumentation.log";
 
+LOG.debug("creating FilenameFilter");
 
-for(int i = 5; i > 0; i--) {
-	String fileName = baseFileName + "." + i;
-	File file = new File(fileName);
-	if (file.exists()) {
-		c.readLogMessagesFromFile(fileName);
+final FilenameFilter filter = new FilenameFilter() {
+	public boolean accept(final File dir, final String name) {
+		return name.startsWith("instrumentation.log");
+	}
+};
+
+LOG.debug("FilenameFilter = {}", filter);
+
+int filesMatched = 0;
+
+LOG.debug("scanning DaemonDir");
+
+final File daemonDir = new File(opennmsHome + "/logs/daemon");
+if (daemonDir.exists()) {
+	for (final File file : daemonDir.listFiles(filter)) {
+		if (file.length() == 0) continue;
+		c.readLogMessagesFromFile(file.getPath());
+		filesMatched++;
 	}
 }
-File file = new File(baseFileName);
 
+LOG.debug("scanning LogDir");
 
-
-if(file.exists() && file.length() != 0) {
-	c.readLogMessagesFromFile(baseFileName);
+final File logDir = new File(opennmsHome + "/logs");
+if (logDir.exists()) {
+	for (final File file : logDir.listFiles(filter)) {
+		if (file.length() == 0) continue;
+		c.readLogMessagesFromFile(file.getPath());
+		filesMatched++;
+	}
 }
 
-
-pageContext.setAttribute("fileLength",file.length());
+pageContext.setAttribute("filesMatched",filesMatched);
 pageContext.setAttribute("collector",c);
 pageContext.setAttribute("OpennmsHome",opennmsHome);
 pageContext.setAttribute("sortColumn", sortColumn);
@@ -119,7 +138,7 @@ pageContext.setAttribute("searchString",searchString);
 </div>
 
 <c:choose>
-	<c:when test="${fileLength == 0}">
+	<c:when test="${filesMatched == 0}">
 		<script type="text/javascript">
 			alert ("Instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j.properties")
 		</script>

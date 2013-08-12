@@ -76,7 +76,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void scrollWheel(double scrollVal, int x, int y) {
-            getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
+            getViewManager().zoomToPoint(getViewManager().getScale() - scrollVal, new Point(x, y));
         }
 
         @Override
@@ -112,9 +112,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void vertexClicked(String vertexId, MouseEventDetails eventDetails, String platform) {
-            m_blockSelectionEvents = true;
             selectVertices(eventDetails.isShiftKey(), eventDetails.isCtrlKey(), vertexId);
-            m_blockSelectionEvents = false;
         }
 
         @Override
@@ -149,7 +147,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private final IconRepositoryManager m_iconRepoManager;
     private String m_activeTool = "pan";
     private boolean m_blockSelectionEvents = false;
-    transient final Object changeVariableProcessingLock = new String("LOCK");
 
     private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
@@ -170,14 +167,15 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                     computeBoundsForSelected(selectionContext);
                 }
                 updateGraph();
-              }
+                }
 		});
 		
 		m_graphContainer.getMapViewManager().addListener(this);
 		m_graphContainer.addChangeListener(this);
 		
 		setScaleDataSource(m_graphContainer.getScaleProperty());
-		
+
+        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconDefs());
 		updateGraph();
 	}
 	
@@ -220,6 +218,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private void selectVertices(boolean shiftModifierPressed, boolean ctrlModifierPressed, String... vertexKeys) {
+        m_blockSelectionEvents = true;
         List<VertexRef> vertexRefsToSelect = new ArrayList<VertexRef>(vertexKeys.length);
         List<VertexRef> vertexRefsToDeselect = new ArrayList<VertexRef>();
         boolean add = shiftModifierPressed || ctrlModifierPressed;
@@ -237,6 +236,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         m_graphContainer.getSelectionManager().deselectAll();
         m_graphContainer.getSelectionManager().selectVertexRefs( m_graphContainer.getVertexRefForest(vertexRefsToSelect) );
+        m_blockSelectionEvents = false;
+        updateMenuItems();
     }
     
 	private void selectEdge(String edgeKey) {

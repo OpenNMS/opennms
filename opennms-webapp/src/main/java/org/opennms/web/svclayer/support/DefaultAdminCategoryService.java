@@ -449,7 +449,7 @@ public class DefaultAdminCategoryService implements
     private void notifyCategoryChange(final OnmsNode node) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
         bldr.setNode(node);
-        bldr.setParam("nodelabel", node.getLabel());
+        bldr.setParam(EventConstants.PARM_NODE_LABEL, node.getLabel());
         send(bldr.getEvent());
     }
     

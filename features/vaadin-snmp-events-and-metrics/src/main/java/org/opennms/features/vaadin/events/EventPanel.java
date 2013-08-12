@@ -29,30 +29,31 @@ package org.opennms.features.vaadin.events;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
+import org.opennms.features.vaadin.config.EditorToolbar;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.netmgt.xml.eventconf.Mask;
+import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
-import de.steinwedel.vaadin.MessageBox;
-import de.steinwedel.vaadin.MessageBox.ButtonType;
-import de.steinwedel.vaadin.MessageBox.EventListener;
 
 /**
  * The Class Event Panel.
@@ -61,15 +62,6 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  */
 @SuppressWarnings("serial")
 public abstract class EventPanel extends Panel {
-
-    /** The event table. */
-    private final EventTable eventTable;
-
-    /** The event form. */
-    private final EventForm eventForm;
-
-    /** The add button. */
-    private final Button add;
 
     /** The isNew flag. True, if the group is new. */
     private boolean isNew = false;
@@ -96,6 +88,7 @@ public abstract class EventPanel extends Panel {
 
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
+
         if (eventConfDao == null)
             throw new RuntimeException("eventConfDao cannot be null.");
 
@@ -104,84 +97,100 @@ public abstract class EventPanel extends Panel {
         this.fileName = fileName;
 
         setCaption("Events");
-        addStyleName(Runo.PANEL_LIGHT);
+        addStyleName("light");
 
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
+        final HorizontalLayout topToolbar = new HorizontalLayout();
+        topToolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                events.setEvent(eventTable.getOnmsEvents());
-                logger.info("The events have been saved.");
                 processEvents(events, logger);
             }
         }));
-        toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+        topToolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 logger.info("Event processing has been canceled");
                 cancel();
             }
         }));
-        mainLayout.addComponent(toolbar);
-        mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        eventTable = new EventTable(events) {
+        final EventTable eventTable = new EventTable(events.getEventCollection());
+
+        final EventForm eventForm = new EventForm();
+        eventForm.setVisible(false);
+
+        final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event) {
-                eventForm.setEventDataSource(event);
-                eventForm.setVisible(true);
+            public void save() {
+                org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
+                logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
+                try {
+                    eventForm.getFieldGroup().commit();
+                    eventForm.setReadOnly(true);
+                    eventTable.refreshRowCache();
+                } catch (CommitException e) {
+                    String msg = "Can't save the changes: " + e.getMessage();
+                    logger.error(msg);
+                    Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                }
+            }
+            @Override
+            public void delete() {
+                Object eventId = eventTable.getValue();
+                if (eventId != null) {
+                    org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
+                    logger.info("Event " + event.getUei() + " has been removed.");
+                    eventTable.select(null);
+                    eventTable.removeItem(eventId);
+                    eventTable.refreshRowCache();
+                }
+            }
+            @Override
+            public void edit() {
+                eventForm.setReadOnly(false);
+            }
+            @Override
+            public void cancel() {
+                eventForm.getFieldGroup().discard();
                 eventForm.setReadOnly(true);
-                setIsNew(false);
             }
         };
-        mainLayout.addComponent(eventTable);
+        bottomToolbar.setVisible(false);
 
-        add = new Button("Add Event");
-        add.addClickListener(new Button.ClickListener() {
+        eventTable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                Object eventId = eventTable.getValue();
+                if (eventId != null) {
+                    eventForm.setEvent(eventTable.getEvent(eventId));
+                }
+                eventForm.setReadOnly(true);
+                eventForm.setVisible(eventId != null);
+                bottomToolbar.setReadOnly(true);
+                bottomToolbar.setVisible(eventId != null);
+            }
+        });   
+
+        final Button add = new Button("Add Event", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();
-                e.setUei("uei.opennms.org/newEvent");
-                e.setEventLabel("New Event");
-                e.setDescr("New Event Description");
-                e.setLogmsg(new Logmsg());
-                e.getLogmsg().setContent("New Event Log Message");
-                e.getLogmsg().setDest("logndisplay");
-                e.setSeverity("Indeterminate");
-                e.setMask(new Mask());
-                e.setAlarmData(new AlarmData());
-                eventTable.updateExternalSource(e);
+                eventTable.addEvent(eventForm.createBasicEvent());
                 eventForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });
-        mainLayout.addComponent(add);
-        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
-        eventForm = new EventForm() {
-            @Override
-            public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
-                if (isNew) {
-                    eventTable.addEvent(event);
-                    logger.info("Event " + event.getUei() + " has been created.");
-                } else {
-                    logger.info("Event " + event.getUei() + " has been updated.");
-                }
-                eventTable.refreshRowCache();
-            }
-            @Override
-            public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
-                logger.info("Event " + event.getUei() + " has been removed.");
-                eventTable.select(null);
-                eventTable.removeItem(event.getUei());
-                eventTable.refreshRowCache();
-            }
-        };
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.addComponent(topToolbar);
+        mainLayout.addComponent(eventTable);
+        mainLayout.addComponent(add);
         mainLayout.addComponent(eventForm);
+        mainLayout.addComponent(bottomToolbar);
+        mainLayout.setComponentAlignment(topToolbar, Alignment.MIDDLE_RIGHT);
+        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         setContent(mainLayout);
     }
@@ -207,8 +216,10 @@ public abstract class EventPanel extends Panel {
 
     /**
      * Failure.
+     *
+     * @param reason the reason
      */
-    public abstract void failure();
+    public abstract void failure(String reason);
 
     /**
      * Process events.
@@ -220,17 +231,14 @@ public abstract class EventPanel extends Panel {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
         final File file = new File(configDir, fileName);
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           "Do you really want to override the existig file?<br/>All current information will be lost.",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               "Do you really want to override the existig file?\nAll current information will be lost.",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         validateFile(file, events, logger);
                     }
                 }
@@ -256,17 +264,14 @@ public abstract class EventPanel extends Panel {
         if (eventCount == 0) {
             saveFile(file, events, logger);
         } else {
-            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
-                                           "Are you sure?",
-                                           MessageBox.Icon.QUESTION,
-                                           eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-            mb.addStyleName(Runo.WINDOW_DIALOG);
-            mb.show(new EventListener() {
-                @Override
-                public void buttonClicked(ButtonType buttonType) {
-                    if (buttonType == MessageBox.ButtonType.YES) {
+            ConfirmDialog.show(getUI(),
+                               "Are you sure?",
+                               eventCount + " of the new events are already on the configuration files.\nDo you really want to override those events ?",
+                               "Yes",
+                               "No",
+                               new ConfirmDialog.Listener() {
+                public void onClose(ConfirmDialog dialog) {
+                    if (dialog.isConfirmed()) {
                         saveFile(file, events, logger);
                     }
                 }
@@ -283,8 +288,16 @@ public abstract class EventPanel extends Panel {
      */
     private void saveFile(final File file, final Events events, final Logger logger) {
         try {
-            logger.info("Saving XML data into " + file.getAbsolutePath());
+            // Normalize the Event Content (required to avoid marshaling problems)
+            // TODO Are other normalizations required ?
+            for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
+                logger.debug("Normalizing event " + event.getUei());
+                AlarmData ad = event.getAlarmData();
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty()))
+                    event.setAlarmData(null);
+            }
             // Save the XML of the new events
+            logger.info("Saving XML data into " + file.getAbsolutePath());
             FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(events, writer);
             writer.close();
@@ -301,8 +314,15 @@ public abstract class EventPanel extends Panel {
             logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            failure();
+            logger.error(e.getClass() + ": " + (e.getMessage() == null ? "[No Details]" : e.getMessage()));
+            if (e.getMessage() == null) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                logger.error(sw.toString());
+            }
+            failure(e.getMessage());
         }
     }
+
 }

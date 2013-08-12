@@ -98,13 +98,6 @@
       <organization>OpenNMS Inc</organization>
     </contributor>
   </contributors>
-  <licenses>
-    <license>
-      <name>GNU General Public License</name>
-      <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
   <!-- 
        This project builds an OSS/J interface for OpenNMS.
        It is released with OpenNMS under the GPL liscence
@@ -433,7 +426,7 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </releases>
-      <id>sourceforge</id>
+      <id>openoss-repo</id>
       <name>Sourceforge OSSbeans Release Repository</name>
       <url>http://maven.opennms.org/content/groups/openoss.sourceforge.net-release</url>
     </repository>

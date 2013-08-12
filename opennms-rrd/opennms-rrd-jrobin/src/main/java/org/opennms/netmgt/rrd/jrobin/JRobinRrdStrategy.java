@@ -206,10 +206,11 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
 
-		RrdUtils.createMetaDataFile(
-				filenameWithoutExtension.substring(0, lastIndexOfSeparator),
-				filenameWithoutExtension.substring(lastIndexOfSeparator),
-				attributeMappings);
+        RrdUtils.createMetaDataFile(
+            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+            filenameWithoutExtension.substring(lastIndexOfSeparator),
+            attributeMappings
+        );
     }
 
     /**

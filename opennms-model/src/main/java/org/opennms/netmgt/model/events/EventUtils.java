@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
@@ -78,14 +79,16 @@ public abstract class EventUtils {
      * @param labelSource a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeAddedEvent(String source, int nodeId, String nodeLabel, String labelSource) {
+    public static Event createNodeAddedEvent(String source, int nodeId, String nodeLabel, NodeLabelSource labelSource) {
         
         debug("CreateNodeAddedEvent: nodedId: %d", nodeId);
         
         EventBuilder bldr = new EventBuilder(NODE_ADDED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
-        bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        if (labelSource != null) {
+            bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
+        }
         
         return bldr.getEvent();
 
@@ -125,7 +128,7 @@ public abstract class EventUtils {
      * @param sysDescr a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
+    public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, NodeLabelSource labelSource, String sysName, String sysDescr) {
         
         debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  %d/%s/%s", nodeId, str(ifaddr), service);
 
@@ -135,7 +138,9 @@ public abstract class EventUtils {
         bldr.setService(service);
         bldr.setParam(PARM_IP_HOSTNAME, ifaddr.getHostName());
         bldr.setParam(PARM_NODE_LABEL, nodeLabel);
-        bldr.setParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        if (labelSource != null) {
+            bldr.setParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
+        }
 
         // Add sysName if available
         if (sysName != null) {
@@ -338,12 +343,14 @@ public abstract class EventUtils {
      * @param labelSource a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, String labelSource) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
-        bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        if (labelSource != null) {
+            bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
+        }
         return bldr.getEvent();
     }
 

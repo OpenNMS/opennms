@@ -21,5 +21,11 @@
     <property name="eventForwarder" ref="eventForwarder"/>
     <property name="pinger" ref="pinger"/>
   </bean>
+
+  <!--   
+  <bean id="callBack" class="org.opennms.netmgt.discovery.DiscoveryPingResponseCallback">
+    <property name="discoveryFactory" ref="discoveryFactory" />
+  </bean>
+  -->
   
 </beans>

@@ -5,13 +5,12 @@ import java.util.concurrent.Callable;
 
 import org.slf4j.MDC;
 
+@SuppressWarnings("rawtypes")
 public class Logging {
-
     public static final String PREFIX_KEY = "prefix";
 
-    public static <T> T withPrefix(String prefix, Callable<T> callable)
-            throws Exception {
-        Map mdc = Logging.getCopyOfContextMap();
+    public static <T> T withPrefix(final String prefix, final Callable<T> callable) throws Exception {
+        final Map mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(prefix);
             return callable.call();
@@ -20,12 +19,12 @@ public class Logging {
         }
 
     }
-    
+
     public static Map getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
-    
-    public static void setContextMap(Map mdc) {
+
+    public static void setContextMap(final Map mdc) {
         if (mdc == null) {
             MDC.clear();
         } else {
@@ -33,9 +32,8 @@ public class Logging {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void withPrefix(String prefix, Runnable runnable) {
-        Map mdc = Logging.getCopyOfContextMap();
+    public static void withPrefix(final String prefix, final Runnable runnable) {
+        final Map mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(prefix);
             runnable.run();
@@ -44,10 +42,7 @@ public class Logging {
         }
     }
 
-    public static void configureInstallerLogging() {
-    }
-
-    public static void putPrefix(String name) {
+    public static void putPrefix(final String name) {
         MDC.put(PREFIX_KEY, name);
     }
 
