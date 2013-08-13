@@ -169,18 +169,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private void setupErrorHandler() {
-        UI.getCurrent().getSession().getService().setSystemMessagesProvider(new SystemMessagesProvider() {
-            @Override
-            public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
-                CustomizedSystemMessages messages =
-                        new CustomizedSystemMessages();
-                messages.setCommunicationErrorCaption("Communication Problem");
-                messages.setCommunicationErrorMessage("You Session has most likely expired");
-                messages.setCommunicationErrorNotificationEnabled(true);
-                messages.setCommunicationErrorURL(Page.getCurrent().getLocation().getHost() + "/opennms/login.jsp");
-                return messages;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        });
+        
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler(){
 
             @Override
