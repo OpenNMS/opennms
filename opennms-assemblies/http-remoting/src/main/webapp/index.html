@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>OpenNMS Remote Poller</title>
   <link rel="stylesheet" type="text/css" href="../opennms/css/styles.css" media="screen" />
@@ -20,8 +21,8 @@
         text-align: left;
         text-decoration: none;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-		/* Hide the links by default, they are shown based on a jquery HEAD command */
-		display: none;
+        /* Hide the links by default, they are shown based on a jquery HEAD command */
+        display: none;
     }
     .download-link.unavailable {
         background-color: #656565;
@@ -35,10 +36,33 @@
     }
   </style>
   <script type="text/javascript" src="js/jquery-2.0.3.js"></script>
+  <script type="text/javascript">
+    // Shorthand for 'onload'
+    $(function() {
+      $.getJSON('js/properties.json', function (json) {
+          // Change all 'version' spans to the correct version
+          $('.version').html(json.projectVersion);
+          // Check to see if the installer EXE is present on the system; if so, show the download link. 
+          $.ajax({
+            url: 'opennms-remote-poller-windows-' + json.projectVersion + '.exe',
+            method: 'HEAD',
+            error: function()
+            {
+              $('#download-unavailable').css("display", "inline-block");
+            },
+            success: function()
+            {
+              $('#download-local').css("display", "inline-block");
+            }
+          });
+        }
+      );
+    });
+  </script>
  </head>
  <body>
   <div id='header'>
-   <h1 id='headerlogo'><a href='index.jsp'><img src="../opennms/images/logo.png" alt='OpenNMS Web Console Home'></a></h1>
+   <h1 id='headerlogo'><a href='../opennms/index.jsp'><img src="../opennms/images/logo.png" alt='OpenNMS Web Console Home'/></a></h1>
    <div id='headerinfo' style='height:56px;'>
     <h2>OpenNMS Remote Poller</h2>
    </div>
@@ -68,39 +92,24 @@
     <p>After configuring the OpenNMS yum repository, you can install the <code>opennms-remote-poller</code> package via yum.</p>
     <h2>APT-based Linux (Debian, Ubuntu)</h2>
     <p>After configuring the OpenNMS apt repository, you can install the <code>opennms-remote-poller</code> package via apt-get.</p>
-	<!-- Check to see if the installer EXE is present on the system; if so, show the download link. -->
-	<script type="text/javascript">
-		$.ajax({
-			url:'opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe',
-			method: 'HEAD',
-			error: function()
-			{
-				$('#download-unavailable').css("display", "inline-block");
-			},
-			success: function()
-			{
-				$('#download-local').css("display", "inline-block");
-			}
-		});
-	</script>
     <h2>Microsoft Windows</h2>
-	<!--
+    <!--
     <p>
       There are two ways to install the OpenNMS remote poller on Windows. You can either install it as a Windows service that 
       wraps Java Web Start or you can install it with a local copy of the JAR. Both install options are available from the following
       installer package.
     </p>
-	-->
+    -->
     <p>
       The following installer package can be used to register the Java Web Start version of the remote poller as a Windows service.
     </p>
     <div id="download-local" class="download-link">
       <span>&#x25BC; <a href="opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
       <p>Windows 2000, XP, 2003, Vista, 2008, 7, 8, 2012</p>
-      <p>Version 1.13.0-SNAPSHOT</p>
+      <p>Version <span class="version">Unknown</span></p>
     </div>
     <div id="download-unavailable" class="download-link unavailable">
-      <span>The Windows installer is not available for download on this system.</span>
+      <span>The Windows installer is not available for download.</span>
     </div>
   </div>
  </body>
