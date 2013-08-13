@@ -36,8 +36,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smslib.AGateway;
 import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;

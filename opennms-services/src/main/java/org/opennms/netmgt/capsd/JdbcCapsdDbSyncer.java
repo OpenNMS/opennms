@@ -42,7 +42,6 @@ import java.util.Map;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer.LightWeightIfEntry;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;

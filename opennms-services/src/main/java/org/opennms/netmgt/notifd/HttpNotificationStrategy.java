@@ -53,8 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**

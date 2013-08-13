@@ -28,7 +28,6 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smslib.*;
 import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.InitializingBean;
