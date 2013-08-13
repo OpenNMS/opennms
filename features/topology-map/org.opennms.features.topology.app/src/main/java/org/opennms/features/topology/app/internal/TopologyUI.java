@@ -32,12 +32,9 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
-import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.Page;
+import com.vaadin.server.*;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -172,11 +169,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private void setupErrorHandler() {
+        UI.getCurrent().getSession().getService().setSystemMessagesProvider(new SystemMessagesProvider() {
+            @Override
+            public SystemMessages getSystemMessages(SystemMessagesInfo systemMessagesInfo) {
+                CustomizedSystemMessages messages =
+                        new CustomizedSystemMessages();
+                messages.setCommunicationErrorCaption("Communication Problem");
+                messages.setCommunicationErrorMessage("You Session has most likely expired");
+                messages.setCommunicationErrorNotificationEnabled(true);
+                messages.setCommunicationErrorURL(Page.getCurrent().getLocation().getHost() + "/opennms/login.jsp");
+                return messages;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler(){
 
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.ERROR_MESSAGE);
+                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
                 LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
