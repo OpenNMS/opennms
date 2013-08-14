@@ -253,22 +253,22 @@ public class EventAdminApplication extends UI {
      * @return a new Events Panel Object
      */
     private void addEventPanel(final VerticalLayout layout, final File file, final Events events) {
-        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file.getName(), events, new SimpleLogger()) {
+        EventPanel eventPanel = new EventPanel(eventConfDao, eventProxy, file, events, new SimpleLogger()) {
             @Override
             public void cancel() {
                 this.setVisible(false);
             }
             @Override
             public void success() {
-                Notification.show("Event file " + file.getName() + " has been successfuly saved.");
+                Notification.show("Event file " + file + " has been successfuly saved.");
                 this.setVisible(false);
             }
             @Override
             public void failure(String reason) {
-                Notification.show("Event file " + file.getName() + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
+                Notification.show("Event file " + file + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
             }
         };
-        eventPanel.setCaption("Events from " + file.getName());
+        eventPanel.setCaption("Events from " + file);
         removeEventPanel(layout);
         layout.addComponent(eventPanel);
     }
