@@ -228,8 +228,8 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
      */
     @Override
     public synchronized void save(final Requisition requisition) throws ForeignSourceRepositoryException {
-        cleanUpSnapshots(requisition);
         m_deployedForeignSourceRepository.save(requisition);
+        cleanUpSnapshots(requisition);
     }
 
     private void cleanUpSnapshots(final Requisition requisition) {
@@ -238,30 +238,34 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
 
         final List<File> pendingSnapshots = RequisitionFileUtils.findSnapshots(m_pendingForeignSourceRepository, foreignSource);
 
-        /* determine whether to delete the pending requisition */
-        boolean deletePendingRequisition = true;
-        if (pendingSnapshots.size() > 0) {
-            for (final File pendingSnapshotFile : pendingSnapshots) {
-                if (isNewer(pendingSnapshotFile, pendingDate)) {
-                    // the pending file is newer than an in-process snapshot, don't delete it
-                    deletePendingRequisition = false;
-                    break;
+        if (pendingDate != null) {
+            /* determine whether to delete the pending requisition */
+            boolean deletePendingRequisition = true;
+            if (pendingSnapshots.size() > 0) {
+                for (final File pendingSnapshotFile : pendingSnapshots) {
+                    if (isNewer(pendingSnapshotFile, pendingDate)) {
+                        // the pending file is newer than an in-process snapshot, don't delete it
+                        deletePendingRequisition = false;
+                        break;
+                    }
                 }
             }
-        }
-        if (deletePendingRequisition) {
-            m_pendingForeignSourceRepository.delete(requisition);
+            if (deletePendingRequisition) {
+                m_pendingForeignSourceRepository.delete(requisition);
+            }
         }
 
         /* determine whether this requisition was imported from a snapshot, and if so, delete its snapshot file */
         RequisitionFileUtils.deleteResourceIfSnapshot(requisition);
+
+        final Date deployedDate = m_deployedForeignSourceRepository.getRequisitionDate(foreignSource);
+        if (deployedDate != null) {
+            RequisitionFileUtils.deleteSnapshotsOlderThan(getPendingForeignSourceRepository(), foreignSource, deployedDate);
+        }
     }
 
     private boolean isNewer(final File snap, final Date date) {
-        final String name = snap.getName();
-        final String timestamp = name.substring(name.lastIndexOf(".") + 1);
-        final Date snapshotDate = new Date(Long.valueOf(timestamp));
-        return date.after(snapshotDate);
+        return RequisitionFileUtils.isNewer(snap, date);
     }
 
     @Override

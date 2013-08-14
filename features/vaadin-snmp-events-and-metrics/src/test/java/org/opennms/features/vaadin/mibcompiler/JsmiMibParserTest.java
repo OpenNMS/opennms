@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.mibcompiler;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
@@ -45,11 +46,13 @@ import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.dao.support.PropertiesGraphDao;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * The Test Class for JsmiMibParser.
@@ -277,7 +280,23 @@ public class JsmiMibParserTest {
             PrefabGraphDumper dumper = new PrefabGraphDumper();
             dumper.dump(graphs, writer);
             System.out.println(writer.getBuffer().toString());
-            Assert.assertEquals(100074, writer.getBuffer().toString().length());
+            Assert.assertEquals(99053, writer.getBuffer().toString().length());
+
+            PropertiesGraphDao dao = new PropertiesGraphDao();
+            StringBuffer sb = new StringBuffer();
+            sb.append("command.prefix=/usr/bin/rrdtool\n");
+            sb.append("output.mime=image/png\n");
+            sb.append(writer.getBuffer().toString());
+            dao.loadProperties("performance", new ByteArrayInputStream(sb.toString().getBytes()));
+            Assert.assertEquals(graphs.size(), dao.getAllPrefabGraphs().size());
+            for (PrefabGraph g : graphs) {
+                try {
+                    PrefabGraph graph = dao.getPrefabGraph(g.getName());
+                    Assert.assertEquals(g.getTitle(), graph.getTitle());
+                } catch (ObjectRetrievalFailureException e) {
+                    Assert.fail(e.getMessage());
+                }
+            }
         } else {
             Assert.fail("The Clavister-MIB.mib file couldn't be parsed successfully.");
         }

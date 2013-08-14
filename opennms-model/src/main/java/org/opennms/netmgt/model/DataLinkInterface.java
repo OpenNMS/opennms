@@ -30,7 +30,6 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -54,7 +53,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.annotations.Type;
-
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
@@ -62,36 +60,28 @@ import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 @Entity
 @Table(name = "datalinkinterface")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DataLinkInterface  implements Serializable, Comparable<DataLinkInterface> {
+public class DataLinkInterface implements Serializable, Comparable<DataLinkInterface> {
     private static final long serialVersionUID = -3336726327359373609L;
-
     private Integer m_id;
     private OnmsNode m_node;
-
-    @Column(name="ifindex", nullable=false)
     private Integer m_ifIndex;
-    @Column(name="nodeparentid", nullable=false)
     private Integer m_nodeParentId;
-    @Column(name="parentifindex", nullable=false)
     private Integer m_parentIfIndex;
-    @Column(name="status", length=1, nullable=false)
     private StatusType m_status;
-    @Column(name="linktypeid", nullable=true)
     private Integer m_linkTypeId;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastpolltime", nullable=false)
     private Date m_lastPollTime;
-    @Column(name="source", nullable=false)
     private String m_source = "linkd";
+    /**
+     * work around a marshalling issue by storing the OnmsNode nodeId *
+     */
 
-    /** work around a marshalling issue by storing the OnmsNode nodeId **/
-    @Transient
     private Integer m_nodeId = null;
 
     public DataLinkInterface() {
     }
 
-    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final StatusType status, final Date lastPollTime) {
+    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final StatusType status,
+                             final Date lastPollTime) {
         m_node = node;
         m_ifIndex = ifIndex;
         m_nodeParentId = nodeParentId;
@@ -113,8 +103,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
 
     @XmlTransient
     @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
         return m_id;
     }
@@ -127,7 +117,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      * Get the ID as a string.  This exists only for XML serialization.
      */
     @XmlID
-    @XmlAttribute(name="id")
+    @XmlAttribute(name = "id")
     @Transient
     public String getDataLinkInterfaceId() {
         return getId().toString();
@@ -137,8 +127,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_id = Integer.valueOf(id);
     }
 
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "nodeId")
     @XmlTransient
     public OnmsNode getNode() {
         return m_node;
@@ -149,16 +139,17 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     }
 
     @Transient
-    @XmlElement(name="nodeId")
+    @XmlElement(name = "nodeId")
     public Integer getNodeId() {
-        return m_node == null? m_nodeId : m_node.getId();
+        return m_node == null ? m_nodeId : m_node.getId();
     }
 
     public void setNodeId(final Integer nodeId) {
         m_nodeId = nodeId;
     }
 
-    @XmlElement(name="ifIndex")
+    @XmlElement(name = "ifIndex")
+    @Column(name = "ifindex", nullable = false)
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -167,7 +158,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_ifIndex = ifIndex;
     }
 
-    @XmlElement(name="nodeParentId")
+    @XmlElement(name = "nodeParentId")
+    @Column(name = "nodeparentid", nullable = false)
     public Integer getNodeParentId() {
         return m_nodeParentId;
     }
@@ -176,7 +168,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_nodeParentId = nodeParentId;
     }
 
-    @XmlElement(name="parentIfIndex")
+    @XmlElement(name = "parentIfIndex")
+    @Column(name = "parentifindex", nullable = false)
     public Integer getParentIfIndex() {
         return m_parentIfIndex;
     }
@@ -185,9 +178,10 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_parentIfIndex = parentIfIndex;
     }
 
-    @XmlAttribute(name="status")
-    @Type(type="org.opennms.netmgt.model.StatusTypeUserType")
+    @XmlAttribute(name = "status")
+    @Type(type = "org.opennms.netmgt.model.StatusTypeUserType")
     @XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
+    @Column(name = "status", length = 1, nullable = false)
     public StatusType getStatus() {
         return m_status;
     }
@@ -196,7 +190,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_status = status;
     }
 
-    @XmlElement(name="linkTypeId")
+    @XmlElement(name = "linkTypeId")
+    @Column(name = "linktypeid", nullable = true)
     public Integer getLinkTypeId() {
         return m_linkTypeId;
     }
@@ -205,7 +200,9 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_linkTypeId = linkTypeId;
     }
 
-    @XmlElement(name="lastPollTime")
+    @XmlElement(name = "lastPollTime")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastpolltime", nullable = false)
     public Date getLastPollTime() {
         return m_lastPollTime;
     }
@@ -213,12 +210,13 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     public void setLastPollTime(final Date lastPollTime) {
         m_lastPollTime = lastPollTime;
     }
-    
-    @XmlAttribute(name="source")
+
+    @XmlAttribute(name = "source")
+    @Column(name = "source", nullable = false)
     public String getSource() {
         return m_source;
     }
-    
+
     public void setSource(final String source) {
         m_source = source;
     }
@@ -231,17 +229,8 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      */
     @Override
     public int compareTo(final DataLinkInterface o) {
-        return new CompareToBuilder()
-            .append(getId(), o.getId())
-            .append(getNode(), o.getNode())
-            .append(getIfIndex(), o.getIfIndex())
-            .append(getSource(), o.getSource())
-            .append(getNodeParentId(), o.getNodeParentId())
-            .append(getParentIfIndex(), o.getParentIfIndex())
-            .append(getStatus(), o.getStatus())
-            .append(getLastPollTime(), o.getLastPollTime())
-            .append(getLinkTypeId(), o.getLinkTypeId())
-            .toComparison();
+        return new CompareToBuilder().append(getId(), o.getId()).append(getNode(), o.getNode()).append(getIfIndex(), o.getIfIndex()).append(
+            getSource(), o.getSource()).append(getNodeParentId(), o.getNodeParentId()).append(getParentIfIndex(), o.getParentIfIndex()).append(
+            getStatus(), o.getStatus()).append(getLastPollTime(), o.getLastPollTime()).append(getLinkTypeId(), o.getLinkTypeId()).toComparison();
     }
-
 }

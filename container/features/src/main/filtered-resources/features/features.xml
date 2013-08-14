@@ -53,6 +53,7 @@
        <feature>dashlet-map</feature>
        <feature>dashlet-image</feature>
        <feature>dashlet-charts</feature>
+       <feature>dashlet-rtc</feature>
    </feature>
 
 </features>

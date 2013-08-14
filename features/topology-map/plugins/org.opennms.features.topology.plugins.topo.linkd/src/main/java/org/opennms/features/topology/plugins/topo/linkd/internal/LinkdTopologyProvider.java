@@ -400,7 +400,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
                     newGroupVertex.setLocked(eachVertexInFile.locked);
                     if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                    newGroupVertex.setParent(eachVertexInFile.parent);
+                    if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
                     newGroupVertex.setSelected(eachVertexInFile.selected);
                     newGroupVertex.setStyleName(eachVertexInFile.styleName);
                     newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
@@ -409,7 +409,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 }
             }
             for (Vertex vertex: getVertices()) {
-                if (vertex.getParent() != null) {
+                if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
                     log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
                     setParent(vertex, vertex.getParent());
                 }
@@ -422,7 +422,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     final Vertex parent = getVertex(eachVertexInFile.parent);
                     if (child == null || parent == null) continue;
                     log("loadtopology: setting parent of " + child + " to " + parent);
-                    setParent(child, parent);
+                    if (!child.equals(parent)) setParent(child, parent);
                 }
             }
         } else {

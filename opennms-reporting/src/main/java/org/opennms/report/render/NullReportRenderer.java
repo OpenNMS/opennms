@@ -31,7 +31,6 @@ package org.opennms.report.render;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
 import org.slf4j.Logger;

@@ -28,15 +28,12 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -49,9 +46,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-/*
- * TODO How to change the rendering of a field.
- */
 /**
  * The Event's VarbindsDecode Field.
  * 
@@ -60,27 +54,28 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> implements Button.ClickListener {
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
-    private final BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
+    private final OnmsBeanContainer<Varbindsdecode> container = new OnmsBeanContainer<Varbindsdecode>(Varbindsdecode.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete", this);
 
     /**
      * Instantiates a new varbinds decode field.
+     *
+     * @param caption the caption
      */
-    public VarbindsDecodeField() {
-        container.setBeanIdProperty("parmid");
-        table.setContainerDataSource(container);
+    public VarbindsDecodeField(String caption) {
+        setCaption(caption);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
         table.setColumnHeader("parmid", "Parameter ID");
@@ -101,8 +96,6 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
@@ -130,34 +123,25 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof List<?>) {
-            @SuppressWarnings("unchecked")
-            List<Varbindsdecode> beans = (List<Varbindsdecode>) value;
-            container.removeAllItems();
-            container.addAll(beans);
-            table.setPageLength(beans.size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
-     */
-    @Override
-    public ArrayList<Varbindsdecode> getValue() {
-        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>(); 
+    protected ArrayList<Varbindsdecode> getInternalValue() {
+        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
         return beans;
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
+     */
+    @Override
+    protected void setInternalValue(ArrayList<Varbindsdecode> varbindsDecodes) {
+        super.setInternalValue(varbindsDecodes);  // TODO Is this required ?
+        container.removeAllItems();
+        container.addAll(varbindsDecodes);
     }
 
     /* (non-Javadoc)
@@ -189,8 +173,8 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
      */
     private void addHandler() {
         Varbindsdecode v = new Varbindsdecode();
-        v.setParmid("??"); // A non null value is required here.
-        container.addBean(v);
+        v.setParmid("??");
+        container.addOnmsBean(v);
     }
 
     /**
@@ -203,7 +187,7 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected Varbinds Decode field?<br/>This action cannot be undone.",
+                               "Do you really want to remove the selected Varbinds Decode field?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.Group;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 
 /**
@@ -41,23 +41,18 @@ import com.vaadin.ui.Table;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class GroupTable extends Table {
+public class GroupTable extends Table {
 
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "name", "count" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "MIB Group", "# MIB Objects" };
+    /** The SNMP Group Container. */
+    private OnmsBeanContainer<Group> container = new OnmsBeanContainer<Group>(Group.class);
 
     /**
      * Instantiates a new group table.
      *
-     * @param source the OpenNMS Data Collection Group
+     * @param groups the groups
      */
-    public GroupTable(final DatacollectionGroup source) {
-        BeanContainer<String,Group> container = new BeanContainer<String,Group>(Group.class);
-        container.setBeanIdProperty("name");
-        container.addAll(source.getGroupCollection());
+    public GroupTable(final List<Group> groups) {
+        container.addAll(groups);
         setContainerDataSource(container);
         addStyleName("light");
         setImmediate(true);
@@ -66,41 +61,46 @@ public abstract class GroupTable extends Table {
         setHeight("250px");
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
-            @SuppressWarnings("unchecked")
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<Group> item = (BeanItem<Group>) source.getContainerDataSource().getItem(itemId);
-                return item.getBean().getMibObjCount();
+                return container.getItem(itemId).getBean().getMibObjCount();
             }
         });
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    BeanItem<Group> item = (BeanItem<Group>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
-                }
-            }
-        });
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "name", "count" });
+        setColumnHeaders(new String[] { "MIB Group", "# MIB Objects" });
     }
 
     /**
-     * Update external source.
+     * Gets the group.
      *
-     * @param item the item
+     * @param groupId the group ID (the Item ID associated with the container)
+     * @return the event
      */
-    public abstract void updateExternalSource(BeanItem<Group> item);
-
-    /**
-     * Adds a group.
-     *
-     * @param group the group
-     */
-    @SuppressWarnings("unchecked")
-    public void addGroup(Group group) {
-        ((BeanContainer<String,Group>) getContainerDataSource()).addBean(group);
+    public Group getGroup(Object groupId) {
+        return container.getItem(groupId).getBean();
     }
 
+    /**
+     * Adds the group.
+     *
+     * @param group the new group
+     * @return the groupId
+     */
+    public Object addGroup(Group group) {
+        Object groupId = container.addOnmsBean(group);
+        select(groupId);
+        return groupId;
+    }
+
+    /**
+     * Gets the groups.
+     *
+     * @return the groups
+     */
+    public List<Group> getGroups() {
+        List<Group> groups = new ArrayList<Group>();
+        for (Object itemId : container.getItemIds()) {
+            groups.add(container.getItem(itemId).getBean());
+        }
+        return groups;
+    }
 }

@@ -27,15 +27,17 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.vaadin.dialogs.ConfirmDialog;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.TextField;
 
 /**
  * The Class Event Form.
@@ -43,57 +45,61 @@ import com.vaadin.ui.Button.ClickListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class ResourceTypeForm extends Form implements ClickListener {
+public class ResourceTypeForm extends CustomComponent {
 
-    /** The Constant FORM_ITEMS. */
-    public static final String[] FORM_ITEMS = new String[] {
-        "name",
-        "label",
-        "resourceLabel",
-        "storageStrategy",
-        "persistenceSelectorStrategy"
-    };
+    /** The name. */
+    @PropertyId("name")
+    final TextField name = new TextField("Resource Type Name");
 
-    /** The Edit button. */
-    private final Button edit = new Button("Edit");
+    /** The label. */
+    @PropertyId("label")
+    final TextField label = new TextField("Resource Type Label");
 
-    /** The Delete button. */
-    private final Button delete = new Button("Delete");
+    /** The resource label. */
+    @PropertyId("resourceLabel")
+    final TextField resourceLabel = new TextField("Resource Label");
 
-    /** The Save button. */
-    private final Button save = new Button("Save");
+    /** The storage strategy. */
+    @PropertyId("storageStrategy")
+    StorageStrategyField storageStrategy = new StorageStrategyField("Storage Strategy");
 
-    /** The Cancel button. */
-    private final Button cancel = new Button("Cancel");
+    /** The persistence selector strategy. */
+    @PropertyId("persistenceSelectorStrategy")
+    final PersistSelectorStrategyField persistenceSelectorStrategy = new PersistSelectorStrategyField("Persist Selector Strategy");
+
+    /** The Event editor. */
+    private final FieldGroup resourceTypeEditor = new FieldGroup();
+
+    /** The event layout. */
+    private final FormLayout resourceTypeLayout = new FormLayout();
 
     /**
      * Instantiates a new resource type form.
      */
     public ResourceTypeForm() {
         setCaption("Resource Type Detail");
-        setBuffered(true);
-        setVisible(false);
-        setFormFieldFactory(new ResourceTypeFieldFactory());
-        initToolbar();
-    }
+        resourceTypeLayout.setMargin(true);
 
-    /**
-     * Initialize the Toolbar.
-     */
-    private void initToolbar() {
-        save.addClickListener(this);
-        cancel.addClickListener(this);
-        edit.addClickListener(this);
-        delete.addClickListener(this);
+        name.setRequired(true);
+        name.setWidth("100%");
+        resourceTypeLayout.addComponent(name);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.setSpacing(true);
-        toolbar.addComponent(edit);
-        toolbar.addComponent(delete);
-        toolbar.addComponent(save);
-        toolbar.addComponent(cancel);
+        label.setRequired(true);
+        label.setWidth("100%");
+        resourceTypeLayout.addComponent(label);
 
-        setFooter(toolbar);
+        resourceLabel.setRequired(false);
+        resourceLabel.setWidth("100%");
+        resourceTypeLayout.addComponent(resourceLabel);
+
+        resourceTypeLayout.addComponent(storageStrategy);
+        resourceTypeLayout.addComponent(persistenceSelectorStrategy);
+
+        setResourceType(createBasicResourceType());
+        resourceTypeEditor.bindMemberFields(this);
+
+        setCompositionRoot(resourceTypeLayout);
+
     }
 
     /**
@@ -102,74 +108,61 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
      * @return the resource type
      */
     @SuppressWarnings("unchecked")
-    private ResourceType getResourceType() {
-        if (getItemDataSource() instanceof BeanItem) {
-            BeanItem<ResourceType> item = (BeanItem<ResourceType>) getItemDataSource();
-            return item.getBean();
-        }
-        return null;
+    public ResourceType getResourceType() {
+        return ((BeanItem<ResourceType>) resourceTypeEditor.getItemDataSource()).getBean();
+    }
+
+    /**
+     * Sets the resource type.
+     *
+     * @param resourceType the new resource type
+     */
+    public void setResourceType(ResourceType resourceType) {
+        resourceTypeEditor.setItemDataSource(new BeanItem<ResourceType>(resourceType));
+    }
+
+    /**
+     * Creates the basic resource type.
+     *
+     * @return the resource type
+     */
+    public ResourceType createBasicResourceType() {
+        ResourceType rt = new ResourceType();
+        rt.setName("New Resource Type");
+        rt.setLabel("New Resource Type");
+        rt.setResourceLabel("{index}");
+        PersistenceSelectorStrategy persistence = new PersistenceSelectorStrategy();
+        persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
+        rt.setPersistenceSelectorStrategy(persistence);
+        StorageStrategy storage = new StorageStrategy();
+        storage.setClazz(IndexStorageStrategy.class.getName());
+        rt.setStorageStrategy(storage);
+        return rt;
+    }
+
+    /**
+     * Gets the field group.
+     *
+     * @return the field group
+     */
+    public FieldGroup getFieldGroup() {
+        return resourceTypeEditor;
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Form#setReadOnly(boolean)
+     * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
      */
     @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
-        save.setVisible(!readOnly);
-        cancel.setVisible(!readOnly);
-        edit.setVisible(readOnly);
-        delete.setVisible(readOnly);
+        resourceTypeEditor.setReadOnly(readOnly);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
+     * @see com.vaadin.ui.AbstractComponent#isReadOnly()
      */
     @Override
-    public void buttonClick(ClickEvent event) {
-        Button source = event.getButton();
-        if (source == save) {
-            commit();
-            setReadOnly(true);
-            saveResourceType(getResourceType());
-        }
-        if (source == cancel) {
-            discard();
-            setReadOnly(true);
-        }
-        if (source == edit) {
-            setReadOnly(false);
-        }
-        if (source == delete) {
-            // FIXME You cannot delete a resource type if it is being used on any group
-            ConfirmDialog.show(getUI(),
-                               "Are you sure?",
-                               "Do you really want to remove the Resource Type " + getResourceType().getName() + "?<br/>This action cannot be undone.",
-                               "Yes",
-                               "No",
-                               new ConfirmDialog.Listener() {
-                public void onClose(ConfirmDialog dialog) {
-                    if (dialog.isConfirmed()) {
-                        setVisible(false);
-                        deleteResourceType(getResourceType());
-                    }
-                }
-            });
-        }
+    public boolean isReadOnly() {
+        return super.isReadOnly() && resourceTypeEditor.isReadOnly();
     }
-
-    /**
-     * Save resource type.
-     *
-     * @param resourceType the resource type
-     */
-    public abstract void saveResourceType(ResourceType resourceType);
-
-    /**
-     * Delete resource type.
-     *
-     * @param resourceType the resource type
-     */
-    public abstract void deleteResourceType(ResourceType resourceType);
-
 }

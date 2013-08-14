@@ -72,7 +72,7 @@ public class EventWindow extends Window {
                 close();
             }
             @Override
-            public void failure() {
+            public void failure(String reason) {
                 close();
             }
         });

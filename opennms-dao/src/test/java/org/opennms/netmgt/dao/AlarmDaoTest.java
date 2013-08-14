@@ -293,7 +293,7 @@ public class AlarmDaoTest implements InitializingBean {
         List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(new Integer[0]);
         Assert.assertNotNull(summary); // the result does not really matter, as long as we get a result
         summary = null;
-        summary = m_alarmDao.getNodeAlarmSummaries(null);
+        summary = m_alarmDao.getNodeAlarmSummaries((Integer[])null);
         Assert.assertNotNull(summary);
     }
 

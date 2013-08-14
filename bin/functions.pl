@@ -184,6 +184,10 @@ info("PATH = " . $ENV{'PATH'});
 info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
+my $git_branch=`$GIT symbolic-ref HEAD`;
+$git_branch =~ s,^refs/heads/,,;
+info("Git Branch = $git_branch");
+
 sub clean_git {
 	my @command = ($GIT, "clean", "-fdx", ".");
 	info("running:", @command);

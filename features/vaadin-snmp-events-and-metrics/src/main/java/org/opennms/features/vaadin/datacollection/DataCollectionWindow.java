@@ -78,7 +78,7 @@ public class DataCollectionWindow extends Window {
             public void success() {
                 ConfirmDialog.show(getUI(),
                                    "Graph Templates",
-                                   "Do you want to generate the default graph templates?<br/>All the existing templates will be overriden.",
+                                   "Do you want to generate the default graph templates?\nAll the existing templates will be overriden.",
                                    "Yes",
                                    "No",
                                    new ConfirmDialog.Listener() {
@@ -90,7 +90,7 @@ public class DataCollectionWindow extends Window {
                 });
             }
             @Override
-            public void failure() {
+            public void failure(String reason) {
                 close();
             }
         });

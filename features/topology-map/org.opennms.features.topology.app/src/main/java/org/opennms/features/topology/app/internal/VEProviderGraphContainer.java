@@ -100,11 +100,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             return new BeanItem<PseudoEdge>(this);
         }
 
-        @Override
-        public String getTooltipText() {
-            return getLabel();
-        }
-
     }
 
     public class VEGraph implements Graph {
@@ -309,9 +304,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			}
     	}
     	
-    	Set<Edge> displayEdges = new HashSet<Edge>(); 
-    	
-    	for(Edge e : m_mergedGraphProvider.getEdges()) {
+    	Set<Edge> displayEdges = new HashSet<Edge>();
+
+        final List<Edge> edges = m_mergedGraphProvider.getEdges();
+        for(Edge e : edges) {
     		VertexRef source = e.getSource().getVertex();
     		VertexRef target = e.getTarget().getVertex();
 
@@ -326,6 +322,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 				// we may need to create a pseudo edge to represent this edge
 				String pseudoId = pseudoId(displaySource, displayTarget);
 				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), displaySource, displayTarget);
+                //This is a hack to get around the device A to device Z label in NCS Path when going through groups
+                if(e.getStyleName().equals("ncs edge direct")){
+                    pEdge.setTooltipText(e.getTooltipText());
+                }
 				displayEdges.add(pEdge);
 			}
     	}

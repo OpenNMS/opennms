@@ -35,7 +35,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ClassUtils;
 
 /**
  * <p>

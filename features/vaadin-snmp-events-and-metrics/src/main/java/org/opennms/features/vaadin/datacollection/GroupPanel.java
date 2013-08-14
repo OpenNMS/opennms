@@ -28,17 +28,23 @@
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.Logger;
+import org.opennms.features.vaadin.config.EditorToolbar;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -47,19 +53,13 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class GroupPanel extends VerticalLayout {
-
-    /** The group form. */
-    private final GroupForm form;
-
-    /** The group table. */
-    private final GroupTable table;
-
-    /** The add button. */
-    private final Button add;
+public class GroupPanel extends Panel {
 
     /** The isNew flag. True, if the group is new. */
     private boolean isNew = false;
+
+    /** The group table. */
+    private final GroupTable groupTable;
 
     /**
      * Instantiates a new group panel.
@@ -69,70 +69,100 @@ public class GroupPanel extends VerticalLayout {
      * @param logger the logger object
      */
     public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
+
+        if (dataCollectionConfigDao == null)
+            throw new RuntimeException("dataCollectionConfigDao cannot be null.");
+
+        if (source == null)
+            throw new RuntimeException("source cannot be null.");
+
         addStyleName("light");
 
-        form = new GroupForm(dataCollectionConfigDao, source) {
+        // Adding all resource types already defined on this source
+        final List<String> resourceTypes = new ArrayList<String>();
+        for (ResourceType type : source.getResourceTypeCollection()) {
+            resourceTypes.add(type.getName());
+        }
+
+        // Adding all defined resource types
+        resourceTypes.addAll(dataCollectionConfigDao.getConfiguredResourceTypes().keySet());
+
+        groupTable = new GroupTable(source.getGroupCollection());
+
+        final GroupForm groupForm = new GroupForm(resourceTypes);
+        groupForm.setVisible(false);
+
+        final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void saveGroup(Group group) {
-                if (isNew) {
-                    table.addGroup(group);
-                    logger.info("MIB Group " + group.getName() + " has been created.");
-                } else {
-                    logger.info("MIB Group " + group.getName() + " has been updated.");
+            public void save() {
+                Group group = groupForm.getGroup();
+                logger.info("SNMP Group " + group.getName() + " has been " + (isNew ? "created." : "updated."));
+                try {
+                    groupForm.getFieldGroup().commit();
+                    groupForm.setReadOnly(true);
+                    groupTable.refreshRowCache();
+                } catch (CommitException e) {
+                    String msg = "Can't save the changes: " + e.getMessage();
+                    logger.error(msg);
+                    Notification.show(msg, Notification.Type.ERROR_MESSAGE);
                 }
-                table.refreshRowCache();
             }
             @Override
-            public void deleteGroup(Group group) {
-                logger.info("MIB Group " + group.getName() + " has been updated.");
-                table.removeItem(group.getName());
-                table.refreshRowCache();
+            public void delete() {
+                Object groupId = groupTable.getValue();
+                if (groupId != null) {
+                    Group group = groupTable.getGroup(groupId);
+                    logger.info("SNMP Group " + group.getName() + " has been removed.");
+                    groupTable.select(null);
+                    groupTable.removeItem(groupId);
+                    groupTable.refreshRowCache();
+                }
+            }
+            @Override
+            public void edit() {
+                groupForm.setReadOnly(false);
+            }
+            @Override
+            public void cancel() {
+                groupForm.getFieldGroup().discard();
+                groupForm.setReadOnly(true);
             }
         };
+        bottomToolbar.setVisible(false);
 
-        table = new GroupTable(source) {
+        groupTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void updateExternalSource(BeanItem<Group> item) {
-                form.setItemDataSource(item, Arrays.asList(GroupForm.FORM_ITEMS));
-                form.setVisible(true);
-                form.setReadOnly(true);
-                setIsNew(false);
+            public void valueChange(ValueChangeEvent event) {
+                Object groupId = groupTable.getValue();
+                if (groupId != null) {
+                    groupForm.setGroup(groupTable.getGroup(groupId));
+                }
+                groupForm.setReadOnly(true);
+                groupForm.setVisible(groupId != null);
+                bottomToolbar.setReadOnly(true);
+                bottomToolbar.setVisible(groupId != null);
             }
-        };
+        });   
 
-        add = new Button("Add Group", new Button.ClickListener() {
+        final Button add = new Button("Add SNMP Group", new Button.ClickListener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                Group group = new Group();
-                group.setName("New Group");
-                group.setIfType("ignore");
-                table.updateExternalSource(new BeanItem<Group>(group));
-                form.setReadOnly(false);
+            public void buttonClick(ClickEvent event) {
+                groupTable.addGroup(groupForm.createBasicGroup());
+                groupForm.setReadOnly(false);
+                bottomToolbar.setReadOnly(false);
                 setIsNew(true);
             }
         });
 
-        setSpacing(true);
-        setMargin(true);
-        addComponent(table);
-        addComponent(add);
-        addComponent(form);
-
-        setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
-    }
-
-    /**
-     * Gets the groups.
-     *
-     * @return the groups
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<Group> getGroups() {
-        final Collection<Group> groups = new ArrayList<Group>();
-        for (Object itemId : table.getContainerDataSource().getItemIds()) {
-            groups.add(((BeanItem<Group>)table.getContainerDataSource().getItem(itemId)).getBean());
-        }
-        return groups;
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.addComponent(groupTable);
+        mainLayout.addComponent(add);
+        mainLayout.addComponent(groupForm);
+        mainLayout.addComponent(bottomToolbar);
+        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+        setContent(mainLayout);
     }
 
     /**
@@ -142,6 +172,15 @@ public class GroupPanel extends VerticalLayout {
      */
     public void setIsNew(boolean isNew) {
         this.isNew = isNew;
+    }
+
+    /**
+     * Gets the groups.
+     *
+     * @return the groups
+     */
+    public List<Group> getGroups() {
+        return groupTable.getGroups();
     }
 
 }
