@@ -352,7 +352,9 @@ public class MibCompilerPanel extends Panel {
                 try {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
-                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
+                    final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
+                    final File eventFile = new File(configDir, eventsFileName);
+                    final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventFile, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
                     getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

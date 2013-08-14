@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.events;
 import java.io.File;
 import java.io.FileWriter;
 
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.EventConstants;
@@ -80,19 +79,19 @@ public abstract class EventPanel extends Panel {
     /** The Events Proxy. */
     private EventProxy eventProxy;
 
-    /** The Events File name. */
-    private String fileName;
+    /** The Events File. */
+    private File eventFile;
 
     /**
      * Instantiates a new event panel.
      *
      * @param eventConfDao the OpenNMS Events Configuration DAO
      * @param eventProxy the OpenNMS Events Proxy
-     * @param fileName the MIB's file name
+     * @param eventFile the events file
      * @param events the OpenNMS events object
      * @param logger the logger object
      */
-    public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final String fileName, final Events events, final Logger logger) {
+    public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
 
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
@@ -101,7 +100,7 @@ public abstract class EventPanel extends Panel {
 
         this.eventConfDao = eventConfDao;
         this.eventProxy = eventProxy;
-        this.fileName = fileName;
+        this.eventFile = eventFile;
 
         setCaption("Events");
         addStyleName(Runo.PANEL_LIGHT);
@@ -215,9 +214,7 @@ public abstract class EventPanel extends Panel {
      * @param logger the logger
      */
     public void processEvents(final Events events, final Logger logger) {
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
-        final File file = new File(configDir, fileName);
-        if (file.exists()) {
+        if (eventFile.exists()) {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
@@ -228,12 +225,12 @@ public abstract class EventPanel extends Panel {
             mb.show(new EventListener() {
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
-                        validateFile(file, events, logger);
+                        validateFile(eventFile, events, logger);
                     }
                 }
             });
         } else {
-            validateFile(file, events, logger);
+            validateFile(eventFile, events, logger);
         }
     }
 
@@ -279,22 +276,31 @@ public abstract class EventPanel extends Panel {
      */
     private void saveFile(final File file, final Events events, final Logger logger) {
         try {
-            logger.info("Saving XML data into " + file.getAbsolutePath());
+            logger.info("Saving XML data into " + file);
             // Save the XML of the new events
             FileWriter writer = new FileWriter(file);
             JaxbUtils.marshal(events, writer);
             writer.close();
-            // Add a reference to the new file into eventconf.xml
-            String fileName = "events/" + file.getName();
-            if (!eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
-                logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
-                eventConfDao.getRootEvents().getEventFileCollection().add(0, fileName);
-                eventConfDao.saveCurrent();
+            // Add a reference to the new file into eventconf.xml if there are events
+            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            if (events.getEventCount() > 0) {
+                if (!eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
+                    logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
+                    eventConfDao.getRootEvents().getEventFileCollection().add(0, fileName);
+                    eventConfDao.saveCurrent();
+                }
+                // Send eventsConfigChange event
+                EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+                eventProxy.send(eb.getEvent());
+                logger.info("The event's configuration reload operation is being performed.");
+            } else {
+                // If a reference to an empty events file exist, it should be removed.
+                if (eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
+                    logger.info("Removing a reference to " + file.getName() + " inside eventconf.xml because there are no events.");
+                    eventConfDao.getRootEvents().getEventFileCollection().remove(fileName);
+                    eventConfDao.saveCurrent();
+                }
             }
-            // Send eventsConfigChange event
-            EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
-            eventProxy.send(eb.getEvent());
-            logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
             logger.error(e.getMessage());
