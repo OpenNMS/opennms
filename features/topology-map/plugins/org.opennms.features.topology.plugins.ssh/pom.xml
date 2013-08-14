@@ -6,7 +6,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.95-SNAPSHOT</version>
+    <version>1.12.0</version>
   </parent>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>ssh</artifactId>
