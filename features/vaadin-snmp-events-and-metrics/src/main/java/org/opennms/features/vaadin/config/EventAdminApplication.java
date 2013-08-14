@@ -149,7 +149,7 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        final File file = new File(eventsDir, fieldValue);
+                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
                         LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
@@ -218,6 +218,30 @@ public class EventAdminApplication extends UI {
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         setContent(layout);
+    }
+
+    /**
+     * Normalize filename.
+     *
+     * @param currentFileName the current file name
+     * @return the string
+     */
+    protected String normalizeFilename(String currentFileName) {
+        String fileName = currentFileName.replaceFirst("\\.$", "");
+        if (fileName.toLowerCase().endsWith(".xml")) {
+            if (fileName.toLowerCase().endsWith(".events.xml")) {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".xml");
+            } else {
+                fileName = fileName.replaceFirst("\\.[Xx][Mm][Ll]", ".events.xml");
+            }
+        } else {
+            if (fileName.toLowerCase().endsWith(".events")) {
+                fileName += ".xml";
+            } else {
+                fileName += ".events.xml";
+            }
+        }
+        return fileName;
     }
 
     /**
