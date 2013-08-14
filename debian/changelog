@@ -1,3 +1,9 @@
+opennms (1.12.0-1) stable; urgency=high
+
+  * First OpenNMS 1.12 release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 14 Aug 2013 16:16:00 -0400
+
 opennms (1.11.94-1) unstable; urgency=medium
 
   * New upstream release.  This release has a few bug fixes and enhancements,
