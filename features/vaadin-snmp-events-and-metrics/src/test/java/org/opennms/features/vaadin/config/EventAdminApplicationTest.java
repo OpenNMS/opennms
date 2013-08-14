@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,6 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 package org.opennms.features.vaadin.config;
+
+import java.io.File;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,6 +55,18 @@ public class EventAdminApplicationTest {
         Assert.assertEquals("data.events.xml", app.normalizeFilename("data.events."));
         Assert.assertEquals("data.events.xml", app.normalizeFilename("data.events.xml"));
         Assert.assertEquals("data.events.xml", app.normalizeFilename("data.events.XML"));
+    }
+
+    /**
+     * Test get relative file.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testGetRelativeFile() throws Exception {
+        File f = new File("/opt/opennms/etc/events/JuniperEvents/syslog/tca_syslog.xml");
+        String file = f.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+        Assert.assertEquals("events/JuniperEvents/syslog/tca_syslog.xml", file);
     }
 
 }
