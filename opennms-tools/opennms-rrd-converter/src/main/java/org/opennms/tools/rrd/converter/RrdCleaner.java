@@ -51,6 +51,12 @@ public class RrdCleaner {
         }
     }
 
+    public List<File> findRrds(final File topDirectory) {
+        final List<File> files = new ArrayList<File>();
+        findRrds(topDirectory, files);
+        return files;
+    }
+
     private void cleanRrd(File f) {
         LogUtils.infof(this, "Removing %s", f);
         try {
@@ -62,34 +68,29 @@ public class RrdCleaner {
         }
     }
 
-    public List<File> findRrds(final File topDirectory) {
-        final List<File> files = new ArrayList<File>();
-        findRrds(topDirectory, files);
-        return files;
-    }
-
-    public void findRrds(final File directory, final List<File> files) {
+    private void findRrds(final File directory, final List<File> files) {
         for (final File f : directory.listFiles()) {
             if (f.isDirectory()) {
                 findRrds(f, files);
             } else {
-                if (f.getName().endsWith(".finished")) {
-                    files.add(f);
-                }
-                if ((f.getName().endsWith(".rrd") || f.getName().endsWith(".jrb")) && getNumOfDsNames(f) == 1) {
+                if (f.getName().endsWith(".finished") || isSingleMetricDs(f)) {
                     files.add(f);
                 }
             }
         }
     }
 
-    public int getNumOfDsNames(final File rrdFile) {
+    private boolean isSingleMetricDs(final File rrdFile) {
+        if (! (rrdFile.getName().endsWith(".rrd") || rrdFile.getName().endsWith(".jrb"))) {
+            return false;
+        }
         try {
             final RrdDb db = new RrdDb(rrdFile.getAbsolutePath(), true);
-            return db.getDsNames().length;
+            String[] dsNames = db.getDsNames();
+            return dsNames.length == 1 && rrdFile.getName().startsWith(dsNames[0] + '.');
         } catch (final Exception e) {
             LogUtils.warnf(JRobinConverter.class, e, "error reading file %s", rrdFile);
-            return -1;
+            return false;
         }
     }
 
