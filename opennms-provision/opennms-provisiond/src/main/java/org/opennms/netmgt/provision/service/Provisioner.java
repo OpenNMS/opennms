@@ -76,7 +76,10 @@ import org.springframework.core.io.UrlResource;
  */
 @EventListener(name="Provisiond:EventListener", logPrefix="provisiond")
 public class Provisioner implements SpringServiceDaemon {
-    private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
+    private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
+	private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
+
+	private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
     
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
@@ -190,7 +193,7 @@ public class Provisioner implements SpringServiceDaemon {
     @Override
     public void start() throws Exception {
         m_manager.initializeAdapters();
-        String enabled = System.getProperty("org.opennms.provisiond.scheduleRescanForExistingNodes", "true");
+        String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_EXISTING_NODES, "true");
         if (Boolean.valueOf(enabled)) {
             scheduleRescanForExistingNodes();
         } else {
@@ -589,12 +592,18 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * <p>handleNodeUpdated</p>
+     * A re-import has occurred, attempt a rescan now.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
-        // scan now since a reimport has occurred
+    	LOG.debug("Node updated event received: {}", e);
+        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
+        	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        	return;
+        }
+        
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {
