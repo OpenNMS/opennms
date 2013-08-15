@@ -4,6 +4,40 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
+	<!-- Start 1.12 -->
+
+	<section id="opennms-1.12.0">
+		<title>Changes in OpenNMS 1.12.0</title>
+
+		<section id="opennms-1.12.0-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>ERROR: insert or update on table &quot;notifications&quot; violates foreign key constraint &quot;fk_eventid3&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-1668'>NMS-1668</ulink>)</para></listitem>
+				<listitem><para>Provisiond never generates nodeCategoryMembershipChanged events (Issue <ulink url='http://issues.opennms.org/browse/NMS-4951'>NMS-4951</ulink>)</para></listitem>
+				<listitem><para>Provisiond Error : org.hibernate.exception.SQLGrammarException: could not execute query (Issue <ulink url='http://issues.opennms.org/browse/NMS-5348'>NMS-5348</ulink>)</para></listitem>
+				<listitem><para>SNMPV3 context not working in provisiond (Issue <ulink url='http://issues.opennms.org/browse/NMS-5556'>NMS-5556</ulink>)</para></listitem>
+				<listitem><para>&quot;No Data for this Entry&quot; in Serial Interface Utilization Summary report (Issue <ulink url='http://issues.opennms.org/browse/NMS-5617'>NMS-5617</ulink>)</para></listitem>
+				<listitem><para>OpenNMS 1.11.91 requres a JDK to be installed for Jetty to display the login page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5835'>NMS-5835</ulink>)</para></listitem>
+				<listitem><para>Duplicated parameter in notification.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-5948'>NMS-5948</ulink>)</para></listitem>
+				<listitem><para>OpenNMS Menu is sometimes left justified (Issue <ulink url='http://issues.opennms.org/browse/NMS-5988'>NMS-5988</ulink>)</para></listitem>
+				<listitem><para>Node availability report wrong calculation of percentage (Issue <ulink url='http://issues.opennms.org/browse/NMS-5990'>NMS-5990</ulink>)</para></listitem>
+				<listitem><para>Node selection dumps to exception error (Issue <ulink url='http://issues.opennms.org/browse/NMS-6002'>NMS-6002</ulink>)</para></listitem>
+				<listitem><para>Topology and Geographical Maps Fail to Load (Issue <ulink url='http://issues.opennms.org/browse/NMS-6003'>NMS-6003</ulink>)</para></listitem>
+				<listitem><para>Alarm Inserts failing with PostgreSQL Exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-6011'>NMS-6011</ulink>)</para></listitem>
+				<listitem><para>Poll Outages &quot;day of week&quot; configuration not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-6013'>NMS-6013</ulink>)</para></listitem>
+				<listitem><para>GWT Errors on Asset Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-6015'>NMS-6015</ulink>)</para></listitem>
+				<listitem><para>Missing HTTP content-type in response of the data export API (Issue <ulink url='http://issues.opennms.org/browse/NMS-6016'>NMS-6016</ulink>)</para></listitem>
+				<listitem><para>Windows CPU graph doesn&#39;t work with JRobin (Issue <ulink url='http://issues.opennms.org/browse/NMS-6017'>NMS-6017</ulink>)</para></listitem>
+				<listitem><para>Concurrent modification exception in NRTG nrt.broker (Issue <ulink url='http://issues.opennms.org/browse/NMS-6019'>NMS-6019</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t add more than one item to any table while editing Events or Data Collection elements through the UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6020'>NMS-6020</ulink>)</para></listitem>
+				<listitem><para>NRTG Realtime link does not show up for Storage (MIB-2 Host Resources) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6021'>NMS-6021</ulink>)</para></listitem>
+				<listitem><para>Statistic Reports shows an empty page (Issue <ulink url='http://issues.opennms.org/browse/NMS-6028'>NMS-6028</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t log in after creating a new user (Issue <ulink url='http://issues.opennms.org/browse/NMS-6030'>NMS-6030</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<!-- Start 1.11 -->
 
 	<section id="opennms-1.11.94">

@@ -4,6 +4,8 @@ MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
 TOPDIR=`cd "$BINDIR"/..; pwd`
 
+export PATH="/usr/local/bin:$PATH"
+
 BUILDTOOL=`which buildtool.pl 2>/dev/null`
 if [ $? != 0 ]; then
 	echo 'Unable to locate buildtool.pl!'

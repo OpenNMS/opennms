@@ -851,9 +851,11 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             final int fdbport = dot1dfdbentry.getQBridgeDot1dTpFdbPort();
 
-            if (fdbport == 0 || fdbport == -1) {
+            if ( fdbport == -1) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Invalid FDB port ({}) for MAC address {} on node {}. Skipping.", fdbport, curMacAddress, node.getNodeId());
                 continue;
+            } else if (fdbport == 0 ) {
+                LOG.debug("processQBridgeDot1DTpFdbTable: FDB port ({}) for MAC address {} on node {}. Saving generic port.", fdbport, curMacAddress, node.getNodeId());
             }
 
             LOG.debug("processQBridgeDot1DTpFdbTable: Found bridge port {} on node {}.", fdbport, node.getNodeId());
@@ -869,9 +871,11 @@ public abstract class AbstractQueryManager implements QueryManager {
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'MGMT' status. Skipping.");
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'OTHER' status. Skipping.");
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+               LOG.debug("processQBridgeDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processQBridgeDot1DTpFdbTable: Unable to determine status. Skipping.");
             }
@@ -915,9 +919,11 @@ public abstract class AbstractQueryManager implements QueryManager {
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                LOG.debug("processDot1DTpFdbTable: Found 'MGMT' status. Skipping.");
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                LOG.debug("processDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                LOG.debug("processDot1DTpFdbTable: Found 'OTHER' status. Skipping.");
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
+                LOG.debug("processDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processDot1DTpFdbTable: Unable to determine status. Skipping.");
             }
