@@ -54,7 +54,6 @@ import org.springframework.web.servlet.ModelAndView;
  * @version $Id: $
  * @since 1.8.1
  */
-@SuppressWarnings("deprecation")
 public class LoadLabelMapController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(LoadLabelMapController.class);

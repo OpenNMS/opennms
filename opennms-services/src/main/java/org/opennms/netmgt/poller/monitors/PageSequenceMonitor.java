@@ -92,13 +92,6 @@ import org.opennms.netmgt.config.pagesequence.SessionVariable;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.HttpPageSequence;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpGet;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpPost;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpUriRequest;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorException;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorParameters;
-import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.SequenceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

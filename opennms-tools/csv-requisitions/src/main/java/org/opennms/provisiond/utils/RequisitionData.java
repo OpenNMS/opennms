@@ -31,7 +31,6 @@
  */
 package org.opennms.provisiond.utils;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;

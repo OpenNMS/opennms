@@ -42,7 +42,6 @@
 
 package org.opennms.acl.ui;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
