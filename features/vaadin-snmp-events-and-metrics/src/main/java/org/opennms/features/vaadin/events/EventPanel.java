@@ -29,7 +29,9 @@ package org.opennms.features.vaadin.events;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.EventConstants;
@@ -278,33 +280,45 @@ public abstract class EventPanel extends Panel {
         try {
             logger.info("Saving XML data into " + file);
             // Save the XML of the new events
-            FileWriter writer = new FileWriter(file);
-            JaxbUtils.marshal(events, writer);
-            writer.close();
+            saveEvents(events, file);
             // Add a reference to the new file into eventconf.xml if there are events
             String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            final Events rootEvents = eventConfDao.getRootEvents();
+            final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
             if (events.getEventCount() > 0) {
-                if (!eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
-                    logger.info("Adding a reference to " + file.getName() + " inside eventconf.xml.");
-                    eventConfDao.getRootEvents().getEventFileCollection().add(0, fileName);
-                    eventConfDao.saveCurrent();
+                if (!rootEvents.getEventFileCollection().contains(fileName)) {
+                    logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
+                    rootEvents.getEventFileCollection().add(0, fileName);
+                    saveEvents(rootEvents, rootFile);
                 }
-                // Send eventsConfigChange event
-                EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
-                eventProxy.send(eb.getEvent());
-                logger.info("The event's configuration reload operation is being performed.");
             } else {
                 // If a reference to an empty events file exist, it should be removed.
-                if (eventConfDao.getRootEvents().getEventFileCollection().contains(fileName)) {
-                    logger.info("Removing a reference to " + file.getName() + " inside eventconf.xml because there are no events.");
-                    eventConfDao.getRootEvents().getEventFileCollection().remove(fileName);
-                    eventConfDao.saveCurrent();
+                if (rootEvents.getEventFileCollection().contains(fileName)) {
+                    logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
+                    rootEvents.getEventFileCollection().remove(fileName);
+                    saveEvents(rootEvents, rootFile);
                 }
             }
+            EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+            eventProxy.send(eb.getEvent());
+            logger.info("The event's configuration reload operation is being performed.");
             success();
         } catch (Exception e) {
             logger.error(e.getMessage());
             failure();
         }
+    }
+
+    /**
+     * Save events.
+     *
+     * @param events the events
+     * @param eventFile the events file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void saveEvents(final Events events, final File eventFile) throws IOException {
+        FileWriter writer = new FileWriter(eventFile);
+        JaxbUtils.marshal(events, writer);
+        writer.close();
     }
 }
