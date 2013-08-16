@@ -327,7 +327,7 @@ public class GWTVertex extends JavaScriptObject {
         return new Func<String, GWTVertex>() {
             @Override
             public String call(GWTVertex vertex, int index) {
-                return (vertex.getIconHeight()/2 + 2) + "px";
+                return (vertex.getIconHeight()/2 + 11) + "px";
             }
         };
     }
@@ -354,13 +354,16 @@ public class GWTVertex extends JavaScriptObject {
             @Override
             public String call(GWTVertex vertex, int index) {
                 SVGRect iconRect = getHiddenIconElement(vertex.getSVGIconId());
-                double primeLength = iconRect.getWidth() >= iconRect.getHeight() ? iconRect.getWidth() : iconRect.getHeight();
+
+                final int width = iconRect.getWidth();
+                final int height = iconRect.getHeight();
+                double primeLength = width >= height ? width : height;
                 double scaleFactor = 48 / primeLength;
-                double newX = (scaleFactor * iconRect.getWidth()) / 2;
-                double newY = (scaleFactor * iconRect.getHeight()) / 2;
-                double iconHeight = scaleFactor * iconRect.getHeight();
+                double newX = (scaleFactor * width) / 2;
+                double newY = (scaleFactor * height) / 2;
+                double iconHeight = scaleFactor * height;
                 vertex.setIconHeight(iconHeight);
-                vertex.setIconWidth(scaleFactor * iconRect.getWidth());
+                vertex.setIconWidth(scaleFactor * width);
                 return "translate(-" + newX +" , -" + newY +") scale(" + scaleFactor + ")";
             }
         };
@@ -416,13 +419,41 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
+    static Func<String, GWTVertex> calculateStatusCounterWidth(){
+        return new Func<String, GWTVertex>(){
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                final int width = 20 + (VERTEX_STATUS_CHAR_SIZE * (vertex.getStatusCount().length() - 1));
+                return "" + width;
+            }
+        };
+    }
+
+    protected static Func<String, GWTVertex> makeStatusCounter() {
+        // TODO Auto-generated method stub
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                if(vertex.isGroup()){
+                    return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
+                }
+                else{
+
+                }
+                return null;
+            }
+
+        };
+    }
+
     public static D3Behavior draw() {
         return new D3Behavior() {
 
             @Override
             public D3 run(D3 selection) {
                 final D3 iconContainer = selection.select(".icon-container");
-                iconContainer.attr("transform", normalizeSVGIcon());
+                iconContainer.attr("transform", normalizeSVGIcon()).attr("opacity", 1);
                 iconContainer.select(".vertex .activeIcon").attr("opacity", selectionFilter());
 
                 selection.select(".svgIconOverlay").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
@@ -430,41 +461,18 @@ public class GWTVertex extends JavaScriptObject {
 
                 selection.select(".status").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
                         .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass(false));
-                
-               
-//            	selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount()).html(makeStatusCounter());
-                	
-//            
-            	
+
+                selection.select(".status-counter").text(getStatusCountText());
+
             	 selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount())
-                 .select("rect").attr("class", getStatusClass(true));
-             
-            	
-            	selection.select(".status-counter").text(getStatusCountText());
-            
+                 .select("rect").attr("class", getStatusClass(true)).attr("width", calculateStatusCounterWidth());
 
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
         };
     }
 
-    protected static Func<String, GWTVertex> makeStatusCounter() {
-		// TODO Auto-generated method stub
-		return new Func<String, GWTVertex>(){
 
-			@Override
-			public String call(GWTVertex vertex, int index) {
-				if(vertex.isGroup()){
-					return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
-				}
-				else{
-					
-				}
-				return null;
-			}
-			
-		};
-	}
 
 	public static D3Behavior create() {
         return new D3Behavior() {
@@ -510,6 +518,7 @@ public class GWTVertex extends JavaScriptObject {
                     }
                 });
 
+                svgIconContainer.attr("opacity", 0);
                 svgIcon.attr("xlink:href", svgIconId("")).attr("class", "upIcon");
                 svgIconRollover.attr("xlink:href", svgIconId("_rollover")).attr("class", "overIcon").attr("opacity", 0);
                 svgIconActive.attr("xlink:href", svgIconId("_active")).attr("class", "activeIcon").attr("opacity", 0);
@@ -518,7 +527,7 @@ public class GWTVertex extends JavaScriptObject {
             	statusCounter.attr("class", "node-status-counter")
                     	.append("svg:rect").attr("height", 20).attr("width", 20).attr("rx", 10).attr("ry", 10);
 
-            	statusCounter.append("text").attr("x", "7px").attr("y","3px").attr("alignment-baseline", "text-before-edge")
+            	statusCounter.append("text").attr("x", "6px").attr("y","14px")
                     	.attr("class", "status-counter").text("2");
             
 
