@@ -274,9 +274,11 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
 
                 final int curIfIndex = curNode.getIfindex(curBridgePort);
+                
+                // TT2295 save also ifindex -1 links
                 if (curIfIndex == -1) {
                     LOG.warn("getLinksFromBridges: got invalid ifIndex on bridge port {}", curBridgePort);
-                    continue;
+                //    continue;
                 }
                 // First get the MAC addresses on bridge port
 

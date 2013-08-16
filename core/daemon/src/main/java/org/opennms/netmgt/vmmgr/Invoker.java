@@ -300,7 +300,7 @@ public class Invoker {
             throw t;
         }
 
-        LOG.debug("Invocation successful.");
+	LOG.debug("Invocation {} successful for MBean {}", invoke.getMethod(), mbean.getObjectName());
 
         return object;
     }
