@@ -177,10 +177,13 @@ run_tests() {
 		RETVAL=$?
 	popd
 
+	return $RETVAL
+}
+
+post_clean() {
 	rm -rf "$SOURCEDIR" || :
 	rm -rf "${HOME}"/.m2/repository || :
-
-	return $RETVAL
+	rm -rf "${ME}"/../target || :
 }
 
 stop_opennms() {
@@ -205,6 +208,7 @@ start_opennms
 run_tests
 RETVAL=$?
 
+post_clean
 stop_opennms
 
 exit $RETVAL
