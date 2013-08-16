@@ -58,18 +58,8 @@ get_hash_from_rpm() {
 clean_maven() {
 	banner "Cleaning out old Maven files"
 
-	# delete things older than a week
 	if [ -d "$HOME/.m2/repository" ]; then
-		do_log "$HOME/.m2/repository exists; cleaning"
-		find "${HOME}/.m2/repository" -depth -ctime +7 -type f -print -exec rm {} \; >/dev/null
-		find "${HOME}/.m2/repository" -depth -type d -print | while read LINE; do
-			rmdir "$LINE" 2>/dev/null || :
-		done
-		BAD_JARS=`find "${HOME}/.m2/repository" -depth -type f -name \*.jar | xargs file | grep text | cut -d: -f1`
-		if [ -n "$BAD_JARS" ]; then
-			rm -f $BAD_JARS
-		fi
-		rm -f "${HOME}/.m2/repository/repository.xml"
+		rm -rf "${HOME}"/.m2/repository
 	fi
 }
 
@@ -181,22 +171,15 @@ run_tests() {
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
 
-# These aren't needed any longer
-#	pushd "$SOURCEDIR"
-#		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-#	pushd "$SOURCEDIR/dependencies"
-#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-#	pushd "$SOURCEDIR/core"
-#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-
 	do_log "bamboo.pl test"
 	pushd "$SOURCEDIR/smoke-test"
 		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
 	popd
+
+	rm -rf "$SOURCEDIR" || :
+	rm -rf "${HOME}"/.m2/repository || :
+
 	return $RETVAL
 }
 
