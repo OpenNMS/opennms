@@ -77,9 +77,9 @@ import org.springframework.core.io.UrlResource;
 @EventListener(name="Provisiond:EventListener", logPrefix="provisiond")
 public class Provisioner implements SpringServiceDaemon {
     private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
-	private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
+    private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
 
-	private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
     
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
