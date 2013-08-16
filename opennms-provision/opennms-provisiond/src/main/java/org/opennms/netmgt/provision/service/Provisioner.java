@@ -42,6 +42,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.EventConstants;
@@ -75,8 +76,6 @@ public class Provisioner implements SpringServiceDaemon {
     private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
     private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
-    
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
@@ -593,9 +592,9 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
-    	LOG.debug("Node updated event received: {}", e);
+    	LogUtils.debugf(this, "Node updated event received: %s", e);
         if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
-        	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        	LogUtils.debugf(this, "Rescanning updated nodes is disabled via property: %s", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
         }
         
