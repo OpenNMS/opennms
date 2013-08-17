@@ -65,8 +65,6 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 
 /**
  * <p>Poller class.</p>
@@ -249,7 +247,6 @@ public class Poller extends AbstractServiceDaemon {
         return m_outageDao;
     }
     
-    @Autowired
     public void setOutageDao(OutageDaoHibernate outageDao) {
         m_outageDao = outageDao;
     }
@@ -306,10 +303,9 @@ public class Poller extends AbstractServiceDaemon {
      */
     private void closeOutagesForUnmanagedServices() {
         Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
-        
+
         OnmsOutage outage = m_outageDao.findByServiceStatus();
         outage.setIfRegainedService(closeTime);
-        LOG.info("******************************CLEARED******************");
         outage = m_outageDao.findByIpInterfaceIsManaged();
         outage.setIfRegainedService(closeTime);
     }
