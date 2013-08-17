@@ -53,7 +53,11 @@ VERSION=`grep '<version>' pom.xml | head -n 1 | sed -e 's,^.*<version>,,' -e 's,
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the package 
-./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+if [ -n "$ONLY_PACKAGE" ]; then
+	./makedeb.sh -a -d -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+else
+	./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+fi
 
 if [ -z "$ONLY_PACKAGE" ]; then
 	# update the $RELEASE repo, and sync it to anything later in the hierarchy

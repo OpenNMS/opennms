@@ -36,6 +36,7 @@ RELEASE=`cat "${TOPDIR}"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 cd "${TOPDIR}/.."
 git clean -fdx
 git reset --hard HEAD
+
 ./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}" || exit 1
 
 if [ -z "$ONLY_PACKAGE" ]; then
