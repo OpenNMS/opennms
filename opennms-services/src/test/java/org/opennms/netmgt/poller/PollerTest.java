@@ -47,13 +47,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
@@ -85,25 +82,9 @@ import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-@Transactional
 public class PollerTest {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
