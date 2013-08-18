@@ -139,6 +139,11 @@ public final class SnmpCollection implements ReadyRunnable {
      */
     private boolean m_collectOspf = false;
 
+    /**
+     * A boolean used to decide if you can collect IS-IS Table
+     */
+    private boolean m_collectIsIs = false;
+
     public LldpLocalGroup m_lldpLocalGroup;
     public LldpLocTable m_lldpLocTable;
     public LldpRemTable m_lldpRemTable;
@@ -410,7 +415,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		
 
 		LOG.debug("run: collecting : {}", m_agentConfig);
-		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf: {}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf);
+		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf/m_collectIsIs: {}/{}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf,m_collectIsIs);
 
         SnmpWalker walker = null;
 
@@ -420,6 +425,10 @@ public final class SnmpCollection implements ReadyRunnable {
         }
         if (m_collectOspf) {
         	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
+        }
+        if (m_collectIsIs) {
+            //FIXME add building table
+            //bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
         }
         if (m_collectLldp) {
         	bldr.add("lldpLocalGroup/lldpLocTable/lldpRemTable", m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable);
@@ -455,6 +464,9 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect ospfGeneralGroup for {}", hostAddress);
         if (m_collectOspf && !this.hasOspfNbrTable())
             LOG.info("run: failed to collect ospfNbrTable for {}", hostAddress);
+        //FIXME add checks for ISIS table walks
+        if (m_collectIsIs )
+            LOG.info("run: collection on isisnot yet supported for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocalGroup())
             LOG.info("run: failed to collect lldpLocalGroup for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocTable())
@@ -968,4 +980,13 @@ public final class SnmpCollection implements ReadyRunnable {
     public boolean getCollectOspfTable() {
        return m_collectOspf;
     }
+    
+    public void collectIsIs(boolean collectIsIs) {        
+        m_collectIsIs = collectIsIs;
+    }
+
+    public boolean getCollectIsIsTable() {
+       return m_collectIsIs;
+    }
+
 }

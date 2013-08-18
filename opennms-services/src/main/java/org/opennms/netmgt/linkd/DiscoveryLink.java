@@ -94,6 +94,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     private boolean discoveryUsingOspf = true;
 
+    private boolean discoveryUsingIsIs = true;
+
     private boolean suspendCollection = false;
 
     private boolean isRunned = false;
@@ -170,6 +172,10 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LOG.debug("run: adding to ospf node list: node with nodeid/ospfrouterid/#ospfinterface {}/{}/#{}", linkableNode.getNodeId(),str(linkableNode.getOspfRouterId()),linkableNode.getOspfinterfaces().size());
                 m_ospfNodes.add(linkableNode);
             }   
+            //FIXME add check for IsIs
+            if (discoveryUsingIsIs) {
+                LOG.debug("run: discovery using isis not yet supported");
+            }
             if (discoveryUsingLldp && linkableNode.getLldpChassisId() != null
                     && linkableNode.getLldpChassisIdSubtype() != null) {
                 LOG.debug("run: adding to lldp node list: node with nodeid/sysname/chassisid {}/{}/{}", linkableNode.getNodeId(),linkableNode.getLldpSysname(),linkableNode.getLldpChassisId());
@@ -1208,6 +1214,29 @@ public final class DiscoveryLink implements ReadyRunnable {
      */
     public void setDiscoveryUsingOspf(boolean discoveryUsingOspf) {
         this.discoveryUsingOspf = discoveryUsingOspf;
+    }
+
+    /**
+     * <p>
+     * discoveryUsingIsIs
+     * </p>
+     * 
+     * @return a boolean.
+     */
+    public boolean discoveryUsingIsIS() {
+        return discoveryUsingIsIs;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>discoveryUsingIsIs</code>.
+     * </p>
+     * 
+     * @param discoveryUsingIsIs
+     *            a boolean.
+     */
+    public void setDiscoveryUsingIsIs(boolean discoveryUsingIsIs) {
+        this.discoveryUsingIsIs = discoveryUsingIsIs;
     }
 
     /**
