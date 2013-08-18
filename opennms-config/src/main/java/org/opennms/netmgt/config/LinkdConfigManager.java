@@ -485,6 +485,17 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * <p>useIsIsDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    @Override
+    public boolean useIsIsDiscovery() {
+        if (m_config.hasUseIsisDiscovery()) return m_config.getUseIsisDiscovery();
+        return true;
+    }
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

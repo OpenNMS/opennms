@@ -218,4 +218,9 @@ public class MockLinkdConfig implements LinkdConfig {
         return false;
     }
 
+    @Override
+    public boolean useIsIsDiscovery() {
+        return false;
+    }
+
 }
