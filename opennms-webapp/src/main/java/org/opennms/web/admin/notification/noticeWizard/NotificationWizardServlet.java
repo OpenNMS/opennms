@@ -643,8 +643,8 @@ public class NotificationWizardServlet extends HttpServlet {
     private void updatePaths(String rule, String criticalIp, String criticalSvc)
                                  throws FilterParseException, SQLException {
         Connection conn = Vault.getDbConnection();
-        SortedMap<Integer, String> nodes = getFilterDao().getNodeMap(rule);
         try {
+            SortedMap<Integer, String> nodes = getFilterDao().getNodeMap(rule);
             Iterator<Integer> i = nodes.keySet().iterator();
             while (i.hasNext()) {
                 Integer key = i.next();

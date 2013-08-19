@@ -39,6 +39,7 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
@@ -96,12 +97,12 @@ public class EventFactory {
             select.append(" AND EVENTDISPLAY='Y' ");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
+
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -148,12 +149,12 @@ public class EventFactory {
             select.append(" GROUP BY EVENTSEVERITY");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
+
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -314,22 +315,22 @@ public class EventFactory {
         Connection conn = Vault.getDbConnection();
 
         try {
-        	/*
+            /*
             StringBuffer select = new StringBuffer("" +
             		"  SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME " +
             		"    FROM EVENTS " +
             		"LEFT OUTER JOIN NODE USING(NODEID) " +
             		"LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
-            */
+             */
             StringBuffer select = new StringBuffer("" +
-            		"          SELECT events.*, node.nodelabel, service.servicename " + 
-            		"            FROM node " + 
-            		"RIGHT OUTER JOIN events " +
-            		"              ON (events.nodeid = node.nodeid) " + 
-            		" LEFT OUTER JOIN service " +
-            		"              ON (service.serviceid = events.serviceid) " + 
-            		"           WHERE ");
-            
+                    "          SELECT events.*, node.nodelabel, service.servicename " + 
+                    "            FROM node " + 
+                    "RIGHT OUTER JOIN events " +
+                    "              ON (events.nodeid = node.nodeid) " + 
+                    " LEFT OUTER JOIN service " +
+                    "              ON (service.serviceid = events.serviceid) " + 
+                    "           WHERE ");
+
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -348,12 +349,12 @@ public class EventFactory {
             }
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
-            
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
-            
+
             ResultSet rs = stmt.executeQuery();
 
             events = rs2Events(rs);
@@ -449,7 +450,7 @@ public class EventFactory {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-        
+
         int eventCount = 0;
         Connection conn = Vault.getDbConnection();
 
@@ -1020,22 +1021,24 @@ public class EventFactory {
             update.append(filter.getParamSql());
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(EventFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement(update.toString());
+            d.watch(stmt);
             stmt.setString(1, user);
             stmt.setTimestamp(2, new Timestamp(time.getTime()));
-            
+
             int parameterIndex = 3;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -1063,17 +1066,19 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(EventFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL");
+            d.watch(stmt);
             stmt.setString(1, user);
             stmt.setTimestamp(2, new Timestamp(time.getTime()));
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
     }
@@ -1121,14 +1126,17 @@ public class EventFactory {
 
             update.append(")");
 
-            Connection conn = Vault.getDbConnection();
-
+            DBUtils d = new DBUtils(EventFactory.class);
             try {
+                Connection conn = Vault.getDbConnection();
+                d.watch(conn);
+
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
+
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }
@@ -1152,20 +1160,22 @@ public class EventFactory {
             update.append(filter.getParamSql());
         }
 
-        Connection conn = Vault.getDbConnection();
-
+        final DBUtils d = new DBUtils(EventFactory.class);
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement(update.toString());
-            
+            d.watch(stmt);
+
             int parameterIndex = 1;
             for (Filter filter : filters) {
-            	parameterIndex += filter.bindParam(stmt, parameterIndex);
+                parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
 
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -1175,14 +1185,18 @@ public class EventFactory {
      * @throws java.sql.SQLException if any.
      */
     public static void unacknowledgeAll() throws SQLException {
-        Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class);
 
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");
+            d.watch(stmt);
+
             stmt.executeUpdate();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
     }
