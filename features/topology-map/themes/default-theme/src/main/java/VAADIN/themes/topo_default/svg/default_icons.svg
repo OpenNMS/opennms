@@ -174,8 +174,8 @@
 		</g>
 	</g>
 </g>
-<g id="ex2020_icons">
-	<g id="ex2020_external" display="none">
+<g id="ex2020_icons" display="none">
+	<g id="ex2020_external">
 		<path id="Rectangle_70_" display="inline" fill="#547EA8" stroke="#547EA8" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78
 			H0.77z"/>
 		<g id="Group_4_" transform="translate(52.000000, 12.000000)" display="inline">
@@ -215,7 +215,7 @@
 			<path id="Rectangle_100_" fill="#547EA8" d="M18.87,0.98v4.43h2.23V0.98H18.87z"/>
 		</g>
 	</g>
-	<g id="ex2020_external_rollover" display="none">
+	<g id="ex2020_external_rollover">
 		<path id="Rectangle_101_" display="inline" fill="#36516C" stroke="#36516C" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78
 			H0.77z"/>
 		<g id="Group_7_" transform="translate(52.000000, 12.000000)" display="inline">
@@ -255,7 +255,7 @@
 			<path id="Rectangle_131_" fill="#36516C" d="M18.87,0.98v4.43h2.23V0.98H18.87z"/>
 		</g>
 	</g>
-	<g id="ex2020_external_active">
+	<g id="ex2020_external_active" display="inline">
 		<path id="Rectangle_197_" fill="#91C054" stroke="#91C054" stroke-width="1.5" d="M0,0v21.17h117.589V0H0z"/>
 		<g id="Group_14_" transform="translate(52.000000, 12.000000)">
 			<path id="Rectangle_196_" fill="#FFFFFF" d="M23.339-0.6v6.25H46.31V-0.6H23.339z"/>
@@ -295,9 +295,9 @@
 		</g>
 	</g>
 </g>
-<g id="generic_icon_1_" display="none">
+<g id="generic_icon_1_">
 	
-		<image display="inline" overflow="visible" enable-background="new    " width="238" height="78" id="generic" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAABOCAYAAAAn8irMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
+		<image overflow="visible" enable-background="new    " width="238" height="78" id="generic" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAABOCAYAAAAn8irMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
 bWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdp
 bj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6
 eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0
@@ -476,7 +476,7 @@ uqXfvAoTGeZxj0TYFgrMx+2UzGVbkGBsLmPbIGlTEBPrm2ZKqjtf+syWTOlkicAm6Ri9RlxNNDlp
 qSRIn7K2NUpYzVTWRJNTJ65X0rpOiaA2qdil726J3N7/FmAApGPjyOKL0IkAAAAASUVORK5CYII=">
 	</image>
 	
-		<image display="inline" overflow="visible" enable-background="new    " width="238" height="78" id="generic_rollover" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAABOCAYAAAAn8irMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
+		<image overflow="visible" enable-background="new    " width="238" height="78" id="generic_rollover" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAO4AAABOCAYAAAAn8irMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
 bWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdp
 bj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6
 eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0
@@ -883,7 +883,7 @@ SuTwd6QV4t0ymKQjugm4pQq4+WBD/2wYuMPH8PEvATeVAdztCrxtSvruUN8lPYApqRs4krdQgbRM
 SeBy9ffiDIk7DNzhY/j4+CSu603uVOqxCQURXRbAMsCbpwBcpM5i9aeWtgkwqdnDqvLwMXz8i8CN
 lNQdUADtVWef+ndKgTv6PwIMAE0J8s3+DtYZAAAAAElFTkSuQmCC">
 	</image>
-	<path id="generic_active" display="inline" fill="none" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="
+	<path id="generic_active" opacity="0.5" fill="#91C054" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="
 		M231.17,58.49c0,8.13-4.061,12.01-12,12.01h-204c-9.17,0-12-3.33-12-12.01V15.28c0-8.95,3.67-11.78,12-11.78h204
 		c10.17,0,12,4.2,12,11.78V58.49z"/>
 </g>
