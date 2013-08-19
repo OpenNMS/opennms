@@ -236,7 +236,7 @@ public abstract class EventPanel extends Panel {
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        validateFile(file, events, logger);
+                        validateFile(eventFile, events, logger);
                     }
                 }
             });

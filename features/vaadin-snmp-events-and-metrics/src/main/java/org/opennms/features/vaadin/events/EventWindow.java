@@ -56,7 +56,6 @@ public class EventWindow extends Window {
      */
     public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) throws Exception {
         super(eventFile.getAbsolutePath()); // Using fileName for as the window's name.
-        setScrollable(true);
         setModal(false);
         setClosable(false);
         setDraggable(false);
