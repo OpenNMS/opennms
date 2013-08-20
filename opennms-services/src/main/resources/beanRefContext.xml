@@ -63,8 +63,6 @@
          <value>META-INF/opennms/applicationContext-pollerBackEnd.xml</value>
          <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml</value>
          <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml</value>
-         <!-- Not sure why this isn't included... it must not work yet. -->
-         <!-- <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-https.xml</value> -->
        </list>
      </constructor-arg>
      <constructor-arg ref="commonContext" />

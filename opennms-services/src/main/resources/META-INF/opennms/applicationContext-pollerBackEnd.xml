@@ -10,15 +10,10 @@
   <tx:annotation-driven />
   <context:annotation-config />
 
-  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="properties">
-      <props>
-        <prop key="opennms.pollerBackend.disconnectedTimeout">600000</prop>
-        <prop key="opennms.pollerBackend.minimumConfigurationReloadInterval">300000</prop>
-      </props>
-    </property>
-    <property name="order" value="0" />
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+    <constructor-arg>
+      <value>600000</value>
+    </constructor-arg>
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
@@ -27,8 +22,7 @@
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager" ref="eventIpcManager" />
-    <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
-    <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
+    <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
   </bean>
   
   <bean name="backend" class="org.opennms.netmgt.poller.remote.support.ExceptionProtectedPollerBackEnd">

@@ -174,7 +174,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             try {
                 doRegister(location);
                 setState(new Running());
-            } catch (final Throwable e) {
+            } catch (final Exception e) {
                 LOG.warn("Unable to register.", e);
                 setState(new Disconnected());
             }
@@ -430,10 +430,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     @Override
     public void afterPropertiesSet() throws Exception {
         assertNotNull(m_timeAdjustment, "timeAdjustment");
-        assertNotNull(m_backEnd, "pollerBackEnd");
-        assertNotNull(m_pollService, "pollService");
-        assertNotNull(m_pollerSettings, "pollerSettings");
-
         m_state.initialize();
     }
 
@@ -740,11 +736,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     private void assertInitialized() {
-        Assert.isTrue(isInitialized(), "afterPropertiesSet() has not been called");
+        Assert.isTrue(isInitialized(), "afterProperties set has not been called");
     }
 
-    private static void assertNotNull(final Object propertyValue, final String propertyName) {
-        Assert.state(propertyValue != null, propertyName + " must be set for instances of " + DefaultPollerFrontEnd.class.getName());
+    private void assertNotNull(final Object propertyValue, final String propertyName) {
+        Assert.state(propertyValue != null, propertyName + " must be set for instances of " + getClass());
     }
 
     @SuppressWarnings("unused")

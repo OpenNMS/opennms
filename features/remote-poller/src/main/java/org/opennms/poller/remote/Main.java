@@ -46,7 +46,6 @@ import org.apache.commons.cli.PosixParser;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,250 +56,255 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class Main implements Runnable {
+public class Main {
+	
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    
+    String[] m_args;
+    ClassPathXmlApplicationContext m_context;
+    PollerFrontEnd m_frontEnd;
+    URI m_uri;
+    String m_locationName;
+    String m_username = null;
+    String m_password = null;
+    String m_pollerHome = null;
+    boolean m_shuttingDown = false;
+    boolean m_gui = false;
+    CommandLine m_cl;
 
-	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private Main(String[] args) throws Exception {
+        m_args = args;
+        m_pollerHome = System.getProperty("poller.home");
+        if (m_pollerHome == null) {
+        	if (System.getProperty("os.name").contains("Windows")) {
+        		m_pollerHome = System.getProperty("java.io.tmpdir");
+        	} else {
+        		m_pollerHome = System.getProperty("user.home") + File.separator + ".opennms";
+        	}
+        }
+        initializeLogging();
+        
+        final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
+        if (pingerClass == null) {
+        	LOG.info("org.opennms.netmgt.icmp.pingerClass not set; using JnaPinger by default");
+        	System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+        }
+    }
 
-	protected final String[] m_args;
-	protected URI m_uri = null;
-	protected String m_locationName;
-	protected String m_username = null;
-	protected String m_password = null;
-	protected static boolean m_shuttingDown = false;
-	protected boolean m_gui = false;
+    private void initializeLogging() throws Exception {
+    }
 
-	private Main(String[] args) {
-		// Give us some time to attach a debugger if necessary
-		//try { Thread.sleep(20000); } catch (InterruptedException e) {}        
+    private void getAuthenticationInfo() {
+    	if (m_uri == null || m_uri.getScheme() == null) {
+    		throw new RuntimeException("no URI specified!");
+    	}
+    	if (m_uri.getScheme().equals("rmi")) {
+    		// RMI doesn't have authentication
+    		return;
+    	}
+    	
+    	if (m_username == null) {
+    		GroovyGui gui = createGui();
+            gui.createAndShowGui();
+            AuthenticationBean auth = gui.getAuthenticationBean();
+            m_username = auth.getUsername();
+            m_password = auth.getPassword();
+    	}
+    	
+    	if (m_username != null) {
+    		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
+    		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
+    	}
+    }
 
-		m_args = args;
-
-		final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
-		if (pingerClass == null) {
-			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
-			System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
-		}
-		LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
-	}
-
-	private void getAuthenticationInfo() {
-		if (m_uri == null || m_uri.getScheme() == null) {
-			throw new RuntimeException("no URI specified!");
-		}
-		if (m_uri.getScheme().equals("rmi")) {
-			// RMI doesn't have authentication
-			return;
-		}
-
-		if (m_username == null) {
-			GroovyGui gui = createGui();
-			gui.createAndShowGui();
-			AuthenticationBean auth = gui.getAuthenticationBean();
-			m_username = auth.getUsername();
-			m_password = auth.getPassword();
-		}
-
-		if (m_username != null) {
-			SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
-			SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(m_username, m_password));
-		}
-	}
-
-	private static GroovyGui createGui() {
+	private GroovyGui createGui() {
 		try {
 			return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
 		} catch (Throwable e) {
 			throw new RuntimeException("Unable to find Configuration GUI!", e);
 		}
 	}
+    
+    private void run() {
+        
+        try {
+            parseArguments();
+            getAuthenticationInfo();
+            createAppContext();
+            registerShutDownHook();
 
-	@Override
-	public void run() {
+            if (!m_gui) {
+                if (!m_frontEnd.isRegistered()) {
+                    if (m_locationName == null) {
+                        LOG.error("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        System.exit(27);
+                    } else {
+                        m_frontEnd.register(m_locationName);
+                    }
+                }
+            }
+        } catch(Throwable e) {
+            // a fatal exception occurred
+            LOG.error("Exception occurred during registration!", e);
+            System.exit(27);
+        }
+        
+    }
 
-		try {
-			parseArguments(m_args);
-			getAuthenticationInfo();
-			AbstractApplicationContext context = createAppContext();
-			PollerFrontEnd frontEnd = getPollerFrontEnd(context);
+    private void parseArguments() throws ParseException {
+        Options options = new Options();
+        
+        options.addOption("h", "help", false, "this help");
+        
+        options.addOption("d", "debug", false, "write debug messages to the log");
+        options.addOption("g", "gui", false, "start a GUI (default: false)");
+        options.addOption("l", "location", true, "the location name of this remote poller");
+        options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
+        options.addOption("n", "name", true, "the name of the user to connect as");
+        options.addOption("p", "password", true, "the password to use when connecting");
 
-			if (!m_gui) {
-				if (!frontEnd.isRegistered()) {
-					if (m_locationName == null) {
-						LOG.error("No location name provided.  You must pass a location name the first time you start the remote poller!");
-						System.exit(27);
-					} else {
-						frontEnd.register(m_locationName);
-					}
-				}
-			}
-		} catch(Throwable e) {
-			// a fatal exception occurred
-			LOG.error("Exception occurred during registration!", e);
-			System.exit(27);
-		}
+        CommandLineParser parser = new PosixParser();
+        m_cl = parser.parse(options, m_args);
 
-	}
+        if (m_cl.hasOption("h")) {
+            usage(options);
+            System.exit(1);
+        }
 
-	private void parseArguments(String[] args) throws ParseException {
-		Options options = new Options();
-
-		options.addOption("h", "help", false, "this help");
-
-		options.addOption("d", "debug", false, "write debug messages to the log");
-		options.addOption("g", "gui", false, "start a GUI (default: false)");
-		options.addOption("l", "location", true, "the location name of this remote poller");
-		options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
-		options.addOption("n", "name", true, "the name of the user to connect as");
-		options.addOption("p", "password", true, "the password to use when connecting");
-
-		CommandLineParser parser = new PosixParser();
-		CommandLine cl = parser.parse(options, args);
-
-		if (cl.hasOption("h")) {
-			usage(options);
-			System.exit(1);
-		}
-
-		if (cl.hasOption("d")) {
-		}
-
-		if (cl.hasOption("l")) {
-			m_locationName = cl.getOptionValue("l");
-		}
-		if (cl.hasOption("u")) {
-			String arg = cl.getOptionValue("u").toLowerCase();
-			try {
+        if (m_cl.hasOption("d")) {
+        }
+        
+        if (m_cl.hasOption("l")) {
+            m_locationName = m_cl.getOptionValue("l");
+        }
+        if (m_cl.hasOption("u")) {
+            String arg = m_cl.getOptionValue("u").toLowerCase();
+        	try {
 				m_uri = new URI(arg);
 			} catch (URISyntaxException e) {
-				usage(options);
-				e.printStackTrace();
-				System.exit(2);
+                usage(options);
+                e.printStackTrace();
+                System.exit(2);
 			}
-		} else {
-			usage(options);
-			System.exit(3);
-		}
+        } else {
+            usage(options);
+            System.exit(3);
+        }
+        
+        if (m_cl.hasOption("g")) {
+            m_gui = true;
+        }
+        
+        if (m_cl.hasOption("n")) {
+        	m_username = m_cl.getOptionValue("n");
+        	m_password = m_cl.getOptionValue("p");
+        	if (m_password == null) {
+        		m_password = "";
+        	}
+        }
+    }
 
-		if (cl.hasOption("g")) {
-			m_gui = true;
-		}
+    private void usage(Options o) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(getClass().getName() + " -u [URL] [options]", o);
+    }
+    
+    private void registerShutDownHook() {
+        Thread shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                m_shuttingDown = true;
+                m_context.close();
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
 
-		if (cl.hasOption("n")) {
-			m_username = cl.getOptionValue("n");
-			m_password = cl.getOptionValue("p");
-			if (m_password == null) {
-				m_password = "";
-			}
-		}
-	}
+    private void createAppContext() {
+        File homeDir = new File(System.getProperty("user.home"));
+        String homeUrl = homeDir.toURI().toString();
+        if (homeUrl.endsWith("/")) {
+            homeUrl = homeUrl.substring(0, homeUrl.length()-1);
+        }
 
-	private static void usage(Options o) {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(Main.class.getName() + " -u [URL] [options]", o);
-	}
+        LOG.info("user.home.url = {}", homeUrl);
+        System.setProperty("user.home.url", homeUrl);
 
-	private AbstractApplicationContext createAppContext() {
+        String serverURI = m_uri.toString().replaceAll("/*$", "");
+        LOG.info("opennms.poller.server.url = {}", serverURI);
+        System.setProperty("opennms.poller.server.url", serverURI);
 
-		/*
-		 * Set a system property called user.home.url so that the
-		 * Spring contexts can reference resources that are stored
-		 * in the user's home directory.
-		 */
-		File homeDir = new File(System.getProperty("user.home"));
-		String homeUrl = homeDir.toURI().toString();
-		// Trim the trailing file separator off of the end of the URI
-		if (homeUrl.endsWith("/")) {
-			homeUrl = homeUrl.substring(0, homeUrl.length()-1);
-		}
+        LOG.info("location name = {}", m_locationName);
 
-		LOG.info("user.home.url = {}", homeUrl);
-		System.setProperty("user.home.url", homeUrl);
+        List<String> configs = new ArrayList<String>();
+        configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
+        configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
 
-		String serverURI = m_uri.toString().replaceAll("/*$", "");
-		LOG.info("opennms.poller.server.url = {}", serverURI);
-		System.setProperty("opennms.poller.server.url", serverURI);
+        if (m_gui) {
+            configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
+        }
 
-		LOG.info("location name = {}", m_locationName);
+        m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
+        m_frontEnd = (PollerFrontEnd) m_context.getBean("pollerFrontEnd");
 
-		List<String> configs = new ArrayList<String>();
-		configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
-		configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
+        m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+            
+            private boolean shouldExit(PropertyChangeEvent e) {
+				LOG.info("shouldExit: received property change event: {};oldvalue:{};newvalue:{}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
+                String propName = e.getPropertyName();
+                Object newValue = e.getNewValue();
 
-		if (m_gui) {
-			configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
-		}
+                // if exitNecessary becomes true.. then return true
+                if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+                	LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
+                    return true;
+                }
+                
+                // if started becomes false the we should exit
+                if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+                	LOG.info("shouldExit: Exiting because started is now false");
+                    return true;
+                }
+                
+            	LOG.info("shouldExit: not exiting");
+                return false;
+                
+            }
 
-		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				m_shuttingDown = true;
-				context.close();
-			}
-		});
-		return context;
-	}
+            @Override
+            public void propertyChange(PropertyChangeEvent e) {
+                if (!m_shuttingDown && shouldExit(e)) {
+                    System.exit(10);
+                }
+            }
+            
+        });
+    }
+		
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
+    public static void main(String[] args) throws Exception {
+        String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
+        File killSwitch = null;
 
-	private static PollerFrontEnd getPollerFrontEnd(AbstractApplicationContext context) {
-		PollerFrontEnd frontEnd = (PollerFrontEnd) context.getBean("pollerFrontEnd");
+        if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
+            killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
+            if (!killSwitch.exists()) {
+                try {
+                    killSwitch.createNewFile();
+                } catch (IOException ioe) {
+                    // We'll just do without one
+                }
+            }
+        }
+        new Main(args).run();
+        
+    }
 
-		frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
 
-			private boolean shouldExit(PropertyChangeEvent e) {
-				LOG.info("shouldExit: received property change event for property: {}; oldvalue: {}; newvalue: {}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
-				String propName = e.getPropertyName();
-				Object newValue = e.getNewValue();
 
-				// if exitNecessary becomes true.. then return true
-				if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
-					LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
-					return true;
-				}
-
-				// if started becomes false the we should exit
-				if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
-					LOG.info("shouldExit: Exiting because started is now false");
-					return true;
-				}
-
-				LOG.info("shouldExit: not exiting");
-				return false;
-			}
-
-			@Override
-			public void propertyChange(PropertyChangeEvent e) {
-				if (!m_shuttingDown && shouldExit(e)) {
-					System.exit(10);
-				}
-			}
-		});
-
-		return frontEnd;
-	}
-
-	/**
-	 * <p>main</p>
-	 *
-	 * @param args an array of {@link java.lang.String} objects.
-	 * @throws java.lang.Exception if any.
-	 */
-	public static void main(String[] args) {
-		try {
-			String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
-			File killSwitch = null;
-			if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
-				killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
-				if (!killSwitch.exists()) {
-					try {
-						killSwitch.createNewFile();
-					} catch (IOException ioe) {
-						// We'll just do without one
-					}
-				}
-			}
-			new Main(args).run();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
 }
