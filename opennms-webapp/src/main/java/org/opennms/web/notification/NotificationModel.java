@@ -40,14 +40,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 
-/**
- * <p>NotificationModel class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class NotificationModel extends Object {
     private static final String USERID = "userID";
 
@@ -109,12 +103,16 @@ public class NotificationModel extends Object {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
             pstmt = conn.prepareStatement(NOTICE_ID);
+            d.watch(pstmt);
             pstmt.setInt(1, id);
+
             rs = pstmt.executeQuery();
+            d.watch(rs);
 
             Notification[] n = rs2NotifyBean(conn, rs);
             if (n.length > 0) {
@@ -127,11 +125,14 @@ public class NotificationModel extends Object {
             pstmt.close();
 
             // create the list of users the page was sent to
-            PreparedStatement sentTo = conn.prepareStatement(SENT_TO);
+            final PreparedStatement sentTo = conn.prepareStatement(SENT_TO);
+            d.watch(sentTo);
             sentTo.setInt(1, id);
-            ResultSet sentToResults = sentTo.executeQuery();
 
-            List<NoticeSentTo> sentToList = new ArrayList<NoticeSentTo>();
+            final ResultSet sentToResults = sentTo.executeQuery();
+            d.watch(sentToResults);
+
+            final List<NoticeSentTo> sentToList = new ArrayList<NoticeSentTo>();
             while (sentToResults.next()) {
                 NoticeSentTo newSentTo = new NoticeSentTo();
                 newSentTo.setUserId(sentToResults.getString(USERID));
@@ -151,22 +152,7 @@ public class NotificationModel extends Object {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                throw(e);
-            } finally {
-                try {
-                    if (pstmt != null) {
-                        pstmt.close();
-                    }
-                } catch (SQLException e) {
-                    throw(e);
-                }
-            }
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return nbean;
@@ -179,9 +165,9 @@ public class NotificationModel extends Object {
      * @throws java.sql.SQLException if any.
      */
     public Notification[] allNotifications() throws SQLException {
-    	return this.allNotifications(null);
+        return this.allNotifications(null);
     }
-    
+
     /**
      * Return all notifications, both outstanding and acknowledged.
      *
@@ -192,32 +178,33 @@ public class NotificationModel extends Object {
     public Notification[] allNotifications(String order) throws SQLException {
         Notification[] notices = null;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            Statement stmt = conn.createStatement();
+            final Statement stmt = conn.createStatement();
+            d.watch(stmt);
 
             // oh man this is lame, but it'll be a DAO soon right?  right?  :P
             String query = SELECT;
             if (order != null) {
-            	if (order.equalsIgnoreCase("asc")) {
-            		query += " ORDER BY pagetime ASC";
-            	} else if (order.equalsIgnoreCase("desc")) {
-            		query += " ORDER BY pagetime DESC";
-            	}
+                if (order.equalsIgnoreCase("asc")) {
+                    query += " ORDER BY pagetime ASC";
+                } else if (order.equalsIgnoreCase("desc")) {
+                    query += " ORDER BY pagetime DESC";
+                }
             }
             query += ";";
-            
-            ResultSet rs = stmt.executeQuery(query);
-            notices = rs2NotifyBean(conn, rs);
 
-            rs.close();
-            stmt.close();
+            final ResultSet rs = stmt.executeQuery(query);
+            d.watch(rs);
+
+            notices = rs2NotifyBean(conn, rs);
         } catch (SQLException e) {
             log().error("allNotifications: Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return (notices);
@@ -227,15 +214,19 @@ public class NotificationModel extends Object {
         if (id == null) {
             return null;
         }
-        
+
         String serviceName = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
+
+        final DBUtils d = new DBUtils(getClass());
         try {
             ps = conn.prepareStatement("SELECT servicename from service where serviceid = ?");
+            d.watch(ps);
             ps.setInt(1, id);
+
             rs = ps.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 serviceName = rs.getString("servicename");
@@ -243,21 +234,7 @@ public class NotificationModel extends Object {
         } catch (SQLException e) {
             log().warn("unable to get service name for service ID '" + id + "'", e);
         } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                log().warn("unable to close result set while getting service name for service ID '" + id + "'", e);
-            } finally {
-                try {
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (SQLException e) {
-                    log().warn("unable to close prepared statement while getting service name for service ID '" + id + "'", e);
-                }
-            }
+            d.cleanUp();
         }
         return serviceName;
     }
@@ -276,7 +253,7 @@ public class NotificationModel extends Object {
     protected Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
         Notification[] notices = null;
         Vector<Notification> vector = new Vector<Notification>();
-        
+
         try {
 
             while (rs.next()) {
@@ -323,20 +300,22 @@ public class NotificationModel extends Object {
     public Notification[] getOutstandingNotices() throws SQLException {
         Notification[] notices = null;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(OUTSTANDING);
-            notices = rs2NotifyBean(conn, rs);
+            final Statement stmt = conn.createStatement();
+            d.watch(stmt);
 
-            rs.close();
-            stmt.close();
+            final ResultSet rs = stmt.executeQuery(OUTSTANDING);
+            d.watch(rs);
+
+            notices = rs2NotifyBean(conn, rs);
         } catch (SQLException e) {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return notices;
@@ -351,23 +330,24 @@ public class NotificationModel extends Object {
     public int getOutstandingNoticeCount() throws SQLException {
         int count = 0;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(OUTSTANDING_COUNT);
+            final Statement stmt = conn.createStatement();
+            d.watch(stmt);
+
+            final ResultSet rs = stmt.executeQuery(OUTSTANDING_COUNT);
+            d.watch(rs);
 
             if (rs.next()) {
                 count = rs.getInt("TOTAL");
             }
-
-            rs.close();
-            stmt.close();
         } catch (SQLException e) {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return count;
@@ -387,24 +367,25 @@ public class NotificationModel extends Object {
 
         int count = 0;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING_COUNT);
+            final PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING_COUNT);
+            d.watch(pstmt);
             pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
+
+            final ResultSet rs = pstmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 count = rs.getInt("TOTAL");
             }
-
-            rs.close();
-            pstmt.close();
         } catch (SQLException e) {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return (count);
@@ -420,22 +401,23 @@ public class NotificationModel extends Object {
     public Notification[] getOutstandingNotices(String name) throws SQLException {
         Notification[] notices = null;
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING);
+            final PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING);
+            d.watch(pstmt);
             pstmt.setString(1, name);
-            ResultSet rs = pstmt.executeQuery();
+
+            final ResultSet rs = pstmt.executeQuery();
+            d.watch(rs);
 
             notices = rs2NotifyBean(conn, rs);
-
-            rs.close();
-            pstmt.close();
         } catch (SQLException e) {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return (notices);
@@ -454,21 +436,21 @@ public class NotificationModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE notifications SET respondtime = ? , answeredby = ? WHERE notifyid= ?");
+            final PreparedStatement pstmt = conn.prepareStatement("UPDATE notifications SET respondtime = ? , answeredby = ? WHERE notifyid= ?");
+            d.watch(pstmt);
             pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
             pstmt.setString(2, name);
             pstmt.setInt(3, noticeId);
             pstmt.execute();
-
-            pstmt.close();
         } catch (SQLException e) {
             log().error("Problem acknowledging notification " + noticeId + " as answered by '" + name + "': " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 
@@ -483,11 +465,12 @@ public class NotificationModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
-            PreparedStatement pstmt = conn.prepareStatement(INSERT_NOTIFY);
-
+            final PreparedStatement pstmt = conn.prepareStatement(INSERT_NOTIFY);
+            d.watch(pstmt);
             pstmt.setString(1, nbean.m_txtMsg);
             pstmt.setString(2, nbean.m_numMsg);
             pstmt.setLong(3, nbean.m_timeSent);
@@ -499,14 +482,11 @@ public class NotificationModel extends Object {
             pstmt.setInt(9, nbean.m_eventId);
 
             pstmt.execute();
-
-            // Close prepared statement.
-            pstmt.close();
         } catch (SQLException e) {
             log().error("Problem getting data from the notifications table: " + e, e);
             throw e;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
     }
 

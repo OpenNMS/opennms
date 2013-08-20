@@ -83,8 +83,8 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        Connection conn = Vault.getDbConnection();
-
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
@@ -97,6 +97,7 @@ public class EventFactory {
             select.append(" AND EVENTDISPLAY='Y' ");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
 
             int parameterIndex = 1;
             for (Filter filter : filters) {
@@ -104,15 +105,14 @@ public class EventFactory {
             }
 
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 eventCount = rs.getInt("EVENTCOUNT");
             }
-
-            rs.close();
             stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return eventCount;
@@ -134,7 +134,8 @@ public class EventFactory {
         }
 
         int[] eventCounts = new int[8];
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
             StringBuffer select = new StringBuffer("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
@@ -148,14 +149,16 @@ public class EventFactory {
             select.append(" AND EVENTDISPLAY='Y'");
             select.append(" GROUP BY EVENTSEVERITY");
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
 
             int parameterIndex = 1;
             for (Filter filter : filters) {
                 parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
 
-            ResultSet rs = stmt.executeQuery();
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             while (rs.next()) {
                 int severity = rs.getInt("EVENTSEVERITY");
@@ -163,11 +166,8 @@ public class EventFactory {
 
                 eventCounts[severity] = eventCount;
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return eventCounts;
@@ -182,12 +182,16 @@ public class EventFactory {
      */
     public static Event getEvent(int eventId) throws SQLException {
         Event event = null;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE EVENTID=? ");
+            d.watch(stmt);
             stmt.setInt(1, eventId);
+
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Event[] events = rs2Events(rs);
 
@@ -195,11 +199,8 @@ public class EventFactory {
             if (events.length > 0) {
                 event = events[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return event;
@@ -312,16 +313,10 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            /*
-            StringBuffer select = new StringBuffer("" +
-            		"  SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME " +
-            		"    FROM EVENTS " +
-            		"LEFT OUTER JOIN NODE USING(NODEID) " +
-            		"LEFT OUTER JOIN SERVICE USING(SERVICEID) WHERE");
-             */
             StringBuffer select = new StringBuffer("" +
                     "          SELECT events.*, node.nodelabel, service.servicename " + 
                     "            FROM node " + 
@@ -348,21 +343,20 @@ public class EventFactory {
                 select.append(offset);
             }
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
 
             int parameterIndex = 1;
             for (Filter filter : filters) {
                 parameterIndex += filter.bindParam(stmt, parameterIndex);
             }
 
-            ResultSet rs = stmt.executeQuery();
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             events = rs2Events(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return events;
@@ -452,7 +446,8 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
             StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
@@ -461,18 +456,18 @@ public class EventFactory {
             select.append(" AND NODEID=?");
             select.append(" AND EVENTDISPLAY='Y' ");
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             if (rs.next()) {
                 eventCount = rs.getInt("EVENTCOUNT");
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return eventCount;
@@ -873,7 +868,8 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
             StringBuffer select = new StringBuffer("SELECT * FROM EVENTS WHERE EVENTDPNAME=?");
@@ -885,16 +881,16 @@ public class EventFactory {
             select.append(" AND EVENTDISPLAY='Y' ");
             select.append(" ORDER BY EVENTID DESC");
 
-            PreparedStatement stmt = conn.prepareStatement(select.toString());
+            final PreparedStatement stmt = conn.prepareStatement(select.toString());
+            d.watch(stmt);
             stmt.setString(1, poller);
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             events = rs2Events(rs);
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return events;
@@ -972,17 +968,19 @@ public class EventFactory {
             update.append(")");
             update.append(" AND EVENTACKUSER IS NULL");
 
-            Connection conn = Vault.getDbConnection();
+            final Connection conn = Vault.getDbConnection();
+            final DBUtils d = new DBUtils(EventFactory.class, conn);
 
             try {
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
+                d.watch(stmt);
+
                 stmt.setString(1, user);
                 stmt.setTimestamp(2, new Timestamp(time.getTime()));
 
                 stmt.executeUpdate();
-                stmt.close();
             } finally {
-                Vault.releaseDbConnection(conn);
+                d.cleanUp();
             }
         }
     }
