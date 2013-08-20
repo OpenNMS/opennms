@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
 import com.vaadin.server.DefaultErrorHandler;
@@ -38,6 +39,7 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -104,6 +106,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
+
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -316,10 +319,32 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
+        final Button historyBackBtn = new Button("<<");
+        historyBackBtn.setDescription("Click to go back");
+        historyBackBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.back()");
+            }
+        });
+
+        final Button historyForwardBtn = new Button(">>");
+        historyForwardBtn.setDescription("Click to go forward");
+        historyForwardBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.forward()");
+            }
+        });
+
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setWidth("31px");
         toolbar.addComponent(panBtn);
         toolbar.addComponent(selectBtn);
+
+        HorizontalLayout historyButtonLayout = new HorizontalLayout();
+        historyButtonLayout.addComponent(historyBackBtn);
+        historyButtonLayout.addComponent(historyForwardBtn);
 
         HorizontalLayout semanticLayout = new HorizontalLayout();
 
@@ -334,6 +359,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
         mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
         mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
+        mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
         mapLayout.setSizeFull();
 
         return mapLayout;
