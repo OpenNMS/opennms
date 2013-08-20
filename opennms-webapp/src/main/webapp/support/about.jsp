@@ -48,8 +48,8 @@
     try {
       Connection conn = Vault.getDbConnection();
       d.watch(conn);
-      dbName = Vault.getDbConnection().getMetaData().getDatabaseProductName();
-      dbVersion = Vault.getDbConnection().getMetaData().getDatabaseProductVersion();
+      dbName = conn.getMetaData().getDatabaseProductName();
+      dbVersion = conn.getMetaData().getDatabaseProductVersion();
    	} catch (Exception e) {
    	  dbName = "Unknown";
       dbVersion = "Unknown";
