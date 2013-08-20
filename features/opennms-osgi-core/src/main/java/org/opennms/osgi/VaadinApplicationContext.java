@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi.locator;
+package org.opennms.osgi;
 
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
 import org.osgi.framework.BundleContext;
 
-public class OnmsServiceManagerLocator {
-
-    public OnmsServiceManager lookup(BundleContext bundleContext) {
-        return new ServiceLocator().lookup(OnmsServiceManager.class, bundleContext);
-    }
+/**
+ * An ApplicationContext for Vaadin-Applications. 
+ * It should provide a Vaadin-Application with all needed information, such as sessionId, username and so on.
+ * In addition it helps getting access to the underlying OSGi-Container and provide the application
+ * with a session scope.
+ * 
+ * @author Markus von Rüden
+ *
+ */
+public interface VaadinApplicationContext {
+    int getUiId();
+    String getSessionId();
+    String getUsername();
+    EventProxy getEventProxy(OnmsServiceManager serviceManager);
+    EventProxy getEventProxy(BundleContext bundleContext);
 }

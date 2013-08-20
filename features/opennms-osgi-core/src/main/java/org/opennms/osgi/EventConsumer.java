@@ -26,8 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
+package org.opennms.osgi;
 
-public interface VaadinApplicationContextCreator {
-    VaadinApplicationContext create(OnmsServiceManager manager);
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * If you want an instance of a class to get notified when an event of a concrete type is fired, just add
+ * this annotation to the method which consumes that event object. <br/><br/>
+ * <b>Example:</b><br/>
+ * <pre>
+ *     // An event consumer
+ *     class MyEventConsumer {
+ *         //...
+ *        &#64;EventConsumer
+ *        public void eventTypeChanged(EventType eventType) {
+ *            // do something..
+ *        }
+ *         //...
+ *     }
+ *
+ *     // some event producer which publishes the event through the EventRegistry
+ *     EventProducer producer = new EventProducer();
+ *     producer.fireEvent(new EventType());
+ * </pre>
+ *
+ * @see {@link EventRegistry}, {@link EventProxy}
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventConsumer {
+
 }
