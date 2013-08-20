@@ -147,7 +147,7 @@
 
     private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
 	    final Connection conn = Vault.getDbConnection();
-	    final DBUtils d = new DBUtils(OutageFactory.class, conn);
+	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
@@ -182,7 +182,7 @@
 	
 	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
 	    final Connection conn = Vault.getDbConnection();
-	    final DBUtils d = new DBUtils(OutageFactory.class, conn);
+	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
 
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
