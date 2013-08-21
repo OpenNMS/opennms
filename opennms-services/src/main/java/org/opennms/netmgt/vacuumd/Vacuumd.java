@@ -152,7 +152,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
-        m_scheduler.stop();
+        if (m_scheduler != null) {
+            m_scheduler.stop();
+        }
     }
 
     /** {@inheritDoc} */
