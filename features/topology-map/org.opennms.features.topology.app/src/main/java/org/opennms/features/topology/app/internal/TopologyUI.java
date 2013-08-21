@@ -33,6 +33,7 @@ import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;

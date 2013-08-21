@@ -883,9 +883,11 @@ SuTwd6QV4t0ymKQjugm4pQq4+WBD/2wYuMPH8PEvATeVAdztCrxtSvruUN8lPYApqRs4krdQgbRM
 SeBy9ffiDIk7DNzhY/j4+CSu603uVOqxCQURXRbAMsCbpwBcpM5i9aeWtgkwqdnDqvLwMXz8i8CN
 lNQdUADtVWef+ndKgTv6PwIMAE0J8s3+DtYZAAAAAElFTkSuQmCC">
 	</image>
-	<path id="generic_active" opacity="0.5" fill="#91C054" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="
-		M231.17,58.49c0,8.13-4.061,12.01-12,12.01h-204c-9.17,0-12-3.33-12-12.01V15.28c0-8.95,3.67-11.78,12-11.78h204
-		c10.17,0,12,4.2,12,11.78V58.49z"/>
+	<g id="generic_active">
+	    <path opacity="0.5" fill="#91C054" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="
+		    M231.17,58.49c0,8.13-4.061,12.01-12,12.01h-204c-9.17,0-12-3.33-12-12.01V15.28c0-8.95,3.67-11.78,12-11.78h204
+		    c10.17,0,12,4.2,12,11.78V58.49z"/>
+	</g>
 </g>
 <g id="cloud_icon" display="none">
 	
