@@ -80,6 +80,14 @@
         <td>${monitor.ipAddress}</td>
       </tr>
       <tr>
+        <th><spring:message code="distributed.remoteHostName"/></th>
+        <td>${monitor.remoteHostName}</td>
+      </tr>
+      <tr>
+        <th><spring:message code="distributed.remoteIpAddress"/></th>
+        <td>${monitor.remoteIpAddress}</td>
+      </tr>
+      <tr>
         <th><spring:message code="distributed.status"/></th>
         <td><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
       </tr>

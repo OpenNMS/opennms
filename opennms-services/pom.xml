@@ -186,15 +186,14 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <!-- 
+      This dependency is needed for HTTP remoting classes that we
+      extend for the remote poller back end.
+    -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
-      <!-- 
-        This dependency is needed for HTTP remoting classes in the Spring contexts 
-        that support the remote poller.
-      -->
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

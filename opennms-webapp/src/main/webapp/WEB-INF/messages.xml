@@ -58,6 +58,14 @@
      IP Address
    </entry>
    
+   <entry key="distributed.remoteHostName">
+     Remote Hostname
+   </entry>
+   
+   <entry key="distributed.remoteIpAddress">
+     Remote IP Address
+   </entry>
+   
    <entry key="distributed.status">
      Status
    </entry>

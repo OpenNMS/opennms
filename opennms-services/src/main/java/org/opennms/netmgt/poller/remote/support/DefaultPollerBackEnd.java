@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,8 +45,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
@@ -70,8 +70,11 @@ import org.opennms.netmgt.poller.remote.OnmsPollModel;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.RemoteHostThreadLocal;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
@@ -417,7 +420,21 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
-        mon.setDetails(pollerDetails);
+
+        Map<String,String> allDetails = new HashMap<String,String>();
+        allDetails.putAll(pollerDetails);
+
+        String remoteHost = RemoteHostThreadLocal.INSTANCE.get();
+        if (remoteHost != null) {
+            allDetails.put("org.opennms.netmgt.poller.remote.remoteHostName", remoteHost);
+            try {
+                allDetails.put("org.opennms.netmgt.poller.remote.remoteHostAddress", InetAddressUtils.str(InetAddressUtils.resolveHostname(remoteHost, false, false)));
+            } catch (UnknownHostException e) {
+                // Never happens
+            }
+        }
+
+        mon.setDetails(allDetails);
         m_locMonDao.update(mon);
 
         sendMonitorStartedEvent(mon);

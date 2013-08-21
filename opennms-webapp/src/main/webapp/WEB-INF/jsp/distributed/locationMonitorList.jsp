@@ -64,6 +64,8 @@
     <th><spring:message code="distributed.id"/></th>
     <th><spring:message code="distributed.hostName"/></th>
     <th><spring:message code="distributed.ipAddress"/></th>
+    <th><spring:message code="distributed.remoteHostName"/></th>
+    <th><spring:message code="distributed.remoteIpAddress"/></th>
     <th><spring:message code="distributed.status"/></th>
     <th><spring:message code="distributed.lastCheckInTime"/></th>
   </tr>
@@ -82,6 +84,8 @@
       </td>
       <td class="divider">${monitor.hostName}</td>
       <td class="divider">${monitor.ipAddress}</td>
+      <td class="divider">${monitor.remoteHostName}</td>
+      <td class="divider">${monitor.remoteIpAddress}</td>
       <td class="divider bright"><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
       <td class="divider">
         <c:choose>
