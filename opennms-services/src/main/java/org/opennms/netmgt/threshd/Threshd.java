@@ -266,7 +266,9 @@ public final class Threshd extends AbstractServiceDaemon {
             m_scheduler.stop();
             m_scheduler = null;
         }
-        m_receiver.close();
+        if (m_receiver != null) {
+            m_receiver.close();
+        }
 	}
 
     /**
