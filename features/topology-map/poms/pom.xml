@@ -40,19 +40,11 @@
                   <pluginExecutions>
                      <pluginExecution>
                         <pluginExecutionFilter>
-                           <groupId>
-                              org.opennms.maven.plugins
-                           </groupId>
-                           <artifactId>
-                              features-maven-plugin
-                           </artifactId>
-                           <versionRange>
-                              [1.0-SNAPSHOT,)
-                           </versionRange>
+                           <groupId>org.opennms.maven.plugins</groupId>
+                           <artifactId>features-maven-plugin</artifactId>
+                           <versionRange>[1.0-SNAPSHOT,)</versionRange>
                            <goals>
-                              <goal>
-                                 generate-features-xml
-                              </goal>
+                              <goal>generate-features-xml</goal>
                            </goals>
                         </pluginExecutionFilter>
                         <action>
@@ -62,12 +54,8 @@
                      <pluginExecution>
                         <pluginExecutionFilter>
                            <groupId>com.vaadin</groupId>
-                           <artifactId>
-                              vaadin-maven-plugin
-                           </artifactId>
-                           <versionRange>
-                              [1.0.2,)
-                           </versionRange>
+                           <artifactId>vaadin-maven-plugin</artifactId>
+                           <versionRange>[1.0.2,)</versionRange>
                            <goals>
                               <goal>resources</goal>
                               <goal>update-widgetset</goal>
