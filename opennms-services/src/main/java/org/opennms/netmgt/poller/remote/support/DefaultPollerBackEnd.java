@@ -622,15 +622,6 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /**
-     * <p>setMinimumConfigurationReloadInterval</p>
-     *
-     * @param value
-     */
-    public void setMinimumConfigurationReloadInterval(final long value) {
-        m_minimumConfigurationReloadInterval = value;
-    }
-
-    /**
      * <p>setEventIpcManager</p>
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
