@@ -12,7 +12,13 @@
         <prop key="opennms.poller.server.registryPort">1099</prop>
       </props>
     </property>
-    <property name="order" value="0" />
+    <!-- 
+      We need to ignore unresolvable placeholders since multiple PropertyPlaceholderConfigurer
+      preprocessors are in use inside this context which is initialized in beanRefContext.xml.
+
+      https://jira.springsource.org/browse/SPR-6428
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
 

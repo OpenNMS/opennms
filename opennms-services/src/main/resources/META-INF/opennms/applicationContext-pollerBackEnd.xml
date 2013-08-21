@@ -13,11 +13,18 @@
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
       <props>
+        <prop key="opennms.pollerBackend.monitorCheckInterval">10000</prop>
         <prop key="opennms.pollerBackend.disconnectedTimeout">600000</prop>
         <prop key="opennms.pollerBackend.minimumConfigurationReloadInterval">300000</prop>
       </props>
     </property>
-    <property name="order" value="0" />
+    <!-- 
+      We need to ignore unresolvable placeholders since multiple PropertyPlaceholderConfigurer
+      preprocessors are in use inside this context which is initialized in beanRefContext.xml.
+
+      https://jira.springsource.org/browse/SPR-6428
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
 
@@ -49,14 +56,8 @@
     <property name="targetMethod" value="checkForDisconnectedMonitors" />
   </bean>
 
-  <bean name="monitorCheckInterval" class="java.lang.Long">
-    <constructor-arg>
-      <value>10000</value>
-    </constructor-arg>
-  </bean>
-
   <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-    <property name="repeatInterval" ref="monitorCheckInterval" />
+    <property name="repeatInterval" value="${opennms.pollerBackend.monitorCheckInterval}" />
     <property name="jobDetail" ref="methodInvokingJobDetail" />
   </bean>
 
