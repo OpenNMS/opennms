@@ -428,9 +428,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         if (remoteHost != null) {
             allDetails.put("org.opennms.netmgt.poller.remote.remoteHostName", remoteHost);
             try {
-                allDetails.put("org.opennms.netmgt.poller.remote.remoteHostAddress", InetAddressUtils.str(InetAddressUtils.resolveHostname(remoteHost, false, false)));
-            } catch (UnknownHostException e) {
-                // Never happens
+                allDetails.put("org.opennms.netmgt.poller.remote.remoteHostAddress", InetAddressUtils.str(InetAddressUtils.getInetAddress(remoteHost)));
+            } catch (Throwable e) {
+                // In case there is an UnknownHostException
             }
         }
 

@@ -90,7 +90,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",
-    "opennms.pollerBackend.disconnectedTimeout=3000",
+    "opennms.pollerBackend.disconnectedTimeout=3000"
 })
 @JUnitTemporaryDatabase
 public class PollerBackEndIntegrationTest implements InitializingBean {
