@@ -88,7 +88,10 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/locationDataServiceTest.xml",
         "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+    "opennms.pollerBackend.monitorCheckInterval=500",
+    "opennms.pollerBackend.disconnectedTimeout=3000",
+})
 @JUnitTemporaryDatabase
 @Transactional
 public class LocationDataServiceTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
