@@ -5,12 +5,23 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="properties">
+      <props>
+        <prop key="opennms.poller.server.serverPort">1199</prop>
+        <prop key="opennms.poller.server.registryPort">1099</prop>
+      </props>
+    </property>
+    <property name="order" value="0" />
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+  </bean>
+
   <bean id="pollerBackEnd-rmi" class="org.springframework.remoting.rmi.RmiServiceExporter">
     <qualifier value="rmi" />
     <property name="service" ref="backend" />
     <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd" />
     <property name="serviceName" value="pollerBackEnd" />
-    <property name="servicePort" value="1199" />
-    <property name="registryPort" value="1099" />
+    <property name="servicePort" value="${opennms.poller.server.serverPort}" />
+    <property name="registryPort" value="${opennms.poller.server.registryPort}" />
   </bean>
 </beans>
