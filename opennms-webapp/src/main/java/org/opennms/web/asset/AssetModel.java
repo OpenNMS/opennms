@@ -59,12 +59,16 @@ public class AssetModel {
      */
     public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
-        Connection conn = Vault.getDbConnection();
 
+        final DBUtils d = new DBUtils(getClass());
         try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ASSETS WHERE NODEID=?");
+            d.watch(stmt);
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
 
             Asset[] assets = rs2Assets(rs);
 
@@ -72,11 +76,8 @@ public class AssetModel {
             if (assets.length > 0) {
                 asset = assets[0];
             }
-
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
 
         return asset;
