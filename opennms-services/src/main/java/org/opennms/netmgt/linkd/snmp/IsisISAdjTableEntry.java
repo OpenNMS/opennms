@@ -193,7 +193,7 @@ public class IsisISAdjTableEntry extends SnmpStore {
     }
     
     public String getIsIsAdjNeighSysId() {
-        return getDisplayString(ISIS_ADJ_NEIGH_SYS_ID_ALIAS);
+        return getHexString(ISIS_ADJ_NEIGH_SYS_ID_ALIAS);
     }
     
     public Integer getIsisAdjNbrExtendedCircID() {
