@@ -35,10 +35,10 @@ $(STAMP_BUILD):
 		echo "using $$OPENNMS_SETTINGS_XML"; \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
 				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -Dbuild=all -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
 				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		else \
@@ -51,10 +51,10 @@ $(STAMP_BUILD):
 	else \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
 				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -Dbuild=all -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
 				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			fi; \
 		else \
