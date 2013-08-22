@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd.snmp;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +43,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjNeighSysType;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -71,6 +74,8 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
     public void testIsisSysObjGroupCollection() throws Exception {
 
         String name = "isisSystemObjectGroup";
+
+        // froh
         IsIsSystemObjectGroup m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(FROH_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
         tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
@@ -86,6 +91,39 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
 
         assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
         assertEquals(FROH_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
+        
+        // oedipus
+        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(OEDIPUS_IP));
+        tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
+        snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(OEDIPUS_IP));
+        walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
+        assertEquals(OEDIPUS_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
+
+        // siegfrie
+        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(InetAddressUtils.addr(SIEGFRIE_IP));
+        tracker = new CollectionTracker[]{m_isisSystemObjectGroup};
+        snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SIEGFRIE_IP));
+        walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+        
+        assertEquals(IsisAdminState.ON, m_isisSystemObjectGroup.getIsisSysAdminState());
+        assertEquals(SIEGFRIE_ISIS_SYS_ID, m_isisSystemObjectGroup.getIsisSysId());
+
     }
 
     @Test
@@ -110,8 +148,28 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
             assertEquals(false, true);
         }
 
-        final Collection<IsisISAdjTableEntry> lldpTableEntryCollection = m_isisISAdjTable.getEntries();
-        assertEquals(2, lldpTableEntryCollection.size());
+        Collection<IsisISAdjTableEntry> isisISAdjTableEntryCollection = m_isisISAdjTable.getEntries();
+        assertEquals(2, isisISAdjTableEntryCollection.size());
+        Iterator<IsisISAdjTableEntry> iter = isisISAdjTableEntryCollection.iterator();
+        IsisISAdjTableEntry entry1 = iter.next();
+        assertEquals(599, entry1.getIsisCircuitIndex().intValue());
+        assertEquals(1, entry1.getIsisISAdjIndex().intValue());
+        assertEquals(IsisISAdjState.UP, entry1.getIsIsAdjStatus());
+        assertEquals("001f12accbf1", entry1.getIsIsAdjNeighSnpaAddress());
+        assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, entry1.getIsisISAdjNeighSysType());
+        assertEquals(OEDIPUS_ISIS_SYS_ID, entry1.getIsIsAdjNeighSysId());
+        assertEquals(0, entry1.getIsisAdjNbrExtendedCircID().intValue());
+        
+        IsisISAdjTableEntry entry2 = iter.next();
+        assertEquals(600, entry2.getIsisCircuitIndex().intValue());
+        assertEquals(1, entry2.getIsisISAdjIndex().intValue());
+        assertEquals(IsisISAdjState.UP, entry2.getIsIsAdjStatus());
+        assertEquals("001f12acc3f2", entry2.getIsIsAdjNeighSnpaAddress());
+        assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, entry2.getIsisISAdjNeighSysType());
+        assertEquals(SIEGFRIE_ISIS_SYS_ID, entry2.getIsIsAdjNeighSysId());
+        assertEquals(0, entry2.getIsisAdjNbrExtendedCircID().intValue());
+
+        
     }
 
 }

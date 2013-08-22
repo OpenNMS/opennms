@@ -30,6 +30,8 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.util.HashMap;
 
+import org.opennms.netmgt.snmp.SnmpResult;
+
 public class IsisISAdjTableEntry extends SnmpStore {
 
     public enum IsisISAdjState {
@@ -96,6 +98,10 @@ public class IsisISAdjTableEntry extends SnmpStore {
     public final static String ISIS_ADJ_NEIGH_SYS_ID_OID       = ".1.3.6.1.2.1.138.1.6.1.1.6";
     public final static String ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS    = "isisISAdjNbrExtendedCircID";
     public final static String ISIS_ADJ_NBR_EXTENDED_CIRC_ID_OID       = ".1.3.6.1.2.1.138.1.6.1.1.7";
+
+    private boolean hasIndex = false;
+    private Integer m_isisCircIndex;
+    private Integer m_isisISAdjIndex;
 
     public static final NamedSnmpVar[] isisIsAdjtable_elemList = new NamedSnmpVar[] {
         
@@ -199,4 +205,24 @@ public class IsisISAdjTableEntry extends SnmpStore {
     public Integer getIsisAdjNbrExtendedCircID() {
         return getInt32(ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS);
     }
+    
+    public Integer getIsisCircuitIndex() {
+        return m_isisCircIndex;
+    }
+    
+    public Integer getIsisISAdjIndex() {
+        return m_isisISAdjIndex;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void storeResult(SnmpResult res) {
+            if (!hasIndex) {
+                    m_isisCircIndex = res.getInstance().getSubIdAt(res.getInstance().length()-2);
+                    m_isisISAdjIndex = res.getInstance().getLastSubId();
+                    hasIndex = true;
+            }
+            super.storeResult(res);
+    }
+
 }
