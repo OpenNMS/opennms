@@ -58,10 +58,40 @@ public class IsisISAdjTableEntry extends SnmpStore {
         }
         
     }
+    
+    public enum IsisISAdjNeighSysType {
+        l1_IntermediateSystem(1),
+        l2IntermediateSystem(2),
+        l1L2IntermediateSystem(3),
+        unknown(4);
+        private final Integer m_value;
+        private static final HashMap<Integer, IsisISAdjNeighSysType> m_valueMap = new HashMap<Integer, IsisISAdjNeighSysType>();
+        
+        static {
+            for (IsisISAdjNeighSysType state: IsisISAdjNeighSysType.values()) {
+                m_valueMap.put(state.getValue(), state);
+            }
+        }
+        private IsisISAdjNeighSysType(Integer value) {
+            m_value = value;
+        }
+        
+        public Integer getValue() {
+            return m_value;
+        }
+        public static IsisISAdjNeighSysType getByValue(Integer value) {
+            return m_valueMap.get(value);
+        }
+
+        
+    }
+    
     public final static String ISIS_ADJ_STATE_ALIAS    = "isisISAdjState";
     public final static String ISIS_ADJ_STATE_OID       = ".1.3.6.1.2.1.138.1.6.1.1.2";
     public final static String ISIS_ADJ_NEIGH_SNPA_ADDRESS_ALIAS    = "isisISAdjNeighSNPAAddress";
     public final static String ISIS_ADJ_NEIGH_SNPA_ADDRESS_OID       = ".1.3.6.1.2.1.138.1.6.1.1.4";
+    public final static String ISIS_ADJ_NEIGH_SYS_TYPE_ALIAS    = "isisISAdjNeighSysType";
+    public final static String ISIS_ADJ_NEIGH_SYS_TYPE_OID       = ".1.3.6.1.2.1.138.1.6.1.1.5";
     public final static String ISIS_ADJ_NEIGH_SYS_ID_ALIAS    = "isisISAdjNeighSysID";
     public final static String ISIS_ADJ_NEIGH_SYS_ID_OID       = ".1.3.6.1.2.1.138.1.6.1.1.6";
     public final static String ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS    = "isisISAdjNbrExtendedCircID";
@@ -86,12 +116,61 @@ public class IsisISAdjTableEntry extends SnmpStore {
          * ::= { isisISAdjEntry 2 }
          */
         new NamedSnmpVar(NamedSnmpVar.SNMPINT32, ISIS_ADJ_STATE_ALIAS, ISIS_ADJ_STATE_ALIAS, 1),
-        
+
+        /**
+         *  isisISAdjNeighSNPAAddress OBJECT-TYPE
+         *  SYNTAX IsisOSINSAddress
+         *  MAX-ACCESS read-only
+         *  STATUS current
+         *  DESCRIPTION
+         *  "The SNPA address of the neighboring system."
+         *  REFERENCE "{ISIS.aoi neighbourSNPAAddress (79)}"
+         *  ::= { isisISAdjEntry 4 }
+         */
         new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, ISIS_ADJ_NEIGH_SNPA_ADDRESS_ALIAS, ISIS_ADJ_NEIGH_SNPA_ADDRESS_OID, 2),
         
-        new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, ISIS_ADJ_NEIGH_SYS_ID_ALIAS, ISIS_ADJ_NEIGH_SYS_ID_OID, 3),
+        /**
+         *  isisISAdjNeighSysType OBJECT-TYPE
+         *          SYNTAX INTEGER
+         *          {
+         *          l1IntermediateSystem(1),
+         *          l2IntermediateSystem(2),
+         *          l1L2IntermediateSystem(3),
+         *          unknown(4)
+         *          }
+         *          MAX-ACCESS read-only
+         *          STATUS current
+         *          DESCRIPTION
+         *          "The type of the neighboring system."
+         *          REFERENCE "{ISIS.aoi neighbourSystemType (80)}"
+         *  ::= { isisISAdjEntry 5 }
+         */
+        new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, ISIS_ADJ_NEIGH_SYS_TYPE_ALIAS, ISIS_ADJ_NEIGH_SYS_TYPE_OID, 3),
         
-        new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS, ISIS_ADJ_NBR_EXTENDED_CIRC_ID_OID, 4)
+        /**
+         *     isisISAdjNeighSysID OBJECT-TYPE
+         *     SYNTAX IsisSystemID
+         *     MAX-ACCESS read-only
+         *     STATUS current
+         *     DESCRIPTION
+         *     "The system ID of the neighboring Intermediate
+         *     System."
+         *     REFERENCE "{ISIS.aoi neighbourSystemIds (83)}"
+         *     ::= { isisISAdjEntry 6 }
+         */
+        new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, ISIS_ADJ_NEIGH_SYS_ID_ALIAS, ISIS_ADJ_NEIGH_SYS_ID_OID, 4),
+        
+        /**
+         * isisISAdjNbrExtendedCircID OBJECT-TYPE
+         * SYNTAX Unsigned32
+         * MAX-ACCESS read-only
+         * STATUS current
+         * DESCRIPTION
+         *  "The 4-byte Extended Circuit ID learned from the
+         *    Neighbor during 3-way handshake, or 0."
+         *    ::= { isisISAdjEntry 7 }
+         */
+        new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32, ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS, ISIS_ADJ_NBR_EXTENDED_CIRC_ID_OID, 5)
 
     };
     
@@ -107,6 +186,10 @@ public class IsisISAdjTableEntry extends SnmpStore {
 
     public String getIsIsAdjNeighSnpaAddress() {
         return getHexString(ISIS_ADJ_NEIGH_SNPA_ADDRESS_ALIAS);
+    }
+    
+    public IsisISAdjNeighSysType getIsisISAdjNeighSysType() {
+        return IsisISAdjNeighSysType.getByValue(getInt32(ISIS_ADJ_NEIGH_SYS_TYPE_ALIAS));
     }
     
     public String getIsIsAdjNeighSysId() {
