@@ -115,7 +115,7 @@ public class IsisISAdjTableEntry extends SnmpStore {
          * REFERENCE "{ISIS.aoi adjacencyState (78)}"
          * ::= { isisISAdjEntry 2 }
          */
-        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, ISIS_ADJ_STATE_ALIAS, ISIS_ADJ_STATE_ALIAS, 1),
+        new NamedSnmpVar(NamedSnmpVar.SNMPINT32, ISIS_ADJ_STATE_ALIAS, ISIS_ADJ_STATE_OID, 1),
 
         /**
          *  isisISAdjNeighSNPAAddress OBJECT-TYPE
