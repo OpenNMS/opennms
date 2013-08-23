@@ -96,20 +96,22 @@ public class ThresholdingSet {
      * <p>initialize</p>
      */
     protected void initialize() {
+        final String logHeader = "initialize(nodeId=" + m_nodeId + ",ipAddr=" + m_hostAddress + ",svc=" + m_serviceName + "): ";
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         m_thresholdGroups.clear();
         for (String groupName : groupNameList) {
             try {
                 ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
                 if (thresholdGroup == null) {
-                    log().error("initialize: Could not get threshold group with name " + groupName);
-                }
-                m_thresholdGroups.add(thresholdGroup);
-                if (log().isDebugEnabled()) {
-                    log().debug("initialize: Adding threshold group: " + thresholdGroup);
+                    log().error(logHeader + "Could not get threshold group with name " + groupName);
+                } else {
+                    m_thresholdGroups.add(thresholdGroup);
+                    if (log().isDebugEnabled()) {
+                        log().debug(logHeader + "Adding threshold group: " + thresholdGroup);
+                    }
                 }
             } catch (Throwable e) {
-                log().error("initialize: Can't process threshold group " + groupName, e);
+                log().error(logHeader + "Can't process threshold group " + groupName, e);
             }
         }
         m_hasThresholds = !m_thresholdGroups.isEmpty();
@@ -138,16 +140,17 @@ public class ThresholdingSet {
      * <p>mergeThresholdGroups</p>
      */
     protected void mergeThresholdGroups() {
-        log().debug("mergeThresholdGroups: begin merging operation");
+        final String logHeader = "mergeThresholdGroups(nodeId=" + m_nodeId + ",ipAddr=" + m_hostAddress + ",svc=" + m_serviceName + "): ";
+        log().debug(logHeader + "Begin merging operation");
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         // If size differs its because some groups where deleted.
         if (groupNameList.size() != m_thresholdGroups.size()) {
             // Deleting Groups
-            log().debug("mergeThresholdGroups: new group name list differs from current threshold group list");
+            log().debug(logHeader + "New group name list differs from current threshold group list");
             for (Iterator<ThresholdGroup> i = m_thresholdGroups.iterator(); i.hasNext();) {
                 ThresholdGroup group = i.next();
                 if (!groupNameList.contains(group.getName())) {
-                    log().info("mergeThresholdGroups: deleting group " + group);
+                    log().info(logHeader + "deleting group " + group);
                     group.delete();
                     i.remove();
                 }
@@ -165,11 +168,11 @@ public class ThresholdingSet {
                 // Add new group
                 ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
                 if (thresholdGroup == null) {
-                    log().error("mergeThresholdGroups: Could not get threshold group with name " + groupName);
+                    log().error(logHeader + "Could not get threshold group with name " + groupName);
                 } else {
                     newThresholdGroupList.add(thresholdGroup);
                     if (log().isDebugEnabled()) {
-                        log().debug("mergeThresholdGroups: Adding threshold group: " + thresholdGroup);
+                        log().debug(logHeader + "Adding threshold group: " + thresholdGroup);
                     }
                 }
             } else {
@@ -177,7 +180,7 @@ public class ThresholdingSet {
                 ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup);
                 newThresholdGroupList.add(thresholdGroup);
                 if (log().isDebugEnabled()) {
-                    log().debug("mergeThresholdGroups: Merging threshold group: " + thresholdGroup);
+                    log().debug(logHeader + "Merging threshold group: " + thresholdGroup);
                 }
             }
         }
@@ -445,7 +448,7 @@ public class ThresholdingSet {
         }
     }
 
-    private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
+    private Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         LogUtils.tracef(ThresholdingSet.class, "getEntityMap: checking if the resourceType '%s' exists on threshold group %s", resourceType, thresholdGroup);
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {

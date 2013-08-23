@@ -371,7 +371,7 @@ public final class ThresholdEntity implements Cloneable {
      * @param entity a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
      */
     public void merge(ThresholdEntity entity) {
-        if (getThresholdConfig().identical(entity.getThresholdConfig()) == false) {
+        if (getThresholdConfig().equals(entity.getThresholdConfig()) == false) {
             sendRearmForTriggeredStates();
             getThresholdConfig().merge(entity.getThresholdConfig());
         }
