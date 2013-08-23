@@ -5,8 +5,7 @@ TOPDIR=`cd $MYDIR; pwd`
 
 cd "$TOPDIR"
 
-#opennms-core_1.9.9-0.<datestamp>_all.deb
-#opennms-core_<pom-version>-<release-major>.<release-minor>.<release-micro>_all.deb
+BINARIES="dch dpkg-sig dpkg-buildpackage expect"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -225,5 +224,13 @@ function main()
     echo ""
     echo "Your completed Debian packages are in the $TOPDIR/.. directory."
 }
+
+for BIN in $BINARIES; do
+	EXECUTABLE=`which $BIN 2>/dev/null || :`
+	if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
+		echo "ERROR: $BIN not found"
+		exit 1
+	fi
+done
 
 main "$@"
