@@ -52,9 +52,14 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jrobin</groupId>
-      <artifactId>jrobin</artifactId>
-      <version>1.5.11</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrobin-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
