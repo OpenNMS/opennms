@@ -12,4 +12,6 @@
 	<stylesheet src="terminalwidget/styles.css"/>
 
 	<inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
+
+    <collapse-all-properties/>
 </module>

@@ -212,7 +212,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             return table;
         }
         
-        table.setTitle("Distributed poller view for " + command.getApplication() + " from " + command.getLocation() + " location");
+        table.setTitle("Distributed status view for " + command.getApplication() + " from " + command.getLocation() + " location");
 
         List<OnmsLocationSpecificStatus> status = findLocationSpecificStatus(command, table.getErrors());
         
@@ -331,7 +331,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         if (locationMonitors.size() == 0) {
             errors.reject("location.no-monitors",
                           new Object[] { applicationName, locationName },
-                          "No location monitors have registered for this "
+                          "No remote pollers have registered for this "
                           + "application and location");
             return null;
         }
@@ -386,7 +386,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(start));
         statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(start, end));
 
-        table.setTitle("Distributed Poller Status Summary");
+        table.setTitle("Distributed Status Summary");
         
         table.addColumn("Area", "");
         table.addColumn("Location", "");
@@ -832,7 +832,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     private ServiceGraph getServiceGraphForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
         if (resource == null) {
-            return new ServiceGraph(service, new String[] { "Resource could not be found.  Has any response time data been collected for this service from this location monitor?" });
+            return new ServiceGraph(service, new String[] { "Resource could not be found.  Has any response time data been collected for this service from this remote poller?" });
         }
         
         String graphName = service.getServiceName().toLowerCase();
@@ -853,7 +853,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
         }
         
-        return new ServiceGraph(service, new String[] { "Graph could not be found for '" + graphName + "' on this resource.  Has any response time data been collected for this service from this location monitor and is the graph definition correct?" });
+        return new ServiceGraph(service, new String[] { "Graph could not be found for '" + graphName + "' on this resource.  Has any response time data been collected for this service from this remote poller and is the graph definition correct?" });
     }
 
     /**

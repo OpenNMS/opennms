@@ -30,11 +30,13 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"
-	import=" java.sql.Connection,
-                java.util.Iterator,
-		java.util.List,
-                org.opennms.core.resource.Vault,
-                org.opennms.web.pathOutage.*" %>
+	import="java.sql.Connection,
+			java.util.Iterator,
+			java.util.List,
+			org.opennms.core.resource.Vault,
+			org.opennms.core.utils.DBUtils,
+			org.opennms.web.pathOutage.*
+" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
   <jsp:param name="title" value="Show Path Outage Nodes" />
@@ -67,7 +69,8 @@
           </tr>
 
 <%        Iterator<String> iter = nodeList.iterator();
-          Connection conn = Vault.getDbConnection();
+          final Connection conn = Vault.getDbConnection();
+          final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
           try {
               while( iter.hasNext() ) {
                   String nodeid = iter.next();
@@ -78,7 +81,7 @@
                   </tr>
               <% } %>
           <% } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
           } %>
 
       </table>

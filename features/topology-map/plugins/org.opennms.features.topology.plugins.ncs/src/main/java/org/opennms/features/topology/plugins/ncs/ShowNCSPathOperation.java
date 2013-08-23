@@ -26,16 +26,16 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class ShowNCSPathOperation implements Operation {
     
@@ -81,7 +81,7 @@ public class ShowNCSPathOperation implements Operation {
             public Field createField(Item item, Object propertyId, Component uiContext) {
                 String pid = (String) propertyId;
 
-                Select select = new Select();
+                ComboBox select = new ComboBox();
                 for(VertexRef vertRef : vertexRefs) {
                     select.addItem(vertRef.getId());
                     select.setItemCaption(vertRef.getId(), vertRef.getLabel());

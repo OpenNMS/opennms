@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.slf4j.MDC;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;

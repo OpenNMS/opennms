@@ -72,11 +72,11 @@
     </tr>
   
     <tr>
-      <td class="normal" align="right">Location monitor</td>
+      <td class="normal" align="right">Remote Poller</td>
       <td class="normal">
         <c:choose>
           <c:when test="${empty historyModel.monitors}">
-            No location monitors have registered for this location
+            No remote pollers have registered for this location.
           </c:when>
           
     	  <c:otherwise>
@@ -97,7 +97,7 @@
               <c:param name="monitorId" value="${historyModel.chosenMonitor.id}"/>
             </c:url>
             
-            <a href="${monitorLink}">View monitor details</a>
+            <a href="${monitorLink}">View remote poller details</a>
     	  </c:otherwise>
         </c:choose>
       </td> 

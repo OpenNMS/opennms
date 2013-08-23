@@ -12,10 +12,12 @@
 	<http pattern="/**" realm="OpenNMS Realm">
       <intercept-url pattern="/"            access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/index.html"  access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
+      <intercept-url pattern="/*.exe"       access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
+      <intercept-url pattern="/js/**"       access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
       <intercept-url pattern="/webstart/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_REMOTING" />
-		<intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
-		<http-basic />
-		<custom-filter position="LAST" ref="authFilterEnabler"/>
+      <intercept-url pattern="/**"          access="ROLE_ADMIN,ROLE_REMOTING" />
+      <http-basic />
+      <custom-filter position="LAST" ref="authFilterEnabler"/>
 	</http>
 
 	<!--  This filter is used to setup the Hibernate query filtering to authorized nodes only -->

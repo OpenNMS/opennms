@@ -53,12 +53,12 @@ import com.vaadin.server.UserError;
 import com.vaadin.server.AbstractErrorMessage.ContentMode;
 import com.vaadin.server.ErrorMessage.ErrorLevel;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -144,7 +144,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
-					final Select select = new Select("Group");
+					final ComboBox select = new ComboBox("Group");
 					for (Vertex childId : groupIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());

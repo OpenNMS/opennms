@@ -89,6 +89,12 @@
     </profile>
   </profiles>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -133,6 +139,9 @@
           <webResources>
             <resource>
               <directory>${project.build.directory}/dependency</directory>
+            </resource>
+            <resource>
+              <directory>${project.build.directory}/classes</directory>
             </resource>
           </webResources>
         </configuration>

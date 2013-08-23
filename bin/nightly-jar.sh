@@ -4,6 +4,8 @@ MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
 TOPDIR=`cd "$BINDIR"/..; pwd`
 
+export PATH="/usr/local/bin:$PATH"
+
 BUILDTOOL=`which buildtool.pl 2>/dev/null`
 if [ $? != 0 ]; then
 	echo 'Unable to locate buildtool.pl!'
@@ -34,6 +36,7 @@ RELEASE=`cat "${TOPDIR}"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 cd "${TOPDIR}/.."
 git clean -fdx
 git reset --hard HEAD
+
 ./make-installer.sh -a -m "${TIMESTAMP}" -u "${REVISION}" || exit 1
 
 if [ -z "$ONLY_PACKAGE" ]; then

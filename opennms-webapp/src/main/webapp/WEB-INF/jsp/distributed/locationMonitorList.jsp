@@ -38,11 +38,11 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Distributed Poller Status" />
-  <jsp:param name="headTitle" value="Distributed Poller Status" />
+  <jsp:param name="title" value="Remote Poller Status" />
+  <jsp:param name="headTitle" value="Remote Poller Status" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Distributed Poller Status" />
+  <jsp:param name="breadcrumb" value="Remote Poller Status" />
 </jsp:include>
 
   
@@ -64,6 +64,8 @@
     <th><spring:message code="distributed.id"/></th>
     <th><spring:message code="distributed.hostName"/></th>
     <th><spring:message code="distributed.ipAddress"/></th>
+    <th><spring:message code="distributed.connectionHostName"/></th>
+    <th><spring:message code="distributed.connectionIpAddress"/></th>
     <th><spring:message code="distributed.status"/></th>
     <th><spring:message code="distributed.lastCheckInTime"/></th>
   </tr>
@@ -82,6 +84,8 @@
       </td>
       <td class="divider">${monitor.hostName}</td>
       <td class="divider">${monitor.ipAddress}</td>
+      <td class="divider">${monitor.connectionHostName}</td>
+      <td class="divider">${monitor.connectionIpAddress}</td>
       <td class="divider bright"><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
       <td class="divider">
         <c:choose>
