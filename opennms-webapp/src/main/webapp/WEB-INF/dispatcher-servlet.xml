@@ -454,10 +454,11 @@
         <property name="url" value="maps.htm" />
         <property name="entries">
             <list>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                     <property name="name" value="Distributed"/>
                     <property name="url" value="RemotePollerMap/index.jsp"/>
                     <property name="locationMatch" value="RemotePollerMap"/>
+                    <property name="locationMonitorDao" ref="locationMonitorDao"/>
                 </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Topology"/>
