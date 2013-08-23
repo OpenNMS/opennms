@@ -1103,7 +1103,7 @@ public class ThresholdingVisitorTest {
         m_defaultErrorLevelToCheck = Level.FATAL;
         LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ERROR);
         assertEquals("expecting 1 event", 1, events.length);
-        assertEquals("initialize: Can't process threshold group SMS_Dieta", events[0].getMessage());
+        assertEquals("initialize(nodeId=1,ipAddr=127.0.0.1,svc=SNMP): Can't process threshold group SMS_Dieta", events[0].getMessage());
     }
 
     /*

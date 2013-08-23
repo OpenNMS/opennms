@@ -333,7 +333,7 @@ public class CollectionResourceWrapper {
             s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
-                log().info("getCounterValue: unknown last value, ignoring current");
+                log().info("getCounterValue: unknown last value for " + id + ", ignoring current");
             } else {                
             	if ( m_collectionTimestamp == null ) {
             		//If you get this, you need to ensure you passed a non-null timestamp to the constructor.  
@@ -370,6 +370,7 @@ public class CollectionResourceWrapper {
                 //       Here is a temporal workaround to avoid the threshold messages.
                 long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
                 if (interval > 0) {
+                    log().debug("getCounterValue: id=" + id + ", value=" + delta/interval + ", delta=" + delta + ", interval=" + interval);
                     m_localCache.put(id, delta / interval);
                 } else {
                     log().error("getCounterValue: invalid interval rate for " + id + ". The last valid value for the metric was " + last.value + " at " + last.timestamp + ". This value will be used instead.");

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -106,6 +105,7 @@ final class CollectableService implements ReadyRunnable {
     private final ServiceParameters m_params;
     
     private final RrdRepository m_repository;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -134,12 +134,10 @@ final class CollectableService implements ReadyRunnable {
         
         m_spec.initialize(m_agent);
         
-        Map<String, Object> roProps=m_spec.getReadOnlyPropertyMap();
-        m_params=new ServiceParameters(roProps);
+        m_params=new ServiceParameters(m_spec.getReadOnlyPropertyMap());
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
-        
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  roProps);
 
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params.getParameters());
     }
     
     /**
@@ -575,6 +573,19 @@ final class CollectableService implements ReadyRunnable {
 
     /**
      * <p>reinitializeThresholding</p>
+     */
+    /*
+     * TODO Re-create or merge ?
+     * 
+     * The reason of doing a merge is to keep and update the threshold states.
+     * 
+     * It is extremely more easy to just recreate the thresholding visitor to avoid complex
+     * operations. But, the cost of doing this is that all the states will be lost, and
+     * some alarms will become orphans.
+     * 
+     * Other idea is to create two methods to get and set the states, and detect orphan
+     * states. That way, we can decide what to do with orphans (like clear the alarm, or
+     * send an auto-rearm), and also it can be used to persist the states across restarts.
      */
     public void reinitializeThresholding() {
         if(m_thresholdVisitor!=null) {
