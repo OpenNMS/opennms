@@ -35,10 +35,10 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Location Monitor Details" />
-  <jsp:param name="headTitle" value="Location Monitor  Details" />
+  <jsp:param name="title" value="Remote Poller Details" />
+  <jsp:param name="headTitle" value="Remote Poller Details" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='distributed/locationMonitorList.htm'>Location Monitors</a>" />
+  <jsp:param name="breadcrumb" value="<a href='distributed/locationMonitorList.htm'>Remote Pollers</a>" />
   <jsp:param name="breadcrumb" value="Details" />
 </jsp:include>
 
@@ -80,12 +80,12 @@
         <td>${monitor.ipAddress}</td>
       </tr>
       <tr>
-        <th><spring:message code="distributed.remoteHostName"/></th>
-        <td>${monitor.remoteHostName}</td>
+        <th><spring:message code="distributed.connectionHostName"/></th>
+        <td>${monitor.connectionHostName}</td>
       </tr>
       <tr>
-        <th><spring:message code="distributed.remoteIpAddress"/></th>
-        <td>${monitor.remoteIpAddress}</td>
+        <th><spring:message code="distributed.connectionIpAddress"/></th>
+        <td>${monitor.connectionIpAddress}</td>
       </tr>
       <tr>
         <th><spring:message code="distributed.status"/></th>
@@ -125,7 +125,7 @@
     <c:if test="${isAdmin}">
       <script type="text/javascript" >
           function confirmDelete() {
-              if (confirm("Are you sure you want to proceed? This action will permanently delete all data for this location monitor in the database and cannot be undone.")) {
+              if (confirm("Are you sure you want to proceed? This action will permanently delete all data for this remote poller in the database and cannot be undone.")) {
                   document.deleteForm.submit();
               }
           }
@@ -159,13 +159,13 @@
         </c:choose>
   
         <p>
-          <b>Delete</b> will delete all database data for this location monitor
-          and cause the location monitor to shutdown when it next checks in.
+          <b>Delete</b> will delete all database data for this remote poller
+          and cause the remote poller to shut down when it next checks in.
         </p>
         
         <p>
-          <b>Pause</b> will cause the location monitor to stop polling when it
-          next checks in.  The location monitor can be unpaused to re-enable
+          <b>Pause</b> will cause the remote poller to stop polling when it
+          next checks in. The remote poller can be unpaused to re-enable
           polling.
         </p>
       </div>

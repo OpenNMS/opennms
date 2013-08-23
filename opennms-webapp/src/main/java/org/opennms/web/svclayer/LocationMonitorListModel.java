@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.springframework.validation.Errors;
 
 /**
@@ -51,10 +52,6 @@ import org.springframework.validation.Errors;
  * @since 1.8.1
  */
 public class LocationMonitorListModel {
-    private static final String HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.hostAddress";
-    private static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
-    private static final String REMOTE_HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.remoteHostAddress";
-    private static final String REMOTE_HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.remoteHostName";
 
     private Errors m_errors;
     private List<LocationMonitorModel> m_locationMonitors;
@@ -120,8 +117,8 @@ public class LocationMonitorListModel {
         private String m_name;
         private String m_hostName;
         private String m_ipAddress;
-        private String m_remoteHostName;
-        private String m_remoteIpAddress;
+        private String m_connectionHostName;
+        private String m_connectionIpAddress;
         private MonitorStatus m_status;
         private Date m_lastCheckInTime;
         private Map<String, String> m_additionalDetails;
@@ -148,10 +145,10 @@ public class LocationMonitorListModel {
             
             setDefinitionName(monitor.getDefinitionName());
             setId(monitor.getId());
-            setHostName(monitor.getDetails().get(HOST_NAME_KEY));
-            setIpAddress(monitor.getDetails().get(HOST_ADDRESS_KEY));
-            setRemoteHostName(monitor.getDetails().get(REMOTE_HOST_NAME_KEY));
-            setRemoteIpAddress(monitor.getDetails().get(REMOTE_HOST_ADDRESS_KEY));
+            setHostName(monitor.getDetails().get(PollerBackEnd.HOST_NAME_KEY));
+            setIpAddress(monitor.getDetails().get(PollerBackEnd.HOST_ADDRESS_KEY));
+            setConnectionHostName(monitor.getDetails().get(PollerBackEnd.CONNECTION_HOST_NAME_KEY));
+            setConnectionIpAddress(monitor.getDetails().get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY));
             setStatus(monitor.getStatus());
             setLastCheckInTime(monitor.getLastCheckInTime());
             
@@ -165,10 +162,10 @@ public class LocationMonitorListModel {
             });
             for (Entry<String, String> detail : details) {
                 if (
-                    !detail.getKey().equals(HOST_NAME_KEY) && 
-                    !detail.getKey().equals(HOST_ADDRESS_KEY) &&
-                    !detail.getKey().equals(REMOTE_HOST_NAME_KEY) &&
-                    !detail.getKey().equals(REMOTE_HOST_ADDRESS_KEY)
+                    !detail.getKey().equals(PollerBackEnd.HOST_NAME_KEY) && 
+                    !detail.getKey().equals(PollerBackEnd.HOST_ADDRESS_KEY) &&
+                    !detail.getKey().equals(PollerBackEnd.CONNECTION_HOST_NAME_KEY) &&
+                    !detail.getKey().equals(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY)
                  ) {
                     addAdditionalDetail(detail.getKey(), detail.getValue());
                 }
@@ -214,12 +211,12 @@ public class LocationMonitorListModel {
             m_hostName = hostName;
         }
 
-        public String getRemoteHostName() {
-            return m_remoteHostName;
+        public String getConnectionHostName() {
+            return m_connectionHostName;
         }
 
-        public void setRemoteHostName(String hostName) {
-            m_remoteHostName = hostName;
+        public void setConnectionHostName(String hostName) {
+            m_connectionHostName = hostName;
         }
 
         public int getId() {
@@ -238,12 +235,12 @@ public class LocationMonitorListModel {
             m_ipAddress = ipAddress;
         }
 
-        public String getRemoteIpAddress() {
-            return m_remoteIpAddress;
+        public String getConnectionIpAddress() {
+            return m_connectionIpAddress;
         }
 
-        public void setRemoteIpAddress(String ipAddress) {
-            m_remoteIpAddress = ipAddress;
+        public void setConnectionIpAddress(String ipAddress) {
+            m_connectionIpAddress = ipAddress;
         }
 
         public Date getLastCheckInTime() {

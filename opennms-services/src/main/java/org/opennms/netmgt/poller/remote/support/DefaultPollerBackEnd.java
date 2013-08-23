@@ -421,7 +421,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
 
-        updateRemoteHostDetails(mon);
+        updateConnectionHostDetails(mon);
 
         m_locMonDao.update(mon);
 
@@ -430,26 +430,26 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return true;
     }
 
-    protected void updateRemoteHostDetails(OnmsLocationMonitor mon) {
+    protected void updateConnectionHostDetails(OnmsLocationMonitor mon) {
         Map<String,String> allDetails = new HashMap<String,String>();
         allDetails.putAll(mon.getDetails());
 
-        String oldRemoteHostAddress = allDetails.get("org.opennms.netmgt.poller.remote.remoteHostAddress");
-        String newRemoteHostAddress = null;
+        String oldConnectionHostAddress = allDetails.get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY);
+        String newConnectionHostAddress = null;
 
         // This value can be either an IP address or a hostname
         String remoteHost = RemoteHostThreadLocal.INSTANCE.get();
         if (remoteHost != null) {
             remoteHost = remoteHost.trim();
-            allDetails.put("org.opennms.netmgt.poller.remote.remoteHostName", remoteHost);
+            allDetails.put(PollerBackEnd.CONNECTION_HOST_NAME_KEY, remoteHost);
             try {
                 InetAddress addr = InetAddressUtils.getInetAddress(remoteHost);
-                newRemoteHostAddress = InetAddressUtils.str(addr);
+                newConnectionHostAddress = InetAddressUtils.str(addr);
                 // Look up the IP address for the name
-                allDetails.put("org.opennms.netmgt.poller.remote.remoteHostAddress", newRemoteHostAddress);
+                allDetails.put(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY, newConnectionHostAddress);
                 // Reverse-lookup the name (in case the value was an IP address before)
-                if (remoteHost.equals(newRemoteHostAddress)) {
-                    allDetails.put("org.opennms.netmgt.poller.remote.remoteHostName", addr.getHostName());
+                if (remoteHost.equals(newConnectionHostAddress)) {
+                    allDetails.put(PollerBackEnd.CONNECTION_HOST_NAME_KEY, addr.getHostName());
                 }
             } catch (Throwable e) {
                 // In case there is an UnknownHostException
@@ -457,21 +457,21 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
         mon.setDetails(allDetails);
 
-        if (oldRemoteHostAddress == null) {
-            if (newRemoteHostAddress != null) {
-                sendMonitorRemoteAddressChangedEvent(mon, oldRemoteHostAddress, newRemoteHostAddress);
+        if (oldConnectionHostAddress == null) {
+            if (newConnectionHostAddress != null) {
+                sendMonitorRemoteAddressChangedEvent(mon, oldConnectionHostAddress, newConnectionHostAddress);
             }
         } else {
-            if (!oldRemoteHostAddress.equals(newRemoteHostAddress)) {
-                sendMonitorRemoteAddressChangedEvent(mon, oldRemoteHostAddress, newRemoteHostAddress);
+            if (!oldConnectionHostAddress.equals(newConnectionHostAddress)) {
+                sendMonitorRemoteAddressChangedEvent(mon, oldConnectionHostAddress, newConnectionHostAddress);
             }
         }
     }
 
     private void sendMonitorRemoteAddressChangedEvent(OnmsLocationMonitor mon, String oldRemoteHostAddress, String newRemoteHostAddress) {
-        m_eventIpcManager.sendNow(createEventBuilder(mon, EventConstants.LOCATION_MONITOR_REMOTE_ADDRESS_CHANGED_UEI)
-            .addParam("oldRemoteHostAddress", oldRemoteHostAddress)
-            .addParam("newRemoteHostAddress", newRemoteHostAddress).getEvent()
+        m_eventIpcManager.sendNow(createEventBuilder(mon, EventConstants.LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI)
+            .addParam("oldConnectionHostAddress", oldRemoteHostAddress)
+            .addParam("newConnectionHostAddress", newRemoteHostAddress).getEvent()
         );
     }
 
@@ -752,7 +752,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             }
         } finally {
             mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
-            updateRemoteHostDetails(mon);
+            updateConnectionHostDetails(mon);
             m_locMonDao.update(mon);
         }
     }

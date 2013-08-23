@@ -1534,14 +1534,14 @@
   </event> 
 
   <event>
-    <uei>uei.opennms.org/remote/locationMonitorRemoteAddressChanged</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's remote IP address has changed</event-label>
+    <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
     <descr>
-      This event is sent when a remote poller's remote IP address has changed.
+      This event is sent when a remote poller's connection IP address has changed.
     </descr>
     <logmsg dest='logndisplay'>
-      The remote IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has changed
-      from %parm[oldRemoteHostAddress]% to %parm[newRemoteHostAddress]%.
+      The connection IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has changed
+      from %parm[oldConnectionHostAddress]% to %parm[newConnectionHostAddress]%.
     </logmsg>
     <severity>Warning</severity>
   </event> 
