@@ -47,11 +47,7 @@ import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
-import org.opennms.netmgt.model.AdhocGraphType;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.netmgt.model.PrefabGraphType;
-import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.model.*;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.slf4j.Logger;
@@ -61,6 +57,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>DefaultRrdGraphService class.</p>
