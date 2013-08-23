@@ -9,8 +9,7 @@ export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
 
-#opennms-core-1.9.9-0.<datestamp>.rpm
-#opennms-core-<pom-version>-<release-major>.<release-minor>.<release-micro>
+BINARIES="expect rpmbuild rsync"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -237,5 +236,13 @@ function main()
     echo ""
     echo "Your completed RPMs are in the $WORKDIR/RPMS/noarch directory."
 }
+
+for BIN in $BINARIES; do
+	EXECUTABLE=`which $BIN 2>/dev/null || :`
+	if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
+		echo "ERROR: $BIN not found"
+		exit 1
+	fi
+done
 
 main "$@"
