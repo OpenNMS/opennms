@@ -81,6 +81,15 @@
             <parameter key="collection" value="jsr160"/>
             <parameter key="thresholding-enabled" value="true"/>
         </service>
+
+        <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
+            <parameter key="collection" value="PostgreSQL"/>
+            <parameter key="thresholding-enabled" value="true"/>
+            <parameter key="driver" value="org.postgresql.Driver"/>
+            <parameter key="user" value="postgres"/>
+            <parameter key="password" value="postgres"/>
+            <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+        </service>
     </package>
 
     <package name="ejn">
@@ -99,5 +108,6 @@
     <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
     <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
     <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
+    <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
 </collectd-configuration>
 
