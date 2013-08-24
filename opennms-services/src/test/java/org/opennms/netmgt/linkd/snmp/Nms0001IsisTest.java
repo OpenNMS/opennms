@@ -172,4 +172,43 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
         
     }
 
+    @Test
+    @JUnitSnmpAgents(value = {
+            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
+            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
+    })
+    public void testIsisCircTableCollection() throws Exception {
+
+        String name = "isisCircTable";
+        IsisCircTable m_isisCircTable = new IsisCircTable(InetAddressUtils.addr(FROH_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[]{m_isisCircTable};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(FROH_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
+        Collection<IsisCircTableEntry> isisCircTableEntryCollection = m_isisCircTable.getEntries();
+        assertEquals(3, isisCircTableEntryCollection.size());
+        Iterator<IsisCircTableEntry> iter = isisCircTableEntryCollection.iterator();
+        IsisCircTableEntry entry1 = iter.next();
+        assertEquals(16, entry1.getIsisCircuitIndex().intValue());
+        assertEquals(16, entry1.getIsisCircIfIndex().intValue());
+        
+        IsisCircTableEntry entry2 = iter.next();
+        assertEquals(599, entry2.getIsisCircuitIndex().intValue());
+        assertEquals(599, entry2.getIsisCircIfIndex().intValue());
+
+        IsisCircTableEntry entry3 = iter.next();
+        assertEquals(600, entry3.getIsisCircuitIndex().intValue());
+        assertEquals(600, entry3.getIsisCircIfIndex().intValue());
+        
+    }
+
 }
