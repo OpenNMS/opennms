@@ -206,7 +206,7 @@ public class IsisISAdjTableEntry extends SnmpStore {
         return getInt32(ISIS_ADJ_NBR_EXTENDED_CIRC_ID_ALIAS);
     }
     
-    public Integer getIsisCircuitIndex() {
+    public Integer getIsisCircIndex() {
         return m_isisCircIndex;
     }
     

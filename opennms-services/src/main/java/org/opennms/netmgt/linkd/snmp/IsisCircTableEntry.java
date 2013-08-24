@@ -70,7 +70,7 @@ public class IsisCircTableEntry extends SnmpStore {
         return getInt32(ISIS_CIRC_IF_ALIAS);
     }
     
-    public Integer getIsisCircuitIndex() {
+    public Integer getIsisCircIndex() {
         return m_isisCircIndex;
     }
         

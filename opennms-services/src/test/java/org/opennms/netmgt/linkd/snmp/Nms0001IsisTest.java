@@ -152,7 +152,7 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
         assertEquals(2, isisISAdjTableEntryCollection.size());
         Iterator<IsisISAdjTableEntry> iter = isisISAdjTableEntryCollection.iterator();
         IsisISAdjTableEntry entry1 = iter.next();
-        assertEquals(599, entry1.getIsisCircuitIndex().intValue());
+        assertEquals(599, entry1.getIsisCircIndex().intValue());
         assertEquals(1, entry1.getIsisISAdjIndex().intValue());
         assertEquals(IsisISAdjState.UP, entry1.getIsIsAdjStatus());
         assertEquals("001f12accbf1", entry1.getIsIsAdjNeighSnpaAddress());
@@ -161,7 +161,7 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
         assertEquals(0, entry1.getIsisAdjNbrExtendedCircID().intValue());
         
         IsisISAdjTableEntry entry2 = iter.next();
-        assertEquals(600, entry2.getIsisCircuitIndex().intValue());
+        assertEquals(600, entry2.getIsisCircIndex().intValue());
         assertEquals(1, entry2.getIsisISAdjIndex().intValue());
         assertEquals(IsisISAdjState.UP, entry2.getIsIsAdjStatus());
         assertEquals("001f12acc3f2", entry2.getIsIsAdjNeighSnpaAddress());
@@ -198,15 +198,15 @@ public class Nms0001IsisTest extends Nms0001NetworkBuilder implements Initializi
         assertEquals(3, isisCircTableEntryCollection.size());
         Iterator<IsisCircTableEntry> iter = isisCircTableEntryCollection.iterator();
         IsisCircTableEntry entry1 = iter.next();
-        assertEquals(16, entry1.getIsisCircuitIndex().intValue());
+        assertEquals(16, entry1.getIsisCircIndex().intValue());
         assertEquals(16, entry1.getIsisCircIfIndex().intValue());
         
         IsisCircTableEntry entry2 = iter.next();
-        assertEquals(599, entry2.getIsisCircuitIndex().intValue());
+        assertEquals(599, entry2.getIsisCircIndex().intValue());
         assertEquals(599, entry2.getIsisCircIfIndex().intValue());
 
         IsisCircTableEntry entry3 = iter.next();
-        assertEquals(600, entry3.getIsisCircuitIndex().intValue());
+        assertEquals(600, entry3.getIsisCircIndex().intValue());
         assertEquals(600, entry3.getIsisCircIfIndex().intValue());
         
     }
