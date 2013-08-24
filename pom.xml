@@ -860,8 +860,8 @@
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <ecjVersion>4.2.2</ecjVersion>
-    <gwtVersion>2.3.0</gwtVersion>
-    <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
+    <gwtVersion>2.5.1</gwtVersion>
+    <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>

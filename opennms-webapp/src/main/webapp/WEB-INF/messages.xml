@@ -14,7 +14,7 @@
    </entry>
    
    <entry key="location.no-monitors">
-     No distributed monitors have reported for applications in "{0}" from
+     No remote pollers have reported for applications in "{0}" from
      location "{1}".
    </entry>
    
@@ -27,11 +27,11 @@
    </entry>
    
    <entry key="distributed.pollerStatus.title">
-     Distributed Poller Status
+     Remote Poller Status
    </entry>
    
    <entry key="distributed.locationMonitorDetails.title">
-     Location Monitor Details
+     Remote Poller Details
    </entry>
    
    <entry key="distributed.locationMonitorDetails.additionalTitle">
@@ -56,6 +56,14 @@
    
    <entry key="distributed.ipAddress">
      IP Address
+   </entry>
+   
+   <entry key="distributed.connectionHostName">
+     Connection Hostname
+   </entry>
+   
+   <entry key="distributed.connectionIpAddress">
+     Connection IP Address
    </entry>
    
    <entry key="distributed.status">
@@ -110,11 +118,11 @@
    </entry>
    
    <entry key="monitorId.notSpecified">
-     Location monitor ID not specified or a type mismatch occurred (should be passed as an integer with "{0}" parameter).
+     Remote Poller ID not specified or a type mismatch occurred (should be passed as an integer with "{0}" parameter).
    </entry>
    
    <entry key="monitorId.notFound">
-     Location monitor ID "{1}" not found.
+     Remote poller ID "{1}" not found.
    </entry>
    
    <entry key="distributed.detail.os.arch">
