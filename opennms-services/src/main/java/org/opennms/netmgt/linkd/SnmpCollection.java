@@ -152,7 +152,7 @@ public final class SnmpCollection implements ReadyRunnable {
     public LldpRemTable m_lldpRemTable;
     
     public OspfGeneralGroup m_ospfGeneralGroup;
-    public OspfNbrTable m_osNbrTable;
+    public OspfNbrTable m_ospfNbrTable;
     
     public IsIsSystemObjectGroup m_isisSystemObjectGroup;
     public IsisISAdjTable m_isisISAdjTable;
@@ -256,11 +256,11 @@ public final class SnmpCollection implements ReadyRunnable {
     }
     
     public boolean hasOspfNbrTable() {
-        return (m_osNbrTable != null && !m_osNbrTable.failed() && !m_osNbrTable.isEmpty());
+        return (m_ospfNbrTable != null && !m_ospfNbrTable.failed() && !m_ospfNbrTable.isEmpty());
     }
 
     OspfNbrTable getOspfNbrTable() {
-        return m_osNbrTable;    
+        return m_ospfNbrTable;    
     }
     
     boolean hasLldpLocalGroup() {
@@ -434,7 +434,13 @@ public final class SnmpCollection implements ReadyRunnable {
         
         m_ospfGeneralGroup = new OspfGeneralGroup(m_address);
         
-        m_osNbrTable = new OspfNbrTable(m_address);
+        m_ospfNbrTable = new OspfNbrTable(m_address);
+        
+        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(m_address);
+        
+        m_isisCircTable = new IsisCircTable(m_address);
+        
+        m_isisISAdjTable = new IsisISAdjTable(m_address);
 
         if (m_collectIpRoute) {
         	m_ipRoute = createClass(m_ipRouteClass, m_address);
@@ -455,7 +461,7 @@ public final class SnmpCollection implements ReadyRunnable {
         	bldr.add("ipNetToMediaTable", m_ipNetToMedia);
         }
         if (m_collectOspf) {
-        	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
+        	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_ospfNbrTable);
         }
         if (m_collectIsIs) {
             bldr.add("isisSystemObjectGroup/isisCircTable/isisISAdjTable", m_isisSystemObjectGroup, m_isisCircTable,m_isisISAdjTable);
@@ -554,7 +560,7 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpLocTable = null;
         m_lldpRemTable = null;
         m_ospfGeneralGroup = null;
-        m_osNbrTable = null;
+        m_ospfNbrTable = null;
         m_isisSystemObjectGroup = null;
         m_isisCircTable = null;
         m_isisISAdjTable = null;
