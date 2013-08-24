@@ -47,6 +47,9 @@ import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.CdpGlobalGroup;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
+import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup;
+import org.opennms.netmgt.linkd.snmp.IsisCircTable;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
@@ -150,6 +153,10 @@ public final class SnmpCollection implements ReadyRunnable {
     
     public OspfGeneralGroup m_ospfGeneralGroup;
     public OspfNbrTable m_osNbrTable;
+    
+    public IsIsSystemObjectGroup m_isisSystemObjectGroup;
+    public IsisISAdjTable m_isisISAdjTable;
+    public IsisCircTable m_isisCircTable;
     /**
      * The ipnettomedia table information
      */
@@ -216,8 +223,32 @@ public final class SnmpCollection implements ReadyRunnable {
         m_address = m_agentConfig.getEffectiveAddress();
     }
 
+    boolean hasIsIsSysObjectGroup() {
+        return (m_isisSystemObjectGroup != null && !m_isisSystemObjectGroup.failed() && m_isisSystemObjectGroup.getIsisSysId() != null);
+    }
+    
+    IsIsSystemObjectGroup getIsIsSystemObjectGroup() {
+        return m_isisSystemObjectGroup;
+    }
+
     boolean hasOspfGeneralGroup() {
         return (m_ospfGeneralGroup != null && !m_ospfGeneralGroup.failed() && m_ospfGeneralGroup.getOspfRouterId() != null);        
+    }
+
+    boolean hasIsisCircTable() {
+        return (m_isisCircTable != null && !m_isisCircTable.failed() && !m_isisCircTable.isEmpty());
+    }
+    
+    IsisCircTable getIsisCircTable() {
+        return m_isisCircTable;
+    }
+    
+    boolean hasIsisISAdjTable() {
+        return (m_isisISAdjTable != null && !m_isisISAdjTable.failed() && !m_isisISAdjTable.isEmpty());
+    }
+    
+    IsisISAdjTable getIsisISAdjTable() {
+        return m_isisISAdjTable;
     }
     
     OspfGeneralGroup getOspfGeneralGroup() {
@@ -427,8 +458,7 @@ public final class SnmpCollection implements ReadyRunnable {
         	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
         }
         if (m_collectIsIs) {
-            //FIXME add building table
-            //bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
+            bldr.add("isisSystemObjectGroup/isisCircTable/isisISAdjTable", m_isisSystemObjectGroup, m_isisCircTable,m_isisISAdjTable);
         }
         if (m_collectLldp) {
         	bldr.add("lldpLocalGroup/lldpLocTable/lldpRemTable", m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable);
@@ -464,9 +494,12 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect ospfGeneralGroup for {}", hostAddress);
         if (m_collectOspf && !this.hasOspfNbrTable())
             LOG.info("run: failed to collect ospfNbrTable for {}", hostAddress);
-        //FIXME add checks for ISIS table walks
-        if (m_collectIsIs )
-            LOG.info("run: collection on isisnot yet supported for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsIsSysObjectGroup())
+            LOG.info("run: failed to collect IsIsSysObjectGroup for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsisCircTable())
+            LOG.info("run: failed to collect IsisCircTable for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsisISAdjTable())
+            LOG.info("run: failed to collect IsisIsAdjTable for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocalGroup())
             LOG.info("run: failed to collect lldpLocalGroup for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocTable())
@@ -522,6 +555,9 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpRemTable = null;
         m_ospfGeneralGroup = null;
         m_osNbrTable = null;
+        m_isisSystemObjectGroup = null;
+        m_isisCircTable = null;
+        m_isisISAdjTable = null;
 
         m_snmpVlanCollection.clear();
 
