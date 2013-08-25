@@ -181,8 +181,8 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForText("Distributed Poller Status");
         waitForText("Hostname");
         assertEquals("Resume All", selenium.getValue("//input[@value='Resume All']"));
-        */
         clickAndWait("link=Admin");
+        */
     }
 
     @Test
