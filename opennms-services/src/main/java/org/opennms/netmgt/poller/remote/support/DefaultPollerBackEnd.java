@@ -430,9 +430,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return true;
     }
 
-    protected void updateConnectionHostDetails(OnmsLocationMonitor mon) {
-        Map<String,String> allDetails = new HashMap<String,String>();
-        allDetails.putAll(mon.getDetails());
+    protected void updateConnectionHostDetails(final OnmsLocationMonitor mon) {
+        final Map<String,String> allDetails = new HashMap<String,String>();
+        if (mon != null && mon.getDetails() != null) allDetails.putAll(mon.getDetails());
 
         String oldConnectionHostAddress = allDetails.get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY);
         String newConnectionHostAddress = null;
