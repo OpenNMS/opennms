@@ -421,7 +421,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         mon.setStatus(MonitorStatus.STARTED);
         mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
 
-        updateConnectionHostDetails(mon);
+        updateConnectionHostDetails(mon, pollerDetails);
 
         m_locMonDao.update(mon);
 
@@ -430,9 +430,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return true;
     }
 
-    protected void updateConnectionHostDetails(final OnmsLocationMonitor mon) {
+    protected void updateConnectionHostDetails(final OnmsLocationMonitor mon, final Map<String, String> pollerDetails) {
         final Map<String,String> allDetails = new HashMap<String,String>();
-        if (mon != null && mon.getDetails() != null) allDetails.putAll(mon.getDetails());
+        if (pollerDetails != null) allDetails.putAll(pollerDetails);
 
         String oldConnectionHostAddress = allDetails.get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY);
         String newConnectionHostAddress = null;
@@ -752,7 +752,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             }
         } finally {
             mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
-            updateConnectionHostDetails(mon);
+            updateConnectionHostDetails(mon, mon.getDetails());
             m_locMonDao.update(mon);
         }
     }
