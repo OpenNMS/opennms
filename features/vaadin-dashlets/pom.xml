@@ -21,6 +21,7 @@
         <module>dashlet-image</module>
         <module>dashlet-charts</module>
         <module>dashlet-rtc</module>
+        <module>dashlet-rrd</module>
         <module>dashlet-features</module>
     </modules>
 </project>
