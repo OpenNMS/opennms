@@ -35,11 +35,8 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
 
 public abstract class VmwareCimCollectionResource extends AbstractCollectionResource {
 
-    private int m_nodeId;
-
     public VmwareCimCollectionResource(CollectionAgent agent) {
         super(agent);
-        m_nodeId = agent.getNodeId();
     }
 
     public int getType() {
@@ -64,6 +61,6 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
     public abstract String getInstance();
 
     public String getParent() {
-        return Integer.toString(m_nodeId);
+        return m_agent.getStorageDir().toString();
     }
 }
