@@ -55,6 +55,10 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup.IsisAdminState;
+import org.opennms.netmgt.linkd.snmp.IsisCircTableEntry;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTableEntry.IsisISAdjState;
 import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
 import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
@@ -239,6 +243,51 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
+    protected void processIsis(final LinkableNode node,
+            final SnmpCollection snmpcoll, final Date scanTime) {
+        String isisSysId = snmpcoll.getIsIsSystemObjectGroup().getIsisSysId();
+        LOG.debug("processIsis: isis node/isissysId: {}/{}",
+                  node.getNodeId(), isisSysId);
+        if (snmpcoll.getIsIsSystemObjectGroup().getIsisSysAdminState() == IsisAdminState.OFF) {
+            LOG.info("processIsis: isis admin down on node/isisSysId: {}/{}. Skipping!",
+                     node.getNodeId(), isisSysId);
+            return;
+        }
+
+        node.setIsisSysId(isisSysId);
+        Map<Integer, Integer> isisCircIndexIfIndexMap = new HashMap<Integer, Integer>();
+        for (final IsisCircTableEntry circ : snmpcoll.getIsisCircTable()) {
+            isisCircIndexIfIndexMap.put(circ.getIsisCircIndex(),
+                                        circ.getIsisCircIfIndex());
+        }
+
+        List<IsisISAdjInterface> isisinterfaces = new ArrayList<IsisISAdjInterface>();
+        for (final IsisISAdjTableEntry isisAdj : snmpcoll.getIsisISAdjTable()) {
+            if (isisAdj.getIsIsAdjStatus() != IsisISAdjState.UP) {
+                LOG.info("processIsis: isis adj status not UP but {}, on node/isisISAdjNeighSysId/isisLocalCircIndex: {}/{}/{}. Skipping!",
+                         isisAdj.getIsIsAdjStatus(), node.getNodeId(),
+                         isisAdj.getIsIsAdjNeighSysId(),
+                         isisAdj.getIsisCircIndex());
+                return;
+            }
+            if (!isisCircIndexIfIndexMap.containsKey(isisAdj.getIsisCircIndex())) {
+                LOG.info("processIsis: isis Circ Index not found on CircTable, on node/isisISAdjNeighSysId/isisLocalCircIndex: {}/{}/{}. Skipping!",
+                         node.getNodeId(), isisAdj.getIsIsAdjNeighSysId(),
+                         isisAdj.getIsisCircIndex());
+                return;
+            }
+            IsisISAdjInterface isisinterface = new IsisISAdjInterface(
+                                                                      isisAdj.getIsIsAdjNeighSysId(),
+                                                                      isisCircIndexIfIndexMap.get(isisAdj.getIsisCircIndex()),
+                                                                      isisAdj.getIsIsAdjNeighSnpaAddress(),
+                                                                      isisAdj.getIsisISAdjIndex());
+            LOG.debug("processIsis: isis adding adj interface node/interface: {}/{}",
+                      node.getNodeId(), isisinterface);
+            isisinterfaces.add(isisinterface);
+        }
+        node.setIsisInterfaces(isisinterfaces);
+    }
+    
     protected void processOspf(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
