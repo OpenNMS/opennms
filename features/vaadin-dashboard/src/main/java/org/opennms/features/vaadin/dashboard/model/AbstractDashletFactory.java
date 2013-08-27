@@ -56,6 +56,11 @@ public abstract class AbstractDashletFactory implements DashletFactory {
     protected Map<String, String> m_requiredParameterDescriptions = new TreeMap<String, String>();
 
     /**
+     * boostable flag
+     */
+    protected boolean m_boostable = true;
+
+    /**
      * Constructor for instantiating a new factory.
      */
     public AbstractDashletFactory() {
@@ -132,6 +137,20 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      */
     public void setRequiredParameterDescriptions(Map<String, String> requiredParameterDescriptions) {
         m_requiredParameterDescriptions = requiredParameterDescriptions;
+    }
+
+    /**
+     * This method sets the boostable flag.
+     */
+    public void setBoostable(boolean boostable) {
+        m_boostable=boostable;
+    }
+
+    /**
+     * This method returns whether this dashlet is boostable.
+     */
+    public boolean isBoostable() {
+        return m_boostable;
     }
 
     /**
