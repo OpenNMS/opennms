@@ -738,7 +738,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             boolean ok = true;
             for (String keyName : keySet) {
                 String attribValue = attribMap.get(StringUtils.removeStart(keyName, "_"));
-                if (attribValue != null) {
+                if (attribValue == null) {
+                    ok = false;
+                } else {
                     String keyValue = m_args.get(keyName);
                     if (keyValue.startsWith("~")) {
                         ok = ok && attribValue.matches(StringUtils.removeStart(keyValue, "~"));
