@@ -790,7 +790,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         for (int i = 0; defs != null && i < defs.length; i++) {
             String key = defs[i].getName();
             int targetIndex = defs[i].getKey();
-            for (int j = 0; j < values.length; j++) {
+            for (int j = 0; values != null && j < values.length; j++) {
                 if (targetIndex == values[j].getKey()) {
                     attributes.put(key, ((CustomFieldStringValue) values[j]).getValue());
                 }
