@@ -246,6 +246,8 @@ public class Linkd extends AbstractServiceDaemon {
             : m_linkdConfig.useLldpDiscovery());
         discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
             : m_linkdConfig.useOspfDiscovery());
+        discoveryLink.setDiscoveryUsingIsIs(pkg.hasUseIsisDiscovery() ? pkg.getUseIsisDiscovery()
+                                                                      : m_linkdConfig.useIsIsDiscovery());
         return discoveryLink;
     }
 
@@ -347,6 +349,8 @@ public class Linkd extends AbstractServiceDaemon {
             : m_linkdConfig.useLldpDiscovery());
         final boolean useOspfDiscovery = (pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
             : m_linkdConfig.useOspfDiscovery());
+        final boolean useIsIsDiscovery = (pkg.hasUseIsisDiscovery() ? pkg.getUseIsisDiscovery()
+                                                                    : m_linkdConfig.useIsIsDiscovery());
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
             : m_linkdConfig.useBridgeDiscovery());
         coll.setIpRouteClass(ipRouteClassName);
@@ -356,6 +360,7 @@ public class Linkd extends AbstractServiceDaemon {
         coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable(pkg.getName()));
         coll.collectLldp(useLldpDiscovery);
         coll.collectOspf(useOspfDiscovery);
+        coll.collectIsIs(useIsIsDiscovery);
         coll.collectBridge(useBridgeDiscovery);
         coll.collectStp(useBridgeDiscovery || saveStpNodeTable(pkg.getName()) || saveStpInterfaceTable(pkg.getName()));
 

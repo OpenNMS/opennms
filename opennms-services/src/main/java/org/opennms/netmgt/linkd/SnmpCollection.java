@@ -47,6 +47,9 @@ import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.CdpGlobalGroup;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
+import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup;
+import org.opennms.netmgt.linkd.snmp.IsisCircTable;
+import org.opennms.netmgt.linkd.snmp.IsisISAdjTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
@@ -139,12 +142,21 @@ public final class SnmpCollection implements ReadyRunnable {
      */
     private boolean m_collectOspf = false;
 
+    /**
+     * A boolean used to decide if you can collect IS-IS Table
+     */
+    private boolean m_collectIsIs = false;
+
     public LldpLocalGroup m_lldpLocalGroup;
     public LldpLocTable m_lldpLocTable;
     public LldpRemTable m_lldpRemTable;
     
     public OspfGeneralGroup m_ospfGeneralGroup;
-    public OspfNbrTable m_osNbrTable;
+    public OspfNbrTable m_ospfNbrTable;
+    
+    public IsIsSystemObjectGroup m_isisSystemObjectGroup;
+    public IsisISAdjTable m_isisISAdjTable;
+    public IsisCircTable m_isisCircTable;
     /**
      * The ipnettomedia table information
      */
@@ -211,8 +223,32 @@ public final class SnmpCollection implements ReadyRunnable {
         m_address = m_agentConfig.getEffectiveAddress();
     }
 
+    boolean hasIsIsSysObjectGroup() {
+        return (m_isisSystemObjectGroup != null && !m_isisSystemObjectGroup.failed() && m_isisSystemObjectGroup.getIsisSysId() != null);
+    }
+    
+    IsIsSystemObjectGroup getIsIsSystemObjectGroup() {
+        return m_isisSystemObjectGroup;
+    }
+
     boolean hasOspfGeneralGroup() {
         return (m_ospfGeneralGroup != null && !m_ospfGeneralGroup.failed() && m_ospfGeneralGroup.getOspfRouterId() != null);        
+    }
+
+    boolean hasIsisCircTable() {
+        return (m_isisCircTable != null && !m_isisCircTable.failed() && !m_isisCircTable.isEmpty());
+    }
+    
+    IsisCircTable getIsisCircTable() {
+        return m_isisCircTable;
+    }
+    
+    boolean hasIsisISAdjTable() {
+        return (m_isisISAdjTable != null && !m_isisISAdjTable.failed() && !m_isisISAdjTable.isEmpty());
+    }
+    
+    IsisISAdjTable getIsisISAdjTable() {
+        return m_isisISAdjTable;
     }
     
     OspfGeneralGroup getOspfGeneralGroup() {
@@ -220,11 +256,11 @@ public final class SnmpCollection implements ReadyRunnable {
     }
     
     public boolean hasOspfNbrTable() {
-        return (m_osNbrTable != null && !m_osNbrTable.failed() && !m_osNbrTable.isEmpty());
+        return (m_ospfNbrTable != null && !m_ospfNbrTable.failed() && !m_ospfNbrTable.isEmpty());
     }
 
     OspfNbrTable getOspfNbrTable() {
-        return m_osNbrTable;    
+        return m_ospfNbrTable;    
     }
     
     boolean hasLldpLocalGroup() {
@@ -398,7 +434,13 @@ public final class SnmpCollection implements ReadyRunnable {
         
         m_ospfGeneralGroup = new OspfGeneralGroup(m_address);
         
-        m_osNbrTable = new OspfNbrTable(m_address);
+        m_ospfNbrTable = new OspfNbrTable(m_address);
+        
+        m_isisSystemObjectGroup = new IsIsSystemObjectGroup(m_address);
+        
+        m_isisCircTable = new IsisCircTable(m_address);
+        
+        m_isisISAdjTable = new IsisISAdjTable(m_address);
 
         if (m_collectIpRoute) {
         	m_ipRoute = createClass(m_ipRouteClass, m_address);
@@ -410,7 +452,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		
 
 		LOG.debug("run: collecting : {}", m_agentConfig);
-		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf: {}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf);
+		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf/m_collectIsIs: {}/{}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf,m_collectIsIs);
 
         SnmpWalker walker = null;
 
@@ -419,7 +461,10 @@ public final class SnmpCollection implements ReadyRunnable {
         	bldr.add("ipNetToMediaTable", m_ipNetToMedia);
         }
         if (m_collectOspf) {
-        	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_osNbrTable);
+        	bldr.add("ospfGeneralGroup/ospfNbrTable", m_ospfGeneralGroup, m_ospfNbrTable);
+        }
+        if (m_collectIsIs) {
+            bldr.add("isisSystemObjectGroup/isisCircTable/isisISAdjTable", m_isisSystemObjectGroup, m_isisCircTable,m_isisISAdjTable);
         }
         if (m_collectLldp) {
         	bldr.add("lldpLocalGroup/lldpLocTable/lldpRemTable", m_lldpLocalGroup, m_lldpLocTable, m_lldpRemTable);
@@ -455,6 +500,12 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect ospfGeneralGroup for {}", hostAddress);
         if (m_collectOspf && !this.hasOspfNbrTable())
             LOG.info("run: failed to collect ospfNbrTable for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsIsSysObjectGroup())
+            LOG.info("run: failed to collect IsIsSysObjectGroup for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsisCircTable())
+            LOG.info("run: failed to collect IsisCircTable for {}", hostAddress);
+        if (m_collectIsIs && !this.hasIsisISAdjTable())
+            LOG.info("run: failed to collect IsisIsAdjTable for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocalGroup())
             LOG.info("run: failed to collect lldpLocalGroup for {}", hostAddress);
         if (m_collectLldp && !this.hasLldpLocTable())
@@ -509,7 +560,10 @@ public final class SnmpCollection implements ReadyRunnable {
         m_lldpLocTable = null;
         m_lldpRemTable = null;
         m_ospfGeneralGroup = null;
-        m_osNbrTable = null;
+        m_ospfNbrTable = null;
+        m_isisSystemObjectGroup = null;
+        m_isisCircTable = null;
+        m_isisISAdjTable = null;
 
         m_snmpVlanCollection.clear();
 
@@ -968,4 +1022,13 @@ public final class SnmpCollection implements ReadyRunnable {
     public boolean getCollectOspfTable() {
        return m_collectOspf;
     }
+    
+    public void collectIsIs(boolean collectIsIs) {        
+        m_collectIsIs = collectIsIs;
+    }
+
+    public boolean getCollectIsIsTable() {
+       return m_collectIsIs;
+    }
+
 }
