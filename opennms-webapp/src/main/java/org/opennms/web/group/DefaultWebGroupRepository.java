@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.web.services.GroupService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,11 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultWebGroupRepository implements WebGroupRepository, InitializingBean {
     
     @Autowired
-    private GroupDao m_groupDao;
-    
-    @Autowired
-    private CategoryDao m_categoryDao;
-    
+    GroupService groupService;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -65,18 +63,15 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     @Transactional
     @Override
     public boolean groupExists(String groupName) {
-        return m_groupDao.hasGroup(groupName);
+        return groupService.existsGroup(groupName);
     }
 
     /** {@inheritDoc} */
     @Transactional
     @Override
     public WebGroup getGroup(String groupName) {
-        
-        Group group = m_groupDao.getGroup(groupName);
-        
-        WebGroup webGroup = new WebGroup(group, getAuthorizedCategories(groupName));
-        
+        Group group = groupService.getGroup(groupName);
+        WebGroup webGroup = new WebGroup(group, groupService.getAuthorizedCategoriesAsString(groupName));
         return webGroup;
     }
 
@@ -84,82 +79,32 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     @Transactional
     @Override
     public void saveGroup(WebGroup webGroup) {
-
-        Group group = m_groupDao.getGroup(webGroup.getName());
-        
+        Group group = groupService.getGroup(webGroup.getName());
         if (group == null) {
             group = new Group();
             group.setName(webGroup.getName());
         }
-        
         group.setComments(webGroup.getComments());
         group.setDutySchedule(webGroup.getDutySchedules());
         group.setUser(webGroup.getUsers());
         if (!webGroup.getDefaultMap().equals(""))
             group.setDefaultMap(webGroup.getDefaultMap());
-        
-        
-        setAuthorizedCategories(webGroup.getName(), webGroup.getAuthorizedCategories());
-        
-        m_groupDao.saveGroup(group.getName(), group);
-        
-        
+
+        groupService.saveGroup(group, webGroup.getAuthorizedCategories());
     }
     
     /** {@inheritDoc} */
     @Transactional
     @Override
     public void deleteGroup(String groupName) {
-        
-        m_groupDao.deleteGroup(groupName);
-        
-        setAuthorizedCategories(groupName, Collections.<String>emptyList());
-        
+        groupService.deleteGroup(groupName);
     }
     
     /** {@inheritDoc} */
     @Transactional
     @Override
     public void renameGroup(String oldName, String newName) {
-        
-        m_groupDao.renameGroup(oldName, newName);
-        
-        List<String> categories = getAuthorizedCategories(oldName);
-        
-        setAuthorizedCategories(oldName, Collections.<String>emptyList());
-        
-        setAuthorizedCategories(newName, categories);
+        groupService.renameGroup(oldName, newName);
     }
-    
-    private List<String> getAuthorizedCategories(String groupName) {
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup(groupName);
-        
-        List<String> categoryNames = new ArrayList<String>(categories.size());
-        
-        for(OnmsCategory category : categories) {
-            categoryNames.add(category.getName());
-        }
-        
-        return categoryNames;
-    }
-    
-    private void setAuthorizedCategories(String groupName, List<String> categoryNames) {
-        
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup(groupName);
-        
-        for(OnmsCategory category : categories) {
-            category.getAuthorizedGroups().remove(groupName);
-        }
-        
-        
-        for(String categoryName : categoryNames) {
-            OnmsCategory category = m_categoryDao.findByName(categoryName, false);
-            if (category != null) {
-                category.getAuthorizedGroups().add(groupName);
-            }
-        }
-        
-    }
-     
 
 }

@@ -60,10 +60,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -263,8 +263,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
             assertNotNull(header);
-            final String location = header.toString();
-            assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
+            final String location = URLDecoder.decode(header.toString(), "UTF-8");
+            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
+            assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
         }
         return response;
     }
@@ -481,17 +482,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
 	protected void createNode() throws Exception {
-	    String node = "<node label=\"TestMachine\">" +
-	    "<labelSource>H</labelSource>" +
-	    "<sysContact>The Owner</sysContact>" +
-	    "<sysDescription>" +
-	    "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-	    "</sysDescription>" +
-	    "<sysLocation>DevJam</sysLocation>" +
-	    "<sysName>TestMachine</sysName>" +
-	    "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-	    "<type>A</type>" +
-	    "</node>";
+	    String node = "<node type=\"A\" label=\"TestMachine\">" +
+	            "<labelSource>H</labelSource>" +
+	            "<sysContact>The Owner</sysContact>" +
+	            "<sysDescription>" +
+	            "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+	            "</sysDescription>" +
+	            "<sysLocation>DevJam</sysLocation>" +
+	            "<sysName>TestMachine</sysName>" +
+	            "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+	            "</node>";
 	    sendPost("/nodes", node, 303, "/nodes/1");
 	}
 
@@ -536,7 +536,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	    String service = "<category name=\"Routers\">" +
 	        "<description>Core Routers</description>" +
 	        "</category>";
-	    sendPost("/nodes/1/categories", service, 303, "/nodes/1/categories/Routers");
+	    sendPost("/categories", service, 303, "/categories/Routers");
 	}
 
     public void setWebAppContext(WebApplicationContext webAppContext) {

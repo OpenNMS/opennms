@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi.internal;
+package org.opennms.osgi.internal;
 
 
-import org.opennms.features.topology.api.osgi.EventRegistry;
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContextCreator;
-import org.opennms.features.topology.api.osgi.locator.EventRegistryLocator;
+import org.opennms.osgi.EventRegistry;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextCreator;
+import org.opennms.osgi.locator.EventRegistryLocator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
@@ -47,6 +48,7 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.slf4j.Logger;
@@ -291,16 +293,35 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testCategory() throws Exception {
-        createCategory();
-        String url = "/nodes/1/categories";
-        String xml = sendRequest(GET, url, 200);
+        createNode();
+        // add category to node 
+        sendRequest(PUT, "/nodes/1/categories/Routers", 303);         
+        String xml = sendRequest(GET, "/nodes/1/categories", 200);
         assertTrue(xml.contains("name=\"Routers\""));
-        url += "/Routers";
-        sendPut(url, "description=My Equipment", 303, "/nodes/1/categories/Routers");
-        xml = sendRequest(GET, url, 200);
+        
+        // add category to node (again)
+        sendRequest(PUT, "/nodes/1/categories/Routers", 400); // should fail
+        
+        // change category name
+        sendPut("/categories/Routers", "description=My Equipment", 303, "/categories/Routers");
+        xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
         assertTrue(xml.contains("<description>My Equipment</description>"));
-        sendRequest(DELETE, url, 200);
-        sendRequest(GET, url, 204);
+
+        // cleanup up...
+        sendRequest(DELETE, "/nodes/1/categories/Routers", 200);
+        sendRequest(GET, "/nodes/1/categories/Routers", 204); // verify...
+        
+        // ... ensure that category is not deleted, only association is removed
+        xml = sendRequest(GET, "/categories/Routers", 200);
+        assertNotNull(xml);
+        assertTrue(xml.contains("<description>My Equipment</description>"));
+        assertTrue(xml.contains("name=\"Routers\""));
+        
+        // try backwards compatibility
+        sendPost("/nodes/1/categories/", JaxbUtils.marshal(new OnmsCategory("Routers")), 303, "/nodes/1/categories/Routers");
+        
+        // and clean up again
+        sendRequest(DELETE, "/nodes/1/categories/Routers", 200);
     }
 
     @Test

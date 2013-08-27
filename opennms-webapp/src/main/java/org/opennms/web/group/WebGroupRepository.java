@@ -37,42 +37,14 @@ package org.opennms.web.group;
  */
 public interface WebGroupRepository {
     
-    /**
-     * <p>groupExists</p>
-     *
-     * @param groupName a {@link java.lang.String} object.
-     * @return a boolean.
-     */
     boolean groupExists(String groupName);
     
-    /**
-     * <p>getGroup</p>
-     *
-     * @param groupName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.group.WebGroup} object.
-     */
     WebGroup getGroup(String groupName);
     
-    /**
-     * <p>saveGroup</p>
-     *
-     * @param group a {@link org.opennms.web.group.WebGroup} object.
-     */
     void saveGroup(WebGroup group);
 
-    /**
-     * <p>deleteGroup</p>
-     *
-     * @param groupName a {@link java.lang.String} object.
-     */
     void deleteGroup(String groupName);
 
-    /**
-     * <p>renameGroup</p>
-     *
-     * @param oldName a {@link java.lang.String} object.
-     * @param newName a {@link java.lang.String} object.
-     */
     void renameGroup(String oldName, String newName);
 
 }

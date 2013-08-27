@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi.internal;
+package org.opennms.osgi.internal;
 
-import org.opennms.features.topology.api.osgi.EventRegistry;
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
+import org.opennms.osgi.EventRegistry;
+import org.opennms.osgi.OnmsServiceManager;
 import org.ops4j.pax.vaadin.SessionListener;
 import org.osgi.framework.*;
 import org.slf4j.Logger;
@@ -40,8 +40,8 @@ import java.util.Properties;
 
 /**
  * Each opennms-bundle which uses vaadin wants to listen to Session-Events
- * (such as sessionInitialized and sessionDestroyed), In addition we need a {@link org.opennms.features.topology.api.osgi.OnmsServiceManager} service.
- * This bundle registers a {@link org.opennms.features.topology.api.osgi.EventRegistry} and a {@link org.opennms.features.topology.api.osgi.OnmsServiceManager} to the OSGI-Container at bundle
+ * (such as sessionInitialized and sessionDestroyed), In addition we need a {@link org.opennms.osgi.OnmsServiceManager} service.
+ * This bundle registers a {@link org.opennms.osgi.EventRegistry} and a {@link org.opennms.osgi.OnmsServiceManager} to the OSGI-Container at bundle
  * activation when the property "OnmsAutoExportServices" is set in the MANIFEST.MF file.
  *
  */

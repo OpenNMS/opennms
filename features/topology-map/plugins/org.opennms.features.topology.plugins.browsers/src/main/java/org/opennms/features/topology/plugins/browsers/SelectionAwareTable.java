@@ -32,7 +32,7 @@ import com.vaadin.ui.Table;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.osgi.EventConsumer;
+import org.opennms.osgi.EventConsumer;
 
 import java.io.Serializable;
 import java.util.ArrayList;

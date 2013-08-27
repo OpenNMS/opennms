@@ -26,35 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
-
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+package org.opennms.osgi;
 
 /**
- * If you want an instance of a class to get notified when an event of a concrete type is fired, just add
- * this annotation to the method which consumes that event object. <br/><br/>
- * <b>Example:</b><br/>
- * <pre>
- *     // An event consumer
- *     class MyEventConsumer {
- *         //...
- *        &#64;EventConsumer
- *        public void eventTypeChanged(EventType eventType) {
- *            // do something..
- *        }
- *         //...
- *     }
- *
- *     // some event producer which publishes the event through the EventRegistry
- *     EventProducer producer = new EventProducer();
- *     producer.fireEvent(new EventType());
- * </pre>
- *
- * @see {@link EventRegistry}, {@link EventProxy}
+ * Provides a session scoped (means sessionId + uiId) view to the {@link EventRegistry}.
+ * 
+ * @author Markus von Rüden
+ * @see {@link EventRegistry}
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface EventConsumer {
-
+public interface EventProxy {
+    <T> void fireEvent(T eventObject);
+    <T> void addPossibleEventConsumer(T possibleEventConsumer);
 }

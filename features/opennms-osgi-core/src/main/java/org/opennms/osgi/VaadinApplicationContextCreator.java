@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi.locator;
+package org.opennms.osgi;
 
-import org.opennms.features.topology.api.osgi.EventRegistry;
-import org.osgi.framework.BundleContext;
-
-public class EventRegistryLocator {
-
-    public EventRegistry lookup(BundleContext context) {
-        return new ServiceLocator().lookup(EventRegistry.class, context);
-    }
+public interface VaadinApplicationContextCreator {
+    VaadinApplicationContext create(OnmsServiceManager manager);
 }

@@ -28,6 +28,9 @@
     <module>geocoder</module>
     <module>name-cutter</module>
 
+   <!-- OpenNMS OSGI Core -->
+   <module>opennms-osgi-core</module>
+
     <!-- Jmx config generator -->
     <module>jmx-config-generator</module>
     <module>jmx-config-generator-webui</module>   

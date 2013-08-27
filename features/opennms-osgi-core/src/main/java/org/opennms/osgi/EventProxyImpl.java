@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
+package org.opennms.osgi;
 
-import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.osgi.framework.BundleContext;
 
 import java.util.List;
