@@ -12,6 +12,6 @@
     <tx:annotation-driven />
 
     <context:component-scan base-package="org.opennms.web.rest" />
-
+    
 </beans>
 

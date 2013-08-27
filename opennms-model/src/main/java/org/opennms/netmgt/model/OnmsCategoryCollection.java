@@ -93,5 +93,9 @@ public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
     public Integer getCount() {
         return this.size();
     }
-
+    
+    // make JaxbUtils happy (for a getter there must be a setter)
+    public void setCount(Integer count) {
+        ; // no implementation, because it is calculated
+    }
 }
