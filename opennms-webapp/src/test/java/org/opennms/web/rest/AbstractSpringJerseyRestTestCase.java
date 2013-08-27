@@ -224,7 +224,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
 			// FIXME: remove when we update to Spring 3.1
 			public void setContentType(final String contentType) {
 				super.setContentType(contentType);
-				super.addHeader("Content-Type", contentType);
 			}
 
 		};
