@@ -46,6 +46,7 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.osgi.*;
 import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
@@ -59,8 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -69,7 +69,7 @@ import java.util.List;
 	"chromeFrameCheck.js"
 })
 @PreserveOnRefresh
-public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
+public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
@@ -95,7 +95,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private boolean m_showHeader = true;
     private OnmsHeaderProvider m_headerProvider = null;
     private String m_userName;
-    private OnmsServiceManager serviceManager;
+    private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
 
@@ -125,7 +125,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
         //create VaadinApplicationContext
-        m_applicationContext = serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
+        m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
             @Override
             public VaadinApplicationContext create(OnmsServiceManager manager) {
                 VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
@@ -135,7 +135,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        m_verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         loadUserSettings(m_applicationContext);
         setupListeners();
@@ -147,6 +147,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(m_verticesUpdateManager);
         m_verticesUpdateManager.selectionChanged(m_selectionManager);
         m_verticesUpdateManager.graphChanged(m_graphContainer);
+
+        m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);
     }
 
     private void setupListeners() {
@@ -720,10 +722,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     public void setServiceManager(BundleContext bundleContext) {
-        this.serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
+        this.m_serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
     }
 
     public VaadinApplicationContext getApplicationContext() {
         return m_applicationContext;
+    }
+
+    @Override
+    @EventConsumer
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+
+        Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
+        Set<VertexRef> vertexRefs = event.getVertexRefs();
+        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
+            m_selectionManager.setSelectedVertexRefs(vertexRefs);
+        }
+
+
     }
 }
