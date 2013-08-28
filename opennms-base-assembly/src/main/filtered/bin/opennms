@@ -567,11 +567,19 @@ if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"
 fi
 
-
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
 	true # do nothing
 else
 	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
+fi
+
+if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -Djava.io.tmpdir > /dev/null ; then
+	true # do nothing
+else
+	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
+		mkdir -p "$OPENNMS_HOME/data/tmp"
+	fi
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.io.tmpdir=$OPENNMS_HOME/data/tmp"
 fi
 
 if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then
