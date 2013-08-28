@@ -57,11 +57,5 @@
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-test-dependencies</artifactId>
-      <type>pom</type>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 </project>
