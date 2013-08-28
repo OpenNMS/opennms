@@ -39,20 +39,62 @@
  *******************************************************************************/
 package org.opennms.core.test.dns;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.*;
+import org.xbill.DNS.Address;
+import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.Cache;
+import org.xbill.DNS.Credibility;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.DNAMERecord;
+import org.xbill.DNS.ExtendedFlags;
+import org.xbill.DNS.Flags;
+import org.xbill.DNS.Header;
+import org.xbill.DNS.Message;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.NameTooLongException;
+import org.xbill.DNS.OPTRecord;
+import org.xbill.DNS.Opcode;
+import org.xbill.DNS.RRset;
+import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.Section;
+import org.xbill.DNS.SetResponse;
+import org.xbill.DNS.TSIG;
+import org.xbill.DNS.TSIGRecord;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.Zone;
+import org.xbill.DNS.ZoneTransferException;
 
 public class DNSServer {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DNSServer.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(DNSServer.class);
+
     private static final int DEFAULT_SOCKET_TIMEOUT = 100;
 
     private final class TCPListener implements Stoppable {
@@ -78,10 +120,13 @@ public class DNSServer {
                         final Thread t = new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                InputStream is = null;
+                                DataInputStream dataIn = null;
+                                DataOutputStream dataOut = null;
                                 try {
                                     try {
-                                        final InputStream is = s.getInputStream();
-                                        final DataInputStream dataIn = new DataInputStream(is);
+                                        is = s.getInputStream();
+                                        dataIn = new DataInputStream(is);
                                         final int inLength = dataIn.readUnsignedShort();
                                         final byte[] in = new byte[inLength];
                                         dataIn.readFully(in);
@@ -97,7 +142,7 @@ public class DNSServer {
                                         }
                                         LOG.debug("returned response: {}", response == null? null : new Message(response));
                                         if (response != null) {
-                                            final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
+                                            dataOut = new DataOutputStream(s.getOutputStream());
                                             dataOut.writeShort(response.length);
                                             dataOut.write(response);
                                         }
@@ -106,20 +151,19 @@ public class DNSServer {
                                     } catch (final IOException e) {
                                         LOG.warn("error while processing socket", e);
                                     } finally {
-                                        try {
-                                            s.close();
-                                        } catch (final IOException e) {
-                                            LOG.warn("unable to close TCP socket", e);
-                                        }
+                                        IOUtils.closeQuietly(s);
+                                        IOUtils.closeQuietly(dataOut);
+                                        IOUtils.closeQuietly(dataIn);
+                                        IOUtils.closeQuietly(is);
                                     }
                                 } catch (final SocketTimeoutException e) {
-                                	LOG.trace("timed out waiting for request", e);
+                                    LOG.trace("timed out waiting for request", e);
                                 }
                             }
                         });
                         t.start();
                     } catch (final SocketTimeoutException e) {
-                    	LOG.trace("timed out waiting for request", e);
+                        LOG.trace("timed out waiting for request", e);
                     }
                 }
             } catch (final IOException e) {
@@ -133,7 +177,7 @@ public class DNSServer {
                 m_latch.countDown();
             }
         }
-        
+
         @Override
         public void stop() {
             m_stopped = true;
@@ -228,11 +272,11 @@ public class DNSServer {
     final Map<Name, TSIG> m_TSIGs = new HashMap<Name, TSIG>();
     final List<Integer> m_ports = new ArrayList<Integer>();
     final List<InetAddress> m_addresses = new ArrayList<InetAddress>();
-    
+
     final List<Stoppable> m_activeListeners = new ArrayList<Stoppable>();
 
     private static String addrport(final InetAddress addr, final int port) {
-    	return InetAddressUtils.str(addr) + "#" + port;
+        return InetAddressUtils.str(addr) + "#" + port;
     }
 
     public DNSServer(final String conffile) throws IOException, ZoneTransferException, ConfigurationException {
@@ -270,9 +314,9 @@ public class DNSServer {
             LOG.debug("stopped {}", listener);
         }
     }
-    
+
     protected void parseConfiguration(final String conffile) throws ConfigurationException, IOException,
-            ZoneTransferException, UnknownHostException {
+    ZoneTransferException, UnknownHostException {
         final FileInputStream fs;
         final InputStreamReader isr;
         final BufferedReader br;
@@ -306,7 +350,7 @@ public class DNSServer {
                     addSecondaryZone(st.nextToken(), st.nextToken());
                 } else if (keyword.equals("cache")) {
                     final Cache cache = new Cache(st.nextToken());
-                    m_caches.put(new Integer(DClass.IN), cache);
+                    m_caches.put(Integer.valueOf(DClass.IN), cache);
                 } else if (keyword.equals("key")) {
                     final String s1 = st.nextToken();
                     final String s2 = st.nextToken();
@@ -332,7 +376,7 @@ public class DNSServer {
 
     protected void initializeDefaults() throws UnknownHostException {
         if (m_ports.size() == 0) {
-            m_ports.add(new Integer(53));
+            m_ports.add(Integer.valueOf(53));
         }
 
         if (m_addresses.size() == 0) {
@@ -349,11 +393,11 @@ public class DNSServer {
         m_ports.clear();
         m_ports.addAll(ports);
     }
-    
+
     public void addAddress(final InetAddress address) {
         m_addresses.add(address);
     }
-    
+
     public void setAddresses(final List<InetAddress> addresses) {
         if (m_addresses == addresses) return;
         m_addresses.clear();
@@ -387,7 +431,7 @@ public class DNSServer {
         Cache c = m_caches.get(dclass);
         if (c == null) {
             c = new Cache(dclass);
-            m_caches.put(new Integer(dclass), c);
+            m_caches.put(Integer.valueOf(dclass), c);
         }
         return c;
     }
