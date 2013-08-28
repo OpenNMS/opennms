@@ -143,6 +143,7 @@ public class JRobinConverter {
         options.addOption("l", "log", true, "The log level to use. (Default: " + DEFAULT_LOG_LEVEL + ")");
         options.addOption("t", "threads", true, "Number of threads to start. (Default: " + DEFAULT_NUMBER_OF_THREADS + ")");
         options.addOption("c", "clean", false, "Remove old single-metric JRBs and temporal files. (Use it only after migrating all your files)");
+        options.addOption("v", "validate", false, "Validate current JRBs ffiles.");
 
         final CommandLineParser parser = new GnuParser();
         final CommandLine cmd = parser.parse(options, args);
@@ -162,6 +163,10 @@ public class JRobinConverter {
         }
         if (cmd.hasOption("c")) {
             new RrdCleaner().execute(cmd);
+            System.exit(1);
+        }
+        if (cmd.hasOption("v")) {
+            new RrdValidator().execute(cmd);
             System.exit(1);
         }
 

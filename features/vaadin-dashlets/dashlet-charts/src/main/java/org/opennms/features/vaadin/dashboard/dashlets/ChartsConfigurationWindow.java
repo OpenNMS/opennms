@@ -143,7 +143,6 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
 
         Page.getCurrent().getStyles().add(".preview { width:225px; }");
 
-
         m_chartSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {

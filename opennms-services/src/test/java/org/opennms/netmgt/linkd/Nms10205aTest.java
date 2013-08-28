@@ -316,6 +316,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
         example1.setUseCdpDiscovery(false);
         example1.setUseBridgeDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);

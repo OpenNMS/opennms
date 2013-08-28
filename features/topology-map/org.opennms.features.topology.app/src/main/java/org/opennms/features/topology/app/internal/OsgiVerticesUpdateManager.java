@@ -31,9 +31,9 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;

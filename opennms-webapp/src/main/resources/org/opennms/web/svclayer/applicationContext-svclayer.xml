@@ -11,11 +11,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
 ">
   <tx:annotation-driven/>
   <context:annotation-config/>
+  <bean name="groupService" class="org.opennms.web.services.GroupService"/>
   <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>
-  <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository"/>
+  <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository">
+  </bean>
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService">
     <property name="nodeDao" ref="nodeDao"/>

@@ -373,7 +373,8 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
        example1.setUseCdpDiscovery(false);
        example1.setUseIpRouteDiscovery(false);
        example1.setUseOspfDiscovery(false);
-       
+       example1.setUseIsisDiscovery(false);
+
        example1.setSaveRouteTable(false);
        example1.setSaveStpInterfaceTable(false);
        example1.setSaveStpNodeTable(false);
@@ -425,7 +426,8 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseOspfDiscovery(true);
-        
+        example1.setUseIsisDiscovery(false);
+
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);

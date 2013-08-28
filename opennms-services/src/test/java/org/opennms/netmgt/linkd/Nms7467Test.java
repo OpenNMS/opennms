@@ -195,6 +195,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
         assertEquals(true,m_linkdConfig.useOspfDiscovery());
         assertEquals(true,m_linkdConfig.useLldpDiscovery());
+        assertEquals(true,m_linkdConfig.useIsIsDiscovery());
 
         assertEquals(true,m_linkdConfig.saveRouteTable());
         assertEquals(true,m_linkdConfig.saveStpNodeTable());
@@ -218,6 +219,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(false,example1.hasUseBridgeDiscovery());
         assertEquals(false,example1.hasUseCdpDiscovery());
         assertEquals(false,example1.hasUseIpRouteDiscovery());
+        assertEquals(false,example1.hasUseIsisDiscovery());
         
         assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
@@ -343,6 +345,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         example1.setForceIpRouteDiscoveryOnEthernet(true);
         
         final OnmsNode ciscosw = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
@@ -439,7 +442,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
-        
+        example1.setUseIsisDiscovery(false);
+
         final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
@@ -748,6 +752,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
 
         m_linkdConfig.update();
 
@@ -1079,6 +1084,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         example1.setUseOspfDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseBridgeDiscovery(false);
+        example1.setUseIsisDiscovery(false);
         example1.setUseCdpDiscovery(true);
         
         example1.setSaveRouteTable(false);
@@ -1145,6 +1151,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
        example1.setUseOspfDiscovery(false);
        example1.setUseIpRouteDiscovery(false);
        example1.setUseBridgeDiscovery(false);
+       example1.setUseIsisDiscovery(false);
        example1.setUseCdpDiscovery(true);
        
        example1.setSaveRouteTable(false);

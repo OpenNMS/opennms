@@ -226,7 +226,8 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
         example1.setUseOspfDiscovery(false);
-        
+        example1.setUseIsisDiscovery(false);
+
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
         final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
@@ -391,7 +392,8 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         example1.setUseIpRouteDiscovery(false);
         example1.setEnableVlanDiscovery(false);
         example1.setUseOspfDiscovery(false);
-        
+        example1.setUseIsisDiscovery(false);
+
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
         final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
@@ -464,6 +466,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);
+        example1.setUseIsisDiscovery(false);
 
         
         final OnmsNode switch4 = m_nodeDao.findByForeignId("linkd", SWITCH4_NAME);

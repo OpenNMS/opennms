@@ -15,7 +15,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gwt.version>2.3.0</gwt.version>
         <gwt.plugin.version>2.2.0</gwt.plugin.version>
         <guava.version>10.0.1</guava.version>
         <quartz.version>2.1.5</quartz.version>
@@ -92,12 +91,12 @@
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-dev</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-user</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -120,6 +119,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -236,7 +247,7 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

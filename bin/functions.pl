@@ -30,6 +30,10 @@ $PATHSEP       = $Config{'path_sep'};
 $VERBOSE       = undef;
 @ARGS          = ();
 
+eval {
+	setpriority(0, 0, 10);
+};
+
 if (not defined $PATHSEP) { $PATHSEP = ':'; }
 
 # If we were called from bin, remove the /bin so we're always
@@ -184,7 +188,7 @@ info("PATH = " . $ENV{'PATH'});
 info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
-chomp(my $git_branch=`$GIT symbolic-ref HEAD`);
+chomp(my $git_branch=`$GIT symbolic-ref HEAD 2>/dev/null || $GIT rev-parse HEAD 2>/dev/null`);
 $git_branch =~ s,^refs/heads/,,;
 info("Git Branch = $git_branch");
 

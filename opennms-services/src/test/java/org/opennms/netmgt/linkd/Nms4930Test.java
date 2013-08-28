@@ -144,6 +144,7 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseBridgeDiscovery(true);
+        example1.setUseIsisDiscovery(false);
 
         example1.setSaveRouteTable(false);
         example1.setEnableVlanDiscovery(false);

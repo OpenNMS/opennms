@@ -174,6 +174,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
         assertEquals(true,m_linkdConfig.useLldpDiscovery());
         assertEquals(true,m_linkdConfig.useCdpDiscovery());
+        assertEquals(true,m_linkdConfig.useIsIsDiscovery());
         
         assertEquals(true,m_linkdConfig.saveRouteTable());
         assertEquals(true,m_linkdConfig.saveStpNodeTable());
@@ -573,6 +574,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
             pkg.setSaveStpNodeTable(false);
             pkg.setSaveStpInterfaceTable(false);
             pkg.setEnableVlanDiscovery(false);
+            pkg.setUseIsisDiscovery(false);
         }
 
     	m_nodeDao.save(getCisco7200a());
