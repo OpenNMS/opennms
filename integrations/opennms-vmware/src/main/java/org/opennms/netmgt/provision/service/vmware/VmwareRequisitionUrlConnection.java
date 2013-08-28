@@ -30,12 +30,16 @@ package org.opennms.netmgt.provision.service.vmware;
 
 import com.vmware.vim25.*;
 import com.vmware.vim25.mo.*;
+
 import org.apache.commons.io.IOExceptionWithCause;
+import org.apache.commons.lang.StringUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.*;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMException;
@@ -44,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +59,11 @@ import java.util.*;
 
 /**
  * The Class VmwareRequisitionUrlConnection
- * <p/>
- * This class is used for the automtic requisition of Vmware related entities.
+ * 
+ * <p>This class is used for the automtic requisition of Vmware related entities.</p>
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     /**
@@ -85,6 +91,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private boolean m_importHostStandBy = false;
     private boolean m_importHostUnknown = false;
 
+    private boolean m_persistVMs = true;
+    private boolean m_persistHosts = true;
+
     /*
      * Host system managedObjectId to name mapping
      */
@@ -92,7 +101,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private Map<String, String> m_hostSystemMap = new HashMap<String, String>();
 
     /**
-     * the query args
+     * the query arguments
      */
     private Map<String, String> m_args = null;
 
@@ -117,6 +126,19 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         m_password = getPassword();
 
         m_args = getQueryArgs();
+
+        boolean importVMOnly = queryParameter("importVMOnly", false);
+        boolean importHostOnly = queryParameter("importHostOnly", false);
+
+        if (importHostOnly && importVMOnly) {
+            throw new MalformedURLException("importHostOnly and importVMOnly can't be true simultaneously");
+        }
+        if (importHostOnly) {
+            m_persistVMs = false;
+        }
+        if (importVMOnly) {
+            m_persistHosts = false;
+        }
 
         m_importVMPoweredOn = queryParameter("importVMPoweredOn", true);
         m_importVMPoweredOff = queryParameter("importVMPoweredOff", false);
@@ -156,32 +178,6 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         } else {
             throw new MalformedURLException("Error processing path element of URL (vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...)");
         }
-    }
-
-    /**
-     * Determine services for host systems to be provisioned from URL
-     *
-     * @return a String[] of opennms service names
-     */
-    private String[] getHostSystemServices(int apiVersion) {
-        String[] hostSystemsServices = new String[]{"VMware-ManagedEntity", "VMware" + apiVersion + "-HostSystem", "VMwareCim-HostSystem"};
-        if (m_args != null && m_args.get(VMWARE_HOSTSYSTEM_SERVICES) != null) {
-            hostSystemsServices = m_args.get(VMWARE_HOSTSYSTEM_SERVICES).split(",");
-        }
-        return hostSystemsServices;
-    }
-
-    /**
-     * Determine services for virtual machines to be provisioned from URL
-     *
-     * @return a String[] of opennms service names
-     */
-    private String[] getVirtualMachineServices(int apiVersion) {
-        String[] virtualMachineServices = new String[]{"VMware-ManagedEntity", "VMware" + apiVersion + "-VirtualMachine"};
-        if (m_args != null && m_args.get(VMWARE_VIRTUALMACHINE_SERVICES) != null) {
-            virtualMachineServices = m_args.get(VMWARE_VIRTUALMACHINE_SERVICES).split(",");
-        }
-        return virtualMachineServices;
     }
 
     /**
@@ -373,20 +369,16 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
             HostSystem hostSystem = (HostSystem) managedEntity;
 
-            if (hostSystem == null) {
-                logger.debug("hostSystem=null");
-            } else {
-                HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+            HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
 
-                if (hostRuntimeInfo == null) {
-                    logger.debug("hostRuntimeInfo=null");
+            if (hostRuntimeInfo == null) {
+                logger.debug("hostRuntimeInfo=null");
+            } else {
+                HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                if (hostSystemPowerState == null) {
+                    logger.debug("hostSystemPowerState=null");
                 } else {
-                    HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
-                    if (hostSystemPowerState == null) {
-                        logger.debug("hostSystemPowerState=null");
-                    } else {
-                        powerState = hostSystemPowerState.toString();
-                    }
+                    powerState = hostSystemPowerState.toString();
                 }
             }
 
@@ -423,20 +415,16 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             if (managedEntity instanceof VirtualMachine) {
                 VirtualMachine virtualMachine = (VirtualMachine) managedEntity;
 
-                if (virtualMachine == null) {
-                    logger.debug("virtualMachine=null");
-                } else {
-                    VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
+                VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
 
-                    if (virtualMachineRuntimeInfo == null) {
-                        logger.debug("virtualMachineRuntimeInfo=null");
+                if (virtualMachineRuntimeInfo == null) {
+                    logger.debug("virtualMachineRuntimeInfo=null");
+                } else {
+                    VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
+                    if (virtualMachinePowerState == null) {
+                        logger.debug("virtualMachinePowerState=null");
                     } else {
-                        VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
-                        if (virtualMachinePowerState == null) {
-                            logger.debug("virtualMachinePowerState=null");
-                        } else {
-                            powerState = virtualMachinePowerState.toString();
-                        }
+                        powerState = virtualMachinePowerState.toString();
                     }
                 }
 
@@ -510,7 +498,6 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      *
      * @return the requisition object
      */
-
     private Requisition buildVMwareRequisition() {
         VmwareViJavaAccess vmwareViJavaAccess = null;
 
@@ -522,13 +509,13 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname);
             } catch (MarshalException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
-                return m_requisition;
+                return null;
             } catch (ValidationException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
-                return m_requisition;
+                return null;
             } catch (IOException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
-                return m_requisition;
+                return null;
             }
         } else {
             vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname, m_username, m_password);
@@ -538,10 +525,10 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             vmwareViJavaAccess.connect();
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}'", m_hostname, e.getMessage());
-            return m_requisition;
+            return null;
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}'", m_hostname, e.getMessage());
-            return m_requisition;
+            return null;
         }
 
         try {
@@ -569,7 +556,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             iterateVirtualMachines(vmwareViJavaAccess, apiVersion);
         } catch (RemoteException e) {
             logger.warn("Error retrieving managed objects from VMware management server '{}': '{}'", m_hostname, e.getMessage());
-            return m_requisition;
+            return null;
         } finally {
             vmwareViJavaAccess.disconnect();
         }
@@ -654,7 +641,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     RequisitionNode node = createRequisitionNode(ipAddresses, hostSystem, apiVersion, vmwareViJavaAccess);
 
                     // ...and add it to the requisition
-                    if (node != null) {
+                    if (node != null && m_persistHosts) {
                         m_requisition.insertNode(node);
                     }
                 }
@@ -710,7 +697,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     }
 
                     // ...and add it to the requisition
-                    if (node != null) {
+                    if (node != null && m_persistVMs) {
                         m_requisition.insertNode(node);
                     }
                 }
@@ -720,12 +707,51 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
     /**
      * Checks whether an attribute/value is defined by a managed entity.
+     * 
+     * <p>The old implementation allows the user to specify only one parameter.</p>
+     * <p>The new implementation allows the user to use a regular expression for the value:</p>
+     * <ul><li>key=location&value=~North.*</li></ul>
+     * <p>As an alternative, now it is possible to specify several parameters on the query.
+     * The rule is to add an underscore character ('_') before the patameter's name and use similar rules for the value:</p>
+     * <ul><li>_location=~North.*</li></ul>
+     * <p>With the new parameter specification, it is possible to pass several attributes. The managed entity must match
+     * all of them to be accepted.</p>
+     * <p>The new specification will take precedence over the old specification. If the new specification is not being used,
+     * the old one will be processed. Otherwise, the new one will be processed, and the old one will be ignored. There is no
+     * way to use both at the same time.</p>
      *
      * @param managedEntity the managed entity to check
      * @return true if present and value is equal, false otherwise
      * @throws RemoteException
      */
     private boolean checkForAttribute(ManagedEntity managedEntity) throws RemoteException {
+        Map<String,String> attribMap = getCustomAttributes(managedEntity);
+
+        Set<String> keySet = new TreeSet<String>();
+        for (String k : m_args.keySet()) {
+            if (k.startsWith("_")) {
+                keySet.add(k);
+            }
+        }
+
+        if (!keySet.isEmpty()) {
+            boolean ok = true;
+            for (String keyName : keySet) {
+                String attribValue = attribMap.get(StringUtils.removeStart(keyName, "_"));
+                if (attribValue == null) {
+                    ok = false;
+                } else {
+                    String keyValue = m_args.get(keyName);
+                    if (keyValue.startsWith("~")) {
+                        ok = ok && attribValue.matches(StringUtils.removeStart(keyValue, "~"));
+                    } else {
+                        ok = ok && attribValue.equals(keyValue);
+                    }
+                }
+            }
+            return ok;
+        }
+
         String key = m_args.get("key");
         String value = m_args.get("value");
 
@@ -739,28 +765,41 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             return false;
         }
 
-        // get available values
-        CustomFieldValue[] values = managedEntity.getCustomValue();
-        // get available definitions
-        CustomFieldDef[] defs = managedEntity.getAvailableField();
-
         // now search for the correct key/value pair
-        for (int i = 0; defs != null && i < defs.length; i++) {
-            if (key.equals(defs[i].getName())) {
-
-                int targetIndex = defs[i].getKey();
-
-                for (int j = 0; j < values.length; j++) {
-                    if (targetIndex == values[j].getKey()) {
-                        return value.equals(((CustomFieldStringValue) values[j]).value);
-                    }
-                }
+        String attribValue = attribMap.get(key);
+        if (attribValue != null) {
+            if (value.startsWith("~")) {
+                return attribValue.matches(StringUtils.removeStart(value, "~"));
+            } else {
+                return attribValue.equals(value);
             }
         }
 
         return false;
     }
 
+    /**
+     * Gets the custom attributes.
+     *
+     * @param entity the entity
+     * @return the custom attributes
+     * @throws RemoteException the remote exception
+     */
+    private Map<String,String> getCustomAttributes(ManagedEntity entity) throws RemoteException {
+        final Map<String,String> attributes = new TreeMap<String,String>();
+        CustomFieldDef[] defs = entity.getAvailableField();
+        CustomFieldValue[] values = entity.getCustomValue();
+        for (int i = 0; defs != null && i < defs.length; i++) {
+            String key = defs[i].getName();
+            int targetIndex = defs[i].getKey();
+            for (int j = 0; values != null && j < values.length; j++) {
+                if (targetIndex == values[j].getKey()) {
+                    attributes.put(key, ((CustomFieldStringValue) values[j]).getValue());
+                }
+            }
+        }
+        return attributes;
+    }
     /**
      * {@inheritDoc}
      * <p/>
@@ -774,8 +813,48 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         InputStream stream = null;
 
         try {
-            Requisition r = buildVMwareRequisition();
-            stream = new ByteArrayInputStream(jaxBMarshal(r).getBytes());
+            Requisition curReq = null;
+            try {
+                ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
+                if (repository != null) {
+                    curReq = repository.getRequisition(m_foreignSource);
+                }
+            } catch (Exception e) {
+                logger.warn("Can't retrieve requisition {}", m_foreignSource);
+            }
+            Requisition newReq = buildVMwareRequisition();
+            if (curReq == null) {
+                if (newReq == null) {
+                    // FIXME Is this correct ? This is the old behavior
+                    newReq = new Requisition(m_foreignSource);
+                }
+            } else {
+                if (newReq == null) {
+                    // If there is a requisition and the vCenter is not responding for some reason, it is better to use the old requisition,
+                    // instead of returning an empty one, which can cause the lost of all the nodes from the DB.
+                    newReq = curReq;
+                } else {
+                    // If there is already a requisition, retrieve the custom assets and categories from the old one, and put them on the new one.
+                    // The VMWare related assets and categories will be preserved.
+                    for (RequisitionNode newNode : newReq.getNodes()) {
+                        for (RequisitionNode curNode : curReq.getNodes()) {
+                            if (newNode.getForeignId().equals(curNode.getForeignId())) {
+                                for (RequisitionAsset asset : curNode.getAssets()) {
+                                    if (!asset.getName().startsWith("vmware")) {
+                                        newNode.putAsset(asset);
+                                    }
+                                }
+                                for (RequisitionCategory cat : curNode.getCategories()) {
+                                    if (!cat.getName().startsWith("VMWare")) {
+                                        newNode.putCategory(cat);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            stream = new ByteArrayInputStream(jaxBMarshal(newReq).getBytes());
         } catch (Throwable e) {
             logger.warn("Problem getting input stream: '{}'", e);
             throw new IOExceptionWithCause("Problem getting input stream: " + e, e);
