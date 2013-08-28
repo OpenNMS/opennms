@@ -69,6 +69,7 @@
                               [1.0.2,)
                            </versionRange>
                            <goals>
+                              <goal>resources</goal>
                               <goal>update-widgetset</goal>
                            </goals>
                         </pluginExecutionFilter>
