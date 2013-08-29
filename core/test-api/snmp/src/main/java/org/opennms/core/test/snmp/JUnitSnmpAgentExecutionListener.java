@@ -140,7 +140,7 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         try {
             final SnmpAgentConfigFactory factory = testContext.getApplicationContext().getBean("snmpPeerFactory", SnmpAgentConfigFactory.class);
             factoryClassName = factory.getClass().getName();
-        } catch (final Throwable t) {
+        } catch (final Exception e) {
             // ignore
         }
         if (!factoryClassName.contains("ProxySnmpAgentConfigFactory")) {
@@ -253,8 +253,8 @@ public class JUnitSnmpAgentExecutionListener extends AbstractTestExecutionListen
         public void setDataForAddress(final SnmpAgentAddress address, final Resource resource) {
             try {
                 MockSnmpStrategy.setDataForAddress(address, resource);
-            } catch (final Throwable t) {
-            	LOG.warn("Unable to set mock SNMP data for {}", address, t);
+            } catch (final Exception e) {
+            	LOG.warn("Unable to set mock SNMP data for {}", address, e);
             }
         }
         @Override
