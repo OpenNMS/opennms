@@ -58,8 +58,7 @@ class Snmp4JValue extends AbstractSnmpValue {
         m_value = value;
     }
     
-    Snmp4JValue(final int syntax, final byte[] initialBytes) {
-        final byte[] bytes = initialBytes.clone();
+    Snmp4JValue(final int syntax, final byte[] bytes) {
         switch (syntax) {
         case SMIConstants.SYNTAX_INTEGER: {
             m_value = new Integer32(new BigInteger(bytes).intValue());

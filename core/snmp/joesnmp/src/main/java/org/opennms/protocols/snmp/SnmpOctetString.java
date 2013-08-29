@@ -71,7 +71,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      *            The new data buffer.
      */
     protected void assumeString(byte[] data) {
-        m_data = data.clone();
+        m_data = data;
     }
 
     /**
@@ -365,10 +365,10 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     }
 
     // TODO: Move this to common base class
-    public static String toHexString(final SnmpOctetString ostr) {
+    public static String toHexString(SnmpOctetString ostr) {
         if (ostr == null) return null;
         StringBuffer sbuf = new StringBuffer();
-        if (ostr.getLength() > 0) {
+        if (ostr != null && ostr.getLength() > 0) {
             byte[] bytes = ostr.getString();
             for (int i = 0; i < bytes.length; i++) {
                 sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));

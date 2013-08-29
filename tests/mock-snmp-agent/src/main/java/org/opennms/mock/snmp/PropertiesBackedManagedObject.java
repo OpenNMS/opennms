@@ -135,7 +135,9 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	
 	private void closeQuietly(InputStream in) {
 		try {
-			in.close();
+			if (in != null) {
+				in.close();
+			}
 		} catch (IOException e) {
 			// ignore this -- hence the quietly
 		}

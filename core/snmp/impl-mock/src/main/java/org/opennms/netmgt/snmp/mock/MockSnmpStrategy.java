@@ -216,7 +216,9 @@ public class MockSnmpStrategy implements SnmpStrategy {
         engineID[1] = (byte) ((s_enterpriseId >> 16) & 0xFF);
         engineID[2] = (byte) ((s_enterpriseId >> 8) & 0xFF);
         engineID[3] = (byte) (s_enterpriseId & 0xFF);
-        final byte[] ip = InetAddrUtils.getLocalHostAddress().getAddress();
+        byte[] ip = new byte[0];
+
+        ip = InetAddrUtils.getLocalHostAddress().getAddress();
 
         if (ip.length == 4) {
             // IPv4
@@ -229,7 +231,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
             engineID[4] = 4;
         }
         
-        final byte[] bytes = new byte[engineID.length+ip.length];
+        byte[] bytes = new byte[engineID.length+ip.length];
         System.arraycopy(engineID, 0, bytes, 0, engineID.length);
         System.arraycopy(ip, 0, bytes, engineID.length, ip.length);
         
