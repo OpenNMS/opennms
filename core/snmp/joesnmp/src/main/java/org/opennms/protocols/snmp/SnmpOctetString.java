@@ -70,8 +70,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * @param data
      *            The new data buffer.
      */
-    protected void assumeString(final byte[] data) {
-        m_data = data == null? data : data.clone();
+    protected void assumeString(byte[] data) {
+        m_data = data.clone();
     }
 
     /**

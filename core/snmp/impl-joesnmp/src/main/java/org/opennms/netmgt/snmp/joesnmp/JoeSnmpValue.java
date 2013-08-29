@@ -58,7 +58,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
     }
     
     JoeSnmpValue(final int typeId, final byte[] initialBytes) {
-        final byte[] bytes = initialBytes == null? null : initialBytes.clone();
+        final byte[] bytes = initialBytes.clone();
         switch(typeId) {
         case SnmpSMI.SMI_COUNTER64: {
             m_value = new SnmpCounter64(new BigInteger(bytes));
