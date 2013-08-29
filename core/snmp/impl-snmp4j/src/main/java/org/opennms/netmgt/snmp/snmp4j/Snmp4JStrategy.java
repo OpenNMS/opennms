@@ -266,17 +266,17 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
     
             try {
-                final ResponseEvent responseEvent = session.send(pdu, agentConfig.getTarget());
+                ResponseEvent responseEvent = session.send(pdu, agentConfig.getTarget());
 
                 if (expectResponse) {
                     return processResponse(agentConfig, responseEvent);
                 } else {
                     return null;
                 }
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 LOG.error("send: error during SNMP operation", e);
                 return new SnmpValue[] { null };
-            } catch (final RuntimeException e) {
+            } catch (Throwable e) {
                 LOG.error("send: unexpected error during SNMP operation", e);
                 return new SnmpValue[] { null };
             }

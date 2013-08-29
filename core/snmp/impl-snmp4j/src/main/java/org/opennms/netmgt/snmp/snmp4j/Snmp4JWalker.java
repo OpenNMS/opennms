@@ -134,7 +134,7 @@ public class Snmp4JWalker extends SnmpWalker {
      */
     public class Snmp4JResponseListener implements ResponseListener {
 
-        private void processResponse(final PDU response) {
+        private void processResponse(PDU response) {
             try {
                 LOG.debug("Received a tracker PDU of type {} from {} of size {}, errorStatus = {}, errorStatusText = {}, errorIndex = {}", PDU.getTypeString(response.getType()), getAddress(), response.size(), response.getErrorStatus(), response.getErrorStatusText(), response.getErrorIndex());
                 if (response.getType() == PDU.REPORT) {
@@ -142,17 +142,15 @@ public class Snmp4JWalker extends SnmpWalker {
                 } else {
                     if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
                         for (int i = 0; i < response.size(); i++) {
-                            final VariableBinding vb = response.get(i);
-                            final SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
-                            final SnmpValue val = new Snmp4JValue(vb.getVariable());
+                            VariableBinding vb = response.get(i);
+                            SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
+                            SnmpValue val = new Snmp4JValue(vb.getVariable());
                             Snmp4JWalker.this.processResponse(receivedOid, val);
                         }
                     }
                     buildAndSendNextPdu();
                 }
-            } catch (final IOException e) {
-                handleFatalError(e);
-            } catch (final RuntimeException e) {
+            } catch (Throwable e) {
                 handleFatalError(e);
             }
         }

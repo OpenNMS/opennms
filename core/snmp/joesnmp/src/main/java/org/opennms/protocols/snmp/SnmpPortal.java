@@ -316,24 +316,24 @@ public class SnmpPortal extends Object {
                                 usedBuffers.addLast(buf);
                             }
                             continue;
-                        } catch (final Exception e) {
+                        } catch (Exception e) {
                             if (!m_isClosing) {
                                 boolean handled = true;
                                 try {
-                                    final Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
+                                    Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
 
                                     Class<?>[] methodParmList = { Class.class };
-                                    Object[] parmList = { this.getClass() };
+                                    Method loggerM = loggerC.getMethod("getInstance", methodParmList);
 
-                                    final Method loggerM = loggerC.getMethod("getInstance", methodParmList);
-                                    final Object loggerI = loggerM.invoke(null, parmList);
+                                    Object[] parmList = { this.getClass() };
+                                    Object loggerI = loggerM.invoke(null, parmList);
 
                                     methodParmList = new Class[] { Object.class, Throwable.class };
-                                    final Method infoM = loggerC.getMethod("info", methodParmList);
+                                    Method infoM = loggerC.getMethod("info", methodParmList);
 
                                     parmList = new Object[] { "An unknown error occured decoding the packet", e };
                                     infoM.invoke(loggerI, parmList);
-                                } catch (final Exception logException) {
+                                } catch (Throwable t) {
                                     handled = false;
                                 }
 
@@ -400,7 +400,7 @@ public class SnmpPortal extends Object {
                             parmList = new Object[] { ostream };
                             debugM.invoke(loggerI, parmList);
                         }
-                    } catch (final Exception loggingException) {
+                    } catch (Throwable t) {
                         handled = false;
                     }
 
@@ -409,7 +409,7 @@ public class SnmpPortal extends Object {
                         SnmpUtil.dumpHex(System.out, pkt.getData(), 0, pkt.getLength());
                     }
                     m_handler.processBadDatagram(pkt);
-                } catch (final AsnDecodingException err) {
+                } catch (AsnDecodingException err) {
                     boolean handled = true;
                     try {
                         Class<?> loggerC = Class.forName("org.opennms.core.utils.ThreadCategory");
@@ -442,7 +442,7 @@ public class SnmpPortal extends Object {
                             parmList = new Object[] { ostream };
                             debugM.invoke(loggerI, parmList);
                         }
-                    } catch (final Exception loggingException) {
+                    } catch (Throwable t) {
                         handled = false;
                     }
 
@@ -451,7 +451,7 @@ public class SnmpPortal extends Object {
                         SnmpUtil.dumpHex(System.out, pkt.getData(), 0, pkt.getLength());
                     }
                     m_handler.processBadDatagram(pkt);
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     if (!m_isClosing) {
                         boolean handled = true;
                         try {
@@ -468,7 +468,7 @@ public class SnmpPortal extends Object {
 
                             parmList = new Object[] { "An unknown error occured decoding the packet", e };
                             infoM.invoke(loggerI, parmList);
-                        } catch (final Exception loggingException) {
+                        } catch (Throwable t) {
                             handled = false;
                         }
 
