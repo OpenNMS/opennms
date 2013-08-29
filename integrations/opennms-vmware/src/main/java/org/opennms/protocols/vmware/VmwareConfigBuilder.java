@@ -31,9 +31,11 @@ package org.opennms.protocols.vmware;
 import com.vmware.vim25.*;
 import com.vmware.vim25.mo.*;
 import com.vmware.vim25.mo.util.MorUtil;
+
 import org.apache.commons.cli.*;
 
 import javax.net.ssl.*;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -67,14 +69,14 @@ public class VmwareConfigBuilder {
         public String getGraphDefinition(String apiVersion) {
             String resourceType = (multiInstance ? "vmware" + apiVersion + groupName : "nodeSnmp");
 
-            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=" + aliasName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
+            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=vmware" + apiVersion + "." + humanReadableName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
 
             if (multiInstance) {
                 def += "report.vmware" + apiVersion + "." + aliasName + ".propertiesValues=vmware" + apiVersion + groupName + "Name\n";
             }
 
-            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"" + aliasName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
-                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \\\n\n";
+            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"VMWare" + apiVersion + " " + humanReadableName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
+                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \n\n";
 
             return def;
         }
@@ -358,14 +360,16 @@ public class VmwareConfigBuilder {
                     Boolean generated = (generatedGraphs.get(vmwarePerformanceMetric.getAliasName()) == null ? false : generatedGraphs.get(vmwarePerformanceMetric.getAliasName()));
 
                     if (!generated) {
+                        generatedGraphs.put(vmwarePerformanceMetric.getAliasName(), Boolean.TRUE);
                         buffer.append(vmwarePerformanceMetric.getGraphDefinition(apiVersion));
                         include.append(vmwarePerformanceMetric.getInclude(apiVersion));
                     }
                 }
             }
         }
+        final String content = include.toString();
 
-        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + include.toString() + "\n\n" + buffer.toString());
+        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + content.subSequence(0, content.length()-4) + "\n\n" + buffer.toString());
     }
 
     private void saveFile(String filename, String contents) {
