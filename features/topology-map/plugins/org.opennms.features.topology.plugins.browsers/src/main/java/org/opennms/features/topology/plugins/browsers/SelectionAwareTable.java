@@ -119,4 +119,5 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         m_container.verticesUpdated(event);
     }
+
 }

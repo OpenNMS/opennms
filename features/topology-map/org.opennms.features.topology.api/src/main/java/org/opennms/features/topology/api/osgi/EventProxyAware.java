@@ -26,39 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.osgi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.opennms.features.topology.api.topo.AbstractVertex;
-
-public class TestVertex extends AbstractVertex {
-
-	List<TestEdge> m_edges = new ArrayList<TestEdge>();
-
-	public TestVertex(String id, String label) {
-		super("test", id, label);
-	}
-
-	public TestVertex(String id, int x, int y) {
-		this(id, "no-label");
-		setX(x);
-		setY(y);
-	}
-
-	@XmlTransient
-	public List<TestEdge> getEdges() {
-		return m_edges;
-	}
-
-	void addEdge(TestEdge edge) {
-		m_edges.add(edge);
-	}
-
-	void removeEdge(TestEdge edge) {
-		m_edges.remove(edge);
-	}
+public interface EventProxyAware {
+    void setEventProxy(EventProxy eventProxy);
 }

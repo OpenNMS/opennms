@@ -112,13 +112,25 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
     @Override
     @EventConsumer
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+        Set<VertexRef> vertexRefs = event.getVertexRefs();
+        List<Integer> nodeIds = new ArrayList<Integer>();
+        for (VertexRef vRef : vertexRefs) {
+            if (vRef.getNamespace().equals("nodes")) {
+                try{
+                    nodeIds.add(Integer.valueOf(vRef.getId()));
+                } catch (NumberFormatException e){
+                    //do nothing
+                }
+            }
+        }
+
         List<Restriction> newRestrictions = new NodeIdFocusToRestrictionsConverter() {
 
             @Override
             protected Restriction createRestriction(Integer nodeId ) {
                 return new EqRestriction("node.id", nodeId);
             }
-        }.getRestrictions(event.getNodeIdFocus());
+        }.getRestrictions(nodeIds);
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);
             getCache().reload(getPage());

@@ -35,6 +35,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.osgi.EventProxy;
+import org.opennms.features.topology.api.osgi.EventProxyAware;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 
 import com.vaadin.data.Container;
@@ -45,7 +47,7 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
-public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
+public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, EventProxyAware {
 
 	private static final String ACTION_CLEAR = "Clear";
 	private static final String ACTION_ESCALATE = "Escalate";
@@ -54,7 +56,9 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
-	private class CheckboxButton extends Button {
+    public EventProxy m_eventProxy;
+
+    private class CheckboxButton extends Button {
 
 		private static final long serialVersionUID = -3595363303361200441L;
 
@@ -212,15 +216,30 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		super.containerItemSetChange(event);
 	}
 
+    @Override
+    public void setEventProxy(EventProxy eventProxy) {
+        m_eventProxy = eventProxy;
+        NodeSelectionLinkGenerator generator = (NodeSelectionLinkGenerator) getColumnGenerator("nodeLabel");
+        generator.setEventProxy(eventProxy);
+    }
+
 	@Override
 	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		super.setColumnGenerators(generators);
 		for (final Object key : generators.keySet()) {
-			// If any of the column generators are {@link CheckboxGenerator} instances,
-			// then connect it to the buttons.
+
+            Object generatorObj = generators.get(key);
+            if(generatorObj instanceof NodeSelectionLinkGenerator){
+                NodeSelectionLinkGenerator nodeLinkGenerator = (NodeSelectionLinkGenerator)generatorObj;
+                nodeLinkGenerator.setEventProxy(m_eventProxy);
+            }
+
+            // If any of the column generators are {@link CheckboxGenerator} instances,
+            // then connect it to the buttons.
 			try {
-				CheckboxGenerator generator = (CheckboxGenerator)generators.get(key);
+
+                CheckboxGenerator generator = (CheckboxGenerator) generatorObj;
 				m_submitButton.setCheckboxGenerator(generator);
 				m_selectAllButton.setCheckboxGenerator(generator);
 				m_resetButton.setCheckboxGenerator(generator);

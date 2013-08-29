@@ -28,16 +28,10 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import org.opennms.features.topology.api.DefaultSelectionContext;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.osgi.EventProxy;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -46,8 +40,18 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
-public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNotifier {
+public class NodeSelectionLinkGenerator implements ColumnGenerator {
+
+    private class NSLGVertexRef extends AbstractVertexRef{
+
+        public NSLGVertexRef(String namespace, String id, String label) {
+            super(namespace, id, label);
+        }
+    }
 
 	private static final long serialVersionUID = -1072007643387089006L;
 
@@ -58,8 +62,9 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 	 * TODO: Fix concurrent access to this field
 	 */
 	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
+    private EventProxy m_eventProxy;
 
-	public NodeSelectionLinkGenerator(String nodeIdProperty) {
+    public NodeSelectionLinkGenerator(String nodeIdProperty) {
 		this(nodeIdProperty, new ToStringColumnGenerator());
 	}
 
@@ -69,7 +74,7 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 	}
 
 	@Override
-	public Object generateCell(Table source, Object itemId, Object columnId) {
+	public Object generateCell(final Table source, final Object itemId, Object columnId) {
 		final Property<Integer> nodeIdProperty = source.getContainerProperty(itemId, m_nodeIdProperty);
 		Object cellValue = m_generator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
@@ -84,36 +89,34 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 				button.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-						SelectionContext context = new DefaultSelectionContext();
-						context.selectVertexRefs(Collections.singleton(new AbstractVertexRef("nodes", nodeIdProperty.getValue().toString(), nodeIdProperty.getValue().toString())));
-						fireSelectionChangedEvent(context);
-					}
-				});
+
+                        fireVertexUpdatedEvent(Arrays.asList(nodeIdProperty.getValue()));
+                    }
+                });
 				return button;
 			}
 		}
 	}
 
-	@Override
-	public void addSelectionListener(SelectionListener listener) {
-		if (listener != null) {
-			m_selectionListeners.add(listener);
-		}
-	}
-	
-	@Override
-	public void setSelectionListeners(Set<SelectionListener> listeners) {
-		m_selectionListeners = listeners;
-	}
-	
-	@Override
-	public void removeSelectionListener(SelectionListener listener) {
-		m_selectionListeners.remove(listener);
-	}
+    private List<VertexRef> getVertexRefsForIds(Integer nodeIdProperty) {
+        VertexRef tempRef = new NSLGVertexRef("nodes", String.valueOf(nodeIdProperty), "");
+        return Arrays.asList(tempRef);
+    }
 
-	protected void fireSelectionChangedEvent(SelectionContext context) {
-		for (SelectionListener listener : m_selectionListeners) {
-			listener.selectionChanged(context);
-		}
-	}
+    protected void fireVertexUpdatedEvent(List<Integer> nodeIds) {
+        Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
+        for (Integer id : nodeIds) {
+            VertexRef vRef = new AbstractVertexRef("nodes", String.valueOf(id),"");
+            vertexRefs.add(vRef);
+        }
+        getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));
+    }
+
+    public void setEventProxy(EventProxy eventProxy) {
+        this.m_eventProxy = eventProxy;
+    }
+
+    public EventProxy getEventProxy() {
+        return m_eventProxy;
+    }
 }

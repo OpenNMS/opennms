@@ -52,12 +52,23 @@ public class BlueprintIViewContribution implements IViewContribution {
         // Get the component by asking the blueprint container to instantiate a prototype bean
         Component component = (Component)m_container.getComponentInstance(m_beanId);
         BundleContext bundleContext = (BundleContext) m_container.getComponentInstance("blueprintBundleContext");
-        applicationContext.getEventProxy(bundleContext).addPossibleEventConsumer(component);
+        EventProxy eventProxy = applicationContext.getEventProxy(bundleContext);
+        eventProxy.addPossibleEventConsumer(component);
+
+        injectEventProxy(component, eventProxy);
+
         return component;
 
     }
 
-	/**
+    private void injectEventProxy(Component component, EventProxy eventProxy) {
+        if(component instanceof EventProxyAware){
+            ((EventProxyAware)component).setEventProxy(eventProxy);
+        }
+
+    }
+
+    /**
 	 * Returns null.
 	 */
 	@Override
