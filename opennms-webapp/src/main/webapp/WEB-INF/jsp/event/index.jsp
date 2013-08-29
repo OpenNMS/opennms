@@ -29,6 +29,9 @@
 
 --%>
 
+<%@page import="org.opennms.netmgt.model.OnmsFilter"%>
+<%@page import="java.util.List"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -44,19 +47,42 @@
   <div class="TwoColLeft">
       <h3>Event Queries</h3>
       <div class="boxWrapper">
-      <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
-			<form action="event/detail.jsp" method="get">
-				<p align="right">Event ID:          
-					<input type="text" name="id" />
-					<input type="submit" value="Get details"/></p>               
-			</form>
-			
-			<ul class="plain">
-				<li><a href="event/list" title="View all outstanding events">All events</a></li>
-				<li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-			</ul>
-		</div>
+        <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
+        <form action="event/detail.jsp" method="get">
+            <p align="right">Event ID:
+                <input type="text" name="id" />
+                <input type="submit" value="Get details"/></p>
+        </form>
+
+        <ul class="plain">
+            <li><a href="event/list" title="View all outstanding events">All events</a></li>
+            <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+        </ul>
+    </div>
+    <br/>
+    <h3>Event filters</h3>
+    <div class="boxWrapper">
+            <%
+            	XssRequestWrapper req = new XssRequestWrapper(request);
+                List<OnmsFilter> filters = (List<OnmsFilter>)req.getAttribute( "filters" );
+                String row = "<li><a href='event/list?filterId=%s&filter=%s'>%s</a></li>";
+                String rows = "";
+                for (OnmsFilter eachFilter : filters) {
+                    rows += String.format(row, eachFilter.getId(), eachFilter.getFilter(), eachFilter.getName()) + "\n";
+                }
+
+                if (!rows.isEmpty()) {
+                    %> <ul class="plain">
+                        <%=rows%>
+                    </ul><%
+                } else {
+                    %><p>No filters available.</p><%
+                }
+            %>
+      </div>
   </div>
+
+
       
   <div class="TwoColRight">
       <h3>Outstanding and acknowledged events</h3>

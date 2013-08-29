@@ -1066,8 +1066,16 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/index</url-pattern>
+  </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/filter/create</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>    
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/detail.jsp</url-pattern>

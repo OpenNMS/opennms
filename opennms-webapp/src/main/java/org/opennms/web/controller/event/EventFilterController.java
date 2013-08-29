@@ -29,7 +29,9 @@
 package org.opennms.web.controller.event;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,7 +106,6 @@ public class EventFilterController extends AbstractController implements Initial
         AcknowledgeType ackType = m_defaultEventType;
 
         String display = request.getParameter("display");
-
         String limitString = request.getParameter("limit");
         int limit = "long".equals(display) ? getDefaultLongLimit() : getDefaultShortLimit();
 

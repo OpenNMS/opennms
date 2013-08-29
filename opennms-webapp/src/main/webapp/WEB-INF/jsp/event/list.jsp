@@ -108,7 +108,7 @@
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
+  <jsp:param name="breadcrumb" value="<a href= 'event/index' title='Events System Page'>Events</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
@@ -185,8 +185,31 @@
     	document.add_notification_form.submit();
     }
 
+    function createFilter() {
+        var filterString = '<%=getFiltersAsString(parms.filters)%>';      
+        var filterName = prompt("Please enter a filter name", "My Filter");
+        if (filterName != null) {
+        	var form = document.forms['FilterCreationForm'];
+        	form.elements["filter"].value = filterString;
+        	form.elements["filterName"].value = filterName;
+	        form.submit();
+        }
+    }
+
+    function deleteFilter(filterId) {
+        alert("Delete filter with id " + filterId);
+    }
+
   </script>
 
+	<form id="FilterDeletionForm" action="event/filter/delete" method="POST">
+		<input type="hidden" name="filterId"/>
+	</form>
+	
+	<form id="FilterCreationForm" action="event/filter/create" method="POST">
+		<input type="hidden" name="filter"/>
+		<input type="hidden" name="filterName"/>
+	</form>
 
       <!-- menu -->
       <div id="linkbar">
@@ -259,8 +282,20 @@
                     <% Filter filter = (Filter)parms.filters.get(i); %>
                     &nbsp; <span class="filter"><%= WebSecurityUtils.sanitizeString(filter.getTextDescription()) %><a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
+
+				<% if (req.getParameter("filterId") == null) { %>
+					<img onClick="createFilter()" src="images/star_empty.png"/>
+                <% } else { %>
+                	<img onClick='deleteFilter("<%=req.getParameter("filterId")%>")' src="images/star_filled.png"/>
+                <% } %>
               </p>
             <% } %>
+            
+            <% if (req.getParameter("filter.create.error") != null) { %>
+            	<div style="background-color: red;">
+            		<%=req.getParameter("filter.create.error") %>
+            	</div>
+           	<%}%>
 
     <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">

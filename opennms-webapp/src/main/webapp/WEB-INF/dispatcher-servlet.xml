@@ -23,6 +23,8 @@
         </property>
     </bean>
 
+    <bean id="filterService" class="org.opennms.web.services.FilterService"/>
+
     <!-- Map controllers based on their bean name -->
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
         <property name="order" value="0"/>
@@ -332,6 +334,11 @@
         <property name="webEventRepository" ref="webEventRepository"/>
     </bean>
 
+    <alias name="/event/index.jsp" alias="/event/filter/create"/>
+    <alias name="/event/index.jsp" alias="/event/index"/>
+    <bean name="/event/index.jsp" class="org.opennms.web.controller.event.EventController">
+    </bean>
+
     <alias name="/event/list.htm" alias="/event/list"/>
     <bean name="/event/list.htm" class="org.opennms.web.controller.event.EventFilterController">
         <property name="successView" value="event/list"/>
@@ -545,7 +552,7 @@
 
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Events"/>
-                    <property name="url" value="event/index.jsp"/>
+                    <property name="url" value="event/index"/>
                     <property name="locationMatch" value="event"/>
                 </bean>
 
