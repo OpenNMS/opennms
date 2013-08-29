@@ -288,7 +288,7 @@ public class SnmpSession extends Object {
          *            The valid length of the buffer.
          */
         public ByteArrayInfo(final byte[] buf, final int length) {
-            m_buf = buf.clone();
+            m_buf = buf == null? null : buf.clone();
             m_length = length;
         }
 
