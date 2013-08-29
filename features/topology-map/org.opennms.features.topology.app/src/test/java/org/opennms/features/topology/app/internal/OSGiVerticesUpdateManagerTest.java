@@ -32,8 +32,8 @@ import com.vaadin.data.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.osgi.*;
 import org.opennms.features.topology.api.topo.*;
+import org.opennms.osgi.*;
 import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 public class OSGiVerticesUpdateManagerTest {
 
-    private class DummyOnmsServiceManager implements OnmsServiceManager{
+    private class DummyOnmsServiceManager implements OnmsServiceManager {
 
         @Override
         public void registerAsService(Object object, VaadinApplicationContext applicationContext) {

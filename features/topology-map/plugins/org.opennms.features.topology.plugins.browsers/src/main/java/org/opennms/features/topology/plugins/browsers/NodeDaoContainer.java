@@ -33,6 +33,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;

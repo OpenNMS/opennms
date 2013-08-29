@@ -26,7 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.osgi;
+package org.opennms.osgi;
+
+import org.opennms.osgi.EventProxy;
 
 public interface EventProxyAware {
     void setEventProxy(EventProxy eventProxy);

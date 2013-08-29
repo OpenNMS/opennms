@@ -35,8 +35,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.osgi.EventProxy;
-import org.opennms.features.topology.api.osgi.EventProxyAware;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 
 import com.vaadin.data.Container;
