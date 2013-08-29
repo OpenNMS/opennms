@@ -332,8 +332,11 @@ public class ConfigTesterTest {
     }
     
     @Test
+    /**
+     * FIXME: Not part of the standard build?
+     */
     public void testOtrs() {
-        testConfigFile("otrs.properties");
+        ignoreConfigFile("otrs.properties");
     }
     
     @Test
@@ -388,8 +391,11 @@ public class ConfigTesterTest {
     }
 
 	@Test
+    /**
+     * FIXME: Not part of the standard build?
+     */
     public void testRt() {
-        testConfigFile("rt.properties");
+        ignoreConfigFile("rt.properties");
     }
 
 	@Test
