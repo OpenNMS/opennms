@@ -8,5 +8,5 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller</groupId>
   <artifactId>org.opennms.features.poller.runtime</artifactId>
-  <name>OpenNMS Poller Runtime</name>
+  <name>OpenNMS Features Poller Runtime</name>
 </project>

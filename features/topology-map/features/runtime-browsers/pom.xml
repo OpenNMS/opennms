@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-browsers</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (Browsers)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (Browsers)</name>
 
   <description>Alarm browser to enhance the Linkd topology UI.</description>
 

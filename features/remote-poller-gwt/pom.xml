@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS Remote Poller GWT UI</name>
+  <name>OpenNMS Features Remote Poller GWT UI</name>
   <properties>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>

@@ -8,7 +8,7 @@
     <version>${version}</version>
     <packaging>bundle</packaging>
 
-    <name>OpenNMS Example Operation Module</name>
+    <name>OpenNMS Features Example Operation Module</name>
     <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
 
     <dependencies>

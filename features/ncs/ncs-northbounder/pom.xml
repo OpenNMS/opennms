@@ -8,7 +8,7 @@
   <groupId>org.opennms.features.ncs</groupId>
   <artifactId>ncs-northbounder</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS NCS Northbounder</name>
+  <name>OpenNMS Features NCS Northbounder</name>
 
   <build>
     <plugins>

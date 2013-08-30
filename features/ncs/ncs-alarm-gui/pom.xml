@@ -10,7 +10,7 @@
   <groupId>org.opennms.features.ncs</groupId>
   <artifactId>ncs-alarm-gui</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS NCS Alarm GUI</name>
+  <name>OpenNMS Features NCS Alarm GUI</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>

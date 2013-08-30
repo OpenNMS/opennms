@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-simple</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (Simple)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (Simple)</name>
 
   <description>Simple runtime and plugins for the OpenNMS topology web app.</description>
 

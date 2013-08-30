@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-troubleticketer</artifactId>
     <packaging>jar</packaging>
-    <name>OpenNMS JIRA Trouble Ticketer</name>
+    <name>OpenNMS Features JIRA Trouble Ticketer</name>
 
     <repositories>
         <repository>
