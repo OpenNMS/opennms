@@ -350,6 +350,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if (fragment != null) {
             LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", m_userName, fragment);
             Page.getCurrent().setUriFragment(fragment);
+            m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
         }
     }
 
