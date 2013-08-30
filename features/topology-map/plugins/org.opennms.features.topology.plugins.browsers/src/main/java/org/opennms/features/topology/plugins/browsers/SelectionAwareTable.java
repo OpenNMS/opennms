@@ -120,4 +120,14 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
         m_container.verticesUpdated(event);
     }
 
+    /**
+     * Make sure that the OnmsDaoContainer cache is reset.
+     */
+    @Override
+    public void resetPageBuffer() {
+        if (m_container != null && m_container.getCache() != null && m_container.getPage() != null) {
+            m_container.getCache().reload(m_container.getPage());
+        }
+        super.resetPageBuffer();
+    }
 }
