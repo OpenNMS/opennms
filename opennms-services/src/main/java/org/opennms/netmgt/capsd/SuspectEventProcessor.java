@@ -62,6 +62,8 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbNodeEntry;
@@ -357,12 +359,12 @@ final class SuspectEventProcessor implements Runnable {
         Date now = new Date();
         entryNode.setCreationTime(now);
         entryNode.setLastPoll(now);
-        entryNode.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
+        entryNode.setNodeType(NodeType.ACTIVE);
         entryNode.setLabel(primaryIf.getHostName());
         if (entryNode.getLabel().equals(str(primaryIf)))
-            entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_ADDRESS);
+            entryNode.setLabelSource(NodeLabelSource.ADDRESS);
         else
-            entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_HOSTNAME);
+            entryNode.setLabelSource(NodeLabelSource.HOSTNAME);
 
         if (snmpc != null) {
             if (snmpc.hasSystemGroup()) {
@@ -385,9 +387,9 @@ final class SuspectEventProcessor implements Runnable {
                     // Hostname takes precedence over sysName so only replace
                     // label if
                     // hostname was not available.
-                    if (entryNode.getLabelSource() == DbNodeEntry.LABEL_SOURCE_ADDRESS) {
+                    if (entryNode.getLabelSource() == NodeLabelSource.ADDRESS) {
                         entryNode.setLabel(str);
-                        entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_SYSNAME);
+                        entryNode.setLabelSource(NodeLabelSource.SYSNAME);
                     }
                 }
 
@@ -417,9 +419,9 @@ final class SuspectEventProcessor implements Runnable {
             // Netbios Name and Domain
             // Note: only override if the label source is not HOSTNAME
             if (smbc.getNbtName() != null
-                    && entryNode.getLabelSource() != DbNodeEntry.LABEL_SOURCE_HOSTNAME) {
+                    && entryNode.getLabelSource() != NodeLabelSource.HOSTNAME) {
                 entryNode.setLabel(smbc.getNbtName());
-                entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_NETBIOS);
+                entryNode.setLabelSource(NodeLabelSource.NETBIOS);
                 entryNode.setNetBIOSName(entryNode.getLabel());
                 if (smbc.getDomainName() != null) {
                     entryNode.setDomainName(smbc.getDomainName());
@@ -1779,7 +1781,9 @@ final class SuspectEventProcessor implements Runnable {
         EventBuilder bldr = createEventBuilder(EventConstants.NODE_ADDED_EVENT_UEI);
         bldr.setNodeid(nodeEntry.getNodeId());
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel());
-        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource());
+        if (nodeEntry.getLabelSource() != null) {
+            bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource().toString());
+        }
         bldr.addParam(EventConstants.PARM_METHOD, "icmp");
         
         sendEvent(bldr.getEvent());
@@ -1880,7 +1884,9 @@ final class SuspectEventProcessor implements Runnable {
         bldr.setService(svcName);
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel());
-        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource());
+        if (nodeEntry.getLabelSource() != null) {
+            bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource().toString());
+        }
 
         // Add qualifier (if available)
         if (qualifier != null && qualifier.length() > 0) {

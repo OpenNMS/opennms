@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
-import org.openoss.opennms.spring.qosd.QoSDimpl2;
 import org.openoss.ossj.fm.monitor.j2ee.AlarmMonitor;
 import java.util.Properties;
 import java.util.Hashtable;

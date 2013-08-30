@@ -91,6 +91,8 @@ MAXIMUM_FILE_DESCRIPTORS=20480
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
 MAXIMUM_SIZE_STACK_SEGMENT=8192
 
+COMMAND=""
+
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -173,7 +175,16 @@ checkXmlFiles(){
 		rm "$TEMPFILE"
 		if [ $FAILCOUNT -gt 0 ]; then
 			echo "Validation failed on $FAILCOUNT XML files.  Exiting." >&2
-			return 6	# From LSB: 6 - program is not configured
+			case $COMMAND in
+				status)
+					# when calling `opennms status` return 3 for "stopped"
+					return 3	# From LSB: 3 - program is stopped
+					;;
+				*)
+					# any other init command should return 6 on error
+					return 6	# From LSB: 6 - program is not configured
+					;;
+			esac
 		fi
 	fi
 
@@ -229,7 +240,16 @@ up-to-date and delete any leftover .$EXTENSION files or
 OpenNMS will not start.
 
 END
-			return 6	# From LSB: 6 - program is not configured
+			case $COMMAND in
+				status)
+					# when calling `opennms status` return 3 for "stopped"
+					return 3	# From LSB: 3 - program is stopped
+					;;
+				*)
+					# any other init command should return 6 on error
+					return 6	# From LSB: 6 - program is not configured
+					;;
+			esac
 		fi
 	done
 
@@ -314,6 +334,13 @@ doStart(){
 	else
 		APP_VM_PARMS="$CONTROLLER_OPTIONS"
 		APP_PARMS_BEFORE="start $SERVICE"
+	fi
+
+	JAVA_EXE=`$OPENNMS_HOME/bin/runjava -c -v`
+	JAVA_EXE_BINDIR=`dirname $JAVA_EXE`
+	if [ ! -x "$JAVA_EXE_BINDIR"/javac ]; then
+		# this is a JRE, try to use ECJ for Jetty compilation instead
+		APP_VM_PARMS="-Dorg.apache.jasper.compiler.disablejsr199=true $APP_VM_PARMS"
 	fi
 
 	if [ -z "$NOEXECUTE" ]; then
@@ -519,11 +546,19 @@ if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"
 fi
 
-
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
 	true # do nothing
 else
 	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
+fi
+
+if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -Djava.io.tmpdir > /dev/null ; then
+	true # do nothing
+else
+	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
+		mkdir -p "$OPENNMS_HOME/data/tmp"
+	fi
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.io.tmpdir=$OPENNMS_HOME/data/tmp"
 fi
 
 if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then
@@ -624,7 +659,17 @@ For details, see the install guide at:
 http://www.opennms.org/index.php/QuickStart#Initialize_OpenNMS_and_the_Database
 
 END
-	exit 6	# From LSB: 6 - program is not configured
+
+	case $COMMAND in
+		status)
+			# when calling `opennms status` return 3 for "stopped"
+			exit 3	# From LSB: 3 - program is stopped
+			;;
+		*)
+			# any other init command should return 6 on error
+			exit 6	# From LSB: 6 - program is not configured
+			;;
+	esac
 fi
 
 myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"

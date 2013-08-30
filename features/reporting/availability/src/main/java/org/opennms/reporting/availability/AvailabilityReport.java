@@ -42,16 +42,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
-
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -83,8 +82,8 @@ public class AvailabilityReport extends Object {
      */
 
     public static String[] months = new String[] { "January", "February",
-            "March", "April", "May", "June", "July", "August", "September",
-            "October", "November", "December" };
+        "March", "April", "May", "June", "July", "August", "September",
+        "October", "November", "December" };
 
     /**
      * Default constructor
@@ -195,10 +194,10 @@ public class AvailabilityReport extends Object {
         m_report.setCategories(categories);
         try {
             AvailabilityData reportSource = new AvailabilityData();
-            
+
             reportSource.fillReport(categoryName, m_report, reportFormat,
-                                 monthFormat, startMonth,
-                                 startDate, startYear);
+                                    monthFormat, startMonth,
+                                    startDate, startYear);
         } catch (Throwable e) {
             LOG.error("Exception", e);
         }
@@ -213,10 +212,10 @@ public class AvailabilityReport extends Object {
      * @throws java.lang.Exception if any.
      */
     public void marshalReport() throws ValidationException, MarshalException,
-            IOException, Exception {
+    IOException, Exception {
 
         File file = new File(ConfigFileConstants.getHome()
-                + "/share/reports/AvailReport.xml");
+                             + "/share/reports/AvailReport.xml");
         try {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
@@ -245,7 +244,7 @@ public class AvailabilityReport extends Object {
             public void run() {
                 LOG.debug("inside generatePDF");
                 File file = new File(ConfigFileConstants.getHome()
-                        + "/share/reports/AvailReport.xml");
+                                     + "/share/reports/AvailReport.xml");
                 try {
                     LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
                     Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
@@ -259,7 +258,7 @@ public class AvailabilityReport extends Object {
                 }
                 LOG.info("leaving generatePDF");
             }
-            
+
         });
 
     }
@@ -269,40 +268,41 @@ public class AvailabilityReport extends Object {
      *
      * @param args an array of {@link java.lang.String} objects.
      */
-    public static void main(String args[]) {
-        
+    public static void main(final String args[]) {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+            @Override public void run() {
+                LOG.debug("main() called with args: {}", StringUtils.arrayToDelimitedString(args, ", "));
 
-        Logging.putPrefix(LOG4J_CATEGORY);
-        LOG.debug("main() called with args: {}", StringUtils.arrayToDelimitedString(args, ", "));
+                System.setProperty("java.awt.headless", "true");
 
-        System.setProperty("java.awt.headless", "true");
+                String logourl = System.getProperty("image");
+                String categoryName = System.getProperty("catName");
+                if (categoryName == null || categoryName.equals("")) {
+                    categoryName = "all";
+                }
+                String format = System.getProperty("format");
+                if (format == null || format.equals("")) {
+                    format = "SVG";
+                }
+                String monthFormat = System.getProperty("MonthFormat");
+                if (monthFormat == null || format.equals("")) {
+                    monthFormat = MONTH_FORMAT_CLASSIC;
+                }
+                String startMonth = System.getProperty("startMonth");
+                String startDate = System.getProperty("startDate");
+                String startYear = System.getProperty("startYear");
 
-        String logourl = System.getProperty("image");
-        String categoryName = System.getProperty("catName");
-        if (categoryName == null || categoryName.equals("")) {
-            categoryName = "all";
-        }
-        String format = System.getProperty("format");
-        if (format == null || format.equals("")) {
-            format = "SVG";
-        }
-        String monthFormat = System.getProperty("MonthFormat");
-        if (monthFormat == null || format.equals("")) {
-            monthFormat = MONTH_FORMAT_CLASSIC;
-        }
-        String startMonth = System.getProperty("startMonth");
-        String startDate = System.getProperty("startDate");
-        String startYear = System.getProperty("startYear");
+                if (startMonth == null || startDate == null || startYear == null) {
+                    throw new NumberFormatException("missing date properties");
+                }
 
-        if (startMonth == null || startDate == null || startYear == null) {
-            throw new NumberFormatException("missing date properties");
-        }
-        
-        try {
-            generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
-        } catch (final Exception e) {
-            LOG.warn("Error while generating report.", e);
-        }
+                try {
+                    generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
+                } catch (final Exception e) {
+                    LOG.warn("Error while generating report.", e);
+                }
+            }
+        });
     }
 
 
@@ -318,9 +318,7 @@ public class AvailabilityReport extends Object {
      * @param startYear a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public static void generateReport(String logourl, String categoryName,
-            String format, String monthFormat, String startMonth,
-            String startDate, String startYear) throws Exception {
+    public static void generateReport(final String logourl, final String categoryName, final String format, final String monthFormat, final String startMonth, final String startDate, final String startYear) throws Exception {
 
         // This report will be invoked by the mailer script.
         // Only SVG formatted reports are needed.

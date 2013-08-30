@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import com.vaadin.data.util.converter.Converter;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -39,16 +40,17 @@ import java.util.Locale;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class CsvListConverter implements Converter<String, CsvListConverter.StringList> {
+public class CsvListConverter implements Converter<String, ArrayList<String>> {
 
-    /**
-     * The Class StringList.
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#convertToModel(java.lang.Object, java.lang.Class, java.util.Locale)
      */
-    public static class StringList extends ArrayList<String> {}
-
     @Override
-    public StringList convertToModel(String fieldValue, Class<? extends StringList> targetType, Locale locale) throws ConversionException {
-        StringList list = new StringList();
+    public ArrayList<String> convertToModel(String fieldValue, Class<? extends ArrayList<String>> targetType, Locale locale) throws ConversionException {
+        if (fieldValue == null) {
+            return null;
+        }
+        ArrayList<String> list = new ArrayList<String>();
         if (fieldValue != null) {
             for (String s : fieldValue.split(",")) {
                 if (s == null || "".equals(s.trim())) {
@@ -61,18 +63,28 @@ public class CsvListConverter implements Converter<String, CsvListConverter.Stri
         return list;
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#convertToPresentation(java.lang.Object, java.lang.Class, java.util.Locale)
+     */
     @Override
-    public String convertToPresentation(StringList propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
+    public String convertToPresentation(ArrayList<String> propertyValue, Class<? extends String> targetType, Locale locale) throws ConversionException {
         return propertyValue == null ? null : StringUtils.join(propertyValue, ',');
     }
 
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#getModelType()
+     */
     @Override
-	public Class<StringList> getModelType() {
-		return StringList.class;
-	}
+    @SuppressWarnings("unchecked")
+    public Class<ArrayList<String>> getModelType() {
+        return (Class<ArrayList<String>>) new ArrayList<String>().getClass();
+    }
 
-	@Override
-	public Class<String> getPresentationType() {
-		return String.class;
-	}
+    /* (non-Javadoc)
+     * @see com.vaadin.data.util.converter.Converter#getPresentationType()
+     */
+    @Override
+    public Class<String> getPresentationType() {
+        return String.class;
+    }
 }

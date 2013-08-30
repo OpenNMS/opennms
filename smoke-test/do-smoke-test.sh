@@ -58,18 +58,8 @@ get_hash_from_rpm() {
 clean_maven() {
 	banner "Cleaning out old Maven files"
 
-	# delete things older than a week
 	if [ -d "$HOME/.m2/repository" ]; then
-		do_log "$HOME/.m2/repository exists; cleaning"
-		find "${HOME}/.m2/repository" -depth -ctime +7 -type f -print -exec rm {} \; >/dev/null
-		find "${HOME}/.m2/repository" -depth -type d -print | while read LINE; do
-			rmdir "$LINE" 2>/dev/null || :
-		done
-		BAD_JARS=`find "${HOME}/.m2/repository" -depth -type f -name \*.jar | xargs file | grep text | cut -d: -f1`
-		if [ -n "$BAD_JARS" ]; then
-			rm -f $BAD_JARS
-		fi
-		rm -f "${HOME}/.m2/repository/repository.xml"
+		rm -rf "${HOME}"/.m2/repository
 	fi
 }
 
@@ -86,6 +76,12 @@ clean_yum() {
 
 reset_database() {
 	banner "Resetting OpenNMS Database"
+
+	# easy way to make sure no one is holding on to any pg sockets
+	do_log "/etc/init.d/postgresql restart"
+	/etc/init.d/postgresql restart
+
+	sleep 5
 
 	do_log "dropdb -U postgres opennms"
 	dropdb -U postgres opennms
@@ -107,18 +103,23 @@ reset_opennms() {
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
 
-	do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
-	rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
+	if [ `ls "$ME"/../target/rpms/*.rpm | wc -l` -gt 0 ]; then
+		do_log "rpm -Uvh $ME/../target/rpms/*.rpm"
+		rpm -Uvh "$ME"/../target/rpms/*.rpm
+	else
+		do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
+		rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
 
-	do_log "yum -y install $PACKAGES"
-	yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+		do_log "yum -y install $PACKAGES"
+		yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+	fi
 }
 
 get_source() {
 	banner "Getting OpenNMS Source"
 
 	do_log "rsync source from $ME to $SOURCEDIR"
-	rsync -avr --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
+	rsync -ar --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
 
 	pushd "$SOURCEDIR"
 		do_log "cleaning git"
@@ -170,23 +171,20 @@ run_tests() {
 	local RETVAL=0
 	rm -rf ~/.m2/repository/org/opennms
 
-# These aren't needed any longer
-#	pushd "$SOURCEDIR"
-#		./compile.pl -N -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-#	pushd "$SOURCEDIR/dependencies"
-#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-#	pushd "$SOURCEDIR/core"
-#		../compile.pl -Denable.snapshots=true -DupdatePolicy=always install
-#	popd
-
 	do_log "bamboo.pl test"
 	pushd "$SOURCEDIR/smoke-test"
 		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
 		RETVAL=$?
 	popd
+
 	return $RETVAL
+}
+
+post_clean() {
+	rsync -ar "${SOURCEDIR}/smoke-test/target/" target/ || :
+	rm -rf "${SOURCEDIR}" || :
+	rm -rf "${HOME}"/.m2/repository || :
+	rm -rf "${ME}"/../target || :
 }
 
 stop_opennms() {
@@ -211,6 +209,7 @@ start_opennms
 run_tests
 RETVAL=$?
 
+post_clean
 stop_opennms
 
 exit $RETVAL

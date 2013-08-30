@@ -81,4 +81,8 @@ public interface DashletFactory {
      */
     public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec);
 
+    /**
+     * This method returns whether this dashlet is boostable.
+     */
+    public boolean isBoostable();
 }

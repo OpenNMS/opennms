@@ -1,10 +1,11 @@
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Tree;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.WidgetContext;
@@ -14,15 +15,14 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 public class NCSViewContribution implements IViewContribution {
 	
@@ -34,10 +34,9 @@ public class NCSViewContribution implements IViewContribution {
     public void setNcsComponentRepository(NCSComponentRepository ncsComponentRepository) {
 		m_ncsComponentRepository = ncsComponentRepository;
 	}
-	
-	@Override
-	public Component getView(final WidgetContext widgetContext) {
-		
+
+    @Override
+    public Component getView(final VaadinApplicationContext applicationContext, final WidgetContext widgetContext) {
 		final Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);

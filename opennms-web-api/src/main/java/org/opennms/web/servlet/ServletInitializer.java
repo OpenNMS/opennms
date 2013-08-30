@@ -39,7 +39,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.slf4j.MDC;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
@@ -95,22 +94,12 @@ public class ServletInitializer extends Object {
 
         Properties properties = new Properties(System.getProperties());
 
-        try {
-        	/*
-        	 * First, check if opennms.home is set, if so, we already have properties
-        	 * because we're in Jetty.
-        	 */
-        	if (properties.getProperty("opennms.home") == null) {
-        		// If not, load properties from configuration.properties
-        		loadPropertiesFromContextResource(context, properties, "/WEB-INF/configuration.properties");
-
-        		// Make sure that we now have opennms.home set
-        		if (properties.getProperty("opennms.home") == null) {
-        			throw new ServletException("The opennms.home context parameter must be set.");
-        		}
-        	}
-        } catch (IOException e) {
-        	throw new ServletException("Could not load configuration.properties", e);
+        /*
+         * First, check if opennms.home is set, if so, we already have properties
+         * because we're in Jetty.
+         */
+        if (properties.getProperty("opennms.home") == null) {
+            throw new ServletException("The opennms.home context parameter must be set.");
         }
 
         String homeDir = properties.getProperty("opennms.home");

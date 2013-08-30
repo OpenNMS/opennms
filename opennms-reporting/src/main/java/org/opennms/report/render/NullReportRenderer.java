@@ -31,12 +31,10 @@ package org.opennms.report.render;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.core.io.Resource;
 
 /**
@@ -66,8 +64,6 @@ public class NullReportRenderer implements ReportRenderer {
      */
     @Override
     public void render() throws ReportRenderException {
-        Logging.putPrefix(LOG4J_CATEGORY);
-        LOG.debug("Do nothing");
         m_outputFileName = m_inputFileName;
     }
 

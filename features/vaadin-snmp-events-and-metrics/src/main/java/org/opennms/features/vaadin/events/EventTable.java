@@ -27,17 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.events;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.xml.eventconf.AlarmData;
-import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Mask;
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * The Class Event Table.
@@ -45,90 +39,48 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class EventTable extends Table {
-
-    /** The Constant COLUMN_NAMES. */
-    public static final String[] COLUMN_NAMES = new String[] { "eventLabel", "uei" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "Event Label", "Event UEI" };
+public class EventTable extends Table {
 
     /** The Table Container for Events. */
-    private final BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event> container;
+    private final OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event> container =
+            new OnmsBeanContainer<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /**
      * Instantiates a new event table.
      *
      * @param events the OpenNMS events
      */
-    public EventTable(final Events events) {
-        container = new BeanContainer<String, org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
-        container.setBeanIdProperty("uei");
-        container.addAll(events.getEventCollection());
+    public EventTable(final List<org.opennms.netmgt.xml.eventconf.Event> events) {
+        container.addAll(events);
         setContainerDataSource(container);
-        setStyleName(Runo.TABLE_SMALL);
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        addStyleName("light");
+        setVisibleColumns(new Object[] { "eventLabel", "uei" });
+        setColumnHeaders(new String[] { "Event Label", "Event UEI" });
         setWidth("100%");
         setHeight("250px");
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    updateExternalSource(getEvent(getValue()));
-                }
-            }
-        });
     }
 
     /**
-     * Update external source.
+     * Gets the event.
      *
-     * @param event the OpenNMS event
+     * @param eventId the event ID (the Item ID associated with the container)
+     * @return the event
      */
-    public abstract void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event);
-
-    /**
-     * Gets all the OpenNMS events.
-     *
-     * @return the OpenNMS events
-     */
-    public List<org.opennms.netmgt.xml.eventconf.Event> getOnmsEvents() {
-        List<org.opennms.netmgt.xml.eventconf.Event> events = new ArrayList<org.opennms.netmgt.xml.eventconf.Event>();
-        for (String itemId : container.getItemIds()) {
-            org.opennms.netmgt.xml.eventconf.Event e = getEvent(itemId);
-            // It doesn't make any sense an alarmData without reductionKey
-            AlarmData a = e.getAlarmData();
-            if (a != null && (a.getReductionKey() == null || a.getReductionKey().trim().equals("")))
-                e.setAlarmData(null);
-            // It doesn't make any sense an mask without mask elements.
-            Mask m = e.getMask();
-            if (m != null && m.getMaskelementCollection().isEmpty())
-                e.setMask(null);
-            events.add(e);
-        }
-        return events;
+    public org.opennms.netmgt.xml.eventconf.Event getEvent(Object eventId) {
+        return container.getItem(eventId).getBean();
     }
 
     /**
-     * Adds an event.
+     * Adds the event.
      *
      * @param event the new event
+     * @return the eventId
      */
-    public void addEvent(org.opennms.netmgt.xml.eventconf.Event event) {
-        container.addBean(event);
+    public Object addEvent(org.opennms.netmgt.xml.eventconf.Event event) {
+        Object eventId = container.addOnmsBean(event);
+        select(eventId);
+        return eventId;
     }
-
-    /**
-     * Gets the OpenNMS event.
-     *
-     * @param itemId the internal Item ID (Event's UEI)
-     * @return the OpenNMS event
-     */
-    private org.opennms.netmgt.xml.eventconf.Event getEvent(Object itemId) {
-        return container.getItem(itemId).getBean();
-    }
-
 }

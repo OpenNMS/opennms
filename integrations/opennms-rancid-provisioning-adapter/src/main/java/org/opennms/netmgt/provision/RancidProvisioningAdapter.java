@@ -296,6 +296,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         RancidNode rUpdatedNode = getSuitableRancidNode(node);
         LOG.debug("doUpdate: found updated Node : {}", rUpdatedNode);
 
+        if (rLocalNode.getDeviceName() == null) {
+        	LOG.warn("Current Rancid Node device name is null, aborting.");
+        	return;
+        }
+        if (rUpdatedNode.getDeviceName() == null) {
+        	LOG.warn("Updated Rancid Node device name is null, aborting.");
+        	return;
+        }
+        
         if (rLocalNode.getDeviceName().equalsIgnoreCase(rUpdatedNode.getDeviceName())) {            
             try {
                 RancidNode rRemoteNode = RWSClientApi.getRWSRancidNodeTLO(cp, rLocalNode.getGroup(), rLocalNode.getDeviceName());

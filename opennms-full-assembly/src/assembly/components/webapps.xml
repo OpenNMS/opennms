@@ -37,17 +37,6 @@
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions><filtered>true</filtered></unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms/WEB-INF</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
-      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
 
     <!-- Remoting webapp -->
     <dependencySet>
@@ -56,26 +45,6 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms-remoting/webstart</outputDirectory>
-      <includes><include>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions><filtered>true</filtered></unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
-      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>

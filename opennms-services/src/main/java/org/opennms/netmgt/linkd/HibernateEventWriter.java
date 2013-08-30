@@ -221,6 +221,11 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             processOspf(node,snmpColl,scanTime);
         }
 
+        LOG.debug("storeSnmpCollection: isis hasIsIsSystemObjectGroup/hasIsisCircTable/hasIsisISAdjTable: {}/{}/{}", snmpColl.hasIsIsSysObjectGroup(),snmpColl.hasIsisCircTable(),snmpColl.hasIsisISAdjTable());
+        if (snmpColl.hasIsIsSysObjectGroup() && snmpColl.hasIsisCircTable() && snmpColl.hasIsisISAdjTable()) {
+            processIsis(node,snmpColl,scanTime);
+        }
+
         LOG.debug("storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: {}/{}/{}", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
         if (snmpColl.hasLldpLocalGroup()) {
             processLldp(node,snmpColl,scanTime);

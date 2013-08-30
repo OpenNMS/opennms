@@ -27,14 +27,17 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.netmgt.charts.ChartUtils;
 import org.opennms.netmgt.config.charts.BarChart;
+import org.opennms.web.charts.ChartUtils;
 
 import java.util.Iterator;
 
@@ -69,13 +72,18 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
 
-        setHeight(230, Unit.PIXELS);
+        setHeight(310, Unit.PIXELS);
         setWidth(40, Unit.PERCENTAGE);
 
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setWidth(100, Unit.PERCENTAGE);
-        verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(true);
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setWidth(100, Unit.PERCENTAGE);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setMargin(true);
+
+        FormLayout formLayout = new FormLayout();
+        formLayout.setWidth(100, Unit.PERCENTAGE);
+        formLayout.setSpacing(true);
+        formLayout.setMargin(true);
 
         /**
          * Adding the checkboxes
@@ -84,7 +92,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
         m_maximizeWidth.setCaption("Maximize width");
 
         m_maximizeHeight = new CheckBox();
-        m_maximizeHeight.setCaption("Maximize width");
+        m_maximizeHeight.setCaption("Maximize height");
 
         String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
         String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
@@ -94,9 +102,6 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
 
         m_maximizeWidth.setValue(maximizeWidth);
         m_maximizeHeight.setValue(maximizeHeight);
-
-        verticalLayout.addComponent(m_maximizeWidth);
-        verticalLayout.addComponent(m_maximizeHeight);
 
         m_chartSelect = new NativeSelect();
         m_chartSelect.setCaption("Chart");
@@ -128,10 +133,35 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
             chartName = firstChartName;
         }
 
+        final Panel panel = new Panel();
+
+        panel.setWidth(230, Unit.PIXELS);
+
+        panel.setCaption("Preview");
+
+        formLayout.addComponent(m_chartSelect);
+
+        Page.getCurrent().getStyles().add(".preview { width:225px; }");
+
+        m_chartSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                String newImage = "/opennms/charts?chart-name=" + valueChangeEvent.getProperty().getValue();
+                Image image = new Image(null, new ExternalResource(newImage));
+                image.setStyleName("preview");
+                panel.setContent(image);
+            }
+        });
+
         m_chartSelect.setValue(chartName);
+        m_chartSelect.setImmediate(true);
 
 
-        verticalLayout.addComponent(m_chartSelect);
+        formLayout.addComponent(m_maximizeWidth);
+        formLayout.addComponent(m_maximizeHeight);
+
+        horizontalLayout.addComponent(formLayout);
+        horizontalLayout.addComponent(panel);
 
         /**
          * Using an additional {@link com.vaadin.ui.HorizontalLayout} for layouting the buttons
@@ -182,6 +212,11 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
         /**
          * Adding the layout and setting the content
          */
+        //verticalLayout.addComponent(buttonLayout);
+
+        VerticalLayout verticalLayout = new VerticalLayout();
+
+        verticalLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(buttonLayout);
 
         setContent(verticalLayout);

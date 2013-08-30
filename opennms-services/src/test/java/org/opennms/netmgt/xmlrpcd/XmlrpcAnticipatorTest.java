@@ -39,7 +39,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class XmlrpcAnticipatorTest extends TestCase {
-    private static final int PORT = 9000;
+    private static final int PORT = 59000;
     
     private XmlrpcAnticipator m_anticipator;
 

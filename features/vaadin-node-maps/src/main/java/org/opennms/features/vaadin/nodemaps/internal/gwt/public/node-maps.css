@@ -1,7 +1,4 @@
-.marker-cluster {
-	color: white;
-	text-shadow: 1px 1px 2px #000;
-}
+
 .marker-cluster-Critical {
 	background-color: rgba(245,205,205,0.8);
 }

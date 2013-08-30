@@ -12,7 +12,7 @@ if [ -z "$APTDIR" ]; then
 	APTDIR="/var/ftp/pub/releases/opennms/debian"
 fi
 
-if [ ! -d "$APTDIR" ]; then
+if [ ! -d "$APTDIR" ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo "APT repository at $APTDIR does not exist!"
 	exit 1
 fi
@@ -24,7 +24,7 @@ if [ $? != 0 ]; then
 fi
 
 UPDATE_REPO=`which update-apt-repo.pl 2>/dev/null`
-if [ $? != 0 ]; then
+if [ $? != 0 ] && [ -z "$ONLY_PACKAGE" ]; then
 	echo 'Unable to locate update-apt-repo.pl!'
 	exit 1
 fi
@@ -53,10 +53,16 @@ VERSION=`grep '<version>' pom.xml | head -n 1 | sed -e 's,^.*<version>,,' -e 's,
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the package 
-./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+if [ -n "$ONLY_PACKAGE" ]; then
+	./makedeb.sh -a -d -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+else
+	./makedeb.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
+fi
 
-# update the $RELEASE repo, and sync it to anything later in the hierarchy
-$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb || exit 1
-find ../*opennms*.{changes,deb,dsc,tar.gz} -maxdepth 0 -type f -exec rm -rf {} \;
+if [ -z "$ONLY_PACKAGE" ]; then
+	# update the $RELEASE repo, and sync it to anything later in the hierarchy
+	$UPDATE_REPO -s "$PASSWORD" "$APTDIR" "nightly-${VERSION}" "${TOPDIR}"/../*opennms*_${VERSION}*.deb || exit 1
+	find ../*opennms*.{changes,deb,dsc,tar.gz} -maxdepth 0 -type f -exec rm -rf {} \;
+fi
 
 $BUILDTOOL nightly-debian save

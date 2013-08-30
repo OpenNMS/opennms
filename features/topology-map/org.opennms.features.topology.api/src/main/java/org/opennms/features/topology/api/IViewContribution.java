@@ -30,14 +30,11 @@ package org.opennms.features.topology.api;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
+import org.opennms.osgi.VaadinApplicationContext;
 
-/**
- * A simple view UI contribution
- */
 public interface IViewContribution {
-	
-	Component getView(WidgetContext widgetContext);
-	String getTitle();
-	Resource getIcon();
 
+    Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
+    String getTitle();
+	Resource getIcon();
 }

@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -110,7 +111,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
             if (labelType.equals("auto")) {
                 newLabel = NodeLabel.computeLabel(nodeId);
             } else if (labelType.equals("user")) {
-                newLabel = new NodeLabel(userLabel, NodeLabel.SOURCE_USERDEFINED);
+                newLabel = new NodeLabel(userLabel, NodeLabelSource.USER);
             } else {
                 throw new ServletException("Unexpected labeltype value: " + labelType);
             }
@@ -167,12 +168,16 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
         if (oldNodeLabel != null) {
             bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, oldNodeLabel.getLabel());
-            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE,oldNodeLabel.getSource() );
+            if (oldNodeLabel.getSource() != null) {
+                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, oldNodeLabel.getSource().toString());
+            }
         }
 
         if (newNodeLabel != null) {
             bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, newNodeLabel.getLabel());
-            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, newNodeLabel.getSource());
+            if (newNodeLabel.getSource() != null) {
+                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, newNodeLabel.getSource().toString());
+            }
         }
 
         this.proxy.send(bldr.getEvent());

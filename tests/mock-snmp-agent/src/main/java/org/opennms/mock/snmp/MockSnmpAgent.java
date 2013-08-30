@@ -370,9 +370,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             super.run();
             m_running = true;
         } catch (final BindException e) {
-        	s_log.error(String.format("Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root.", m_address), e);
+        	s_log.error(String.format("Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address, e), e);
         } catch (final Throwable t) {
-        	s_log.error("An error occurred while initializing.", t);
+        	s_log.error("An error occurred while initializing: " + t, t);
         }
 
         boolean interrupted = false;
@@ -387,16 +387,20 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
         for (final TransportMapping transportMapping : transportMappings) {
             try {
-                if (transportMapping != null) transportMapping.close();
+                if (transportMapping != null) {
+                	transportMapping.close();
+                }
             } catch (final IOException t) {
-            	s_log.error("an error occurred while closing the transport mapping", t);
+            	s_log.error("an error occurred while closing the transport mapping " + transportMapping + ": " + t, t);
             }
         }
 
         m_stopped = true;
         
         s_log.debug("Agent is no longer running.");
-        if (interrupted) Thread.currentThread().interrupt();
+        if (interrupted) {
+        	Thread.currentThread().interrupt();
+        }
     }
 
     /*

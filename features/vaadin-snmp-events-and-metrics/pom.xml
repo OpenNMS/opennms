@@ -61,6 +61,13 @@
       <id>vaadin-addons</id>
       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -106,6 +113,11 @@
             <artifactId>vaadin</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>onms-default-theme</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- MIB Compiler Dependencies -->
@@ -163,6 +175,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.lib</artifactId> 
             <scope>test</scope>
         </dependency>
 

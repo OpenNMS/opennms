@@ -2,6 +2,7 @@
 
     <bean id="chartsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.ChartsDashletFactory" scope="singleton">
         <property name="name" value="Charts"/>
+        <property name="boostable" value="false"/>
 
         <property name="requiredParameters">
             <map>

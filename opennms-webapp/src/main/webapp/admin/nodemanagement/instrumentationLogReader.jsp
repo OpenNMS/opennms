@@ -88,20 +88,9 @@ LOG.debug("FilenameFilter = {}", filter);
 
 int filesMatched = 0;
 
-LOG.debug("scanning DaemonDir");
-
-final File daemonDir = new File(opennmsHome + "/logs/daemon");
-if (daemonDir.exists()) {
-	for (final File file : daemonDir.listFiles(filter)) {
-		if (file.length() == 0) continue;
-		c.readLogMessagesFromFile(file.getPath());
-		filesMatched++;
-	}
-}
-
 LOG.debug("scanning LogDir");
 
-final File logDir = new File(opennmsHome + "/logs");
+final File logDir = new File(opennmsHome, "logs");
 if (logDir.exists()) {
 	for (final File file : logDir.listFiles(filter)) {
 		if (file.length() == 0) continue;

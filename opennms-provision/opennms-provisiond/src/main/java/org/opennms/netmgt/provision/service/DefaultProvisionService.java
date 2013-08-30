@@ -30,11 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -52,7 +47,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -74,6 +68,8 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -90,6 +86,11 @@ import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -198,11 +199,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         node.setDistPoller(createDistPollerIfNecessary("localhost", "127.0.0.1"));
         m_nodeDao.save(node);
         m_nodeDao.flush();
-        
+
         final EntityVisitor eventAccumlator = new AddEventVisitor(m_eventForwarder);
 
         node.visit(eventAccumlator);
-        
+
+        if (node.getCategories().size() > 0) {
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            bldr.setNode(node);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, node.getLabel());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
     }
     
     /** {@inheritDoc} */
@@ -212,8 +219,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
+        final Set<OnmsCategory> existingCategories = dbNode.getCategories();
+        final Set<OnmsCategory> newCategories = node.getCategories();
+
         dbNode.mergeNode(node, m_eventForwarder, false);
-    
+
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
@@ -221,6 +231,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
         node.visit(eventAccumlator);
         
+        boolean categoriesChanged = false;
+        if (existingCategories.size() != newCategories.size()) categoriesChanged = true;
+        if (!categoriesChanged && !existingCategories.containsAll(newCategories)) categoriesChanged = true;
+        if (!categoriesChanged && !newCategories.containsAll(existingCategories)) categoriesChanged = true;
+
+        if (categoriesChanged) {
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            bldr.setNode(dbNode);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, dbNode.getLabel());
+            m_eventForwarder.sendNow(bldr.getEvent());
+        }
     }
 
     /** {@inheritDoc} */
@@ -1113,7 +1134,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
         
         OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
@@ -1138,9 +1159,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // @ipv6
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
                 node.setLabel(hostname == null ? ipAddress : hostname);
-                node.setLabelSource(hostname == null ? "A" : "H");
-                node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
-                node.setType("A");
+                node.setLabelSource(hostname == null ? NodeLabelSource.ADDRESS : NodeLabelSource.HOSTNAME);
+                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
+                node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
                 
                 final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), node);
@@ -1156,7 +1177,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
         
         if (node != null) {
-            
+        	
+        	if (foreignSource != null) {
+            	node.setForeignId(node.getNodeId());
+            	createUpdateRequistion(ipAddress, node, foreignSource);
+        	}
+        	
             // we do this here rather than in the doInsert method because
             // the doInsert may abort
             node.visit(new AddEventVisitor(m_eventForwarder));
@@ -1165,6 +1191,45 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return node;
         
     }
+    
+	private boolean createUpdateRequistion(final String addrString, final OnmsNode node, String m_foreignSource) {
+		LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
+		try {
+			Requisition r = null;
+			if (m_foreignSource != null) {
+				r = m_foreignSourceRepository.getRequisition(m_foreignSource);
+				if (r == null) {
+					r = new Requisition(m_foreignSource);
+				}
+			}
+			
+			r.updateDateStamp();
+			RequisitionNode rn = new RequisitionNode();
+
+			RequisitionInterface iface = new RequisitionInterface();
+			iface.setDescr("disc-if");
+			iface.setIpAddr(addrString);
+			iface.setManaged(true);
+			iface.setSnmpPrimary(PrimaryType.PRIMARY);
+			iface.setStatus(Integer.valueOf(1));
+			RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
+			ric.add(iface);
+			rn.setInterfaces(ric);
+			rn.setBuilding(m_foreignSource);
+			rn.setForeignId(node.getForeignId());
+			rn.setNodeLabel(node.getLabel());
+			r.putNode(rn);
+			m_foreignSourceRepository.save(r);
+			m_foreignSourceRepository.flush();
+		} catch (ForeignSourceRepositoryException e) {
+			LOG.error("Couldn't create/update requistion for newSuspect "+addrString, e);
+			return false;
+		}
+		LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);
+		return true;
+	}
+
+
     
     private String getHostnameForIp(final String address) {
     	return addr(address).getCanonicalHostName();

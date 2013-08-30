@@ -116,6 +116,9 @@
           addresses that are configured in this file.</documentation>
         </annotation>
       </attribute>
+      
+      <attribute name="foreign-source" type="string" use="optional" />
+      
     </complexType>
   </element>
 
@@ -142,6 +145,9 @@
               address. This timeout overrides the default.</documentation>
             </annotation>
           </attribute>
+          
+          <attribute name="foreign-source" type="string" use="optional" />
+          
         </extension>
       </simpleContent>
     </complexType>
@@ -184,6 +190,9 @@
           timeout overrides the default.</documentation>
         </annotation>
       </attribute>
+      
+      <attribute name="foreign-source" type="string" use="optional" />
+      
     </complexType>
   </element>
 
@@ -238,8 +247,21 @@
               this file. This timeout overrides the default.</documentation>
             </annotation>
           </attribute>
+          
+          <attribute name="foreign-source" type="string" use="optional" />
+          
         </extension>
       </simpleContent>
     </complexType>
+    
   </element>
+  
+  <element name="foreign-source" >
+    <simpleType>
+      <restriction base="string" />
+    </simpleType>
+  </element>
+  
+  
+  
 </schema>

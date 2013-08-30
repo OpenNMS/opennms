@@ -7,6 +7,7 @@
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarms"/>
+        <property name="boostable" value="true"/>
 
         <property name="requiredParameters">
             <map>
@@ -26,6 +27,7 @@
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarm Details"/>
+        <property name="boostable" value="true"/>
 
         <property name="requiredParameters">
             <map>

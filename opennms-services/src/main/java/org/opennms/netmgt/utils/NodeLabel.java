@@ -42,6 +42,7 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,28 +109,6 @@ public class NodeLabel {
     private final static String SQL_DB_RETRIEVE_NODELABEL = "SELECT nodelabel,nodelabelsource FROM node WHERE nodeid=?";
 
     /**
-     * Valid values for node label source flag
-     */
-    public final static char SOURCE_USERDEFINED = 'U';
-
-    /** Constant <code>SOURCE_NETBIOS='N'</code> */
-    public final static char SOURCE_NETBIOS = 'N';
-
-    /** Constant <code>SOURCE_HOSTNAME='H'</code> */
-    public final static char SOURCE_HOSTNAME = 'H';
-
-    /** Constant <code>SOURCE_SYSNAME='S'</code> */
-    public final static char SOURCE_SYSNAME = 'S';
-
-    /** Constant <code>SOURCE_ADDRESS='A'</code> */
-    public final static char SOURCE_ADDRESS = 'A';
-
-    /**
-     * Initialization value for node label source flag
-     */
-    public final static char SOURCE_UNKNOWN = 'X';
-
-    /**
      * Maximum length for node label
      */
     public final static int MAX_NODE_LABEL_LENGTH = 256;
@@ -161,7 +140,7 @@ public class NodeLabel {
     /**
      * Flag describing source of node label
      */
-    private final char m_nodeLabelSource;
+    private final NodeLabelSource m_nodeLabelSource;
 
     /**
      * The property string in the properties file which specifies the method to
@@ -174,11 +153,7 @@ public class NodeLabel {
      */
     public NodeLabel() {
         m_nodeLabel = null;
-        m_nodeLabelSource = SOURCE_UNKNOWN;
-    }
-
-    public NodeLabel(String nodeLabel, String nodeLabelSource) {
-        this(nodeLabel, nodeLabelSource.charAt(0));
+        m_nodeLabelSource = NodeLabelSource.UNKNOWN;
     }
 
     /**
@@ -189,14 +164,14 @@ public class NodeLabel {
      * @param nodeLabelSource
      *            Flag indicating source of node label
      */
-    public NodeLabel(String nodeLabel, char nodeLabelSource) {
+    public NodeLabel(String nodeLabel, NodeLabelSource nodeLabelSource) {
         switch(nodeLabelSource) {
-            case SOURCE_ADDRESS:
-            case SOURCE_HOSTNAME:
-            case SOURCE_NETBIOS:
-            case SOURCE_SYSNAME:
-            case SOURCE_UNKNOWN:
-            case SOURCE_USERDEFINED:
+            case ADDRESS:
+            case HOSTNAME:
+            case NETBIOS:
+            case SYSNAME:
+            case UNKNOWN:
+            case USER:
                 break;
             default:
                 throw new IllegalArgumentException("Invalid value for node label source: " + nodeLabelSource);
@@ -219,7 +194,7 @@ public class NodeLabel {
      *
      * @return node label source flag
      */
-    public char getSource() {
+    public NodeLabelSource getSource() {
         return m_nodeLabelSource;
     }
 
@@ -239,17 +214,15 @@ public class NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    public static NodeLabel retrieveLabel(int nodeID) throws SQLException {
-        NodeLabel label = null;
-        Connection dbConnection = Vault.getDbConnection();
+    public static NodeLabel retrieveLabel(final int nodeID) throws SQLException {
+        final Connection dbConnection = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
-            label = retrieveLabel(nodeID, dbConnection);
+            return retrieveLabel(nodeID, dbConnection);
         } finally {
-            Vault.releaseDbConnection(dbConnection);
+            d.cleanUp();
         }
-
-        return label;
     }
 
     /**
@@ -293,11 +266,21 @@ public class NodeLabel {
             d.cleanUp();
         }
 
-        if (nodeLabelSource != null) {
-            char[] temp = nodeLabelSource.toCharArray();
-            return new NodeLabel(nodeLabel, temp[0]);
-        } else
-            return new NodeLabel(nodeLabel, SOURCE_UNKNOWN);
+        if (NodeLabelSource.ADDRESS.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.ADDRESS);
+        } else if (NodeLabelSource.HOSTNAME.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.HOSTNAME);
+        } else if (NodeLabelSource.NETBIOS.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.NETBIOS);
+        } else if (NodeLabelSource.SYSNAME.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.SYSNAME);
+        } else if (NodeLabelSource.UNKNOWN.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.UNKNOWN);
+        } else if (NodeLabelSource.USER.toString().equals(nodeLabelSource)) {
+            return new NodeLabel(nodeLabel, NodeLabelSource.USER);
+        } else {
+            return new NodeLabel(nodeLabel, NodeLabelSource.UNKNOWN);
+        }
     }
 
     /**
@@ -317,13 +300,14 @@ public class NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public static void assignLabel(int nodeID, NodeLabel nodeLabel) throws SQLException {
-        Connection dbConnection = Vault.getDbConnection();
+    public static void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
+        final Connection dbConnection = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
             assignLabel(nodeID, nodeLabel, dbConnection);
         } finally {
-            Vault.releaseDbConnection(dbConnection);
+            d.cleanUp();
         }
     }
 
@@ -344,17 +328,16 @@ public class NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public static void assignLabel(int nodeID, NodeLabel nodeLabel, Connection dbConnection) throws SQLException {
+    public static void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
         if (nodeLabel == null) {
             nodeLabel = computeLabel(nodeID, dbConnection);
         }
 
-        PreparedStatement stmt = null;
         final DBUtils d = new DBUtils(NodeLabel.class);
 
         try {
             // Issue SQL update to assign the 'nodelabel' && 'nodelabelsource' fields of the 'node' table
-            stmt = dbConnection.prepareStatement(SQL_DB_UPDATE_NODE_LABEL);
+            PreparedStatement stmt = dbConnection.prepareStatement(SQL_DB_UPDATE_NODE_LABEL);
             d.watch(stmt);
             int column = 1;
 
@@ -399,13 +382,14 @@ public class NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public static NodeLabel computeLabel(int nodeID) throws SQLException {
-        Connection dbConnection = Vault.getDbConnection();
+    public static NodeLabel computeLabel(final int nodeID) throws SQLException {
+        final Connection dbConnection = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
             return computeLabel(nodeID, dbConnection);
         } finally {
-            Vault.releaseDbConnection(dbConnection);
+            d.cleanUp();
         }
 
     }
@@ -439,7 +423,7 @@ public class NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public static NodeLabel computeLabel(int nodeID, Connection dbConnection) throws SQLException {
+    public static NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
         // Issue SQL query to retrieve NetBIOS name associated with the node
         String netbiosName = null;
         PreparedStatement stmt = null;
@@ -467,7 +451,7 @@ public class NodeLabel {
 
                 LOG.debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: {}", netbiosName);
                     
-                NodeLabel nodeLabel = new NodeLabel(netbiosName, SOURCE_NETBIOS);
+                NodeLabel nodeLabel = new NodeLabel(netbiosName, NodeLabelSource.NETBIOS);
                 return nodeLabel;
             }
         } finally {
@@ -539,7 +523,7 @@ public class NodeLabel {
 
         if (primaryAddr == null) {
             LOG.warn("Could not find primary interface for node {}, cannot compute nodelabel", nodeID);
-            return new NodeLabel("Unknown", SOURCE_UNKNOWN);
+            return new NodeLabel("Unknown", NodeLabelSource.UNKNOWN);
         }
 
         // We now know the IP address of the primary interface so
@@ -554,7 +538,7 @@ public class NodeLabel {
                 primaryHostName = primaryHostName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
 
-            return new NodeLabel(primaryHostName, SOURCE_HOSTNAME);
+            return new NodeLabel(primaryHostName, NodeLabelSource.HOSTNAME);
         }
 
         // If we get this far either the primary interface does not have
@@ -582,13 +566,13 @@ public class NodeLabel {
                 primarySysName = primarySysName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
 
-            NodeLabel nodeLabel = new NodeLabel(primarySysName, SOURCE_SYSNAME);
+            NodeLabel nodeLabel = new NodeLabel(primarySysName, NodeLabelSource.SYSNAME);
             return nodeLabel;
         }
 
         // If we get this far the node has no sysName either so we need to
         // use the ipAddress as the nodeLabel
-        NodeLabel nodeLabel = new NodeLabel(primaryAddr.toString(), SOURCE_ADDRESS);
+        NodeLabel nodeLabel = new NodeLabel(InetAddressUtils.str(primaryAddr), NodeLabelSource.ADDRESS);
         return nodeLabel;
     }
 

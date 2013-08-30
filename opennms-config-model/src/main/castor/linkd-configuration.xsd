@@ -176,6 +176,16 @@
 				</annotation>
 			</attribute>
 
+			<attribute name="use-isis-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						isis mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+			
 			<attribute name="save-route-table" type="boolean"
 				use="optional" default="true">
 				<annotation>
@@ -499,6 +509,14 @@
 			</attribute>
 
 			<attribute name="use-ospf-discovery" type="boolean">
+				<annotation>
+					<documentation>
+						OverWrite default value of link-configuration corresponding attribute	
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-isis-discovery" type="boolean">
 				<annotation>
 					<documentation>
 						OverWrite default value of link-configuration corresponding attribute	

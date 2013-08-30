@@ -38,7 +38,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  */
 public class MapDashletFactory extends AbstractDashletFactory {
     /**
-     * Method for instatiating a new {@link Dashlet} instance.
+     * Method for creating a new {@link Dashlet} instance.
      *
      * @param dashletSpec the {@link DashletSpec} to use
      * @return a new {@link Dashlet} instance
