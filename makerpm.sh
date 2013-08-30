@@ -9,7 +9,7 @@ export PATH="$TOPDIR/maven/bin:$JAVA_HOME/bin:$PATH"
 
 cd "$TOPDIR"
 
-BINARIES="expect rpmbuild rsync"
+BINARIES="expect rpmbuild rsync makensis"
 
 function exists() {
     which "$1" >/dev/null 2>&1
