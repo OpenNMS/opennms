@@ -97,14 +97,4 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
         }
         return retVal.toString();
     }
-
-    /**
-     * <p>getResponse</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    protected String getResponse() {
-        return getResponseList().toArray().toString();
-    }
-    
 }
