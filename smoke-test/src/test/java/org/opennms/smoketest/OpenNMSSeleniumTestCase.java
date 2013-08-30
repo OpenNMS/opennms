@@ -46,7 +46,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true, "DEBUG");
+        final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
+        MockLogAppender.setupLogging(true, logLevel);
 
         WebDriver driver = null;
 
