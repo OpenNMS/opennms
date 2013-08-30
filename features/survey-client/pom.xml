@@ -13,7 +13,7 @@
     <artifactId>survey-client</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OpenNMS Survey Client</name>
+    <name>OpenNMS Features Survey Client</name>
     <description>Client for posting anonymous survey info to OpenNMS.com</description>
     
     <properties>

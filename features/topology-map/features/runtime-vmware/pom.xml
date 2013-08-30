@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-vmware</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (VMware)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (VMware)</name>
 
   <description>Runtime and plugins for the OpenNMS VMware topology web app.</description>
 

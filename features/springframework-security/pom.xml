@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.springframework-security</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Spring Framework Security</name>
+  <name>OpenNMS Features Spring Framework Security</name>
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>

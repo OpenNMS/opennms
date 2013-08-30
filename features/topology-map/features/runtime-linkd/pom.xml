@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-linkd</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (Linkd)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (Linkd)</name>
 
   <description>Linkd-based runtime and plugins for the OpenNMS topology web app.</description>
 

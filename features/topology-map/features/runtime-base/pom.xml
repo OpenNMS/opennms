@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-base</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (Base)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (Base)</name>
 
   <description>Base runtime and plugins for the OpenNMS topology web app.</description>
 

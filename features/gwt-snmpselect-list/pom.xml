@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS GWT Snmp Select List</name>
+  <name>OpenNMS Features GWT Snmp Select List</name>
 
 
   <dependencies>

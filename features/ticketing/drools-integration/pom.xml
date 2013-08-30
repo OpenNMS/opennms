@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ticketing</groupId>
   <artifactId>org.opennms.features.ticketing.drools-integration</artifactId>
-  <name>OpenNMS Drools Integration for Ticketing</name>
+  <name>OpenNMS Features Drools Integration for Ticketing</name>
   <url>http://www.opennms.org/</url>
   <dependencies>
     <dependency>

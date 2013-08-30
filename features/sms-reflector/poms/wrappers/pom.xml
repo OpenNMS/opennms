@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>wrapper-bundle-settings</artifactId>
-  <name>sms-reflector - wrapper instructions</name>
+  <name>OpenNMS Features SMS-Reflector - wrapper instructions</name>
   <!--
    | don't apply project details to wrapped jars
   -->

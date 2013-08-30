@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-dev</artifactId>
 
-  <name>OpenNMS :: Topology :: Development</name>
+  <name>OpenNMS Features :: Topology :: Development</name>
 
   <description>Useful utilities for the OpenNMS OSGi container.</description>
 
