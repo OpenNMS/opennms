@@ -31,11 +31,9 @@ package org.opennms.protocols.vmware;
 import com.vmware.vim25.*;
 import com.vmware.vim25.mo.*;
 import com.vmware.vim25.mo.util.MorUtil;
-
 import org.apache.commons.cli.*;
 
 import javax.net.ssl.*;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -186,7 +184,7 @@ public class VmwareConfigBuilder {
         }
 
         String[] nameChunks = {"unkown", "protos", "threshold", "datastore", "alloc", "utilization", "normalized", "normal", "shares", "depth", "resource", "overhead", "swap", "rate", "metric", "number", "averaged", "load", "decompression", "compression", "device", "latency",
-                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched"};
+                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched", "percentage", "seeks", "consumed", "medium", "small", "large", "active", "observed", "time"};
 
         for (String chunk : nameChunks) {
             name = condenseName(name, chunk);
@@ -369,7 +367,7 @@ public class VmwareConfigBuilder {
         }
         final String content = include.toString();
 
-        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + content.subSequence(0, content.length()-4) + "\n\n" + buffer.toString());
+        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + content.subSequence(0, content.length() - 4) + "\n\n" + buffer.toString());
     }
 
     private void saveFile(String filename, String contents) {
