@@ -173,7 +173,7 @@ run_tests() {
 
 	do_log "bamboo.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
+		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 
