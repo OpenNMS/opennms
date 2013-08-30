@@ -186,14 +186,12 @@
 		<dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
 
 		 <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
 			<classifier>sources</classifier>
 			<scope>${scope.type}</scope>
 		</dependency>
