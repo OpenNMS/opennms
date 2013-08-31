@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector</groupId>
   <artifactId>rxtx-commands</artifactId>
-  <name>${bundle.symbolicName}</name>
+  <name>OpenNMS Features SMS-Reflector RXTX Commands</name>
   <packaging>bundle</packaging>
   <dependencies>
     <!--

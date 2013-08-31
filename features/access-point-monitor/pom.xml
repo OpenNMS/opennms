@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.access-point-monitor</artifactId>
-  <name>OpenNMS Access Point Monitor</name>
+  <name>OpenNMS Features Access Point Monitor</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

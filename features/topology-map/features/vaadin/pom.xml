@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>vaadin</artifactId>
 
-  <name>OpenNMS :: Topology :: Vaadin + Dependencies</name>
+  <name>OpenNMS Features :: Topology :: Vaadin + Dependencies</name>
 
   <description>The Vaadin web application framework.</description>
 

@@ -12,7 +12,7 @@
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>features</artifactId>
 
-  <name>OpenNMS :: Topology :: Features</name>
+  <name>OpenNMS Features Topology Features</name>
 
   <packaging>pom</packaging>
 

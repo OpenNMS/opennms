@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller (JNLP)</name>
+  <name>OpenNMS Features Remote Poller (JNLP)</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>

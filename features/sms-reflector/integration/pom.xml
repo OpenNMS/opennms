@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.sms-reflector</groupId>
   <artifactId>integration</artifactId>
-  <name>Non OSGi Integration</name>
+  <name>OpenNMS Features SMS-Reflector Non OSGi Integration</name>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>

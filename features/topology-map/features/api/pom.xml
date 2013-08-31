@@ -12,7 +12,7 @@
     <groupId>org.opennms.osgi.features.topology</groupId>
     <artifactId>opennms-topology-api</artifactId>
 
-    <name>OpenNMS :: Topology :: API</name>
+    <name>OpenNMS Features :: Topology :: API</name>
 
     <description>APIs for creating topology OSGi plugins.</description>
 
