@@ -42,7 +42,7 @@
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
-        org.opennms.web.springframework.security.Authentication"
+        org.opennms.web.api.Authentication"
 %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

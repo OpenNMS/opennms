@@ -177,6 +177,11 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator-annotation-processor</artifactId>
+      <version>4.1.0.Final</version>
+    </dependency>
     <!-- Other version overrides -->
     <dependency>
       <groupId>commons-beanutils</groupId>

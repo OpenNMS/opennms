@@ -15,7 +15,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gwt.version>2.3.0</gwt.version>
         <gwt.plugin.version>2.2.0</gwt.plugin.version>
         <guava.version>10.0.1</guava.version>
         <quartz.version>2.1.5</quartz.version>
@@ -77,6 +76,7 @@
                     <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
                     <noServer>true</noServer>
                     <port>8080</port>
+                    <draftCompile>false</draftCompile>
                     <compileReport>false</compileReport>
                 </configuration>
                 <executions>
@@ -91,19 +91,23 @@
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-dev</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.google.gwt</groupId>
                         <artifactId>gwt-user</artifactId>
-                        <version>${gwt.version}</version>
+                        <version>${gwtVersion}</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <draftCompile>false</draftCompile>
+                    <compileReport>false</compileReport>
+                </configuration>
                 <executions>
                     <execution>
                         <configuration>
@@ -115,6 +119,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -130,16 +146,10 @@
         						<pluginExecution>
         							<pluginExecutionFilter>
         								<groupId>com.vaadin</groupId>
-        								<artifactId>
-        									vaadin-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[1.0.2,)
-        								</versionRange>
+        								<artifactId>vaadin-maven-plugin</artifactId>
+        								<versionRange>[1.0.2,)</versionRange>
         								<goals>
-        									<goal>
-        										update-widgetset
-        									</goal>
+        									<goal>update-widgetset</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -148,15 +158,9 @@
         						</pluginExecution>
         						<pluginExecution>
         							<pluginExecutionFilter>
-        								<groupId>
-        									org.codehaus.mojo
-        								</groupId>
-        								<artifactId>
-        									gwt-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[2.2.0,)
-        								</versionRange>
+        								<groupId>org.codehaus.mojo</groupId>
+        								<artifactId>gwt-maven-plugin</artifactId>
+        								<versionRange>[2.2.0,)</versionRange>
         								<goals>
         									<goal>resources</goal>
         								</goals>
@@ -167,19 +171,11 @@
         						</pluginExecution>
         						<pluginExecution>
         							<pluginExecutionFilter>
-        								<groupId>
-        									org.opennms.maven.plugins
-        								</groupId>
-        								<artifactId>
-        									features-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[1.0.1,)
-        								</versionRange>
+        								<groupId>org.opennms.maven.plugins</groupId>
+        								<artifactId>features-maven-plugin</artifactId>
+        								<versionRange>[1.0.1,)</versionRange>
         								<goals>
-        									<goal>
-        										generate-features-xml
-        									</goal>
+        									<goal>generate-features-xml</goal>
         								</goals>
         							</pluginExecutionFilter>
         							<action>
@@ -251,7 +247,7 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
