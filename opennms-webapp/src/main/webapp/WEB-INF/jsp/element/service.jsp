@@ -43,7 +43,7 @@
         org.opennms.netmgt.config.poller.Parameter,
         org.opennms.netmgt.model.OnmsMonitoredService,
         org.opennms.netmgt.poller.ServiceMonitor,
-        org.opennms.web.springframework.security.Authentication
+        org.opennms.web.api.Authentication
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

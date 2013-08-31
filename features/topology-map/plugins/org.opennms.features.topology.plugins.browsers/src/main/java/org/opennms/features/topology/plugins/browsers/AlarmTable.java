@@ -35,9 +35,11 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
-import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.web.api.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;
@@ -251,13 +253,19 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	@Override
 	public Component[] getExtraComponents() {
-		return new Component[] {
-		        m_refreshButton,
+		if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
+			return new Component[] {
+				m_refreshButton
+			};
+		} else {
+			return new Component[] {
+				m_refreshButton,
 				m_selectAllButton,
 				m_resetButton,
 				m_ackCombo,
 				m_submitButton
-		};
+			};
+		}
 	}
 	
 	private String getUser() {
