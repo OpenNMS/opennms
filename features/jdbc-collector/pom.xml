@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.jdbc-collector</artifactId>
-  <name>OpenNMS JDBC Collector</name>
+  <name>OpenNMS Features JDBC Collector</name>
   <build>
     <plugins>
       <plugin>

@@ -8,6 +8,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.provisioning</groupId>
   <artifactId>org.opennms.features.provisioning.api</artifactId>
-  <name>OpenNMS Provisioning API</name>
+  <name>OpenNMS Features Provisioning API</name>
   <url>http://www.opennms.org/</url>
 </project>

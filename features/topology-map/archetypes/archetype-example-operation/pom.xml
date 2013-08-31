@@ -7,7 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
 
-  <name>OpenNMS Topology Operation Archetype</name>
+  <name>OpenNMS Features Topology Operation Archetype</name>
 
   <build>
     <extensions>

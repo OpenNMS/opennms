@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.ticketing</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Ticketing</name>
+  <name>OpenNMS Features Ticketing</name>
   <modules>
     <module>api</module>
     <module>drools-integration</module>
