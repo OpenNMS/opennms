@@ -98,6 +98,9 @@ public class NodeDaoTest implements InitializingBean {
     @Autowired
     TransactionTemplate m_transTemplate;
 
+    private static boolean m_populated = false;
+    private static DatabasePopulator m_lastPopulator;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         org.opennms.core.utils.BeanUtils.assertAutowiring(this);
@@ -105,16 +108,25 @@ public class NodeDaoTest implements InitializingBean {
 
     @BeforeTransaction
     public void setUp() {
-        m_populator.populateDatabase();
+        try {
+            if (!m_populated) {
+                m_populator.populateDatabase();
+                m_lastPopulator = m_populator;
+            }
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        } finally {
+            m_populated = true;
+        }
     }
 
     @AfterTransaction
     public void tearDown() {
-        m_populator.resetDatabase();
+        //m_populator.resetDatabase();
     }
 
     public OnmsNode getNode1() {
-        return m_populator.getNode1();
+        return m_lastPopulator.getNode1();
     }
 
     public JdbcTemplate getJdbcTemplate() {
