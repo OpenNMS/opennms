@@ -434,6 +434,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 			break;
 		case WARNING:
 			level = SyslogConstants.LEVEL_WARN;
+			break;
 		case NORMAL:
 			level = SyslogConstants.LEVEL_NOTICE;
 			break;

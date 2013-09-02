@@ -521,13 +521,16 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             
             try {
-                String s[] = reader.readLine().split("x");
+                String line = null;
+                if ((line = reader.readLine()) == null) {
+                    throw new IOException("No output from the createGraph() command");
+                }
+                String s[] = line.split("x");
                 width = Integer.parseInt(s[0]);
                 height = Integer.parseInt(s[1]);
                 
                 List<String> printLinesList = new ArrayList<String>();
                 
-                String line = null;
                 while ((line = reader.readLine()) != null) {
                     printLinesList.add(line);
                 }
