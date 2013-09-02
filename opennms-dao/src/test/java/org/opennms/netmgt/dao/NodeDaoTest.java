@@ -532,9 +532,9 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testQuery2() {
-        assertNotNull(m_populator);
-        assertNotNull(m_populator.getNode6());
-        OnmsNode n = getNodeDao().get(m_populator.getNode6().getId());
+        assertNotNull(m_lastPopulator);
+        assertNotNull(m_lastPopulator.getNode6());
+        OnmsNode n = getNodeDao().get(m_lastPopulator.getNode6().getId());
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());
