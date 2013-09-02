@@ -37,7 +37,7 @@ public interface RtConfigDao {
     public String getPassword();
     public String getQueue();
     public List<String> getValidClosedStatus();
-    public List<Integer> getValidOpenStatus();
+    public List<String> getValidOpenStatus();
     public List<String> getValidCancelledStatus();
     public String getOpenStatus();
     public String getClosedStatus();
