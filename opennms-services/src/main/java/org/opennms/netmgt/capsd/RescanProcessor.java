@@ -62,6 +62,10 @@ import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -73,6 +77,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * This class is designed to rescan all the managed interfaces for a specified
@@ -182,7 +188,7 @@ public final class RescanProcessor implements Runnable {
     private int m_nodeId;
     
     private static Set<Integer> m_queuedRescanTracker;
-
+    
     /**
      * Constructor.
      * 

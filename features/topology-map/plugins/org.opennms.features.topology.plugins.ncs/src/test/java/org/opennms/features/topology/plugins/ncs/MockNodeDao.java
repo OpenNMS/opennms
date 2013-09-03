@@ -268,4 +268,9 @@ public class MockNodeDao implements NodeDao {
         return null;
     }
 
+    @Override
+    public OnmsNode getPathOutageByNodeId(Integer nodeId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

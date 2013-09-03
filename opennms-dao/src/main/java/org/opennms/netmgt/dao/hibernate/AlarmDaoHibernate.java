@@ -81,4 +81,9 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
         return findObjects(AlarmSummary.class,sql.toString());
     }
+    
+    public List<OnmsAlarm> findByNodeId(Long nodeId) {
+        String hql = "from OnmsAlarm as alarm where alarm.node.id = ?";
+        return find(hql, nodeId);
+    }
 }

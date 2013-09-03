@@ -114,4 +114,9 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public Integer getNodeIdByIpAddr(String ipAddr) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
 }

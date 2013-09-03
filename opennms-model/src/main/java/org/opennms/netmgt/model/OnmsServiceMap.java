@@ -30,12 +30,22 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.core.style.ToStringCreator;
 
 
 /**
  * <p>OnmsServiceMap class.</p>
  */
+
+@Entity
+@Table(name="servicemap")
 public class OnmsServiceMap extends OnmsEntity implements Serializable {
 
     /**
@@ -76,6 +86,10 @@ public class OnmsServiceMap extends OnmsEntity implements Serializable {
  * @hibernate.generator-param name="sequence" value="svcMapNxtId"
  * @return a {@link java.lang.Integer} object.
  */
+    @Id
+    @Column(name="id")
+    @SequenceGenerator(name="serviceMapSequence", sequenceName="svcMapNxtId")
+    @GeneratedValue(generator="serviceMapSequence")
 public Integer getId() {
         return m_id;
     }
@@ -94,6 +108,7 @@ public Integer getId() {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="ipaddr")
     public String getIpAddr() {
         return this.m_ipAddr;
     }
@@ -112,6 +127,7 @@ public Integer getId() {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="servicemapname")
     public String getServiceMapName() {
         return this.m_serviceMapName;
     }

@@ -134,4 +134,35 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
         return null;
     }
 
+    @Override
+    public List<OnmsMonitoredService> findByIpaddr(String ipAddr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsMonitoredService> getByServiceName(String service) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsMonitoredService> getByIpaddr(String ipAddr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsMonitoredService> getByNodeId(Integer nodeId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsMonitoredService> getByNodeIdIpAddrServiceName(
+            Integer nodeId, String ipAddr, String service) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

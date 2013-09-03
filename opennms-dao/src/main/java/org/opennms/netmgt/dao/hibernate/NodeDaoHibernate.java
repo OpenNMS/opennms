@@ -89,6 +89,11 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return label;
     }
 
+    public String getTypeForId(Integer id) {
+        String type = null;
+        type = findObjects(String.class, "select n.type from OnmsNode as n where n.id = ?", id).get(0);
+        return type;
+    }
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
@@ -413,5 +418,23 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         Integer nextNodeId = null;
         nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);
         return nextNodeId;
+    }
+    
+    public List<OnmsNode> findNodeIdsForInterfaceAndLabel(String nodeLabel, String ipAddr) {
+        // SELECT node.nodeid 
+        // FROM node, ipinterface 
+        // WHERE node.nodeid = ipinterface.nodeid 
+        // AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'
+        String query = "select node.id " +
+                        "from OnmsNode as node, OnmsIpInterface as ipInterface " +
+                        "where node.id = ipInterface.node.id " +
+                        "and node.label = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D' and node.type != 'D'";
+        return find(query, nodeLabel, ipAddr);
+    }
+    
+    @Override
+    public OnmsNode getPathOutageByNodeId(Integer nodeId) {
+        String query = "from pathoutage where nodeid = ?";
+        return findUnique(query, nodeId);
     }
 }

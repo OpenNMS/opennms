@@ -147,7 +147,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private String m_foreignSource;
     
     private String m_foreignId;
-
+    
     /** persistent field */
     private OnmsDistPoller m_distPoller;
 

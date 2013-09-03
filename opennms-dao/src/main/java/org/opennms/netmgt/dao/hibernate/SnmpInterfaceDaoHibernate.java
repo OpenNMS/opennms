@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
@@ -56,6 +58,14 @@ public class SnmpInterfaceDaoHibernate extends
         
     }
 
+    public List<OnmsSnmpInterface> findListByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(ifIndex, "ifIndex may not be null");
+        return find("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?", 
+                          nodeId, 
+                          ifIndex);
+        
+    }
 
 
     /** {@inheritDoc} */

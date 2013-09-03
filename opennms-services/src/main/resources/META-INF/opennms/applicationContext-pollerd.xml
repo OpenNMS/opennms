@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
@@ -12,6 +13,8 @@
 	">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:annotation-config />
+    <context:component-scan base-package="org.opennms.netmgt.poller"/>
     
     <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.DefaultQueryManager">
         <property name="dataSource" ref="dataSource" />
@@ -29,13 +32,14 @@
         <constructor-arg ref="pollContext" />
     </bean>
     
-    <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
+    <bean name="daemon" class="org.opennms.netmgt.poller.Poller" scope="singleton">
       <property name="dataSource" ref="dataSource" />
       <property name="eventManager" ref="eventIpcManager" />
       <property name="network" ref="pollableNetwork" />
       <property name="queryManager" ref="pollerQueryManager" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="pollOutagesConfig" ref="pollOutagesConfig" />
+      <property name="outageDao" ref="outageDao" />
     </bean>
     
 </beans>

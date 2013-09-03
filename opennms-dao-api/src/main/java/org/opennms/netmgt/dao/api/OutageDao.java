@@ -85,5 +85,8 @@ public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
      * @return A list of outages.
      */
     List<OutageSummary> getNodeOutageSummaries(int rows);
-
+    
+    List<OnmsOutage> findbyNodeIdIpAddrServiceId(Integer nodeId, String ipAddr, Integer serviceId);
+    
+    List<OnmsOutage> findbyNodeIdAndIpAddr(Integer nodeId, String ipAddr);
 }

@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
@@ -47,6 +48,8 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
@@ -62,6 +65,8 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 
 /**
  * <p>Poller class.</p>
@@ -75,7 +80,7 @@ public class Poller extends AbstractServiceDaemon {
 
     private final static String LOG4J_CATEGORY = "poller";
 
-    private final static Poller m_singleton = new Poller();
+//    private final static Poller m_singleton = new Poller();
 
     private boolean m_initialized = false;
 
@@ -94,6 +99,8 @@ public class Poller extends AbstractServiceDaemon {
     private EventIpcManager m_eventMgr;
 
     private DataSource m_dataSource;
+    
+    private OutageDaoHibernate m_outageDao;
 
     /**
      * <p>Constructor for Poller.</p>
@@ -238,6 +245,15 @@ public class Poller extends AbstractServiceDaemon {
         m_scheduler = scheduler;
     }
 
+    public OutageDaoHibernate getOutageDao() {
+        return m_outageDao;
+    }
+    
+    @Autowired
+    public void setOutageDao(OutageDaoHibernate outageDao) {
+        m_outageDao = outageDao;
+    }
+
     /**
      * <p>onInit</p>
      */
@@ -248,7 +264,6 @@ public class Poller extends AbstractServiceDaemon {
         LOG.debug("init: serviceUnresponsive behavior: {}", (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
-        
         try {
             LOG.debug("init: Closing outages for unmanaged services");
             
@@ -291,17 +306,12 @@ public class Poller extends AbstractServiceDaemon {
      */
     private void closeOutagesForUnmanagedServices() {
         Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
-
-        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
-        svcUpdater.execute(closeTime);
         
-        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
-        Updater ifUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
-        ifUpdater.execute(closeTime);
-        
-
-
+        OnmsOutage outage = m_outageDao.findByServiceStatus();
+        outage.setIfRegainedService(closeTime);
+        LOG.info("******************************CLEARED******************");
+        outage = m_outageDao.findByIpInterfaceIsManaged();
+        outage.setIfRegainedService(closeTime);
     }
     
     /**
@@ -313,9 +323,14 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId));
+        List<OnmsOutage> outageList = m_outageDao.findbyNodeId(nodeId);
+        for(OnmsOutage outage : outageList) {
+            if(outage.getIfRegainedService() == null) {
+                outage.setIfRegainedService(closeTime);
+                outage.getServiceRegainedEvent().setId(eventId);
+                m_outageDao.update(outage);
+            }
+        }
     }
     
     /**
@@ -328,9 +343,14 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr);
+        List<OnmsOutage> outageList = m_outageDao.findbyNodeIdAndIpAddr(nodeId, ipAddr);
+        for(OnmsOutage outage : outageList) {
+            if(outage.getIfRegainedService() == null) {
+                outage.setIfRegainedService(closeTime);
+                outage.getServiceRegainedEvent().setId(eventId);
+                m_outageDao.update(outage);
+            }
+        }
     }
     
     /**
@@ -344,9 +364,14 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
-        final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
-        Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
-        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr, serviceName);
+        List<OnmsOutage> outageList = m_outageDao.findbyNodeIdIpAddrAndServiceName(nodeId, ipAddr, serviceName);
+        for(OnmsOutage outage : outageList) {
+            if(outage.getIfRegainedService() == null) {
+                outage.setIfRegainedService(closeTime);
+                outage.getServiceRegainedEvent().setId(eventId);
+                m_outageDao.update(outage);
+            }
+        }
     }
 
     private void createScheduler() {
@@ -418,14 +443,14 @@ public class Poller extends AbstractServiceDaemon {
 		getScheduler().resume();
 	}
 
-    /**
-     * <p>getInstance</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.Poller} object.
-     */
-    public static Poller getInstance() {
-        return m_singleton;
-    }
+//    /**
+//     * <p>getInstance</p>
+//     *
+//     * @return a {@link org.opennms.netmgt.poller.Poller} object.
+//     */
+//    public static Poller getInstance() {
+//        return m_singleton;
+//    }
 
     /**
      * <p>getServiceMonitor</p>

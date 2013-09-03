@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,5 +191,46 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             }
             return retval;
         }
+    }
+
+    public Date findLastPollTimeByNodeId(final Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        // SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')
+
+        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isManaged in ('M','N')", nodeId).getIpLastCapsdPoll();
+    }
+    
+    public int updateLastPollTime(Date ipLastCapsdPoll, String ipAddr, Integer nodeId ) {
+        String query = "update OnmsIpInterface as ipInterface set ipInterface.ipLastCapsdPoll = ? where ipInterface.node.id = ? and ipInterface.ipAddress = ?";
+        return queryInt(query,ipLastCapsdPoll, nodeId, ipAddr);
+    }
+    
+    public int getCountOfOtherInterfacesOnNode(long nodeId, String ipAddr) {
+        //  SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'
+        String query = "select COUNT(*) from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D'";
+        int count = queryInt(query, nodeId, ipAddr);
+        LOG.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+        return count;
+    }
+    
+    public int getIpInterfaceStatus(String nodeLabel, String ipaddr) {
+        // SELECT nodelabel, ipaddr 
+        // FROM node, ipinterface 
+        // WHERE node.nodeid = ipinterface.nodeid 
+        // AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'
+        String query = "from OnmsNode as node, OnmsIpInterface as ipInterface " +
+        		"where node.id = ipInterface.node.id " +
+        		"and node.label = ? and ipInterface.ipAddress = ? and node.type != 'D' and ipInterface.isManaged != 'D'";
+        
+        return queryInt(query, nodeLabel, ipaddr);
+    }
+    
+    @Override
+    public Integer getNodeIdByIpAddr(String ipAddr) {
+        String query = "select node.id from OnmsNode as node, OnmsIpInterface as ipInterface " +
+        		"where node.id = ipInterface.node.id " +
+        		"and ipInterface.ipAddress = ?";
+        
+        return queryInt(query, ipAddr);
     }
 }

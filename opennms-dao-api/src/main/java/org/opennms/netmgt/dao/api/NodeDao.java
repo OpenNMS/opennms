@@ -225,4 +225,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     Integer getNextNodeId (Integer nodeId);
     
     Integer getPreviousNodeId (Integer nodeId);
+    
+    OnmsNode getPathOutageByNodeId(Integer nodeId);
 }
