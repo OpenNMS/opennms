@@ -308,8 +308,7 @@ public abstract class JaxbUtils {
 		return context;
 	}
 
-	private static Schema getValidatorFor(final Class<?> origClazz) {
-		final Class<?> clazz = (Class<?>)(origClazz instanceof Class<?> ? origClazz : origClazz.getClass());
+	private static Schema getValidatorFor(final Class<?> clazz) {
 		LOG.trace("finding XSD for class {}", clazz);
 
 		if (m_schemas.containsKey(clazz)) {

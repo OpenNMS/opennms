@@ -220,7 +220,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
                         future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
                         future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
-                }else if(cause instanceof Throwable) {
+                } else {
                     LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
                     detectFuture.setServiceDetected(false);
                 }

@@ -255,7 +255,7 @@ public class DNSAddressRequest {
         // Synchronize on the class, not
         // the instance.
         //
-        synchronized (getClass()) {
+        synchronized (DNSAddressRequest.class) {
             m_reqID = globalID % 65536;
             globalID = m_reqID + 1; // prevents negative numbers.
         }

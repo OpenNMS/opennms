@@ -208,7 +208,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
                     future.getChannel().bind(localAddress);
                     future.getChannel().connect(m_remoteAddress);
                 }
-            } else if(cause instanceof Throwable) {
+            } else {
                 LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
                 future.setFailure(new ServiceDetectionFailedException());
             } 
