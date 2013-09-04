@@ -465,6 +465,22 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <doCheck>false</doCheck>
+          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+          <revisionOnScmFailure>0</revisionOnScmFailure>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals><goal>create</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
@@ -909,6 +925,12 @@
       <modules>
         <module>extensions</module>
         <module>opennms-tools</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>build-bamboo</id>
+      <modules>
+        <module>opennms-full-assembly</module>
       </modules>
     </profile>
 
