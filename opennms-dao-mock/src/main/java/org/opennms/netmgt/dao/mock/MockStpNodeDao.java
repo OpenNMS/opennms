@@ -74,7 +74,7 @@ public class MockStpNodeDao extends AbstractMockDao<OnmsStpNode,Integer> impleme
         final List<OnmsStpNode> nodes = new ArrayList<OnmsStpNode>();
         for (final OnmsStpNode node : findAll()) {
             if (node.getNode() != null && node.getNode().getId() != nodeId) continue;
-            if (node.getLastPollTime() != null || node.getLastPollTime().before(scanTime)) {
+            if (node.getLastPollTime() != null && node.getLastPollTime().before(scanTime)) {
                 nodes.add(node);
             }
         }

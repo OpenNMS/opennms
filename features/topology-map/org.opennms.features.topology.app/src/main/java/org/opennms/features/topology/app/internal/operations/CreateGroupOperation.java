@@ -78,8 +78,11 @@ public class CreateGroupOperation implements Constants, Operation {
 
 			@Override
 			public void setValue(String newValue) throws ReadOnlyException, ConversionException {
-				if (newValue == null) super.setValue(newValue);
-				if (newValue instanceof String) super.setValue(((String)newValue).trim());
+				if (newValue == null) {
+					super.setValue(newValue);
+				} else {
+					super.setValue(newValue.trim());
+				}
 			}
 
 			@Override
@@ -204,8 +207,7 @@ public class CreateGroupOperation implements Constants, Operation {
 			@Override
 			protected boolean isValidValue(String value) {
 				if (value == null) return false;
-				if ( !(value instanceof String)) return false;
-				return !((String)value).trim().isEmpty();
+				return !value.trim().isEmpty();
 			}
 
 			@Override

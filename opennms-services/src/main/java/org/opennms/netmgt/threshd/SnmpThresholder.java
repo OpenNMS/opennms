@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -188,10 +189,10 @@ public final class SnmpThresholder implements ServiceThresholder {
             }
             
             LOG.debug("initialize: dumping generic resources thresholds defined for {}:", snmpThresholdNetworkInterface);
-            for (String resourceType : config.getGenericResourceTypeMap().keySet()) {
-                for (Set<ThresholdEntity> entitySet : config.getGenericResourceTypeMap().get(resourceType).getThresholdMap().values()) {
+            for (Entry<String, ThresholdResourceType> resourceTypeEntry : config.getGenericResourceTypeMap().entrySet()) {
+                for (Set<ThresholdEntity> entitySet : resourceTypeEntry.getValue().getThresholdMap().values()) {
                 	for (ThresholdEntity entity : entitySet) {
-				LOG.debug("    {}.{}", resourceType, entity);
+				LOG.debug("    {}.{}", resourceTypeEntry.getKey(), entity);
                 	}
                 }
             }
@@ -362,8 +363,8 @@ public final class SnmpThresholder implements ServiceThresholder {
         
         Map<String, Set<ThresholdEntity>> thresholdMap = thresholdNetworkInterface.getNodeThresholdMap();
         
-        for(String threshKey  :thresholdMap.keySet()) {
-        	for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+        for(Set<ThresholdEntity> threshEntities : thresholdMap.values()) {
+        	for (ThresholdEntity thresholdEntity : threshEntities) {
         		processThresholdForNode(directory, thresholdNetworkInterface, date, events, thresholdEntity);
         	}
         }
@@ -461,8 +462,8 @@ public final class SnmpThresholder implements ServiceThresholder {
         Map<String, Set<ThresholdEntity>> thresholdMap = snmpIface.getInterfaceThresholdMap(ifLabel);
         
         Map<String, String> ifDataMap = new HashMap<String, String>();
-        for(String threshKey  :thresholdMap.keySet()) {
-        	for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+        for(Set<ThresholdEntity> threshEntities :thresholdMap.values()) {
+        	for (ThresholdEntity thresholdEntity : threshEntities) {
         		processThresholdForInterface(directory, snmpIface, date, events, thresholdEntity, ifLabel, ifDataMap);
         	}
         }
@@ -507,9 +508,9 @@ public final class SnmpThresholder implements ServiceThresholder {
         File[] files = directory.listFiles();
         for (File file : files) {
             String resource = file.getName();
-            for(String threshKey  :thresholdMap.keySet()) {
+            for(Set<ThresholdEntity> threshEntities : thresholdMap.values()) {
                 LOG.debug("checkResourceDir: resource=", resource);
-                for (ThresholdEntity thresholdEntity : thresholdMap.get(threshKey)) {
+                for (ThresholdEntity thresholdEntity : threshEntities) {
 	                String dsLabelValue = getDataSourceLabel(file, snmpIface, thresholdEntity);
 	                processThresholdForResource(file, snmpIface, date, events, thresholdEntity, dsLabelValue);
                 }

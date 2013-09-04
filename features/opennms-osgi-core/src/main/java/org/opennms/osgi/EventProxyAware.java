@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.rt;
+package org.opennms.osgi;
 
-import java.io.IOException;
-import java.util.List;
+import org.opennms.osgi.EventProxy;
 
-public interface RtConfigDao {
-
-    public String getUsername();
-    public String getPassword();
-    public String getQueue();
-    public List<String> getValidClosedStatus();
-    public List<String> getValidOpenStatus();
-    public List<String> getValidCancelledStatus();
-    public String getOpenStatus();
-    public String getClosedStatus();
-    public String getCancelledStatus();
-    public String getRequestor();
-    public String getBaseURL();
-    public int getTimeout();
-    public int getRetry();
-
-    public void save() throws IOException;
+public interface EventProxyAware {
+    void setEventProxy(EventProxy eventProxy);
 }

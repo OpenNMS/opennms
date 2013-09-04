@@ -78,8 +78,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * <p>expectClose</p>
      */
     protected void expectClose() {
-        send(LineOrientedRequest.Null, equals(null));
-        
+        send(LineOrientedRequest.Null, MultilineOrientedDetector.equals(null));
     }
     
     /**

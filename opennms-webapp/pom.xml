@@ -192,7 +192,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
         <executions>
             <execution>
                 <id>attach-artifacts</id>
@@ -673,7 +672,6 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

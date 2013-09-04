@@ -44,11 +44,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.IntSet;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.StorageStrategy;
@@ -474,14 +474,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
 
-        IntSet snmpNodes = findSnmpNodeDirectories(); 
+        Set<Integer> snmpNodes = findSnmpNodeDirectories(); 
         Set<String> responseTimeInterfaces = findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         // Only returns non-deleted nodes to fix NMS-2977
         // http://issues.opennms.org/browse/NMS-2977
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
-        IntSet nodesFound = new IntSet();
+        Set<Integer> nodesFound = new TreeSet<Integer>();
         for (Integer nodeId : nodeIds) {
             if (nodesFound.contains(nodeId.intValue())) {
                 continue;
@@ -527,7 +527,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
-        IntSet nodesFound = new IntSet();
+        Set<Integer> nodesFound = new TreeSet<Integer>();
         for (OnmsNode node : nodes) {
             if (nodesFound.contains(node.getId())) {
                 continue;
@@ -652,8 +652,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return m_domainResourceType.createChildResource(domain);
     }
 
-    private IntSet findSnmpNodeDirectories() {
-        IntSet nodes = new IntSet();
+    private Set<Integer> findSnmpNodeDirectories() {
+        Set<Integer> nodes = new TreeSet<Integer>();
         
         File directory = new File(getRrdDirectory(), SNMP_DIRECTORY);
         File[] nodeDirs = directory.listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
@@ -664,7 +664,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
         for (File nodeDir : nodeDirs) {
             try {
-                int nodeId = Integer.parseInt(nodeDir.getName());
+                Integer nodeId = Integer.valueOf(nodeDir.getName());
                 nodes.add(nodeId);
             } catch (NumberFormatException e) {
                 // skip... don't add

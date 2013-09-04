@@ -37,7 +37,7 @@
 	org.opennms.netmgt.config.users.User,
     org.springframework.web.context.WebApplicationContext,
     org.springframework.web.context.support.WebApplicationContextUtils,
-    org.opennms.web.springframework.security.Authentication"
+    org.opennms.web.api.Authentication"
 %>
 
 <%

@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -453,16 +454,16 @@ public class AvailCalculations extends Object {
         //
         TreeMap<Long, List<OutageSince>> treeMap = null;
 
-        for(String service : m_services.keySet()) {
+        for(Entry<String, Map<IfService, OutageSvcTimesList>> serviceEntry : m_services.entrySet()) {
             treeMap = new TreeMap<Long, List<OutageSince>>();
-            Map<IfService, OutageSvcTimesList> ifSvcOutageList = m_services.get(service);
+            Map<IfService, OutageSvcTimesList> ifSvcOutageList = serviceEntry.getValue();
 
-            for(IfService ifservice : ifSvcOutageList.keySet()) {
-                if (ifservice != null) {
-                    OutageSvcTimesList outageSvcList = (OutageSvcTimesList) ifSvcOutageList.get(ifservice);
+            for(Entry<IfService, OutageSvcTimesList> ifserviceEntry : ifSvcOutageList.entrySet()) {
+                if (ifserviceEntry.getKey() != null) {
+                    OutageSvcTimesList outageSvcList = ifserviceEntry.getValue();
                     if (outageSvcList != null) {
                         long rollingWindow = m_daysInLastMonth * ROLLING_WINDOW;
-                        List<OutageSince> svcOutages = outageSvcList.getServiceOutages(ifservice.getNodeName(), m_endLastMonthTime, rollingWindow);
+                        List<OutageSince> svcOutages = outageSvcList.getServiceOutages(ifserviceEntry.getKey().getNodeName(), m_endLastMonthTime, rollingWindow);
                         for(OutageSince outageSince : svcOutages) {
                             if (outageSince != null) {
                                 long outage = outageSince.getOutage() / 1000;
@@ -482,8 +483,7 @@ public class AvailCalculations extends Object {
             int top20Count = 0;
             Rows rows = new Rows();
 
-            loop : for(Long outage : treeMap.keySet()) {
-                List<OutageSince> list = treeMap.get(outage);
+            loop : for(List<OutageSince> list : treeMap.values()) {
                 for(OutageSince outageSince : list) {
                     top20Count++;
                     String nodeName = outageSince.getNodeName();
@@ -528,9 +528,9 @@ public class AvailCalculations extends Object {
             table.setRows(rows);
             Section section = new Section();
             section.setClassicTable(table);
-            section.setSectionName(label + " " + service);
-            section.setSectionTitle(label + " " + service);
-            section.setSectionDescr(descr + " " + service);
+            section.setSectionName(label + " " + serviceEntry.getKey());
+            section.setSectionTitle(label + " " + serviceEntry.getKey());
+            section.setSectionDescr(descr + " " + serviceEntry.getKey());
             section.setSectionIndex(m_sectionIndex);
             m_sectionIndex++;
             catSections.addSection(section);
@@ -617,15 +617,16 @@ public class AvailCalculations extends Object {
         //
         LOG.debug("Offenders {}", offenders);
         LOG.debug("Inside lastMoTopNOffenders");
-        Set<Double> percentValues = offenders.keySet();
-        Iterator<Double> iter = percentValues.iterator();
+        Set<Entry<Double, List<String>>> percentEntries = offenders.entrySet();
+        Iterator<Entry<Double, List<String>>> iter = percentEntries.iterator();
 
         Rows rows = new Rows();
         int top20Count = 0;
         loop: while (iter.hasNext()) {
-            Double percent = (Double) iter.next();
+            Entry<Double, List<String>> percentEntry = iter.next();
+            Double percent = percentEntry.getKey();
             if (percent.doubleValue() < 100.0) {
-                List<String> nodeNames = offenders.get(percent);
+                List<String> nodeNames = percentEntry.getValue();
                 if (nodeNames != null) {
                     ListIterator<String> lstIter = nodeNames.listIterator();
                     while (lstIter.hasNext()) {

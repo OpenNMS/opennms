@@ -147,7 +147,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * <p>expectClose</p>
      */
     public void expectClose() {
-        send(LineOrientedRequest.Null, equals(null));
+        send(LineOrientedRequest.Null, LineOrientedDetector.equals(null));
     }
     
     /** {@inheritDoc} */

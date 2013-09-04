@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

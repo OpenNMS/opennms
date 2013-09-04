@@ -419,7 +419,7 @@ public class DutySchedule {
                     ndays += 7;
                 }
                 LOG.debug("nextInSchedule: day {} is {} from today", i, ndays);
-                tempnext = (86400000 * ndays) - dateMillis + startMillis;
+                tempnext = (86400000L * (long)ndays) - dateMillis + startMillis;
                 if (tempnext < next || next == -1) {
                     next = tempnext;
                     LOG.debug("nextInSchedule: duty begins in {} millisecs", next);

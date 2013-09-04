@@ -125,13 +125,13 @@ public class AssetsUpdater {
     
     protected static void parseCsv2(final File csv) throws ClassNotFoundException, SQLException, IOException {
 	
-	String sql = m_dbQuery;
-	
-	Connection con = createConnection(false);
-	PreparedStatement ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-	
-	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
-	CSVReader csvReader = new CSVReader(br);
+		String sql = m_dbQuery;
+		
+		Connection con = createConnection(false);
+		PreparedStatement ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(csv)));
+		CSVReader csvReader = new CSVReader(br);
 		String[] line;
 		int lineCnt = 0;
 		while((line = csvReader.readNext()) != null) {
@@ -181,6 +181,7 @@ public class AssetsUpdater {
 			con.rollback();
 		}
 	
+		csvReader.close();
 		ps.close();
 		con.close();
 	}

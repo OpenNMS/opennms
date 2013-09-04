@@ -60,7 +60,6 @@
             <Bundle-Activator>${bundle.activator}</Bundle-Activator>
           </instructions>
         </configuration>
-        <version>2.3.7</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
