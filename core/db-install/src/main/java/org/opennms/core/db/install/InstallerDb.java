@@ -878,7 +878,7 @@ public class InstallerDb {
      * <p>getTableFromSQL</p>
      *
      * @param tableName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @return a {@link Table} object.
      * @throws java.lang.Exception if any.
      */
     public Table getTableFromSQL(String tableName) throws Exception {
@@ -989,7 +989,7 @@ public class InstallerDb {
      *
      * @param columns a {@link java.util.List} object.
      * @param column a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.dao.db.Column} object.
+     * @return a {@link Column} object.
      */
     public Column findColumn(final List<Column> columns, final String column) {
         for (final Column c : columns) {
@@ -1033,7 +1033,7 @@ public class InstallerDb {
      * <p>getTableFromDB</p>
      *
      * @param tableName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @return a {@link Table} object.
      * @throws java.lang.Exception if any.
      */
     public Table getTableFromDB(final String tableName) throws Exception {
@@ -1264,8 +1264,8 @@ public class InstallerDb {
      * <p>changeTable</p>
      *
      * @param table a {@link java.lang.String} object.
-     * @param oldTable a {@link org.opennms.netmgt.dao.db.Table} object.
-     * @param newTable a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @param oldTable a {@link Table} object.
+     * @param newTable a {@link Table} object.
      * @throws java.lang.Exception if any.
      */
     public void changeTable(final String table, final Table oldTable, final Table newTable) throws Throwable {
@@ -1654,7 +1654,7 @@ public class InstallerDb {
      * <p>checkOldTables</p>
      *
      * @throws java.sql.SQLException if any.
-     * @throws org.opennms.netmgt.dao.db.BackupTablesFoundException if any.
+     * @throws BackupTablesFoundException if any.
      */
     public void checkOldTables() throws SQLException, BackupTablesFoundException {
     	final Statement st = getConnection().createStatement();
@@ -1725,7 +1725,7 @@ public class InstallerDb {
     /**
      * <p>checkConstraint</p>
      *
-     * @param constraint a {@link org.opennms.netmgt.dao.db.Constraint} object.
+     * @param constraint a {@link Constraint} object.
      * @throws java.lang.Exception if any.
      */
     public void checkConstraint(final Constraint constraint) throws Exception {
@@ -1914,7 +1914,7 @@ public class InstallerDb {
     /**
      * <p>fixConstraint</p>
      *
-     * @param constraint a {@link org.opennms.netmgt.dao.db.Constraint} object.
+     * @param constraint a {@link Constraint} object.
      * @param removeRows a boolean.
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -2481,7 +2481,7 @@ public class InstallerDb {
     /**
      * <p>getIndexDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.db.IndexDao} object.
+     * @return a {@link IndexDao} object.
      */
     public IndexDao getIndexDao() {
         return m_indexDao;
@@ -2536,7 +2536,7 @@ public class InstallerDb {
     /**
      * <p>getTriggerDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.db.TriggerDao} object.
+     * @return a {@link TriggerDao} object.
      */
     public TriggerDao getTriggerDao() {
         return m_triggerDao;
@@ -2636,7 +2636,7 @@ public class InstallerDb {
      * <p>addColumnReplacement</p>
      *
      * @param tableColumn a {@link java.lang.String} object.
-     * @param replacement a {@link org.opennms.netmgt.dao.db.ColumnChangeReplacement} object.
+     * @param replacement a {@link ColumnChangeReplacement} object.
      */
     public void addColumnReplacement(final String tableColumn, final ColumnChangeReplacement replacement) {
         m_columnReplacements.put(tableColumn, replacement);

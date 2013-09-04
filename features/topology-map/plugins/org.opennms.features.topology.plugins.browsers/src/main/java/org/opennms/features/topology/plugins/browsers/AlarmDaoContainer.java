@@ -61,9 +61,9 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.osgi.EventConsumer;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.osgi.EventConsumer;
 
 import java.util.*;
 

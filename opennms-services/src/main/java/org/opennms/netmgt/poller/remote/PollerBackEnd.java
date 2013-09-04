@@ -47,6 +47,10 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * @version $Id: $
  */
 public interface PollerBackEnd {
+    public static final String HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.hostAddress";
+    public static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
+    public static final String CONNECTION_HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.connectionHostAddress";
+    public static final String CONNECTION_HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.connectionHostName";
     
     /**
      * Return the set of available MonitoringLocationDefinitions

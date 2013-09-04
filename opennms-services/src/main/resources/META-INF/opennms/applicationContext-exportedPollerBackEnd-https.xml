@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <bean id="pollerBackEnd" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+  <bean id="pollerBackEnd" class="org.opennms.netmgt.poller.remote.RemoteHostHttpInvokerServiceExporter">
     <property name="service" ref="backend" />
     <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd" />
   </bean>

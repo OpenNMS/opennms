@@ -116,51 +116,6 @@ public class DashletSpecEditor extends Panel {
         gridLayout.setMargin(true);
 
         /**
-         * Setting up the dashlet selection
-         */
-
-        m_dashletSelect = new NativeSelect();
-
-        m_dashletSelect.setCaption("Dashlet");
-
-        updateDashletSelection(dashletSelector.getDashletFactoryList());
-
-        m_dashletSelect.setImmediate(true);
-        m_dashletSelect.setNewItemsAllowed(false);
-        m_dashletSelect.setNullSelectionItemId("Undefined");
-        m_dashletSelect.select(dashletSpec.getDashletName());
-
-        m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                if (m_savingDisabled) {
-                    return;
-                }
-
-                if (valueChangeEvent.getProperty().getValue() == null) {
-                    m_dashletSpec.setDashletName("Undefined");
-                } else {
-                    m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
-                }
-
-                m_dashletSpec.getParameters().clear();
-
-                Map<String, String> requiredParameters = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters();
-
-                for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-                    m_dashletSpec.getParameters().put(entry.getKey(), entry.getValue());
-                }
-
-                m_propertiesButton.setEnabled(requiredParameters.size() > 0);
-
-                WallboardProvider.getInstance().save();
-                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Dashlet");
-            }
-        });
-
-        FormLayout f1 = new FormLayout();
-        f1.addComponent(m_dashletSelect);
-
-        /**
          * Priority field setup, layout and adding listener and validator
          */
         final TextField priorityField = new TextField();
@@ -219,7 +174,6 @@ public class DashletSpecEditor extends Panel {
                 }
             }
         });
-
 
         /**
          * Duration field setup, layout and adding listener and validator
@@ -280,6 +234,61 @@ public class DashletSpecEditor extends Panel {
                 }
             }
         });
+
+        boolean boostable = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).isBoostable();
+
+        boostPriorityField.setEnabled(boostable);
+        boostDurationField.setEnabled(boostable);
+
+        /**
+         * Setting up the dashlet selection
+         */
+
+        m_dashletSelect = new NativeSelect();
+
+        m_dashletSelect.setCaption("Dashlet");
+
+        updateDashletSelection(dashletSelector.getDashletFactoryList());
+
+        m_dashletSelect.setImmediate(true);
+        m_dashletSelect.setNewItemsAllowed(false);
+        m_dashletSelect.setNullSelectionItemId("Undefined");
+        m_dashletSelect.select(dashletSpec.getDashletName());
+
+        m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                if (m_savingDisabled) {
+                    return;
+                }
+
+                if (valueChangeEvent.getProperty().getValue() == null) {
+                    m_dashletSpec.setDashletName("Undefined");
+                } else {
+                    m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
+                }
+
+                m_dashletSpec.getParameters().clear();
+
+                Map<String, String> requiredParameters = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters();
+
+                for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
+                    m_dashletSpec.getParameters().put(entry.getKey(), entry.getValue());
+                }
+
+                m_propertiesButton.setEnabled(requiredParameters.size() > 0);
+
+                boolean boostable = m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).isBoostable();
+
+                boostPriorityField.setEnabled(boostable);
+                boostDurationField.setEnabled(boostable);
+
+                WallboardProvider.getInstance().save();
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Dashlet");
+            }
+        });
+
+        FormLayout f1 = new FormLayout();
+        f1.addComponent(m_dashletSelect);
 
         /**
          * Adding the required input fields and buttons to several {@link FormLayout} instances for better layout.
