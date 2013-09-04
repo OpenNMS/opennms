@@ -70,7 +70,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
                 sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
             }
         } catch (Throwable e) {
-            new ServletException("Could not update notification status: " + e.getMessage(), e);
+            throw new ServletException("Could not update notification status: " + e.getMessage(), e);
         }
 
         // forward the request for proper display

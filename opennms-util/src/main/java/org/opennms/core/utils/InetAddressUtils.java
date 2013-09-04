@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
@@ -157,7 +158,7 @@ abstract public class InetAddressUtils {
         try {
             return InetAddress.getByAddress(ipAddrOctets);
         } catch (final UnknownHostException e) {
-            throw new IllegalArgumentException("Invalid IPAddress " + ipAddrOctets + " with length " + ipAddrOctets.length);
+            throw new IllegalArgumentException("Invalid IPAddress " + ArrayUtils.toString(ipAddrOctets) + " with length " + ipAddrOctets.length);
         }
 
     }
@@ -613,7 +614,7 @@ abstract public class InetAddressUtils {
     
     public static String macAddressBytesToString(byte[] macAddress) {
         if (macAddress.length != 6) {
-            throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+            throw new IllegalArgumentException("Cannot decode MAC address: " + ArrayUtils.toString(macAddress));
         }
         
         return String.format(

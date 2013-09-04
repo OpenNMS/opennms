@@ -210,7 +210,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        OnmsNode onmsNode = getNodeDao().get(1);
+        OnmsNode onmsNode = getNodeDao().get(nextNodeId);
         assertEquals(null, onmsNode.getForeignSource());
         assertEquals(null, onmsNode.getForeignId());
 

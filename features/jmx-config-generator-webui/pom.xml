@@ -66,7 +66,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.plugin.version}</version>
                 <configuration>
                     <!-- if you don't specify any modules, the plugin will find them -->
                     <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
@@ -240,26 +239,22 @@
        <dependency>
 			<groupId>org.opennms.osgi.features.topology</groupId>
 	      	<artifactId>vaadin</artifactId>
-	      	<version>${project.version}</version>
 	      	<type>pom</type>
 	    </dependency>
         <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwtVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
@@ -292,7 +287,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -304,8 +298,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>args4j</groupId>

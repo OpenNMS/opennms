@@ -187,7 +187,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
             @Override
             public void setContentType(final String contentType) {
                 super.setContentType(contentType);
-                super.addHeader("Content-Type", contentType);
             }
             
         };

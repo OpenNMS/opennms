@@ -162,7 +162,7 @@ public class CorrelationExample {
             		m_eventSequence.add(item);
             		
             	}
-            	
+            	scanner.close();
             }
     	}
     	

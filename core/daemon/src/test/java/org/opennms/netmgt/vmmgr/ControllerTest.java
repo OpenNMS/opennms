@@ -108,5 +108,6 @@ public class ControllerTest {
 //        assertEquals("the first log message should be an error", Level.ERROR, MockLogAppender.getEvents()[0].getLevel());
         
         MockLogAppender.resetEvents();
+        server.close();
     }
 }

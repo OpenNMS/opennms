@@ -219,8 +219,11 @@ public class DbElement implements Cloneable {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public void setType(String type) throws MapsException {
-        if (type.equals(MapsConstants.MAP_TYPE) || type.equals(MapsConstants.NODE_TYPE) || type.equals(MapsConstants.NODE_HIDE_TYPE) || type.equals(MapsConstants.MAP_HIDE_TYPE))  this.type = type;
-        new MapsException("Cannot create an Element with type " + type);
+        if (type.equals(MapsConstants.MAP_TYPE) || type.equals(MapsConstants.NODE_TYPE) || type.equals(MapsConstants.NODE_HIDE_TYPE) || type.equals(MapsConstants.MAP_HIDE_TYPE)) {
+            this.type = type;
+        } else {
+            throw new MapsException("Cannot create an Element with type " + type);
+        }
     }
 
     /**

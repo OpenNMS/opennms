@@ -130,6 +130,18 @@ public class RtTicketerPluginTest extends TestCase {
 
     }
 
+    public void testStateConversions() {
+        assertEquals(Ticket.State.OPEN, m_ticketer.rtToOpenNMSState("open"));
+        assertEquals(Ticket.State.OPEN, m_ticketer.rtToOpenNMSState("new"));
+        assertEquals(Ticket.State.CLOSED, m_ticketer.rtToOpenNMSState("resolved"));
+        assertEquals(Ticket.State.CANCELLED, m_ticketer.rtToOpenNMSState("cancelled"));
+        assertEquals(Ticket.State.OPEN, m_ticketer.rtToOpenNMSState("INVALID_STRING"));
+
+        assertEquals("new", m_ticketer.openNMSToRTState(Ticket.State.OPEN));
+        assertEquals("resolved", m_ticketer.openNMSToRTState(Ticket.State.CLOSED));
+        assertEquals("cancelled", m_ticketer.openNMSToRTState(Ticket.State.CANCELLED));
+    }
+
     private void assertTicketEquals(final Ticket existing, final Ticket retrieved) {
         assertEquals(existing.getId(), retrieved.getId());
         assertEquals(existing.getState(), retrieved.getState());

@@ -21,7 +21,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwtVersion}</version>
         <configuration>
           <cssFiles>
             <cssFile>gwt/theme/OpennmsTheme_rtl.css</cssFile>

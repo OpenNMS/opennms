@@ -17,7 +17,6 @@
       <plugin>
         <inherited>false</inherited>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -50,19 +49,16 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -77,7 +73,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
