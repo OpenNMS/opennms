@@ -10,7 +10,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt.tableresources</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS GWT Table Resources</name>
+  <name>OpenNMS Features GWT Table Resources</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -20,13 +20,11 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

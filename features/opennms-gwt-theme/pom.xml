@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS GWT Theme</name>
+  <name>OpenNMS Features GWT Theme</name>
 
   <build>
     
@@ -21,7 +21,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwtVersion}</version>
         <configuration>
           <cssFiles>
             <cssFile>gwt/theme/OpennmsTheme_rtl.css</cssFile>

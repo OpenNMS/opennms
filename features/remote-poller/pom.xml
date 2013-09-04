@@ -9,14 +9,13 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller</name>
+  <name>OpenNMS Features Remote Poller</name>
   <url>http://maven.apache.org</url>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>

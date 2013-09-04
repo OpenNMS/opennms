@@ -96,8 +96,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      */
     @Override
     public ConnectionProperties getBase() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             LOG.debug("Connections used: {}{}", getBaseUrl().getServer_url(), getBaseUrl().getDirectory());
             LOG.debug("RWS timeout(sec): {}", getBaseUrl().getTimeout());
             if (getBaseUrl().getUsername() == null) {
@@ -121,8 +121,8 @@ abstract public class RWSConfigManager implements RWSConfig {
     public ConnectionProperties getNextStandBy() {
         if (! hasStandbyUrl()) return null; 
 
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             final StandbyUrl standByUrl = getNextStandbyUrl();
             LOG.debug("Connections used: {}{}", standByUrl.getServer_url(), standByUrl.getDirectory());
             LOG.debug("RWS timeout(sec): {}", standByUrl.getTimeout());
@@ -157,8 +157,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      */
     @Override
     public BaseUrl getBaseUrl() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config.getBaseUrl();
         } finally {
             getReadLock().unlock();
@@ -172,8 +172,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      */
     @Override
     public StandbyUrl[] getStanbyUrls() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config.getStandbyUrl();
         } finally {
             getReadLock().unlock();
@@ -187,8 +187,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      */
     @Override
     public StandbyUrl getNextStandbyUrl() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             StandbyUrl standbyUrl = null;
             if (hasStandbyUrl()) {
                 if (m_cursor == m_config.getStandbyUrlCount()) {
@@ -209,8 +209,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      */
     @Override
     public boolean hasStandbyUrl() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return (m_config.getStandbyUrlCount() > 0);
         } finally {
             getReadLock().unlock();
@@ -226,8 +226,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      * @throws java.io.IOException if any.
      */
     protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
         } finally {
             getWriteLock().unlock();
@@ -240,8 +240,8 @@ abstract public class RWSConfigManager implements RWSConfig {
      * @return a {@link org.opennms.netmgt.config.rws.RwsConfiguration} object.
      */
     public RwsConfiguration getConfiguration() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();

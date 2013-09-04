@@ -231,13 +231,14 @@ public class DiscoveryConfigFactory {
      */
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-            getWriteLock().lock();
+            Writer fileWriter = null;
             try {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), "UTF-8");
+                getWriteLock().lock();
+                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), "UTF-8");
                 fileWriter.write(xml);
                 fileWriter.flush();
-                fileWriter.close();
             } finally {
+                if (fileWriter != null ) fileWriter.close();
                 getWriteLock().unlock();
             }
         }
@@ -251,8 +252,8 @@ public class DiscoveryConfigFactory {
      * @throws java.io.IOException if any.
      */
     public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
@@ -371,9 +372,9 @@ public class DiscoveryConfigFactory {
     public List<IPPollAddress> getURLSpecifics() {
         final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
 
-        getReadLock().lock();
         
         try {
+            getReadLock().lock();
             Long defaultTimeout = null;
             Integer defaultRetries = null;
             if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
@@ -412,9 +413,9 @@ public class DiscoveryConfigFactory {
     public List<IPPollRange> getRanges() {
         final List<IPPollRange> includes = new LinkedList<IPPollRange>();
 
-        getReadLock().lock();
-        
         try {
+            getReadLock().lock();
+
             Long defaultTimeout = null;
             Integer defaultRetries = null;
             if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
@@ -472,9 +473,9 @@ public class DiscoveryConfigFactory {
     public List<IPPollAddress> getSpecifics() {
         final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
     
-        getReadLock().lock();
-        
         try {
+            getReadLock().lock();
+
             Long defaultTimeout = null;
             Integer defaultRetries = null;
             if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
@@ -517,9 +518,9 @@ public class DiscoveryConfigFactory {
      * @return a boolean.
      */
     public boolean isExcluded(final InetAddress address) {
-        getReadLock().lock();
-        
         try {
+            getReadLock().lock();
+
             final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRangeCollection();
             if (excludeRange != null) {
                 final byte[] laddr = address.getAddress();
@@ -622,9 +623,9 @@ public class DiscoveryConfigFactory {
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<IPPollAddress> getConfiguredAddresses() {
-        getReadLock().lock();
-        
         try {
+            getReadLock().lock();
+
             final List<IPPollAddress> specifics = getSpecifics();
             final List<IPPollRange> ranges = getRanges();
             specifics.addAll(getURLSpecifics());
@@ -648,8 +649,8 @@ public class DiscoveryConfigFactory {
      * @return a long.
      */
     public long getRestartSleepTime() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return getConfiguration().getRestartSleepTime();
         } finally {
             getReadLock().unlock();
@@ -662,8 +663,8 @@ public class DiscoveryConfigFactory {
      * @return a long.
      */
     public long getInitialSleepTime() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return getConfiguration().getInitialSleepTime();
         } finally {
             getReadLock().unlock();

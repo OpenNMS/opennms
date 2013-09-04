@@ -36,8 +36,6 @@ public final class GraphInfo {
     private String m_title      = null;
     private String m_resourceId = null;
     private String m_timespan   = null;
-    private Integer m_startTime = null;
-    private Integer m_endTime   = null;
 
     public GraphInfo(final Element elem) {
         // required
@@ -84,13 +82,5 @@ public final class GraphInfo {
 
     public String getTitle() {
         return m_title;
-    }
-
-    public Integer getStartTime() {
-        return m_startTime;
-    }
-    
-    public Integer getEndTime() {
-        return m_endTime;
     }
 }

@@ -89,14 +89,15 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 	 * <p>getDiscoveryConfig</p>
 	 *
 	 * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
+	 * @throws ServletException 
 	 */
-	public static DiscoveryConfiguration getDiscoveryConfig() {
+	public static DiscoveryConfiguration getDiscoveryConfig() throws ServletException {
         DiscoveryConfiguration config = null;
         try {
              DiscoveryConfigFactory.reload();
              config = DiscoveryConfigFactory.getInstance().getConfiguration();
         } catch (final Exception e) {
-            new ServletException("Could not load configuration: " + e.getMessage(), e);
+            throw new ServletException("Could not load configuration: " + e.getMessage(), e);
         }
         return config;
 	}

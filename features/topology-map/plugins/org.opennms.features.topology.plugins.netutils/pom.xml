@@ -13,7 +13,7 @@
 	<groupId>org.opennms.features.topology</groupId>
 	<artifactId>netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>OpenNMS Topology NetUtils</name>
+	<name>OpenNMS Features Topology NetUtils</name>
 
 	<properties>
 		<packaging.type>bundle</packaging.type>
@@ -186,14 +186,12 @@
 		<dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
 
 		 <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
 			<classifier>sources</classifier>
 			<scope>${scope.type}</scope>
 		</dependency>

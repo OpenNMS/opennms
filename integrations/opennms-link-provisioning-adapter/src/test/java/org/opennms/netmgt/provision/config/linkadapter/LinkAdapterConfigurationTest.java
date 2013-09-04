@@ -146,6 +146,7 @@ public class LinkAdapterConfigurationTest implements InitializingBean {
                 sb.append(line).append("\n");
         }
         System.err.println(sb.toString());
+        br.close();
     }
 
     @Test

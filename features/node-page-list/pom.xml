@@ -11,7 +11,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.node-page-list</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Node Page List Component</name>
+  <name>OpenNMS Features Node Page List Component</name>
 
   <properties>
     <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
@@ -27,7 +27,6 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
     
@@ -40,7 +39,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

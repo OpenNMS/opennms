@@ -220,16 +220,6 @@ public class VmwareViJavaAccess {
                 return null;
             }
 
-            public boolean isServerTrusted(
-                    java.security.cert.X509Certificate[] certs) {
-                return true;
-            }
-
-            public boolean isClientTrusted(
-                    java.security.cert.X509Certificate[] certs) {
-                return true;
-            }
-
             @Override
             public void checkServerTrusted(
                     java.security.cert.X509Certificate[] certs, String authType)

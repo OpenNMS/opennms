@@ -210,22 +210,23 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             @Override
             public void operationComplete(ConnectFuture future) {
                 final Throwable cause = future.getException();
-               
-                if (cause instanceof IOException) {
-                    if(retryAttempt == 0) {
-                        LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
+
+                if (cause != null) {
+                    if (cause instanceof IOException) {
+                        if (retryAttempt == 0) {
+                            LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
+                            detectFuture.setServiceDetected(false);
+                        } else {
+                            LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
+                            future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
+                            future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
+                        }
+                    } else {
+                        LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
                         detectFuture.setServiceDetected(false);
-                    }else {
-                        LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
-                        future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
-                        future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
-                }else if(cause instanceof Throwable) {
-                    LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
-                    detectFuture.setServiceDetected(false);
                 }
             }
-            
         };
     }
 

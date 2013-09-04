@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-dao-mock</artifactId>
-  <name>OpenNMS Persistence Layer Mock Objects</name>
+  <name>OpenNMS DAO Persistence Layer Mock Objects</name>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>

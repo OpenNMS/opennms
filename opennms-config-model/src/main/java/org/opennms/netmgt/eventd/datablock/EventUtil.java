@@ -47,8 +47,6 @@ import java.util.regex.Pattern;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.model.capsd.DbSnmpInterfaceEntry;
@@ -57,6 +55,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods used
@@ -971,6 +971,7 @@ public final class EventUtil {
 	 * Retrieve nodeLabel from the node table of the database given a particular
 	 * nodeId.
 	 * 
+	 * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * 
@@ -1026,6 +1027,7 @@ public final class EventUtil {
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
 	 * nodeId and ipAddr.
 	 *
+     * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * @param ipAddr
@@ -1108,6 +1110,7 @@ public final class EventUtil {
     /**
      * Helper method.
      * 
+     * @deprecated Replace with standard DAO calls instead of using JDBC
      * @param parm
      * @param event
      * @return The value of an asset field based on the nodeid of the event 

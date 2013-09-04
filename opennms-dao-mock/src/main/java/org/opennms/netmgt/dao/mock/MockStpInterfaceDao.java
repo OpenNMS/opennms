@@ -87,7 +87,7 @@ public class MockStpInterfaceDao extends AbstractMockDao<OnmsStpInterface,Intege
         final List<OnmsStpInterface> ifaces = new ArrayList<OnmsStpInterface>();
         for (final OnmsStpInterface iface : findAll()) {
             if (iface.getNode() != null && iface.getNode().getId() != nodeId) continue;
-            if (iface.getLastPollTime() != null || iface.getLastPollTime().before(scanTime)) {
+            if (iface.getLastPollTime() != null && iface.getLastPollTime().before(scanTime)) {
                 ifaces.add(iface);
             }
         }

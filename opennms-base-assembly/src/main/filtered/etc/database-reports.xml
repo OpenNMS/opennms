@@ -3,16 +3,10 @@
         xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
-        <report id="defaultCalendarReport" display-name="default calendar report"
+        <report id="defaultCalendarReport" display-name="Default calendar report"
                 report-service="availabilityReportService" description="standard opennms report in calendar format" />
-        <report id="defaultClassicReport" display-name="default classic report"
+        <report id="defaultClassicReport" display-name="Default classic report"
                 report-service="availabilityReportService" description="standard opennms report in tabular format" />
-        <report id="sample-report" display-name="sample JasperReport" online="true"
-                report-service="jasperReportService" description="sample Jasper report using jdbc datasource" />
-        <report id="trivial-report" display-name="trivial JasperReport" online="true"
-                report-service="jasperReportService" description="trivial Jasper report using null datasource" />
-	    <report id="parameter-test" display-name="parameter test report" online="true"
-                report-service="jasperReportService" description="trivial Jasper Report with parameters using null datasource" />
         <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
                 report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
         <report id="Response-Time-Summary-Report" display-name="Response Time Summary for node" online="true" 
@@ -39,6 +33,9 @@
                 report-service="jasperReportService" description="Asset management report focused on maintenance strategy.Forecast and overview for 12 month and informations about age of nodes and maintenance contracts" />
         <report id="Event-Analysis" display-name="Event Analysis report" online="true" 
                 report-service="jasperReportService" description="Analyse events based on events source and quantity by nodes." />
-<!--	<report id="DiskUsageForCTX" display-name="C: Disk Usage for CTX servers" online="true" 
-	report-service="jasperReportService" description="C: Disk Usage for CTX servers" />-->
+<!--    The following report expects that storeByGroup is enabled -->
+<!--
+        <report id="DiskUsageForCTX" display-name="C: Disk Usage for CTX servers" online="true" 
+                report-service="jasperReportService" description="C: Disk Usage for CTX servers" />
+-->
 </database-reports>

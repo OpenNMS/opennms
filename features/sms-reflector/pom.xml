@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>sms-reflector</artifactId>
-  <name>org.opennms.features.sms-reflector (OSGi project)</name>
+  <name>OpenNMS Features SMS-Reflector (OSGi project)</name>
   <!--
    | describe your project here
   -->
@@ -50,7 +50,6 @@
       <plugin>
         <groupId>org.ops4j</groupId>
         <artifactId>maven-pax-plugin</artifactId>
-        <version>1.5</version>
         <configuration>
           <!--
            | some example Pax-Runner settings

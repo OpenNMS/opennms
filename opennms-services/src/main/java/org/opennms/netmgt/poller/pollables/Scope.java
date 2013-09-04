@@ -89,14 +89,14 @@ public enum Scope {
      * @return a boolean.
      */
     public static boolean isLargerThan(Scope a, Scope b) {
-        if (a == null && b == null) {
+        if (a == null) {
             return false;
-        } else if (a == null && b != null) {
-            return false;
-        } else if (a != null && b == null) {
-            return true;
         } else {
-            return a.isLargerThan(b);
+            if (b == null) {
+                return true;
+            } else {
+                return a.isLargerThan(b);
+            }
         }
     }
     

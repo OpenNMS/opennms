@@ -11,7 +11,7 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-ncs</artifactId>
 
-  <name>OpenNMS :: Topology :: Runtime (NCS)</name>
+  <name>OpenNMS Features :: Topology :: Runtime (NCS)</name>
 
   <description>NCS-based runtime and plugins for the OpenNMS topology web app.</description>
 

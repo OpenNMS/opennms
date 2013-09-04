@@ -34,7 +34,7 @@
 	session="true"
 	import="org.opennms.web.notification.*,
 			org.opennms.web.notification.filter.*,
-                org.opennms.web.springframework.security.Authentication,
+                org.opennms.web.api.Authentication,
 		java.util.*,
 		java.sql.SQLException,
 		java.io.UnsupportedEncodingException,
