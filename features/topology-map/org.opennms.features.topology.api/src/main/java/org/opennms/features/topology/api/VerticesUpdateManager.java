@@ -28,7 +28,10 @@
 
 package org.opennms.features.topology.api;
 
+import org.opennms.features.topology.api.topo.VertexRef;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * A VerticesUpdateManager is responsible to publish all nodeIds
@@ -45,14 +48,24 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
 
     class VerticesUpdateEvent {
 
-        private final List<Integer> nodeIdFocus;
+        private final Set<VertexRef> m_vertexRefs;
+        private final boolean m_displayingAllVertices;
 
-        public VerticesUpdateEvent(List<Integer> nodeIdFocus) {
-            this.nodeIdFocus = nodeIdFocus;
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs) {
+            this(vertexRefs, false);
         }
 
-        public List<Integer> getNodeIdFocus() {
-            return nodeIdFocus;
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, boolean displayingAllVertices){
+            m_vertexRefs = vertexRefs;
+            m_displayingAllVertices = displayingAllVertices;
+        }
+
+        public Set<VertexRef> getVertexRefs() {
+            return m_vertexRefs;
+        }
+
+        public boolean allVerticesSelected(){
+            return m_displayingAllVertices;
         }
     }
 }
