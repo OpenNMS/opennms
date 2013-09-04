@@ -11,7 +11,7 @@
             <column name="filterid" type="int">
                 <constraints primaryKey="true" nullable="false" primaryKeyName="pk_filterid"/>
             </column>
-            <column name="user" type="varchar(50)">
+            <column name="username" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="filtername" type="varchar(50)">

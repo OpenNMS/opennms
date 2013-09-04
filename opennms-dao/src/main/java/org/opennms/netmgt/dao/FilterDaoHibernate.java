@@ -11,10 +11,22 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import java.sql.SQLException;
 import java.util.List;
 
+// TODO MVR move to org.opennms.netmgt.dao.hibernate package
 public class FilterDaoHibernate extends AbstractDaoHibernate<OnmsFilter, Integer> implements FilterDao {
 
     public FilterDaoHibernate() {
         super(OnmsFilter.class);
+    }
+    
+    
+    
+    @Override
+    public void save(OnmsFilter entity) throws org.springframework.dao.DataAccessException {
+    	// TODO MVR remove setCheckWriteOperations(false) operation and
+    	// do it the right way -> Ask Matt what the right way is.
+    	// Without this a "InvalidDataAccessException is thrown"
+    	getHibernateTemplate().setCheckWriteOperations(false);  
+    	super.save(entity);
     }
 
     @Override

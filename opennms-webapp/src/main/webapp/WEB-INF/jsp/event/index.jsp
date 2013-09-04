@@ -65,12 +65,17 @@
             <%
             	XssRequestWrapper req = new XssRequestWrapper(request);
                 List<OnmsFilter> filters = (List<OnmsFilter>)req.getAttribute( "filters" );
-                String row = "<li><a href='event/list?filterId=%s&filter=%s'>%s</a></li>";
+                String row = "<li><a href='event/list?filterId=%s&%s' title='show events for this filter'>%s</a> [ <a href='event/deleteFilter?filterId=%s' title='delete filter'>X</a> ]</li>";
                 String rows = "";
                 for (OnmsFilter eachFilter : filters) {
-                    rows += String.format(row, eachFilter.getId(), eachFilter.getFilter(), eachFilter.getName()) + "\n";
+                    rows += String.format(
+                    		row, 
+                    		eachFilter.getId(), 
+                    		eachFilter.getFilter(), 
+                    		eachFilter.getName(), 
+                    		eachFilter.getId()) + "\n";
                 }
-
+                
                 if (!rows.isEmpty()) {
                     %> <ul class="plain">
                         <%=rows%>

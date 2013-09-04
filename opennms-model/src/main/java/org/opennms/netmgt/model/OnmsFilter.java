@@ -17,7 +17,7 @@ public class OnmsFilter {
     @Column(name="filterid", nullable=false)
     private Integer id;
 
-    @Column(name="user", nullable=false)
+    @Column(name="username", nullable=false)
     private String username;
 
     @Column(name="filtername", nullable=false)
