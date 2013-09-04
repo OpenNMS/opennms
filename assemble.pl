@@ -44,7 +44,14 @@ if (not grep { $_ =~ /^[^-]/ } @ARGS) {
 }
 
 my @command = ($MVN, @ARGS);
-info("changing working directory to $assembly");
+
+my $corebuilddir = File::Spec->catdir($PREFIX, 'core', 'build');
+info("building in $corebuilddir");
+chdir($corebuilddir);
+info("running:", @command);
+handle_errors(system(@command));
+
+info("building in $assembly");
 chdir($assembly);
 info("running:", @command);
 handle_errors_and_exit(system(@command));
