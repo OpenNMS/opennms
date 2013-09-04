@@ -140,7 +140,12 @@ public class FileReloadContainer<T> {
             m_lastFileSize = m_file.length();
         } catch (final IOException e) {
             // Do nothing... we'll fall back to using the InputStream
-        	LOG.info("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource, e);
+            if (LOG.isTraceEnabled()) {
+                // if we've got trace turned on, show the stack, but chances are, we don't care about it
+                LOG.trace("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource, e);
+            } else {
+                LOG.info("Resource '{}' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource);
+            }
         }
         
         m_lastReloadCheck = System.currentTimeMillis();
