@@ -895,7 +895,7 @@
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.12.v20130726</jettyVersion>
-    <karafVersion>2.3.1</karafVersion>
+    <karafVersion>2.3.2</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>

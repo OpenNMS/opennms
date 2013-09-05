@@ -517,6 +517,11 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
     <repository>
+      <id>com.springsource.repository.bundles</id>
+      <name>SpringSource Enterprise Bundle Repository</name>
+      <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
+    </repository>
+    <repository>
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
