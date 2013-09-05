@@ -565,7 +565,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         SimpleWebTable expectedTable = new SimpleWebTable();
-        expectedTable.setTitle("Distributed Poller Status Summary");
+        expectedTable.setTitle("Distributed Status Summary");
         expectedTable.addColumn("Area", "");
         expectedTable.addColumn("Location", "");
         expectedTable.addColumn("Application 1", "");
@@ -631,7 +631,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         SimpleWebTable expectedTable = new SimpleWebTable();
-        expectedTable.setTitle("Distributed Poller Status Summary");
+        expectedTable.setTitle("Distributed Status Summary");
         expectedTable.addColumn("Area", "");
         expectedTable.addColumn("Location", "");
         expectedTable.addColumn(app.getName(), "");
@@ -706,7 +706,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         SimpleWebTable expectedTable = new SimpleWebTable();
-        expectedTable.setTitle("Distributed Poller Status Summary");
+        expectedTable.setTitle("Distributed Status Summary");
         expectedTable.addColumn("Application", "");
         expectedTable.addColumn("Raleigh", "");
         expectedTable.addColumn("Durham", "");
