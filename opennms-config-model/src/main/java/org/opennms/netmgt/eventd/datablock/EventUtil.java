@@ -996,7 +996,7 @@ public final class EventUtil {
 		                .executeQuery("SELECT nodelabel FROM node WHERE nodeid="
 		                        + String.valueOf(nodeId));
 		        if (rs.next()) {
-		            nodeLabel = (String) rs.getString("nodelabel");
+		            nodeLabel = rs.getString("nodelabel");
 		        }
 		    } finally {
 		        // Close the statement
@@ -1131,7 +1131,7 @@ public final class EventUtil {
                     stmt = dbConn.createStatement();
                     ResultSet rs = stmt.executeQuery("SELECT " + assetField + " FROM assets WHERE nodeid=" + String.valueOf(nodeId));
                          if (rs.next()) {
-                             retParmVal = (String) rs.getString(assetField);
+                             retParmVal = rs.getString(assetField);
                          }
                   } catch (SQLException sqlE) {
                                 // do nothing

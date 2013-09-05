@@ -49,7 +49,7 @@ public interface GraphContainer extends DisplayState {
 
 	Criteria getCriteria(String namespace);
 
-	void setCriteria(Criteria critiera);
+	void setCriteria(Criteria criteria);
 
 	void addChangeListener(ChangeListener listener);
 
