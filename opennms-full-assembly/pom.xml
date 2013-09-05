@@ -236,7 +236,6 @@
   </build>
 
   <modules>
-    <module>../container/features</module>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
     <module>../opennms-doc</module>

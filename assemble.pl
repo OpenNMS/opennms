@@ -51,6 +51,12 @@ chdir($corebuilddir);
 info("running:", @command);
 handle_errors(system(@command));
 
+my $containerdir = File::Spec->catdir($PREFIX, 'container', 'features');
+info("building in $containerdir");
+chdir($containerdir);
+info("running:", @command);
+handle_errors(system(@command));
+
 info("building in $assembly");
 chdir($assembly);
 info("running:", @command);
