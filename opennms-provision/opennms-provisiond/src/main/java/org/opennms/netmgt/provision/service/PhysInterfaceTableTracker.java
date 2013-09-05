@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import org.opennms.core.utils.InetAddressUtils;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -39,6 +38,9 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * PhysInterfaceTableTracker
  *
@@ -46,7 +48,8 @@ import org.opennms.netmgt.snmp.TableTracker;
  * @version $Id: $
  */
 public class PhysInterfaceTableTracker extends TableTracker {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PhysInterfaceTableTracker.class);
+ 
     /** Constant <code>IF_TABLE_ENTRY</code> */
     public static final SnmpObjId IF_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
     /** Constant <code>IF_INDEX</code> */
@@ -191,7 +194,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
                     return InetAddressUtils.normalizeMacAddress(displayString);
                 }
             } catch (IllegalArgumentException e) {
-                LogUtils.warnf(this, e, e.getMessage());
+                LOG.warn(e.getMessage(), e);
                 return displayString;
             }
         }
