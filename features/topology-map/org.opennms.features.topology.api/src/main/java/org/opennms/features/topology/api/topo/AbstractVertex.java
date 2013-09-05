@@ -49,6 +49,9 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 		super(namespace, id);
 	}
 
+    public AbstractVertex(String namespace, String id, String label){
+        super(namespace, id, label);
+    }
 	/**
 	 * @deprecated Use namespace/id tuple
 	 */

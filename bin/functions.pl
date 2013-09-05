@@ -30,6 +30,10 @@ $PATHSEP       = $Config{'path_sep'};
 $VERBOSE       = undef;
 @ARGS          = ();
 
+eval {
+	setpriority(0, 0, 10);
+};
+
 if (not defined $PATHSEP) { $PATHSEP = ':'; }
 
 # If we were called from bin, remove the /bin so we're always

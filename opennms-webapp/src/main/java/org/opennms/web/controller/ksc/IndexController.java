@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.web.springframework.security.Authentication;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;

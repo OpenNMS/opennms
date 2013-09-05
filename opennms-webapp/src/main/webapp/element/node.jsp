@@ -41,7 +41,7 @@
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.web.pathOutage.*,
-        org.opennms.web.springframework.security.Authentication,
+        org.opennms.web.api.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
