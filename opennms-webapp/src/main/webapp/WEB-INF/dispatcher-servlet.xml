@@ -23,7 +23,7 @@
         </property>
     </bean>
 
-    <bean id="filterService" class="org.opennms.web.services.FilterService"/>
+    <bean id="filterService" class="org.opennms.web.services.FavoriteFilterService"/>
 
     <!-- Map controllers based on their bean name -->
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
@@ -319,15 +319,13 @@
 <!--    	<alias name="/event/*.jsp" alias="/event/index"/> -->
 <!--    	<alias name="/event/*.jsp" alias="/event/*"/> -->
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
-   		<property name="defaultShortLimit" value="20"/>
-        <property name="defaultLongLimit" value="10"/>
-        <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED"/>
-        <property name="defaultSortStyle" value="ID"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
+    </bean>
+    
+    <bean name="/event/filter/*" class="org.opennms.web.controller.event.FavoriteFilterController">
     </bean>
  
  <!--     <alias name="/event/list.htm" alias="/event/list"/> -->
-<!--     <bean id="eventFilterListController" name="/event/list.htm" class="org.opennms.web.controller.event.FilterController"> -->
+<!--     <bean id="eventFilterListController" name="/event/list.htm" class="org.opennms.web.controller.event.FavoriteFilterControllerntroller"> -->
 <!--         <property name="successView" value="event/list"/> -->
 <!--         <property name="defaultShortLimit" value="20"/> -->
 <!--         <property name="defaultLongLimit" value="10"/> -->
@@ -349,7 +347,7 @@
 <!--     <alias name="/event/index.jsp" alias="/event/filter/create"/> -->
 <!--     <alias name="/event/index.jsp" alias="/event/index"/> -->
    
-<!--    <bean name="/event/filter/create" class="org.opennms.web.controller.event.FilterController"> -->
+<!--    <bean name="/event/filter/create" class="org.opennms.web.controller.event.FavoriteFilterControllerntroller"> -->
    
 <!--    </bean> -->
    

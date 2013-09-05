@@ -1068,9 +1068,13 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/index</url-pattern>
   </servlet-mapping>
-   <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/filter/create</url-pattern>
+    <url-pattern>/event/createFilter</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/deleteFilter</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

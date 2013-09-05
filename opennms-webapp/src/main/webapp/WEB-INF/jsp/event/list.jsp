@@ -33,21 +33,14 @@
 
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
-
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.api.Authentication"%>
-
 <%@page import="org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet"%>
-
 <%@page import="org.opennms.web.filter.Filter"%>
-
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.EventQueryParms"%>
 <%@page import="org.opennms.web.event.EventUtil"%>
-
-<%@page import="org.opennms.web.controller.event.AcknowledgeEventController"%>
-
 <%@page import="org.opennms.web.event.filter.SeverityFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeSeverityFilter"%>
 <%@page import="org.opennms.web.event.filter.AfterDateFilter"%>
@@ -58,10 +51,12 @@
 <%@page import="org.opennms.web.event.filter.NegativeInterfaceFilter"%>
 <%@page import="org.opennms.web.event.filter.ServiceFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeServiceFilter"%>
-<%@page import="org.opennms.web.event.filter.AcknowledgedByFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeAcknowledgedByFilter"%>
 <%@page import="org.opennms.web.event.filter.ExactUEIFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeExactUEIFilter"%>
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.SortStyle"%>
+<%@page import="org.opennms.netmgt.model.OnmsFilter" %>
+<%@ page import="org.opennms.web.filter.FilterUtil" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -88,6 +83,9 @@
         throw new ServletException( "Missing either the events or parms request attribute." );
     }
 
+    // optional bookmark
+    final OnmsFilter favorite = (OnmsFilter) req.getAttribute("favorite");
+
     // Make 'action' the opposite of the current acknowledgement state
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
@@ -103,8 +101,7 @@
 
 
 
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
-<%@page import="org.opennms.web.event.SortStyle"%><jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
@@ -186,27 +183,33 @@
     }
 
     function createFilter() {
-        var filterString = '<%=getFiltersAsString(parms.filters)%>';      
         var filterName = prompt("Please enter a filter name", "My Filter");
         if (filterName != null) {
-        	var form = document.forms['FilterCreationForm'];
-        	form.elements["filter"].value = filterString;
-        	form.elements["filterName"].value = filterName;
-	        form.submit();
+            window.location.href = '/opennms/event/createFilter?<%=getFiltersAsStringWithoutLeadingFilter(parms.filters)%>&filterName=' + filterName;
+
+//        	var form = document.forms['FilterCreationForm'];
+//        	form.elements["filter"].value = '';
+//        	form.elements["filterName"].value = filterName;
+//	        form.submit();
         }
     }
 
-    function deleteFilter(filterId) {
-        alert("Delete filter with id " + filterId);
+    function deleteFilter(favoriteId) {
+        var reallyDelete = confirm('Do you really want to delete this filter?');
+        if (reallyDelete) {
+            var form = document.forms['FilterDeletionForm'];
+            form.elements['favoriteId'].value = favoriteId;
+            form.submit();
+        }
     }
 
   </script>
 
-	<form id="FilterDeletionForm" action="event/filter/delete" method="POST">
-		<input type="hidden" name="filterId"/>
+	<form id="FilterDeletionForm" action="event/deleteFilter" method="POST">
+		<input type="hidden" name="favoriteId"/>
 	</form>
 	
-	<form id="FilterCreationForm" action="event/filter/create" method="POST">
+	<form id="FilterCreationForm" action="event/createFilter" method="POST">
 		<input type="hidden" name="filter"/>
 		<input type="hidden" name="filterName"/>
 	</form>
@@ -283,17 +286,17 @@
                     &nbsp; <span class="filter"><%= WebSecurityUtils.sanitizeString(filter.getTextDescription()) %><a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
 
-				<% if (req.getParameter("filterId") == null) { %>
+				<% if (favorite == null) { %>
 					<img onClick="createFilter()" src="images/star_empty.png"/>
                 <% } else { %>
-                	<img onClick='deleteFilter("<%=req.getParameter("filterId")%>")' src="images/star_filled.png"/>
+                	<img onClick='deleteFilter("<%=favorite.getId()%>")' src="images/star_filled.png"/> <%=favorite.getName() %>
                 <% } %>
               </p>
             <% } %>
             
             <% if (req.getParameter("filter.create.error") != null) { %>
             	<div style="background-color: red;">
-            		<%=req.getParameter("filter.create.error") %>
+            		<%=req.getParameter("favorite.create.error") %>
             	</div>
            	<%}%>
 
@@ -533,19 +536,22 @@
       return( buffer.toString() );
     }
 
-    
-    public String getFiltersAsString(List<Filter> filters ) {
+    public String getFiltersAsString(List<Filter> filters) {
         StringBuffer buffer = new StringBuffer();
-    
         if( filters != null ) {
-            for( int i=0; i < filters.size(); i++ ) {
-                buffer.append( "&amp;filter=" );
-                String filterString = EventUtil.getFilterString((Filter)filters.get(i));
-                buffer.append( java.net.URLEncoder.encode(filterString) );
+            List<String> filterStrings = new ArrayList<String>();
+            for (Filter eachFilter : filters) {
+                filterStrings.add(EventUtil.getFilterString(eachFilter));
             }
-        }      
-    
+            buffer.append("&amp;").append(FilterUtil.toFilterURL(filterStrings));
+        }
         return( buffer.toString() );
+    }
+
+    public String getFiltersAsStringWithoutLeadingFilter(List<Filter> filters) {
+        String filterString = getFiltersAsString(filters);
+        filterString = filterString.replaceFirst("&amp;", "").replaceAll("&amp;", "&");
+        return filterString;
     }
 
     public String makeLink( SortStyle sortStyle, AcknowledgeType ackType, List<Filter> filters, int limit ) {

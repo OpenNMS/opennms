@@ -45,9 +45,11 @@ import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.filter.Filter;
-import org.opennms.web.services.FilterService;
+import org.opennms.web.filter.FilterUtil;
+import org.opennms.web.services.FavoriteFilterService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -66,26 +68,22 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  */
 public class EventController extends MultiActionController implements InitializingBean {
 	
-	public static final int DEFAULT_MULTIPLE = 0;
-	
+	private static final int DEFAULT_MULTIPLE = 0;
+
+    private static final int DEFAULT_SHORT_LIMIT = 20;
+
+    private static final int DEFAULT_LONG_LIMIT = 10;
+
+    private static final AcknowledgeType DEFAULT_EVENT_TYPE = AcknowledgeType.UNACKNOWLEDGED;
+
+    private static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
+
 	@Autowired
-    private FilterService filterService;
-	
-	@Autowired
-	private FilterController filterController;
-	
+    private FavoriteFilterService filterService;
+
 	@Autowired
 	private WebEventRepository m_webEventRepository;
-	
-    private Integer m_defaultShortLimit;
 
-    private Integer m_defaultLongLimit;
-    
-    private AcknowledgeType m_defaultEventType = AcknowledgeType.UNACKNOWLEDGED;
-
-    private SortStyle m_defaultSortStyle = SortStyle.ID;
-
-    
     private boolean m_showEventCount = false;
 
     public EventController() {
@@ -107,11 +105,17 @@ public class EventController extends MultiActionController implements Initializi
      * </p>
      */
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	List<Filter> filterList = EventUtil.getFilterList(request.getParameterValues("filter"), getServletContext());
-    	AcknowledgeType ackType = getAcknowledgeType(request);
-    	ModelAndView modelAndView = createModelAndView(request, filterList, ackType);
-    	modelAndView.setViewName("event/list");
-    	return modelAndView;
+        OnmsFilter favorite = getFavorite(request.getParameter("favoriteId"), request.getRemoteUser());
+        return list(request, favorite);
+    }
+
+    private ModelAndView list(HttpServletRequest request, OnmsFilter favorite) {
+        List<Filter> filterList = EventUtil.getFilterList(request.getParameterValues("filter"), getServletContext());
+        AcknowledgeType ackType = getAcknowledgeType(request);
+        ModelAndView modelAndView = createListModelAndView(request, filterList, ackType);
+        modelAndView.addObject("favorite", favorite);
+        modelAndView.setViewName("event/list");
+        return modelAndView;
     }
     
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -129,27 +133,45 @@ public class EventController extends MultiActionController implements Initializi
         modelAndView.addObject("filters", userFilterList);
         return modelAndView;
     }
-    
+
+    @Transactional(readOnly=false)
     public ModelAndView createFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	ModelAndView modelAndView = filterController.create(request,  response);
-    	ModelAndView listModelAndView = list(request, response);
-    	listModelAndView.addObject("filter.create.error", modelAndView.getModel().get("filter.create.error"));
-    	return listModelAndView;
+        String error = null;
+        try {
+            OnmsFilter favorite = filterService.createFilter(
+                    request.getRemoteUser(),
+                    request.getParameter("filterName"),
+                    FilterUtil.toFilterURL(request.getParameterValues("filter")),
+                    OnmsFilter.Page.EVENT);
+            if (favorite != null) {
+                return list(request, favorite); // success
+            }
+            throw new FavoriteFilterService.FavoriteFilterException("An error occured while creating the filter");
+        } catch (FavoriteFilterService.FavoriteFilterException ex) {
+            error = ex.getMessage();
+        }
+        ModelAndView errorView = list(request, (OnmsFilter)null);
+        errorView.addObject("favorite.create.error", error);
+        return errorView;
     }
-    
+
+    @Transactional(readOnly=false)
     public ModelAndView deleteFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	ModelAndView filterModelAndView = filterController.delete(request, response);
-    	ModelAndView listModelAndView = list(request, response);
-    	listModelAndView.addObject("filter.delete.error", filterModelAndView.getModel().get("filter.delete.error"));
-//    	listModelAndView.getModel().remove("filterId");
-//    	listModelAndView.getModel().remove("filterName");
-    	return listModelAndView;
+        String favoriteId = request.getParameter("favoriteId");
+        ModelAndView modelAndView = list(request, (OnmsFilter)null);
+        boolean success = filterService.deleteFilter(favoriteId, request.getRemoteUser());
+        if (!success) {
+            modelAndView.addObject("favorite.delete.error", "Filter couldn't be deleted.");
+        } else {
+            modelAndView.addObject("favorite.delete.success", "Filter deleted.");
+        }
+        return modelAndView;
     }
     
     private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
     	List<Filter> filterList = new ArrayList<Filter>();
     	filterList.add(singleFilter);
-        return createModelAndView(request, filterList, null);
+        return createListModelAndView(request, filterList, null);
     }
     
     private String getDisplay(HttpServletRequest request) {
@@ -159,7 +181,7 @@ public class EventController extends MultiActionController implements Initializi
     private int getLimit(HttpServletRequest request) {
     	final String display = getDisplay(request);
         final String limitString = request.getParameter("limit");
-    	int limit = "long".equals(display) ? getDefaultLongLimit() : getDefaultShortLimit();
+    	int limit = "long".equals(display) ? DEFAULT_LONG_LIMIT : DEFAULT_SHORT_LIMIT;
         if (limitString != null) {
             try {
                 int newlimit = WebSecurityUtils.safeParseInt(limitString);
@@ -187,7 +209,7 @@ public class EventController extends MultiActionController implements Initializi
     
     private SortStyle getSortStyle(HttpServletRequest request) {
     	final String sortStyleString = request.getParameter("sortby");
-    	SortStyle sortStyle = m_defaultSortStyle;
+    	SortStyle sortStyle = DEFAULT_SORT_STYLE;
         if (sortStyleString != null) {
             SortStyle temp = SortStyle.getSortStyle(sortStyleString);
             if (temp != null) {
@@ -199,7 +221,7 @@ public class EventController extends MultiActionController implements Initializi
     
     private AcknowledgeType getAcknowledgeType(HttpServletRequest request) {
     	 String ackTypeString = request.getParameter("acktype");
-    	 AcknowledgeType ackType = m_defaultEventType;
+    	 AcknowledgeType ackType = DEFAULT_EVENT_TYPE;
     	 // otherwise, apply filters/acktype/etc.
          if (ackTypeString != null) {
              AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
@@ -221,7 +243,7 @@ public class EventController extends MultiActionController implements Initializi
         return parms;
     }
     
-    private ModelAndView createModelAndView(HttpServletRequest request, List<Filter> filterList, AcknowledgeType ackType) {
+    private ModelAndView createListModelAndView(HttpServletRequest request, List<Filter> filterList, AcknowledgeType ackType) {
     	final EventQueryParms parms = createEventQueryParms(request, filterList, ackType);
         final EventCriteria queryCriteria = new EventCriteria(parms);
         final Event[] events = m_webEventRepository.getMatchingEvents(queryCriteria);
@@ -229,7 +251,7 @@ public class EventController extends MultiActionController implements Initializi
         final ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", parms);
-        
+
         if (m_showEventCount) {
             EventCriteria countCriteria = new EventCriteria(filterList, ackType);
             modelAndView.addObject("eventCount", m_webEventRepository.countMatchingEvents(countCriteria));
@@ -239,47 +261,21 @@ public class EventController extends MultiActionController implements Initializi
         return modelAndView;
 	}
 
-    private Integer getDefaultShortLimit() {
-        return m_defaultShortLimit;
-    }
-
-    public void setDefaultShortLimit(Integer limit) {
-        m_defaultShortLimit = limit;
-    }
-
-    private Integer getDefaultLongLimit() {
-        return m_defaultLongLimit;
-    }
-
-    public void setDefaultLongLimit(Integer limit) {
-        m_defaultLongLimit = limit;
+    private OnmsFilter getFavorite(String favoriteId, String username) {
+        if (favoriteId != null) {
+            OnmsFilter filter = filterService.getFilter(favoriteId, username);
+            return filter;
+        }
+        return null;
     }
 
     @Override
     public void afterPropertiesSet() {
-        Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
-        Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");
-        Assert.notNull(m_defaultLongLimit, "property defaultLongLimit must be set to a value greater than 0");
-        Assert.isTrue(m_defaultLongLimit > 0, "property defaultLongLimit must be set to a value greater than 0");
+        Assert.notNull(DEFAULT_SHORT_LIMIT, "property defaultShortLimit must be set to a value greater than 0");
+        Assert.isTrue(DEFAULT_SHORT_LIMIT > 0, "property defaultShortLimit must be set to a value greater than 0");
+        Assert.notNull(DEFAULT_LONG_LIMIT, "property defaultLongLimit must be set to a value greater than 0");
+        Assert.isTrue(DEFAULT_LONG_LIMIT > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
         Assert.notNull(filterService, "filterService must be set");
-        Assert.notNull(filterController, "filterController must be set");
     }
-
-    public AcknowledgeType getDefaultAcknowledgeType() {
-        return m_defaultEventType;
-    }
-
-    public void setDefaultAcknowledgeType(AcknowledgeType defaultAcknowledgeType) {
-        m_defaultEventType = defaultAcknowledgeType;
-    }
-
-    public SortStyle getDefaultSortStyle() {
-        return m_defaultSortStyle;
-    }
-
-    public void setDefaultSortStyle(SortStyle defaultSortStyle) {
-        m_defaultSortStyle = defaultSortStyle;
-    }
-
 }

@@ -32,6 +32,7 @@
 <%@page import="org.opennms.netmgt.model.OnmsFilter"%>
 <%@page import="java.util.List"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
+<%@ page import="org.opennms.web.filter.FilterUtil" %>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -60,18 +61,18 @@
         </ul>
     </div>
     <br/>
-    <h3>Event filters</h3>
+    <h3>Event Filter Favorites</h3>
     <div class="boxWrapper">
             <%
             	XssRequestWrapper req = new XssRequestWrapper(request);
                 List<OnmsFilter> filters = (List<OnmsFilter>)req.getAttribute( "filters" );
-                String row = "<li><a href='event/list?filterId=%s&%s' title='show events for this filter'>%s</a> [ <a href='event/deleteFilter?filterId=%s' title='delete filter'>X</a> ]</li>";
+                String row = "<li><a href='event/list?favoriteId=%s&%s' title='show events for this favorite'>%s</a> [ <a href='event/deleteFilter?favoriteId=%s' title='delete favorite'>X</a> ]</li>";
                 String rows = "";
                 for (OnmsFilter eachFilter : filters) {
                     rows += String.format(
                     		row, 
-                    		eachFilter.getId(), 
-                    		eachFilter.getFilter(), 
+                    		eachFilter.getId(),
+                            eachFilter.getFilter(),
                     		eachFilter.getName(), 
                     		eachFilter.getId()) + "\n";
                 }
