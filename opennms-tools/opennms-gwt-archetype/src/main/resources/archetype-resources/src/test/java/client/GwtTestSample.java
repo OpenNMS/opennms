@@ -31,7 +31,7 @@
 #set( $symbol_escape = '\' )
 package ${package}.client;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import com.google.gwt.junit.client.GWTTestCase;
 

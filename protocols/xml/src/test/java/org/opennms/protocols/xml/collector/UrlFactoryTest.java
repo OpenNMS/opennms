@@ -30,7 +30,7 @@ package org.opennms.protocols.xml.collector;
 
 import java.net.URL;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.opennms.protocols.http.HttpUrlConnection;

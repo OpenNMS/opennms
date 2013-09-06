@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.support;
 
 import java.io.File;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
