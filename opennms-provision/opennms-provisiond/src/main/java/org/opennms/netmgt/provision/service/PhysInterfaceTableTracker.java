@@ -188,7 +188,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
                     // This is the normal case that most agents conform to: the value is an ASCII 
                     // string representing the colon-separated MAC address. We just need to reformat 
                     // it to remove the colons and convert it into a 12-character string.
-                    return InetAddressUtils.normalizeMacAddress(displayString);
+                    return displayString == null ? null : InetAddressUtils.normalizeMacAddress(displayString);
                 }
             } catch (IllegalArgumentException e) {
                 LogUtils.warnf(this, e, e.getMessage());
