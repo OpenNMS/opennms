@@ -92,6 +92,9 @@
       <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
         <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
       </mbean>
+      <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
+        <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
+      </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
