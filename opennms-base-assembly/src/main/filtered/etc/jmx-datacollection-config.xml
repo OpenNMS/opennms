@@ -89,6 +89,9 @@
         <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
         <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
       </mbean>
+      <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
+        <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+      </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
