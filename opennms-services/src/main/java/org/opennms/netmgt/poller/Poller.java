@@ -711,7 +711,11 @@ public class Poller extends AbstractServiceDaemon {
      * @return the number of polls that have been executed
      */
     public long getNumPolls() {
-        return m_scheduler.getNumTasksExecuted();
+        if (m_scheduler != null) {
+            return m_scheduler.getNumTasksExecuted();
+        } else {
+            return 0L;
+        }
     }
 
     public static String getLoggingCategory() {
