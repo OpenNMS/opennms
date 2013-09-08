@@ -705,6 +705,15 @@ public class Poller extends AbstractServiceDaemon {
         getNetwork().visit(visitor);
     }
 
+    /**
+     * Returns the number of polls that have been executed so far.
+     *
+     * @return the number of polls that have been executed
+     */
+    public long getNumPolls() {
+        return m_scheduler.getNumTasksExecuted();
+    }
+
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
 	}
