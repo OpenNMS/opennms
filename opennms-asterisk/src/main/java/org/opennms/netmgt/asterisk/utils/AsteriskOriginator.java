@@ -70,8 +70,6 @@ public class AsteriskOriginator {
     // private static final String DEFAULT_LEGB_APP_DATA = "tt-monkeysintro";
 
     private DefaultManagerConnection m_managerConnection = null;
-    private OriginateAction m_originateAction = null;
-    private ManagerResponse m_managerResponse = null;
 
     /*
      * properties from configuration
@@ -192,7 +190,7 @@ public class AsteriskOriginator {
      * @throws org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException if any.
      */
     public void originateCall() throws AsteriskOriginatorException {
-        m_originateAction = buildOriginateAction();
+        OriginateAction originateAction = buildOriginateAction();
         
         LOG.info("Logging in Asterisk manager connection");
         try {
@@ -210,10 +208,11 @@ public class AsteriskOriginator {
         
         LOG.info("Originating a call to extension {}", m_legAExtension);
         LOG.debug(createCallLogMsg());
-        LOG.debug("Originate action:\n\n{}", m_originateAction.toString());
+        LOG.debug("Originate action:\n\n{}", originateAction.toString());
         
+        ManagerResponse managerResponse = null;
         try {
-            m_managerResponse = m_managerConnection.sendAction(m_originateAction);
+            managerResponse = m_managerConnection.sendAction(originateAction);
         } catch (IllegalArgumentException iae) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("Illegal argument sending originate action", iae);
@@ -228,12 +227,12 @@ public class AsteriskOriginator {
             throw new AsteriskOriginatorException("Timed out sending originate action", toe);
         }
         
-        LOG.info("Asterisk manager responded: {}", m_managerResponse.getResponse());
-        LOG.info("Asterisk manager message: {}", m_managerResponse.getMessage());
+        LOG.info("Asterisk manager responded: {}", managerResponse.getResponse());
+        LOG.info("Asterisk manager message: {}", managerResponse.getMessage());
         
-        if (m_managerResponse.getResponse().toLowerCase().startsWith("error")) {
+        if (managerResponse.getResponse().toLowerCase().startsWith("error")) {
             m_managerConnection.logoff();
-            throw new AsteriskOriginatorException("Got error response sending originate event. Response: " + m_managerResponse.getResponse() + "; Message: " + m_managerResponse.getMessage());
+            throw new AsteriskOriginatorException("Got error response sending originate event. Response: " + managerResponse.getResponse() + "; Message: " + managerResponse.getMessage());
         }
         
         LOG.info("Logging off Asterisk manager connection");

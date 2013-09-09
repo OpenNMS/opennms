@@ -53,7 +53,6 @@ public class Tl1ClientImpl implements Tl1Client {
     private volatile boolean m_started = false;
 
     private Socket m_tl1Socket;
-    private Thread m_socketReader;
     private BlockingQueue<Tl1AutonomousMessage> m_tl1Queue;
     private BufferedReader m_reader;
     private TimeoutSleeper m_sleeper;
@@ -100,7 +99,7 @@ public class Tl1ClientImpl implements Tl1Client {
         LOG.info("start:Connection delay = {}", m_reconnectionDelay);
         setStarted(true);
 
-        m_socketReader = new Thread("TL1-Socket-Reader") {
+        Thread socketReader = new Thread("TL1-Socket-Reader") {
 
             @Override
             public void run() {
@@ -109,7 +108,7 @@ public class Tl1ClientImpl implements Tl1Client {
 
         };
 
-        m_socketReader.start();
+        socketReader.start();
         LOG.info("Started TL1 client: {}:{}", m_host, String.valueOf(m_port));
     }
 

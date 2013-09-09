@@ -106,7 +106,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private String m_userName;
     private OnmsServiceManager serviceManager;
     private VaadinApplicationContext m_applicationContext;
-    private VerticesUpdateManager m_verticesUpdateManager;
 
 
     private String getHeader(HttpServletRequest request) {
@@ -145,7 +144,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        m_verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
+        VerticesUpdateManager verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
 
         loadUserSettings(m_applicationContext);
         setupListeners();
@@ -153,10 +152,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         setupErrorHandler();
 
         // notifiy osgi-listeners, otherwise initialization would not work
-        m_graphContainer.addChangeListener(m_verticesUpdateManager);
-        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
-        m_verticesUpdateManager.selectionChanged(m_selectionManager);
-        m_verticesUpdateManager.graphChanged(m_graphContainer);
+        m_graphContainer.addChangeListener(verticesUpdateManager);
+        m_selectionManager.addSelectionListener(verticesUpdateManager);
+        verticesUpdateManager.selectionChanged(m_selectionManager);
+        verticesUpdateManager.graphChanged(m_graphContainer);
     }
 
     private void setupListeners() {

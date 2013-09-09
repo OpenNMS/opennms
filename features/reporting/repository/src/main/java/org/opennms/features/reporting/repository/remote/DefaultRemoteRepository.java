@@ -83,11 +83,6 @@ public class DefaultRemoteRepository implements ReportRepository {
     private ApacheHttpClient m_client;
 
     /**
-     * HTTP client connection configuration
-     */
-    private ApacheHttpClientConfig m_clientConfig;
-
-    /**
      * Data structure from ReST call
      */
     private WebResource m_webResource;
@@ -104,13 +99,13 @@ public class DefaultRemoteRepository implements ReportRepository {
             String jasperReportsVersion) {
         this.m_remoteRepositoryDefintion = remoteRepositoryDefinition;
         this.m_jasperReportsVersion = jasperReportsVersion;
-        m_clientConfig = new DefaultApacheHttpClientConfig();
-        m_clientConfig.getState().setCredentials(null,
+        ApacheHttpClientConfig clientConfig = new DefaultApacheHttpClientConfig();
+        clientConfig.getState().setCredentials(null,
                 m_remoteRepositoryDefintion.getURI().getHost(),
                 m_remoteRepositoryDefintion.getURI().getPort(),
                 m_remoteRepositoryDefintion.getLoginUser(),
                 m_remoteRepositoryDefintion.getLoginRepoPassword());
-        m_client = ApacheHttpClient.create(m_clientConfig);
+        m_client = ApacheHttpClient.create(clientConfig);
     }
 
     /**

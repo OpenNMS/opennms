@@ -82,8 +82,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     
     private long m_usersLastModified;
 
-    private long m_userFileSize;
-
     private String m_magicUsersConfigurationFile;
 	
     /**
@@ -126,7 +124,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         LOG.debug("Loaded the users.xml file with {} users", users.size());
 
         m_usersLastModified = m_userManager.getLastModified();
-        m_userFileSize = m_userManager.getFileSize();
         m_users = users;
     }
     

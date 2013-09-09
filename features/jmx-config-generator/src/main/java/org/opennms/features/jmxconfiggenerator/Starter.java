@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
@@ -109,8 +110,6 @@ public class Starter {
     @Option(name = "-url", usage = "JMX URL Usage: <hostname>:<port> OR service:jmx:<protocol>:<sap> OR service:jmx:remoting-jmx://<hostname>:<port>")
     private String url;
 	
-    private Map<String, String> dictionary = new HashMap<String, String>();
-
     public static void main(String[] args) throws IOException {
         new Starter().doMain(args);
     }
@@ -129,7 +128,7 @@ public class Starter {
                 throw new CmdLineException(parser, "set jmx or graph.");
             }
 
-            dictionary = loadInternalDictionary();
+            Map<String, String> dictionary = loadInternalDictionary();
             if (dictionaryFile != null) {
                 dictionary = loadExternalDictionary(dictionaryFile);
             }
