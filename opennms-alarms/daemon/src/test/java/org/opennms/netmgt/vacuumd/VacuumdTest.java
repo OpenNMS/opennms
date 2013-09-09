@@ -165,15 +165,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         MockUtil.println("Sleeping for "+TEAR_DOWN_WAIT_MILLIS+" millis in tearDown...");
         Thread.sleep(TEAR_DOWN_WAIT_MILLIS);
     }
-    
-    /**
-     * Test for running statments
-     */
-    @Test
-    public final void testRunStatements() {
-    	m_vacuumd.executeStatements();
-    }
-    
+
     /**
      * This is an attempt at testing scheduled automations.
      * @throws InterruptedException
