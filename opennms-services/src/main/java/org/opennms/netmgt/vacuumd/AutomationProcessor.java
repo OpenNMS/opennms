@@ -47,7 +47,6 @@ import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.Assignment;
-import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -76,11 +75,6 @@ public class AutomationProcessor implements ReadyRunnable {
     private final Automation m_automation;
     private final TriggerProcessor m_trigger;
     private final ActionProcessor m_action;
-    
-    /** 
-     * @deprecated Associate {@link Automation} objects with {@link ActionEvent} instances instead.
-     */
-    private final AutoEventProcessor m_autoEvent;
     private final ActionEventProcessor m_actionEvent;
     
     private volatile Schedule m_schedule;
@@ -410,60 +404,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
         
     }
-    
-    /**
-     * @deprecated Use {@link ActionEventProcessor} instead.
-     */
-    static class AutoEventProcessor {
 
-    	private static final Logger LOG = LoggerFactory.getLogger(ActionProcessor.class);
-
-    	private final String m_automationName;
-        private final AutoEvent m_autoEvent;
-        
-        /**
-         * @deprecated Use {@link ActionEventProcessor} instead.
-         */
-        public AutoEventProcessor(String automationName, AutoEvent autoEvent) {
-            m_automationName = automationName;
-            m_autoEvent = autoEvent;
-        }
-        
-        public boolean hasEvent() {
-            return m_autoEvent != null;
-        }
-
-        public AutoEvent getAutoEvent() {
-            return m_autoEvent;
-        }
-
-        String getUei() {
-            if (hasEvent()) {
-                return getAutoEvent().getUei().getContent();
-            } else {
-                return null;
-            }
-        }
-
-        void send() {
-            
-            if (hasEvent()) {
-                //create and send event
-                LOG.debug("AutoEventProcessor: Sending auto-event {} for automation {}", getUei(), m_automationName);
-                
-                EventBuilder bldr = new EventBuilder(getUei(), "Automation");
-                sendEvent(bldr.getEvent());
-            } else {
-                LOG.debug("AutoEventProcessor: No auto-event for automation {}", m_automationName);
-            }
-        }
-
-        private void sendEvent(Event event) {
-            Vacuumd.getSingleton().getEventManager().sendNow(event);
-        }
-
-    }
-    
     static class SQLExceptionHolder extends RuntimeException {
     	private static final Logger LOG = LoggerFactory.getLogger(SQLExceptionHolder.class);
 
@@ -650,13 +591,11 @@ public class AutomationProcessor implements ReadyRunnable {
      *
      * @param automation a {@link org.opennms.netmgt.config.vacuumd.Automation} object.
      */
-    @SuppressWarnings("deprecation")
-	public AutomationProcessor(Automation automation) {
+    public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));
         m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
-        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName()));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent()));
     }
     
@@ -761,7 +700,6 @@ public class AutomationProcessor implements ReadyRunnable {
         		
 		if (m_action.processAction(triggerResults)) {
 		    m_actionEvent.processActionEvent(triggerResults);
-		    m_autoEvent.send();
 		    return true;
 		} else {
 			return false;
