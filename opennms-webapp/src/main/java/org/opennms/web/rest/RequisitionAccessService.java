@@ -55,7 +55,7 @@ public class RequisitionAccessService {
 
     private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
-        public Thread newThread(Runnable r) {
+        public Thread newThread(final Runnable r) {
             return new Thread(r, "Requisition-Accessor-Thread");
         }
     });
@@ -72,7 +72,7 @@ public class RequisitionAccessService {
 
         private Requisition m_pending = null;
 
-        public RequisitionAccessor(String foreignSource, ForeignSourceRepository pendingRepo, ForeignSourceRepository deployedRepo) {
+        public RequisitionAccessor(final String foreignSource, final ForeignSourceRepository pendingRepo, final ForeignSourceRepository deployedRepo) {
             m_foreignSource = foreignSource;
             m_pendingRepo = pendingRepo;
             m_deployedRepo = deployedRepo;
@@ -91,10 +91,8 @@ public class RequisitionAccessService {
             return m_deployedRepo;
         }
 
-       
 
-        public Requisition getActiveRequisition(boolean createIfMissing) {
-
+        public Requisition getActiveRequisition(final boolean createIfMissing) {
             if (m_pending != null) {
                 return m_pending;
             }
@@ -115,12 +113,12 @@ public class RequisitionAccessService {
             return pending;
         }
 
-        public void save(Requisition requisition) {
+        public void save(final Requisition requisition) {
             m_pending = requisition;
         }
 
         void addOrReplaceNode(final RequisitionNode node) {
-            Requisition req = getActiveRequisition(true);
+            final Requisition req = getActiveRequisition(true);
             if (req != null) {
                 req.updateDateStamp();
                 req.putNode(node);
@@ -128,8 +126,8 @@ public class RequisitionAccessService {
             }
         }
 
-        void addOrReplaceInterface(String foreignId, RequisitionInterface iface) {
-            Requisition req = getActiveRequisition(true);
+        void addOrReplaceInterface(final String foreignId, final RequisitionInterface iface) {
+            final Requisition req = getActiveRequisition(true);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -141,11 +139,11 @@ public class RequisitionAccessService {
         }
 
         void addOrReplaceService(final String foreignId, final String ipAddress, final RequisitionMonitoredService service) {
-            Requisition req = getActiveRequisition(true);
+            final Requisition req = getActiveRequisition(true);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    RequisitionInterface iface = node.getInterface(ipAddress);
+                    final RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
                         req.updateDateStamp();
                         iface.putMonitoredService(service);
@@ -156,7 +154,7 @@ public class RequisitionAccessService {
         }
 
         void addOrReplaceNodeCategory(final String foreignId, final RequisitionCategory category) {
-            Requisition req = getActiveRequisition(true);
+            final Requisition req = getActiveRequisition(true);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -168,7 +166,7 @@ public class RequisitionAccessService {
         }
 
         void addOrReplaceNodeAssetParameter(final String foreignId, final RequisitionAsset asset) {
-            Requisition req = getActiveRequisition(true);
+            final Requisition req = getActiveRequisition(true);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -183,7 +181,7 @@ public class RequisitionAccessService {
             final String foreignSource = m_foreignSource;
             LOG.debug("updateRequisition: Updating requisition with foreign source {}", foreignSource);
             if (params.isEmpty()) return;
-            Requisition req = getActiveRequisition(false);
+            final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 req.updateDateStamp();
                 RestUtils.setBeanProperties(req, params);
@@ -209,14 +207,14 @@ public class RequisitionAccessService {
         }
 
         void updateInterface(final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
-            String foreignSource = m_foreignSource;
+            final String foreignSource = m_foreignSource;
             LOG.debug("updateInterface: Updating interface {} on node {}/{}", ipAddress, foreignSource, foreignId);
             if (params.isEmpty()) return;
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    RequisitionInterface iface = node.getInterface(ipAddress);
+                    final RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
                         req.updateDateStamp();
                         RestUtils.setBeanProperties(iface, params);
@@ -239,7 +237,7 @@ public class RequisitionAccessService {
             getDeployedForeignSourceRepository().delete(req);
         }
 
-        void deleteNode(String foreignId) {
+        void deleteNode(final String foreignId) {
             LOG.debug("deleteNode: Deleting node {} from foreign source {}", foreignId, getForeignSource());
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
@@ -249,7 +247,7 @@ public class RequisitionAccessService {
             }
         }
 
-        void deleteInterface(String foreignId, String ipAddress) {
+        void deleteInterface(final String foreignId, final String ipAddress) {
             LOG.debug("deleteInterface: Deleting interface {} from node {}/{}", ipAddress, getForeignSource(), foreignId);
             Requisition req = getActiveRequisition(false);
             if (req != null) {
@@ -262,13 +260,13 @@ public class RequisitionAccessService {
             }
         }
 
-        void deleteInterfaceService(String foreignId, String ipAddress, String service) {
+        void deleteInterfaceService(final String foreignId, final String ipAddress, final String service) {
             LOG.debug("deleteInterfaceService: Deleting service {} from interface {} on node {}/{}", service, ipAddress, getForeignSource(), foreignId);
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
-                    RequisitionInterface iface = node.getInterface(ipAddress);
+                    final RequisitionInterface iface = node.getInterface(ipAddress);
                     if (iface != null) {
                         req.updateDateStamp();
                         iface.deleteMonitoredService(service);
@@ -278,7 +276,7 @@ public class RequisitionAccessService {
             }
         }
 
-        void deleteCategory(String foreignId, String category) {
+        void deleteCategory(final String foreignId, final String category) {
             LOG.debug("deleteCategory: Deleting category {} from node {}/{}", category, getForeignSource(), foreignId);
             Requisition req = getActiveRequisition(false);
             if (req != null) {
@@ -291,7 +289,7 @@ public class RequisitionAccessService {
             }
         }
 
-        void deleteAssetParameter(String foreignId, String parameter) {
+        void deleteAssetParameter(final String foreignId, final String parameter) {
             LOG.debug("deleteAssetParameter: Deleting asset parameter {} from node {}/{}", parameter, getForeignSource(), foreignId);
             final Requisition req = getActiveRequisition(false);
             if (req != null) {
@@ -339,18 +337,16 @@ public class RequisitionAccessService {
         RequisitionInterface getInterfaceForNode(final String foreignId, final String ipAddress) {
             flush();
 
-            Requisition req = getActiveRequisition(false);
-            RequisitionNode node = req == null ? null : req.getNode(foreignId);
-
+            final Requisition req = getActiveRequisition(false);
+            final RequisitionNode node = req == null ? null : req.getNode(foreignId);
             return node == null ? null : node.getInterface(ipAddress);
         }
 
         RequisitionInterfaceCollection getInterfacesForNode(final String foreignId) {
             flush();
 
-            Requisition req = getActiveRequisition(false);
-            RequisitionNode node = req == null ? null : req.getNode(foreignId);
-
+            final Requisition req = getActiveRequisition(false);
+            final RequisitionNode node = req == null ? null : req.getNode(foreignId);
             return node == null ? null : new RequisitionInterfaceCollection(node.getInterfaces());
         }
 
@@ -377,9 +373,9 @@ public class RequisitionAccessService {
         RequisitionMonitoredService getServiceForInterface(final String foreignId, final String ipAddress, final String service) {
             flush();
 
-            Requisition req = getActiveRequisition(false);
-            RequisitionNode node = req == null ? null : req.getNode(foreignId);
-            RequisitionInterface iface = node == null ? null : node.getInterface(ipAddress);
+            final Requisition req = getActiveRequisition(false);
+            final RequisitionNode node = req == null ? null : req.getNode(foreignId);
+            final RequisitionInterface iface = node == null ? null : node.getInterface(ipAddress);
 
             return iface == null ? null : iface.getMonitoredService(service);
         }
@@ -387,9 +383,9 @@ public class RequisitionAccessService {
         RequisitionMonitoredServiceCollection getServicesForInterface(final String foreignId, final String ipAddress) {
             flush();
 
-            Requisition req = getActiveRequisition(false);
-            RequisitionNode node = req == null ? null : req.getNode(foreignId);
-            RequisitionInterface iface = node == null ? null : node.getInterface(ipAddress);
+            final Requisition req = getActiveRequisition(false);
+            final RequisitionNode node = req == null ? null : req.getNode(foreignId);
+            final RequisitionInterface iface = node == null ? null : node.getInterface(ipAddress);
 
             return iface == null ? null : new RequisitionMonitoredServiceCollection(iface.getMonitoredServices());
         }
@@ -397,10 +393,10 @@ public class RequisitionAccessService {
         URL createSnapshot() throws MalformedURLException {
             flush();
 
-            Requisition pending = getPendingForeignSourceRepository().getRequisition(getForeignSource());
-            Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
+            final Requisition pending = getPendingForeignSourceRepository().getRequisition(getForeignSource());
+            final Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
 
-            URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
+            final URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
                     ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
                         : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
 
@@ -423,7 +419,7 @@ public class RequisitionAccessService {
     private final Map<String, RequisitionAccessor> m_accessors = new HashMap<String, RequisitionAccessor>();
 
     // should only called inside a submitted job on the executor thread
-    private RequisitionAccessor getAccessor(String foreignSource) {
+    private RequisitionAccessor getAccessor(final String foreignSource) {
         RequisitionAccessor accessor = m_accessors.get(foreignSource);
         if (accessor == null) {
             accessor = new RequisitionAccessor(foreignSource, m_pendingForeignSourceRepository, m_deployedForeignSourceRepository);
@@ -435,8 +431,8 @@ public class RequisitionAccessService {
     // should only be called inside a submitted job on the executor thread -
     // Used for operations that access
     // requisitions for multiple foreignSources
-    private void flushAll() {
-        for (RequisitionAccessor accessor : m_accessors.values()) {
+    void flushAll() {
+        for (final RequisitionAccessor accessor : m_accessors.values()) {
             accessor.flush();
         }
     }
@@ -453,12 +449,12 @@ public class RequisitionAccessService {
         return m_eventProxy;
     }
 
-    private <T> T submitAndWait(Callable<T> callable) {
+    private <T> T submitAndWait(final Callable<T> callable) {
         try {
             return m_executor.submit(callable).get();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new RuntimeException(e);
-        } catch (ExecutionException e) {
+        } catch (final ExecutionException e) {
             if (e.getCause() instanceof RuntimeException) {
                 throw ((RuntimeException) e.getCause());
             } else {
@@ -467,48 +463,40 @@ public class RequisitionAccessService {
         }
     }
 
-    private Future<?> submitWriteOp(Runnable r) {
+    private Future<?> submitWriteOp(final Runnable r) {
         return m_executor.submit(r);
     }
 
     // GLOBAL
     public int getDeployedCount() {
         return submitAndWait(new Callable<Integer>() {
-
-            @Override
-            public Integer call() throws Exception {
+            @Override public Integer call() throws Exception {
                 flushAll();
                 return getDeployedForeignSourceRepository().getRequisitions().size();
             }
-
         });
     }
 
     // GLOBAL
     public RequisitionCollection getDeployedRequisitions() {
         return submitAndWait(new Callable<RequisitionCollection>() {
-
-            @Override
-            public RequisitionCollection call() throws Exception {
+            @Override public RequisitionCollection call() throws Exception {
                 flushAll();
                 return new RequisitionCollection(getDeployedForeignSourceRepository().getRequisitions());
             }
-
         });
     }
 
     // GLOBAL
     public RequisitionCollection getRequisitions() {
         return submitAndWait(new Callable<RequisitionCollection>() {
-
-            @Override
-            public RequisitionCollection call() throws Exception {
+            @Override public RequisitionCollection call() throws Exception {
                 flushAll();
 
                 final Set<Requisition> reqs = new TreeSet<Requisition>();
-                Set<String> fsNames = getPendingForeignSourceRepository().getActiveForeignSourceNames();
+                final Set<String> fsNames = getPendingForeignSourceRepository().getActiveForeignSourceNames();
                 fsNames.addAll(getDeployedForeignSourceRepository().getActiveForeignSourceNames());
-                Set<String> activeForeignSourceNames = fsNames;
+                final Set<String> activeForeignSourceNames = fsNames;
                 for (final String fsName : activeForeignSourceNames) {
                     final Requisition r = getAccessor(fsName).getActiveRequisition(false);
                     if (r != null) {
@@ -524,46 +512,33 @@ public class RequisitionAccessService {
     // GLOBAL
     public int getPendingCount() {
         return submitAndWait(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
+            @Override public Integer call() throws Exception {
                 flushAll();
                 return getPendingForeignSourceRepository().getRequisitions().size();
             }
-
         });
     }
 
     public Requisition getRequisition(final String foreignSource) {
         return submitAndWait(new Callable<Requisition>() {
-
-            @Override
-            public Requisition call() throws Exception {
+            @Override public Requisition call() throws Exception {
                 return getAccessor(foreignSource).getRequisition();
             }
-
         });
     }
 
     public RequisitionNodeCollection getNodes(final String foreignSource) {
-
         return submitAndWait(new Callable<RequisitionNodeCollection>() {
-
-            @Override
-            public RequisitionNodeCollection call() throws Exception {
+            @Override public RequisitionNodeCollection call() throws Exception {
                 return getAccessor(foreignSource).getNodes();
             }
-
         });
     }
 
     public RequisitionNode getNode(final String foreignSource, final String foreignId) {
-
         return submitAndWait(new Callable<RequisitionNode>() {
-
-            @Override
-            public RequisitionNode call() throws Exception {
-                RequisitionAccessor accessor = getAccessor(foreignSource);
-                return accessor.getNode(foreignId);
+            @Override public RequisitionNode call() throws Exception {
+                return getAccessor(foreignSource).getNode(foreignId);
             }
 
         });
@@ -571,32 +546,23 @@ public class RequisitionAccessService {
 
     public RequisitionInterfaceCollection getInterfacesForNode(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionInterfaceCollection>() {
-
-            @Override
-            public RequisitionInterfaceCollection call() throws Exception {
+            @Override public RequisitionInterfaceCollection call() throws Exception {
                 return getAccessor(foreignSource).getInterfacesForNode(foreignId);
             }
-
         });
     }
 
     public RequisitionInterface getInterfaceForNode(final String foreignSource, final String foreignId, final String ipAddress) {
-
         return submitAndWait(new Callable<RequisitionInterface>() {
-
-            @Override
-            public RequisitionInterface call() throws Exception {
+            @Override public RequisitionInterface call() throws Exception {
                 return getAccessor(foreignSource).getInterfaceForNode(foreignId, ipAddress);
             }
-
         });
     }
 
     public RequisitionMonitoredServiceCollection getServicesForInterface(final String foreignSource, final String foreignId, final String ipAddress) {
         return submitAndWait(new Callable<RequisitionMonitoredServiceCollection>() {
-
-            @Override
-            public RequisitionMonitoredServiceCollection call() throws Exception {
+            @Override public RequisitionMonitoredServiceCollection call() throws Exception {
                 return getAccessor(foreignSource).getServicesForInterface(foreignId, ipAddress);
             }
         });
@@ -604,20 +570,15 @@ public class RequisitionAccessService {
 
     public RequisitionMonitoredService getServiceForInterface(final String foreignSource, final String foreignId, final String ipAddress, final String service) {
         return submitAndWait(new Callable<RequisitionMonitoredService>() {
-
-            @Override
-            public RequisitionMonitoredService call() throws Exception {
+            @Override public RequisitionMonitoredService call() throws Exception {
                 return getAccessor(foreignSource).getServiceForInterface(foreignId, ipAddress, service);
             }
-
         });
     }
 
     public RequisitionCategoryCollection getCategories(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionCategoryCollection>() {
-
-            @Override
-            public RequisitionCategoryCollection call() throws Exception {
+            @Override public RequisitionCategoryCollection call() throws Exception {
                 return getAccessor(foreignSource).getCategories(foreignId);
             }
         });
@@ -625,9 +586,7 @@ public class RequisitionAccessService {
 
     public RequisitionCategory getCategory(final String foreignSource, final String foreignId, final String category) {
         return submitAndWait(new Callable<RequisitionCategory>() {
-
-            @Override
-            public RequisitionCategory call() throws Exception {
+            @Override public RequisitionCategory call() throws Exception {
                 return getAccessor(foreignSource).getCategory(foreignId, category);
             }
         });
@@ -635,9 +594,7 @@ public class RequisitionAccessService {
 
     public RequisitionAssetCollection getAssetParameters(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionAssetCollection>() {
-
-            @Override
-            public RequisitionAssetCollection call() throws Exception {
+            @Override public RequisitionAssetCollection call() throws Exception {
                 return getAccessor(foreignSource).getAssetParameters(foreignId);
             }
         });
@@ -645,83 +602,62 @@ public class RequisitionAccessService {
 
     public RequisitionAsset getAssetParameter(final String foreignSource, final String foreignId, final String parameter) {
         return submitAndWait(new Callable<RequisitionAsset>() {
-
-            @Override
-            public RequisitionAsset call() throws Exception {
+            @Override public RequisitionAsset call() throws Exception {
                 return getAccessor(foreignSource).getAssetParameter(foreignId, parameter);
             }
-
         });
     }
 
     public void addOrReplaceRequisition(final Requisition requisition) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(requisition.getForeignSource()).save(requisition);
             }
-
         });
     }
 
     public void addOrReplaceNode(final String foreignSource, final RequisitionNode node) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).addOrReplaceNode(node);
             }
-
         });
     }
 
     public void addOrReplaceInterface(final String foreignSource, final String foreignId, final RequisitionInterface iface) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).addOrReplaceInterface(foreignId, iface);
             }
-
         });
     }
 
     public void addOrReplaceService(final String foreignSource, final String foreignId, final String ipAddress, final RequisitionMonitoredService service) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).addOrReplaceService(foreignId, ipAddress, service);
             }
-
         });
     }
 
     public void addOrReplaceNodeCategory(final String foreignSource, final String foreignId, final RequisitionCategory category) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).addOrReplaceNodeCategory(foreignId, category);
             }
-
         });
     }
 
     public void addOrReplaceNodeAssetParameter(final String foreignSource, final String foreignId, final RequisitionAsset asset) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).addOrReplaceNodeAssetParameter(foreignId, asset);
             }
-
         });
     }
 
     public void importRequisition(final String foreignSource, final Boolean rescanExisting) {
-        URL activeUrl = createSnapshot(foreignSource);
+        final URL activeUrl = createSnapshot(foreignSource);
 
         final String url = activeUrl.toString();
         LOG.debug("importRequisition: Sending import event with URL {}", url);
@@ -741,125 +677,91 @@ public class RequisitionAccessService {
 
     private URL createSnapshot(final String foreignSource) {
         return submitAndWait(new Callable<URL>() {
-
-            @Override
-            public URL call() throws Exception {
+            @Override public URL call() throws Exception {
                 return getAccessor(foreignSource).createSnapshot();
             }
-
         });
     }
 
     public void updateRequisition(final String foreignSource, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).updateRequisition(params);
             }
-
         });
     }
 
     public void updateNode(final String foreignSource, final String foreignId, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).updateNode(foreignId, params);
             }
-
         });
     }
 
     public void updateInterface(final String foreignSource, final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).updateInterface(foreignId, ipAddress, params);
             }
-
         });
     }
 
     public void deletePendingRequisition(final String foreignSource) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deletePending();
             }
-
         });
     }
 
     public void deleteDeployedRequisition(final String foreignSource) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteDeployed();
             }
-
         });
     }
 
     public void deleteNode(final String foreignSource, final String foreignId) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteNode(foreignId);
             }
-
         });
     }
 
     public void deleteInterface(final String foreignSource, final String foreignId, final String ipAddress) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteInterface(foreignId, ipAddress);
             }
-
         });
     }
 
     public void deleteInterfaceService(final String foreignSource, final String foreignId, final String ipAddress, final String service) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteInterfaceService(foreignId, ipAddress, service);
             }
-
         });
     }
 
     public void deleteCategory(final String foreignSource, final String foreignId, final String category) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteCategory(foreignId, category);
             }
-
         });
     }
 
     public void deleteAssetParameter(final String foreignSource, final String foreignId, final String parameter) {
         submitWriteOp(new Runnable() {
-
-            @Override
-            public void run() {
+            @Override public void run() {
                 getAccessor(foreignSource).deleteAssetParameter(foreignId, parameter);
             }
-
         });
     }
 
-    
 
 }
