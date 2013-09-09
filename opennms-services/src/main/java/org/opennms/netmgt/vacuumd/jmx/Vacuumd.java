@@ -129,6 +129,12 @@ public class Vacuumd implements VacuumdMBean {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public long getNumAutomations() {
+        return getVacuumd().getNumAutomations();
+    }
+
     private org.opennms.netmgt.vacuumd.Vacuumd getVacuumd() {
         return org.opennms.netmgt.vacuumd.Vacuumd.getSingleton();
     }

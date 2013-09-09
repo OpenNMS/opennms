@@ -281,7 +281,20 @@ public class Vacuumd extends AbstractServiceDaemon implements EventListener {
         
         return isTarget;
     }
-    
+
+    /**
+     * Returns the number of automations that have been executed so far.
+     *
+     * @return the number of automations that have been executed
+     */
+    public long getNumAutomations() {
+        if (m_scheduler != null) {
+            return m_scheduler.getNumTasksExecuted();
+        } else {
+            return 0L;
+        }
+    }
+
     private VacuumdConfigFactory getVacuumdConfig() {
         return VacuumdConfigFactory.getInstance();
     }
