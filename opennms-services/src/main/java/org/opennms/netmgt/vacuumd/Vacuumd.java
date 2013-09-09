@@ -31,13 +31,9 @@ package org.opennms.netmgt.vacuumd;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-
-import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -46,7 +42,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
-import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -68,17 +63,11 @@ import org.slf4j.LoggerFactory;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
-public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
+public class Vacuumd extends AbstractServiceDaemon implements EventListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(Vacuumd.class);
     
     private static volatile Vacuumd m_singleton;
-
-    private volatile Thread m_thread;
-
-    private volatile long m_startTime;
-
-    private volatile boolean m_stopped = false;
 
     private volatile LegacyScheduler m_scheduler;
 
@@ -142,16 +131,12 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     protected void onStart() {
-        m_startTime = System.currentTimeMillis();
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
         m_scheduler.start();
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onStop() {
-        m_stopped = true;
         if (m_scheduler != null) {
             m_scheduler.stop();
         }
@@ -161,127 +146,12 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onPause() {
         m_scheduler.pause();
-        m_stopped = true;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onResume() {
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
         m_scheduler.resume();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Runnable#run()
-     */
-    /**
-     * <p>run</p>
-     */
-    @Override
-    public void run() {
-        LOG.info("Vacuumd scheduling started");
-
-        long now = System.currentTimeMillis();
-        long period = getVacuumdConfig().getPeriod();
-
-        LOG.info("Vacuumd sleeping until time to execute statements period = {}", period);
-
-        long waitTime = 500L;
-
-        while (!m_stopped) {
-            try {
-                now = waitPeriod(now, period, waitTime);
-
-                LOG.info("Vacuumd beginning to execute statements");
-                executeStatements();
-
-                m_startTime = System.currentTimeMillis();
-
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception", e);
-            }
-        }
-    }
-
-    /**
-     * <p>executeStatements</p>
-     */
-    protected void executeStatements() {
-        if (!m_stopped) {
-            List<Statement> statements = getVacuumdConfig().getStatements();
-            for (Statement statement : statements) {
-				runUpdate(statement.getContent(), statement.getTransactional());
-			}
-        }
-    }
-
-    /**
-     * @param now
-     * @param period
-     * @param waitTime
-     * @return
-     */
-    private long waitPeriod(long now, long period, long waitTime) {
-        int count = 0;
-        while (!m_stopped && ((now - m_startTime) < period)) {
-            try {
-                if (count % 100 == 0) {
-                    LOG.debug("Vacuumd: {}ms remaining to execution.", (period - now + m_startTime));
-                }
-                Thread.sleep(waitTime);
-                now = System.currentTimeMillis();
-                count++;
-            } catch (InterruptedException e) {
-                // FIXME: what do I do here?
-            }
-        }
-        return now;
-    }
-
-    private void runUpdate(String sql, boolean transactional) {
-        LOG.info("Vacuumd executing statement: {}", sql);
-        // update the database
-        Connection dbConn = null;
-        
-        //initially set doCommit to avoid doing a commit in the finally
-        //if an exception is thrown.        
-        boolean commitRequired = false;
-        boolean autoCommitFlag = !transactional;
-        try {
-            dbConn = getDataSourceFactory().getConnection();
-            dbConn.setAutoCommit(autoCommitFlag);
-
-            PreparedStatement stmt = dbConn.prepareStatement(sql);
-            int count = stmt.executeUpdate();
-            stmt.close();
-
-            LOG.debug("Vacuumd: Ran update {}: this affected {} rows", sql, count);
-
-            commitRequired = transactional;
-        } catch (SQLException ex) {
-            LOG.error("Vacuumd:  Database error execuating statement {}", sql, ex);
-        } finally {
-            if (dbConn != null) {
-                try {
-                    if (commitRequired) {
-                        dbConn.commit();
-                    } else if (transactional) {
-                        dbConn.rollback();
-                    }
-                } catch (SQLException ex) {
-                } finally {
-                    if (dbConn != null) {
-                        try {
-                            dbConn.close();
-                        } catch (Throwable e) {
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void createScheduler() {
@@ -339,7 +209,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     public void onEvent(Event event) {
-        
         if (isReloadConfigEvent(event)) {
             handleReloadConifgEvent();
         }
@@ -415,9 +284,5 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     
     private VacuumdConfigFactory getVacuumdConfig() {
         return VacuumdConfigFactory.getInstance();
-    }
-    
-    private DataSource getDataSourceFactory() {
-        return DataSourceFactory.getInstance();
     }
 }
