@@ -113,24 +113,24 @@ public class AsteriskOriginator {
      * @param amiProps a {@link java.util.Properties} object.
      * @throws org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException if any.
      */
-    public AsteriskOriginator(Properties amiProps) throws AsteriskOriginatorException {
+    public AsteriskOriginator(final Properties amiProps) throws AsteriskOriginatorException {
         
         try {
             configureProperties(amiProps);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new AsteriskOriginatorException("Failed to construct originator", e);
         }
         
         // Get the details for this AMI peer from the AmiPeerFactory
         try {
             AmiPeerFactory.init();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw new AsteriskOriginatorException("I/O error initializing AMI peer factory", ioe);
         }
         
-        AmiAgentConfig agentConfig = AmiPeerFactory.getInstance().getAgentConfig(m_amiHost);
+        final AmiAgentConfig agentConfig = AmiPeerFactory.getInstance().getAgentConfig(m_amiHost);
         // Now create and configure the manager connection
-        ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
+        final ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
         if (agentConfig.getUseTls()) {
             m_managerConnection = (DefaultManagerConnection)mcf.createSecureManagerConnection();
         } else {
@@ -158,7 +158,7 @@ public class AsteriskOriginator {
      * @throws IOException
      */
     
-    private void configureProperties(Properties amiProps) throws IOException {
+    private void configureProperties(final Properties amiProps) throws IOException {
         
         //this loads the OpenNMS-defined properties
         m_amiProps = AsteriskConfig.getProperties();
@@ -195,17 +195,17 @@ public class AsteriskOriginator {
         LOG.info("Logging in Asterisk manager connection");
         try {
             m_managerConnection.login();
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             throw new AsteriskOriginatorException("Illegal state logging in Asterisk manager connection", ise);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw new AsteriskOriginatorException("I/O exception logging in Asterisk manager connection", ioe);
-        } catch (AuthenticationFailedException afe) {
+        } catch (final AuthenticationFailedException afe) {
             throw new AsteriskOriginatorException("Authentication failure logging in Asterisk manager connection", afe);
-        } catch (TimeoutException toe) {
+        } catch (final TimeoutException toe) {
             throw new AsteriskOriginatorException("Timed out logging in Asterisk manager connection", toe);
         }
         LOG.info("Successfully logged in Asterisk manager connection");
-        
+
         LOG.info("Originating a call to extension {}", m_legAExtension);
         LOG.debug(createCallLogMsg());
         LOG.debug("Originate action:\n\n{}", originateAction.toString());
@@ -213,16 +213,16 @@ public class AsteriskOriginator {
         ManagerResponse managerResponse = null;
         try {
             managerResponse = m_managerConnection.sendAction(originateAction);
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("Illegal argument sending originate action", iae);
-        } catch (IllegalStateException ise) {
+        } catch (final IllegalStateException ise) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("Illegal state sending originate action", ise);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("I/O exception sending originate action", ioe);
-        } catch (TimeoutException toe) {
+        } catch (final TimeoutException toe) {
             m_managerConnection.logoff();
             throw new AsteriskOriginatorException("Timed out sending originate action", toe);
         }
@@ -247,7 +247,7 @@ public class AsteriskOriginator {
      * @throws org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException if any of the underlying operations fail
      */
     public OriginateAction buildOriginateAction() throws AsteriskOriginatorException {
-        OriginateAction action = new OriginateAction();
+        final OriginateAction action = new OriginateAction();
         action.setCallerId(m_callerId);
         setLegAChannel(expandPattern(m_legAChannelPattern));
         action.setChannel(getLegAChannel());
@@ -265,14 +265,15 @@ public class AsteriskOriginator {
         return action;
     }
 
-    private String expandPattern(String pattern) {
+    private String expandPattern(final String pattern) {
         LOG.debug("Expanding pattern {}", pattern);
-        String expanded = AsteriskUtils.expandPattern(pattern);
         
         // Further expand AsteriskOriginator-specific tokens
-        Properties props = new Properties();
+        final Properties props = new Properties();
         props.put("exten", getLegAExtension());
-        expanded = PropertiesUtils.substitute(expanded, props);
+
+        final String expanded = PropertiesUtils.substitute(AsteriskUtils.expandPattern(pattern), props);
+
         LOG.debug("Expanded pattern is: {}", expanded);
         return expanded;
     }
@@ -281,7 +282,7 @@ public class AsteriskOriginator {
      * @return
      */
     private String createCallLogMsg() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         sb.append("\n\tChannel: ");
         sb.append(getLegAChannel());
         sb.append("\n\tFrom Caller-ID: ");
@@ -321,7 +322,7 @@ public class AsteriskOriginator {
      *
      * @param cid The from address to set.
      */
-    public void setCallerId(String cid) {
+    public void setCallerId(final String cid) {
         m_callerId = cid;
     }
 
@@ -340,7 +341,7 @@ public class AsteriskOriginator {
      * @param amiHost Sets the mail host.
      * @throws java.net.UnknownHostException if any.
      */
-    public void setAmiHost(String amiHost) throws UnknownHostException {
+    public void setAmiHost(final String amiHost) throws UnknownHostException {
         m_amiHost = InetAddressUtils.addr(amiHost);
     }
 
@@ -359,7 +360,7 @@ public class AsteriskOriginator {
      * @param messageText
      *            Sets the message text.
      */
-    public void setMessageText(String messageText) {
+    public void setMessageText(final String messageText) {
         m_messageText = messageText;
     }
 
@@ -378,7 +379,7 @@ public class AsteriskOriginator {
      * @param subject
      *            Sets the message Subject.
      */
-    public void setSubject(String subject) {
+    public void setSubject(final String subject) {
         m_subject = subject;
     }
 
@@ -396,7 +397,7 @@ public class AsteriskOriginator {
      *
      * @param exten Sets the extension for Leg A
      */
-    public void setLegAExtension(String exten) {
+    public void setLegAExtension(final String exten) {
         m_legAExtension = exten;
     }
 
@@ -412,9 +413,9 @@ public class AsteriskOriginator {
     /**
      * <p>setLegAChannel</p>
      *
-     * @param chan Sets the channelfor Leg A
+     * @param chan Sets the channel for Leg A
      */
-    public void setLegAChannel(String chan) {
+    public void setLegAChannel(final String chan) {
         m_legAChannel = chan;
     }
 
@@ -432,7 +433,7 @@ public class AsteriskOriginator {
      *
      * @param debug a boolean.
      */
-    public void setDebug(boolean debug) {
+    public void setDebug(final boolean debug) {
         m_debug = debug;
     }
 
@@ -451,7 +452,7 @@ public class AsteriskOriginator {
      * @param name Name of variable to set
      * @param value Value to set for variable
      */
-    public void setChannelVariable(String name, String value) {
+    public void setChannelVariable(final String name, final String value) {
         m_channelVars.put(name, value);
     }
     
@@ -470,7 +471,7 @@ public class AsteriskOriginator {
      * @param name Name of variable to retrieve
      * @return Value of named variable
      */
-    public String getChannelVariable(String name) {
+    public String getChannelVariable(final String name) {
         if (name == null || "".equals(name)) {
             return null;
         }

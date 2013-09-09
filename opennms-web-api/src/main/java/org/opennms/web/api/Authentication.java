@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.springframework.security;
+package org.opennms.web.api;
 
 import java.util.HashMap;
 import java.util.Map;

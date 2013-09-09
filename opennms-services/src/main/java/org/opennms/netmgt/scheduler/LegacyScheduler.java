@@ -85,6 +85,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     private Thread m_worker;
 
     /**
+     * Used to keep track of the number of tasks that have been executed.
+     */
+    private long m_numTasksExecuted = 0;
+
+    /**
      * This queue extends the standard FIFO queue instance so that it is
      * possible to peek at an instance without removing it from the queue.
      * 
@@ -440,6 +445,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                                 // Add runnable to the execution queue
                                 m_runner.execute(readyRun);
                                 ++runned;
+
+                                // Increment the execution counter
+                                ++m_numTasksExecuted;
                             }
                         } catch (InterruptedException e) {
                             return; // jump all the way out
@@ -474,5 +482,11 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             m_status = STOPPED;
         }
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getNumTasksExecuted() {
+        return m_numTasksExecuted;
     }
 }

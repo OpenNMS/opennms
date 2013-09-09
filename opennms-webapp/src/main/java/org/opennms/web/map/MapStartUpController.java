@@ -91,7 +91,7 @@ public class MapStartUpController extends MapsLoggingController {
 	            LOG.debug("MapStartUp for user:{}", user);
 
 			bw.write(ResponseAssembler.getStartupResponse(manager.getProperties(
-			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))));
+			                          request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN))));
 		} catch (Throwable e) {
 			LOG.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));

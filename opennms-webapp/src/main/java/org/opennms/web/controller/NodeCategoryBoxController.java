@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

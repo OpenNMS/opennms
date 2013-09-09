@@ -32,12 +32,8 @@ package org.opennms.netmgt.asterisk.utils;
  * <p>AsteriskOriginatorException class.</p>
  *
  * @author jeffg
- * @version $Id: $
  */
 public class AsteriskOriginatorException extends Exception {
-    /**
-     * 
-     */
     private static final long serialVersionUID = -6830694356801565351L;
 
     /**
@@ -52,7 +48,7 @@ public class AsteriskOriginatorException extends Exception {
      *
      * @param message a {@link java.lang.String} object.
      */
-    public AsteriskOriginatorException(String message) {
+    public AsteriskOriginatorException(final String message) {
         super(message);
     }
 
@@ -62,7 +58,7 @@ public class AsteriskOriginatorException extends Exception {
      * @param message a {@link java.lang.String} object.
      * @param cause a {@link java.lang.Throwable} object.
      */
-    public AsteriskOriginatorException(String message, Throwable cause) {
+    public AsteriskOriginatorException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -71,7 +67,7 @@ public class AsteriskOriginatorException extends Exception {
      *
      * @param cause a {@link java.lang.Throwable} object.
      */
-    public AsteriskOriginatorException(Throwable cause) {
+    public AsteriskOriginatorException(final Throwable cause) {
         super(cause);
     }
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,33 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.controller;
+package org.opennms.osgi;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.opennms.osgi.EventProxy;
 
-import org.opennms.web.api.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-
-/**
- * <p>FrontPageController class.</p>
- *
- * @author ranger
- * @since 1.8.1
- */
-@Controller
-@RequestMapping("/frontPage.htm")
-public class FrontPageController {
-
-    @RequestMapping(method = RequestMethod.GET)
-    protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (request.isUserInRole(Authentication.ROLE_DASHBOARD)) {
-            return new ModelAndView("redirect:/dashboard.jsp");
-        } else {
-            return new ModelAndView("redirect:/index.jsp");
-        }
-    }
+public interface EventProxyAware {
+    void setEventProxy(EventProxy eventProxy);
 }
