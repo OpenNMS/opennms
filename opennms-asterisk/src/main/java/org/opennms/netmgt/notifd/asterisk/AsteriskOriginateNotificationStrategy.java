@@ -60,61 +60,63 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
      */
     /** {@inheritDoc} */
     @Override
-    public int send(List<Argument> arguments) {
+    public final int send(final List<Argument> arguments) {
         LOG.debug("In the {} class", getClass());
 
         try {
-            AsteriskOriginator originator = buildOriginator(arguments);
-            originator.originateCall();
-        } catch (AsteriskOriginatorException aoe) {
+            buildOriginator(arguments).originateCall();
+        } catch (final AsteriskOriginatorException aoe) {
             LOG.error("Error originating call for notification.", aoe);
             return 1;
         }
         return 0;
     }
 
-    private AsteriskOriginator buildOriginator(List<Argument> arguments) throws AsteriskOriginatorException {
-        AsteriskOriginator ao = new AsteriskOriginator();
-        for (Argument arg : arguments) {
-            if (NotificationManager.PARAM_WORK_PHONE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_WORK_PHONE => {}", arg.getValue());
-                ao.setLegAExtension(arg.getValue());
-            } else if (NotificationManager.PARAM_HOME_PHONE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_HOME_PHONE => {}", arg.getValue());
-                ao.setLegAExtension(arg.getValue());
-            } else if (NotificationManager.PARAM_MOBILE_PHONE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_MOBILE_PHONE => {}", arg.getValue());
-                ao.setLegAExtension(arg.getValue());
-            } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_SUBJECT => {}", arg.getValue());
-                ao.setSubject(arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_SUBJECT, arg.getValue());
-            } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_TEXT_MSG => {}", arg.getValue());
-                ao.setMessageText(arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_BODY, arg.getValue());
-            } else if (NotificationManager.PARAM_TUI_PIN.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_TUI_PIN => {}", arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USER_PIN, arg.getValue());
-            } else if (NotificationManager.PARAM_DESTINATION.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_DESTINATION => {}", arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USERNAME, arg.getValue());
-            } else if (NotificationManager.PARAM_NODE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_NODE => {}", arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, arg.getValue());
+    private AsteriskOriginator buildOriginator(final List<Argument> arguments) throws AsteriskOriginatorException {
+        final AsteriskOriginator ao = new AsteriskOriginator();
+        for (final Argument arg : arguments) {
+            final String argSwitch = arg.getSwitch();
+            final String argValue = arg.getValue();
+
+            if (NotificationManager.PARAM_WORK_PHONE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_WORK_PHONE => {}", argValue);
+                ao.setLegAExtension(argValue);
+            } else if (NotificationManager.PARAM_HOME_PHONE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_HOME_PHONE => {}", argValue);
+                ao.setLegAExtension(argValue);
+            } else if (NotificationManager.PARAM_MOBILE_PHONE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_MOBILE_PHONE => {}", argValue);
+                ao.setLegAExtension(argValue);
+            } else if (NotificationManager.PARAM_SUBJECT.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_SUBJECT => {}", argValue);
+                ao.setSubject(argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_SUBJECT, argValue);
+            } else if (NotificationManager.PARAM_TEXT_MSG.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_TEXT_MSG => {}", argValue);
+                ao.setMessageText(argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NOTIFY_BODY, argValue);
+            } else if (NotificationManager.PARAM_TUI_PIN.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_TUI_PIN => {}", argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USER_PIN, argValue);
+            } else if (NotificationManager.PARAM_DESTINATION.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_DESTINATION => {}", argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_USERNAME, argValue);
+            } else if (NotificationManager.PARAM_NODE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_NODE => {}", argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, argValue);
                 try {
-                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(arg.getValue()).getLabel());
-                } catch (Throwable e) {
+                    ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(argValue).getLabel());
+                } catch (final RuntimeException e) {
                     ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, null);
                 }
-            } else if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_INTERFACE => {}", arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_INTERFACE, arg.getValue());
-            } else if (NotificationManager.PARAM_SERVICE.equals(arg.getSwitch())) {
-                LOG.debug("Found: PARAM_SERVICE => {}", arg.getValue());
-                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_SERVICE, arg.getValue());
+            } else if (NotificationManager.PARAM_INTERFACE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_INTERFACE => {}", argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_INTERFACE, argValue);
+            } else if (NotificationManager.PARAM_SERVICE.equals(argSwitch)) {
+                LOG.debug("Found: PARAM_SERVICE => {}", argValue);
+                ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_SERVICE, argValue);
             } else {
-                LOG.debug("Unconsumed arg: {} => {}", String.valueOf(arg.getSwitch()), String.valueOf(arg.getValue()));
+                LOG.debug("Unconsumed arg: {} => {}", String.valueOf(argSwitch), String.valueOf(argValue));
             }
         }
         return ao;
