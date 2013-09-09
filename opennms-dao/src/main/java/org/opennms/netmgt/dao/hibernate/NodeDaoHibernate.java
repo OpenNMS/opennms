@@ -79,9 +79,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      * having to return a bulky Node object.
      */
     public String getLabelForId(Integer id) {
-    	String label = null;
-    	label = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id).get(0);
-    	return label;
+        List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
+        return list == null || list.isEmpty() ? null : list.get(0);
     }
 
     /** {@inheritDoc} */
