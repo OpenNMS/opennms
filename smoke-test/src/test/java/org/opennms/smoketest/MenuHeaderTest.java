@@ -121,7 +121,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testDistributedStatusLink() {
         clickAndWait("link=Distributed Status");
-        assertTrue(selenium.isTextPresent("Distributed Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
+        assertTrue(selenium.isTextPresent("Distributed Poller Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
     }
 
     @Test
