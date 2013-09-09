@@ -186,7 +186,6 @@ public class AutomationProcessor implements ReadyRunnable {
     }
     
     static class TriggerResults {
-    	private static final Logger LOG = LoggerFactory.getLogger(TriggerResults.class);
     	private final TriggerProcessor m_trigger;
     	private final ResultSet m_resultSet;
     	private final boolean m_successful;
@@ -406,8 +405,6 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     static class SQLExceptionHolder extends RuntimeException {
-    	private static final Logger LOG = LoggerFactory.getLogger(SQLExceptionHolder.class);
-
     	private static final long serialVersionUID = 2479066089399740468L;
 
         private final SQLException m_ex;
@@ -451,9 +448,6 @@ public class AutomationProcessor implements ReadyRunnable {
 
     
     static class EventAssignment {
-
-    	private static final Logger LOG = LoggerFactory.getLogger(EventAssignment.class);
-
     	static final Pattern s_pattern = Pattern.compile("\\$\\{(\\w+)\\}");
         private final Assignment m_assignment;
 
