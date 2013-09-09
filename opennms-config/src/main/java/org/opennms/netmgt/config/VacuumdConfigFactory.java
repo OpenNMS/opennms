@@ -33,16 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
-import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
-import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.springframework.util.Assert;
@@ -199,16 +196,6 @@ public final class VacuumdConfigFactory {
     }
 
     /**
-     * Returns a Collection of named events to that may have
-     * been configured to be sent after an automation has run.
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public synchronized Collection<AutoEvent> getAutoEvents() {
-        return m_config.getAutoEvents().getAutoEventCollection();
-    }
-
-    /**
      * <p>getActionEvents</p>
      *
      * @return a {@link java.util.Collection} object.
@@ -269,45 +256,6 @@ public final class VacuumdConfigFactory {
             }
         }
         return null;
-    }
-    
-    /**
-     * Returns the AutoEvent associated with the auto-event-name
-     *
-     * @deprecated Use {@link ActionEvent} objects instead. Access these objects with {@link #getActionEvent(String)}.
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.vacuumd.AutoEvent} object.
-     */
-    public synchronized AutoEvent getAutoEvent(String name) {
-        for (AutoEvent ae : getAutoEvents()) {
-            if (ae.getName().equals(name)) {
-                return ae;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * <p>getSqlStatements</p>
-     *
-     * @return an array of {@link java.lang.String} objects.
-     */
-    public synchronized String[] getSqlStatements() {
-        Statement[] stmts = m_config.getStatement();
-        String[] sql = new String[stmts.length];
-        for (int i = 0; i < stmts.length; i++) {
-            sql[i] = stmts[i].getContent();
-        }
-        return sql;
-    }
-    
-    /**
-     * <p>getStatements</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public synchronized List<Statement> getStatements() {
-    	return m_config.getStatementCollection();
     }
 
     /**

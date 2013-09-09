@@ -284,12 +284,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     public final void testGetAutomations() {
         assertEquals(29, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
-    
-    @Test
-    public final void testGetAutoEvents() {
-        assertEquals(0, VacuumdConfigFactory.getInstance().getAutoEvents().size());
-    }
-    
+
     /**
      * Simple test on a helper method.
      */
