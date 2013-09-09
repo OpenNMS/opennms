@@ -290,12 +290,12 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      */
     @Test
     public final void testGetAutomations() {
-        assertEquals(19, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(29, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     @Test
     public final void testGetAutoEvents() {
-        assertEquals(2, VacuumdConfigFactory.getInstance().getAutoEvents().size());
+        assertEquals(0, VacuumdConfigFactory.getInstance().getAutoEvents().size());
     }
     
     /**
@@ -313,7 +313,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
-        assertEquals(18,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(28, VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getAction().getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     

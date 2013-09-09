@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "action-event")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ActionEvent implements Serializable {
+public class ActionEvent implements Serializable, Named {
     private static final long serialVersionUID = 1286974132304106079L;
 
     private static final boolean DEFAULT_FOR_EACH_RESULT_FLAG = false;

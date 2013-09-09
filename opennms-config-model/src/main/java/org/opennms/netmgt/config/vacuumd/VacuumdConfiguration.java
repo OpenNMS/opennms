@@ -37,11 +37,15 @@ package org.opennms.netmgt.config.vacuumd;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -113,16 +117,13 @@ public class VacuumdConfiguration implements Serializable {
     }
 
     public VacuumdConfiguration(final int period,
-            final List<Statement> statements, final Automations automations,
-            final Triggers triggers, final Actions actions,
-            final AutoEvents autoEvents, final ActionEvents actionEvents) {
+            final Automations automations, final Triggers triggers,
+            final Actions actions, final ActionEvents actionEvents) {
         super();
         setPeriod(period);
-        setStatement(statements);
         setAutomations(automations);
         setTriggers(triggers);
         setActions(actions);
-        setAutoEvents(autoEvents);
         setActionEvents(actionEvents);
     }
 
@@ -503,5 +504,114 @@ public class VacuumdConfiguration implements Serializable {
      */
     public void setTriggers(final Triggers triggers) {
         this._triggers = triggers;
+    }
+
+    /**
+     * Converts auto-events to action-events and statements to automations
+     * automatically after being unmarshalled.
+     *
+     * @param unmarshaller
+     * @param parent
+     */
+    void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        // Convert auto-events to action-events
+        List<AutoEvent> autoEvents = _autoEvents.getAutoEventCollection();
+
+        // Iterate over all of the automations, processing those that reference auto-events
+        for (Automation automation : _automations.getAutomationCollection()) {
+            // If no auto-event name is set, we're not interested
+            if (automation.getAutoEventName() == null) {
+                continue;
+            }
+
+            // The automation references an auto-event, try and find it
+            AutoEvent matchedAutoEvent = null;
+            for (AutoEvent autoEvent : autoEvents) {
+                if (autoEvent.getName().equals(automation.getAutoEventName())) {
+                    matchedAutoEvent = autoEvent;
+                }
+            }
+
+            // No match, throw an exception
+            if (matchedAutoEvent == null) {
+                throw new IllegalStateException("An auto-event named '"
+                                                        + automation.getAutoEventName()
+                                                        + "' was referenced, but not found in the vacuumd configuration file.");
+            }
+
+            // Build an action event with the same uei
+            ActionEvent actionEvent = new ActionEvent();
+            actionEvent.setName(getAvailableName(matchedAutoEvent.getName(),
+                                                 _actionEvents.getActionEventCollection()));
+            actionEvent.setForEachResult(true);
+            actionEvent.addAssignment(new Assignment("field", "uei",
+                                                     matchedAutoEvent.getUei().getContent()));
+            _actionEvents.addActionEvent(actionEvent);
+
+            // Update the automation to reference the action-event instead of the auto-event
+            automation.setAutoEventName(null);
+            automation.setActionEvent(actionEvent.getName());
+        }
+
+        // Erase the auto-events - there are no more automations referencing them
+        setAutoEvents(new AutoEvents());
+
+        // Convert statements to automations
+        for (Statement statement : getStatementCollection()) {
+            Action action = new Action();
+            action.setName(getAvailableName("statementAsAction", _actions.getActionCollection()));
+            action.setStatement(statement);
+            _actions.addAction(action);
+
+            Automation automation = new Automation();
+            automation.setName(getAvailableName("statementAsAutomation",
+                                                _automations.getAutomationCollection()));
+            automation.setInterval(getPeriod());
+            automation.setActive(true);
+            automation.setActionName(action.getName());
+            _automations.addAutomation(automation);
+        }
+
+        // Erase the statements - they are automations now
+        setStatement(new ArrayList<Statement>(0));
+    }
+
+    /**
+     * Generates a name that is not currently used by any object
+     * in the given collection.
+     *
+     * @param prefix
+     *          Prefix used for the generated name.
+     * @param objects
+     *          Collection of objects in which the name should be unique.
+     * @return
+     *          A name that is not used by any other objects in the collection
+     */
+    private <T extends Named> String getAvailableName(final String prefix, final Collection<T> objects) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("A prefix must be set.");
+        }
+
+        // Set containing all of the existing names in the collection
+        Set<String> existingNames = new HashSet<String>();
+
+        // Add all of the non-null names to the set
+        Iterator<T> it = objects.iterator();
+        while (it.hasNext()) {
+            String name = it.next().getName();
+            if (name == null) {
+                continue;
+            }
+            existingNames.add(name);
+        }
+
+        // Generate a name that is not in the set
+        String uniqueName = prefix;
+        int i = 1;
+        while (existingNames.contains(uniqueName)) {
+            uniqueName = prefix + "-" + i++;
+        }
+
+        return uniqueName;
     }
 }
