@@ -61,9 +61,9 @@ public class EmailAddress {
      */
     public EmailAddress(String newAddress) {
         String address = newAddress;
-        username = address.substring(0, address.indexOf("@"));
+        username = address.substring(0, address.indexOf('@'));
 
-        String addressTail = address.substring(address.indexOf("@") + 1, address.length());
+        String addressTail = address.substring(address.indexOf('@') + 1, address.length());
         StringTokenizer tokens = new StringTokenizer(addressTail, ".");
 
         List<String> tokenList = new ArrayList<String>();

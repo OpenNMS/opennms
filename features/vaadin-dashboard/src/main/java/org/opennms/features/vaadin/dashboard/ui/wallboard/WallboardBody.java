@@ -25,8 +25,8 @@ public class WallboardBody extends VerticalLayout {
     private Timer timer;
     private int waitFor = 0;
     private int iteration = 1, index = -1;
-    private final int PRIORITY_DECREASE = 1;
-    private final int DURATION_DECREASE = 1;
+    private static final int PRIORITY_DECREASE = 1;
+    private static final int DURATION_DECREASE = 1;
     private ProgressIndicator progressIndicator;
     private Label debugLabel = new Label("debug");
     private boolean debugEnabled = false;

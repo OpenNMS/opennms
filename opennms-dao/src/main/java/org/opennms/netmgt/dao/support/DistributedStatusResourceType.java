@@ -229,7 +229,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     */
 
     private String getDefinitionNameFromLocationMonitorDirectory(String dir) {
-        int index = dir.indexOf("-");
+        int index = dir.indexOf('-');
         if (index == -1) {
             throw new IllegalArgumentException("Location monitor directory \""
                                                + dir + "\" isn't a valid "
@@ -239,7 +239,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
 
     private int getLocationMonitorIdFromLocationMonitorDirectory(String dir) {
-        int index = dir.indexOf("-");
+        int index = dir.indexOf('-');
         if (index == -1) {
             throw new IllegalArgumentException("Location monitor directory \""
                                                + dir + "\" isn't a valid "

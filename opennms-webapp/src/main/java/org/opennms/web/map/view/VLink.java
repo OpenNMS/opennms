@@ -228,7 +228,7 @@ final public class VLink {
      * @return a {@link java.lang.String} object.
      */
     public String getIdWithoutLinkType() {
-        return id.substring(0, id.lastIndexOf("-"));
+        return id.substring(0, id.lastIndexOf('-'));
     }
     /**
      * <p>increaseLinks</p>

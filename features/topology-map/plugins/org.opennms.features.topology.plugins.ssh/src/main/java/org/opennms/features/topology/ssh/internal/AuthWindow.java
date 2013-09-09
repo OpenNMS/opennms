@@ -57,8 +57,8 @@ public class AuthWindow extends Window implements Button.ClickListener{
     SSHWindow sshWindow; // The SSH window that will arise after the auth window connects
     private String m_host;  // The hostname to connect to
     private int m_port;  // The port to connect to
-    private int TERM_WIDTH = 800;  // The width of the terminal
-    private int TERM_HEIGHT = 520;   // The height of the terminal
+    private static final int TERM_WIDTH = 800;  // The width of the terminal
+    private static final int TERM_HEIGHT = 520;   // The height of the terminal
     private ClientSession session = null; // The ClientSession object used to track each SSH session
     final SshClient client;
     protected String testString; // used to unit test the button click event
@@ -67,7 +67,7 @@ public class AuthWindow extends Window implements Button.ClickListener{
     protected TextField usernameField;
     protected PasswordField passwordField;
     private boolean showOptions = false;
-    private final int FIELD_BUFFER = 20;
+    private static final int FIELD_BUFFER = 20;
 
     /**
      * This constructor method spawns a window to authorize the

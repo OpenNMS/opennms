@@ -43,7 +43,7 @@ import org.opennms.netmgt.capsd.Plugin;
  */
 public class LoopPlugin implements Plugin {
 
-    private final String m_protocolName = "LOOP";
+    private static final String m_protocolName = "LOOP";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()

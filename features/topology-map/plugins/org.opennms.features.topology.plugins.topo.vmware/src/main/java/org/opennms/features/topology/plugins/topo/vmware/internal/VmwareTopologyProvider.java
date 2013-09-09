@@ -52,7 +52,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
-    private final String SPLIT_REGEXP = " *, *";
+    private static final String SPLIT_REGEXP = " *, *";
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private boolean m_generated = false;

@@ -2162,7 +2162,7 @@ public class DBManager extends Manager {
     }
 
     private String getLabel(String fqdn) {
-        if (fqdn.indexOf(".")>0 && !validate(fqdn)) {
+        if (fqdn.indexOf('.')>0 && !validate(fqdn)) {
             return fqdn.substring(0, fqdn.indexOf('.'));
         } else {
             return fqdn;

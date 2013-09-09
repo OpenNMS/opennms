@@ -48,9 +48,9 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class EventsAlarmsWindow extends Window {
 
-	private final double sizePercentage = 0.80; // Window size ratio to the main window
-	private final int widthCushion = 50; //Border cushion for width of window;
-	private final int heightCushion = 110; //Border cushion for height of window
+	private static final double sizePercentage = 0.80; // Window size ratio to the main window
+	private static final int widthCushion = 50; //Border cushion for width of window;
+	private static final int heightCushion = 110; //Border cushion for height of window
 	private Embedded eventsBrowser = null; //Browser component which is directed at the events page
 	private Embedded alarmsBrowser = null; //Browser component which is directed at the alarms page
 	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
