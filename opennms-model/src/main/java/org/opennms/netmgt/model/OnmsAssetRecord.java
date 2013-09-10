@@ -1236,11 +1236,11 @@ public class OnmsAssetRecord implements Serializable {
      * @param connection a {@link java.lang.String} object.
      */
     public void setConnection(final String connection) {
-        if (connection.equalsIgnoreCase(TELNET_CONNECTION)) {
+        if (TELNET_CONNECTION.equalsIgnoreCase(connection)) {
             m_connection = TELNET_CONNECTION;
-        } else if (connection.equalsIgnoreCase(SSH_CONNECTION)) {
+        } else if (SSH_CONNECTION.equalsIgnoreCase(connection)) {
             m_connection = SSH_CONNECTION;
-        } else if (connection.equalsIgnoreCase(RSH_CONNECTION)) {
+        } else if (RSH_CONNECTION.equalsIgnoreCase(connection)) {
             m_connection = RSH_CONNECTION;
         } else {
             m_connection = connection;
