@@ -50,90 +50,90 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class JettyServer extends AbstractServiceDaemon {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(JettyServer.class);
 
     private static final String LOG4J_CATEGORY = "jetty-server";
-    
+
     int m_port = 8080;
 
     private Server m_server;
-    
+
     /**
      * <p>Constructor for JettyServer.</p>
      */
     protected JettyServer() {
         super(LOG4J_CATEGORY);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        Properties p = System.getProperties();
-        
-        File homeDir = new File(p.getProperty("opennms.home"));
-        File webappsDir = new File(homeDir, "jetty-webapps");
+        final Properties p = System.getProperties();
+
+        final File homeDir = new File(p.getProperty("opennms.home"));
+        final File webappsDir = new File(homeDir, "jetty-webapps");
 
         m_server = new Server();
-        Connector connector = new SelectChannelConnector();
-        Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
+        final Connector connector = new SelectChannelConnector();
+        final Integer port = Integer.getInteger("org.opennms.netmgt.jetty.port", m_port);
         connector.setPort(port);
 
-        String host = System.getProperty("org.opennms.netmgt.jetty.host");
+        final String host = System.getProperty("org.opennms.netmgt.jetty.host");
         if (host != null) {
             connector.setHost(host);
         }
-        
-        Integer requestHeaderSize = Integer.getInteger("org.opennms.netmgt.jetty.requestHeaderSize");
+
+        final Integer requestHeaderSize = Integer.getInteger("org.opennms.netmgt.jetty.requestHeaderSize");
         if(requestHeaderSize != null) {
             connector.setRequestHeaderSize(requestHeaderSize);
         }
 
         m_server.addConnector(connector);
 
-        Integer ajp_port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port");
+        final Integer ajp_port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port");
         if (ajp_port != null) {
-            Ajp13SocketConnector ajpConnector = new Ajp13SocketConnector();
+            final Ajp13SocketConnector ajpConnector = new Ajp13SocketConnector();
             ajpConnector.setPort(ajp_port);
             // Apache AJP connector freaks out with anything larger
             ajpConnector.setRequestHeaderSize(8096);
             m_server.addConnector(ajpConnector);
         }
-        
-        Integer https_port = Integer.getInteger("org.opennms.netmgt.jetty.https-port");
-        if (https_port != null) {
-            
-            String keyStorePath = System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore");
-            String keyStorePassword = System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
-            String keyManagerPassword = System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit");
-            String certificateAlias = System.getProperty("org.opennms.netmgt.jetty.https-cert-alias", null);
 
-            SslContextFactory contextFactory = new SslContextFactory(keyStorePath);
+        final Integer https_port = Integer.getInteger("org.opennms.netmgt.jetty.https-port");
+        if (https_port != null) {
+            final String keyStorePath = System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore");
+            final String keyStorePassword = System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
+            final String keyManagerPassword = System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit");
+            final String certificateAlias = System.getProperty("org.opennms.netmgt.jetty.https-cert-alias", null);
+
+            final SslContextFactory contextFactory = new SslContextFactory(keyStorePath);
             contextFactory.setKeyStorePassword(keyStorePassword);
             contextFactory.setKeyManagerPassword(keyManagerPassword);
             if (certificateAlias != null && !"".equals(certificateAlias.trim())) {
                 contextFactory.setCertAlias(certificateAlias);
             }
 
-        	excludeCipherSuites(contextFactory, https_port);
+            excludeCipherSuites(contextFactory, https_port);
 
-            SslSocketConnector sslConnector = new SslSocketConnector(contextFactory);
+            final SslSocketConnector sslConnector = new SslSocketConnector(contextFactory);
             sslConnector.setPort(https_port);
 
-        	String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
-    		if (httpsHost != null) {
-    			sslConnector.setHost(httpsHost);
-    		}
-    		m_server.addConnector(sslConnector);
+            final String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
+            if (httpsHost != null) {
+                sslConnector.setHost(httpsHost);
+            }
+
+            m_server.addConnector(sslConnector);
         }
-        
-        HandlerCollection handlers = new HandlerCollection();
+
+        final HandlerCollection handlers = new HandlerCollection();
 
         if (webappsDir.exists()) {
             File rootDir = null;
-            for (File file: webappsDir.listFiles()) {
+            for (final File file: webappsDir.listFiles()) {
                 if (file.isDirectory()) {
-                    String contextPath;
+                    final String contextPath;
                     if ("ROOT".equals(file.getName())) {
                         // Defer this to last to avoid nested context order problems
                         rootDir = file;
@@ -161,15 +161,15 @@ public class JettyServer extends AbstractServiceDaemon {
      * @param name a {@link java.io.File} object.
      * @param contextPath a {@link java.lang.String} object.
      */
-    protected void addContext(HandlerCollection handlers, File name, String contextPath) {
+    protected void addContext(final HandlerCollection handlers, final File name, final String contextPath) {
         LOG.warn("adding context: {} -> {}", contextPath, name.getAbsolutePath());
-        WebAppContext wac = new WebAppContext();
-	/*
-	 * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
+        final WebAppContext wac = new WebAppContext();
+        /*
+         * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
          * most of our jars are installed in ${opennms.home}/lib.  This is only required for jetty7
          * See: http://wiki.eclipse.org/Jetty/Howto/Configure_JSP
          */
-	wac.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*\\.jar$");
+        wac.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*\\.jar$");
         wac.setWar(name.getAbsolutePath());
         wac.setContextPath(contextPath);
         handlers.addHandler(wac);
@@ -181,7 +181,7 @@ public class JettyServer extends AbstractServiceDaemon {
      * @param https_port 
      * @param sslConnector a {@link org.eclipse.jetty.server.security.SslSocketConnector} object.
      */
-    protected void excludeCipherSuites(SslContextFactory contextFactory, Integer port) {
+    protected void excludeCipherSuites(final SslContextFactory contextFactory, final Integer port) {
         String[] defaultExclSuites = {
                 "SSL_DHE_DSS_WITH_DES_CBC_SHA",
                 "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
@@ -195,9 +195,9 @@ public class JettyServer extends AbstractServiceDaemon {
                 "TLS_RSA_EXPORT_WITH_DES40_CBC_SHA",
                 "TLS_RSA_WITH_DES_CBC_SHA"
         };
-        
+
         String[] exclSuites;
-        String exclSuitesString = System.getProperty("org.opennms.netmgt.jetty.https-exclude-cipher-suites");
+        final String exclSuitesString = System.getProperty("org.opennms.netmgt.jetty.https-exclude-cipher-suites");
         if (exclSuitesString == null) {
             LOG.warn("No excluded SSL/TLS cipher suites specified, using hard-coded defaults");
             exclSuites = defaultExclSuites;
@@ -205,10 +205,10 @@ public class JettyServer extends AbstractServiceDaemon {
             exclSuites = exclSuitesString.split("\\s*:\\s*");
             LOG.warn("Excluding {} user-specified SSL/TLS cipher suites", exclSuites.length);
         }
-        
+
         contextFactory.setExcludeCipherSuites(exclSuites);
-        
-        for (String suite : exclSuites) {
+
+        for (final String suite : exclSuites) {
             LOG.info("Excluded SSL/TLS cipher suite {} for connector on port {}", suite, port);
         }
     }
@@ -218,7 +218,7 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStart() {
         try {
             m_server.start();
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             LOG.error("Error starting Jetty Server", e);
         }
     }
@@ -228,7 +228,7 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStop() {
         try {
             m_server.stop();
-        } catch (Throwable e) {
+        } catch (final Exception e) {
             LOG.error("Error stopping Jetty Server", e);
         }
     }
