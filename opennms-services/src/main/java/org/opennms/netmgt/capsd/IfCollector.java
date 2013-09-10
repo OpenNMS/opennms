@@ -205,8 +205,8 @@ public final class IfCollector implements Runnable {
                 } else {
                     LOG.warn("IfCollector: Caught undeclared throwable exception when testing for protocol {} on host {}", plugin.getProtocol(), logAddr, utE);
                 }
-            } catch (final RuntimeException e) {
-                LOG.warn("IfCollector: Caught an exception when testing for protocol {} on host {}", plugin.getProtocol(), logAddr, e);
+            } catch (final Throwable t) {
+                LOG.warn("IfCollector: Caught an exception when testing for protocol {} on host {}", plugin.getProtocol(), logAddr, t);
             }
             LOG.debug("{} plugin {} completed!", logAddr, plugin.getProtocol());
         }
@@ -360,9 +360,9 @@ public final class IfCollector implements Runnable {
             try {
                 m_smbCollector = new IfSmbCollector(m_target, hasExchange);
                 m_smbCollector.run();
-            } catch (final RuntimeException e) {
+            } catch (final Throwable t) {
                 m_smbCollector = null;
-                LOG.warn("IfCollector.run: Caught an exception when collecting SMB information from target {}", str(m_target), e);
+                LOG.warn("IfCollector.run: Caught an exception when collecting SMB information from target {}", str(m_target), t);
             }
 
             LOG.debug("IfCollector.run: SMB collection completed");
@@ -491,9 +491,9 @@ public final class IfCollector implements Runnable {
                     } // end while(more ip addresses)
                 } // end if(ipAddrTable entries collected)
             } // end try()
-            catch (final RuntimeException e) {
+            catch (final Throwable t) {
                 m_snmpCollector = null;
-                LOG.warn("IfCollector.run: Caught an exception when collecting SNMP information from target {}", str(m_target), e);
+                LOG.warn("IfCollector.run: Caught an exception when collecting SNMP information from target {}", str(m_target), t);
             }
 
             LOG.debug("IfCollector.run: SNMP collection completed");

@@ -125,8 +125,8 @@ final class DataSender implements Fiber {
         final int oldPriority = currentThread.getPriority();
         try {
             currentThread.setPriority(priority);
-        } catch (final RuntimeException e) {
-            LOG.debug("Error setting thread priority: ", e);
+        } catch (final Throwable t) {
+            LOG.debug("Error setting thread priority: ", t);
         }
 
         return oldPriority;
@@ -177,8 +177,8 @@ final class DataSender implements Fiber {
         LOG.info("DataSender - shutting down the data sender pool");
         try {
             m_dsrPool.shutdown();
-        } catch (final RuntimeException e) {
-            LOG.error("Error shutting down data sender pool", e);
+        } catch (final Throwable t) {
+            LOG.error("Error shutting down data sender pool", t);
         }
 
         m_status = STOPPED;
@@ -276,8 +276,8 @@ final class DataSender implements Fiber {
             setCurrentThreadPriority(oldPriority);
 
             LOG.debug("DataSender: posted data for category: {}", catlabel);
-        } catch (final Exception e) {
-            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, e);
+        } catch (final Throwable t) {
+            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
             setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } finally {
             IOUtils.closeQuietly(inp);
@@ -349,8 +349,8 @@ final class DataSender implements Fiber {
             final EuiLevel euidata;
             try {
                 euidata = m_euiMapper.convertToEuiLevelXML(cat);
-            } catch (final RuntimeException e) {
-                LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, e);
+            } catch (final Throwable t) {
+                LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
                 setCurrentThreadPriority(Thread.NORM_PRIORITY);
                 continue;
             }
@@ -382,8 +382,8 @@ final class DataSender implements Fiber {
 
                         postInfo.clearErrors();
 
-                    } catch (final Exception e) {
-                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, e.getClass().getName(), e.getMessage(), e);
+                    } catch (final Throwable t) {
+                        LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, e.getClass().getName(), e.getMessage(), t);
                         postInfo.incrementErrors();
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {

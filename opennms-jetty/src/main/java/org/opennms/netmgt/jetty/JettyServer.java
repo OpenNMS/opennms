@@ -218,8 +218,8 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStart() {
         try {
             m_server.start();
-        } catch (final Exception e) {
-            LOG.error("Error starting Jetty Server", e);
+        } catch (final Throwable t) {
+            LOG.error("Error starting Jetty Server", t);
         }
     }
 
@@ -228,8 +228,8 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void onStop() {
         try {
             m_server.stop();
-        } catch (final Exception e) {
-            LOG.error("Error stopping Jetty Server", e);
+        } catch (final Throwable t) {
+            LOG.error("Error stopping Jetty Server", t);
         }
     }
 
