@@ -56,17 +56,10 @@ public interface EdgeProvider {
 	
 	public Edge getEdge(EdgeRef reference);
 	
-	public boolean matches(EdgeRef edgeRef, Criteria criteria);
-	
 	/**
 	 * Return an immutable list of edges that match the criteria.
 	 */
-	public List<Edge> getEdges(Criteria criteria);
-	
-	/**
-	 * Return an immutable list of all edges.
-	 */
-	public List<Edge> getEdges();
+	public List<Edge> getEdges(Criteria... criteria);
 	
 	/**
 	 * Return an immutable list of all edges that match this set of references.

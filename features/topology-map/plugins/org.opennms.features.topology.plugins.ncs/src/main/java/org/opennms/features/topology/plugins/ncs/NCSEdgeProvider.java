@@ -136,52 +136,56 @@ public class NCSEdgeProvider implements EdgeProvider {
 	 * @param criteria An {@link NCSServiceCriteria} object
 	 */
 	@Override
-	public List<Edge> getEdges(Criteria criteria) {
+	public List<Edge> getEdges(Criteria... criteria) {
 		List<Edge> retval = new ArrayList<Edge>();
-		NCSServiceCriteria crit = (NCSServiceCriteria)criteria;
-		for (Long id : crit) {
-			NCSComponent service = m_dao.get(id);
-			if (service == null) {
-				LoggerFactory.getLogger(this.getClass()).warn("NCSComponent not found for ID {}", id);
-			} else {
-                //Check foreignsource of the subcomponents to make sure it matches the Service's foreignsource
-				NCSComponent[] subs = checkForeignSource(service.getForeignSource(), service.getSubcomponents());
-				// Connect all of the ServiceElements to one another
-				for (int i = 0; i < subs.length; i++) {
-					for (int j = i + 1; j < subs.length; j++) {
-						String foreignSource = null, foreignId = null;
-						OnmsNode sourceNode = null, targetNode = null;
-						NodeIdentification ident = subs[i].getNodeIdentification();
-						String sourceLabel = subs[i].getName();
-						if (ident != null) {
-							foreignSource = ident.getForeignSource();
-							foreignId = ident.getForeignId();
-							sourceNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
-							if (sourceNode == null) {
-								continue;
-							}
-							if (sourceLabel == null) {
-								sourceLabel = sourceNode.getLabel();
+		for (Criteria criterium : criteria) {
+			try {
+				NCSServiceCriteria crit = (NCSServiceCriteria)criterium;
+				for (Long id : crit) {
+					NCSComponent service = m_dao.get(id);
+					if (service == null) {
+						LoggerFactory.getLogger(this.getClass()).warn("NCSComponent not found for ID {}", id);
+					} else {
+						//Check foreignsource of the subcomponents to make sure it matches the Service's foreignsource
+						NCSComponent[] subs = checkForeignSource(service.getForeignSource(), service.getSubcomponents());
+						// Connect all of the ServiceElements to one another
+						for (int i = 0; i < subs.length; i++) {
+							for (int j = i + 1; j < subs.length; j++) {
+								String foreignSource = null, foreignId = null;
+								OnmsNode sourceNode = null, targetNode = null;
+								NodeIdentification ident = subs[i].getNodeIdentification();
+								String sourceLabel = subs[i].getName();
+								if (ident != null) {
+									foreignSource = ident.getForeignSource();
+									foreignId = ident.getForeignId();
+									sourceNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
+									if (sourceNode == null) {
+										continue;
+									}
+									if (sourceLabel == null) {
+										sourceLabel = sourceNode.getLabel();
+									}
+								}
+								ident = subs[j].getNodeIdentification();
+								String targetLabel = subs[j].getName();
+								if (ident != null) {
+									foreignSource = ident.getForeignSource();
+									foreignId = ident.getForeignId();
+									targetNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
+									if (targetNode == null) {
+										continue;
+									}
+									if (targetLabel == null) {
+										targetLabel = targetNode.getLabel();
+									}
+								}
+
+								retval.add(new NCSEdge(subs[i].getForeignId(), service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
 							}
 						}
-						ident = subs[j].getNodeIdentification();
-						String targetLabel = subs[j].getName();
-						if (ident != null) {
-							foreignSource = ident.getForeignSource();
-							foreignId = ident.getForeignId();
-							targetNode = m_nodeDao.findByForeignId(foreignSource, foreignId);
-							if (targetNode == null) {
-								continue;
-							}
-							if (targetLabel == null) {
-								targetLabel = targetNode.getLabel();
-							}
-						}
-						
-						retval.add(new NCSEdge(subs[i].getForeignId(), service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
 					}
 				}
-			}
+			} catch (ClassCastException e) {}
 		}
 		return retval;
 	}
@@ -195,12 +199,6 @@ public class NCSEdgeProvider implements EdgeProvider {
         }
         return retVal.toArray(new NCSComponent[0]);
     }
-
-    @Override
-	public List<Edge> getEdges() {
-		throw new UnsupportedOperationException("Not implemented");
-		// TODO: Implement me
-	}
 
 	@Override
 	public List<Edge> getEdges(
@@ -222,11 +220,6 @@ public class NCSEdgeProvider implements EdgeProvider {
 	@Override
 	public void removeEdgeListener(EdgeListener vertexListener) {
 		// TODO: Implement me
-	}
-
-	@Override
-	public boolean matches(EdgeRef edgeRef, Criteria criteria) {
-		throw new UnsupportedOperationException("EdgeProvider.matches is not yet implemented.");
 	}
 
 	public static class NCSServiceCriteria extends ArrayList<Long> implements Criteria {

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -301,12 +302,17 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public Criteria getCriteria(String namespace) {
+        public Criteria[] getCriteria() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public void setCriteria(Criteria critiera) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void removeCriteria(Criteria critiera) {
             //To change body of implemented methods use File | Settings | File Templates.
         }
 

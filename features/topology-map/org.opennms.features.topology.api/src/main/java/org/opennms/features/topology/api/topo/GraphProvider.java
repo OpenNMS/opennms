@@ -38,7 +38,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void load(String filename) throws MalformedURLException, JAXBException;
 
-    public void refresh();
+	void refresh();
 
 	void resetContainer();
 
@@ -59,9 +59,5 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void removeEdges(EdgeRef... edges);
 
-        @Override
-	boolean setParent(VertexRef vertexId, VertexRef parentId);
-
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
-
 }

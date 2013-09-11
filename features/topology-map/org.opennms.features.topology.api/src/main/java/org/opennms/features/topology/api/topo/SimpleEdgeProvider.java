@@ -32,12 +32,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.slf4j.LoggerFactory;
 
 public class SimpleEdgeProvider implements EdgeProvider {
@@ -124,11 +126,6 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges() {
-		return Collections.unmodifiableList(new ArrayList<Edge>(m_edgeMap.values()));
-	}
-
-	@Override
 	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		List<Edge> edges = new ArrayList<Edge>();
 		for(EdgeRef ref : references) {
@@ -137,7 +134,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 				edges.add(edge);
 			}
 		}
-		return edges;
+		return Collections.unmodifiableList(edges);
 	}
 
 	private void fireEdgeSetChanged() {
@@ -214,25 +211,27 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<Edge> getEdges(Criteria c) {
-		MatchingCriteria criteria = (MatchingCriteria) c;
-		
+	public List<Edge> getEdges(Criteria... criteria) {
 		List<Edge> edges = new ArrayList<Edge>();
-		
-		for(Edge e : getEdges()) {
-			if (criteria.matches(e)) {
-				edges.add(e);
-			}
+		edges.addAll(m_edgeMap.values());
+
+		for (Criteria criterium : criteria) {
+			try {
+				MatchingCriteria matchingCriteria = (MatchingCriteria)criterium;
+				for(Iterator<Edge> itr = edges.iterator(); itr.hasNext();) {
+					Edge next = itr.next();
+					if (
+						matchingCriteria.getType() == Criteria.ElementType.EDGE &&
+						matchingCriteria.getNamespace() == getEdgeNamespace() &&
+						!matchingCriteria.matches(next)
+					) {
+						itr.remove();
+					}
+				}
+			} catch (ClassCastException e) {}
 		}
-		return edges;
 
-	}
-
-	@Override
-	public boolean matches(EdgeRef edgeRef, Criteria c) {
-		MatchingCriteria criteria = (MatchingCriteria)c;
-		
-		return criteria.matches(getEdge(edgeRef));
+		return Collections.unmodifiableList(edges);
 	}
 
 	@Override

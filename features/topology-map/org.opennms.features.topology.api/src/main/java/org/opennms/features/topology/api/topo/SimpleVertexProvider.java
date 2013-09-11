@@ -85,11 +85,6 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getVertices() {
-		return Collections.unmodifiableList(new ArrayList<Vertex>(m_vertexMap.values()));
-	}
-
-	@Override
 	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
 		List<Vertex> vertices = new ArrayList<Vertex>();
 		for(VertexRef ref : references) {
@@ -243,8 +238,9 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getVertices(Criteria criteria) {
-		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
+	public List<Vertex> getVertices(Criteria... criteria) {
+		// TODO: Change code to properly filter on Criteria
+		return Collections.unmodifiableList(new ArrayList<Vertex>(m_vertexMap.values()));
 	}
 
 	@Override

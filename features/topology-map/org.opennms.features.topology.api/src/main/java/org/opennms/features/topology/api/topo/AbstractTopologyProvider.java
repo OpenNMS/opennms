@@ -28,15 +28,18 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {    
+public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
@@ -312,5 +315,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         groupIdGenerator.reset();
         edgeIdGenerator.reset();
     }
-}
 
+    @Override
+    public abstract void save();
+
+    @Override
+    public abstract void load(String filename) throws MalformedURLException, JAXBException;
+
+    @Override
+    public abstract void refresh();
+}
