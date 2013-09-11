@@ -621,7 +621,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             } else {
                 formatter = s_oneDigitAfterDecimal;
             }
-            displaySpeed = ((double) ifSpeed) / 1000000000;
+            displaySpeed = ((double) ifSpeed) / 1000000000.0;
             units = "Gbps";
         } else if (ifSpeed >= 1000000L) {
             if ((ifSpeed % 1000000L) == 0) {
@@ -629,7 +629,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             } else {
                 formatter = s_oneDigitAfterDecimal;
             }
-            displaySpeed = ((double) ifSpeed) / 1000000;
+            displaySpeed = ((double) ifSpeed) / 1000000.0;
             units = "Mbps";
         } else if (ifSpeed >= 1000L) {
             if ((ifSpeed % 1000L) == 0) {
@@ -637,7 +637,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             } else {
                 formatter = s_oneDigitAfterDecimal;
             }
-            displaySpeed = ((double) ifSpeed) / 1000;
+            displaySpeed = ((double) ifSpeed) / 1000.0;
             units = "kbps";
         } else {
             formatter = s_noDigitsAfterDecimal;
