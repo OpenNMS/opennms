@@ -110,7 +110,7 @@
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
+  <jsp:param name="breadcrumb" value="<a href= 'event/index' title='Events System Page'>Events</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 

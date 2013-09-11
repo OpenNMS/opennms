@@ -4,13 +4,13 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-  <jsp-config>
-    <jsp-property-group>
-        <url-pattern>*.jsp</url-pattern>
-        <page-encoding>UTF-8</page-encoding>
-    </jsp-property-group>
-  </jsp-config>
-		 
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+
   <display-name>opennms</display-name>
 
   <!-- Uncomment this to set the webapp timeout to infinite.
@@ -1070,11 +1070,11 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/createFilter</url-pattern>
+    <url-pattern>/event/createFavorite</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/deleteFilter</url-pattern>
+    <url-pattern>/event/deleteFavorite</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>

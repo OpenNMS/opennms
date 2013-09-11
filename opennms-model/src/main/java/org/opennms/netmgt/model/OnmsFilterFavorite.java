@@ -3,13 +3,13 @@ package org.opennms.netmgt.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="filters")
-public class OnmsFilter {
+@Table(name="filterfavorites",
+       uniqueConstraints={@UniqueConstraint(columnNames={"username", "filtername", "page"})})
+public class OnmsFilterFavorite {
 
     public static enum Page {
         EVENT, ADMIN;
     }
-
 
     @Id
     @SequenceGenerator(name="filterSequence", sequenceName="filternextid")
@@ -30,7 +30,7 @@ public class OnmsFilter {
     @Enumerated(EnumType.STRING)
     private Page page;
 
-    public OnmsFilter() { }
+    public OnmsFilterFavorite() { }
 
     public Integer getId() {
         return id;

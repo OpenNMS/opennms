@@ -28,9 +28,11 @@
 
 package org.opennms.web.alarm;
 
-import java.util.List;
-
 import org.opennms.web.filter.Filter;
+import org.opennms.web.filter.NormalizedAcknowledgeType;
+import org.opennms.web.filter.QueryParameters;
+
+import java.util.List;
 
 /**
  * Convenience data structure for holding the arguments to an event query.
@@ -42,7 +44,8 @@ import org.opennms.web.filter.Filter;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AlarmQueryParms extends Object {
+// TODO MVR add deprecated
+public class AlarmQueryParms implements QueryParameters {
     public SortStyle sortStyle;
 
     public AcknowledgeType ackType;
@@ -55,13 +58,33 @@ public class AlarmQueryParms extends Object {
     
     public String display;
 
-    /**
-     * Convert the internal (and useful) ArrayList filters object into an array
-     * of Filter instances.
-     *
-     * @return an array of org$opennms$web$filter$Filter objects.
-     */
-    public Filter[] getFilters() {
-        return this.filters.toArray(new Filter[this.filters.size()]);
+    @Override
+    public String getSortStyleShortName() {
+        return sortStyle != null  ? sortStyle.getShortName() : null;
+    }
+
+    @Override
+    public NormalizedAcknowledgeType getAckType() {
+        return ackType != null ? ackType.toNormalizedAcknowledgeType() : null;
+    }
+
+    @Override
+    public List<Filter> getFilters() {
+        return this.filters;
+    }
+
+    @Override
+    public int getLimit() {
+        return limit;
+    }
+
+    @Override
+    public int getMultiple() {
+        return multiple;
+    }
+
+    @Override
+    public String getDisplay() {
+        return display;
     }
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.web.event;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;

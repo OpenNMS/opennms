@@ -1,3 +1,7 @@
+<%@ page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+<%@ page import="org.opennms.web.tags.filters.EventFilterCallback" %>
+<%@ page import="org.opennms.web.tags.filters.FilterCallback" %>
+<%@ page import="org.opennms.netmgt.model.OnmsFilterFavorite" %>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -29,10 +33,6 @@
 
 --%>
 
-<%@page import="org.opennms.netmgt.model.OnmsFilter"%>
-<%@page import="java.util.List"%>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@ page import="org.opennms.web.filter.FilterUtil" %>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -43,7 +43,11 @@
   <jsp:param name="headTitle" value="Events" />
   <jsp:param name="location" value="event" />  
   <jsp:param name="breadcrumb" value="Events" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 </jsp:include>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="../../taglib.tld" prefix="onms" %>
 
   <div class="TwoColLeft">
       <h3>Event Queries</h3>
@@ -62,34 +66,53 @@
     </div>
     <br/>
     <h3>Event Filter Favorites</h3>
+    <onms:alert/>
     <div class="boxWrapper">
-            <%
-            	XssRequestWrapper req = new XssRequestWrapper(request);
-                List<OnmsFilter> filters = (List<OnmsFilter>)req.getAttribute( "filters" );
-                String row = "<li><a href='event/list?favoriteId=%s&%s' title='show events for this favorite'>%s</a> [ <a href='event/deleteFilter?favoriteId=%s' title='delete favorite'>X</a> ]</li>";
-                String rows = "";
-                for (OnmsFilter eachFilter : filters) {
-                    rows += String.format(
-                    		row, 
-                    		eachFilter.getId(),
-                            eachFilter.getFilter(),
-                    		eachFilter.getName(), 
-                    		eachFilter.getId()) + "\n";
-                }
-                
-                if (!rows.isEmpty()) {
-                    %> <ul class="plain">
-                        <%=rows%>
-                    </ul><%
-                } else {
-                    %><p>No filters available.</p><%
-                }
-            %>
+        <c:choose>
+            <c:when test="${!empty favorites}">
+                <!-- Filters -->
+                <ul class="plain">
+                    <c:forEach var="eachFavorite" items="${favorites}">
+                        <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('<c:out value="${eachFavorite.id}"/>')" onMouseOut="hideTT()"/>
+                            <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='show events for this favorite'>${eachFavorite.name}</a> [ <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='delete favorite'>X</a> ]
+                        </li>
+                    </c:forEach>
+                </ul>
+            </c:when>
+            <c:otherwise>
+                <p>No favorites available.</p>
+            </c:otherwise>
+        </c:choose>
       </div>
   </div>
 
+<!-- Tooltips for filters -->
+<c:forEach var="eachFavorite" items="${favorites}">
+    <%
+        OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
+        FilterCallback callback = new EventFilterCallback(pageContext.getServletContext());
 
-      
+        NormalizedQueryParameters params = new NormalizedQueryParameters();
+        params.setFilters(callback.parse(current.getFilter()));
+
+        pageContext.setAttribute("parms", params);
+        pageContext.setAttribute("callback", callback);
+    %>
+    <div class="tooltip" style="" id="${eachFavorite.id}">
+        <p><b>Filter: </b><br/>
+            <onms:filters
+                    context="/event/list"
+                    favorite="${eachFavorite}"
+                    parameters="${parms}"
+                    showRemoveLink="false"
+                    showAcknowledgeFilter="false"
+                    callback="${callback}" />
+        </p>
+    </div>
+</c:forEach>
+
+  <%--<%=tooltips%>--%>
+
   <div class="TwoColRight">
       <h3>Outstanding and acknowledged events</h3>
 		<div class="boxWrapper">

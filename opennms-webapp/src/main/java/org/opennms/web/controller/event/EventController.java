@@ -29,13 +29,16 @@
 package org.opennms.web.controller.event;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.model.OnmsFilter;
+import org.opennms.netmgt.model.OnmsFilterFavorite;
+import org.opennms.web.alert.AlertType;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.EventQueryParms;
@@ -44,15 +47,21 @@ import org.opennms.web.event.SortStyle;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.FilterUtil;
-import org.opennms.web.services.FavoriteFilterService;
+import org.opennms.web.services.FilterFavoriteService;
+import org.opennms.web.servlet.MissingParameterException;
+import org.opennms.web.tags.AlertTag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.view.RedirectView;
 
 // TODO MVR modify javadoc
 /**
@@ -67,7 +76,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  * @since 1.8.1
  */
 public class EventController extends MultiActionController implements InitializingBean {
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventController.class);
+
 	private static final int DEFAULT_MULTIPLE = 0;
 
     private static final int DEFAULT_SHORT_LIMIT = 20;
@@ -79,7 +90,7 @@ public class EventController extends MultiActionController implements Initializi
     private static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
 	@Autowired
-    private FavoriteFilterService filterService;
+    private FilterFavoriteService filterService;
 
 	@Autowired
 	private WebEventRepository m_webEventRepository;
@@ -105,11 +116,11 @@ public class EventController extends MultiActionController implements Initializi
      * </p>
      */
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        OnmsFilter favorite = getFavorite(request.getParameter("favoriteId"), request.getRemoteUser());
+        OnmsFilterFavorite favorite = getFavorite(request.getParameter("favoriteId"), request.getRemoteUser());
         return list(request, favorite);
     }
 
-    private ModelAndView list(HttpServletRequest request, OnmsFilter favorite) {
+    private ModelAndView list(HttpServletRequest request, OnmsFilterFavorite favorite) {
         List<Filter> filterList = EventUtil.getFilterList(request.getParameterValues("filter"), getServletContext());
         AcknowledgeType ackType = getAcknowledgeType(request);
         ModelAndView modelAndView = createListModelAndView(request, filterList, ackType);
@@ -128,46 +139,138 @@ public class EventController extends MultiActionController implements Initializi
     
     // index view
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	List<OnmsFilter> userFilterList = filterService.getFilters(request.getRemoteUser(), OnmsFilter.Page.EVENT);
+    	List<OnmsFilterFavorite> userFilterList = filterService.getFilters(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
         ModelAndView modelAndView = new ModelAndView("event/index");
-        modelAndView.addObject("filters", userFilterList);
+        modelAndView.addObject("favorites", userFilterList);
         return modelAndView;
     }
 
     @Transactional(readOnly=false)
-    public ModelAndView createFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
         try {
-            OnmsFilter favorite = filterService.createFilter(
+            OnmsFilterFavorite favorite = filterService.createFilter(
                     request.getRemoteUser(),
-                    request.getParameter("filterName"),
+                    request.getParameter("favoriteName"),
                     FilterUtil.toFilterURL(request.getParameterValues("filter")),
-                    OnmsFilter.Page.EVENT);
+                    OnmsFilterFavorite.Page.EVENT);
             if (favorite != null) {
-                return list(request, favorite); // success
+                ModelAndView successView = list(request, favorite); // success
+                AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                return successView;
             }
-            throw new FavoriteFilterService.FavoriteFilterException("An error occured while creating the filter");
-        } catch (FavoriteFilterService.FavoriteFilterException ex) {
+            error = "An error occured while creating the favorite";
+        } catch (FilterFavoriteService.FavoriteFilterException ex) {
             error = ex.getMessage();
         }
-        ModelAndView errorView = list(request, (OnmsFilter)null);
-        errorView.addObject("favorite.create.error", error);
+        ModelAndView errorView = list(request, (OnmsFilterFavorite)null);
+        AlertTag.addAlertToRequest(errorView, error, AlertType.ERROR);
         return errorView;
     }
 
     @Transactional(readOnly=false)
-    public ModelAndView deleteFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ModelAndView modelAndView = getView(request);
         String favoriteId = request.getParameter("favoriteId");
-        ModelAndView modelAndView = list(request, (OnmsFilter)null);
         boolean success = filterService.deleteFilter(favoriteId, request.getRemoteUser());
         if (!success) {
-            modelAndView.addObject("favorite.delete.error", "Filter couldn't be deleted.");
+            AlertTag.addAlertToRequest(modelAndView, "Favorite couldn't be deleted.", AlertType.ERROR);
         } else {
-            modelAndView.addObject("favorite.delete.success", "Filter deleted.");
+            AlertTag.addAlertToRequest(modelAndView, "Favorite deleted successfully.", AlertType.SUCCESS);
         }
         return modelAndView;
     }
-    
+
+    /**
+     * TODO MVR TEST ME
+     * Acknowledge the events specified in the POST and then redirect the client
+     * to an appropriate URL for display.
+     */
+    public ModelAndView acknowledge(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        // required parameter
+        String[] eventIdStrings = request.getParameterValues("event");
+        String action = request.getParameter("actionCode");
+
+        if (eventIdStrings == null) {
+            throw new MissingParameterException("event", new String[] { "event", "actionCode" });
+        }
+
+        if (action == null) {
+            throw new MissingParameterException("actionCode", new String[] { "event", "actionCode" });
+        }
+
+        List<Filter> filters = new ArrayList<Filter>();
+        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
+        EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
+
+        LOG.debug("criteria = {}, action = {}", criteria, action);
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
+            m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
+            m_webEventRepository.unacknowledgeMatchingEvents(criteria);
+        } else {
+            throw new ServletException("Unknown acknowledge action: " + action);
+        }
+
+        return getView(request);
+    }
+
+    /**
+     * // TODO MVR test me
+     * Acknowledge the events specified in the POST and then redirect the client
+     * to an appropriate URL for display.
+     */
+    public ModelAndView acknowledgeByFilter(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // required parameter
+        String[] filterStrings = request.getParameterValues("filter");
+        String action = request.getParameter("actionCode");
+
+        if (filterStrings == null) {
+            filterStrings = new String[0];
+        }
+
+        if (action == null) {
+            throw new MissingParameterException("actionCode", new String[] { "filter", "actionCode" });
+        }
+
+        // handle the filter parameters
+        ArrayList<Filter> filterArray = new ArrayList<Filter>();
+        for (String filterString : filterStrings) {
+            Filter filter = EventUtil.getFilter(filterString, getServletContext());
+            if (filter != null) {
+                filterArray.add(filter);
+            }
+        }
+
+        Filter[] filters = filterArray.toArray(new Filter[filterArray.size()]);
+
+        EventCriteria criteria = new EventCriteria(filters);
+
+        if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
+            m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
+        } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
+            m_webEventRepository.unacknowledgeMatchingEvents(criteria);
+        } else {
+            throw new ServletException("Unknown acknowledge action: " + action);
+        }
+        return getView(request);
+    }
+
+    // TODO MVR comment/javadoc
+    private ModelAndView getView(HttpServletRequest request) {
+        String redirectParms = request.getParameter("redirectParms");
+        String redirect = request.getParameter("redirect");
+        String viewName;
+        if (redirect != null) {
+            viewName = redirect;
+        } else {
+            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? "/event/list" : "/event/list" + "?" + redirectParms);
+        }
+        RedirectView view = new RedirectView(viewName, true);
+        return new ModelAndView(view);
+    }
+
     private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
     	List<Filter> filterList = new ArrayList<Filter>();
     	filterList.add(singleFilter);
@@ -261,9 +364,9 @@ public class EventController extends MultiActionController implements Initializi
         return modelAndView;
 	}
 
-    private OnmsFilter getFavorite(String favoriteId, String username) {
+    private OnmsFilterFavorite getFavorite(String favoriteId, String username) {
         if (favoriteId != null) {
-            OnmsFilter filter = filterService.getFilter(favoriteId, username);
+            OnmsFilterFavorite filter = filterService.getFilter(favoriteId, username);
             return filter;
         }
         return null;
