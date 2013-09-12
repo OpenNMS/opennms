@@ -952,7 +952,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         for (final DataLinkInterface link: links) {
         	printLink(link);
         }
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface ngsw108linktociscows = links.get(0);
         
@@ -996,7 +996,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface linuxubuntulinktociscows = links.get(0);
         
@@ -1053,7 +1053,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface workstationlinktociscows = links.get(0);
         

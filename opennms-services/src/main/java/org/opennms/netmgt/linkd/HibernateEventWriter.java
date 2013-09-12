@@ -329,6 +329,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now,getLinkd().getSource());
         m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),getLinkd().getSource());
+        m_dataLinkInterfaceDao.flush();
     }
 
     @Override
