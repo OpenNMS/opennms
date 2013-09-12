@@ -192,7 +192,7 @@
     <repositories>
         <repository>
             <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -225,7 +225,7 @@
         </pluginRepository>
         <pluginRepository>
             <id>vaadin-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
