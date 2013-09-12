@@ -635,6 +635,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
             }
         }
+        /*
         LOG.info("getLinksFromCdp: founding Cisco Discovery Protocol links between Cdp nodes and Others");
         for (LinkableNode node: m_cdpNodes) {
             for (CdpInterface cdp: node.getCdpInterfaces()) {
@@ -646,6 +647,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
             }
         }
+        */
     }
 
     // We use a simple algoritm

@@ -183,7 +183,8 @@ public abstract class LinkdNetworkBuilder {
         System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
         System.err.println("getCdpCacheAddressType: "+cdpCacheTableEntry.getCdpCacheAddressType());
         System.err.println("getCdpCacheAddress: "+cdpCacheTableEntry.getCdpCacheAddress());
-        System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
+        if (cdpCacheTableEntry.getCdpCacheIpv4Address() != null )
+            System.err.println("getCdpCacheIpv4Address: "+cdpCacheTableEntry.getCdpCacheIpv4Address().getHostName());
         System.err.println("getCdpCacheVersion: "+cdpCacheTableEntry.getCdpCacheVersion());
         System.err.println("getCdpCacheDeviceId: "+cdpCacheTableEntry.getCdpCacheDeviceId());
         System.err.println("getCdpCacheDevicePort: "+cdpCacheTableEntry.getCdpCacheDevicePort());

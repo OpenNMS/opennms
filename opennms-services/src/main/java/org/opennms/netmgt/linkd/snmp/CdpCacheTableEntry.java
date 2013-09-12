@@ -445,6 +445,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 	 */
 	private static InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
 
+	    try {
 		long ipAddr = Long.parseLong(ipaddrhexstrng, 16);
 		byte[] bytes = new byte[4];
 		bytes[3] = (byte) (ipAddr & 0xff);
@@ -453,6 +454,10 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
 
 		return InetAddressUtils.getInetAddress(bytes);
+	    } catch (NumberFormatException nfe) {
+	       
+	    }
+		return null;
 	}
 
 

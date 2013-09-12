@@ -537,7 +537,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processCdp: targetSysName found: {}", targetSysName);
 
             InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
-            LOG.debug("processCdp: cdp cache ipa address found: {}", str(cdpTargetIpAddr));
+            LOG.debug("processCdp: cdp cache ip address found: {}", str(cdpTargetIpAddr));
 
             final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
