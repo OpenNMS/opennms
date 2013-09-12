@@ -202,7 +202,7 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+            <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
         </repository>
         <repository>
             <url>http://maven.opennms.org/content/groups/maven.org-release2</url>

@@ -131,7 +131,7 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.vaadin.com/vaadin-addons</url>
+            <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
         </repository>
     </repositories>
 
