@@ -635,7 +635,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
             }
         }
-        /*
+        
         LOG.info("getLinksFromCdp: founding Cisco Discovery Protocol links between Cdp nodes and Others");
         for (LinkableNode node: m_cdpNodes) {
             for (CdpInterface cdp: node.getCdpInterfaces()) {
@@ -647,7 +647,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
             }
         }
-        */
+        
     }
 
     // We use a simple algoritm
@@ -1157,6 +1157,10 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LOG.info("addNodetoNodeLink: link {} exists, not adding", nnlink.toString());
                 return;
             }
+        }
+        if (nnlink.getNodeId() == nnlink.getNodeparentid()) {
+            LOG.info("addNodetoNodeLink: link {} is on the same node, not adding", nnlink.toString());
+            return;
         }
         LOG.debug("addNodetoNodeLink: adding link {}", nnlink.toString());
         m_links.add(nnlink);

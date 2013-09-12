@@ -263,13 +263,14 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
+    @Transactional
     public void storeDiscoveryLink(final DiscoveryLink discoveryLink)
     {
         final Date now = new Date();
 
         for (final NodeToNodeLink lk : discoveryLink.getLinks()) {
-            DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeId(),
-                                                                                    lk.getIfindex());
+            DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeId()),
+                                                                                    Integer.valueOf(lk.getIfindex()));
             if (iface == null) {
                 final OnmsNode onmsNode = m_nodeDao.get(lk.getNodeId());
                 iface = new DataLinkInterface(
@@ -282,17 +283,10 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             }
             iface.setNodeParentId(lk.getNodeparentid());
             iface.setParentIfIndex(lk.getParentifindex());
+            iface.setStatus(StatusType.ACTIVE);
             iface.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
-            final DataLinkInterface parent = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeparentid(),
-                                                                                           lk.getParentifindex());
-            if (parent != null) {
-                if (parent.getNodeParentId() == lk.getNodeId()
-                        && parent.getParentIfIndex() == lk.getIfindex()
-                        && parent.getStatus().equals(StatusType.DELETED)) {
-                    m_dataLinkInterfaceDao.delete(parent);
-                }
-            }
+            //m_dataLinkInterfaceDao.flush();
         }
 
         for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
@@ -302,15 +296,18 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                 continue;
             }
             if (atInterfaces.size() > 1) {
-                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Returning the first.", lkm.getMacAddress());
+                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Duplicated ip/mac address. Skipping ", lkm.getMacAddress());
+                continue;
             }
             final OnmsAtInterface atInterface = atInterfaces.iterator().next();
             if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(),
                                               discoveryLink.getPackageName())) {
-                LOG.debug("storeDiscoveryLink: IP address {} not found on link.  Skipping.", atInterface.getIpAddress());
+                LOG.debug("storeDiscoveryLink: IP address {} not found on package {}.  Skipping.", atInterface.getIpAddress(),discoveryLink.getPackageName());
                 continue;
             }
+
             final OnmsNode atInterfaceNode = atInterface.getNode();
+            
             DataLinkInterface dli = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(atInterfaceNode.getId(),
                                                                                   atInterface.getIfIndex());
             if (dli == null) {
@@ -324,9 +321,11 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             }
             dli.setNodeParentId(lkm.getNodeparentid());
             dli.setParentIfIndex(lkm.getParentifindex());
+            dli.setStatus(StatusType.ACTIVE);
             dli.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
             LOG.debug("storeDiscoveryLink: Storing {}", dli);
+            //m_dataLinkInterfaceDao.flush();
         }
         m_dataLinkInterfaceDao.deactivateIfOlderThan(now,getLinkd().getSource());
         m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),getLinkd().getSource());

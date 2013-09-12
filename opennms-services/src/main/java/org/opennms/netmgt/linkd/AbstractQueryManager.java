@@ -182,6 +182,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             for (final OnmsAtInterface at : ats) {
+                int interfaceindex = getIfIndex(at.getNode().getId(), hostAddress);
+                LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",interfaceindex, node.getNodeId(), hostAddress);
             	at.setSourceNodeId(node.getNodeId());
 
 	            if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
@@ -189,10 +191,10 @@ public abstract class AbstractQueryManager implements QueryManager {
 	            }
 	            at.setMacAddress(physAddr);
 
-	            if (at.getIfIndex() != null && !at.getIfIndex().equals(ifindex)) {
+	            if (at.getIfIndex() != null && at.getIfIndex().intValue() != ifindex) {
 	                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})", ifindex, at.getIfIndex(), hostAddress, physAddr);
 	            }
-	            at.setIfIndex(ifindex);
+	            at.setIfIndex(interfaceindex);
 
 	            at.setLastPollTime(scanTime);
 	            at.setStatus(StatusType.ACTIVE);
@@ -201,7 +203,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             
 	            // Now store the information that is needed to create link in linkd
 	            AtInterface atinterface = new AtInterface(at.getNode().getId(), physAddr, at.getIpAddress());
-	            atinterface.setIfIndex(getIfIndex(at.getNode().getId(), at.getIpAddress().getHostAddress()));
+	            atinterface.setIfIndex(interfaceindex);
 	            getLinkd().addAtInterface(atinterface);            
             }
         }
