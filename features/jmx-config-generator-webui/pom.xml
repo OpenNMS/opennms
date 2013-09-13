@@ -214,7 +214,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>codehaus-snapshots</id>
-            <url>http://nexus.codehaus.org/snapshots</url>
+            <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
