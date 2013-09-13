@@ -8,7 +8,6 @@ import org.opennms.web.filter.QueryParameters;
 
 import javax.servlet.ServletContext;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventFilterCallback implements FilterCallback {
@@ -20,16 +19,23 @@ public class EventFilterCallback implements FilterCallback {
     }
 
     @Override
-    public String getFiltersString(List<Filter> filters) {
-        StringBuffer buffer = new StringBuffer();
-        if( filters != null ) {
-            List<String> filterStrings = new ArrayList<String>();
-            for (Filter eachFilter : filters) {
-                filterStrings.add(EventUtil.getFilterString(eachFilter));
-            }
-            buffer.append("&amp;").append(FilterUtil.toFilterURL(filterStrings));
+    public String toFilterString(String[] filters) {
+        if (filters != null) {
+            return FilterUtil.toFilterURL(filters);
         }
-        return( buffer.toString() );
+        return "";
+    }
+
+    @Override
+    public String toFilterString(List<Filter> filters) {
+        if( filters != null ) {
+            String[] filterStrings = new String[filters.size()];
+            for (int i=0; i<filterStrings.length; i++) {
+                filterStrings[i] = EventUtil.getFilterString(filters.get(i));
+            }
+            return toFilterString(filterStrings);
+        }
+        return "";
     }
 
     @Override
@@ -39,9 +45,19 @@ public class EventFilterCallback implements FilterCallback {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");
             }
-            filterParameter[i] = URLDecoder.decode(filterParameter[i]);
         }
-        return EventUtil.getFilterList(filterParameter, servletContext);
+        return parse(filterParameter);
+
+    }
+
+    @Override
+    public List<Filter> parse(String[] filters) {
+        if (filters != null) {
+            for (int i = 0; i < filters.length; i++) {
+                filters[i] = URLDecoder.decode(filters[i]);
+            }
+        }
+        return EventUtil.getFilterList(filters, servletContext);
     }
 
     @Override
@@ -54,7 +70,7 @@ public class EventFilterCallback implements FilterCallback {
         if (parameters.getLimit() > 0) {
             buffer.append("&amp;limit=").append(parameters.getLimit());
         }
-        buffer.append(getFiltersString(parameters.getFilters()));
+        buffer.append("&amp;").append(toFilterString(parameters.getFilters()));
         if (favorite != null) {
             buffer.append("&favoriteId=" + favorite.getId());
         }

@@ -203,6 +203,7 @@
     background-color: #EEE;
     z-index: 1000;
     max-width: 250px;
+    border: 1px solid #999;
 }
 
 img.info {

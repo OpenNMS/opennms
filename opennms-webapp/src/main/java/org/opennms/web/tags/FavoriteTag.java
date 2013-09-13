@@ -128,8 +128,8 @@ public class FavoriteTag extends TagSupport {
     }
 
     private String getFiltersAsStringWithoutLeadingFilter() {
-        String filterString = filterCallback.getFiltersString(parameters.getFilters());
-        filterString = filterString.replaceFirst("&amp;", "").replaceAll("&amp;", "&");
+        String filterString = filterCallback.toFilterString(parameters.getFilters());
+        filterString = filterString.replaceAll("&amp;", "&");
         return filterString;
     }
 

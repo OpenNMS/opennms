@@ -28,23 +28,10 @@
 
 package org.opennms.web.controller.event;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.alert.AlertType;
-import org.opennms.web.event.AcknowledgeType;
-import org.opennms.web.event.Event;
-import org.opennms.web.event.EventQueryParms;
-import org.opennms.web.event.EventUtil;
-import org.opennms.web.event.SortStyle;
-import org.opennms.web.event.WebEventRepository;
+import org.opennms.web.event.*;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.EventIdListFilter;
@@ -53,6 +40,8 @@ import org.opennms.web.filter.FilterUtil;
 import org.opennms.web.services.FilterFavoriteService;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.tags.AlertTag;
+import org.opennms.web.tags.filters.EventFilterCallback;
+import org.opennms.web.tags.filters.FilterCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,6 +51,13 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 // TODO MVR modify javadoc
 /**
@@ -89,6 +85,8 @@ public class EventController extends MultiActionController implements Initializi
 
     private static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
+    private FilterCallback m_callback;
+
 	@Autowired
     private FilterFavoriteService filterService;
 
@@ -100,6 +98,13 @@ public class EventController extends MultiActionController implements Initializi
     public EventController() {
         super();
         m_showEventCount = Boolean.getBoolean("opennms.eventlist.showCount");
+    }
+
+    private FilterCallback getFilterCallback() {
+        if (m_callback == null) {
+            m_callback = new EventFilterCallback(getServletContext());
+        }
+        return m_callback;
     }
 
     // TODO MVR modify javadoc
@@ -116,14 +121,16 @@ public class EventController extends MultiActionController implements Initializi
      * </p>
      */
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        OnmsFilterFavorite favorite = getFavorite(request.getParameter("favoriteId"), request.getRemoteUser());
+        OnmsFilterFavorite favorite = getFavorite(
+                request.getParameter("favoriteId"),
+                request.getRemoteUser(),
+                request.getParameterValues("filter"));
         return list(request, favorite);
     }
 
     private ModelAndView list(HttpServletRequest request, OnmsFilterFavorite favorite) {
-        List<Filter> filterList = EventUtil.getFilterList(request.getParameterValues("filter"), getServletContext());
         AcknowledgeType ackType = getAcknowledgeType(request);
-        ModelAndView modelAndView = createListModelAndView(request, filterList, ackType);
+        ModelAndView modelAndView = createListModelAndView(request, getFilterCallback().parse(request.getParameterValues("filter")), ackType);
         modelAndView.addObject("favorite", favorite);
         modelAndView.setViewName("event/list");
         return modelAndView;
@@ -139,7 +146,7 @@ public class EventController extends MultiActionController implements Initializi
     
     // index view
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	List<OnmsFilterFavorite> userFilterList = filterService.getFilters(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
+    	List<OnmsFilterFavorite> userFilterList = filterService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
         ModelAndView modelAndView = new ModelAndView("event/index");
         modelAndView.addObject("favorites", userFilterList);
         return modelAndView;
@@ -149,7 +156,7 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
         try {
-            OnmsFilterFavorite favorite = filterService.createFilter(
+            OnmsFilterFavorite favorite = filterService.createFavorite(
                     request.getRemoteUser(),
                     request.getParameter("favoriteName"),
                     FilterUtil.toFilterURL(request.getParameterValues("filter")),
@@ -170,15 +177,17 @@ public class EventController extends MultiActionController implements Initializi
 
     @Transactional(readOnly=false)
     public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView modelAndView = getView(request);
+        ModelAndView listView = list(request, (OnmsFilterFavorite)null);
+        ModelAndView resultView = getView(request);
         String favoriteId = request.getParameter("favoriteId");
-        boolean success = filterService.deleteFilter(favoriteId, request.getRemoteUser());
+        boolean success = filterService.deleteFavorite(favoriteId, request.getRemoteUser());
         if (!success) {
-            AlertTag.addAlertToRequest(modelAndView, "Favorite couldn't be deleted.", AlertType.ERROR);
+            AlertTag.addAlertToRequest(resultView, "Favorite couldn't be deleted.", AlertType.ERROR);
         } else {
-            AlertTag.addAlertToRequest(modelAndView, "Favorite deleted successfully.", AlertType.SUCCESS);
+            AlertTag.addAlertToRequest(resultView, "Favorite deleted successfully.", AlertType.SUCCESS);
         }
-        return modelAndView;
+        resultView.addObject("filters", listView.getModel().get("filters")); // filters should be still there
+        return resultView;
     }
 
     /**
@@ -340,7 +349,7 @@ public class EventController extends MultiActionController implements Initializi
         parms.ackType = ackType;
         parms.display = getDisplay(request);
         parms.filters = filterList;
-        parms.limit = getLimit(request);;
+        parms.limit = getLimit(request);
         parms.multiple =  getMultiple(request);
         parms.sortStyle = getSortStyle(request);	
         return parms;
@@ -364,9 +373,9 @@ public class EventController extends MultiActionController implements Initializi
         return modelAndView;
 	}
 
-    private OnmsFilterFavorite getFavorite(String favoriteId, String username) {
+    private OnmsFilterFavorite getFavorite(String favoriteId, String username, String[] filters) {
         if (favoriteId != null) {
-            OnmsFilterFavorite filter = filterService.getFilter(favoriteId, username);
+            OnmsFilterFavorite filter = filterService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
             return filter;
         }
         return null;
