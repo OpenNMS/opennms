@@ -50,9 +50,9 @@ import java.util.Map;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 143;
-    private static final int systemDefCount = 149;
-    private static final int groupsCount = 228;
+    private static final int resourceTypesCount = 159;
+    private static final int systemDefCount = 150;
+    private static final int groupsCount = 256;
     private Level errorLevel;
 
     @Before
