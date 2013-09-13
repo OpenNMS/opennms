@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -174,7 +175,7 @@ public class Snmp4JAgentConfig {
 
     private OctetString createOctetString(String s) {
         
-        if (s == null) {
+        if (StringUtils.isBlank(s)) {
             return null;
         }
         
@@ -203,7 +204,7 @@ public class Snmp4JAgentConfig {
          * Returning null here is okay because the SNMP4J library supports
          * this value as null when creating the SNMP session.
          */
-        if (privProtocol == null) {
+        if (StringUtils.isBlank(privProtocol)) {
             return null;
         }
         
@@ -237,7 +238,7 @@ public class Snmp4JAgentConfig {
          * Returning null here is okay because the SNMP4J library supports
          * this value as null when creating the SNMP session.
          */
-        if (authProtocol == null) {
+        if (StringUtils.isBlank(authProtocol)) {
             return null;
         }
         
@@ -296,6 +297,14 @@ public class Snmp4JAgentConfig {
 
     public OctetString getPrivPassPhrase() {
         return createOctetString(m_config.getPrivPassPhrase());
+    }
+
+    public OctetString getContextName() {
+        return createOctetString(m_config.getContextName());
+    }
+
+    public OctetString getContextEngineID() {
+        return createOctetString(m_config.getContextEngineId());
     }
 
     /**
@@ -362,7 +371,19 @@ public class Snmp4JAgentConfig {
      * @return
      */
     public PDU createPdu(int type) {
-        PDU pdu = getVersion() == SnmpConstants.version3 ? new ScopedPDU() : new PDU();
+        PDU pdu = null;
+        if (isSnmpV3()) {
+            pdu = new ScopedPDU();
+            ScopedPDU scopedPDU = (ScopedPDU) pdu;
+            OctetString contextName = getContextName();
+            if (contextName != null)
+                scopedPDU.setContextName(contextName);
+            OctetString contextEngineID = getContextEngineID();
+            if (contextEngineID != null)
+                scopedPDU.setContextEngineID(contextEngineID);
+        } else {
+            pdu = new PDU();
+        }
         pdu.setType(type);
         return pdu;
     }
