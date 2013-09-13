@@ -675,15 +675,19 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
         	
-            final Integer routemetric1 = route.getIpRouteMetric1();
+            final Integer routestatus = route.getIpRouteStatus();
+            if ( routestatus == null || routestatus.intValue() != IpRouteCollectorEntry.IP_ROUTE_ACTIVE_STATUS) {
+                LOG.info("processRouteTable: Route status is invalid or not defined. checking metric....");
+                final Integer routemetric1 = route.getIpRouteMetric1();
         	if (routemetric1 == null || routemetric1 < 0) {
-                LOG.info("processRouteTable: Route metric is invalid. Skipping.");
-                continue;
-            } 
+                    LOG.info("processRouteTable: Also Route metric1 is invalid. Skipping.");
+                    continue;
+                } 
+            }
 
             LOG.debug("processRouteTable: parsing routeDest/routeMask/nextHop: {}/{}/{} - ifIndex = {}", str(routedest), str(routemask), str(nexthop), ifindex);
 
-        	int snmpiftype = -2;
+            int snmpiftype = -2;
             if (ifindex == 0) {
 			LOG.debug("processRouteTable: ifindex is 0. Looking local table to get a valid index.");
             	for (OnmsIpInterface ip : getIpInterfaceDao().findByNodeId(node.getNodeId())) {

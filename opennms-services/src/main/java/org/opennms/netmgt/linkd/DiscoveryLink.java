@@ -565,11 +565,9 @@ public final class DiscoveryLink implements ReadyRunnable {
             for (final RouterInterface routeIface : curNode.getRouteInterfaces()) {
                 LOG.debug("getLinksFromRouteTable: parsing RouterInterface: {}", routeIface.toString());
 
-                final NodeToNodeLink lk = new NodeToNodeLink(
-                                                             routeIface.getNextHopNodeid(),
-                                                             routeIface.getNextHopIfindex());
-                lk.setNodeparentid(curNodeId);
-                lk.setParentifindex(routeIface.getIfindex());
+                final NodeToNodeLink lk = new NodeToNodeLink(curNodeId,routeIface.getIfindex());
+                lk.setNodeparentid(routeIface.getNextHopNodeid());
+                lk.setParentifindex(routeIface.getNextHopIfindex());
                 LOG.info("getLinksFromRouteTable: saving route link: {}", lk.toString());
                 addNodetoNodeLink(lk);
             }

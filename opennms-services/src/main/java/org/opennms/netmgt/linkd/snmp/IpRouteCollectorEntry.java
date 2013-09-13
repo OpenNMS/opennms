@@ -41,6 +41,8 @@ public abstract class IpRouteCollectorEntry extends SnmpStore {
         super(list);
     }
 
+    public final static int IP_ROUTE_ACTIVE_STATUS = 1;
+    
     public final static     String  IP_ROUTE_DEST           = "ipRouteDest";
     public final static     String  IP_ROUTE_IFINDEX        = "ipRouteIfIndex";
     public final static     String  IP_ROUTE_METRIC1        = "ipRouteMetric1";
@@ -54,6 +56,7 @@ public abstract class IpRouteCollectorEntry extends SnmpStore {
     public final static     String  IP_ROUTE_MASK           = "ipRouteMask";
     public final static     String  IP_ROUTE_METRIC5        = "ipRouteMetric5";
     public final static     String  IP_ROUTE_INFO           = "ipRouteInfo";
+    public final static     String  IP_ROUTE_STATUS         = "ipRouteStatus";
     
     public InetAddress getIpRouteDest() {
         return getIPAddress(IP_ROUTE_DEST); 
@@ -106,6 +109,10 @@ public abstract class IpRouteCollectorEntry extends SnmpStore {
 
     public String getIpRouteInfo() {
         return getObjectID(IP_ROUTE_INFO);
+    }
+    
+    public Integer getIpRouteStatus() {
+        return getInt32(IP_ROUTE_STATUS);
     }
     
     public OnmsIpRouteInterface getOnmsIpRouteInterface(OnmsIpRouteInterface ipRouteInterface) {
