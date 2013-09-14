@@ -692,7 +692,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LOG.info("processRouteTable: Route metric1 is invalid or \" not used\". checking the route status.");
                 final Integer routestatus = route.getIpRouteStatus();
                 if ( routestatus == null || routestatus.intValue() != IpRouteCollectorEntry.IP_ROUTE_ACTIVE_STATUS) {
-                    LOG.info("processRouteTable: Route status {} is not active or null. ", routestatus.intValue());
+                    LOG.info("processRouteTable: Route status {} is not active or null. ", routestatus);
                     continue;
                 } 
             }
