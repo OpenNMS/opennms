@@ -301,6 +301,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
         }
 
+        // FIXME remove this is you use mac address in DiscoveryLink memory
         for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
             final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
             if (atInterfaces.size() == 0) {
