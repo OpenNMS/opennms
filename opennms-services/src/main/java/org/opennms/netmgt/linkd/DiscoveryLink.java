@@ -348,6 +348,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                         m_bridgeNodes.put(endNodeid, endNode);
 
                         // finding links between two backbone ports
+                        // FIXME no criteria....check the rules
                         addLinks(getMacsOnBridgeLink(curNode, curBridgePort,
                                                      endNode, endBridgePort),
                                                      curNodeId, curIfIndex);
@@ -488,9 +489,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 
                     LOG.debug("getBackBoneLinksFromBridges: found designated nodeid {}", designatednodeid);
 
+                    //FIXME at least log......
                     // test if there are other bridges between this link
                     // USING MAC ADDRESS FORWARDING TABLE
-
                     if (!isNearestBridgeLink(curNode, stpbridgeport,
                                              designatedNode,
                                              designatedbridgeport)) {
@@ -527,6 +528,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
                     LOG.debug("getBackBoneLinksFromBridges: adding links on backbone found link");
 
+                    //FIXME must be added on the designated bridge too or just choose a better design think on
                     addLinks(getMacsOnBridgeLink(curNode, stpbridgeport,
                                                  designatedNode,
                                                  designatedbridgeport),
@@ -1179,6 +1181,8 @@ public final class DiscoveryLink implements ReadyRunnable {
                     continue;
                 }
                 final List<AtInterface> ats = m_linkd.getAtInterfaces(getPackageName(), curMacAddress);
+                // FIXME you do not need two...or add mac links or add nodetonode link
+                // adding mac link save memory
                 if (!ats.isEmpty()) {
                     for (final AtInterface at : ats) {
                         final NodeToNodeLink lNode = new NodeToNodeLink(at.getNodeid(), at.getIfIndex());
