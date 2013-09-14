@@ -181,30 +181,42 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
+            // FIXME manage duplicated ip address
             for (final OnmsAtInterface at : ats) {
-                int interfaceindex = getIfIndex(at.getNode().getId(), hostAddress);
-                LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",interfaceindex, node.getNodeId(), hostAddress);
-            	at.setSourceNodeId(node.getNodeId());
+                int interfaceindex = getIfIndex(at.getNode().getId(),
+                                                hostAddress);
+                LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",
+                          interfaceindex, node.getNodeId(), hostAddress);
+                at.setSourceNodeId(node.getNodeId());
 
-	            if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
-	                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})", physAddr, at.getMacAddress(), hostAddress, ifindex);
-	            }
-	            at.setMacAddress(physAddr);
+                if (at.getMacAddress() != null
+                        && !at.getMacAddress().equals(physAddr)) {
+                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})",
+                             physAddr, at.getMacAddress(), hostAddress,
+                             ifindex);
+                }
+                at.setMacAddress(physAddr);
 
-	            if (at.getIfIndex() != null && at.getIfIndex().intValue() != ifindex) {
-	                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})", ifindex, at.getIfIndex(), hostAddress, physAddr);
-	            }
-	            at.setIfIndex(interfaceindex);
+                if (at.getIfIndex() != null
+                        && at.getIfIndex().intValue() != ifindex) {
+                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})",
+                             ifindex, at.getIfIndex(), hostAddress, physAddr);
+                }
+                at.setIfIndex(interfaceindex);
 
-	            at.setLastPollTime(scanTime);
-	            at.setStatus(StatusType.ACTIVE);
+                at.setLastPollTime(scanTime);
+                at.setStatus(StatusType.ACTIVE);
 
-	            getAtInterfaceDao().saveOrUpdate(at);
-            
-	            // Now store the information that is needed to create link in linkd
-	            AtInterface atinterface = new AtInterface(at.getNode().getId(), physAddr, at.getIpAddress());
-	            atinterface.setIfIndex(interfaceindex);
-	            getLinkd().addAtInterface(atinterface);            
+                getAtInterfaceDao().saveOrUpdate(at);
+
+                // Now store the information that is needed to create link in
+                // linkd
+                AtInterface atinterface = new AtInterface(
+                                                          at.getNode().getId(),
+                                                          physAddr,
+                                                          at.getIpAddress());
+                atinterface.setIfIndex(interfaceindex);
+                getLinkd().addAtInterface(atinterface);
             }
         }
         
