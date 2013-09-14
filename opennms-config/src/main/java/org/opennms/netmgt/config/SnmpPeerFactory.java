@@ -524,12 +524,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determineAuthProtocol(final Definition def) {
         final String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
-        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
-        /*
-        if (authProtocol == null) {
+        if (authProtocol == null && determineAuthPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
         }
-        */
         return authProtocol;
     }
     
@@ -578,12 +575,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private String determinePrivProtocol(final Definition def) {
         final String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
-        // Forcing a default is wrong, because if it is not explicitly defined, probably it means that it should not be used, and SNMP4J expect null for optional parameters.
-        /*
-        if (authPrivProtocol == null) {
+        if (authPrivProtocol == null && determinePrivPassPhrase(def) != null) {
             return SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
         }
-        */
         return authPrivProtocol;
     }
 
