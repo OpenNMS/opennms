@@ -302,41 +302,41 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(8,m_dataLinkInterfaceDao.countAll());
         
         //
-        final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
+        final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4).iterator().next();
         
         assertEquals(mac.getId(), mactongsw108link.getNode().getId());
         assertEquals(4,mactongsw108link.getIfIndex().intValue());
         assertEquals(ngsw108.getId(), mactongsw108link.getNodeParentId());
         assertEquals(1, mactongsw108link.getParentIfIndex().intValue());        
 
-        final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8);
+        final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8).iterator().next();
         
         assertEquals(ngsw108.getId(), ngsw108linktociscows.getNode().getId());
         assertEquals(8,ngsw108linktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), ngsw108linktociscows.getNodeParentId());
         assertEquals(9, ngsw108linktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52);
+        final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52).iterator().next();
         assertEquals(ciscows.getId(), ciscorouterlinktociscows2.getNode().getId());
         assertEquals(52, ciscorouterlinktociscows2.getIfIndex().intValue());
         assertEquals(ciscorouter.getId(), ciscorouterlinktociscows2.getNodeParentId());
         assertEquals(3, ciscorouterlinktociscows2.getParentIfIndex().intValue());
 
-        final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4);
+        final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4).iterator().next();
         
         assertEquals(linux.getId(), linuxubuntulinktociscows.getNode().getId());
         assertEquals(4,linuxubuntulinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), linuxubuntulinktociscows.getNodeParentId());
         assertEquals(11, linuxubuntulinktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1);
+        final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1).iterator().next();
         
         assertEquals(workstation.getId(), workstationlinktociscows.getNode().getId());
         assertEquals(-1,workstationlinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), workstationlinktociscows.getNodeParentId());
         assertEquals(47, workstationlinktociscows.getParentIfIndex().intValue());
 
-        final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1);
+        final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1).iterator().next();
         
         assertEquals(ciscoap.getId(), ciscoaplinktociscows.getNode().getId());
         assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());

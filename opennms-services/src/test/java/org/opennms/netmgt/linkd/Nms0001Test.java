@@ -215,7 +215,7 @@ public class Nms0001Test extends Nms0001NetworkBuilder implements InitializingBe
             
         }
         
-        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599));
+        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599)).iterator().next();
         iface.setNodeParentId(oedipus.getId());
         iface.setParentIfIndex(578);
         iface.setStatus(StatusType.ACTIVE);

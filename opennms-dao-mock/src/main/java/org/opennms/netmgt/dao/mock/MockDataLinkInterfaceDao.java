@@ -2,7 +2,6 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.criteria.Alias.JoinType;
@@ -64,17 +63,22 @@ public class MockDataLinkInterfaceDao extends AbstractMockDao<DataLinkInterface,
     }
 
     @Override
-    public DataLinkInterface findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
+    public Collection<DataLinkInterface> findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
         final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.eq("node.id", nodeId);
         builder.eq("ifIndex", ifIndex);
 
-        final List<DataLinkInterface> interfaces = findMatching(builder.toCriteria());
-        if (interfaces.size() > 0) {
-            return interfaces.get(0);
-        }
-        return null;
+        return findMatching(builder.toCriteria());
+    }
+
+    @Override
+    public Collection<DataLinkInterface> findByParentNodeIdAndIfIndex(final Integer nodeParentId, final Integer parentIfIndex) {
+        final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
+        builder.eq("nodeParentId", nodeParentId);
+        builder.eq("parentIfIndex", parentIfIndex);
+
+        return findMatching(builder.toCriteria());
     }
 
     @Override

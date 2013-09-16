@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -148,6 +149,32 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
             LOG.debug("dli = {}", iface);
         }
         assertEquals(3, dlis.size());
+    }
+
+    @Test
+    @Transactional
+    public void testFindByNodeIdAndifIndex() {
+        Collection<DataLinkInterface> dlfindbynodeidifindex = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(m_databasePopulator.getNode2().getId(), 1);
+        assertEquals(1, dlfindbynodeidifindex.size());
+        for (DataLinkInterface link: dlfindbynodeidifindex) {
+            assertEquals(m_databasePopulator.getNode2().getId(), link.getNodeId());
+            assertEquals(1, link.getIfIndex().intValue());
+        }
+
+        Collection<DataLinkInterface> node1ifindex1 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(m_databasePopulator.getNode1().getId(), 2); 
+        assertEquals(1,node1ifindex1.size());
+        for (DataLinkInterface link: node1ifindex1) {
+            assertEquals(m_databasePopulator.getNode1().getId(), link.getNodeId());
+            assertEquals(2, link.getIfIndex().intValue());
+        }
+        
+        Collection<DataLinkInterface> node1ifindex1parent = m_dataLinkInterfaceDao.findByParentNodeIdAndIfIndex(m_databasePopulator.getNode1().getId(), 1); 
+        assertEquals(3,node1ifindex1parent.size());
+        for (DataLinkInterface link: node1ifindex1parent) {
+            assertEquals(m_databasePopulator.getNode1().getId(), link.getNodeParentId());
+            assertEquals(1, link.getParentIfIndex().intValue());
+        }
+        
     }
 
     @Test
