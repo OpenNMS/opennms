@@ -57,6 +57,8 @@
 <%@page import="org.opennms.web.filter.Filter" %>
 <%@page import="org.opennms.web.tags.filters.EventFilterCallback" %>
 <%@page import="org.opennms.web.tags.filters.FilterCallback" %>
+<%@ page import="org.opennms.web.alert.AlertType" %>
+<%@ page import="org.opennms.web.tags.select.FilterFavoriteSelectTagHandler" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -78,7 +80,8 @@
     //required attributes
     Event[] events = (Event[])req.getAttribute( "events" );
     int eventCount = req.getAttribute( "eventCount" ) == null ? -1 : (Integer)req.getAttribute( "eventCount" );
-    NormalizedQueryParameters parms = new NormalizedQueryParameters((EventQueryParms)req.getAttribute( "parms" ));
+    NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+    FilterCallback callback = (EventFilterCallback) req.getAttribute("callback");
 
     if( events == null || parms == null ) {
         throw new ServletException( "Missing either the events or parms request attribute." );
@@ -98,12 +101,9 @@
     pageContext.setAttribute("addNegativeFilter", "[-]");
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
     pageContext.setAttribute("addAfterFilter", "[&lt;]");
-
-    // Stuff for filtering
-    FilterCallback callback = new EventFilterCallback(pageContext.getServletContext());
-    pageContext.setAttribute("parms", parms);
-    pageContext.setAttribute("callback", callback);
+    pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler());
 %>
+
 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -186,6 +186,13 @@
     	document.getElementById("uei").value=uei;
     	document.add_notification_form.submit();
     }
+
+    function changeFavorite(selectElement) {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var favoriteId = selectedOption.value.split(';')[0];
+        var filter = selectedOption.value.split(';')[1];
+        window.location.href = "<%=req.getContextPath()%>/event/list?favoriteId=" + favoriteId + '&' + filter;
+    }
   </script>
 
       <!-- menu -->
@@ -223,7 +230,6 @@
 	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
 
-
       <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
             <% if( events.length > 0 ) { %>
@@ -243,8 +249,16 @@
                   <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
                 </jsp:include>
               <% } %>
-            <% } %>          
+            <% } %>
 
+            <p>
+                Favorites:
+                <onms:select
+                        elements='${favorites}'
+                        selected='${favorite}'
+                        handler='${filterFavoriteSelectTagHandler}'
+                        onChange='changeFavorite(this)'/>
+            </p>
 
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
                 <p>

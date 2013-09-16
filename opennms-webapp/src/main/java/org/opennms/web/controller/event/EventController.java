@@ -28,6 +28,7 @@
 
 package org.opennms.web.controller.event;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.alert.AlertType;
@@ -37,6 +38,7 @@ import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.filter.FilterUtil;
+import org.opennms.web.filter.NormalizedQueryParameters;
 import org.opennms.web.services.FilterFavoriteService;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.tags.AlertTag;
@@ -149,6 +151,7 @@ public class EventController extends MultiActionController implements Initializi
     	List<OnmsFilterFavorite> userFilterList = filterService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
         ModelAndView modelAndView = new ModelAndView("event/index");
         modelAndView.addObject("favorites", userFilterList);
+        modelAndView.addObject("callback", getFilterCallback());
         return modelAndView;
     }
 
@@ -170,23 +173,28 @@ public class EventController extends MultiActionController implements Initializi
         } catch (FilterFavoriteService.FavoriteFilterException ex) {
             error = ex.getMessage();
         }
-        ModelAndView errorView = list(request, (OnmsFilterFavorite)null);
+        ModelAndView errorView = list(request, (OnmsFilterFavorite) null);
         AlertTag.addAlertToRequest(errorView, error, AlertType.ERROR);
         return errorView;
     }
 
     @Transactional(readOnly=false)
     public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView listView = list(request, (OnmsFilterFavorite)null);
-        ModelAndView resultView = getView(request);
+        // delete
         String favoriteId = request.getParameter("favoriteId");
         boolean success = filterService.deleteFavorite(favoriteId, request.getRemoteUser());
+
+        ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
+        resultView.addObject("favorite", null); // we deleted the favorite
+        if (!StringUtils.isEmpty(request.getParameter("redirect"))) {
+            resultView.setViewName(request.getParameter("redirect")); // change to redirect View
+        }
+
         if (!success) {
             AlertTag.addAlertToRequest(resultView, "Favorite couldn't be deleted.", AlertType.ERROR);
         } else {
             AlertTag.addAlertToRequest(resultView, "Favorite deleted successfully.", AlertType.SUCCESS);
         }
-        resultView.addObject("filters", listView.getModel().get("filters")); // filters should be still there
         return resultView;
     }
 
@@ -222,7 +230,7 @@ public class EventController extends MultiActionController implements Initializi
             throw new ServletException("Unknown acknowledge action: " + action);
         }
 
-        return getView(request);
+        return getRedirectView(request);
     }
 
     /**
@@ -263,11 +271,11 @@ public class EventController extends MultiActionController implements Initializi
         } else {
             throw new ServletException("Unknown acknowledge action: " + action);
         }
-        return getView(request);
+        return getRedirectView(request);
     }
 
     // TODO MVR comment/javadoc
-    private ModelAndView getView(HttpServletRequest request) {
+    private ModelAndView getRedirectView(HttpServletRequest request) {
         String redirectParms = request.getParameter("redirectParms");
         String redirect = request.getParameter("redirect");
         String viewName;
@@ -276,8 +284,8 @@ public class EventController extends MultiActionController implements Initializi
         } else {
             viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? "/event/list" : "/event/list" + "?" + redirectParms);
         }
-        RedirectView view = new RedirectView(viewName, true);
-        return new ModelAndView(view);
+        RedirectView redirectView = new RedirectView(viewName);
+        return new ModelAndView(redirectView);
     }
 
     private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
@@ -362,7 +370,9 @@ public class EventController extends MultiActionController implements Initializi
         
         final ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("events", events);
-        modelAndView.addObject("parms", parms);
+        modelAndView.addObject("parms", new NormalizedQueryParameters(parms));
+        modelAndView.addObject("callback", getFilterCallback());
+        modelAndView.addObject("favorites", filterService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT));
 
         if (m_showEventCount) {
             EventCriteria countCriteria = new EventCriteria(filterList, ackType);

@@ -90,18 +90,17 @@
 <c:forEach var="eachFavorite" items="${favorites}">
     <%
         OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
-        FilterCallback callback = new EventFilterCallback(pageContext.getServletContext());
+        FilterCallback callback = (EventFilterCallback) request.getAttribute("callback");
 
         NormalizedQueryParameters params = new NormalizedQueryParameters();
         params.setFilters(callback.parse(current.getFilter()));
 
         pageContext.setAttribute("parms", params);
-        pageContext.setAttribute("callback", callback);
     %>
     <div class="tooltip" style="" id="${eachFavorite.id}">
         <p><b>Filter: </b><br/>
             <onms:filters
-                    context="/event/list"
+                    context="/event/index"
                     favorite="${eachFavorite}"
                     parameters="${parms}"
                     showRemoveLink="false"
