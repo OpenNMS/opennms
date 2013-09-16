@@ -153,7 +153,8 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         criteria.setProjection(Projections.distinct(projList));
         criteria.setResultTransformer(Transformers.aliasToBean(OnmsAssetRecord.class));
 
-        @SuppressWarnings("unchecked") List<OnmsAssetRecord> result = getHibernateTemplate().findByCriteria(criteria);
+        @SuppressWarnings("unchecked") 
+        List<OnmsAssetRecord> result = getHibernateTemplate().findByCriteria(criteria);
         return result;
     }
 }

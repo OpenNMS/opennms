@@ -488,7 +488,7 @@ public abstract class Util extends Object {
      * @param names an array of {@link java.lang.String} objects.
      * @return a {@link java.util.Map} object.
      */
-    public static SortedMap<String, String> getOrderedMap(final String names[][]) {
+    public static SortedMap<String, String> getOrderedMap(final String[][] names) {
     	final TreeMap<String, String> orderedMap = new TreeMap<String, String>();
 
         for (int i = 0; i < names.length; i++) {

@@ -353,8 +353,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
 				    }
 					 */
-                    String edgeId = edge.getId();
-                    return edgeId;
+                    return edge.getId();
                 }
 
 			};
@@ -822,13 +821,11 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	}
 
     private String minEndPoint(GWTEdge edge1) {
-        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();
-        return edge1Source;
+        return edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();
     }
 	
     private String maxEndPoint(GWTEdge edge1) {
-        String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getTarget().getId() : edge1.getSource().getId();
-        return edge1Source;
+        return edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getTarget().getId() : edge1.getSource().getId();
     }
     
 	private native void sortEdges(JsArray<GWTEdge> list)/*-{

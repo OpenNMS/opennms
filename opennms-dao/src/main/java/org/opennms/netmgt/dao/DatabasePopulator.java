@@ -376,8 +376,7 @@ public class DatabasePopulator {
             .setIfSpeed(10000000)
             .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        final OnmsNode node1 = builder.getCurrentNode();
-        return node1;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode2(final NetworkBuilder builder) {
@@ -394,8 +393,7 @@ public class DatabasePopulator {
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         builder.addAtInterface(getNode1(), "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
-        OnmsNode node2 = builder.getCurrentNode();
-        return node2;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode3(final NetworkBuilder builder) {
@@ -409,8 +407,7 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.3.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node3 = builder.getCurrentNode();
-        return node3;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode4(final NetworkBuilder builder) {
@@ -424,8 +421,7 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.4.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node4 = builder.getCurrentNode();
-        return node4;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode5(final NetworkBuilder builder) {
@@ -441,8 +437,7 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("10.1.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node5 = builder.getCurrentNode();
-        return node5;
+        return builder.getCurrentNode();
     }
 
     private OnmsNode buildNode6(final NetworkBuilder builder) {
@@ -457,8 +452,7 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("10.1.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        OnmsNode node6 = builder.getCurrentNode();
-        return node6;
+        return builder.getCurrentNode();
     }
 
     private OnmsEvent buildEvent(final OnmsDistPoller distPoller) {

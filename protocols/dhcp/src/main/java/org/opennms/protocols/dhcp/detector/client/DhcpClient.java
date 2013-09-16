@@ -81,8 +81,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     public DhcpResponse receiveBanner() throws IOException, Exception {
         long responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
         LOG.debug("got a response from the server: {}", responseTime);
-        DhcpResponse response = new DhcpResponse(responseTime);
-        return response;
+        return new DhcpResponse(responseTime);
     }
 
     /**

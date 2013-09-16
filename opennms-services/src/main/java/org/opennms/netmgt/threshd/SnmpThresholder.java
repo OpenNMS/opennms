@@ -389,8 +389,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             }
             values.put(ds,dsValue);
         }
-        List<Event> eventList=threshold.evaluateAndCreateEvents(values, date);
-        return eventList;
+        return threshold.evaluateAndCreateEvents(values, date);
     }
 
     private String getDsLabel(ThresholdEntity threshold) {
@@ -533,8 +532,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 }
             }
         }
-        ResourceFilter[] filters = {};
-        return filters;
+        return new ResourceFilter[0];
     }
     
     /*

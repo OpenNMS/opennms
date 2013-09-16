@@ -126,7 +126,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public String getLinkForResource(OnmsResource resource) {
-        String ident[] = resource.getName().split(":");
+        String[] ident = resource.getName().split(":");
         int nodeId = m_nodeDao.findByForeignId(ident[0], ident[1]).getId();
         return "element/node.jsp?node=" + nodeId;
     }

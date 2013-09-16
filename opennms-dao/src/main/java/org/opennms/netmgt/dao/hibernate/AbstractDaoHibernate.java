@@ -170,8 +170,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @param <S> a S object.
      * @return a {@link java.util.List} object.
      */
-    @SuppressWarnings("unchecked")
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
+        @SuppressWarnings("unchecked")
     	final List<S> notifs = getHibernateTemplate().find(query, values);
         return notifs;
     }

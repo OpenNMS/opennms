@@ -96,7 +96,7 @@ public class CommandExecutor implements ExecutorStrategy {
 
         try {
             // set up the process
-            String commandArray[] = new String[commandList.size()];
+            String[] commandArray = new String[commandList.size()];
             commandArray = commandList.toArray(commandArray);
             if (LOG.isDebugEnabled()) {
                 StringBuffer list = new StringBuffer();

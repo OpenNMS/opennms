@@ -148,7 +148,7 @@ public class OnmsAlarmOssjMapper {
 	 */
 	public static int USE_TYPE_INSTANCE=2;
 
-	private static String alarmUpdateBehaviourStr[] = {"SPECIFY_OUTSTATION", "USE_TYPE_INSTANCE"};
+	private static String[] alarmUpdateBehaviourStr = {"SPECIFY_OUTSTATION", "USE_TYPE_INSTANCE"};
 
 	/**
 	 * REturns string value of alarmUpdateBehaviour

@@ -71,7 +71,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         String fileName = getFileName();
         String lang = getLangClass();
         String engine = getBsfEngine();
-        String extensions[] = getFileExtensions();
+        String[] extensions = getFileExtensions();
 
         LOG.info("Loading notification script from file '{}'", fileName);
         File scriptFile = new File(fileName);

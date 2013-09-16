@@ -158,7 +158,7 @@ public class VmwareCimQuery {
         usage(options, cmd, null, null);
     }
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname, username, password;
 
         final Options options = new Options();

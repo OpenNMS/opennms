@@ -66,7 +66,7 @@ public class UpdateGroupController extends AbstractController implements Initial
             WebGroup newGroup = (WebGroup) userSession.getAttribute("group.modifyGroup.jsp");
 
             // get the rest of the group information from the form
-            String users[] = request.getParameterValues("selectedUsers");
+            String[] users = request.getParameterValues("selectedUsers");
             
             newGroup.setUsers(new ArrayList<String>(Arrays.asList(users)));
 

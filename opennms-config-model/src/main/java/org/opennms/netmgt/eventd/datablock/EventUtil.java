@@ -753,7 +753,7 @@ public final class EventUtil {
             src = src.replaceFirst(sepLiteral, "");
         }
         
-        String components[] = src.split(sepLiteral);
+        String[] components = src.split(sepLiteral);
         int startIndex, endIndex;
         if ((Math.abs(offset) > components.length) || (offset == 0)) {
             return null;

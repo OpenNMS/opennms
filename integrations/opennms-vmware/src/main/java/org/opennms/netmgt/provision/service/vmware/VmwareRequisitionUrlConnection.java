@@ -167,7 +167,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         path = path.replaceAll("^/", "");
         path = path.replaceAll("/$", "");
 
-        String pathElements[] = path.split("/");
+        String[] pathElements = path.split("/");
 
         if (pathElements.length == 1) {
             if ("".equals(pathElements[0])) {

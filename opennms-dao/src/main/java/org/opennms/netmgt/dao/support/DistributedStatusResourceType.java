@@ -94,8 +94,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        List<OnmsResource> empty = Collections.emptyList();
-        return empty;
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
@@ -186,9 +185,8 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
-        // is this right?
-        List<OnmsResource> empty = Collections.emptyList();
-        return empty;
+        // TODO: is this right?
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */

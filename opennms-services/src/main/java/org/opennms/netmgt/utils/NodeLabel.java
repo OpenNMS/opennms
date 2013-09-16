@@ -451,8 +451,7 @@ public class NodeLabel {
 
                 LOG.debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: {}", netbiosName);
                     
-                NodeLabel nodeLabel = new NodeLabel(netbiosName, NodeLabelSource.NETBIOS);
-                return nodeLabel;
+                return new NodeLabel(netbiosName, NodeLabelSource.NETBIOS);
             }
         } finally {
             d.cleanUp();
@@ -566,14 +565,12 @@ public class NodeLabel {
                 primarySysName = primarySysName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
 
-            NodeLabel nodeLabel = new NodeLabel(primarySysName, NodeLabelSource.SYSNAME);
-            return nodeLabel;
+            return new NodeLabel(primarySysName, NodeLabelSource.SYSNAME);
         }
 
         // If we get this far the node has no sysName either so we need to
         // use the ipAddress as the nodeLabel
-        NodeLabel nodeLabel = new NodeLabel(InetAddressUtils.str(primaryAddr), NodeLabelSource.ADDRESS);
-        return nodeLabel;
+        return new NodeLabel(InetAddressUtils.str(primaryAddr), NodeLabelSource.ADDRESS);
     }
 
     /**
