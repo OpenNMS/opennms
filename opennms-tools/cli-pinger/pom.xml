@@ -3,14 +3,14 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.10.13-SNAPSHOT</version>
+    <version>1.10.13</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.netmgt.clipinger</groupId>
   <artifactId>clipinger</artifactId>
   <packaging>jar</packaging>
   <name>clipinger</name>
-  <version>1.10.13-SNAPSHOT</version>
+  <version>1.10.13</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
