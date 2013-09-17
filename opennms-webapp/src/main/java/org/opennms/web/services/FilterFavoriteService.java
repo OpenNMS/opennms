@@ -142,6 +142,7 @@ public class FilterFavoriteService {
         filter.setName(favoriteName);
         filter.setPage(page);
         favoriteDao.save(filter);
+        favoriteDao.flush(); // TODO MVR remove this!
         return filter;
     }
 
@@ -157,6 +158,7 @@ public class FilterFavoriteService {
     private boolean deleteFavorite(OnmsFilterFavorite favorite) {
         if (favorite != null) {
             favoriteDao.delete(favorite);
+            favoriteDao.flush(); // TODO MVR remove this!
             return true;
         }
         return false;

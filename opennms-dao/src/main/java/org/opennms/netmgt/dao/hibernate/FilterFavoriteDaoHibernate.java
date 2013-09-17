@@ -46,6 +46,24 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
     }
 
     @Override
+    public void delete(OnmsFilterFavorite entity) throws org.springframework.dao.DataAccessException {
+        // TODO MVR remove setCheckWriteOperations(false) operation and
+        // do it the right way -> Ask Matt what the right way is.
+        // Without this a "InvalidDataAccessException is thrown"
+        getHibernateTemplate().setCheckWriteOperations(false);
+        super.delete(entity);
+    }
+
+    @Override
+    public void save(OnmsFilterFavorite entity) throws org.springframework.dao.DataAccessException {
+        // TODO MVR remove setCheckWriteOperations(false) operation and
+        // do it the right way -> Ask Matt what the right way is.
+        // Without this a "InvalidDataAccessException is thrown"
+        getHibernateTemplate().setCheckWriteOperations(false);
+        super.save(entity);
+    }
+
+    @Override
     public OnmsFilterFavorite findBy(final String userName, final String filterName) {
         return getHibernateTemplate().execute(new HibernateCallback<OnmsFilterFavorite>() {
             @Override
