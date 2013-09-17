@@ -37,6 +37,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         // otherwise, Firefox
         if (driver == null) {
-            driver = new FirefoxDriver();
+            final File phantomJS = new File("/usr/local/bin/phantomjs");
+            if (phantomJS.exists()) {
+                driver = new PhantomJSDriver();
+            } else {
+                driver = new FirefoxDriver();
+            }
         }
 
         String baseUrl = "http://localhost:8980/";

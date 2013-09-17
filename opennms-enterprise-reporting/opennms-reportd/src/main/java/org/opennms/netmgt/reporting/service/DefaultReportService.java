@@ -256,7 +256,7 @@ public class DefaultReportService implements ReportService,InitializingBean {
         for(Parameter parm : parameters)
             parmMap.put(parm.getName(), parm.getValue());
         
-        return Collections.unmodifiableMap(parmMap);
+        return parmMap;
     }
 
 }
