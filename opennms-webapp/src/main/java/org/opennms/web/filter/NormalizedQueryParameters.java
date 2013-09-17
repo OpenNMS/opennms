@@ -66,4 +66,8 @@ public class NormalizedQueryParameters implements QueryParameters {
     public void setFilters(List<Filter> filters) {
         this.filters = filters;
     }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
 }

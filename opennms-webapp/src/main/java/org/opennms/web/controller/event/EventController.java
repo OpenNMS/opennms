@@ -83,14 +83,14 @@ public class EventController extends MultiActionController implements Initializi
 
     private static final int DEFAULT_LONG_LIMIT = 10;
 
-    private static final AcknowledgeType DEFAULT_EVENT_TYPE = AcknowledgeType.UNACKNOWLEDGED;
+    private static final AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = AcknowledgeType.UNACKNOWLEDGED;
 
     private static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
     private FilterCallback m_callback;
 
 	@Autowired
-    private FilterFavoriteService filterService;
+    private FilterFavoriteService favoriteService;
 
 	@Autowired
 	private WebEventRepository m_webEventRepository;
@@ -148,7 +148,7 @@ public class EventController extends MultiActionController implements Initializi
     
     // index view
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	List<OnmsFilterFavorite> userFilterList = filterService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
+    	List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
         ModelAndView modelAndView = new ModelAndView("event/index");
         modelAndView.addObject("favorites", userFilterList);
         modelAndView.addObject("callback", getFilterCallback());
@@ -159,7 +159,7 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
         try {
-            OnmsFilterFavorite favorite = filterService.createFavorite(
+            OnmsFilterFavorite favorite = favoriteService.createFavorite(
                     request.getRemoteUser(),
                     request.getParameter("favoriteName"),
                     FilterUtil.toFilterURL(request.getParameterValues("filter")),
@@ -170,7 +170,7 @@ public class EventController extends MultiActionController implements Initializi
                 return successView;
             }
             error = "An error occured while creating the favorite";
-        } catch (FilterFavoriteService.FavoriteFilterException ex) {
+        } catch (FilterFavoriteService.FilterFavoriteException ex) {
             error = ex.getMessage();
         }
         ModelAndView errorView = list(request, (OnmsFilterFavorite) null);
@@ -182,7 +182,7 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // delete
         String favoriteId = request.getParameter("favoriteId");
-        boolean success = filterService.deleteFavorite(favoriteId, request.getRemoteUser());
+        boolean success = favoriteService.deleteFavorite(favoriteId, request.getRemoteUser());
 
         ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
         resultView.addObject("favorite", null); // we deleted the favorite
@@ -288,6 +288,7 @@ public class EventController extends MultiActionController implements Initializi
         return new ModelAndView(redirectView);
     }
 
+    // TODO MVR we do not need this method
     private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
     	List<Filter> filterList = new ArrayList<Filter>();
     	filterList.add(singleFilter);
@@ -341,7 +342,7 @@ public class EventController extends MultiActionController implements Initializi
     
     private AcknowledgeType getAcknowledgeType(HttpServletRequest request) {
     	 String ackTypeString = request.getParameter("acktype");
-    	 AcknowledgeType ackType = DEFAULT_EVENT_TYPE;
+    	 AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
     	 // otherwise, apply filters/acktype/etc.
          if (ackTypeString != null) {
              AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
@@ -372,7 +373,7 @@ public class EventController extends MultiActionController implements Initializi
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", new NormalizedQueryParameters(parms));
         modelAndView.addObject("callback", getFilterCallback());
-        modelAndView.addObject("favorites", filterService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT));
+        modelAndView.addObject("favorites", favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT));
 
         if (m_showEventCount) {
             EventCriteria countCriteria = new EventCriteria(filterList, ackType);
@@ -385,7 +386,7 @@ public class EventController extends MultiActionController implements Initializi
 
     private OnmsFilterFavorite getFavorite(String favoriteId, String username, String[] filters) {
         if (favoriteId != null) {
-            OnmsFilterFavorite filter = filterService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
+            OnmsFilterFavorite filter = favoriteService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
             return filter;
         }
         return null;
@@ -398,6 +399,6 @@ public class EventController extends MultiActionController implements Initializi
         Assert.notNull(DEFAULT_LONG_LIMIT, "property defaultLongLimit must be set to a value greater than 0");
         Assert.isTrue(DEFAULT_LONG_LIMIT > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
-        Assert.notNull(filterService, "filterService must be set");
+        Assert.notNull(favoriteService, "favoriteService must be set");
     }
 }

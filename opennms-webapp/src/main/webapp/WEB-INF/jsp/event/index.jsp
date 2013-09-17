@@ -73,7 +73,7 @@
                 <!-- Filters -->
                 <ul class="plain">
                     <c:forEach var="eachFavorite" items="${favorites}">
-                        <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('<c:out value="${eachFavorite.id}"/>')" onMouseOut="hideTT()"/>
+                        <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('${eachFavorite.id}')" onMouseOut="hideTT()"/>
                             <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='show events for this favorite'>${eachFavorite.name}</a> [ <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='delete favorite'>X</a> ]
                         </li>
                     </c:forEach>
@@ -109,8 +109,6 @@
         </p>
     </div>
 </c:forEach>
-
-  <%--<%=tooltips%>--%>
 
   <div class="TwoColRight">
       <h3>Outstanding and acknowledged events</h3>

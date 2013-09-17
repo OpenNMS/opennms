@@ -1040,10 +1040,26 @@
     <url-pattern>*.map</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>*.htm</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>*.htm</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/index</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/createFavorite</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/alarm/deleteFavorite</url-pattern>
+    </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/acknowledge</url-pattern>
@@ -1126,7 +1142,7 @@
     <location>/errors/categorynotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.web.MissingParameterException</exception-type>
+    <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
     <location>/errors/missingparam.jsp</location>
   </error-page>
   <error-page>

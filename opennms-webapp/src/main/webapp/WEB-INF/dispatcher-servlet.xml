@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
+    <tx:annotation-driven/>
     <context:annotation-config/>
 
     <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
@@ -22,8 +24,6 @@
             </list>
         </property>
     </bean>
-
-    <bean id="filterService" class="org.opennms.web.services.FilterFavoriteService"/>
 
     <!-- Map controllers based on their bean name -->
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
@@ -279,14 +279,15 @@
         <property name="redirectView" value="/alarm/list.htm"/>
     </bean>
 
-    <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
-        <property name="successView" value="alarm/list"/>
-        <property name="defaultShortLimit" value="20"/>
-        <property name="defaultLongLimit" value="10"/>
-        <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED"/>
-        <property name="defaultSortStyle" value="ID"/>
-        <property name="alarmRepository" ref="alarmRepository"/>
-    </bean>
+    <bean name="/alarm/createFavorite" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <bean name="/alarm/deleteFavorite" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <alias name="/alarm/index.htm" alias="/alarm/index"/>
+    <bean name="/alarm/index.htm" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
+
+    <alias name="/alarm/list.htm" alias="/alarm/list"/>
+    <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController"/>
 
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
@@ -528,7 +529,7 @@
 
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Alarms"/>
-                    <property name="url" value="alarm/index.jsp"/>
+                    <property name="url" value="alarm/index.htm"/>
                     <property name="locationMatch" value="alarm"/>
                 </bean>
 

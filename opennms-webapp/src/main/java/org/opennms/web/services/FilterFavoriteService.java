@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.services;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,19 +35,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-// TODO MVR getFilters in getFavorites umbenennen
+/**
+ * Service to handle CRUD operations and such on {@link OnmsFilterFavorite} objects.
+ */
 public class FilterFavoriteService {
 
-    public static class FavoriteFilterException extends Exception {
-        public FavoriteFilterException(String msg) {
-          super(msg);
+    public static class FilterFavoriteException extends Exception {
+        public FilterFavoriteException(String msg) {
+            super(msg);
         }
     }
 
     @Autowired
     private FilterFavoriteDao favoriteDao;
 
-    // TODO MVR comment gets favorite only if tfilterString matches
+    /**
+     * Returns a favorite only if the given user is allowed to see that favorite and if the given filterString matches with the stored filter criteria inside the favorite.
+     * If the favorite does not exist for the user or the filter criteria does not match null is return.
+     *
+     * @param favoriteId   The id of the favorite.
+     * @param username     The username which tries to load the favorite.
+     * @param filterString The expected filter criteria.
+     * @return The requestes favorite or null.
+     */
     public OnmsFilterFavorite getFavorite(String favoriteId, String username, String filterString) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         if (favorite == null) return null;
@@ -29,11 +67,26 @@ public class FilterFavoriteService {
         return null;
     }
 
+    /**
+     * Deletes the given favorite, but only if the given username is allowed to delete.
+     *
+     * @param favoriteId
+     * @param username
+     * @return true if the favorite was deleted, otherwise false.
+     */
     public boolean deleteFavorite(String favoriteId, String username) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         return deleteFavorite(favorite);
     }
 
+    /**
+     * Returns the requested favorite if the favorite exists, the favoriteId is a valid Integer and if the given username is allowed to load the favorite.
+     *
+     * @param favoriteId The id of the favorite.
+     * @param userName   The user which tries to load the favorite.
+     * @return The favorite or null if the favoriteId is not an Integer,
+     *         the favorite does not exist or the given username is not allowed to see the requested favorite.
+     */
     public OnmsFilterFavorite getFavorite(String favoriteId, String userName) {
         try {
             Integer filterIdInteger = Integer.valueOf(favoriteId);
@@ -44,6 +97,13 @@ public class FilterFavoriteService {
         }
     }
 
+    /**
+     * Returns the requested favorite if the favorite exists and if the given username is allowed to load the favorite.
+     *
+     * @param favoriteId The id of the favorite.
+     * @param userName   The user which tries to load the favorite.
+     * @return The favorite or null if the favorite does not exist or the given username is not allowed to see the requested favorite.
+     */
     public OnmsFilterFavorite getFavorite(Integer favoriteId, String userName) {
         OnmsFilterFavorite favorite = favoriteDao.get(favoriteId);
         if (favorite != null && favorite.getUsername().equalsIgnoreCase(userName)) {
@@ -52,17 +112,29 @@ public class FilterFavoriteService {
         return null; // not visible for this user
     }
 
+    /**
+     * Deletes the favorite. The deletion is only performed if the favorite exists and the given user is allowed to delete.
+     * @param favoriteId
+     * @param userName
+     * @return
+     */
     public boolean deleteFilter(int favoriteId, String userName) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, userName);
         return deleteFavorite(favorite);
     }
 
+    /**
+     * Loads all favorites for the user and the given page.
+     * @param userName
+     * @param page
+     * @return
+     */
     public List<OnmsFilterFavorite> getFavorites(String userName, OnmsFilterFavorite.Page page) {
         List<OnmsFilterFavorite> favorites = favoriteDao.findBy(userName, page);
         return favorites;
     }
 
-    public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FavoriteFilterException {
+    public OnmsFilterFavorite createFavorite(String userName, String favoriteName, String filterString, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
         validate(userName, favoriteName, filterString, page);
         OnmsFilterFavorite filter = new OnmsFilterFavorite();
         filter.setUsername(userName);
@@ -70,23 +142,21 @@ public class FilterFavoriteService {
         filter.setName(favoriteName);
         filter.setPage(page);
         favoriteDao.save(filter);
-        favoriteDao.flush(); // TODO MVR remove flush
         return filter;
     }
 
-    private void validate(String userName, String favoriteName, String filter, OnmsFilterFavorite.Page page) throws FavoriteFilterException {
-        if (StringUtils.isEmpty(userName)) throw new FavoriteFilterException("No username specified.");
-        if (StringUtils.isEmpty(favoriteName))  throw new FavoriteFilterException("No favorite name specified.");
-        if (StringUtils.isEmpty(filter)) throw new FavoriteFilterException("The specified favorite is empty.");
+    private void validate(String userName, String favoriteName, String filter, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
+        if (StringUtils.isEmpty(userName)) throw new FilterFavoriteException("No username specified.");
+        if (StringUtils.isEmpty(favoriteName)) throw new FilterFavoriteException("No favorite name specified.");
+        if (StringUtils.isEmpty(filter)) throw new FilterFavoriteException("The specified favorite is empty.");
         if (favoriteDao.existsFilter(userName, favoriteName, page)) {
-            throw new FavoriteFilterException("A favorite with this name already exists.");
+            throw new FilterFavoriteException("A favorite with this name already exists.");
         }
     }
 
     private boolean deleteFavorite(OnmsFilterFavorite favorite) {
         if (favorite != null) {
             favoriteDao.delete(favorite);
-            favoriteDao.flush(); // TODO MVR remove flush
             return true;
         }
         return false;

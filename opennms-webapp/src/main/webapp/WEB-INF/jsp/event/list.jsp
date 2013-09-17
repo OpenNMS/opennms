@@ -31,34 +31,22 @@
 
 <%@page language="java"	contentType="text/html"	session="true" %>
 
-<%@page import="java.util.List"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@page import="org.opennms.web.api.Authentication"%>
+<%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet"%>
-<%@page import="org.opennms.web.event.Event"%>
-<%@page import="org.opennms.web.event.EventQueryParms"%>
-<%@page import="org.opennms.web.event.filter.SeverityFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeSeverityFilter"%>
-<%@page import="org.opennms.web.event.filter.AfterDateFilter"%>
-<%@page import="org.opennms.web.event.filter.BeforeDateFilter"%>
-<%@page import="org.opennms.web.event.filter.NodeFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeNodeFilter"%>
-<%@page import="org.opennms.web.event.filter.InterfaceFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeInterfaceFilter"%>
-<%@page import="org.opennms.web.event.filter.ServiceFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeServiceFilter"%>
-<%@page import="org.opennms.web.event.filter.ExactUEIFilter"%>
-<%@page import="org.opennms.web.event.filter.NegativeExactUEIFilter"%>
+<%@page import="org.opennms.web.api.Authentication"%>
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.SortStyle"%>
-<%@page import="org.opennms.netmgt.model.OnmsFilterFavorite" %>
-<%@page import="org.opennms.web.filter.*" %>
-<%@page import="org.opennms.web.filter.Filter" %>
-<%@page import="org.opennms.web.tags.filters.EventFilterCallback" %>
-<%@page import="org.opennms.web.tags.filters.FilterCallback" %>
-<%@ page import="org.opennms.web.alert.AlertType" %>
-<%@ page import="org.opennms.web.tags.select.FilterFavoriteSelectTagHandler" %>
+<%@page import="org.opennms.web.event.filter.*"%>
+<%@page import="org.opennms.web.filter.Filter"%>
+<%@page import="org.opennms.web.filter.NormalizedQueryParameters"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
+<%@page import="org.opennms.web.tags.filters.EventFilterCallback"%>
+<%@page import="org.opennms.web.tags.filters.FilterCallback"%>
+<%@page import="org.opennms.web.tags.select.FilterFavoriteSelectTagHandler"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="org.opennms.web.api.Util" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -200,7 +188,7 @@
       <ul>
         <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/advsearch.jsp")%>" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/severity.jsp")%>">Severity Legend</a></li>
+        <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "event/severity.jsp")%>','event_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330');" title="Open a window explaining the event severities">Severity Legend</a></li>
 
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
@@ -213,9 +201,9 @@
               </form>
 
               <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <a href="#" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
               <% } else { %>
-                <a href="#" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
               <% } %>
             </li>
           <% } %>
@@ -425,7 +413,7 @@
                 </nobr>
               <% } %>
               <% if (req.isUserInRole(Authentication.ROLE_ADMIN)) { %>
-               	  <a href="#" onclick="submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
+               	  <a href="javascript:void()" onclick="submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
               <% } %>
             <% } else { %>
               &nbsp;

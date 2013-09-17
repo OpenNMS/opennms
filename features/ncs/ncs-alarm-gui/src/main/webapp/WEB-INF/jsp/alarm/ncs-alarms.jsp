@@ -116,7 +116,7 @@
   <jsp:param name="title" value="Alarm List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.jsp' title='Alarms System Page'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.htm' title='Alarms System Page'>Alarms</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
@@ -223,7 +223,7 @@
       <li><a href="<%=this.makeLink(parms, "long")%>" title="Detailed List of Alarms">Long Listing</a></li>
         </c:otherwise>
       </c:choose>
-      <li><a href="javascript:void()" onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>

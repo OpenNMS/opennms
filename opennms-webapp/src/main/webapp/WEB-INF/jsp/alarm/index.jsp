@@ -28,22 +28,27 @@
  *******************************************************************************/
 
 --%>
+<%@page language="java" contentType="text/html" session="true" %>
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils,
-        org.opennms.core.soa.ServiceRegistry,
-        org.opennms.web.navigate.PageNavEntry,
-        java.util.Collection"
-%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
+<%@page import="java.util.Collection" %>
+<%@page import="org.springframework.web.context.WebApplicationContext" %>
+<%@page import="org.opennms.web.navigate.PageNavEntry" %>
+<%@page import="org.opennms.core.soa.ServiceRegistry" %>
+<%@page import="org.opennms.web.tags.filters.AlarmFilterCallback" %>
+<%@page import="org.opennms.web.tags.filters.FilterCallback" %>
+<%@page import="org.opennms.netmgt.model.OnmsFilterFavorite" %>
+<%@page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="../../taglib.tld" prefix="onms" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarms" />
   <jsp:param name="headTitle" value="Alarms" />
   <jsp:param name="location" value="alarm" />  
   <jsp:param name="breadcrumb" value="Alarms" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 </jsp:include>
 
   <div class="TwoColLeft">
@@ -62,7 +67,51 @@
           <%=getAlarmPageNavItems() %>
         </ul>  
       </div>
+      <br/>
+      <h3>Alarm Filter Favorites</h3>
+      <onms:alert/>
+      <div class="boxWrapper">
+          <c:choose>
+              <c:when test="${!empty favorites}">
+                  <!-- Filters -->
+                  <ul class="plain">
+                      <c:forEach var="eachFavorite" items="${favorites}">
+                          <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('${eachFavorite.id}')" onMouseOut="hideTT()"/>
+                              <a href="alarm/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='show alarms for this favorite'>${eachFavorite.name}</a> [ <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='delete favorite'>X</a> ]
+                          </li>
+                      </c:forEach>
+                  </ul>
+              </c:when>
+              <c:otherwise>
+                  <p>No favorites available.</p>
+              </c:otherwise>
+          </c:choose>
+      </div>
   </div>
+
+<!-- Tooltips for filters -->
+<c:forEach var="eachFavorite" items="${favorites}">
+    <%
+        OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
+        FilterCallback callback = (AlarmFilterCallback) request.getAttribute("callback");
+
+        NormalizedQueryParameters params = new NormalizedQueryParameters();
+        params.setFilters(callback.parse(current.getFilter()));
+
+        pageContext.setAttribute("parms", params);
+    %>
+    <div class="tooltip" style="" id="${eachFavorite.id}">
+        <p><b>Filter: </b><br/>
+            <onms:filters
+                    context="/alarm/index"
+                    favorite="${eachFavorite}"
+                    parameters="${parms}"
+                    showRemoveLink="false"
+                    showAcknowledgeFilter="false"
+                    callback="${callback}" />
+        </p>
+    </div>
+</c:forEach>
 
   <div class="TwoColRight">
     <h3>Outstanding and acknowledged alarms</h3>
