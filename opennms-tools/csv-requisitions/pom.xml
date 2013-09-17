@@ -4,7 +4,7 @@
   <groupId>org.opennms.provisiond.utils</groupId>
   <artifactId>csv-requisition</artifactId>
   <packaging>jar</packaging>
-  <version>1.12.1</version>
+  <version>1.12.2-SNAPSHOT</version>
   <name>csv-requistion</name>
   <url>http://maven.apache.org</url>
   <build>
