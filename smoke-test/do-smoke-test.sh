@@ -102,20 +102,12 @@ reset_opennms() {
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
-	if [ `ls "$ME"/../target/rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh $ME/../target/rpms/*.rpm"
-		rpm -Uvh "$ME"/../target/rpms/*.rpm
+	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
+		do_log "rpm -Uvh $ME/../../rpms/*.rpm"
+		rpm -Uvh "$ME"/../../rpms/*.rpm
 	else
-		do_log "removing repo RPMs"
-		rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
-		rm -rf /etc/yum.repos.d/opennms*
-
-		REPO=`cat $ME/../.nightly | grep -E '^repo:' | sed -e 's,^repo: *,,'`
-		do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
-		rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
-
-		do_log "yum -y install $PACKAGES"
-		yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+		echo "Unable to locate RPMs for installing!"
+		exit 1
 	fi
 }
 
