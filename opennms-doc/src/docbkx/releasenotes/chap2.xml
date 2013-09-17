@@ -6,6 +6,52 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="opennms-1.12.1">
+		<title>Changes in OpenNMS 1.12.1</title>
+
+		<section id="opennms-1.12.1-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Debian init.d script wrong postgres dependency (Issue <ulink url='http://issues.opennms.org/browse/NMS-5879'>NMS-5879</ulink>)</para></listitem>
+				<listitem><para>threshold filters not processed properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-5880'>NMS-5880</ulink>)</para></listitem>
+				<listitem><para>Prefab graph ignores properties for width and height (Issue <ulink url='http://issues.opennms.org/browse/NMS-5918'>NMS-5918</ulink>)</para></listitem>
+				<listitem><para>Disable Threshd by default in service-configuration.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-6024'>NMS-6024</ulink>)</para></listitem>
+				<listitem><para>Database connections leak until the system cannot obtain any more connections (Issue <ulink url='http://issues.opennms.org/browse/NMS-6051'>NMS-6051</ulink>)</para></listitem>
+				<listitem><para>No login screen after update 1.10.12.1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6058'>NMS-6058</ulink>)</para></listitem>
+				<listitem><para>The VMWare collector doesn&#39;t work properly when storeByForeignSource is enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-6060'>NMS-6060</ulink>)</para></listitem>
+				<listitem><para>Distributed map offered when no monitoring locations defined (Issue <ulink url='http://issues.opennms.org/browse/NMS-6063'>NMS-6063</ulink>)</para></listitem>
+				<listitem><para>Mail Transport Monitor exception in 1.12.0 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6067'>NMS-6067</ulink>)</para></listitem>
+				<listitem><para>Make the VMWare Provisioner more useful (Issue <ulink url='http://issues.opennms.org/browse/NMS-6070'>NMS-6070</ulink>)</para></listitem>
+				<listitem><para>provision.pl is not handling properly the 302 and 303 HTTP Responses. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6072'>NMS-6072</ulink>)</para></listitem>
+				<listitem><para>OpenNMS web UI has encountered an error (Issue <ulink url='http://issues.opennms.org/browse/NMS-6073'>NMS-6073</ulink>)</para></listitem>
+				<listitem><para>The JAR where the GpDetector is defined doesn&#39;t appear on the RPM or DEB files (Issue <ulink url='http://issues.opennms.org/browse/NMS-6074'>NMS-6074</ulink>)</para></listitem>
+				<listitem><para>The jasper report templates doesn&#39;t work after enabling storeByForeignSource (Issue <ulink url='http://issues.opennms.org/browse/NMS-6075'>NMS-6075</ulink>)</para></listitem>
+				<listitem><para>JNA code does not work if tmpdir is mounted noexec (Issue <ulink url='http://issues.opennms.org/browse/NMS-6076'>NMS-6076</ulink>)</para></listitem>
+				<listitem><para>config-tester exception in clean 1.12 installation (Issue <ulink url='http://issues.opennms.org/browse/NMS-6077'>NMS-6077</ulink>)</para></listitem>
+				<listitem><para>Remove sample-report, trivial-report and parameter-test from database-reports.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-6080'>NMS-6080</ulink>)</para></listitem>
+				<listitem><para>VmwareConfigBuilder is not generating a valid graph templates file. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6081'>NMS-6081</ulink>)</para></listitem>
+				<listitem><para>VmwareConfigBuilder creates too long aliases for vSphere 5.1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6082'>NMS-6082</ulink>)</para></listitem>
+				<listitem><para>parent-foreign-source is not working anymore (Issue <ulink url='http://issues.opennms.org/browse/NMS-6083'>NMS-6083</ulink>)</para></listitem>
+				<listitem><para>Syslog Northbounder is not translating the node labels (Issue <ulink url='http://issues.opennms.org/browse/NMS-6092'>NMS-6092</ulink>)</para></listitem>
+				<listitem><para>Requisition ReST Caching Does Not Flush On Shutdown (Issue <ulink url='http://issues.opennms.org/browse/NMS-6093'>NMS-6093</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t use SNMPv3 with NoAuth-NoPriv (Issue <ulink url='http://issues.opennms.org/browse/NMS-6108'>NMS-6108</ulink>)</para></listitem>
+				<listitem><para>Cron-triggered reports in Reportd do not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-6113'>NMS-6113</ulink>)</para></listitem>
+				<listitem><para>alarmidnotfound.jsp went missing (Issue <ulink url='http://issues.opennms.org/browse/NMS-6114'>NMS-6114</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.1-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Changing RRD graph size with URL parameter width and height (Issue <ulink url='http://issues.opennms.org/browse/NMS-5919'>NMS-5919</ulink>)</para></listitem>
+				<listitem><para>Ability to disable rescanning of updated nodes during import (Issue <ulink url='http://issues.opennms.org/browse/NMS-6040'>NMS-6040</ulink>)</para></listitem>
+				<listitem><para>PostgreSQL / JDBC data collection config (Issue <ulink url='http://issues.opennms.org/browse/NMS-6062'>NMS-6062</ulink>)</para></listitem>
+				<listitem><para>SNMP support for Clavister security devices (Issue <ulink url='http://issues.opennms.org/browse/NMS-6107'>NMS-6107</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.12.0">
 		<title>Changes in OpenNMS 1.12.0</title>
 
@@ -446,6 +492,37 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.13">
+		<title>Changes in OpenNMS 1.10.13</title>
+
+		<section id="opennms-1.10.13-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>ERROR: insert or update on table &quot;notifications&quot; violates foreign key constraint &quot;fk_eventid3&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-1668'>NMS-1668</ulink>)</para></listitem>
+				<listitem><para>Provisiond Error : org.hibernate.exception.SQLGrammarException: could not execute query (Issue <ulink url='http://issues.opennms.org/browse/NMS-5348'>NMS-5348</ulink>)</para></listitem>
+				<listitem><para>&quot;No Data for this Entry&quot; in Serial Interface Utilization Summary report (Issue <ulink url='http://issues.opennms.org/browse/NMS-5617'>NMS-5617</ulink>)</para></listitem>
+				<listitem><para>Debian init.d script wrong postgres dependency (Issue <ulink url='http://issues.opennms.org/browse/NMS-5879'>NMS-5879</ulink>)</para></listitem>
+				<listitem><para>threshold filters not processed properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-5880'>NMS-5880</ulink>)</para></listitem>
+				<listitem><para>It is possible to define an OnmsServiceType twice and that can hurt some features. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5914'>NMS-5914</ulink>)</para></listitem>
+				<listitem><para>Duplicated parameter in notification.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-5948'>NMS-5948</ulink>)</para></listitem>
+				<listitem><para>Node availability report wrong calculation of percentage (Issue <ulink url='http://issues.opennms.org/browse/NMS-5990'>NMS-5990</ulink>)</para></listitem>
+				<listitem><para>Database connections leak until the system cannot obtain any more connections (Issue <ulink url='http://issues.opennms.org/browse/NMS-6051'>NMS-6051</ulink>)</para></listitem>
+				<listitem><para>`opennms status` should return 3 when unconfigured, not 6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6068'>NMS-6068</ulink>)</para></listitem>
+				<listitem><para>The JAR where the GpDetector is defined doesn&#39;t appear on the RPM or DEB files (Issue <ulink url='http://issues.opennms.org/browse/NMS-6074'>NMS-6074</ulink>)</para></listitem>
+				<listitem><para>parent-foreign-source is not working anymore (Issue <ulink url='http://issues.opennms.org/browse/NMS-6083'>NMS-6083</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.13-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Add new sysOID to linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-6034'>NMS-6034</ulink>)</para></listitem>
+				<listitem><para>SNMP support for Clavister security devices (Issue <ulink url='http://issues.opennms.org/browse/NMS-6107'>NMS-6107</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.12">
 		<title>Changes in OpenNMS 1.10.12</title>
