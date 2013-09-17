@@ -181,43 +181,56 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
-            // FIXME manage duplicated ip address
-            for (final OnmsAtInterface at : ats) {
-                int interfaceindex = getIfIndex(at.getNode().getId(),
-                                                hostAddress);
-                LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",
-                          interfaceindex, node.getNodeId(), hostAddress);
-                at.setSourceNodeId(node.getNodeId());
-
-                if (at.getMacAddress() != null
-                        && !at.getMacAddress().equals(physAddr)) {
-                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})",
-                             physAddr, at.getMacAddress(), hostAddress,
-                             ifindex);
+            OnmsAtInterface at = null;
+            if (ats.size() > 1) {
+                LOG.debug("processIpNetToMediaTable: found duplicated  IP address {}.", hostAddress);
+                for (OnmsAtInterface currAt: ats) {
+                    LOG.debug("processIpNetToMediaTable: parsing duplicated  arp interface {}.", currAt);
+                    if (currAt.getNode().getId() == node.getNodeId()) {
+                        at=currAt;
+                        break;
+                    }
                 }
-                at.setMacAddress(physAddr);
-
-                if (at.getIfIndex() != null
-                        && at.getIfIndex().intValue() != ifindex) {
-                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})",
-                             ifindex, at.getIfIndex(), hostAddress, physAddr);
-                }
-                at.setIfIndex(interfaceindex);
-
-                at.setLastPollTime(scanTime);
-                at.setStatus(StatusType.ACTIVE);
-
-                getAtInterfaceDao().saveOrUpdate(at);
-
-                // Now store the information that is needed to create link in
-                // linkd
-                AtInterface atinterface = new AtInterface(
-                                                          at.getNode().getId(),
-                                                          physAddr,
-                                                          at.getIpAddress());
-                atinterface.setIfIndex(interfaceindex);
-                getLinkd().addAtInterface(atinterface);
+                LOG.debug("processIpNetToMediaTable: no suitable duplicated  arp interface found. Skipping entry {}", ent);
+                continue;
+            } else {
+                at = ats.iterator().next();
             }
+            int interfaceindex = getIfIndex(at.getNode().getId(),
+                                            hostAddress);
+            LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",
+                      interfaceindex, node.getNodeId(), hostAddress);
+            at.setSourceNodeId(node.getNodeId());
+
+            if (at.getMacAddress() != null
+                    && !at.getMacAddress().equals(physAddr)) {
+                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})",
+                         physAddr, at.getMacAddress(), hostAddress,
+                         ifindex);
+            }
+            at.setMacAddress(physAddr);
+
+            if (at.getIfIndex() != null
+                    && at.getIfIndex().intValue() != ifindex) {
+                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})",
+                         ifindex, at.getIfIndex(), hostAddress, physAddr);
+            }
+            at.setIfIndex(interfaceindex);
+
+            at.setLastPollTime(scanTime);
+            at.setStatus(StatusType.ACTIVE);
+
+            getAtInterfaceDao().saveOrUpdate(at);
+
+            // Now store the information that is needed to create link in
+            // linkd
+            AtInterface atinterface = new AtInterface(
+                                                      at.getNode().getId(),
+                                                      physAddr,
+                                                      at.getIpAddress());
+            atinterface.setIfIndex(interfaceindex);
+            getLinkd().addAtInterface(atinterface);
+            
         }
         
         if (!hasPrimaryIpAsAtinterface)
