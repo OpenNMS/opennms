@@ -38,9 +38,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
@@ -72,14 +69,14 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         // otherwise, Firefox
         if (driver == null) {
-            final File phantomJS = new File("/usr/local/bin/phantomjs");
-            if (phantomJS.exists()) {
-                final DesiredCapabilities caps = new DesiredCapabilities();
-                caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
-                driver = new PhantomJSDriver(caps);
-            } else {
+            //final File phantomJS = new File("/usr/local/bin/phantomjs");
+            //if (phantomJS.exists()) {
+            //    final DesiredCapabilities caps = new DesiredCapabilities();
+            //    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
+            //    driver = new PhantomJSDriver(caps);
+            //} else {
                 driver = new FirefoxDriver();
-            }
+            //}
         }
 
         String baseUrl = "http://localhost:8980/";
