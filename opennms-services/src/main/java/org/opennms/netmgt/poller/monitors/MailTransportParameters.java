@@ -80,7 +80,7 @@ public class MailTransportParameters {
     }
             
     Map<String,Object> getParameterMap() {
-        return Collections.unmodifiableMap(m_parameterMap);
+        return m_parameterMap;
     }
 
     MailTransportTest getTransportTest() {

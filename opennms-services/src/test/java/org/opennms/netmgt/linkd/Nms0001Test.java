@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,6 +54,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -212,5 +214,14 @@ public class Nms0001Test extends Nms0001NetworkBuilder implements InitializingBe
             } 
             
         }
+        
+        DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599));
+        iface.setNodeParentId(oedipus.getId());
+        iface.setParentIfIndex(578);
+        iface.setStatus(StatusType.ACTIVE);
+        iface.setLastPollTime(new Date());
+        m_dataLinkInterfaceDao.saveOrUpdate(iface);
+        
+        assertEquals(3, m_dataLinkInterfaceDao.countAll());
     }
 }

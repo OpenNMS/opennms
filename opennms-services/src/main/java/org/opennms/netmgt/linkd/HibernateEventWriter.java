@@ -263,14 +263,17 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
+    @Transactional
     public void storeDiscoveryLink(final DiscoveryLink discoveryLink)
     {
         final Date now = new Date();
+        String source = getLinkd().getName()+"/"+discoveryLink.getPackageName();
 
         for (final NodeToNodeLink lk : discoveryLink.getLinks()) {
-            DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeId(),
-                                                                                    lk.getIfindex());
+            DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeId()),
+                                                                                    Integer.valueOf(lk.getIfindex()));
             if (iface == null) {
+                
                 final OnmsNode onmsNode = m_nodeDao.get(lk.getNodeId());
                 iface = new DataLinkInterface(
                                               onmsNode,
@@ -279,22 +282,26 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                                               lk.getParentifindex(),
                                               StatusType.ACTIVE,
                                               now);
+                iface.setSource(source);
+            } else {
+                iface.setNodeParentId(lk.getNodeparentid());
+                iface.setParentIfIndex(lk.getParentifindex());
+                iface.setSource(source);
+                iface.setStatus(StatusType.ACTIVE);
+                iface.setLastPollTime(now);
             }
-            iface.setNodeParentId(lk.getNodeparentid());
-            iface.setParentIfIndex(lk.getParentifindex());
-            iface.setLastPollTime(now);
+            DataLinkInterface reversiface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(Integer.valueOf(lk.getNodeparentid()),
+                                                                                          Integer.valueOf(lk.getParentifindex()));
+            if (reversiface != null && reversiface.getNodeParentId().intValue() == lk.getNodeId() &&
+                    reversiface.getParentIfIndex().intValue() == lk.getIfindex()) {
+                LOG.debug("storeDiscoveryLink: Deleting found reverse interface for {} on link {}.", reversiface,lk);
+                m_dataLinkInterfaceDao.delete(reversiface);
+            }
+                
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
-            final DataLinkInterface parent = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeparentid(),
-                                                                                           lk.getParentifindex());
-            if (parent != null) {
-                if (parent.getNodeParentId() == lk.getNodeId()
-                        && parent.getParentIfIndex() == lk.getIfindex()
-                        && parent.getStatus().equals(StatusType.DELETED)) {
-                    m_dataLinkInterfaceDao.delete(parent);
-                }
-            }
         }
 
+        // FIXME remove this is you use mac address in DiscoveryLink memory
         for (final MacToNodeLink lkm : discoveryLink.getMacLinks()) {
             final Collection<OnmsAtInterface> atInterfaces = m_atInterfaceDao.findByMacAddress(lkm.getMacAddress());
             if (atInterfaces.size() == 0) {
@@ -302,15 +309,18 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                 continue;
             }
             if (atInterfaces.size() > 1) {
-                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Returning the first.", lkm.getMacAddress());
+                LOG.debug("storeDiscoveryLink: More than one atInterface returned for the mac address {}. Duplicated ip/mac address. Skipping ", lkm.getMacAddress());
+                continue;
             }
             final OnmsAtInterface atInterface = atInterfaces.iterator().next();
             if (!m_linkd.isInterfaceInPackage(atInterface.getIpAddress(),
                                               discoveryLink.getPackageName())) {
-                LOG.debug("storeDiscoveryLink: IP address {} not found on link.  Skipping.", atInterface.getIpAddress());
+                LOG.debug("storeDiscoveryLink: IP address {} not found on package {}.  Skipping.", atInterface.getIpAddress(),discoveryLink.getPackageName());
                 continue;
             }
+
             final OnmsNode atInterfaceNode = atInterface.getNode();
+            
             DataLinkInterface dli = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(atInterfaceNode.getId(),
                                                                                   atInterface.getIfIndex());
             if (dli == null) {
@@ -321,15 +331,20 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                                             lkm.getParentifindex(),
                                             StatusType.ACTIVE,
                                             now);
+                dli.setSource(source);
+            } else {
+                dli.setNodeParentId(lkm.getNodeparentid());
+                dli.setParentIfIndex(lkm.getParentifindex());
+                dli.setStatus(StatusType.ACTIVE);
+                dli.setLastPollTime(now);
+                dli.setSource(source);
             }
-            dli.setNodeParentId(lkm.getNodeparentid());
-            dli.setParentIfIndex(lkm.getParentifindex());
-            dli.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
             LOG.debug("storeDiscoveryLink: Storing {}", dli);
         }
-        m_dataLinkInterfaceDao.deactivateIfOlderThan(now,getLinkd().getSource());
-        m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),getLinkd().getSource());
+        m_dataLinkInterfaceDao.deactivateIfOlderThan(now,source);
+        m_dataLinkInterfaceDao.deleteIfOlderThan(new Date(now.getTime()-3*discoveryLink.getSnmpPollInterval()),source);
+        m_dataLinkInterfaceDao.flush();
     }
 
     @Override

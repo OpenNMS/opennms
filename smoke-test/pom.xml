@@ -8,11 +8,34 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
+  <properties>
+    <seleniumVersion>2.33.0</seleniumVersion>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>2.33.0</version>
+      <version>${seleniumVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-chrome-driver</artifactId>
+      <version>${seleniumVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+      <version>${seleniumVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-safari-driver</artifactId>
+      <version>${seleniumVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.detro.ghostdriver</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

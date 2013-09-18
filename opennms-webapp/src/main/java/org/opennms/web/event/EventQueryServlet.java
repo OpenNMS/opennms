@@ -46,6 +46,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
@@ -77,7 +78,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
      * The URL for the servlet. The
@@ -127,6 +128,12 @@ public class EventQueryServlet extends HttpServlet {
         String nodeNameLike = WebSecurityUtils.sanitizeString(request.getParameter("nodenamelike"));
         if (nodeNameLike != null && nodeNameLike.length() > 0) {
             filterArray.add(new NodeNameLikeFilter(nodeNameLike));
+        }
+
+        // convenient syntax for ExactUEIFilter
+        String exactUEI = WebSecurityUtils.sanitizeString(request.getParameter("exactuei"));
+        if (exactUEI != null && exactUEI.length() > 0) {
+            filterArray.add(new ExactUEIFilter(exactUEI));
         }
 
         // convenient syntax for ServiceFilter
