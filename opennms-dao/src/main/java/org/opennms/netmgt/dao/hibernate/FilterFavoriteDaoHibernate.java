@@ -50,7 +50,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         // TODO MVR remove setCheckWriteOperations(false) operation and
         // do it the right way -> Ask Matt what the right way is.
         // Without this a "InvalidDataAccessException is thrown"
-        getHibernateTemplate().setCheckWriteOperations(false);
+//        getHibernateTemplate().setCheckWriteOperations(false);
         super.delete(entity);
     }
 
@@ -59,7 +59,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         // TODO MVR remove setCheckWriteOperations(false) operation and
         // do it the right way -> Ask Matt what the right way is.
         // Without this a "InvalidDataAccessException is thrown"
-        getHibernateTemplate().setCheckWriteOperations(false);
+//        getHibernateTemplate().setCheckWriteOperations(false);
         super.save(entity);
     }
 

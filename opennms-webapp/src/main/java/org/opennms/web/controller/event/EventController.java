@@ -63,8 +63,8 @@ import java.util.List;
 
 // TODO MVR modify javadoc
 /**
- * A controller that handles querying the event table by using filters to create an
- * event list and and then forwards that event list to a JSP for display.
+ * A controller that handles all event actions (e.g. querying the event table by using filters to create an
+ * event list and and then forwards that event list to a JSP for display).
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -102,14 +102,12 @@ public class EventController extends MultiActionController implements Initializi
         m_showEventCount = Boolean.getBoolean("opennms.eventlist.showCount");
     }
 
-    private FilterCallback getFilterCallback() {
-        if (m_callback == null) {
-            m_callback = new EventFilterCallback(getServletContext());
-        }
-        return m_callback;
+    @Override
+    @Transactional
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return super.handleRequest(request, response);
     }
 
-    // TODO MVR modify javadoc
     /**
      * {@inheritDoc}
      *
@@ -141,7 +139,7 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
     	// asking for a specific ID; only filter should be event ID
-    	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(WebSecurityUtils.safeParseInt(idString))); 
+    	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(WebSecurityUtils.safeParseInt(idString)));
     	modelAndView.setViewName("event/detail");
     	return modelAndView;
     }
@@ -155,7 +153,6 @@ public class EventController extends MultiActionController implements Initializi
         return modelAndView;
     }
 
-    @Transactional(readOnly=false)
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
         try {
@@ -178,7 +175,6 @@ public class EventController extends MultiActionController implements Initializi
         return errorView;
     }
 
-    @Transactional(readOnly=false)
     public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // delete
         String favoriteId = request.getParameter("favoriteId");
@@ -274,7 +270,6 @@ public class EventController extends MultiActionController implements Initializi
         return getRedirectView(request);
     }
 
-    // TODO MVR comment/javadoc
     private ModelAndView getRedirectView(HttpServletRequest request) {
         String redirectParms = request.getParameter("redirectParms");
         String redirect = request.getParameter("redirect");
@@ -288,13 +283,6 @@ public class EventController extends MultiActionController implements Initializi
         return new ModelAndView(redirectView);
     }
 
-    // TODO MVR we do not need this method
-    private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
-    	List<Filter> filterList = new ArrayList<Filter>();
-    	filterList.add(singleFilter);
-        return createListModelAndView(request, filterList, null);
-    }
-    
     private String getDisplay(HttpServletRequest request) {
     	return request.getParameter("display");
     }
@@ -363,7 +351,13 @@ public class EventController extends MultiActionController implements Initializi
         parms.sortStyle = getSortStyle(request);	
         return parms;
     }
-    
+
+    private ModelAndView createModelAndView(HttpServletRequest request, Filter singleFilter) {
+        List<Filter> filterList = new ArrayList<Filter>();
+        filterList.add(singleFilter);
+        return createListModelAndView(request, filterList, null);
+    }
+
     private ModelAndView createListModelAndView(HttpServletRequest request, List<Filter> filterList, AcknowledgeType ackType) {
     	final EventQueryParms parms = createEventQueryParms(request, filterList, ackType);
         final EventCriteria queryCriteria = new EventCriteria(parms);
@@ -390,6 +384,13 @@ public class EventController extends MultiActionController implements Initializi
             return filter;
         }
         return null;
+    }
+
+    private FilterCallback getFilterCallback() {
+        if (m_callback == null) {
+            m_callback = new EventFilterCallback(getServletContext());
+        }
+        return m_callback;
     }
 
     @Override
