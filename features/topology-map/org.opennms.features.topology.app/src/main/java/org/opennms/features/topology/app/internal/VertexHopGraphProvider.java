@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
 
@@ -43,9 +45,12 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class will be used to filter a topology so that the semantic zoom level is
@@ -55,15 +60,21 @@ import org.opennms.features.topology.api.topo.VertexRef;
  * @author Seth
  */
 public class VertexHopGraphProvider implements GraphProvider {
+	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-	public static class VertexHopCriteria extends ArrayList<VertexRef> implements Criteria {
+	public static class VertexHopCriteria implements Criteria {
 
 		private static final long serialVersionUID = 2904432878716561926L;
 
+		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
 		//private int m_hops;
 
+		public VertexHopCriteria() {
+			super();
+			//m_hops = hops;
+		}
+
 		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
-			super(objects);
 			//m_hops = hops;
 		}
 
@@ -85,6 +96,22 @@ public class VertexHopGraphProvider implements GraphProvider {
 		@Override
 		public String getNamespace() {
 			return "nodes";
+		}
+
+		public void add(VertexRef ref) {
+			m_vertices.add(ref);
+		}
+
+		public void remove(VertexRef ref) {
+			m_vertices.remove(ref);
+		}
+
+		public void clear(VertexRef ref) {
+			m_vertices.clear();
+		}
+
+		public boolean contains(VertexRef ref) {
+			return m_vertices.contains(ref);
 		}
 	}
 
@@ -162,17 +189,20 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		// Find the vertices that match a required HopDistanceCriteria
 		for (Criteria criterium : criteria) {
-			VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
-			for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
-				Vertex vertex = itr.next();
-				if (hdCriteria.contains(vertex)) {
-					// Put the vertex into the return value and remove it
-					// from the list of all eligible vertices
-					retval.add(vertex);
-					nextHops.add(vertex);
-					itr.remove();
+			try {
+				VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
+				for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
+					Vertex vertex = itr.next();
+					if (hdCriteria.contains(vertex)) {
+						// Put the vertex into the return value and remove it
+						// from the list of all eligible vertices
+						retval.add(vertex);
+						nextHops.add(vertex);
+						itr.remove();
+						LOG.debug("Added {} to selected vertex list", vertex);
+					}
 				}
-			}
+			} catch (ClassCastException e) {}
 		}
 
 		// Clear the existing semantic zoom level values
