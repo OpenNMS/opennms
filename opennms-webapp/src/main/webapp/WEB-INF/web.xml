@@ -1115,7 +1115,7 @@
     <location>/errors/categorynotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.web.MissingParameterException</exception-type>
+    <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
     <location>/errors/missingparam.jsp</location>
   </error-page>
   <error-page>
