@@ -69,6 +69,7 @@ import org.opennms.netmgt.dao.api.StpNodeDao;
 import org.opennms.netmgt.dao.api.VlanDao;
 import org.opennms.netmgt.linkd.nb.Nms7467NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -228,7 +229,24 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
+    // mrgarrison:172.20.1.5:-1   -------- ciscoswitch:172.20.1.7:47 ---bridge
+    // workstation:172.20.1.101:-1-------- ciscoswitch:172.20.1.7:47 ---bridge
+    // mrmakay:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp
+    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // mrmakay:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // linuxubuntu:172.20.1.14:4  -------- ciscoswitch:172.20.1.7:11 ---bridge
+    // ng108switch:172.20.1.8:8   -------- ciscoswitch:172.20.1.7:9  ---bridge
+    // mac:172.20.1.28:4          -------- ng108switch:172.20.1.8:1  ---bridge
     public void testAllTogether() throws Exception {
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setForceIpRouteDiscoveryOnEthernet(false);
+        example1.setSaveRouteTable(true);
+        example1.setUseCdpDiscovery(true);
 
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.save(getCiscoWsC2948());
@@ -270,15 +288,19 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
         assertEquals(5, linkables.size());       
 
+        for (OnmsAtInterface onmsat: m_atInterfaceDao.findAll()) {
+            printAtInterface(onmsat);
+        }
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
                                        
         assertEquals(5, m_linkd.getLinkableNodesOnPackage("example1").size());
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
+        for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll())
+            printLink(link);
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());
         
-        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(9,links.size());
         //
         final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
         
@@ -320,6 +342,20 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());
         assertEquals(ciscows.getId(), ciscoaplinktociscows.getNodeParentId());
         assertEquals(47,ciscoaplinktociscows.getParentIfIndex().intValue());
+        
+
+        Thread.sleep(5000);
+
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        assertEquals(8,m_dataLinkInterfaceDao.countAll());
+
     }
 
     @Test
@@ -511,7 +547,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         // Now Let's test the database
         //0 atinterface in database
-        assertEquals(4, m_atInterfaceDao.findAll().size());
+        assertEquals(4, m_atInterfaceDao.countAll());
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
         criteria.createAlias("node", "node");
@@ -916,7 +952,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         for (final DataLinkInterface link: links) {
         	printLink(link);
         }
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface ngsw108linktociscows = links.get(0);
         
@@ -960,7 +996,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface linuxubuntulinktociscows = links.get(0);
         
@@ -1017,7 +1053,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(2,links.size());
+        assertEquals(1,links.size());
         
         final DataLinkInterface workstationlinktociscows = links.get(0);
         

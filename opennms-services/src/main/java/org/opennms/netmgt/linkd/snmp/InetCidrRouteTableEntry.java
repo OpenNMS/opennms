@@ -217,7 +217,8 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * ipRouteProto value. If this metric is not used,
         * its value should be set to -1.
         */
-       new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ROUTE_METRIC5, ".1.3.6.1.2.1.4.24.7.1.16", 12)
+       new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ROUTE_METRIC5, ".1.3.6.1.2.1.4.24.7.1.16", 12),
+       new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ROUTE_STATUS, ".1.3.6.1.2.1.4.24.7.1.17", 13)
 
        /**
         * A reference to MIB definitions specific to the
