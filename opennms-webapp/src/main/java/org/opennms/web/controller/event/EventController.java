@@ -277,7 +277,7 @@ public class EventController extends MultiActionController implements Initializi
         if (redirect != null) {
             viewName = redirect;
         } else {
-            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? "/event/list" : "/event/list" + "?" + redirectParms);
+            viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? "/event/list" : "/event/list" + "?" + redirectParms);
         }
         RedirectView redirectView = new RedirectView(viewName);
         return new ModelAndView(redirectView);
