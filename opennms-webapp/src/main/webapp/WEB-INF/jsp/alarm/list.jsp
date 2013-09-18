@@ -252,17 +252,14 @@
               </jsp:include>
             <% } %>
 
-            <p>
-                Favorites:
-                <onms:select
-                        elements='${favorites}'
-                        selected='${favorite}'
-                        handler='${filterFavoriteSelectTagHandler}'
-                        onChange='changeFavorite(this)'/>
-            </p>
-
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
                 <p>
+                    Favorites:
+                    <onms:select
+                            elements='${favorites}'
+                            selected='${favorite}'
+                            handler='${filterFavoriteSelectTagHandler}'
+                            onChange='changeFavorite(this)'/>
                     <onms:favorite
                             favorite="${favorite}"
                             parameters="${parms}"
