@@ -58,8 +58,10 @@ public class ReportSelectListAppController implements Presenter {
     
     private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {
         List<ResourceListItem> data = new ArrayList<ResourceListItem>();
-        for(int i = 0; i < resourceList.length(); i++) {
-            data.add(resourceList.get(i));
+        if (resourceList != null) {
+            for(int i = 0; i < resourceList.length(); i++) {
+                data.add(resourceList.get(i));
+            }
         }
         return data;
     }
