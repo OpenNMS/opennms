@@ -120,7 +120,7 @@
         <enabled>true</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
       </releases>
-      <id>com.springsource.repository.bundles</id>
+      <id>springsource.com-release</id>
       <name>SpringSource Enterprise Bundle Repository</name>
       <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
     </repository>

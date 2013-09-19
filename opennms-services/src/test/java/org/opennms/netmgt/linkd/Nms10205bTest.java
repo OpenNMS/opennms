@@ -268,21 +268,22 @@ Address          Interface              State     ID               Pri  Dead
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        assertEquals(12, links.size());
+        assertEquals(15, links.size());
         
         /*
 
                 The topology layout:
 
-Parentnode     ParentInterface                  Node            Interface               LinkdStrategy           id
+Parentnode     ParentInterface (Ifindex)     Node            Interface         (IfIndex) LinkdStrategy           id
 
 Mumbai          ge-0/1/2.0      (519)  ----> Delhi             ge-1/0/2.0      (28503)  next hop router         800
 Mumbai          ge-0/0/1.0      (507)  ----> Bangalore         ge-0/0/0.0      (2401)   next hop router         801
 Mumbai          ge-0/0/2.0      (977)  ----> Bagmane           ge-1/0/0.0      (534)    next hop router         802
 Mumbai          ge-0/1/1.0      (978)  ----> Mysore            ge-0/0/1.0      (508)    next hop router         803
+Mumbai          ge-0/0/3.0      (508)  ----> Space_ex_sw2      me0.0           (34)    next hop router         803
 
 Delhi           ge-1/0/1.0     (3674)  ----> Bangalore         ge-0/0/1.0      (2397)   next hop router         804
-Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   not saved
+Delhi           ge-1/1/6.0     (17619) ----> Space_ex_sw1      ge-0/0/6.0      (528)    next hop router ****1   OK
 Delhi           ge-1/1/6       (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)    lldp            ****1   805
 Delhi           ge-1/1/5       (28519) ----> Bagmane           ge-1/0/1        (513)    lldp                    811
 
@@ -290,8 +291,8 @@ Bangalore       ge-0/0/3.0     (2398)  ----> Space_ex_sw2      ge-0/0/3.0      (
 Bangalore       ge-0/1/0.0     (2396)  ----> Bagmane           ge-1/0/4.0      (1732)   next hop router         807
 
 Bagmane         ge-1/0/5.0      (654)  ----> Mysore            ge-0/1/1.0      (520)    next hop router         808
-Bagmane         ge-1/0/2        (514)  ----> J6350-2           ge-0/0/2.0      (549)    lldp            ****2   809
-Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   not saved
+Bagmane         ge-1/0/2        (514)  ----> J6350-42          ge-0/0/2.0      (549)    lldp            ****2   809
+Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (549)    next hop router ****2   OK
 
 Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2     ge-0/0/0.0      (531)    lldp            ****3   810
 Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router ****3   810
@@ -320,29 +321,45 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
             if (start == id) {
-                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                //checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
+                checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
             } else if (start+1 == id ) {
-                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                //checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
+                checkLink(mumbai,bangalore,507,2401,datalinkinterface);
             } else if (start+2 == id ) {
-            	checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+            	//checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
+                checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
             } else if (start+3 == id ) {
-            	checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+            	//checkLink(mysore, mumbai, 508, 978, datalinkinterface);
+                checkLink(mumbai, mysore, 978, 508, datalinkinterface);
             } else if (start+4 == id ) {
-            	checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+            	//checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
+                checkLink( delhi,bangalore, 3674, 2397, datalinkinterface);
             } else if (start+5 == id ) {
-            	checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+            	//checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+                checkLink(delhi, spaceexsw1,  17619,528, datalinkinterface);
             } else if (start+6 == id ) {
-            	checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                //checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
+                checkLink(bangalore, spaceexsw2, 2398, 551, datalinkinterface);
             } else if (start+7 == id ) {
-            	checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                //checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
+                checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
             } else if (start+8 == id ) {
-            	checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                //checkLink(mysore, bagmane, 520, 654, datalinkinterface);
+                checkLink(bagmane , mysore, 654, 520, datalinkinterface);
             } else if (start+9 == id ) {
-            	checkLink(j635042, bagmane, 549, 514, datalinkinterface);
+                checkLink(bagmane, j635042, 540, 549, datalinkinterface);
             } else if (start+10 == id ) {
-            	checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                //checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
+                checkLink(spaceexsw1, spaceexsw2, 1361, 531, datalinkinterface);
             } else if (start+11 == id ) {
-            	checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+                checkLink(spaceexsw2, mumbai,  34,508, datalinkinterface);
+            } else if (start+12 == id ) {
+                checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
+            } else if (start+13 == id ) {
+                checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
+            } else if (start+14 == id ) {
+                checkLink(j635042, bagmane, 549, 514, datalinkinterface);
             } else  {
             	checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
             }

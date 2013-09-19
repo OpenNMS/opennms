@@ -893,11 +893,14 @@ public final class SnmpCollection implements ReadyRunnable {
                 + getCollectBridge() + " collectStpNode="
                 + getCollectStp() + " collectCdp="
                 + getCollectCdp() + " collectIpRoute="
-                + getCollectIpRoute();
+                + getCollectIpRoute()+ " collectLldp="
+                + getCollectLldp() + " collectOspf="
+                + getCollectOspf() + " collectIsis="
+                + getCollectIsIs();
 
     }
 
-    public boolean getCollectLldpTable() {
+    public boolean getCollectLldp() {
         return m_collectLldp;
     }
 
@@ -1019,7 +1022,7 @@ public final class SnmpCollection implements ReadyRunnable {
         m_collectOspf = collectOspfTable;
     }
 
-    public boolean getCollectOspfTable() {
+    public boolean getCollectOspf() {
        return m_collectOspf;
     }
     
@@ -1027,7 +1030,7 @@ public final class SnmpCollection implements ReadyRunnable {
         m_collectIsIs = collectIsIs;
     }
 
-    public boolean getCollectIsIsTable() {
+    public boolean getCollectIsIs() {
        return m_collectIsIs;
     }
 

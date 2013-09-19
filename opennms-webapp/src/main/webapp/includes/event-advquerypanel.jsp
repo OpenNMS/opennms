@@ -105,6 +105,9 @@
             </td>
           </tr>
 
+          <tr><td colspan="2">Exact Event UEI:</td></tr>
+          <tr><td colspan="2"><input type="text" name="exactuei" size="64" maxsize="128" /></td></tr>
+
           <tr>
             <td colspan="2">Service:</td>
           </tr>

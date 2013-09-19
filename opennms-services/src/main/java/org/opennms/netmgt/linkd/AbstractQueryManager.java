@@ -181,28 +181,42 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
+            // FIXME manage duplicated ip address
             for (final OnmsAtInterface at : ats) {
-            	at.setSourceNodeId(node.getNodeId());
+                int interfaceindex = getIfIndex(at.getNode().getId(),
+                                                hostAddress);
+                LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",
+                          interfaceindex, node.getNodeId(), hostAddress);
+                at.setSourceNodeId(node.getNodeId());
 
-	            if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
-	                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})", physAddr, at.getMacAddress(), hostAddress, ifindex);
-	            }
-	            at.setMacAddress(physAddr);
+                if (at.getMacAddress() != null
+                        && !at.getMacAddress().equals(physAddr)) {
+                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface MAC address to {} but it used to be '{}' (IP Address = {}, ifIndex = {})",
+                             physAddr, at.getMacAddress(), hostAddress,
+                             ifindex);
+                }
+                at.setMacAddress(physAddr);
 
-	            if (at.getIfIndex() != null && !at.getIfIndex().equals(ifindex)) {
-	                LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})", ifindex, at.getIfIndex(), hostAddress, physAddr);
-	            }
-	            at.setIfIndex(ifindex);
+                if (at.getIfIndex() != null
+                        && at.getIfIndex().intValue() != ifindex) {
+                    LOG.info("processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to {} but it used to be '{}' (IP Address = {}, MAC = {})",
+                             ifindex, at.getIfIndex(), hostAddress, physAddr);
+                }
+                at.setIfIndex(interfaceindex);
 
-	            at.setLastPollTime(scanTime);
-	            at.setStatus(StatusType.ACTIVE);
+                at.setLastPollTime(scanTime);
+                at.setStatus(StatusType.ACTIVE);
 
-	            getAtInterfaceDao().saveOrUpdate(at);
-            
-	            // Now store the information that is needed to create link in linkd
-	            AtInterface atinterface = new AtInterface(at.getNode().getId(), physAddr, at.getIpAddress());
-	            atinterface.setIfIndex(getIfIndex(at.getNode().getId(), at.getIpAddress().getHostAddress()));
-	            getLinkd().addAtInterface(atinterface);            
+                getAtInterfaceDao().saveOrUpdate(at);
+
+                // Now store the information that is needed to create link in
+                // linkd
+                AtInterface atinterface = new AtInterface(
+                                                          at.getNode().getId(),
+                                                          physAddr,
+                                                          at.getIpAddress());
+                atinterface.setIfIndex(interfaceindex);
+                getLinkd().addAtInterface(atinterface);
             }
         }
         
@@ -537,7 +551,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processCdp: targetSysName found: {}", targetSysName);
 
             InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
-            LOG.debug("processCdp: cdp cache ipa address found: {}", str(cdpTargetIpAddr));
+            LOG.debug("processCdp: cdp cache ip address found: {}", str(cdpTargetIpAddr));
 
             final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
@@ -674,14 +688,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
         	
             final Integer routemetric1 = route.getIpRouteMetric1();
-        	if (routemetric1 == null || routemetric1 < 0) {
-                LOG.info("processRouteTable: Route metric is invalid. Skipping.");
-                continue;
-            } 
+            if (routemetric1 == null || routemetric1 == -1) {
+                LOG.info("processRouteTable: Route metric1 is invalid or \" not used\". checking the route status.");
+                final Integer routestatus = route.getIpRouteStatus();
+                if ( routestatus == null || routestatus.intValue() != IpRouteCollectorEntry.IP_ROUTE_ACTIVE_STATUS) {
+                    LOG.info("processRouteTable: Route status {} is not active or null. ", routestatus);
+                    continue;
+                } 
+            }
 
             LOG.debug("processRouteTable: parsing routeDest/routeMask/nextHop: {}/{}/{} - ifIndex = {}", str(routedest), str(routemask), str(nexthop), ifindex);
 
-        	int snmpiftype = -2;
+            int snmpiftype = -2;
             if (ifindex == 0) {
 			LOG.debug("processRouteTable: ifindex is 0. Looking local table to get a valid index.");
             	for (OnmsIpInterface ip : getIpInterfaceDao().findByNodeId(node.getNodeId())) {

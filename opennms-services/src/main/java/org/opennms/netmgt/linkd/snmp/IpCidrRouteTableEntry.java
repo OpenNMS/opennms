@@ -222,6 +222,7 @@ public final class IpCidrRouteTableEntry extends IpRouteCollectorEntry
          * able to generate and recognize this value.
          */
         new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,        IP_ROUTE_INFO,      TABLE_OID + ".9",  13),
+        new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,        IP_ROUTE_STATUS,    TABLE_OID + ".16", 14),
     };
       
     /**

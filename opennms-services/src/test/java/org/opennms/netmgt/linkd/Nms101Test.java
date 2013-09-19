@@ -225,8 +225,8 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertEquals(true, snmpCollLaptop.getCollectStp());
         assertEquals(true, snmpCollLaptop.getCollectCdp());
         assertEquals(true, snmpCollLaptop.getCollectIpRoute());
-        assertEquals(true, snmpCollLaptop.getCollectOspfTable());
-        assertEquals(true, snmpCollLaptop.getCollectLldpTable());
+        assertEquals(true, snmpCollLaptop.getCollectOspf());
+        assertEquals(true, snmpCollLaptop.getCollectLldp());
 
         assertEquals(false, snmpCollLaptop.collectVlanTable());
         
@@ -242,8 +242,8 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertEquals(true, snmpCollcisco3600.getCollectStp());
         assertEquals(true, snmpCollcisco3600.getCollectCdp());
         assertEquals(true, snmpCollcisco3600.getCollectIpRoute());
-        assertEquals(true, snmpCollcisco3600.getCollectOspfTable());
-        assertEquals(true, snmpCollcisco3600.getCollectLldpTable());
+        assertEquals(true, snmpCollcisco3600.getCollectOspf());
+        assertEquals(true, snmpCollcisco3600.getCollectLldp());
 
         assertEquals(true, snmpCollcisco3600.collectVlanTable());
         assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", snmpCollcisco3600.getVlanClass());
