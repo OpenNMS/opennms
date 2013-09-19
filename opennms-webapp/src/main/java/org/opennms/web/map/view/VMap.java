@@ -231,6 +231,9 @@ final public class VMap extends DbMap {
     	return elements.get(getElementId(id, type));
     }
 
+    public VElement getElement(String elementid) {
+        return elements.get(elementid);
+    }
     /**
      * <p>Getter for the field <code>elements</code>.</p>
      *

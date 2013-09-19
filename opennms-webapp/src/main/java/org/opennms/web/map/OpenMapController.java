@@ -32,6 +32,9 @@ package org.opennms.web.map;
  * Created on 8-giu-2005
  *
  */
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -39,14 +42,19 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections15.Transformer;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
+import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
+
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 
 /**
@@ -63,6 +71,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class OpenMapController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OpenMapController.class);
+        public static final int ELBOW_ROOM = 200;
 
 
 	private Manager manager;
@@ -147,11 +156,33 @@ public class OpenMapController extends MapsLoggingController {
 				
 				map.setHeight(mapHeight);
 				map.setWidth(mapWidth);
+
+	                        for (VElement ve : map.getElements().values()) {
+	                             ve.setX((int) (ve.getX() * widthFactor));
+	                             ve.setY((int) (ve.getY() * heightFactor));
+	                        }
+
+				SparseGraph<VElement,VLink> jungGraph = new SparseGraph<VElement, VLink>();
 				
-				for (VElement ve : map.getElements().values()) {
-				    ve.setX((int) (ve.getX() * widthFactor));
-                    ve.setY((int) (ve.getY() * heightFactor));
+				for (VElement ve: map.getElements().values()) {
+				    jungGraph.addVertex(ve);
 				}
+				for (VLink vl: map.getLinks()) {
+				    jungGraph.addEdge(vl, map.getElement(vl.getFirst()), map.getElement(vl.getSecond()));
+				}
+				
+			        KKLayout<VElement, VLink> layout = new KKLayout<VElement, VLink>(jungGraph);
+			        layout.setInitializer(initializer(map));
+			        layout.setSize(selectLayoutSize(map));
+			        
+		                while(!layout.done()) {
+		                     layout.step();
+		                }
+		                
+		                for (VElement ve : map.getElements().values()) {
+                                    ve.setX((int)layout.getX(ve));
+                                    ve.setY((int)layout.getY(ve));
+                               }
 			}
 			
 			bw.write(ResponseAssembler.getMapResponse(map));
@@ -165,5 +196,27 @@ public class OpenMapController extends MapsLoggingController {
 
 		return null;
 	}
+        
+        protected Transformer<VElement, Point2D> initializer(final VMap layout) {
+            return new Transformer<VElement, Point2D>() {
+                    @Override
+                    public Point2D transform(VElement v) {
+                            return new Point(v.getX(), v.getY());
+                    }
+            };
+       }
+        
+        protected Dimension selectLayoutSize(VMap g) {
+            int vertexCount = g.getElements().size();
+            
+             double height = 1.5*Math.sqrt(vertexCount)*ELBOW_ROOM;
+             double width = height*16/9;
+             
+             return new Dimension((int)width, (int)height);
+             
+            
+      }
+
+
 
 }
