@@ -16,16 +16,11 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
 import org.discotools.gwt.leaflet.client.crs.epsg.EPSG3857;
@@ -45,10 +40,15 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alar
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
 
-import java.util.List;
-import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
 public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsumer {
@@ -61,7 +61,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     private MarkerContainer m_markers;
 
     private MarkerClusterGroup m_markerClusterGroup;
-    
+
     private MarkerClusterGroup[] m_stateClusterGroups;
 
     private boolean m_firstUpdate = true;
@@ -231,16 +231,16 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         m_layer = new TileLayer(url, tileOptions);
         m_map.addLayer(m_layer, true);
     }
-    
-   
-        //this class wraps javascript helper methods and also return JSObject objects for state data
-        //US state data from United States Census Cartographic Boundary Files
-        private static class StatesData{
-        	
-        	protected StatesData(){}
-        	
-        	public static native JSObject getInstance()
-        	/*-{
+
+
+    //this class wraps javascript helper methods and also return JSObject objects for state data
+    //US state data from United States Census Cartographic Boundary Files
+    private static class StatesData{
+
+        protected StatesData(){}
+
+        public static native JSObject getInstance()
+        /*-{
         	 return {
     					"type": "FeatureCollection",
     					"features": [
@@ -351,9 +351,9 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     					]
     					};
         	 }-*/;
-        	
-        	public static native JSObject getUsShape()
-        	/*-{
+
+        public static native JSObject getUsShape()
+        /*-{
 		return {"type":"FeatureCollection","features":[
 		{"type":"Feature","id":"USA","properties":{"name":"United States of America"},"geometry":{
 		"type": "MultiPolygon",
@@ -2402,35 +2402,35 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 		}}
 		]};
 		}-*/;
-        	
-        	public static native JSObject getStateOptions(int i)
-        	/*-{
+
+        public static native JSObject getStateOptions(int i)
+        /*-{
         	return {inUs: true, stateId: i};
-        		
+
         	}-*/;
-        	
-        	public static native int getStateId(double lat, double lng, JSObject statesDataLarge)
-        	/*-{
-        	  
+
+        public static native int getStateId(double lat, double lng, JSObject statesDataLarge)
+        /*-{
+
         	  	var usMinLngArraySorted = [-179.14734, -160.555771, -124.733174, -124.552441, -124.409591, -120.005746, -117.214889, -116.049415, -114.813613, -114.052718, -111.056888, -109.060062, -109.050044, -106.627808, -104.057698, -104.053249, -104.0489, -103.002565, -102.051744, -97.239155, -96.639704, -95.774704, -94.617919, -94.043147, -92.888114, -91.636942, -91.512974, -90.418136, -90.309877, -89.571509, -88.471214, -88.071449, -87.634938, -85.605165, -84.820157, -84.321869, -83.675413, -83.352485, -82.644739, -80.51979, -79.762152, -79.487651, -77.1199, -75.788658, -75.559446, -73.727775, -73.508142, -73.437429, -72.556214, -71.862772, -71.084334, -67.954119 ];
     			var minLngArraySortedIndex = [26, 7, 34, 48, 2, 44, 28, 13, 0, 36, 24, 3, 14, 51, 50, 43, 15, 16, 29, 11, 37, 42, 1, 10, 23, 12, 8, 41, 18, 38, 25, 9, 27, 6, 47, 32, 19, 33, 22, 17, 46, 30, 5, 21, 31, 4, 40, 35, 45, 49, 39, 20];
-    		
+
         	 	var x = lng, y = lat;
-    		    
+
     		    var inside = false;
     		    var state = 0;
-    		    
+
     		    for (var k = minLngArraySortedIndex.length - 1; k >= 0; k--){
     		    	if(x >= usMinLngArraySorted[k]){
-    		    		
+
     		    		if(statesDataLarge.features[minLngArraySortedIndex[k]].geometry.type === "MultiPolygon"){
 
     		    			for(var n = 0; n < statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates.length; n++){
     		    				for (var i = 0, inside = false, j = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0].length - 1; i < statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0].length; j = i++) {
-    		    			
+
     		    	        		var xi = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0][i][0], yi = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0][i][1];
     		    	        		var xj = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0][j][0], yj = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[n][0][j][1];
-    		    	        
+
     		    	        		var intersect = ((xi > x) != (xj > x))
     		    	            	&& (y < (yj - yi) * (x - xi) / (xj - xi) + yi);
     		    	        		if (intersect) inside = !inside;
@@ -2445,38 +2445,38 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     		    		for (var i = 0, inside = false, j = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0].length - 1; i < statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0].length; j = i++) {
     		        		var xi = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0][i][0], yi = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0][i][1];
     		        		var xj = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0][j][0], yj = statesDataLarge.features[minLngArraySortedIndex[k]].geometry.coordinates[0][j][1];
-    		        
+
     		        		var intersect = ((xi > x) != (xj > x))
     		            	&& (y < (yj - yi) * (x - xi) / (xj - xi) + yi);
     		        		if (intersect) inside = !inside;
-    				
+
     		   		    }
     		    		if (inside) {
     		    			state = statesDataLarge.features[minLngArraySortedIndex[k]].properties.STATE;
     		    			return state;
     		    		}
-    		    
+
     		    	}
     			}
     		}
-    		    
+
     		    return state;
         	 }-*/;
-        	
-        	public static native boolean inUs(double lat, double lng, JSObject usShape)
-        	/*-{
+
+        public static native boolean inUs(double lat, double lng, JSObject usShape)
+        /*-{
         	 	var x = lng;
     			var y = lat;
     			var inside = false;
     			var inUs = false;
-    	
+
     		for(var n = 0; n < usShape.features[0].geometry.coordinates.length; n++){
-    		
+
     			for (var i = 0, inside = false, j = usShape.features[0].geometry.coordinates[n][0].length - 1; i < usShape.features[0].geometry.coordinates[n][0].length; j = i++) {
-    		
+
             		var xi = usShape.features[0].geometry.coordinates[n][0][i][0], yi = usShape.features[0].geometry.coordinates[n][0][i][1];
             		var xj = usShape.features[0].geometry.coordinates[n][0][j][0], yj = usShape.features[0].geometry.coordinates[n][0][j][1];
-            
+
             		var intersect = ((xi > x) != (xj > x))
                 		&& (y < (yj - yi) * (x - xi) / (xj - xi) + yi);
             		if (intersect) inside = !inside;
@@ -2485,53 +2485,53 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         	}
     		return inUs;
         	}-*/;
-        	
-        	public static native JSObject getPolygonInfo(int k, JSObject statesDataLarge)
-        	/*-{
+
+        public static native JSObject getPolygonInfo(int k, JSObject statesDataLarge)
+        /*-{
     			return statesDataLarge.features[k];
         	 }-*/;
-        	
-        	public static native int getLength(int k, JSObject statesDataLarge)
-        	/*-{
+
+        public static native int getLength(int k, JSObject statesDataLarge)
+        /*-{
         		return statesDataLarge.features[k].geometry.coordinates.length;
         	}-*/;
-        	
-        }
-        
-       
 
-        private void addMarkerLayer() {
-            logger.log(Level.INFO, "adding marker cluster layer");
-            final Options markerClusterOptions = new Options();
-            markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
-            markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
-            // markerClusterOptions.setProperty("disableClusteringAtZoom", 13);
-            m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
-            final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
-            m_markerClusterGroup.on("clusterclick", callback);
-            m_markerClusterGroup.on("clustertouchend", callback);
-            m_map.addLayer(m_markerClusterGroup);
-            m_stateClusterGroups = new MarkerClusterGroup[52];
-            Options[] stateClusterOptions = new Options[m_stateClusterGroups.length];
-            for(int i = 0; i < m_stateClusterGroups.length; i++){
-            	//stateClusterOptions[i] = new Options();
-            	stateClusterOptions[i] = markerClusterOptions;
-            	stateClusterOptions[i].setProperty("maxClusterRadius", 350);
-            	stateClusterOptions[i].setProperty("inUs", true);
-            	stateClusterOptions[i].setProperty("stateID", i);
-            	stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
-            	//stateClusterOptions[i].setProperty("zoomToBoundsOnClick", false);
-            	//stateClusterOptions[i].setProperty("iconCreateFunction", new IconCreateCallback());
-            	m_stateClusterGroups[i] = new MarkerClusterGroup(stateClusterOptions[i]);
-            	m_stateClusterGroups[i].on("clusterclick", callback);
-            	m_stateClusterGroups[i].on("clustertouchend", callback);
-            	m_map.addLayer(m_stateClusterGroups[i]);
-            }
-            
-            
+    }
+
+
+
+    private void addMarkerLayer() {
+        logger.log(Level.INFO, "adding marker cluster layer");
+        final Options markerClusterOptions = new Options();
+        markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
+        markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
+        // markerClusterOptions.setProperty("disableClusteringAtZoom", 13);
+        m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
+        final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
+        m_markerClusterGroup.on("clusterclick", callback);
+        m_markerClusterGroup.on("clustertouchend", callback);
+        m_map.addLayer(m_markerClusterGroup);
+        m_stateClusterGroups = new MarkerClusterGroup[52];
+        Options[] stateClusterOptions = new Options[m_stateClusterGroups.length];
+        for(int i = 0; i < m_stateClusterGroups.length; i++){
+            //stateClusterOptions[i] = new Options();
+            stateClusterOptions[i] = markerClusterOptions;
+            stateClusterOptions[i].setProperty("maxClusterRadius", 350);
+            stateClusterOptions[i].setProperty("inUs", true);
+            stateClusterOptions[i].setProperty("stateID", i);
+            stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
+            //stateClusterOptions[i].setProperty("zoomToBoundsOnClick", false);
+            //stateClusterOptions[i].setProperty("iconCreateFunction", new IconCreateCallback());
+            m_stateClusterGroups[i] = new MarkerClusterGroup(stateClusterOptions[i]);
+            m_stateClusterGroups[i].on("clusterclick", callback);
+            m_stateClusterGroups[i].on("clustertouchend", callback);
+            m_map.addLayer(m_stateClusterGroups[i]);
         }
 
-       
+
+    }
+
+
 
     private void addSearchControl() {
         logger.log(Level.INFO, "adding search control");
@@ -2591,16 +2591,16 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
                     if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
-                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
-                    	if(!m_stateClusterGroups[stateId].hasLayer(marker)){
-                    		m_stateClusterGroups[stateId].addLayer(marker);
-                    	}
+                        int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
+                        if(!m_stateClusterGroups[stateId].hasLayer(marker)){
+                            m_stateClusterGroups[stateId].addLayer(marker);
+                        }
                     }
-                    
+
                     else{
-                    	if (!m_markerClusterGroup.hasLayer(marker)) {
-                    		m_markerClusterGroup.addLayer(marker);
-                    	}
+                        if (!m_markerClusterGroup.hasLayer(marker)) {
+                            m_markerClusterGroup.addLayer(marker);
+                        }
                     }
                     return true;
                 }
@@ -2622,16 +2622,16 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
                     final NodeMarker marker = m_markerIterator.next();
                     marker.closePopup();
                     if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
-                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
-                    	
-                    		m_stateClusterGroups[stateId].removeLayer(marker);
-                    	
+                        int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
+
+                        m_stateClusterGroups[stateId].removeLayer(marker);
+
                     }
-                    
+
                     else{
-                
-                    	m_markerClusterGroup.removeLayer(marker);
-                    	
+
+                        m_markerClusterGroup.removeLayer(marker);
+
                     }
                     return true;
                 }
@@ -2673,7 +2673,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         logger.log(Level.INFO, "clearing existing markers");
         m_markerClusterGroup.clearLayers();
         for(int i = 0; i < m_stateClusterGroups.length; i++){
-        	m_stateClusterGroups[i].clearLayers();
+            m_stateClusterGroups[i].clearLayers();
         }
 
         refresh();
@@ -2725,7 +2725,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         if (m_markerClusterGroup != null) {
             m_markerClusterGroup.clearLayers();
             for(int i = 0; i < m_stateClusterGroups.length; i++){
-            	m_stateClusterGroups[i].clearLayers();
+                m_stateClusterGroups[i].clearLayers();
             }
         }
         if (m_map != null) {

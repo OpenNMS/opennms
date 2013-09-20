@@ -139,7 +139,7 @@ public class NodeMarker extends Marker {
     public String getForeignId() {
         return getProperty(Property.FOREIGN_ID);
     }
-    
+
     public String getIpAddress() {
         return getProperty(Property.IP_ADDRESS);
     }

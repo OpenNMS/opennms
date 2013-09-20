@@ -1,6 +1,10 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import com.vaadin.client.VConsole;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
@@ -8,14 +12,10 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final String TARGET_NONE = "";
     private static final String TARGET_BLANK = "target=\"_blank\"";
+    private static final Logger LOG = Logger.getLogger(NodeMarkerClusterCallback.class.getName());
 
     private static final class NodeMarkerComparator implements Comparator<NodeMarker> {
         final static int BEFORE = -1;
@@ -50,7 +50,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         final StringBuilder sb = new StringBuilder();
         final MarkerCluster cluster = event.getMarkerCluster();
         final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
-        VConsole.log("Clicked, processing " + markers.size() + " markers.");
+        LOG.fine("Clicked, processing " + markers.size() + " markers.");
         Collections.sort(markers, new NodeMarkerComparator());
 
         if (markers.size() == 1) {
@@ -97,12 +97,12 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
                 VConsole.log("marker cluster popup keydown event");
             }
         }, element);
-        */
+         */
         final Map map = new Map(cluster.getGroup().getMapObject());
-        VConsole.log("current zoom: " + map.getZoom() + ", max zoom: " + map.getMaxZoom());
+        LOG.fine("current zoom: " + map.getZoom() + ", max zoom: " + map.getMaxZoom());
 
         if (map.getZoom() == map.getMaxZoom()) {
-            VConsole.log("at max zoom, skipping popup");
+            LOG.fine("at max zoom, skipping popup");
         } else {
             PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
         }

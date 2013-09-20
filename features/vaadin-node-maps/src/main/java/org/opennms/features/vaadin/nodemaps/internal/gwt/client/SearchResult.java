@@ -20,7 +20,7 @@ public class SearchResult extends JSObject {
         setProperty("title", title);
         return this;
     }
-    
+
     public final LatLng getLatLng() {
         return new LatLng(getProperty("latLng"));
     }

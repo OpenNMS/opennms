@@ -17,7 +17,7 @@ public abstract class SearchStateManager {
     public SearchStateManager(final ValueItem valueItem, final ValueItem history) {
         m_valueItem = valueItem;
         m_history = history;
-        
+
         final String valueSearchString = m_valueItem.getValue();
         final String historySearchString = getHistorySearchString();
         if (historySearchString != null) {

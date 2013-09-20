@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
     Logger logger = Logger.getLogger(getClass().getName());
 

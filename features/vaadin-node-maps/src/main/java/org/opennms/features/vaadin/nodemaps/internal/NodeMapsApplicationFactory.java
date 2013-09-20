@@ -42,13 +42,13 @@ import com.vaadin.ui.UI;
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
-	private final BlueprintContainer m_blueprintContainer;
-	private final String m_beanName;
-	
-	public NodeMapsApplicationFactory(BlueprintContainer container, String beanName) {
-		m_blueprintContainer = container;
-		m_beanName = beanName;
-	}
+    private final BlueprintContainer m_blueprintContainer;
+    private final String m_beanName;
+
+    public NodeMapsApplicationFactory(BlueprintContainer container, String beanName) {
+        m_blueprintContainer = container;
+        m_beanName = beanName;
+    }
 
     @Override
     public Class<? extends UI> getUIClass() {

@@ -35,11 +35,11 @@ public class NodeMapNavEntry implements ConditionalPageNavEntry {
     @Override public String getUrl() {
         return m_url;
     }
-    
+
     public void setUrl(final String url) {
         m_url = url;
     }
-    
+
     @Override public String toString() {
         return "NodeMapNavEntry[url=" + m_url + ",name=" + m_name +"]";
     }

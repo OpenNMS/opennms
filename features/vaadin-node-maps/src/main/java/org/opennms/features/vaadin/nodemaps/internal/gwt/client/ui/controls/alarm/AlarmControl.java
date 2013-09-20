@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 public class AlarmControl extends Control {
     Logger logger = Logger.getLogger(getClass().getName());
-    
+
     private ListBox m_severityBox;
     private final SearchConsumer m_searchConsumer;
 
@@ -101,12 +101,12 @@ public class AlarmControl extends Control {
     public AlarmControl addTo(final Map map) {
         return (AlarmControl)super.addTo(map);
     }
-    
+
     @Override
     public AlarmControl setPosition(final String position) {
         return (AlarmControl)super.setPosition(position);
     }
-    
+
     @Override
     public AlarmControl removeFrom(final Map map) {
         return (AlarmControl)super.removeFrom(map);

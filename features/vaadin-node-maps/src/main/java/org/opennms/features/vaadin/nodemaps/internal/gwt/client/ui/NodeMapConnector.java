@@ -28,12 +28,11 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.ui.Connect;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
@@ -44,14 +43,15 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.shared.ui.Connect;
 
 @Connect(NodeMap.class)
 public class NodeMapConnector extends AbstractComponentConnector {
-
+    private static final long serialVersionUID = 3902997653175283284L;
     private Map<String, Icon> m_icons;
 
 
