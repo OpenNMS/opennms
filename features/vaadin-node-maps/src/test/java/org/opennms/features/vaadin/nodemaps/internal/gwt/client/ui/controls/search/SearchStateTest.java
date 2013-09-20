@@ -1,22 +1,36 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.logging.Logger;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager.State;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.impl.SchedulerImpl;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.impl.HistoryImpl;
-import com.vaadin.client.VConsole;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
     NativeEvent.class,
     EventTarget.class,
-    VConsole.class,
     History.class,
     HistoryImpl.class,
     Scheduler.class,
@@ -32,7 +46,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "com.google.gwt.core.client.impl.SchedulerImpl"
 })
 public class SearchStateTest {
-    /*
+    final Logger LOG = Logger.getLogger(SearchStateTest.class.getName());
+
     private ValueItem m_mockSearchInput = new TestValueItem();
     private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
@@ -40,9 +55,6 @@ public class SearchStateTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
-        final Console console = new TestConsole();
-        Whitebox.setInternalState(VConsole.class, "impl", console);
-
         final SchedulerImpl scheduler = new TestSchedulerImpl();
         Whitebox.setInternalState(SchedulerImpl.class, "INSTANCE", scheduler);
     }
@@ -295,7 +307,7 @@ public class SearchStateTest {
         } else if (keyCode == KeyCodes.KEY_BACKSPACE) {
             if (value.length() > 0) {
                 m_mockSearchInput.setValue(value.substring(0, value.length() - 1));
-                VConsole.log("backspace!  old=" + value + ", new=" + m_mockSearchInput.getValue());
+                LOG.fine("backspace!  old=" + value + ", new=" + m_mockSearchInput.getValue());
             }
         } else {
             m_mockSearchInput.setValue(value + keyCode);
@@ -327,36 +339,6 @@ public class SearchStateTest {
         @Override public void scheduleIncremental(final RepeatingCommand cmd) {
             while (cmd.execute()) {}
         }
-    }
-
-    private static final class TestConsole implements Console {
-        @Override public void log(final String msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void log(final Throwable e) {
-            e.printStackTrace(System.err);
-        }
-
-        @Override public void error(final Throwable e) {
-            e.printStackTrace(System.err);
-        }
-
-        @Override public void error(final String msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void printObject(final Object msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void dirUIDL(ValueMap u, ApplicationConnection cnf) {}
-
-        @Override public void printLayoutProblems(ValueMap meta, ApplicationConnection applicationConnection, Set<ComponentConnector> zeroHeightComponents, Set<ComponentConnector> zeroWidthComponents) {}
-
-        @Override public void setQuietMode(boolean quietDebugMode) {}
-
-        @Override public void init() {}
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
@@ -416,6 +398,5 @@ public class SearchStateTest {
         }
 
     }
-    */
 
 }
