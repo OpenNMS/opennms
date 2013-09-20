@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.vaadin.data.Validator;
 import org.apache.camel.component.http.HttpOperationFailedException;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -24,9 +24,12 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -35,8 +38,6 @@ import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class ShowNCSPathOperation implements Operation {
     
@@ -51,12 +52,16 @@ public class ShowNCSPathOperation implements Operation {
     @Override
     public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
         //Get the current NCS criteria from here you can get the foreignIds foreignSource and deviceA and Z
-        final NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria(m_ncsEdgeProvider.getEdgeNamespace());
-        if(criteria.size() > 0) {
-            m_storedCriteria = criteria;
+        for (Criteria criterium : operationContext.getGraphContainer().getCriteria()) {
+            try {
+                NCSServiceCriteria ncsCriterium = (NCSServiceCriteria)criterium;
+                if(ncsCriterium.size() > 0) {
+                    m_storedCriteria = ncsCriterium;
+                    break;
+                }
+            } catch (ClassCastException e) {}
         }
-        
-        
+
         final VertexRef defaultVertRef = targets.get(0);
         final SelectionManager selectionManager = operationContext.getGraphContainer().getSelectionManager();
         final Collection<VertexRef> vertexRefs = getVertexRefsForNCSService(m_storedCriteria); //selectionManager.getSelectedVertexRefs();
@@ -231,27 +236,26 @@ public class ShowNCSPathOperation implements Operation {
             if(!namespace.equals("nodes")) {
                 return false;
             }else {
-                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-                return criteria != null && criteria.size() == 1;
+                for (Criteria criteria : operationContext.getGraphContainer().getCriteria()) {
+                    try {
+                        if (criteria != null && ((NCSServiceCriteria)criteria).size() == 1) {
+                            return true;
+                        }
+                    } catch (ClassCastException e) {}
+                }
+                return false;
             }
         }
         
         return false;
     }
 
+    /**
+     * TODO: Should we just return true? This is basically a no-op.
+     */
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        for(VertexRef targetRef : targets) {
-            String namespace = targetRef.getNamespace();
-            if(!namespace.equals("nodes")) {
-                return false;
-            }else {
-                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-                return criteria != null && criteria.size() == 1;
-            }
-        }
-        
-        return false;
+        return display(targets, operationContext);
     }
 
     @Override

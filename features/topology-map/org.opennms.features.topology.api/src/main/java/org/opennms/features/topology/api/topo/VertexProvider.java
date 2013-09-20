@@ -36,8 +36,8 @@ public interface VertexProvider {
 	/**
 	 * A string used to identify references belonging to this provider
 	 * 
-	 * May only container characters that make for a reasonable java identifier
-	 * such as letters digits and underscore (no colons, periods, commans etc.)
+	 * May only contain characters that make for a reasonable Java identifier
+	 * such as letters digits and underscore (no colons, periods, commas etc.)
 	 * 
 	 */
 	public String getVertexNamespace();
@@ -47,8 +47,8 @@ public interface VertexProvider {
 	 * to contribute to or overlay another namespace 
 
 	 * @param namespace the namespace of a provider
-	 * @return true if this provider contributes the the given namespace, false other.  Should 
-	 * return false for passing its own namepace. A provider doesn't contribute to itself    
+	 * @return true if this provider contributes the the given namespace, false otherwise.  Should 
+	 * return false when passing in its own namepace. A provider doesn't contribute to itself.
 	 */
 	public boolean contributesTo(String namespace);
 
@@ -68,9 +68,7 @@ public interface VertexProvider {
 	/**
 	 * Return an immutable list of vertices that match the criteria.
 	 */
-	public List<Vertex> getVertices(Criteria criteria);
-
-	public List<Vertex> getVertices();
+	public List<Vertex> getVertices(Criteria... criteria);
 	
 	public List<Vertex> getVertices(Collection<? extends VertexRef> references);
 	
