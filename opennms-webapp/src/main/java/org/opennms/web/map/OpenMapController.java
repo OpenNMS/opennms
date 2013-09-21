@@ -179,14 +179,21 @@ public class OpenMapController extends MapsLoggingController {
 		                     layout.step();
 		                }
 		                
+		                int vertexCount = map.getElements().size();
 		                for (VElement ve : map.getElements().values()) {
 		                    LOG.debug("---------Element {}---------", ve.getLabel());
 		                    LOG.debug("dbcoor: X={} Y={}",ve.getX(),ve.getY());
                                     LOG.debug("kkcoor: X={} Y={}",layout.getX(ve),layout.getY(ve));
                                     LOG.debug("kkcoor: X={} Y={}",(int)layout.getX(ve),(int)layout.getY(ve));
                                     LOG.debug("");
-                                    ve.setX((int)layout.getX(ve));
-                                    ve.setY((int)layout.getY(ve));
+                                    if (vertexCount >= 10) {
+                                        ve.setX((int)layout.getX(ve)-100);
+                                        ve.setY((int)layout.getY(ve)-100);
+                                    } else {
+                                        ve.setX((int)layout.getX(ve));
+                                        ve.setY((int)layout.getY(ve));
+                                    }
+                                    LOG.debug("vmspcoor: X={} Y={}",ve.getX(),ve.getY());
                                }
 			}
 			
@@ -220,8 +227,10 @@ public class OpenMapController extends MapsLoggingController {
              
              return new Dimension((int)width,(int)height);
              */
+            double height = 1.1*g.getHeight();
+            double width = height*16/9;
             
-            return new Dimension(g.getWidth(),g.getHeight());
+            return new Dimension((int)width,(int)height);
             
       }
 
