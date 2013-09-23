@@ -1,0 +1,366 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.features.topology.app.internal;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBException;
+
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexRef;
+
+/**
+ * This class will be used to filter a topology so that the semantic zoom level is
+ * interpreted as a hop distance away from a set of selected vertices. The vertex 
+ * selection is specified using a {@link Criteria} filter.
+ * 
+ * @author Seth
+ */
+public class VertexHopGraphProvider implements GraphProvider {
+
+	public static class VertexHopCriteria extends ArrayList<VertexRef> implements Criteria {
+
+		private static final long serialVersionUID = 2904432878716561926L;
+
+		//private int m_hops;
+
+		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
+			super(objects);
+			//m_hops = hops;
+		}
+
+		@Override
+		public ElementType getType() {
+			return ElementType.VERTEX;
+		}
+
+		/*
+		public int getHops() {
+			return m_hops;
+		}
+		 */
+
+		/**
+		 * TODO: This return value doesn't matter since we just delegate
+		 * to the m_delegate provider.
+		 */
+		@Override
+		public String getNamespace() {
+			return "nodes";
+		}
+	}
+
+	private final GraphProvider m_delegate;
+
+	private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();
+
+	public VertexHopGraphProvider(GraphProvider delegate) {
+		m_delegate = delegate;
+	}
+
+	@Override
+	public void save() {
+		m_delegate.save();
+	}
+
+	@Override
+	public void load(String filename) throws MalformedURLException, JAXBException {
+		m_delegate.load(filename);
+	}
+
+	@Override
+	public void refresh() {
+		m_delegate.refresh();
+	}
+
+	@Override
+	public String getVertexNamespace() {
+		return m_delegate.getVertexNamespace();
+	}
+
+	@Override
+	public boolean contributesTo(String namespace) {
+		return m_delegate.contributesTo(namespace);
+	}
+
+	@Override
+	public boolean containsVertexId(String id) {
+		return m_delegate.containsVertexId(id);
+	}
+
+	@Override
+	public boolean containsVertexId(VertexRef id) {
+		return m_delegate.containsVertexId(id);
+	}
+
+	@Override
+	public Vertex getVertex(String namespace, String id) {
+		return m_delegate.getVertex(namespace, id);
+	}
+
+	@Override
+	public Vertex getVertex(VertexRef reference) {
+		return m_delegate.getVertex(reference);
+	}
+
+	@Override
+	public int getSemanticZoomLevel(VertexRef vertex) {
+		Integer szl = m_semanticZoomLevels.get(vertex);
+		return szl == null ? 0 : szl;
+	}
+
+	/**
+	 * TODO: OVERRIDE THIS FUNCTION
+	 */
+	@Override
+	public List<Vertex> getVertices(Criteria... criteria) {
+		List<Vertex> retval = new ArrayList<Vertex>();
+		List<VertexRef> currentHops = new ArrayList<VertexRef>();
+		List<VertexRef> nextHops = new ArrayList<VertexRef>();
+		List<Vertex> allVertices = new ArrayList<Vertex>();
+
+		// Get the entire list of vertices
+		allVertices.addAll(m_delegate.getVertices(criteria));
+
+		// Find the vertices that match a required HopDistanceCriteria
+		for (Criteria criterium : criteria) {
+			VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
+			for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
+				Vertex vertex = itr.next();
+				if (hdCriteria.contains(vertex)) {
+					// Put the vertex into the return value and remove it
+					// from the list of all eligible vertices
+					retval.add(vertex);
+					nextHops.add(vertex);
+					itr.remove();
+				}
+			}
+		}
+
+		// Clear the existing semantic zoom level values
+		m_semanticZoomLevels.clear();
+		int semanticZoomLevel = 0;
+
+		// Put a limit on the SZL in case we infinite loop for some reason
+		while (semanticZoomLevel < 100 && nextHops.size() > 0) {
+			currentHops.addAll(nextHops);
+			nextHops.clear();
+
+			for (VertexRef vertex : currentHops) {
+
+				// Mark the current vertex as belonging to a particular SZL
+				if (m_semanticZoomLevels.get(vertex) != null) {
+					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertex.toString());
+				}
+				m_semanticZoomLevels.put(vertex, semanticZoomLevel);
+
+				// Fetch all edges attached to this vertex
+				for (EdgeRef edgeRef : m_delegate.getEdgeIdsForVertex(vertex)) {
+					Edge edge = m_delegate.getEdge(edgeRef);
+
+					// Find everything attached to those edges
+					VertexRef nextVertex = null;
+					if (vertex.equals(edge.getSource().getVertex())) {
+						nextVertex = edge.getTarget().getVertex();
+					} else if (vertex.equals(edge.getTarget().getVertex())) {
+						nextVertex = edge.getSource().getVertex();
+					} else {
+						throw new IllegalStateException(String.format("Vertex %s was not the source or target of edge %s", vertex.toString(), edge.toString()));
+					}
+
+					// If we haven't assigned a SZL to the vertices that were located,
+					// then put the vertex into the next collection of hops
+					if (allVertices.contains(nextVertex)) {
+						nextHops.add(nextVertex);
+						allVertices.remove(nextVertex);
+					}
+				}
+			}
+
+			// Clear the temp list of current hops
+			currentHops.clear();
+
+			// Increment the semantic zoom level
+			semanticZoomLevel++;
+		}
+
+		return retval;
+	}
+
+	/**
+	 * TODO: OVERRIDE THIS FUNCTION?
+	 */
+	@Override
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+		return m_delegate.getVertices(references);
+	}
+
+	/**
+	 * TODO: Is this correct?
+	 */
+	@Override
+	public List<Vertex> getRootGroup() {
+		return getVertices();
+	}
+
+	@Override
+	public boolean hasChildren(VertexRef group) {
+		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	}
+
+	@Override
+	public Vertex getParent(VertexRef vertex) {
+		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	}
+
+	@Override
+	public boolean setParent(VertexRef child, VertexRef parent) {
+		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	}
+
+	@Override
+	public List<Vertex> getChildren(VertexRef group) {
+		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	}
+
+	@Override
+	public void addVertexListener(VertexListener vertexListener) {
+		m_delegate.addVertexListener(vertexListener);
+	}
+
+	@Override
+	public void removeVertexListener(VertexListener vertexListener) {
+		m_delegate.removeVertexListener(vertexListener);
+	}
+
+	@Override
+	public void clearVertices() {
+		m_delegate.clearVertices();
+	}
+
+	@Override
+	public String getEdgeNamespace() {
+		return m_delegate.getEdgeNamespace();
+	}
+
+	@Override
+	public Edge getEdge(String namespace, String id) {
+		return m_delegate.getEdge(namespace, id);
+	}
+
+	@Override
+	public Edge getEdge(EdgeRef reference) {
+		return m_delegate.getEdge(reference);
+	}
+
+	/**
+	 * TODO OVERRIDE THIS FUNCTION
+	 */
+	@Override
+	public List<Edge> getEdges(Criteria... criteria) {
+		return m_delegate.getEdges(criteria);
+	}
+
+	@Override
+	public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
+		return m_delegate.getEdges(references);
+	}
+
+	@Override
+	public void addEdgeListener(EdgeListener listener) {
+		m_delegate.addEdgeListener(listener);
+	}
+
+	@Override
+	public void removeEdgeListener(EdgeListener listener) {
+		m_delegate.removeEdgeListener(listener);
+	}
+
+	@Override
+	public void clearEdges() {
+		m_delegate.clearEdges();
+	}
+
+	@Override
+	public void resetContainer() {
+		m_delegate.resetContainer();
+	}
+
+	@Override
+	public void addVertices(Vertex... vertices) {
+		m_delegate.addVertices(vertices);
+	}
+
+	@Override
+	public void removeVertex(VertexRef... vertexId) {
+		m_delegate.removeVertex(vertexId);
+	}
+
+	@Override
+	public Vertex addVertex(int x, int y) {
+		return m_delegate.addVertex(x, y);
+	}
+
+	@Override
+	public Vertex addGroup(String label, String iconKey) {
+		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	}
+
+	@Override
+	public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
+		return m_delegate.getEdgeIdsForVertex(vertex);
+	}
+
+	@Override
+	public void addEdges(Edge... edges) {
+		m_delegate.addEdges(edges);
+	}
+
+	@Override
+	public void removeEdges(EdgeRef... edges) {
+		m_delegate.removeEdges(edges);
+	}
+
+	@Override
+	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
+		return m_delegate.connectVertices(sourceVertextId, targetVertextId);
+	}
+}

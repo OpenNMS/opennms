@@ -675,8 +675,8 @@ public final class RescanProcessor implements Runnable {
     static void updateSpeed(final int ifIndex, final IfTableEntry ifte, final IfXTableEntry ifxte, final DbSnmpInterfaceEntry dbSnmpIfEntry) {
         try {
             dbSnmpIfEntry.updateSpeed(getInterfaceSpeed(ifte, ifxte));
-        } catch (final RuntimeException e) {
-            LOG.warn("updateNonIpInterface: ifSpeed '{}' for ifIndex {} is invalid, inserting 0", ifte.getDisplayString(IfTableEntry.IF_SPEED), ifIndex, e);
+        } catch (final Throwable t) {
+            LOG.warn("updateNonIpInterface: ifSpeed '{}' for ifIndex {} is invalid, inserting 0", ifte.getDisplayString(IfTableEntry.IF_SPEED), ifIndex, t);
             dbSnmpIfEntry.updateSpeed(0);
         }
     }
@@ -1399,8 +1399,8 @@ public final class RescanProcessor implements Runnable {
                 final String name = rs.getString(2);
                 serviceNames.put(id, name);
             }
-        } catch (final Exception e) {
-            LOG.error("Error reading services table", e);
+        } catch (final Throwable t) {
+            LOG.error("Error reading services table", t);
         } finally {
             d.cleanUp();
         }
@@ -2578,8 +2578,8 @@ public final class RescanProcessor implements Runnable {
             for (final Event event : m_eventList) {
                 try {
                     EventIpcManagerFactory.getIpcManager().sendNow(event);
-                } catch (final RuntimeException e) {
-                    LOG.warn("run: unexpected throwable exception caught while sending event", e);
+                } catch (final Throwable t) {
+                    LOG.warn("run: unexpected throwable exception caught while sending event", t);
                 }
             }
         }

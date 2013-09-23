@@ -34,6 +34,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.web.api.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
@@ -63,26 +66,31 @@ public class CheckboxGenerator implements ColumnGenerator, ItemSetChangeListener
 		if (property.getValue() == null) {
 			return null;
 		} else {
-			final CheckBox button = new CheckBox();
-			button.setData(property.getValue());
-			button.setValue(isSelected((Integer) property.getValue()));
-			button.addValueChangeListener(new ValueChangeListener() {
-
-				private static final long serialVersionUID = 2991986878904005830L;
-
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					if (Boolean.TRUE.equals(event.getProperty().getValue())) {
-						m_selectedCheckboxes.add(property.getValue());
-						m_notSelectedCheckboxes.remove(property.getValue());
-					} else {
-						m_selectedCheckboxes.remove(property.getValue());
-						m_notSelectedCheckboxes.add(property.getValue());
+			if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
+				// Do not render the checkboxes for read-only users
+				return null;
+			} else {
+				final CheckBox button = new CheckBox();
+				button.setData(property.getValue());
+				button.setValue(isSelected((Integer) property.getValue()));
+				button.addValueChangeListener(new ValueChangeListener() {
+	
+					private static final long serialVersionUID = 2991986878904005830L;
+	
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						if (Boolean.TRUE.equals(event.getProperty().getValue())) {
+							m_selectedCheckboxes.add(property.getValue());
+							m_notSelectedCheckboxes.remove(property.getValue());
+						} else {
+							m_selectedCheckboxes.remove(property.getValue());
+							m_notSelectedCheckboxes.add(property.getValue());
+						}
 					}
-				}
-			});
-			m_checkboxes.add(button);
-			return button;
+				});
+				m_checkboxes.add(button);
+				return button;
+			}
 		}
 	}
 

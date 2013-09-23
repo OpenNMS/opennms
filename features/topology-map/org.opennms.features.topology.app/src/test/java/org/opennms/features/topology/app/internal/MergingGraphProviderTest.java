@@ -90,9 +90,7 @@ public class MergingGraphProviderTest {
 		assertEquals(m_graphProvider.getEdges(), edges);
 		
 		// set a criteria now and get some ncs edges
-		m_mergedProvider.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge2"));
-		
-		edges = m_mergedProvider.getEdges();
+		edges = m_mergedProvider.getEdges(SimpleEdgeProvider.labelMatches("ncs", "ncsedge2"));
 
 		assertEquals(5, edges.size());
 		assertTrue(edges.contains(new AbstractEdgeRef("ncs", "ncs2")));

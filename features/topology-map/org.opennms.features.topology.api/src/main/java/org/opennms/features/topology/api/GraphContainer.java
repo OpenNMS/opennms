@@ -47,9 +47,11 @@ public interface GraphContainer extends DisplayState {
 
 	void setBaseTopology(GraphProvider graphProvider);
 
-	Criteria getCriteria(String namespace);
+	Criteria[] getCriteria();
 
 	void setCriteria(Criteria criteria);
+
+	void removeCriteria(Criteria criteria);
 
 	void addChangeListener(ChangeListener listener);
 
