@@ -198,7 +198,7 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
-        window.location.href = "<%=req.getContextPath()%>/alarm/list?favoriteId=" + favoriteId + '&' + filter;
+        window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
 
   </script>

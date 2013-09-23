@@ -29,6 +29,8 @@
 package org.opennms.web.tags;
 
 import org.opennms.netmgt.model.OnmsFilterFavorite;
+import org.opennms.web.filter.Filter;
+import org.opennms.web.filter.NormalizedQueryParameters;
 import org.opennms.web.filter.QueryParameters;
 import org.opennms.web.tags.filters.FilterCallback;
 
@@ -37,6 +39,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 public class FavoriteTag extends TagSupport {
 
@@ -60,7 +63,13 @@ public class FavoriteTag extends TagSupport {
 
             @Override
             public String getJavascript(FavoriteTag favoriteTag) {
-                return DESELECT_FAVORITE_JAVASCRIPT_TEMPLATE.replaceAll("\\{CONTEXT_URL\\}", favoriteTag.getContext());
+                final NormalizedQueryParameters parameters = new NormalizedQueryParameters(favoriteTag.parameters);
+                parameters.setFilters(new ArrayList<Filter>());
+
+                return DESELECT_FAVORITE_JAVASCRIPT_TEMPLATE
+                        .replaceAll(
+                                "\\{CLEAR_URL\\}",
+                                createLink(favoriteTag.filterCallback, favoriteTag.getContext(), parameters, null));
             }
         };
 
@@ -77,13 +86,12 @@ public class FavoriteTag extends TagSupport {
 
             @Override
             public String getJavascript(FavoriteTag favoriteTag) {
-                /* /opennms/event/deleteFavorite?...&favoriteName="" */
-                final String deleteFavoriteUrl = MessageFormat.format("{0}{1}?{2}&favoriteId=",
-                        favoriteTag.getUrlBase(),
-                        favoriteTag.getDeleteFilterController(),
-                        favoriteTag.getFiltersAsStringWithoutLeadingFilter());
+                /* /opennms/event/deleteFavorite */
+                final String urlBase = favoriteTag.getUrlBase() + favoriteTag.getDeleteFilterController();
+                final String deleteFavoriteUrl = createLink(favoriteTag.filterCallback, urlBase, favoriteTag.parameters, null);
 
-                return DELETE_FAVORITE_JAVASCRIPT_TEMPLATE.replaceAll("\\{DELETE_FAVORITE_URL\\}", deleteFavoriteUrl);
+                return DELETE_FAVORITE_JAVASCRIPT_TEMPLATE.
+                        replaceAll("\\{DELETE_FAVORITE_URL\\}",MessageFormat.format("{0}&favoriteId=", deleteFavoriteUrl));
             }
         };
 
@@ -101,12 +109,11 @@ public class FavoriteTag extends TagSupport {
 
             @Override
             public String getJavascript(FavoriteTag favoriteTag) {
+                final String urlBase = favoriteTag.getUrlBase() + favoriteTag.getCreateFilterController(); // /opennms/event/createFavorite
+                final String createUrl = createLink(favoriteTag.filterCallback, urlBase, favoriteTag.parameters, null);
+
                 /* /opennms/event/createFavorite?...&favoriteName="" */
-                final String createFavoriteURL = MessageFormat.format(
-                        "{0}{1}?{2}&favoriteName=",
-                        favoriteTag.getUrlBase(),
-                        favoriteTag.getCreateFilterController(),
-                        favoriteTag.getFiltersAsStringWithoutLeadingFilter());
+                final String createFavoriteURL = MessageFormat.format("{0}&favoriteName=",createUrl);
 
                 return CREATE_FAVORITE_JAVASCRIPT_TEMPLATE
                         .replaceAll("\\{DEFAULT_FAVORITE\\}", favoriteTag.getDefaultFavoriteName())
@@ -145,13 +152,17 @@ public class FavoriteTag extends TagSupport {
 
     private static final String DESELECT_FAVORITE_JAVASCRIPT_TEMPLATE =
             "   function clearFilters() {\n" +
-            "       window.location.href = '{CONTEXT_URL}'\n" +
+            "       window.location.href = '{CLEAR_URL}'\n" +
             "   }";
 
     /**
      * If no default favorite name is configured for this tag inside the JSP file this one is used as the DEFAULT value.
      */
     private static final String DEFAULT_FAVORITE_NAME = "My Favorite";
+
+    private static String createLink(FilterCallback callback, String urlBase, QueryParameters params, OnmsFilterFavorite favorite) {
+        return callback.createLink(urlBase, params, favorite).replaceAll("&amp;", "&");
+    }
 
     /**
      * The callback to handle link-creation and such. Is needed to determine e.g. to create an alert or event-link.
@@ -277,12 +288,6 @@ public class FavoriteTag extends TagSupport {
         return JAVASCRIPT_TEMPLATE
                 .replaceAll("\\{SELECT_SCRIPT\\}", selectAction.getJavascript(this))
                 .replaceAll("\\{DESELECT_SCRIPT\\}", deselectAction.getJavascript(this));
-    }
-
-    private String getFiltersAsStringWithoutLeadingFilter() {
-        String filterString = filterCallback.toFilterString(parameters.getFilters());
-        filterString = filterString.replaceAll("&amp;", "&");
-        return filterString;
     }
 
     private String getUrlBase() {
