@@ -297,7 +297,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	
     	List<Vertex> displayVertices = new ArrayList<Vertex>();
     	
-    	for(Vertex v : m_mergedGraphProvider.getVertices()) {
+    	for(Vertex v : m_mergedGraphProvider.getVertices(getCriteria())) {
     		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(v);
     		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_mergedGraphProvider.hasChildren(v))) {
     			displayVertices.add(v);
@@ -306,7 +306,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	
     	Set<Edge> displayEdges = new HashSet<Edge>();
 
-        final List<Edge> edges = m_mergedGraphProvider.getEdges();
+        final List<Edge> edges = m_mergedGraphProvider.getEdges(getCriteria());
         for(Edge e : edges) {
     		VertexRef source = e.getSource().getVertex();
     		VertexRef target = e.getTarget().getVertex();
@@ -390,24 +390,39 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         return m_graph;
     }
 
-    @Override
-    public Criteria getCriteria(String namespace) {
-    	return m_mergedGraphProvider.getCriteria(namespace);
-    }
-    
+	private final Set<Criteria> m_criteria = new HashSet<Criteria>();
+
+	@Override
+	public Criteria[] getCriteria() {
+		return m_criteria.toArray(new Criteria[0]);
+	}
+
+	@Override
+	public void setCriteria(Criteria criteria) {
+		m_criteria.add(criteria);
+		/*
+		Set<Criteria> criterias = m_criteria.get(criteria.getNamespace());
+		if (criterias == null) {
+			criterias = new HashSet<Criteria>();
+			m_criteria.put(criteria.getNamespace(), new TreeSet<Criteria>());
+		}
+		criterias.add(criteria);
+		 */
+		rebuildGraph();
+	}
+
+	@Override
+	public void removeCriteria(Criteria criteria) {
+		m_criteria.remove(criteria);
+		/*
+		String namespace = criteria.getNamespace();
+		m_criteria.remove(namespace);
+		*/
+		rebuildGraph();
+	}
+
     public void setBundleContext(final BundleContext bundleContext) {
         m_bundleContext = bundleContext;
-    }
-    
-    public void removeCriteria(Criteria criteria) {
-        m_mergedGraphProvider.removeCriteria(criteria);
-        rebuildGraph();
-    }
-    
-    @Override
-    public void setCriteria(Criteria criteria) {
-    	m_mergedGraphProvider.setCriteria(criteria);
-        rebuildGraph();
     }
 
 	private void fireGraphChanged() {

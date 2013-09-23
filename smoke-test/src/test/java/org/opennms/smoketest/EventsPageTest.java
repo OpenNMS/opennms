@@ -71,4 +71,10 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("//div[@id='content']/div/h2/a[2]");
     }
 
+    @Test
+    public void testNodeIdNotFoundPage() throws InterruptedException {
+        selenium.open("/opennms/event/detail.jsp?id=999999999");
+        waitForText("Event Not Found in Database");
+    }
+
 }
