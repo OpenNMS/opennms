@@ -170,9 +170,10 @@ public abstract class LinkdNetworkBuilder {
         System.err.println("-----------------------------------------------------------");
         System.err.println("Local cdp nodeid: "+nodeid);
         System.err.println("Local cdp ifindex: "+cdp.getCdpIfIndex());
+        System.err.println("Local cdp port: "+cdp.getCdpIfName());
         System.err.println("Target cdp deviceId: "+cdp.getCdpTargetDeviceId());
         System.err.println("Target cdp nodeid: "+cdp.getCdpTargetNodeId());
-        System.err.println("Target cdp ifindex: "+cdp.getCdpTargetIfIndex());
+        System.err.println("Target cdp ifname: "+cdp.getCdpTargetIfName());
         System.err.println("-----------------------------------------------------------");
         System.err.println("");        
     	

@@ -236,6 +236,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             processIpNetToMediaTable(node, snmpColl,scanTime);
         }
 
+        LOG.debug("storeSnmpCollection: hasCdpGlobalGroup: {}", snmpColl.hasCdpGlobalGroup());
         LOG.debug("storeSnmpCollection: hasCdpCacheTable: {}", snmpColl.hasCdpCacheTable());
         if (snmpColl.hasCdpGlobalGroup() && snmpColl.hasCdpCacheTable()) {
             processCdp(node, snmpColl, scanTime);
@@ -399,8 +400,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
     // SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
     @Override
-    protected List<Integer> getNodeidFromIp(final InetAddress cdpTargetIpAddr) {
-        List<Integer> nodeids = new ArrayList<Integer>();
+    protected List<OnmsNode> getNodeidFromIp(final InetAddress cdpTargetIpAddr) {
+        List<OnmsNode> nodeids = new ArrayList<OnmsNode>();
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.eq("ipAddress", cdpTargetIpAddr);
@@ -409,7 +410,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
         LOG.debug("getNodeidFromIp: Found {} nodeids matching ipAddress {}", interfaces.size(),str(cdpTargetIpAddr));
         for (final OnmsIpInterface ipinterface : interfaces) {
-            nodeids.add(ipinterface.getNode().getId());
+            nodeids.add(ipinterface.getNode());
         }
         return nodeids;
     }

@@ -133,7 +133,7 @@ public class Nms0001Test extends Nms0001NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
     })
-    public void testNetwork17216Links() throws Exception {
+    public void testIsIsLinks() throws Exception {
         
         m_nodeDao.save(getFroh());
         m_nodeDao.save(getOedipus());

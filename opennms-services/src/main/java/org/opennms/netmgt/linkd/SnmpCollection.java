@@ -46,6 +46,7 @@ import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
 import org.opennms.netmgt.linkd.snmp.CdpGlobalGroup;
+import org.opennms.netmgt.linkd.snmp.CdpInterfaceTable;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
 import org.opennms.netmgt.linkd.snmp.IsIsSystemObjectGroup;
 import org.opennms.netmgt.linkd.snmp.IsisCircTable;
@@ -171,7 +172,8 @@ public final class SnmpCollection implements ReadyRunnable {
      * The CdpCache table information
      */
     public CdpGlobalGroup m_cdpGlobalGroup;
-    public CdpCacheTable m_CdpCache;
+    public CdpCacheTable m_cdpCache;
+    public CdpInterfaceTable m_cdpInterface;
 
     /**
      * The VLAN Table information
@@ -330,14 +332,23 @@ public final class SnmpCollection implements ReadyRunnable {
      * Returns true if the CDP Cache table was collected.
      */
     boolean hasCdpCacheTable() {
-        return (m_CdpCache != null && !m_CdpCache.failed() && !m_CdpCache.isEmpty());
+        return (m_cdpCache != null && !m_cdpCache.failed() && !m_cdpCache.isEmpty());
     }
-
+    
     /**
      * Returns the collected IP route table.
      */
     CdpCacheTable getCdpCacheTable() {
-        return m_CdpCache;
+        return m_cdpCache;
+    }
+
+    boolean hasCdpInterfaceTable() {
+        return (m_cdpInterface != null && !m_cdpInterface.failed() && !m_cdpInterface.isEmpty());
+        
+    }
+
+    CdpInterfaceTable getCdpInterfaceTable() {
+        return m_cdpInterface;
     }
 
     /**
@@ -424,7 +435,9 @@ public final class SnmpCollection implements ReadyRunnable {
 
         m_cdpGlobalGroup = new CdpGlobalGroup(m_address);
 
-        m_CdpCache = new CdpCacheTable(m_address);
+        m_cdpCache = new CdpCacheTable(m_address);
+
+        m_cdpInterface = new CdpInterfaceTable(m_address);
 
         m_lldpLocalGroup = new LldpLocalGroup(m_address);
 
@@ -473,7 +486,7 @@ public final class SnmpCollection implements ReadyRunnable {
         	bldr.add("ipRouteTable", m_ipRoute);
         }
         if (m_collectCdp) {
-        	bldr.add("cdpGlobalGroup/cdpCacheTable", m_cdpGlobalGroup, m_CdpCache);
+        	bldr.add("cdpGlobalGroup/cdpInterface/cdpCacheTable",m_cdpGlobalGroup,m_cdpInterface,m_cdpCache);
         }
         if (m_collectVlan && m_vlanTable != null) {
         	bldr.add("vlanTable", m_vlanTable);
@@ -518,6 +531,8 @@ public final class SnmpCollection implements ReadyRunnable {
             LOG.info("run: failed to collect ipRouteTable for {}", hostAddress);
         if (m_collectCdp && !this.hasCdpGlobalGroup())
             LOG.info("run: failed to collect cdpGlobalGroup for {}", hostAddress);
+        if (m_collectCdp && !this.hasCdpInterfaceTable())
+            LOG.info("run: failed to collect cdpInterfaceTable for []", hostAddress);
         if (m_collectCdp && !this.hasCdpCacheTable())
             LOG.info("run: failed to collect cdpCacheTable for []", hostAddress);
         if (m_collectVlan && m_vlanTable != null && !this.hasVlanTable())
@@ -554,7 +569,8 @@ public final class SnmpCollection implements ReadyRunnable {
         m_ipNetToMedia = null;
         m_ipRoute = null;
         m_cdpGlobalGroup = null;
-        m_CdpCache = null;
+        m_cdpCache = null;
+        m_cdpInterface = null;
         m_vlanTable = null;
         m_lldpLocalGroup = null;
         m_lldpLocTable = null;

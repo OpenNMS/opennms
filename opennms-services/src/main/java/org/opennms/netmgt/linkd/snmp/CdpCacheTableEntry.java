@@ -171,7 +171,7 @@ public final class CdpCacheTableEntry extends SnmpStore {
 		 *  indicates no Port-ID field (TLV) was reported in the
 		 *  most recent CDP message.</P>
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 6)
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, CDP_DEVICEPORT, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7", 7)
 
 		/**
 		 * <P>The Device's Hardware Platform as reported in the most

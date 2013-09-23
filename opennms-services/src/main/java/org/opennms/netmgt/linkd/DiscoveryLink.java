@@ -73,7 +73,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     private List<LinkableNode> m_isisNodes = new ArrayList<LinkableNode>();
 
-    private List<LinkableNode> m_cdpNodes = new ArrayList<LinkableNode>();
+    private Map<String,LinkableNode> m_cdpNodes = new HashMap<String,LinkableNode>();
 
     // this is the list of MAC address just parsed by discovery process
     private List<String> m_macsParsed = new ArrayList<String>();
@@ -190,7 +190,7 @@ public final class DiscoveryLink implements ReadyRunnable {
             }
             if (discoveryUsingCdp && linkableNode.hasCdpInterfaces()) {
                 LOG.debug("run: adding to CDP node list: node with nodeid/#cdpinterfaces {}/#{}", linkableNode.getNodeId(),linkableNode.getCdpInterfaces().size());
-                m_cdpNodes.add(linkableNode);
+                m_cdpNodes.put(linkableNode.getCdpDeviceId(),linkableNode);
             }
             if (discoveryUsingRoutes && linkableNode.hasRouteInterfaces()) {
                 LOG.debug("run: adding to router node list: node with nodeid/#iprouteinterface {}/#{}", linkableNode.getNodeId(),linkableNode.getRouteInterfaces().size());
@@ -581,73 +581,48 @@ public final class DiscoveryLink implements ReadyRunnable {
         }
 
     }
-
-    private List<NodeToNodeLink> getCdpLinks(LinkableNode node1, LinkableNode node2) {
-        int node1Id = node1.getNodeId();
-        int node2Id = node2.getNodeId();
-        LOG.info("getCdpLinks: checking cdp links between node1 {} and node2 {}", node1Id, node2Id);
-
-        List<NodeToNodeLink> cdplinks = new ArrayList<NodeToNodeLink>();
-        for (final CdpInterface cdpIface : node1.getCdpInterfaces()) {
-            LOG.debug("getCdpLinks: parsing cdp interface {} on node {}.", cdpIface,node1Id);
-            if (cdpIface.getCdpTargetNodeId() != node2Id ||
-                    !cdpIface.getCdpTargetDeviceId().equals(node2.getCdpDeviceId())) {
-                LOG.debug("getCdpLinks: target node {} with cdpDeviceId {} is not node2 {} with cdpdeviceId {} Skipping.", cdpIface.getCdpTargetNodeId(),cdpIface.getCdpTargetDeviceId(),node2Id,node2.getCdpDeviceId());
-                continue;
-            }
-            if (isBridgeNode(node1Id)) {
-                LinkableNode node = m_bridgeNodes.get(node1Id);
-                if (node.isBackBoneBridgePort(node.getBridgePort(cdpIface.getCdpIfIndex()))) {
-                    LOG.debug("getCdpLinks: source node is bridge node, and port {} is backbone port! Skipping.", cdpIface.getCdpIfIndex());
-                    continue;
-                }
-            }
-            if (isBridgeNode(node2Id)) {
-                LinkableNode node = m_bridgeNodes.get(node2Id);
-                if (node.isBackBoneBridgePort(node.getBridgePort(cdpIface.getCdpTargetIfIndex()))) {
-                    LOG.debug("getCdpLinks: target node is bridge node, and port {} is backbone port! Skipping.", cdpIface.getCdpTargetIfIndex());
-                    continue;
-                }
-            }
-
-            final NodeToNodeLink link = new NodeToNodeLink(
-                                                           cdpIface.getCdpTargetNodeId(),
-                                                           cdpIface.getCdpTargetIfIndex());
-            link.setNodeparentid(node1Id);
-            link.setParentifindex(cdpIface.getCdpIfIndex());
-            cdplinks.add(link);
-        }
-        return cdplinks;
-    }
-
+    
     private void getLinksFromCdp() {
         LOG.info("getLinksFromCdp: adding links using Cisco Discovery Protocol");
 
         LOG.info("getLinksFromCdp: found # {} nodes using Cisco Discovery Protocol", m_cdpNodes.size());
 
         LOG.info("getLinksFromCdp: founding Cisco Discovery Protocol links between Cdp nodes");
-        for (LinkableNode linknode1: m_cdpNodes) {
-            for (LinkableNode linknode2: m_cdpNodes) {
-                if (linknode1.getNodeId() >= linknode2.getNodeId())
-                    continue;
-                for (NodeToNodeLink cdpLink: getCdpLinks(linknode1,linknode2)) {
-                    addNodetoNodeLink(cdpLink);
-                }
-            }
-        }
-        
-        LOG.info("getLinksFromCdp: founding Cisco Discovery Protocol links between Cdp nodes and Others");
-        for (LinkableNode node: m_cdpNodes) {
-            for (CdpInterface cdp: node.getCdpInterfaces()) {
-                if (!isCdpNode(cdp.getCdpTargetNodeId())) {
-                    NodeToNodeLink link = new NodeToNodeLink(cdp.getCdpTargetNodeId(), cdp.getCdpTargetIfIndex());
-                    link.setNodeparentid(node.getNodeId());
-                    link.setParentifindex(cdp.getCdpIfIndex());
+        for (LinkableNode linknode1: m_cdpNodes.values()) {
+            LOG.info("getLinksFromCdp: parsing cdp device {} with cdpDeviceId {} using Cisco Discovery Protocol",linknode1.getNodeId(), linknode1.getCdpDeviceId());
+            for (CdpInterface cdpiface1: linknode1.getCdpInterfaces()) {
+                LOG.info("getLinksFromCdp: found  cdpTargetDeviceId {} ", cdpiface1.getCdpTargetDeviceId());
+                if (cdpiface1.getCdpTargetDeviceId() != null) {
+                    LinkableNode linknode2 = m_cdpNodes.get(cdpiface1.getCdpTargetDeviceId());
+                    if (linknode2 == null) {
+                        LOG.info("getLinksFromCdp: no cdpdevice found for cdpDeviceId {} ", cdpiface1.getCdpTargetDeviceId());
+                        continue;
+                    }
+                    if (linknode1.getNodeId() >= linknode2.getNodeId())
+                        continue;
+                    LOG.info("getLinksFromCdp: cdpdevice found node {} for cdpTargetDeviceId {} ", linknode2.getNodeId(), cdpiface1.getCdpTargetDeviceId());
+                    
+                    for (CdpInterface cdpiface2: linknode2.getCdpInterfaces()) {
+                        if (cdpiface2.getCdpTargetDeviceId() != null 
+                                && cdpiface2.getCdpTargetDeviceId().equals(linknode1.getCdpDeviceId()) 
+                                && cdpiface1.getCdpIfName().equals(cdpiface2.getCdpTargetIfName())
+                                && cdpiface2.getCdpIfName().equals(cdpiface1.getCdpTargetIfName())) {
+                            NodeToNodeLink cdpLink = new NodeToNodeLink(linknode2.getNodeId(), cdpiface2.getCdpIfIndex());
+                            cdpLink.setNodeparentid(linknode1.getNodeId());
+                            cdpLink.setParentifindex(cdpiface1.getCdpIfIndex());
+                            addNodetoNodeLink(cdpLink);
+                        }
+                    }
+                } else if (cdpiface1.getCdpTargetNodeId()!= null) {
+                    LOG.info("getLinksFromCdp: cdpdevice found no snmp target node {} for cdpTargetDeviceId {} ", cdpiface1.getCdpTargetNodeId(), cdpiface1.getCdpTargetDeviceId());
+                    NodeToNodeLink link = new NodeToNodeLink(cdpiface1.getCdpTargetNodeId(), -1);
+                    link.setNodeparentid(linknode1.getNodeId());
+                    link.setParentifindex(cdpiface1.getCdpIfIndex());
                     addNodetoNodeLink(link);
                 }
             }
         }
-        
+                
     }
 
     // We use a simple algoritm
@@ -792,15 +767,6 @@ public final class DiscoveryLink implements ReadyRunnable {
             }
         }
         return links;
-    }
-
-    boolean isCdpNode(int nodeid) {
-        for (final LinkableNode curNode : m_cdpNodes ) {
-            if (nodeid == curNode.getNodeId())
-                return true;
-        }
-        return false;
-
     }
 
     /**

@@ -1071,8 +1071,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(InetAddressUtils.addr(CISCO_C870_IP)).get(0);
-        assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
+        final OnmsNode node = db.getNodeidFromIp(InetAddressUtils.addr(CISCO_C870_IP)).get(0);
+        assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId(), node.getId());
     }
     
     @Test 
@@ -1203,7 +1203,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
        for (LinkableNode lnode: linkables) {
            if (ciscows.getId() == lnode.getNodeId()) {
                assertEquals(true, lnode.hasCdpInterfaces());
-               assertEquals(1, lnode.getCdpInterfaces().size());
+               assertEquals(2, lnode.getCdpInterfaces().size());
            } else {
                assertTrue("Found node not added!!!!!",false);
            }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -34,38 +34,38 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
- * <P>InetCidrRouteTable uses a SnmpSession to collect the ipRouteTable entries
- * It implements the SnmpHandler to receive notifications when a reply is 
- * received/error occurs in the SnmpSession used to send requests/receive 
- * replies.</P>
+ * <P>
+ * CdpCacheTable uses a SnmpSession to collect the CdpCache table
+ * entries. It implements the SnmpHandler to receive notifications when a reply
+ * is received/error occurs in the SnmpSession used to send requests/receive
+ * replies.
+ * </P>
  *
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
- *
- * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
-public class InetCidrRouteTable extends SnmpTable<InetCidrRouteTableEntry>
-{
-    
-   /**
-    * <P>Constructs an InetCidrRouteTable object that is used to collect
-    * the address elements from the remote agent. Once all
-    * the elements are collected, or there is an error in
-    * the collection the signaler object is <EM>notified</EM>
-    * to inform other threads.</P>
-    *
-    * @param session   The session with the remote agent.
-    * @param signaler  The object to notify waiters.
-    *
-    * @see InetCidrRouteTableEntry
-    */
-   public InetCidrRouteTable(InetAddress address)
-   {
-        super(address, "ipRouteTable", InetCidrRouteTableEntry.ms_elemList);
-   }
-   
-   @Override
-    protected InetCidrRouteTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
-        return new InetCidrRouteTableEntry();
+public class CdpInterfaceTable extends SnmpTable<CdpInterfaceTableEntry> {
+
+    /**
+     * <P>
+     * Constructs an CdpInterfaceTable object that is used to collect the Cisco Discovery Protocol
+     * elements from the remote agent. Once all the elements are collected, or
+     * there is an error in the collection the signaler object is <EM>notified
+     * </EM> to inform other threads.
+     * </P>
+     *
+     * @see CdpInterfaceTableEntry
+     * @param address a {@link java.net.InetAddress} object.
+     */
+    public CdpInterfaceTable(InetAddress address)
+	{
+        super(address, "cdpInterfaceTable", CdpInterfaceTableEntry.cdpInterface_elemList);
+	}
+    /** {@inheritDoc} */
+    @Override
+    protected CdpInterfaceTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+        return new CdpInterfaceTableEntry();
     }
 
 }

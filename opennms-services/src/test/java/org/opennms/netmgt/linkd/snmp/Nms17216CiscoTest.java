@@ -95,4 +95,36 @@ public class Nms17216CiscoTest extends Nms17216NetworkBuilder implements Initial
         assertEquals(6, m_vlan.getVlansForSnmpCollection().size());
     }        
 
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+    })
+    public void testNetwork17216CdpInterfaceTable() throws Exception {
+        
+        String name = "cdpInterfaceTable";
+        CdpInterfaceTable m_cdpinterface = new CdpInterfaceTable(InetAddressUtils.addr(SWITCH1_IP));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {m_cdpinterface};
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
+        walker.start();
+
+        try {
+                walker.waitFor();
+        } catch (final InterruptedException e) {
+
+        }
+
+        for (SnmpStore store: m_cdpinterface) {
+                CdpInterfaceTableEntry ent = (CdpInterfaceTableEntry) store;
+            System.out.println("-----Cdp Interface----");
+                System.out.println("cdpInterfaceIfIndex: " + ent.getCdpInterfaceIfIndex());
+            System.out.println("cdpInterfaceIfName: " + ent.getCdpInterfaceName());
+            System.out.println("");
+        }
+
+        
+        assertEquals(28, m_cdpinterface.size());
+    }        
+
 }
