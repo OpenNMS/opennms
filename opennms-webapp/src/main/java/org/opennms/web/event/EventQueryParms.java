@@ -43,8 +43,9 @@ import java.util.List;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  * @since 1.8.1
+ * @Deprecated use {@link QueryParameters} instead.
  */
-// TODO MVR add deprecated
+@Deprecated
 public class EventQueryParms extends Object implements QueryParameters {
     public SortStyle sortStyle;
 

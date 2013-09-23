@@ -61,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// TODO MVR modify javadoc
 /**
  * A controller that handles all event actions (e.g. querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display).
@@ -195,7 +194,6 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     /**
-     * TODO MVR TEST ME
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
@@ -230,7 +228,6 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     /**
-     * // TODO MVR test me
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

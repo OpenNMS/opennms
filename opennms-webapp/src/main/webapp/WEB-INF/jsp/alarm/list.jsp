@@ -48,6 +48,7 @@
 <%@page import="org.opennms.web.tags.select.FilterFavoriteSelectTagHandler" %>
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.List" %>
+<%@page import="org.opennms.web.tags.FavoriteTag" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -264,8 +265,10 @@
                             favorite="${favorite}"
                             parameters="${parms}"
                             callback="${callback}"
+                            context="/alarm/list"
                             createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite" />
+                            deleteFavoriteController="/alarm/deleteFavorite"
+                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
                     <onms:filters
                             context="/alarm/list"
                             favorite="${favorite}"

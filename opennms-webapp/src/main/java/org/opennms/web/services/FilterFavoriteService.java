@@ -145,6 +145,14 @@ public class FilterFavoriteService {
         return filter;
     }
 
+    protected void setFilterFavoriteDao(FilterFavoriteDao favoriteDao) {
+        this.favoriteDao = favoriteDao;
+    }
+    
+    protected FilterFavoriteDao getFilterFavoriteDao() {
+		return favoriteDao;
+	}
+
     private void validate(String userName, String favoriteName, String filter, OnmsFilterFavorite.Page page) throws FilterFavoriteException {
         if (StringUtils.isEmpty(userName)) throw new FilterFavoriteException("No username specified.");
         if (StringUtils.isEmpty(favoriteName)) throw new FilterFavoriteException("No favorite name specified.");

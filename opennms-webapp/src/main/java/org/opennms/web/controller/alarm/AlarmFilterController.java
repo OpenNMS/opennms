@@ -59,7 +59,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-// TODO MVR optimize javadoc and so on
 /**
  * A controller that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
@@ -68,7 +67,6 @@ import java.util.List;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class AlarmFilterController extends MultiActionController implements InitializingBean {
-
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmFilterController.class);
 
@@ -85,6 +83,12 @@ public class AlarmFilterController extends MultiActionController implements Init
     private FilterFavoriteService favoriteService;
 
     private FilterCallback m_callback;
+
+    @Override
+    @Transactional
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return super.handleRequest(request, response);
+    }
 
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
         OnmsFilterFavorite favorite = getFavorite(
@@ -111,7 +115,6 @@ public class AlarmFilterController extends MultiActionController implements Init
         return modelAndView;
     }
 
-    @Transactional(readOnly=false)
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
         try {
@@ -134,7 +137,6 @@ public class AlarmFilterController extends MultiActionController implements Init
         return errorView;
     }
 
-    @Transactional(readOnly=false)
     public ModelAndView deleteFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // delete
         String favoriteId = request.getParameter("favoriteId");

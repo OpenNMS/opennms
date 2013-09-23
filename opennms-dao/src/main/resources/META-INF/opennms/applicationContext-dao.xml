@@ -313,7 +313,7 @@
   
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
 
-  <bean id="filtersDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
+  <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   

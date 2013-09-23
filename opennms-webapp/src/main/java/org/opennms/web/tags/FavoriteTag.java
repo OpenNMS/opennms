@@ -40,6 +40,83 @@ import java.text.MessageFormat;
 
 public class FavoriteTag extends TagSupport {
 
+    public static interface Action {
+
+        String getDescription();
+        String getJavascriptCallback(FavoriteTag favoriteTag);
+        String getJavascript(FavoriteTag favoriteTag);
+
+        Action CLEAR_FILTERS = new Action() {
+
+            @Override
+            public String getDescription() {
+                return "clear favorite and reset all filter criteria";
+            }
+
+            @Override
+            public String getJavascriptCallback(FavoriteTag favoriteTag) {
+                return "clearFilters()";
+            }
+
+            @Override
+            public String getJavascript(FavoriteTag favoriteTag) {
+                return DESELECT_FAVORITE_JAVASCRIPT_TEMPLATE.replaceAll("\\{CONTEXT_URL\\}", favoriteTag.getContext());
+            }
+        };
+
+        Action DELETE_FAVORITE = new Action() {
+            @Override
+            public String getDescription() {
+                return "delete the current selected favorite";
+            }
+
+            @Override
+            public String getJavascriptCallback(FavoriteTag favoriteTag) {
+                return "deleteFavorite(" + favoriteTag.getFavorite().getId() + ")";
+            }
+
+            @Override
+            public String getJavascript(FavoriteTag favoriteTag) {
+                /* /opennms/event/deleteFavorite?...&favoriteName="" */
+                final String deleteFavoriteUrl = MessageFormat.format("{0}{1}?{2}&favoriteId=",
+                        favoriteTag.getUrlBase(),
+                        favoriteTag.getDeleteFilterController(),
+                        favoriteTag.getFiltersAsStringWithoutLeadingFilter());
+
+                return DELETE_FAVORITE_JAVASCRIPT_TEMPLATE.replaceAll("\\{DELETE_FAVORITE_URL\\}", deleteFavoriteUrl);
+            }
+        };
+
+        Action CREATE_FAVORITE = new Action() {
+
+            @Override
+            public String getDescription() {
+                return "create a favorite with current filter settings";
+            }
+
+            @Override
+            public String getJavascriptCallback(FavoriteTag favoriteTag) {
+                return "createFavorite()";
+            }
+
+            @Override
+            public String getJavascript(FavoriteTag favoriteTag) {
+                /* /opennms/event/createFavorite?...&favoriteName="" */
+                final String createFavoriteURL = MessageFormat.format(
+                        "{0}{1}?{2}&favoriteName=",
+                        favoriteTag.getUrlBase(),
+                        favoriteTag.getCreateFilterController(),
+                        favoriteTag.getFiltersAsStringWithoutLeadingFilter());
+
+                return CREATE_FAVORITE_JAVASCRIPT_TEMPLATE
+                        .replaceAll("\\{DEFAULT_FAVORITE\\}", favoriteTag.getDefaultFavoriteName())
+                        .replaceAll("\\{CREATE_FAVORITE_URL\\}", createFavoriteURL);
+            }
+        };
+    }
+
+    private static Action DEFAULT_DESELECT_ACTION = Action.CLEAR_FILTERS;
+
     private static final String TEMPLATE = "{0}\n{1}";
 
     /**
@@ -48,26 +125,28 @@ public class FavoriteTag extends TagSupport {
      */
     private static final String IMG_TEMPLATE = new String("<img style=\"cursor:pointer;\" title=\"{0}\" with=25 height=25 onClick=\"{1}\" src=\"{2}\"/>{3}");
 
-    /**
-     * Template for the javascript "createFavorite" and "deleteFavorite" functions.
-     * The functions need to handle which controllers (e.g. Alarm or Filter) should be called.
-     */
-    private static final String JAVASCRIPT_TEMPLATE =
-            "<script type=\"text/javascript\">\n" +
+    private static final String JAVASCRIPT_TEMPLATE =    "<script type=\"text/javascript\">\n{SELECT_SCRIPT}\n\n{DESELECT_SCRIPT}\n</script>\n";
+
+    private static final String CREATE_FAVORITE_JAVASCRIPT_TEMPLATE =
             "   function createFavorite() {\n" +
             "       var favoriteName = prompt(\"Please enter a favorite name\", \"{DEFAULT_FAVORITE}\");\n" +
             "       if (favoriteName != null) {\n" +
             "           window.location.href = '{CREATE_FAVORITE_URL}' + favoriteName;\n" +
             "       }\n" +
-            "}\n" +
-            "\n" +
+            "}";
+
+    private static final String DELETE_FAVORITE_JAVASCRIPT_TEMPLATE =
             "   function deleteFavorite(favoriteId) {\n" +
             "       var reallyDelete = confirm('Do you really want to delete this favorite?');\n" +
             "       if (reallyDelete) {\n" +
             "           window.location.href = '{DELETE_FAVORITE_URL}' + favoriteId;\n" +
             "       }\n" +
-            "   }\n" +
-            "</script>\n";
+            "   }";
+
+    private static final String DESELECT_FAVORITE_JAVASCRIPT_TEMPLATE =
+            "   function clearFilters() {\n" +
+            "       window.location.href = '{CONTEXT_URL}'\n" +
+            "   }";
 
     /**
      * If no default favorite name is configured for this tag inside the JSP file this one is used as the DEFAULT value.
@@ -106,6 +185,11 @@ public class FavoriteTag extends TagSupport {
      */
     private String deleteFavoriteController;
 
+
+    private String context;
+
+    private Action deselectAction;
+
     public void setCallback(FilterCallback callback) {
         this.filterCallback = callback;
     }
@@ -136,6 +220,17 @@ public class FavoriteTag extends TagSupport {
         this.favorite = favorite;
     }
 
+    public void setContext(String context) {
+        if (context != null && context.startsWith("/")) {
+            context = context.substring(1, context.length());
+        }
+        this.context = context;
+    }
+
+    public void setOnDeselect(Action action) {
+        this.deselectAction = action;
+    }
+
     public OnmsFilterFavorite getFavorite() {
         return favorite;
     }
@@ -151,21 +246,22 @@ public class FavoriteTag extends TagSupport {
 
     /**
      * Creates the image either with a filled or an empty star.
+     *
      * @return The image String.
      */
     private String getImageString() {
         if (getFavorite() != null) {
             return MessageFormat.format(
                     IMG_TEMPLATE,
-                    "delete the current selected favorite",
-                    "deleteFavorite(" + getFavorite().getId() + ")",
+                    getDeselectAction().getDescription(),
+                    getDeselectAction().getJavascriptCallback(this),
                     "images/star_filled.png",
                     " " + getFavorite().getName());
         }
         return MessageFormat.format(
                 IMG_TEMPLATE,
-                "create a favorite with current filter settings",
-                "createFavorite()",
+                getSelectAction().getDescription(),
+                getSelectAction().getJavascriptCallback(this),
                 "images/star_empty.png",
                 "");
     }
@@ -175,23 +271,12 @@ public class FavoriteTag extends TagSupport {
      * @return
      */
     private String getScriptString() {
-        /* /opennms/event/createFavorite?...&favoriteName="" */
-        final String createFavoriteUrl = MessageFormat.format(
-                "{0}{1}?{2}&favoriteName=",
-                getUrlBase(),
-                getCreateFilterController(),
-                getFiltersAsStringWithoutLeadingFilter());
-
-        /* /opennms/event/deleteFavorite?...&favoriteName="" */
-        final String deleteFavoriteUrl = MessageFormat.format("{0}{1}?{2}&favoriteId=",
-                getUrlBase(),
-                getDeleteFilterController(),
-                getFiltersAsStringWithoutLeadingFilter());
+        final Action selectAction = getSelectAction();
+        final Action deselectAction = getDeselectAction();
 
         return JAVASCRIPT_TEMPLATE
-                .replaceAll("\\{DEFAULT_FAVORITE\\}", getDefaultFavoriteName())
-                .replaceAll("\\{CREATE_FAVORITE_URL\\}", createFavoriteUrl)
-                .replaceAll("\\{DELETE_FAVORITE_URL\\}", deleteFavoriteUrl);
+                .replaceAll("\\{SELECT_SCRIPT\\}", selectAction.getJavascript(this))
+                .replaceAll("\\{DESELECT_SCRIPT\\}", deselectAction.getJavascript(this));
     }
 
     private String getFiltersAsStringWithoutLeadingFilter() {
@@ -224,5 +309,18 @@ public class FavoriteTag extends TagSupport {
 
     private String getDefaultFavoriteName() {
         return defaultFavoriteName != null ? defaultFavoriteName : DEFAULT_FAVORITE_NAME;
+    }
+
+    private String getContext() {
+        return getUrlBase() + context;
+    }
+
+    private Action getSelectAction() {
+        return Action.CREATE_FAVORITE;
+    }
+
+    private Action getDeselectAction() {
+        if (deselectAction != null) return deselectAction;
+        return DEFAULT_DESELECT_ACTION;
     }
 }
