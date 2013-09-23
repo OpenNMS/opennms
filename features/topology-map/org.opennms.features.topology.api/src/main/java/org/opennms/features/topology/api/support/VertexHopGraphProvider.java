@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.support;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -174,9 +175,6 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return szl == null ? 0 : szl;
 	}
 
-	/**
-	 * TODO: OVERRIDE THIS FUNCTION
-	 */
 	@Override
 	public List<Vertex> getVertices(Criteria... criteria) {
 		List<Vertex> retval = new ArrayList<Vertex>();
@@ -221,6 +219,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertex.toString());
 				}
 				m_semanticZoomLevels.put(vertex, semanticZoomLevel);
+				// Put the vertex into the full list of vertices that is returned
+				retval.add(getVertex(vertex));
 
 				// Fetch all edges attached to this vertex
 				for (EdgeRef edgeRef : m_delegate.getEdgeIdsForVertex(vertex)) {
@@ -272,23 +272,25 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public boolean hasChildren(VertexRef group) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	public boolean hasChildren(VertexRef group) {	
+		return false;
 	}
 
 	@Override
 	public Vertex getParent(VertexRef vertex) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		// throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return null;
 	}
 
 	@Override
 	public boolean setParent(VertexRef child, VertexRef parent) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		// throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return false;
 	}
 
 	@Override
 	public List<Vertex> getChildren(VertexRef group) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -322,7 +324,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	/**
-	 * TODO OVERRIDE THIS FUNCTION
+	 * TODO OVERRIDE THIS FUNCTION?
 	 */
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
