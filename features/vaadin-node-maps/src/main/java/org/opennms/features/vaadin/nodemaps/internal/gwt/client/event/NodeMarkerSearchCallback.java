@@ -3,7 +3,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchResults;
 
 import java.util.Collection;
@@ -25,14 +25,14 @@ public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
         m_markerProvider = provider;
     }
 
-    public abstract Collection<NodeMarker> search(final Collection<NodeMarker> markers, final String text);
+    public abstract Collection<JSNodeMarker> search(final Collection<JSNodeMarker> markers, final String text);
 
     protected JSObject doSearch(final String text) {
         logger.log(Level.INFO, "doSearch(" + text +")");
-        final Collection<NodeMarker> markers = search(m_markerProvider.getMarkers(), text);
+        final Collection<JSNodeMarker> markers = search(m_markerProvider.getMarkers(), text);
         logger.log(Level.INFO, markers.size() + " markers returned.");
         final SearchResults results = SearchResults.create();
-        for (final NodeMarker marker : markers) {
+        for (final JSNodeMarker marker : markers) {
             results.setProperty(marker.getNodeLabel(), marker.getLatLng().getJSObject());
         }
         return results;

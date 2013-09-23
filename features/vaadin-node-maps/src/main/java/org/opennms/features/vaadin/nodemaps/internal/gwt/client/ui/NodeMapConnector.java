@@ -40,7 +40,7 @@ import org.discotools.gwt.leaflet.client.types.Point;
 import org.opennms.features.vaadin.nodemaps.internal.NodeMap;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 
 import com.google.gwt.core.client.GWT;
@@ -83,19 +83,19 @@ public class NodeMapConnector extends AbstractComponentConnector {
             return;
         }
 
-        final List<NodeMarker> featureCollection = new ArrayList<NodeMarker>();
+        final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
 
         for (MapNode node : getState().nodes) {
-            final NodeMarker marker = new NodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
-            marker.putProperty(NodeMarker.Property.NODE_ID, node.getNodeId());
-            marker.putProperty(NodeMarker.Property.NODE_LABEL, node.getNodeLabel());
-            marker.putProperty(NodeMarker.Property.FOREIGN_SOURCE, node.getForeignSource());
-            marker.putProperty(NodeMarker.Property.FOREIGN_ID, node.getForeignId());
-            marker.putProperty(NodeMarker.Property.DESCRIPTION, node.getDescription());
-            marker.putProperty(NodeMarker.Property.MAINTCONTRACT, node.getMaintcontract());
-            marker.putProperty(NodeMarker.Property.IP_ADDRESS, node.getIpAddress());
-            marker.putProperty(NodeMarker.Property.SEVERITY, node.getSeverity());
-            marker.putProperty(NodeMarker.Property.SEVERITY_LABEL, node.getSeverityLabel());
+            final JSNodeMarker marker = new JSNodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
+            marker.putProperty(JSNodeMarker.Property.NODE_ID, node.getNodeId());
+            marker.putProperty(JSNodeMarker.Property.NODE_LABEL, node.getNodeLabel());
+            marker.putProperty(JSNodeMarker.Property.FOREIGN_SOURCE, node.getForeignSource());
+            marker.putProperty(JSNodeMarker.Property.FOREIGN_ID, node.getForeignId());
+            marker.putProperty(JSNodeMarker.Property.DESCRIPTION, node.getDescription());
+            marker.putProperty(JSNodeMarker.Property.MAINTCONTRACT, node.getMaintcontract());
+            marker.putProperty(JSNodeMarker.Property.IP_ADDRESS, node.getIpAddress());
+            marker.putProperty(JSNodeMarker.Property.SEVERITY, node.getSeverity());
+            marker.putProperty(JSNodeMarker.Property.SEVERITY_LABEL, node.getSeverityLabel());
 
             List<String> categories = node.getCategories();
             if (categories != null) {

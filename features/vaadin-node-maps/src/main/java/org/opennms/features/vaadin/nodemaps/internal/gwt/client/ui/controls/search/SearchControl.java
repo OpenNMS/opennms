@@ -1,5 +1,22 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.discotools.gwt.leaflet.client.controls.Control;
+import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
+
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -18,22 +35,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SearchControl extends Control {
     Logger logger = Logger.getLogger(getClass().getName());
@@ -58,9 +59,9 @@ public class SearchControl extends Control {
     private MarkerContainer m_markerContainer;
     private SearchEventCallback m_changeCallback;
 
-    private CellList<NodeMarker> m_autoComplete;
+    private CellList<JSNodeMarker> m_autoComplete;
     private SearchStateManager m_stateManager;
-    private SingleSelectionModel<NodeMarker> m_selectionModel;
+    private SingleSelectionModel<JSNodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
 
     public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer) {
@@ -73,7 +74,7 @@ public class SearchControl extends Control {
         logger.log(Level.INFO, "new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
-        m_selectionModel = new SingleSelectionModel<NodeMarker>();
+        m_selectionModel = new SingleSelectionModel<JSNodeMarker>();
 
         m_historyWrapper = new HistoryWrapper();
 
@@ -105,7 +106,7 @@ public class SearchControl extends Control {
     }
 
     public void refresh() {
-        final List<NodeMarker> markers = m_markerContainer.getMarkers();
+        final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
         m_autoComplete.setRowData(markers);
     }
 
@@ -133,9 +134,9 @@ public class SearchControl extends Control {
                 // it's the search consumer's job to trigger an update in any UI elements
                 m_searchConsumer.refresh();
 
-                final List<NodeMarker> markers = m_markerContainer.getMarkers();
-                final NodeMarker selected = m_selectionModel.getSelectedObject();
-                final NodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
+                final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
+                final JSNodeMarker selected = m_selectionModel.getSelectedObject();
+                final JSNodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
                 if (selected == null) {
                     if (firstMarker != null) m_selectionModel.setSelected(firstMarker, true);
                 } else {
@@ -158,7 +159,7 @@ public class SearchControl extends Control {
             public void focusAutocomplete() {
                 m_autoComplete.setFocus(true);
                 if (m_selectionModel.getSelectedObject() == null) {
-                    final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                    final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                     if (markers.size() > 0) {
                         m_selectionModel.setSelected(markers.get(0), true);
                     }
@@ -167,7 +168,7 @@ public class SearchControl extends Control {
 
             @Override
             public void showAutocomplete() {
-                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 if (markers.size() > 0) {
                     m_selectionModel.setSelected(markers.get(0), true);
                 }
@@ -182,7 +183,7 @@ public class SearchControl extends Control {
 
             @Override
             public void entrySelected() {
-                final NodeMarker selected = m_selectionModel.getSelectedObject();
+                final JSNodeMarker selected = m_selectionModel.getSelectedObject();
                 if (selected != null) {
                     m_inputBox.setValue("nodeLabel=" + selected.getNodeLabel());
                 }
@@ -236,9 +237,9 @@ public class SearchControl extends Control {
     }
 
     private void initializeCellAutocompleteWidget() {
-        final AbstractSafeHtmlRenderer<NodeMarker> renderer = new AbstractSafeHtmlRenderer<NodeMarker>() {
+        final AbstractSafeHtmlRenderer<JSNodeMarker> renderer = new AbstractSafeHtmlRenderer<JSNodeMarker>() {
             @Override
-            public SafeHtml render(final NodeMarker marker) {
+            public SafeHtml render(final JSNodeMarker marker) {
                 final SafeHtmlBuilder builder = new SafeHtmlBuilder();
                 final String searchString = m_searchConsumer.getSearchString().toLowerCase();
 
@@ -276,10 +277,10 @@ public class SearchControl extends Control {
             }
         };
 
-        final AbstractSafeHtmlCell<NodeMarker> cell = new AbstractSafeHtmlCell<NodeMarker>(renderer, "keydown", "click", "dblclick", "touchstart") {
+        final AbstractSafeHtmlCell<JSNodeMarker> cell = new AbstractSafeHtmlCell<JSNodeMarker>(renderer, "keydown", "click", "dblclick", "touchstart") {
 
             @Override
-            public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final NodeMarker value, final NativeEvent event, final ValueUpdater<NodeMarker> valueUpdater) {
+            public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final JSNodeMarker value, final NativeEvent event, final ValueUpdater<JSNodeMarker> valueUpdater) {
                 if (m_stateManager.handleAutocompleteEvent(event)) {
                     super.onBrowserEvent(context, parent, value, event, valueUpdater);
                 }
@@ -294,7 +295,7 @@ public class SearchControl extends Control {
             }
         };
 
-        m_autoComplete = new CellList<NodeMarker>(cell);
+        m_autoComplete = new CellList<JSNodeMarker>(cell);
         m_autoComplete.setSelectionModel(m_selectionModel);
         m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
         m_autoComplete.setVisible(false);

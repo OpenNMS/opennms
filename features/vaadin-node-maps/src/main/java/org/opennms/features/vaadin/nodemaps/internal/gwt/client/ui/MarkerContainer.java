@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 
 public class MarkerContainer implements MarkerProvider {
-    final List<NodeMarker> m_markers         = new ArrayList<NodeMarker>();
-    final List<NodeMarker> m_filteredMarkers = new ArrayList<NodeMarker>();
+    final List<JSNodeMarker> m_markers         = new ArrayList<JSNodeMarker>();
+    final List<JSNodeMarker> m_filteredMarkers = new ArrayList<JSNodeMarker>();
 
     private MarkerFilter m_filter;
 
@@ -22,13 +22,13 @@ public class MarkerContainer implements MarkerProvider {
         return getMarkers().size();
     }
 
-    public ListIterator<NodeMarker> listIterator() {
+    public ListIterator<JSNodeMarker> listIterator() {
         return getMarkers().listIterator();
     }
 
-    public List<NodeMarker> getDisabledMarkers() {
-        final ArrayList<NodeMarker> markers = new ArrayList<NodeMarker>();
-        for (final NodeMarker marker : m_markers) {
+    public List<JSNodeMarker> getDisabledMarkers() {
+        final ArrayList<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
+        for (final JSNodeMarker marker : m_markers) {
             if (!m_filteredMarkers.contains(marker)) {
                 markers.add(marker);
             }
@@ -37,11 +37,11 @@ public class MarkerContainer implements MarkerProvider {
     }
 
     @Override
-    public List<NodeMarker> getMarkers() {
+    public List<JSNodeMarker> getMarkers() {
         return Collections.unmodifiableList(m_filteredMarkers);
     }
 
-    public void setMarkers(final List<NodeMarker> markers) {
+    public void setMarkers(final List<JSNodeMarker> markers) {
         if (m_markers != markers) {
             m_markers.clear();
             m_markers.addAll(markers);
@@ -51,7 +51,7 @@ public class MarkerContainer implements MarkerProvider {
 
     public void refresh() {
         m_filteredMarkers.clear();
-        for (final NodeMarker marker : m_markers) {
+        for (final JSNodeMarker marker : m_markers) {
             if (m_filter.matches(marker)) {
                 m_filteredMarkers.add(marker);
             }

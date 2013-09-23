@@ -9,7 +9,7 @@ import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
@@ -17,13 +17,13 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final String TARGET_BLANK = "target=\"_blank\"";
     private static final Logger LOG = Logger.getLogger(NodeMarkerClusterCallback.class.getName());
 
-    private static final class NodeMarkerComparator implements Comparator<NodeMarker> {
+    private static final class NodeMarkerComparator implements Comparator<JSNodeMarker> {
         final static int BEFORE = -1;
         final static int EQUAL = 0;
         final static int AFTER = 1;
 
         @Override
-        public int compare(final NodeMarker left, final NodeMarker right) {
+        public int compare(final JSNodeMarker left, final JSNodeMarker right) {
             if (left == right) return EQUAL;
             if (left.getSeverity() != right.getSeverity()) {
                 return left.getSeverity() > right.getSeverity()? BEFORE : AFTER;
@@ -49,19 +49,19 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     public final void run(final MarkerClusterEvent event) {
         final StringBuilder sb = new StringBuilder();
         final MarkerCluster cluster = event.getMarkerCluster();
-        final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
+        final List<JSNodeMarker> markers = (List<JSNodeMarker>)cluster.getAllChildMarkers();
         LOG.fine("Clicked, processing " + markers.size() + " markers.");
         Collections.sort(markers, new NodeMarkerComparator());
 
         if (markers.size() == 1) {
-            final NodeMarker marker = markers.get(0);
+            final JSNodeMarker marker = markers.get(0);
             sb.append("<div class=\"node-marker-single\">");
             sb.append(getPopupTextForMarker(marker));
             sb.append("</div>");
         } else {
             final StringBuilder nodeBuilder = new StringBuilder();
             int unacked = 0;
-            for (final NodeMarker marker : markers) {
+            for (final JSNodeMarker marker : markers) {
                 unacked += marker.getUnackedCount();
                 nodeBuilder.append("<tr class=\"node-marker-" + marker.getSeverityLabel() + "\">");
                 nodeBuilder.append("<td class=\"node-marker-label\">");
@@ -108,7 +108,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         }
     }
 
-    public static String getPopupTextForMarker(final NodeMarker marker) {
+    public static String getPopupTextForMarker(final JSNodeMarker marker) {
         // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
         sb.append("<h2>Node <a class=\"node\" href=\"element/node.jsp?node=").append(marker.getNodeId()).append("\" " + TARGET_NONE + ">").append(marker.getNodeLabel()).append("</a></h2>");

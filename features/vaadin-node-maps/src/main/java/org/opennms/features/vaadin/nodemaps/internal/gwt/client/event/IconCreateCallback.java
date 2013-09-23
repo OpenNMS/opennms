@@ -8,7 +8,7 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
 import org.discotools.gwt.leaflet.client.types.DivIcon;
 import org.discotools.gwt.leaflet.client.types.DivIconOptions;
 import org.discotools.gwt.leaflet.client.types.Point;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 public class IconCreateCallback extends JSObjectWrapper {
@@ -32,7 +32,7 @@ public class IconCreateCallback extends JSObjectWrapper {
 //
 //        int severity = 0;
 //        String severityLabel = "Normal";
-//        for (final NodeMarker marker : (List<NodeMarker>)cluster.getAllChildMarkers()) {
+//        for (final JSNodeMarker marker : (List<JSNodeMarker>)cluster.getAllChildMarkers()) {
 //            final int nodeSeverity = marker.getSeverity();
 //            if (nodeSeverity > severity) {
 //                severity = nodeSeverity;
@@ -57,7 +57,7 @@ public class IconCreateCallback extends JSObjectWrapper {
         String[] classArray = {"Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical"};
 
         String severityLabel = "Normal";
-        for(final NodeMarker marker : (List<NodeMarker>)cluster.getAllChildMarkers()) {
+        for(final JSNodeMarker marker : (List<JSNodeMarker>)cluster.getAllChildMarkers()) {
             final int nodeSeverity = marker.getSeverity();
             total++;
             dataArray[nodeSeverity -1] += 1.0;

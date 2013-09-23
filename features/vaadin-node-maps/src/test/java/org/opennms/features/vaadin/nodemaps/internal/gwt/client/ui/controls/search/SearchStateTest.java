@@ -327,8 +327,8 @@ public class SearchStateTest {
         private String m_value = "";
 
         @Override public String getValue() { return m_value; }
-
         @Override public void setValue(final String value) { m_value = value; }
+        @Override public String toString() { return "TestValueItem [value=" + m_value + "]"; }
     }
 
     private static final class TestSchedulerImpl extends SchedulerImpl {
