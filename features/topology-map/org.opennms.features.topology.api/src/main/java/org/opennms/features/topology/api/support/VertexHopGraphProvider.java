@@ -76,6 +76,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 
 		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
+			m_vertices.addAll(objects);
 			//m_hops = hops;
 		}
 
@@ -113,6 +114,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public boolean contains(VertexRef ref) {
 			return m_vertices.contains(ref);
+		}
+
+		public int size() {
+			return m_vertices.size();
 		}
 	}
 
@@ -206,6 +211,12 @@ public class VertexHopGraphProvider implements GraphProvider {
 		// Clear the existing semantic zoom level values
 		m_semanticZoomLevels.clear();
 		int semanticZoomLevel = 0;
+
+		// If we didn't find any matching nodes among the focus nodes...
+		if (nextHops.size() < 1) {
+			// ...then just return the full list of vertices
+			return allVertices;
+		}
 
 		// Put a limit on the SZL in case we infinite loop for some reason
 		while (semanticZoomLevel < 100 && nextHops.size() > 0) {

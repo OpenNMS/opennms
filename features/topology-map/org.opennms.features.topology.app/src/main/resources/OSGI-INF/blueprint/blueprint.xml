@@ -237,6 +237,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Add To Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.AddFocusVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Remove From Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveFocusVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Rename Group"/>
