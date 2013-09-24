@@ -26,15 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.support;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
 
@@ -43,9 +46,12 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class will be used to filter a topology so that the semantic zoom level is
@@ -55,15 +61,22 @@ import org.opennms.features.topology.api.topo.VertexRef;
  * @author Seth
  */
 public class VertexHopGraphProvider implements GraphProvider {
+	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-	public static class VertexHopCriteria extends ArrayList<VertexRef> implements Criteria {
+	public static class VertexHopCriteria implements Criteria {
 
 		private static final long serialVersionUID = 2904432878716561926L;
 
+		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
 		//private int m_hops;
 
+		public VertexHopCriteria() {
+			super();
+			//m_hops = hops;
+		}
+
 		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
-			super(objects);
+			m_vertices.addAll(objects);
 			//m_hops = hops;
 		}
 
@@ -85,6 +98,26 @@ public class VertexHopGraphProvider implements GraphProvider {
 		@Override
 		public String getNamespace() {
 			return "nodes";
+		}
+
+		public void add(VertexRef ref) {
+			m_vertices.add(ref);
+		}
+
+		public void remove(VertexRef ref) {
+			m_vertices.remove(ref);
+		}
+
+		public void clear(VertexRef ref) {
+			m_vertices.clear();
+		}
+
+		public boolean contains(VertexRef ref) {
+			return m_vertices.contains(ref);
+		}
+
+		public int size() {
+			return m_vertices.size();
 		}
 	}
 
@@ -147,9 +180,6 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return szl == null ? 0 : szl;
 	}
 
-	/**
-	 * TODO: OVERRIDE THIS FUNCTION
-	 */
 	@Override
 	public List<Vertex> getVertices(Criteria... criteria) {
 		List<Vertex> retval = new ArrayList<Vertex>();
@@ -162,22 +192,31 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		// Find the vertices that match a required HopDistanceCriteria
 		for (Criteria criterium : criteria) {
-			VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
-			for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
-				Vertex vertex = itr.next();
-				if (hdCriteria.contains(vertex)) {
-					// Put the vertex into the return value and remove it
-					// from the list of all eligible vertices
-					retval.add(vertex);
-					nextHops.add(vertex);
-					itr.remove();
+			try {
+				VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
+				for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
+					Vertex vertex = itr.next();
+					if (hdCriteria.contains(vertex)) {
+						// Put the vertex into the return value and remove it
+						// from the list of all eligible vertices
+						retval.add(vertex);
+						nextHops.add(vertex);
+						itr.remove();
+						LOG.debug("Added {} to selected vertex list", vertex);
+					}
 				}
-			}
+			} catch (ClassCastException e) {}
 		}
 
 		// Clear the existing semantic zoom level values
 		m_semanticZoomLevels.clear();
 		int semanticZoomLevel = 0;
+
+		// If we didn't find any matching nodes among the focus nodes...
+		if (nextHops.size() < 1) {
+			// ...then just return the full list of vertices
+			return allVertices;
+		}
 
 		// Put a limit on the SZL in case we infinite loop for some reason
 		while (semanticZoomLevel < 100 && nextHops.size() > 0) {
@@ -191,6 +230,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertex.toString());
 				}
 				m_semanticZoomLevels.put(vertex, semanticZoomLevel);
+				// Put the vertex into the full list of vertices that is returned
+				retval.add(getVertex(vertex));
 
 				// Fetch all edges attached to this vertex
 				for (EdgeRef edgeRef : m_delegate.getEdgeIdsForVertex(vertex)) {
@@ -242,23 +283,25 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	@Override
-	public boolean hasChildren(VertexRef group) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+	public boolean hasChildren(VertexRef group) {	
+		return false;
 	}
 
 	@Override
 	public Vertex getParent(VertexRef vertex) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		// throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return null;
 	}
 
 	@Override
 	public boolean setParent(VertexRef child, VertexRef parent) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		// throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return false;
 	}
 
 	@Override
 	public List<Vertex> getChildren(VertexRef group) {
-		throw new UnsupportedOperationException("Grouping is unsupported by " + getClass().getName());
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -292,7 +335,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	/**
-	 * TODO OVERRIDE THIS FUNCTION
+	 * TODO OVERRIDE THIS FUNCTION?
 	 */
 	@Override
 	public List<Edge> getEdges(Criteria... criteria) {
