@@ -16,6 +16,7 @@ import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 
 public class MergingGraphProviderTest {
 

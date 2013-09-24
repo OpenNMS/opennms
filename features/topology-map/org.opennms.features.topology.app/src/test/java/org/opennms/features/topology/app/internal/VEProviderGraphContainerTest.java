@@ -26,6 +26,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 
 public class VEProviderGraphContainerTest {
 

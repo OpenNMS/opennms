@@ -183,7 +183,7 @@ public class OnmsUser implements UserDetails {
 	/**
 	 * <p>getAuthorities</p>
 	 *
-	 * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
+	 * @return an array of {@link GrantedAuthority} objects.
 	 */
     @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -193,7 +193,7 @@ public class OnmsUser implements UserDetails {
 	/**
 	 * <p>setAuthorities</p>
 	 *
-	 * @param authorities an array of {@link org.springframework.security.GrantedAuthority} objects.
+	 * @param authorities an array of {@link GrantedAuthority} objects.
 	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		m_authorities = authorities;
