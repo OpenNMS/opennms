@@ -374,16 +374,22 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         // putting parents to topology information
         ManagedEntity parentEntity = managedEntity.getParent();
 
+        // TODO: Is this the best algorithm to build the topology info ?
+        // TODO: How to deal with a big list of networks on the ESX Hosts ?
         do {
             if (vmwareTopologyInfo.length() > 0) {
                 vmwareTopologyInfo.append(", ");
             }
             try {
-                vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), "UTF-8"));
+                if (parentEntity != null && parentEntity.getMOR() != null) {
+                    vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), "UTF-8"));
+                } else {
+                    logger.warn("Can't add topologyInformation because either the parentEntity or the MOR is null for " + managedEntity.getName());
+                }
             } catch (UnsupportedEncodingException e) {
                 logger.warn("Unsupported encoding '{}'", e.getMessage());
             }
-            parentEntity = parentEntity.getParent();
+            parentEntity = parentEntity == null ? null : parentEntity.getParent();
         } while (parentEntity != null);
 
         if (managedEntity instanceof HostSystem) {
