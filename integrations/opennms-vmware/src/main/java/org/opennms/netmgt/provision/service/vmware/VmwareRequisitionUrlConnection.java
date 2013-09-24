@@ -814,6 +814,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
         return attributes;
     }
+
     /**
      * {@inheritDoc}
      * <p/>
@@ -827,15 +828,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         InputStream stream = null;
 
         try {
-            Requisition curReq = null;
-            try {
-                ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-                if (repository != null) {
-                    curReq = repository.getRequisition(m_foreignSource);
-                }
-            } catch (Exception e) {
-                logger.warn("Can't retrieve requisition {}", m_foreignSource);
-            }
+            Requisition curReq = getExistingRequisition();
             Requisition newReq = buildVMwareRequisition();
             if (curReq == null) {
                 if (newReq == null) {
@@ -893,6 +886,19 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
 
         return stream;
+    }
+
+    protected Requisition getExistingRequisition() {
+        Requisition curReq = null;
+        try {
+            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
+            if (repository != null) {
+                curReq = repository.getRequisition(m_foreignSource);
+            }
+        } catch (Exception e) {
+            logger.warn("Can't retrieve requisition {}", m_foreignSource);
+        }
+        return curReq;
     }
 
     private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
