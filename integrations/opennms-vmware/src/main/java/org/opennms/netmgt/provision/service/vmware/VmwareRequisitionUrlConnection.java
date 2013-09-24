@@ -698,21 +698,8 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 if (checkVMPowerState(virtualMachine) && checkForAttribute(virtualMachine)) {
                     logger.debug("Adding Virtual Machine '{}'", virtualMachine.getName());
 
-                    LinkedHashSet<String> ipAddresses = new LinkedHashSet<String>();
-
-                    // add the Ip address reported by VMware tools, this should be primary
-                    ipAddresses.add(virtualMachine.getGuest().getIpAddress());
-
-                    // if possible, iterate over all virtual networks networks and add interface Ip addresses
-                    if (virtualMachine.getGuest().getNet() != null) {
-                        for (GuestNicInfo guestNicInfo : virtualMachine.getGuest().getNet()) {
-                            if (guestNicInfo.getIpAddress() != null) {
-                                for (String ipAddress : guestNicInfo.getIpAddress()) {
-                                    ipAddresses.add(ipAddress);
-                                }
-                            }
-                        }
-                    }
+                    // iterate over all interfaces
+                    TreeSet<String> ipAddresses = vmwareViJavaAccess.getVirtualMachineIpAddresses(virtualMachine);
 
                     // create the new node...
                     RequisitionNode node = createRequisitionNode(ipAddresses, virtualMachine, apiVersion, vmwareViJavaAccess);
