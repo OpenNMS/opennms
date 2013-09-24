@@ -33,6 +33,7 @@ import com.vmware.vim25.mo.*;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
@@ -91,6 +92,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private boolean m_importHostStandBy = false;
     private boolean m_importHostUnknown = false;
 
+    private boolean m_persistIPv4 = true;
+    private boolean m_persistIPv6 = true;
+
     private boolean m_persistVMs = true;
     private boolean m_persistHosts = true;
 
@@ -138,6 +142,19 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
         if (importVMOnly) {
             m_persistHosts = false;
+        }
+
+        boolean importIPv4Only = queryParameter("importIPv4Only", false);
+        boolean importIPv6Only = queryParameter("importIPv6Only", false);
+
+        if (importIPv4Only && importIPv6Only) {
+            throw new MalformedURLException("importIPv4Only and importIPv6Only can't be true simultaneously");
+        }
+        if (importIPv4Only) {
+            m_persistIPv6 = false;
+        }
+        if (importIPv6Only) {
+            m_persistIPv4 = false;
         }
 
         m_importVMPoweredOn = queryParameter("importVMPoweredOn", true);
@@ -253,28 +270,28 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             for (String ipAddress : ipAddresses) {
 
                 try {
-                    InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                    if ((m_persistIPv4 && InetAddressUtils.isIPv4Address(ipAddress)) || (m_persistIPv6 && InetAddressUtils.isIPv6Address(ipAddress))) {
+                        InetAddress inetAddress = InetAddress.getByName(ipAddress);
 
-                    if (!inetAddress.isLoopbackAddress()) {
-                        RequisitionInterface requisitionInterface = new RequisitionInterface();
-                        requisitionInterface.setIpAddr(ipAddress);
+                        if (!inetAddress.isLoopbackAddress()) {
+                            RequisitionInterface requisitionInterface = new RequisitionInterface();
+                            requisitionInterface.setIpAddr(ipAddress);
 
-                        //  the first one will be primary
-                        if (firstInterface) {
-                            requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
-
-                            for (String service : m_virtualMachineServices) {
-                                requisitionInterface.insertMonitoredService(new RequisitionMonitoredService(service.trim()));
+                            //  the first one will be primary
+                            if (firstInterface) {
+                                requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
+                                for (String service : m_virtualMachineServices) {
+                                    requisitionInterface.insertMonitoredService(new RequisitionMonitoredService(service.trim()));
+                                }
+                                firstInterface = false;
+                            } else {
+                                requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
                             }
 
-                            firstInterface = false;
-                        } else {
-                            requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
+                            requisitionInterface.setManaged(Boolean.TRUE);
+                            requisitionInterface.setStatus(Integer.valueOf(1));
+                            requisitionNode.putInterface(requisitionInterface);
                         }
-
-                        requisitionInterface.setManaged(Boolean.TRUE);
-                        requisitionInterface.setStatus(Integer.valueOf(1));
-                        requisitionNode.putInterface(requisitionInterface);
                     }
                 } catch (UnknownHostException unknownHostException) {
                     logger.warn("Invalid IP address '{}'", unknownHostException.getMessage());
@@ -290,26 +307,28 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 for (String ipAddress : ipAddresses) {
 
                     try {
-                        InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                        if ((m_persistIPv4 && InetAddressUtils.isIPv4Address(ipAddress)) || (m_persistIPv6 && InetAddressUtils.isIPv6Address(ipAddress))) {
+                            InetAddress inetAddress = InetAddress.getByName(ipAddress);
 
-                        if (!inetAddress.isLoopbackAddress()) {
-                            RequisitionInterface requisitionInterface = new RequisitionInterface();
-                            requisitionInterface.setIpAddr(ipAddress);
+                            if (!inetAddress.isLoopbackAddress()) {
+                                RequisitionInterface requisitionInterface = new RequisitionInterface();
+                                requisitionInterface.setIpAddr(ipAddress);
 
-                            if (firstInterface) {
-                                primaryInterfaceCandidate = requisitionInterface;
-                                firstInterface = false;
+                                if (firstInterface) {
+                                    primaryInterfaceCandidate = requisitionInterface;
+                                    firstInterface = false;
+                                }
+
+                                if (!reachableInterfaceFound && reachableCimService(vmwareViJavaAccess, (HostSystem) managedEntity, ipAddress)) {
+                                    primaryInterfaceCandidate = requisitionInterface;
+                                    reachableInterfaceFound = true;
+                                }
+
+                                requisitionInterface.setManaged(Boolean.TRUE);
+                                requisitionInterface.setStatus(Integer.valueOf(1));
+                                requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
+                                requisitionInterfaceList.add(requisitionInterface);
                             }
-
-                            if (!reachableInterfaceFound && reachableCimService(vmwareViJavaAccess, (HostSystem) managedEntity, ipAddress)) {
-                                primaryInterfaceCandidate = requisitionInterface;
-                                reachableInterfaceFound = true;
-                            }
-
-                            requisitionInterface.setManaged(Boolean.TRUE);
-                            requisitionInterface.setStatus(Integer.valueOf(1));
-                            requisitionInterface.setSnmpPrimary(PrimaryType.SECONDARY);
-                            requisitionInterfaceList.add(requisitionInterface);
                         }
 
                     } catch (UnknownHostException unknownHostException) {
