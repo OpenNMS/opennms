@@ -167,14 +167,27 @@ public class GroupService implements InitializingBean {
     
     public boolean addUser(String groupName, String userName) {
         Group group = getGroup(groupName);
-        if (group != null) {
+        if (group != null && hasUser(userName)) {
+            if (getUserForGroup(groupName, userName) != null) {
+                return false; // user is already added
+            }
+            // user is not added to group, add
+            group.addUser(userName);
+            saveGroup(group);
+            return true;
+        }
+        return false; // group or user does not exist.
+    }
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
+    private boolean hasUser(final String userName) {
+        if (userName != null) {
             try {
-                boolean hasUser = m_userDao.hasUser(userName);
-                if (hasUser) {
-                    group.addUser(userName);
-                    saveGroup(group);
-                    return true;
-                }
+                return m_userDao.hasUser(userName);
             } catch (MarshalException e) {
                 Log.error("could not load user", e); //ignore
             } catch (ValidationException e) {
@@ -183,12 +196,7 @@ public class GroupService implements InitializingBean {
                 Log.error("could not load user", e); //ignore
             }
         }
-        return false; // group or user does not exist.
-    }
-    
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+        return false;
     }
 
     private void setAuthorizedCategories(String groupName, List<String> categoryNames) {

@@ -55,22 +55,7 @@ public class AlarmTicketController extends MultiActionController {
 	private static final Logger LOG = LoggerFactory.getLogger(AlarmTicketController.class);
 
     private TroubleTicketProxy m_troubleTicketProxy;
-    
-    /**
-     * <p>Constructor for AlarmTicketController.</p>
-     */
-    public AlarmTicketController() {
-        super();
-        LOG.debug("AlarmTicketController created");
-    }
 
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        LOG.debug("AlarmTicketController handleRequestInternal called");
-        return super.handleRequestInternal(request, response);
-    }
-    
     static class CommandBean {
         Integer alarm;
         String redirect;
@@ -89,16 +74,7 @@ public class AlarmTicketController extends MultiActionController {
         
         
     }
-    
-    /**
-     * <p>create</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @param bean a {@link org.opennms.web.controller.alarm.AlarmTicketController.CommandBean} object.
-     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
-     * @throws java.lang.Exception if any.
-     */
+
     public ModelAndView create(HttpServletRequest request, HttpServletResponse response, CommandBean bean) throws Exception {
     	Map<String,String> parameters = new HashMap<String, String>();
     	parameters.put(EventConstants.PARM_USER, request.getRemoteUser());
@@ -112,41 +88,20 @@ public class AlarmTicketController extends MultiActionController {
     	m_troubleTicketProxy.createTicket(bean.getAlarm(), parameters);
         return new ModelAndView("redirect:"+bean.getRedirect());
     }
-    /**
-     * <p>update</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @param bean a {@link org.opennms.web.controller.alarm.AlarmTicketController.CommandBean} object.
-     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
-     */
+
     public ModelAndView update(HttpServletRequest request, HttpServletResponse response, CommandBean bean) {
         m_troubleTicketProxy.updateTicket(bean.getAlarm());
         return new ModelAndView("redirect:"+bean.getRedirect());
     }
-    /**
-     * <p>close</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @param bean a {@link org.opennms.web.controller.alarm.AlarmTicketController.CommandBean} object.
-     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
-     */
+
     public ModelAndView close(HttpServletRequest request, HttpServletResponse response, CommandBean bean) {
         m_troubleTicketProxy.closeTicket(bean.getAlarm());
         return new ModelAndView("redirect:"+bean.getRedirect());
     }
 
-    /**
-     * <p>setTroubleTicketProxy</p>
-     *
-     * @param troubleTicketProxy a {@link org.opennms.web.svclayer.TroubleTicketProxy} object.
-     */
+
     public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
         m_troubleTicketProxy = troubleTicketProxy;
     }
 
-    /**
-     * @return logger for this class
-     */
 }

@@ -37,12 +37,16 @@ import org.apache.commons.lang.ArrayUtils;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 public class NodeTable extends SelectionAwareTable {
+
+    private EventProxy eventProxy;
 
 	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public NodeTable(String caption, NodeDaoContainer container) {
