@@ -866,14 +866,32 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     for (RequisitionNode newNode : newReq.getNodes()) {
                         for (RequisitionNode curNode : curReq.getNodes()) {
                             if (newNode.getForeignId().equals(curNode.getForeignId())) {
+                                // Add existing custom assets
                                 for (RequisitionAsset asset : curNode.getAssets()) {
                                     if (!asset.getName().startsWith("vmware")) {
                                         newNode.putAsset(asset);
                                     }
                                 }
+                                // Add existing custom categories
                                 for (RequisitionCategory cat : curNode.getCategories()) {
                                     if (!cat.getName().startsWith("VMWare")) {
                                         newNode.putCategory(cat);
+                                    }
+                                }
+                                // Add existing custom services
+                                /*
+                                 * For each interface on the new requisition,
+                                 * - Retrieve the list of custom services from the corresponding interface on the existing requisition,
+                                 *   matching the interface by the IP address
+                                 * - If the list of services is not empty, add them to the new interface
+                                 */
+                                for (RequisitionInterface intf : curNode.getInterfaces()) {
+                                    List<RequisitionMonitoredService> services = getManualyConfiguredServices(intf);
+                                    if (!services.isEmpty()) {
+                                        RequisitionInterface newIntf = getRequisitionInterface(newNode, intf.getIpAddr());
+                                        if (newIntf != null) {
+                                            newIntf.getMonitoredServices().addAll(services);
+                                        }
                                     }
                                 }
                             }
@@ -888,6 +906,38 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         }
 
         return stream;
+    }
+
+    private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
+        for (RequisitionInterface intf : node.getInterfaces()) {
+            if (ipAddr.equals(intf.getIpAddr())) {
+                return intf;
+            }
+        }
+        return null;
+    }
+
+    private List<RequisitionMonitoredService> getManualyConfiguredServices(RequisitionInterface intf) {
+        List<RequisitionMonitoredService> services = new ArrayList<RequisitionMonitoredService>();
+        for (RequisitionMonitoredService svc : intf.getMonitoredServices()) {
+            boolean found = false;
+            for (String svcName : m_hostSystemServices) {
+                if (svcName.trim().equals(svc.getServiceName())) {
+                    found = true;
+                    continue;
+                }
+            }
+            for (String svcName : m_virtualMachineServices) {
+                if (svcName.trim().equals(svc.getServiceName())) {
+                    found = true;
+                    continue;
+                }
+            }
+            if (!found) {
+                services.add(svc);
+            }
+        }
+        return services;
     }
 
     /**
