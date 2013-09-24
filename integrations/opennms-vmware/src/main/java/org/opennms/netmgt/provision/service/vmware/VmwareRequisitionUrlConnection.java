@@ -211,6 +211,8 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         List<CIMObject> cimObjects = null;
         try {
             cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", ipAddress);
+        } catch (ConnectException e) {
+            return false;
         } catch (RemoteException e) {
             return false;
         } catch (CIMException e) {

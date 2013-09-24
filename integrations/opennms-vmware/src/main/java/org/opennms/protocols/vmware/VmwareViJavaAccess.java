@@ -38,30 +38,71 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
-import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
-import org.sblim.wbem.cim.*;
-import org.sblim.wbem.client.CIMClient;
-import org.sblim.wbem.client.PasswordCredential;
-import org.sblim.wbem.client.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.ssl.*;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.dao.VmwareConfigDao;
+
+import org.sblim.wbem.cim.CIMException;
+import org.sblim.wbem.cim.CIMNameSpace;
+import org.sblim.wbem.cim.CIMObject;
+import org.sblim.wbem.cim.CIMObjectPath;
+import org.sblim.wbem.cim.CIMProperty;
+import org.sblim.wbem.cim.CIMValue;
+import org.sblim.wbem.client.CIMClient;
+import org.sblim.wbem.client.PasswordCredential;
+import org.sblim.wbem.client.UserPrincipal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vmware.vim25.GuestNicInfo;
+import com.vmware.vim25.HostNetworkInfo;
+import com.vmware.vim25.HostServiceTicket;
+import com.vmware.vim25.HostVirtualNic;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.HostNetworkSystem;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServerConnection;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
+import com.vmware.vim25.ws.WSClient;
 
 /**
  * The Class VmwareViJavaAccess
@@ -409,7 +450,7 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws RemoteException, CIMException {
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws ConnectException, RemoteException, CIMException {
         List<CIMObject> cimObjects = new ArrayList<CIMObject>();
 
         if (!m_hostServiceTickets.containsKey(hostSystem)) {
@@ -469,7 +510,7 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws RemoteException, CIMException {
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws ConnectException, RemoteException, CIMException {
         return queryCimObjects(hostSystem, cimClass, null);
     }
 
