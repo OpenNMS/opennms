@@ -212,7 +212,7 @@ public class GroupRestService extends OnmsRestService {
         } finally {
             writeUnlock();
         }
-        throw getException(Status.BAD_REQUEST, "User with name '{}' does not exist.", userName);
+        throw getException(Status.BAD_REQUEST, "User with name '{}' already added or does not exist.", userName);
     }
 
     @DELETE
