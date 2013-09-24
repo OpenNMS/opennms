@@ -3,6 +3,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.sea
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
@@ -59,9 +61,9 @@ public class SearchControl extends Control {
     private MarkerContainer m_markerContainer;
     private SearchEventCallback m_changeCallback;
 
-    private CellList<JSNodeMarker> m_autoComplete;
+    private CellList<NodeMarker> m_autoComplete;
     private SearchStateManager m_stateManager;
-    private SingleSelectionModel<JSNodeMarker> m_selectionModel;
+    private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
 
     public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer) {
@@ -74,7 +76,7 @@ public class SearchControl extends Control {
         logger.log(Level.INFO, "new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
-        m_selectionModel = new SingleSelectionModel<JSNodeMarker>();
+        m_selectionModel = new SingleSelectionModel<NodeMarker>();
 
         m_historyWrapper = new HistoryWrapper();
 
@@ -135,8 +137,8 @@ public class SearchControl extends Control {
                 m_searchConsumer.refresh();
 
                 final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
-                final JSNodeMarker selected = m_selectionModel.getSelectedObject();
-                final JSNodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
+                final NodeMarker selected = m_selectionModel.getSelectedObject();
+                final NodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
                 if (selected == null) {
                     if (firstMarker != null) m_selectionModel.setSelected(firstMarker, true);
                 } else {
@@ -183,7 +185,7 @@ public class SearchControl extends Control {
 
             @Override
             public void entrySelected() {
-                final JSNodeMarker selected = m_selectionModel.getSelectedObject();
+                final NodeMarker selected = m_selectionModel.getSelectedObject();
                 if (selected != null) {
                     m_inputBox.setValue("nodeLabel=" + selected.getNodeLabel());
                 }
@@ -237,31 +239,35 @@ public class SearchControl extends Control {
     }
 
     private void initializeCellAutocompleteWidget() {
-        final AbstractSafeHtmlRenderer<JSNodeMarker> renderer = new AbstractSafeHtmlRenderer<JSNodeMarker>() {
+        final AbstractSafeHtmlRenderer<NodeMarker> renderer = new AbstractSafeHtmlRenderer<NodeMarker>() {
             @Override
-            public SafeHtml render(final JSNodeMarker marker) {
+            public SafeHtml render(final NodeMarker marker) {
                 final SafeHtmlBuilder builder = new SafeHtmlBuilder();
-                final String searchString = m_searchConsumer.getSearchString().toLowerCase();
+                final String search = m_searchConsumer.getSearchString();
 
                 builder.appendHtmlConstant("<div class=\"autocomplete-label\">");
                 builder.appendHtmlConstant(marker.getNodeLabel());
                 builder.appendHtmlConstant("</div>");
                 String additionalSearchInfo = null;
-                if (searchString.contains(":") || searchString.contains("=")) {
-                    final String searchKey = searchString.replaceAll("[\\:\\=].*$", "").toLowerCase();
+
+                if (search != null && (search.contains(":") || search.contains("="))) {
+                    final String searchKey = search.replaceAll("[\\:\\=].*$", "").toLowerCase();
                     logger.log(Level.INFO, "searchKey = " + searchKey);
 
+                    final Map<String,String> props = marker.getProperties();
+
                     if ("category".equals(searchKey) || "categories".equals(searchKey)) {
-                        final String categoryString = marker.getCategoriesAsString();
-                        if (categoryString.length() > 0) {
-                            additionalSearchInfo = categoryString;
+                        final String catString = props.get("categories");
+                        if (catString != null) {
+                            additionalSearchInfo = catString;
                         }
                     }
 
-                    for (final String key : marker.getTextPropertyNames()) {
-                        final String lowerKey = key.toLowerCase();
-                        if (lowerKey.equals(searchKey) && m_labels.containsKey(lowerKey)) {
-                            additionalSearchInfo = m_labels.get(lowerKey) + ": " + marker.getProperty(key);
+                    for (final Map.Entry<String,String> entry : props.entrySet()) {
+                        final String key = entry.getKey().toLowerCase();
+                        final Object value = entry.getValue();
+                        if (key.equals(searchKey) && m_labels.containsKey(key)) {
+                            additionalSearchInfo = m_labels.get(key) + ": " + value;
                             break;
                         }
                     }
@@ -277,10 +283,10 @@ public class SearchControl extends Control {
             }
         };
 
-        final AbstractSafeHtmlCell<JSNodeMarker> cell = new AbstractSafeHtmlCell<JSNodeMarker>(renderer, "keydown", "click", "dblclick", "touchstart") {
+        final AbstractSafeHtmlCell<NodeMarker> cell = new AbstractSafeHtmlCell<NodeMarker>(renderer, "keydown", "click", "dblclick", "touchstart") {
 
             @Override
-            public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final JSNodeMarker value, final NativeEvent event, final ValueUpdater<JSNodeMarker> valueUpdater) {
+            public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final NodeMarker value, final NativeEvent event, final ValueUpdater<NodeMarker> valueUpdater) {
                 if (m_stateManager.handleAutocompleteEvent(event)) {
                     super.onBrowserEvent(context, parent, value, event, valueUpdater);
                 }
@@ -295,7 +301,7 @@ public class SearchControl extends Control {
             }
         };
 
-        m_autoComplete = new CellList<JSNodeMarker>(cell);
+        m_autoComplete = new CellList<NodeMarker>(cell);
         m_autoComplete.setSelectionModel(m_selectionModel);
         m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
         m_autoComplete.setVisible(false);

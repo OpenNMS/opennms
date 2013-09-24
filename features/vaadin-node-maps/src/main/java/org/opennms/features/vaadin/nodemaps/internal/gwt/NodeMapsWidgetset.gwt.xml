@@ -4,6 +4,7 @@
 
     <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
+    <inherits name="org.opennms.features.geocoder.API" />
     <!-- 
           Compiler error: The Cross-Site-Iframe linker does not support <script> tags in the gwt.xml files, 
           but the gwt.xml file (or the gwt.xml files which it includes) contains the following script tags: 

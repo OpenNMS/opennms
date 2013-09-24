@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 
 public class MarkerContainer implements MarkerProvider {
     final List<JSNodeMarker> m_markers         = new ArrayList<JSNodeMarker>();
@@ -28,9 +28,12 @@ public class MarkerContainer implements MarkerProvider {
 
     public List<JSNodeMarker> getDisabledMarkers() {
         final ArrayList<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
-        for (final JSNodeMarker marker : m_markers) {
-            if (!m_filteredMarkers.contains(marker)) {
-                markers.add(marker);
+        for (final NodeMarker marker : m_markers) {
+            if (marker instanceof JSNodeMarker) {
+                final JSNodeMarker m = (JSNodeMarker)marker;
+                if (!m_filteredMarkers.contains(m)) {
+                    markers.add(m);
+                }
             }
         }
         return Collections.unmodifiableList(markers);

@@ -3,8 +3,11 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.features.geocoder.Coordinates;
 public class SimpleNodeMarker implements NodeMarker {
 
     private Integer m_nodeId;
@@ -17,27 +20,45 @@ public class SimpleNodeMarker implements NodeMarker {
     private String m_severityLabel;
     private Integer m_unackedCount;
     private String m_maintContract;
+    private Coordinates m_coordinates;
     private List<String> m_categoryList = new ArrayList<String>();
 
-    public final Map<String,Object> getProperties() {
-        final Map<String,Object> props = new HashMap<String,Object>();
-        addIfExists(props, "nodeid", getNodeId());
+    public final Map<String,String> getProperties() {
+        final Map<String,String> props = new HashMap<String,String>();
+
+        final Integer nodeId = getNodeId();
+        if (nodeId != null) props.put("nodeid", nodeId.toString());
+
+        final Integer severity = getSeverity();
+        if (severity != null) props.put("severity", severity.toString());
+
+        final Integer unackedCount = getUnackedCount();
+        if (unackedCount != null) props.put("unackedcount", unackedCount.toString());
+
+        final Coordinates coordinates = getCoordinates();
+        if (coordinates != null) props.put("coordinates", coordinates.toString());
+
+        if (m_categoryList != null && m_categoryList.size() > 0) {
+            final StringBuilder sb = new StringBuilder();
+            final Iterator<String> i = getCategoryList().iterator();
+            while (i.hasNext()) {
+                sb.append(i.next());
+                if (i.hasNext()) sb.append(",");
+            }
+            props.put("categories", sb.toString());
+        }
+
         addIfExists(props, "foreignsource", getForeignSource());
         addIfExists(props, "foreignid", getForeignId());
         addIfExists(props, "nodelabel", getNodeLabel());
         addIfExists(props, "description", getDescription());
         addIfExists(props, "ipaddress", getIpAddress());
-        addIfExists(props, "severity", getSeverity());
         addIfExists(props, "severitylabel", getSeverityLabel());
-        addIfExists(props, "unackedcount", getUnackedCount());
         addIfExists(props, "maintcontract", getMaintContract());
-        if (m_categoryList != null && m_categoryList.size() > 0) {
-            addIfExists(props, "categories", getCategoryList());
-        }
         return props;
     }
 
-    private final void addIfExists(final Map<String,Object> props, final String key, final Object value) {
+    private final void addIfExists(final Map<String,String> props, final String key, final String value) {
         if (value != null) {
             props.put(key, value);
         }
@@ -131,6 +152,15 @@ public class SimpleNodeMarker implements NodeMarker {
 
     public void setMaintContract(final String maintContract) {
         m_maintContract = maintContract;
+    }
+
+    @Override
+    public Coordinates getCoordinates() {
+        return m_coordinates;
+    }
+
+    public void setCoordinates(final Coordinates coordinates) {
+        m_coordinates = coordinates;
     }
 
     @Override

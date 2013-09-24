@@ -1,14 +1,15 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchResults;
-
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
+import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchResults;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerProvider;
 
 public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
     Logger logger = Logger.getLogger(getClass().getName());
@@ -33,7 +34,8 @@ public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
         logger.log(Level.INFO, markers.size() + " markers returned.");
         final SearchResults results = SearchResults.create();
         for (final JSNodeMarker marker : markers) {
-            results.setProperty(marker.getNodeLabel(), marker.getLatLng().getJSObject());
+            final LatLng latLng = JSNodeMarker.coordinatesToLatLng(marker.getCoordinates());
+            results.setProperty(marker.getNodeLabel(), latLng.getJSObject());
         }
         return results;
     }

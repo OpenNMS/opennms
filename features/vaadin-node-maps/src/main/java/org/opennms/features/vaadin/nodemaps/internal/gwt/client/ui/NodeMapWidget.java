@@ -31,7 +31,7 @@ import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
@@ -305,11 +305,11 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
             public void execute() {
                 if (m_firstUpdate) {
                     final LatLngBounds bounds = new LatLngBounds();
-                    for (final JSNodeMarker marker : m_markers.getMarkers()) {
-                        bounds.extend(marker.getLatLng());
+                    for (final NodeMarker marker : m_markers.getMarkers()) {
+                        bounds.extend(JSNodeMarker.coordinatesToLatLng(marker.getCoordinates()));
                     }
-                    for (final JSNodeMarker marker : m_markers.getDisabledMarkers()) {
-                        bounds.extend(marker.getLatLng());
+                    for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
+                        bounds.extend(JSNodeMarker.coordinatesToLatLng(marker.getCoordinates()));
                     }
                     //logger.log(Level.INFO, "first update, zooming to " + bounds.toBBoxString());
                     m_map.fitBounds(bounds);

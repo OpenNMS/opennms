@@ -3,6 +3,8 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.geocoder.Coordinates;
+
 public interface NodeMarker {
     public Integer getNodeId();
     public String getForeignSource();
@@ -15,6 +17,7 @@ public interface NodeMarker {
     public Integer getUnackedCount();
     public String getMaintContract();
     public List<String> getCategoryList();
+    public Coordinates getCoordinates();
 
-    public Map<String, Object> getProperties();
+    public Map<String, String> getProperties();
 }

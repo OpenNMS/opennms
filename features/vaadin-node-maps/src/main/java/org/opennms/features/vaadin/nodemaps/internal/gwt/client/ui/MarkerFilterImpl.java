@@ -3,7 +3,6 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
@@ -13,6 +12,7 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
 public class MarkerFilterImpl implements MarkerFilter {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(MarkerFilterImpl.class.getName());
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
     private SearchConsumer m_searchConsumer;
@@ -50,8 +50,8 @@ public class MarkerFilterImpl implements MarkerFilter {
             matchType = MatchType.SUBSTRING;
             searchFor.add(searchString);
         }
-        LOG.info("search property = " + searchProperty + ", match type = " + matchType + ", search string = " + searchFor);
-        final Map<String, Object> markerProperties = marker.getProperties();
+
+        final Map<String, String> markerProperties = marker.getProperties();
 
         if (searchProperty != null) {
             return matchProperty(matchType, searchProperty, searchFor, markerProperties);
@@ -66,53 +66,34 @@ public class MarkerFilterImpl implements MarkerFilter {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, Object> searchIn) {
+    private boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, String> searchIn) {
         final String lowerSearchProperty = searchProperty.toLowerCase();
+        
         if ("category".equals(lowerSearchProperty) || "categories".equals(lowerSearchProperty)) {
-            return matchCategory((List<String>)searchIn.get("categories"), matchType, searchFor);
+            return matchCategory(searchIn.get("categories"), matchType, searchFor);
         } else {
-            final Object value = searchIn.get(lowerSearchProperty);
+            final String value = searchIn.get(lowerSearchProperty);
+            if (value == null) return false;
             for (final String searchEntry : searchFor) {
-                if (value instanceof Integer) {
-                    try {
-                        switch (matchType) {
-                        case EXACT:
-                        case IN:
-                            final Integer iSearchEntry = Integer.valueOf(searchEntry);
-                            if (iSearchEntry == value) {
-                                return true;
-                            }
-                            ;;
-                        case SUBSTRING:
-                            if (value == null || ((String)value).toLowerCase().contains(searchEntry)) {
-                                return true;
-                            }
-                            ;;
-                        }
-                    } catch (final NumberFormatException e) {
-                        LOG.log(Level.WARNING, "Failed to format " + searchEntry + " as a number.", e);
+                if (matchType == MatchType.EXACT || matchType == MatchType.IN) {
+                    if (value.toLowerCase().equals(searchEntry)) {
+                        return true;
                     }
-                } else {
-                    if (matchType == MatchType.EXACT || matchType == MatchType.IN) {
-                        if (value != null && ((String)value).toLowerCase().equals(searchEntry)) {
-                            return true;
-                        }
-                    } else if (matchType == MatchType.SUBSTRING) {
-                        if (value != null && ((String)value).toLowerCase().contains(searchEntry)) {
-                            return true;
-                        }
+                } else if (matchType == MatchType.SUBSTRING) {
+                    if (value.toLowerCase().contains(searchEntry)) {
+                        return true;
                     }
                 }
             }
         }
+        
         return false;
     }
 
-    private boolean matchCategory(final List<String> categories, final MatchType matchType, final List<String> searchFor) {
+    private boolean matchCategory(final String categories, final MatchType matchType, final List<String> searchFor) {
         if (categories == null) return false;
 
-        for (final String category : categories) {
+        for (final String category : categories.split("\\s*,\\s*")) {
             final String categoryLower = category.toLowerCase();
             for (final String searchEntry : searchFor) {
                 if (matchType == MatchType.EXACT || matchType == MatchType.IN) {
@@ -126,6 +107,7 @@ public class MarkerFilterImpl implements MarkerFilter {
                 }
             }
         }
+        
         return false;
     }
 }

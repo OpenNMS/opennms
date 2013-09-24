@@ -37,6 +37,7 @@ import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.geocoder.Coordinates;
 
 import com.google.gwt.core.client.JsArrayString;
 
@@ -72,11 +73,11 @@ public class JSNodeMarker extends Marker implements NodeMarker {
         return getJSObject().getPropertyAsString(key);
     }
 
-    public String[] getTextPropertyNames() {
+    public List<String> getTextPropertyNames() {
         final JsArrayString nativeNames = getNativePropertyNames(getJSObject());
-        final String[] names = new String[nativeNames.length()];
+        final List<String> names = new ArrayList<String>();
         for (int i = 0; i < nativeNames.length(); i++) {
-            names[i] = nativeNames.get(i);
+            names.add(nativeNames.get(i));
         }
         return names;
     }
@@ -170,6 +171,10 @@ public class JSNodeMarker extends Marker implements NodeMarker {
         return getProperty(Property.MAINTCONTRACT);
     }
 
+    public Coordinates getCoordinates() {
+        final LatLng latLng = this.getLatLng();
+        return new Coordinates(Double.valueOf(latLng.lng()).floatValue(), Double.valueOf(latLng.lat()).floatValue());
+    }
     public Integer getSeverity() {
         final String severity = getProperty(Property.SEVERITY);
         return severity == null? 0 : Integer.valueOf(severity);
@@ -180,26 +185,40 @@ public class JSNodeMarker extends Marker implements NodeMarker {
         return count == null? 0 : Integer.valueOf(count);
     }
 
-    public Map<String,Object> getProperties() {
-        final Map<String,Object> props = new HashMap<String,Object>();
-        for (final String key : getTextPropertyNames()) {
-            if (getProperty(key) == null) continue;
-
-            if (Property.CATEGORIES.equals(key)) {
-                // categories is a list
-                props.put(key, getCategoryList());
-            } else if (Property.NODE_ID.equals(key)) {
-                // node ID is an integer
-                props.put(key, getNodeId());
-            } else if (Property.SEVERITY.equals(key)) {
-                // severity is an integer
-                props.put(key, getSeverity());
-            } else if (Property.UNACKED_COUNT.equals(key)) {
-                props.put(key, getUnackedCount());
-            } else {
-                props.put(key, getProperty(key));
-            }
+    public Map<String,String> getProperties() {
+        final Map<String,String> props = new HashMap<String,String>();
+        for (final String k : getTextPropertyNames()) {
+            final String value = getProperty(k);
+            if (k == null || value == null) continue;
+            final String key = k.toLowerCase();
+            props.put(key, value);
         }
+
+        final String cats = getCategoriesAsString();
+        if (cats != null && cats.length() > 0) {
+            props.put("categories", cats);
+        }
+
+        final Integer nodeId = getNodeId();
+        if (nodeId != null) {
+            props.put("nodeid", nodeId.toString());
+        }
+
+        final Integer severity = getSeverity();
+        if (severity != null) {
+            props.put("severity", severity.toString());
+        }
+
+        final Integer unackedCount = getUnackedCount();
+        if (unackedCount != null) {
+            props.put("unackedcount", unackedCount.toString());
+        }
+
+        final Coordinates coordinates = getCoordinates();
+        if (coordinates != null) {
+            props.put("coordinates", coordinates.toString());
+        }
+
         return props;
     }
 
@@ -210,6 +229,10 @@ public class JSNodeMarker extends Marker implements NodeMarker {
 
     public JSObject toSearchResult() {
         return SearchResult.create(getNodeLabel(), getLatLng());
+    }
+
+    public static LatLng coordinatesToLatLng(final Coordinates coordinates) {
+        return new LatLng(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble());
     }
 
 }
