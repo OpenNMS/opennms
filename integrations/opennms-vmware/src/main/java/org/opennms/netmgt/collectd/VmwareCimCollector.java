@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -326,10 +325,7 @@ public class VmwareCimCollector implements ServiceCollector {
                     List<CIMObject> cimList = null;
                     try {
                         cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
-                    } catch (RemoteException e) {
-                        logger.warn("Error retrieving cim values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
-                        return collectionSet;
-                    } catch (CIMException e) {
+                    } catch (Exception e) {
                         logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;
                     } finally {

@@ -420,7 +420,7 @@ public class VmwareViJavaAccessTest {
 
         try {
             returnedCimObjects = vmwareViJavaAccess.queryCimObjects(mockHostSystem, "cimClass");
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
 
