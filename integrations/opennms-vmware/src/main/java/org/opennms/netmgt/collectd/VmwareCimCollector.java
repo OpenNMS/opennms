@@ -265,18 +265,21 @@ public class VmwareCimCollector implements ServiceCollector {
 
         try {
             vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
+            int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", -1);
+            if (timeout > 0) {
+                if (!vmwareViJavaAccess.setTimeout(timeout)) {
+                    logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
+                }
+            }
         } catch (MarshalException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (ValidationException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (IOException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         }
 
         try {
@@ -284,11 +287,9 @@ public class VmwareCimCollector implements ServiceCollector {
         } catch (MalformedURLException e) {
             logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (RemoteException e) {
             logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         }
 
         HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
