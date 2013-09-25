@@ -50,11 +50,10 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 public class CommandManager {
-
     private class DefaultOperationContext implements OperationContext {
 
         private final UI m_mainWindow;
@@ -109,8 +108,11 @@ public class CommandManager {
             Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
             //TODO: Do some implementation here for execute
             if (operation != null) {
-
-                operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
+                try {
+                    operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
+                } catch (final RuntimeException e) {
+                    LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);
+                }
             }
         }
 
@@ -213,6 +215,7 @@ public class CommandManager {
             final OperationContext operationContext) {
 
         return new MenuBar.Command() {
+            private static final long serialVersionUID = 1542437659855341046L;
 
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -327,20 +330,25 @@ public class CommandManager {
         Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 
         //Check for null because separators have no Operation
-        if(operation != null) {
-            List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
-            boolean visibility = operation.display(selectedVertices, operationContext);
-            menuItem.setVisible(visibility);
-            boolean enabled = operation.enabled(selectedVertices, operationContext);
-            menuItem.setEnabled(enabled);
-
-            if (operation instanceof CheckedOperation) {
-                if (!menuItem.isCheckable()) {
-                    menuItem.setCheckable(true);
+        
+        try {
+            if(operation != null) {
+                List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+                boolean visibility = operation.display(selectedVertices, operationContext);
+                menuItem.setVisible(visibility);
+                boolean enabled = operation.enabled(selectedVertices, operationContext);
+                menuItem.setEnabled(enabled);
+    
+                if (operation instanceof CheckedOperation) {
+                    if (!menuItem.isCheckable()) {
+                        menuItem.setCheckable(true);
+                    }
+    
+                    menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
                 }
-
-                menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
             }
+        } catch (final RuntimeException e) {
+            LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
         }
     }
 
@@ -353,8 +361,12 @@ public class CommandManager {
         List<VertexRef> targets = asVertexList(target);
         // TODO: Figure out how to do this in the new contextmenu
 
-        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+        try {
+            //ctxMenuItem.setVisible(operation.display(targets, operationContext));
+            ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+        } catch (final RuntimeException e) {
+            LoggerFactory.getLogger(this.getClass()).warn("updateContextMenuItem: operation failed", e);
+        }
 
     }
 
