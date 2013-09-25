@@ -89,9 +89,10 @@ public class KscComboboxPresenter implements Presenter, KscComboboxView.Presente
     
     private List<KscReportDetail> convertJsArrayToList(JsArray<KscReportDetail> kscReportDetails) {
         List<KscReportDetail> m_list = new ArrayList<KscReportDetail>();
-        
-        for(int i = 0; i < kscReportDetails.length(); i++) {
-            m_list.add(kscReportDetails.get(i));
+        if (kscReportDetails != null) {
+            for(int i = 0; i < kscReportDetails.length(); i++) {
+                m_list.add(kscReportDetails.get(i));
+            }
         }
         return m_list;
     }

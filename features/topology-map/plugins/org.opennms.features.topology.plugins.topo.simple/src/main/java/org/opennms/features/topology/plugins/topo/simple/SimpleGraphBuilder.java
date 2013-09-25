@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.plugins.topo.simple;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -7,7 +7,6 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 public class SimpleGraphBuilder {
 

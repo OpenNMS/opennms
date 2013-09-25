@@ -312,6 +312,10 @@
   </bean>
   
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+
+  <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
   
   <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
