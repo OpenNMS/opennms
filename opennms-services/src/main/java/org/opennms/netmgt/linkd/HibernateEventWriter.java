@@ -646,6 +646,45 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
+    protected void saveAtInterface(final OnmsAtInterface saveMe) {
+        new UpsertTemplate<OnmsAtInterface, AtInterfaceDao>(m_transactionManager, m_atInterfaceDao) {
+
+            @Override
+            protected OnmsAtInterface query() {
+                return m_dao.findByNodeAndAddress(saveMe.getNode().getId(), saveMe.getIpAddress(), saveMe.getMacAddress());
+            }
+
+            @Override
+            protected OnmsAtInterface doUpdate(OnmsAtInterface updateMe) {
+                // Make sure that the fields used in the query match
+                Assert.isTrue(updateMe.getNode().compareTo(saveMe.getNode()) == 0);
+                Assert.isTrue(updateMe.getIpAddress().equals(saveMe.getIpAddress()));
+                Assert.isTrue(updateMe.getMacAddress().equals(saveMe.getMacAddress()));
+
+                if (updateMe.getId() == null && saveMe.getId() != null) {
+                    updateMe.setId(saveMe.getId());
+                }
+                //updateMe.setBridgePort(saveMe.getBridgePort());
+                updateMe.setIfIndex(saveMe.getIfIndex());
+                updateMe.setLastPollTime(saveMe.getLastPollTime());
+                //updateMe.setNode(saveMe.getNode());
+                updateMe.setStatus(saveMe.getStatus());
+                //updateMe.setVlan(saveMe.getVlan());
+                m_dao.update(updateMe);
+                m_dao.flush();
+                return updateMe;
+            }
+
+            @Override
+            protected OnmsAtInterface doInsert() {
+                m_dao.save(saveMe);
+                m_dao.flush();
+                return saveMe;
+            }
+        }.execute();
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
         LOG.debug("Initialized {}", this.getClass().getSimpleName());

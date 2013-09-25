@@ -123,6 +123,8 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract void saveStpInterface(final OnmsStpInterface stpInterface);
 
+    protected abstract void saveAtInterface(final OnmsAtInterface saveMe) ;
+
     protected abstract List<String> getPhysAddrs(final int nodeId);
 
     protected abstract void markOldDataInactive(final Date now, final int nodeid);
@@ -175,28 +177,32 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processIpNetToMediaTable: trying save ipNetToMedia info: IP address {}, MAC address {}, ifIndex {}", hostAddress, physAddr, ifindex);
 
             // get an AtInterface but without setting MAC address
-            final Collection<OnmsAtInterface> ats = getAtInterfaceDao().getAtInterfaceForAddress(ipaddress);
-            if (ats.isEmpty()) {
+            final Collection<OnmsIpInterface> iplist = getIpInterfaceDao().findByIpAddress(hostAddress);
+            if (iplist.isEmpty()) {
                 LOG.debug("processIpNetToMediaTable: no node found for IP address {}.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
                 continue;
             }
 
-            OnmsAtInterface at = null;
-            if (ats.size() > 1) {
+            OnmsIpInterface ipinterface = null;
+            if (iplist.size() > 1) {
                 LOG.debug("processIpNetToMediaTable: found duplicated  IP address {}.", hostAddress);
-                for (OnmsAtInterface currAt: ats) {
-                    LOG.debug("processIpNetToMediaTable: parsing duplicated  arp interface {}.", currAt);
-                    if (currAt.getNode().getId() == node.getNodeId()) {
-                        at=currAt;
+                for (OnmsIpInterface ip: iplist) {
+                    LOG.debug("processIpNetToMediaTable: parsing duplicated  ip interface {}.", ip);
+                    if (ip.getNode().getId() == node.getNodeId()) {
+                        LOG.debug("processIpNetToMediaTable: suitable ip interface found. Skipping entry {}", ip);
+                        ipinterface=ip;
                         break;
                     }
                 }
-                LOG.debug("processIpNetToMediaTable: no suitable duplicated  arp interface found. Skipping entry {}", ent);
-                continue;
+                if (ipinterface == null) {
+                    LOG.debug("processIpNetToMediaTable: no suitable duplicated  arp interface found. Skipping entry {}", ent);
+                    continue;
+                }
             } else {
-                at = ats.iterator().next();
+                ipinterface = iplist.iterator().next();
             }
+            OnmsAtInterface at = new OnmsAtInterface(ipinterface.getNode(),ipinterface.getIpAddress());
             int interfaceindex = getIfIndex(at.getNode().getId(),
                                             hostAddress);
             LOG.debug("processIpNetToMediaTable: found ifindex {} for node {} IP address {}.",
@@ -221,7 +227,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             at.setLastPollTime(scanTime);
             at.setStatus(StatusType.ACTIVE);
 
-            getAtInterfaceDao().saveOrUpdate(at);
+            saveAtInterface(at);
 
             // Now store the information that is needed to create link in
             // linkd
@@ -1091,5 +1097,6 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
         return stpNode;
     }
+
 
 }
