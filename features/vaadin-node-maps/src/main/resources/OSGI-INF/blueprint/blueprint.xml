@@ -51,14 +51,13 @@ xsi:schemaLocation="
 	    </service-properties>
 	</service>
 
-	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink"	>
-	</bean>
+	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink"	/>
 
 	<service id="nodeMapsQueryLinkService" interface="org.opennms.features.topology.api.Operation" ref="nodeMapsQueryLink">
 		<service-properties>
 			<entry key="operation.menuLocation" value="Device" />
 			<entry key="operation.contextMenuLocation" value="" />
-			<entry key="operation.label" value="View in Geographical Maps" />
+			<entry key="operation.label" value="View in GeoMaps" />
 		</service-properties>
 	</service>
 </blueprint>
