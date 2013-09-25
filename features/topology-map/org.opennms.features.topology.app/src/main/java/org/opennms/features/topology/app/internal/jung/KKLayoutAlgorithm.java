@@ -42,9 +42,9 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
-        @Override
+	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
-		
+
 		Graph g = graphContainer.getGraph();
 
 		final Layout graphLayout = g.getLayout();
@@ -52,34 +52,27 @@ public class KKLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		SparseGraph<VertexRef, Edge> jungGraph = new SparseGraph<VertexRef, Edge>();
 
 		Collection<? extends Vertex> vertices = g.getDisplayVertices();
-		
+
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
-		
+
 		Collection<? extends Edge> edges = g.getDisplayEdges();
-		
+
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
-		
 
 		KKLayout<VertexRef, Edge> layout = new KKLayout<VertexRef, Edge>(jungGraph);
 		layout.setInitializer(initializer(graphLayout));
 		layout.setSize(selectLayoutSize(graphContainer));
-		
+
 		while(!layout.done()) {
 			layout.step();
 		}
-		
-		
+
 		for(Vertex v : vertices) {
 			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
 		}
-		
-		
-		
-		
 	}
-
 }
