@@ -603,7 +603,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                     LOG.info("getLinksFromCdp: cdpdevice found node {} for cdpTargetDeviceId {} ", linknode2.getNodeId(), cdpiface1.getCdpTargetDeviceId());
                     
                     for (CdpInterface cdpiface2: linknode2.getCdpInterfaces()) {
-                        if (cdpiface2.getCdpTargetDeviceId() != null 
+                        if (cdpiface2 != null && cdpiface2.getCdpTargetDeviceId() != null 
                                 && cdpiface2.getCdpTargetDeviceId().equals(linknode1.getCdpDeviceId()) 
                                 && cdpiface1.getCdpIfName().equals(cdpiface2.getCdpTargetIfName())
                                 && cdpiface2.getCdpIfName().equals(cdpiface1.getCdpTargetIfName())) {
@@ -613,7 +613,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                             addNodetoNodeLink(cdpLink);
                         }
                     }
-                } else if (cdpiface1.getCdpTargetNodeId()!= null) {
+                } else if (cdpiface1.getCdpTargetNodeId() != null) {
                     LOG.info("getLinksFromCdp: cdpdevice found no snmp target node {} for cdpTargetDeviceId {} ", cdpiface1.getCdpTargetNodeId(), cdpiface1.getCdpTargetDeviceId());
                     NodeToNodeLink link = new NodeToNodeLink(cdpiface1.getCdpTargetNodeId(), -1);
                     link.setNodeparentid(linknode1.getNodeId());

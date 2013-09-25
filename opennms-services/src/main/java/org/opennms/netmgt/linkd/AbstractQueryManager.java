@@ -350,7 +350,11 @@ public abstract class AbstractQueryManager implements QueryManager {
                     OspfNbrInterface ospfinterface = new OspfNbrInterface(ospfNbrRouterId);
                     ospfinterface.setOspfNbrNodeId(ipinterface.getNode().getId());
                     ospfinterface.setOspfNbrIpAddr(ospfNbrIpAddr);
-                    ospfinterface.setOspfNbrNetMask(getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(), ifIndex).getNetMask());
+                    OnmsSnmpInterface snmpinterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(ipinterface.getNode().getId(), ifIndex);
+                    if (snmpinterface != null)
+                        ospfinterface.setOspfNbrNetMask(snmpinterface.getNetMask());
+                    else
+                        ospfinterface.setOspfNbrNetMask(InetAddressUtils.getInetAddress("255.255.255.252"));
                     ospfinterface.setOspfNbrIfIndex(ifIndex);
                     LOG.debug("processOspf: adding ospf interface. node/ospfinterface: {}/{}", node.getNodeId(), ospfinterface);
                     ospfinterfaces.add(ospfinterface);
