@@ -28,6 +28,7 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.opennms.features.topology.api.support.DialogWindow;
@@ -35,8 +36,11 @@ import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.topology.api.support.InfoWindow.LabelCreator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -46,6 +50,8 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
+    final static private Logger LOG = LoggerFactory.getLogger(AlarmIdColumnLinkGenerator.class);
+
     private static final long serialVersionUID = 7212711788117805336L;
 
     private final String alarmIdPropertyName;
@@ -84,9 +90,13 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
                 }
 
                 // alarm still exists, show alarm details
+                final URI currentLocation = Page.getCurrent().getLocation();
+                final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                final String redirectFragment = contextRoot + "/alarm/detail.htm?id=" + alarmId;
+                LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
+
                 try {
-                    final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                    final InfoWindow window = new InfoWindow(new URL(contextRoot + "/alarm/detail.htm?id=" + alarmId), new LabelCreator() {
+                    final InfoWindow window = new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new LabelCreator() {
                         @Override
                         public String getLabel() {
                             return "Alarm Info " + alarmId;
