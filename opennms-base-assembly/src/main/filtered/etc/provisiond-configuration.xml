@@ -34,6 +34,14 @@
 
     where possible parameters are:
 
+       importIPv4Only -
+         Imports only IPv4 Interfaces
+         Default: false
+
+       importIPv6Only -
+         Imports only IPv6 Interfaces
+         Default: false
+
        importVMPoweredOn -
          Controls whether powered on machines should be imported.
          Default: true
@@ -104,7 +112,9 @@
        If the content of customAttributeValue starts with '~', the rest of it will be treated as a regular expresion. In
        this case, the real value must match the provided expression.
 
-       IMPORTANT: importVMOnly and importHostOnly can't be true simultaneously.
+       IMPORTANT:
+       - importVMOnly and importHostOnly can't be true simultaneously.
+       - importIPv4Only and importIPv6Only can't be true simultaneously.
 
      Examples for import-url-resource:
        vmware://vcenter.mydomain.org?importHostPoweredOff=true

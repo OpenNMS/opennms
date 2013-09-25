@@ -38,30 +38,72 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
-import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
-import org.sblim.wbem.cim.*;
-import org.sblim.wbem.client.CIMClient;
-import org.sblim.wbem.client.PasswordCredential;
-import org.sblim.wbem.client.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.ssl.*;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.dao.VmwareConfigDao;
+
+import org.sblim.wbem.cim.CIMException;
+import org.sblim.wbem.cim.CIMNameSpace;
+import org.sblim.wbem.cim.CIMObject;
+import org.sblim.wbem.cim.CIMObjectPath;
+import org.sblim.wbem.cim.CIMProperty;
+import org.sblim.wbem.cim.CIMValue;
+import org.sblim.wbem.client.CIMClient;
+import org.sblim.wbem.client.PasswordCredential;
+import org.sblim.wbem.client.UserPrincipal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vmware.vim25.GuestNicInfo;
+import com.vmware.vim25.HostNetworkInfo;
+import com.vmware.vim25.HostServiceTicket;
+import com.vmware.vim25.HostVirtualNic;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.HostNetworkSystem;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServerConnection;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
+import com.vmware.vim25.ws.WSClient;
 
 /**
  * The Class VmwareViJavaAccess
@@ -215,22 +257,15 @@ public class VmwareViJavaAccess {
     protected void relax() {
 
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
 
-            @Override
-            public void checkServerTrusted(
-                    java.security.cert.X509Certificate[] certs, String authType)
-                    throws java.security.cert.CertificateException {
+            public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
                 return;
             }
 
-            @Override
-            public void checkClientTrusted(
-                    java.security.cert.X509Certificate[] certs, String authType)
-                    throws java.security.cert.CertificateException {
+            public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
                 return;
             }
         }};
@@ -403,7 +438,7 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws RemoteException, CIMException {
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws ConnectException, RemoteException, CIMException {
         List<CIMObject> cimObjects = new ArrayList<CIMObject>();
 
         if (!m_hostServiceTickets.containsKey(hostSystem)) {
@@ -463,19 +498,33 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws RemoteException, CIMException {
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws ConnectException, RemoteException, CIMException {
         return queryCimObjects(hostSystem, cimClass, null);
     }
 
     /**
-     * Searches for the primary ip address of a host system
+     * Searches for the primary ip address of a host system.
+     * <p>The idea is to resolve the HostSystem's name and use the resulting IP if the IP is listed on the available addresses list,
+     * otherwise, use the first ip listed on the available list.</p>
      *
      * @param hostSystem the host system to query
      * @return the primary ip address
      * @throws RemoteException
      */
+    // TODO We should use the IP of the "Management Network" (i.e. the port that has enabled "Management Traffic" on the available vSwitches).
+    //      Resolving the name of the HostSystem as the FQDN is the most closest thing for that.
     public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
-        return getHostSystemIpAddresses(hostSystem).first();
+        TreeSet<String> addresses = getHostSystemIpAddresses(hostSystem);
+        String ipAddress = null;
+        try {
+            ipAddress = InetAddress.getByName(hostSystem.getName()).getHostAddress();
+        } catch (Exception e) {
+            logger.debug("Can't resolve the IP address from {}.", hostSystem.getName());
+        }
+        if (ipAddress == null) {
+            return addresses.first();
+        }
+        return addresses.contains(ipAddress) ? ipAddress : addresses.first();
     }
 
     /**
@@ -507,6 +556,34 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+        return ipAddresses;
+    }
+
+    /**
+     * Searches for all ip addresses of a virtual machine
+     *
+     * @param virtualMachine the virtual machine to query
+     * @return the ip addresses of the virtual machine, the first one is the primary
+     * @throws RemoteException
+     */
+    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) throws RemoteException {
+        TreeSet<String> ipAddresses = new TreeSet<String>();
+
+        // add the Ip address reported by VMware tools, this should be primary
+        if (virtualMachine.getGuest().getIpAddress() != null)
+            ipAddresses.add(virtualMachine.getGuest().getIpAddress());
+
+        // if possible, iterate over all virtual networks networks and add interface Ip addresses
+        if (virtualMachine.getGuest().getNet() != null) {
+            for (GuestNicInfo guestNicInfo : virtualMachine.getGuest().getNet()) {
+                if (guestNicInfo.getIpAddress() != null) {
+                    for (String ipAddress : guestNicInfo.getIpAddress()) {
+                        ipAddresses.add(ipAddress);
+                    }
+                }
+            }
+        }
+
         return ipAddresses;
     }
 
