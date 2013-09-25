@@ -132,8 +132,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
     </reference-list>
     
-    <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
-    <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
+    <bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />
+    <bean id="treeWidgetManager" class="org.opennms.features.topology.api.WidgetManager" />
     
     <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="widgetManager"/>

@@ -37,7 +37,7 @@ import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.Point;
-import org.opennms.features.vaadin.nodemaps.internal.NodeMap;
+import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
@@ -45,15 +45,17 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarker
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(NodeMap.class)
+@Connect(NodeMapComponent.class)
 public class NodeMapConnector extends AbstractComponentConnector {
     private static final long serialVersionUID = 3902997653175283284L;
     private Map<String, Icon> m_icons;
 
+    private NodeIdSelectionRpc m_rpc = RpcProxy.create(NodeIdSelectionRpc.class, this);
 
     public NodeMapConnector() {
         initializeIcons();
@@ -64,7 +66,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
     }-*/;
 
     @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+    public void onStateChanged(final StateChangeEvent stateChangeEvent) {
         // Handle all common Vaadin features first
         super.onStateChanged(stateChangeEvent);
 
@@ -76,6 +78,9 @@ public class NodeMapConnector extends AbstractComponentConnector {
             updateNodes();
         }
 
+        if (stateChangeEvent.hasPropertyChanged("nodeIds")) {
+
+        }
     }
 
     private void updateNodes() {
@@ -85,7 +90,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
         final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
 
-        for (MapNode node : getState().nodes) {
+        for (final MapNode node : getState().nodes) {
             final JSNodeMarker marker = new JSNodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
             marker.putProperty(JSNodeMarker.Property.NODE_ID, node.getNodeId());
             marker.putProperty(JSNodeMarker.Property.NODE_LABEL, node.getNodeLabel());
@@ -97,7 +102,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
             marker.putProperty(JSNodeMarker.Property.SEVERITY, node.getSeverity());
             marker.putProperty(JSNodeMarker.Property.SEVERITY_LABEL, node.getSeverityLabel());
 
-            List<String> categories = node.getCategories();
+            final List<String> categories = node.getCategories();
             if (categories != null) {
                 marker.setCategories(categories.toArray(new String[]{}));
             }
@@ -124,7 +129,9 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(NodeMapWidget.class);
+        final NodeMapWidget widget = GWT.create(NodeMapWidget.class);
+        widget.setRpc(m_rpc);
+        return widget;
     }
 
     @Override

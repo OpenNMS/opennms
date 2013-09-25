@@ -29,18 +29,30 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.UI;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.NodeIdSelectionRpc;
 import org.opennms.netmgt.model.*;
 
 import java.util.*;
 
-public class NodeMap extends AbstractComponent {
+public class NodeMapComponent extends AbstractComponent {
 
     private static final long serialVersionUID = 2L;
+    private NodeIdSelectionRpc m_rpc = new NodeIdSelectionRpc() {
+        private static final long serialVersionUID = 6827947640059117291L;
+        @Override
+        public void setSelectedNodes(final List<Integer> nodeIds) {
+            // getState().nodeIds = nodeIds;
+            ((NodeMapsApplication)UI.getCurrent()).setFocusedNodes(nodeIds);
+        }
+    };
 
-    public NodeMap() {
+    public NodeMapComponent() {
+        registerRpc(m_rpc);
     }
 
     public void showNodes(final Map<Integer, NodeEntry> nodeEntries) {
@@ -109,7 +121,7 @@ public class NodeMap extends AbstractComponent {
             m_severity = severity;
         }
 
-        public MapNode createNode(){
+        public MapNode createNode() {
             MapNode node = new MapNode();
             node.setLatitude(m_latitude);
             node.setLongitude(m_longitude);

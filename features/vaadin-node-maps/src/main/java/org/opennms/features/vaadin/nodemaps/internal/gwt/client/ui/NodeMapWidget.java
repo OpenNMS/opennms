@@ -16,6 +16,7 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
@@ -51,26 +52,18 @@ import com.google.gwt.user.client.ui.Widget;
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
 public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsumer {
     private final DivElement m_div;
-
     private Map m_map;
-
     private ILayer m_layer;
-
     private MarkerContainer m_markers;
-
     private MarkerClusterGroup m_markerClusterGroup;
-
     private MarkerClusterGroup[] m_stateClusterGroups;
 
     private boolean m_firstUpdate = true;
-
     private int m_minimumSeverity = 0;
-
     private String m_searchString = "";
-
     private SearchControl m_searchControl;
-
     private MarkerFilter m_filter;
+    private NodeIdSelectionRpc m_rpc;
 
     private Logger logger = Logger.getLogger(getClass().getName());
 
@@ -231,6 +224,15 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
         m_markers.refresh();
 
+        final List<Integer> nodeIds = new ArrayList<Integer>();
+        for (final JSNodeMarker marker : m_markers.getMarkers()) {
+            final Integer nodeId = marker.getNodeId();
+            if (nodeId != null) {
+                nodeIds.add(nodeId);
+            }
+        }
+        m_rpc.setSelectedNodes(nodeIds);
+
         logger.log(Level.INFO, "processing " + m_markers.size() + " markers for the node layer");
         // make the search control refresh with the new markers
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -390,5 +392,9 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
             m_map.removeLayer(m_layer);
             m_map = null;
         }
+    }
+
+    public void setRpc(final NodeIdSelectionRpc rpc) {
+        m_rpc = rpc;
     }
 }

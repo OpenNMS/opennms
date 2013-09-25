@@ -1,6 +1,6 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
 	http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
 
@@ -11,47 +11,53 @@ xsi:schemaLocation="
 	<reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 
+	<bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />
 
-    <bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype" init-method="init">
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="assetRecordDao" ref="assetDao" />
-        <property name="alarmDao" ref="alarmDao" />
-        <property name="geocoderService" ref="geocoderService" />
-        <property name="transactionOperations" ref="transactionTemplate" />
-    </bean>
+	<reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">
+		<reference-listener bind-method="onBind" unbind-method="onUnbind" ref="widgetManager" />
+	</reference-list>
+
+	<bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype" init-method="init">
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="assetRecordDao" ref="assetDao" />
+		<property name="alarmDao" ref="alarmDao" />
+		<property name="geocoderService" ref="geocoderService" />
+		<property name="transactionOperations" ref="transactionTemplate" />
+	</bean>
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
 		<property name="headerProvider" ref="onmsHeaderProvider" />
-        <property name="mapWidgetComponent" ref="mapWidget" />
+		<property name="mapWidgetComponent" ref="mapWidget" />
+		<property name="widgetManager" ref="widgetManager" />
 	</bean>
 
-	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory" >
+	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory">
 		<!-- Blueprint container bean -->
-		<argument ref="blueprintContainer"/>
+		<argument ref="blueprintContainer" />
 		<!-- Bean id of the Vaadin application prototype -->
-		<argument value="nodeMapsApplication"/>
+		<argument value="nodeMapsApplication" />
 	</bean>
 
 	<service id="nodeMapsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="nodeMapsApplicationFactory">
 		<service-properties>
 			<entry key="alias" value="/node-maps" />
-			<entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset"/>
+			<entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
 		</service-properties>
 	</service>
 
 	<bean id="nodeMapsLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapNavEntry">
-	    <property name="url" value="node-maps#search/nodeId=%nodeid%" />
-	    <property name="name" value="View in Geographical Map" />
+		<property name="url" value="node-maps#search/nodeId=%nodeid%" />
+		<property name="name" value="View in Geographical Map" />
 	</bean>
-	
+
 	<service id="nodeMapsLinkService" interface="org.opennms.web.navigate.ConditionalPageNavEntry" ref="nodeMapsLink">
-	    <service-properties>
-	        <entry key="Page" value="node" />
-	        <entry key="registration.export" value="true" />
-	    </service-properties>
+		<service-properties>
+			<entry key="Page" value="node" />
+			<entry key="registration.export" value="true" />
+		</service-properties>
 	</service>
 
-	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink"	/>
+	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink" />
 
 	<service id="nodeMapsQueryLinkService" interface="org.opennms.features.topology.api.Operation" ref="nodeMapsQueryLink">
 		<service-properties>
@@ -60,4 +66,5 @@ xsi:schemaLocation="
 			<entry key="operation.label" value="View in GeoMaps" />
 		</service-properties>
 	</service>
+
 </blueprint>

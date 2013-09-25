@@ -28,22 +28,48 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.vaadin.ui.VerticalSplitPanel;
 
 /**
  * The Class Node Maps Application.
@@ -93,25 +119,28 @@ import java.io.InputStream;
 @StyleSheet({
     "gwt/public/markercluster/MarkerCluster.css",
     "gwt/public/markercluster/MarkerCluster.Default.css",
-"gwt/public/node-maps.css"})
-public class NodeMapsApplication extends UI {
+    "gwt/public/node-maps.css"
+})
+public class NodeMapsApplication extends UI implements WidgetUpdateListener, WidgetContext {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
     private VerticalLayout m_rootLayout;
-
-    private Logger m_log = LoggerFactory.getLogger(getClass());
+    private VerticalLayout m_layout;
 
     private MapWidgetComponent m_mapWidgetComponent;
     private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
+    private WidgetManager m_widgetManager;
+    private VaadinRequest m_request;
+    private VaadinApplicationContext m_context;
 
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
     }
 
-    public void setMapWidgetComponent(MapWidgetComponent m_mapWidgetComponent) {
-        this.m_mapWidgetComponent = m_mapWidgetComponent;
+    public void setMapWidgetComponent(final MapWidgetComponent mapWidgetComponent) {
+        m_mapWidgetComponent = mapWidgetComponent;
     }
 
     public void setHeaderHtml(final String headerHtml) {
@@ -123,36 +152,163 @@ public class NodeMapsApplication extends UI {
         m_headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; var style = document.createElement(\"style\"); style.type = 'text/css'; style.innerHTML = '.leaflet-control-container { display: none; }'; document.body.appendChild(style); }</script>";
     }
 
+    public void setWidgetManager(final WidgetManager widgetManager) {
+        LOG.debug("setting widget manager: {}", widgetManager);
+
+        if(m_widgetManager != null) {
+            m_widgetManager.removeUpdateListener(this);
+        }
+        m_widgetManager = widgetManager;
+        m_widgetManager.addUpdateListener(this);
+    }
 
     @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        m_log.debug("initializing");
+    public void widgetListUpdated(final WidgetManager widgetManager) {
+        updateWidgetView(widgetManager);
+    }
+
+    private void updateWidgetView(final WidgetManager widgetManager) {
+        if (m_layout != null) {
+            synchronized (m_layout) {
+                m_layout.removeAllComponents();
+                if(widgetManager.widgetCount() == 0) {
+                    m_layout.addComponent(m_mapWidgetComponent);
+                } else {
+                    final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+                    bottomLayoutBar.setFirstComponent(m_mapWidgetComponent);
+
+                    // Split the screen 70% top, 30% bottom
+                    bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                    bottomLayoutBar.setSizeFull();
+                    bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                    m_layout.addComponent(bottomLayoutBar);
+                }
+                m_layout.markAsDirty();
+            }
+        } else {
+            LOG.warn("updateWidgetView() called, but there's no layout yet!");
+        }
+    }
+
+    /**
+     * Gets a {@link TabSheet} view for all widgets in this manager.
+     * 
+     * @return TabSheet
+     */
+    private Component getTabSheet(final WidgetManager manager, final WidgetContext widgetContext) {
+        // Use an absolute layout for the bottom panel
+        AbsoluteLayout bottomLayout = new AbsoluteLayout();
+        bottomLayout.setSizeFull();
+
+        final TabSheet tabSheet = new TabSheet();
+        tabSheet.setSizeFull();
+
+        for(final IViewContribution viewContrib : manager.getWidgets()) {
+            // Create a new view instance
+            final Component view = viewContrib.getView(m_context, widgetContext);
+
+            // Icon can be null
+            tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
+
+            // If the component supports the HasExtraComponents interface, then add the extra 
+            // components to the tab bar
+            try {
+                final Component[] extras = ((HasExtraComponents)view).getExtraComponents();
+                if (extras != null && extras.length > 0) {
+                    // For any extra controls, add a horizontal layout that will float
+                    // on top of the right side of the tab panel
+                    final HorizontalLayout extraControls = new HorizontalLayout();
+                    extraControls.setHeight(32, Unit.PIXELS);
+                    extraControls.setSpacing(true);
+
+                    // Add the extra controls to the layout
+                    for (final Component component : extras) {
+                        extraControls.addComponent(component);
+                        extraControls.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
+                    }
+
+                    // Add a TabSheet.SelectedTabChangeListener to show or hide the extra controls
+                    tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+                        @Override
+                        public void selectedTabChange(final SelectedTabChangeEvent event) {
+                            final TabSheet source = (TabSheet) event.getSource();
+                            if (source == tabSheet) {
+                                // Bizarrely enough, getSelectedTab() returns the contained
+                                // Component, not the Tab itself.
+                                //
+                                // If the first tab was selected...
+                                if (source.getSelectedTab() == view) {
+                                    extraControls.setVisible(true);
+                                } else {
+                                    extraControls.setVisible(false);
+                                }
+                            }
+                        }
+                    });
+
+                    // Place the extra controls on the absolute layout
+                    bottomLayout.addComponent(extraControls, "top:0px;right:5px;z-index:100");
+                }
+            } catch (ClassCastException e) {}
+            view.setSizeFull();
+        }
+
+        // Add the tabsheet to the layout
+        bottomLayout.addComponent(tabSheet, "top: 0; left: 0; bottom: 0; right: 0;");
+
+        return bottomLayout;
+    }
+
+    @Override
+    protected void init(final VaadinRequest vaadinRequest) {
+        m_request = vaadinRequest;
+        LOG.debug("initializing");
+
+        final VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
+        final UI currentUI = UI.getCurrent();
+        context.setSessionId(currentUI.getSession().getSession().getId());
+        context.setUiId(currentUI.getUIId());
+        context.setUsername(vaadinRequest.getRemoteUser());
+        m_context = context;
+
         createMapPanel(vaadinRequest.getParameter("search"));
-        createRootLayout(vaadinRequest);
+        createRootLayout();
         addRefresher();
     }
 
-    private void createMapPanel(String searchString) {
+    private void createMapPanel(final String searchString) {
         m_mapWidgetComponent.setSearchString(searchString);
         m_mapWidgetComponent.setSizeFull();
     }
 
-    private void createRootLayout(VaadinRequest request) {
+    private void createRootLayout() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
         setContent(m_rootLayout);
+        addHeader();
 
-        addHeader(request);
-        m_rootLayout.addComponent(m_mapWidgetComponent);
-        m_rootLayout.setExpandRatio(m_mapWidgetComponent, 1.0f);
+        addContentLayout();
     }
 
-    private void addHeader(VaadinRequest request) {
+    private void addContentLayout() {
+        m_layout = new VerticalLayout();
+        m_layout.setSizeFull();
+        m_rootLayout.addComponent(m_layout);
+        m_rootLayout.setExpandRatio(m_layout, 1);
+
+        if (m_widgetManager.widgetCount() > 0) {
+            updateWidgetView(m_widgetManager);
+        } else {
+            m_layout.addComponent(m_mapWidgetComponent);
+        }
+    }
+
+    private void addHeader() {
         if (m_headerProvider != null) {
             try {
-                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(request)));
+                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request)));
             } catch (final Exception e) {
-                LOG.warn("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
+                LOG.warn("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
 
             }
         }
@@ -165,12 +321,8 @@ public class NodeMapsApplication extends UI {
                 headerLayout.addStyleName("onmsheader");
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
-                try {
-                    is.close();
-                } catch (final IOException closeE) {
-                    m_log.debug("failed to close HTML input stream", closeE);
-                }
-                m_log.debug("failed to get header layout data", e);
+                IOUtils.closeQuietly(is);
+                LOG.debug("failed to get header layout data", e);
             }
         }
     }
@@ -180,4 +332,73 @@ public class NodeMapsApplication extends UI {
         refresher.setRefreshInterval(REFRESH_INTERVAL);
         addExtension(refresher);
     }
+
+    public void setFocusedNodes(final List<Integer> nodeIds) {
+        for(final IViewContribution viewContrib : m_widgetManager.getWidgets()) {
+            // Create a new view instance
+            final Component view = viewContrib.getView(m_context, this);
+            final SelectionListener listener = (SelectionListener)view;
+            final SelectionContext selectionContext = new SelectionContext() {
+                @Override
+                public boolean deselectAll() {
+                    return false;
+                }
+
+                @Override
+                public boolean setSelectedVertexRefs(final Collection<? extends VertexRef> vertexRefs) {
+                    return false;
+                }
+
+                @Override
+                public boolean selectVertexRefs(final Collection<? extends VertexRef> vertexRefs) {
+                    return false;
+                }
+
+                @Override
+                public boolean deselectVertexRefs(final Collection<? extends VertexRef> vertexRefs) {
+                    return false;
+                }
+
+                @Override
+                public boolean setSelectedEdgeRefs(final Collection<? extends EdgeRef> edgeRefs) {
+                    return false;
+                }
+
+                @Override
+                public boolean isVertexRefSelected(final VertexRef vertexRef) {
+                    return false;
+                }
+
+                @Override
+                public boolean isEdgeRefSelected(final EdgeRef edgeRef) {
+                    return false;
+                }
+
+                @Override
+                public Collection<VertexRef> getSelectedVertexRefs() {
+                    final List<VertexRef> vertexes = new ArrayList<VertexRef>();
+
+                    for (final Integer nodeId : nodeIds) {
+                        vertexes.add(new AbstractVertexRef("nodes", nodeId.toString(), null));
+                    }
+                    
+                    return vertexes;
+                }
+                
+            };
+            listener.selectionChanged(selectionContext);
+        }
+    }
+
+    @Override
+    public GraphContainer getGraphContainer() {
+        LOG.debug("don't have a graph container");
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public String toString() {
+        return "NodeMapsApplication@" + hashCode();
+    }
+
 }

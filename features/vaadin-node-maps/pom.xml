@@ -163,6 +163,12 @@
 			<artifactId>org.osgi.compendium</artifactId>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.opennms.osgi</groupId>
+            <artifactId>opennms-osgi-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
 		<!-- Vaadin Dependencies -->
 

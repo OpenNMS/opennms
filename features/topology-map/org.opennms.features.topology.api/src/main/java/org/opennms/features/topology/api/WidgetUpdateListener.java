@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api;
 
 public interface WidgetUpdateListener {
-
     public void widgetListUpdated(WidgetManager widgetManager);
 }
