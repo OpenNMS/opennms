@@ -196,6 +196,13 @@ public interface LinkdConfig {
     boolean useOspfDiscovery();
 
     /**
+     * <p>useIsIsDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useIsIsDiscovery();
+
+    /**
      * <p>saveStpNodeTable</p>
      *
      * @return a boolean.

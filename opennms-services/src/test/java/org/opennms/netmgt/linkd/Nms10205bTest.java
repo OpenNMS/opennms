@@ -431,6 +431,7 @@ it has a link to Mysore that does not support LLDP
         example1.setUseCdpDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseOspfDiscovery(false);
+        example1.setUseIsisDiscovery(false);
 
         example1.setSaveRouteTable(false);
         example1.setSaveStpInterfaceTable(false);
@@ -589,6 +590,7 @@ Address          Interface              State     ID               Pri  Dead
         example1.setUseBridgeDiscovery(false);
         example1.setUseIpRouteDiscovery(false);
         example1.setUseOspfDiscovery(true);
+        example1.setUseIsisDiscovery(false);
 
         example1.setSaveStpInterfaceTable(false);
         example1.setSaveStpNodeTable(false);

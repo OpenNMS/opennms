@@ -43,7 +43,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.Vector;
 
-import org.slf4j.MDC;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;

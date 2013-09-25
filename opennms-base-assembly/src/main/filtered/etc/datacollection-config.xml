@@ -53,6 +53,7 @@
         <include-collection dataCollectionGroup="Novell"/>
         <include-collection dataCollectionGroup="pfSense"/>
         <include-collection dataCollectionGroup="Powerware"/>
+        <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
         <include-collection dataCollectionGroup="Riverbed"/>
         <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
         <include-collection dataCollectionGroup="ServerTech"/>

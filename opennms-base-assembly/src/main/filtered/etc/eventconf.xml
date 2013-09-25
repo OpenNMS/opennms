@@ -1534,6 +1534,19 @@
   </event> 
 
   <event>
+    <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
+    <descr>
+      This event is sent when a remote poller's connection IP address has changed.
+    </descr>
+    <logmsg dest='logndisplay'>
+      The connection IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has changed
+      from %parm[oldConnectionHostAddress]% to %parm[newConnectionHostAddress]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event> 
+
+  <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
     <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
     <descr>
@@ -2035,6 +2048,7 @@
   <event-file>events/Fore.events.xml</event-file>
   <event-file>events/Fortinet.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
+  <event-file>events/FoundryNetworks2.events.xml</event-file>
   <event-file>events/FujitsuSiemens.events.xml</event-file>
   <event-file>events/GGSN.events.xml</event-file>
   <event-file>events/Groupwise.events.xml</event-file>

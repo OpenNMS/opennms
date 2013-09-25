@@ -53,7 +53,7 @@ public class PathOutageFactory extends Object {
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
     private static final String GET_CRITICAL_PATH_BY_NODEID = "SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
-    
+
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
     private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
@@ -71,7 +71,7 @@ public class PathOutageFactory extends Object {
     private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages WHERE ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
-    
+
     /** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
     public static final String NO_CRITICAL_PATH = "Not Configured";
 
@@ -84,27 +84,30 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static List<String[]> getAllCriticalPaths() throws SQLException {
-        Connection conn = Vault.getDbConnection();
-        List<String[]> paths = new ArrayList<String[]>();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+
+        final List<String[]> paths = new ArrayList<String[]>();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATHS);
+            final PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATHS);
+            d.watch(stmt);
 
-            ResultSet rs = stmt.executeQuery();
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
             while (rs.next()) {
                 String[] path = new String[2];
                 path[0] = rs.getString(1);
                 path[1] = rs.getString(2);
                 paths.add(path);
             }
-            rs.close();
-            stmt.close();
+            return paths;
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
-        return paths;
     }
-    
+
     /**
      * <p>
      * Retrieve critical path by nodeid
@@ -149,22 +152,25 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
-        Connection conn = Vault.getDbConnection();
-        List<String> pathNodes = new ArrayList<String>();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+
+        final List<String> pathNodes = new ArrayList<String>();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
+            final PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
+            d.watch(stmt);
             stmt.setString(1, criticalPathIp);
             stmt.setString(2, criticalPathServiceName);
 
-            ResultSet rs = stmt.executeQuery();
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
             while (rs.next()) {
                 pathNodes.add(rs.getString(1));
             }
-            rs.close();
-            stmt.close();
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         return pathNodes;
     }
@@ -180,54 +186,75 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
+        final DBUtils d = new DBUtils(PathOutageFactory.class);
 
-        int countManagedSvcs = 0;
-        int countOutages = 0;
-        String result[] = new String[3];
-        result[1] = "Cleared";
-        result[2] = "Unmanaged";
-        
-        int nodeID = WebSecurityUtils.safeParseInt(nodeIDStr);
+        try {
+            int countManagedSvcs = 0;
+            int countOutages = 0;
+            String result[] = new String[3];
+            result[1] = "Cleared";
+            result[2] = "Unmanaged";
 
-        PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
-        stmt.setInt(1, nodeID);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            result[0] = rs.getString(1);
-        }
-        rs.close();
-        stmt.close();
+            int nodeID = WebSecurityUtils.safeParseInt(nodeIDStr);
 
-        stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
-        stmt.setInt(1, nodeID);
-        rs = stmt.executeQuery();
-        while (rs.next()) {
-            countManagedSvcs = rs.getInt(1);
-        }
-        rs.close();
-        stmt.close();
-
-        if(countManagedSvcs > 0) {
-            stmt = conn.prepareStatement(COUNT_OUTAGES);
+            PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
+            d.watch(stmt);
             stmt.setInt(1, nodeID);
-            rs = stmt.executeQuery();
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
             while (rs.next()) {
-                countOutages = rs.getInt(1);
+                result[0] = rs.getString(1);
             }
+
             rs.close();
             stmt.close();
-            if(countManagedSvcs == countOutages) {
-                result[1] = "Critical";
-                result[2] = "All Services Down";
-            } else if(countOutages == 0) {
-                result[1] = "Normal";
-                result[2] = "All Services Up";
-            } else {
-                result[1] = "Minor";
-                result[2] = "Some Services Down";
+
+            stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
+            d.watch(stmt);
+            stmt.setInt(1, nodeID);
+
+            rs = stmt.executeQuery();
+            d.watch(rs);
+
+            while (rs.next()) {
+                countManagedSvcs = rs.getInt(1);
             }
+
+            rs.close();
+            stmt.close();
+
+            if(countManagedSvcs > 0) {
+                stmt = conn.prepareStatement(COUNT_OUTAGES);
+                d.watch(stmt);
+                stmt.setInt(1, nodeID);
+
+                rs = stmt.executeQuery();
+                d.watch(rs);
+
+                while (rs.next()) {
+                    countOutages = rs.getInt(1);
+                }
+
+                rs.close();
+                stmt.close();
+
+                if(countManagedSvcs == countOutages) {
+                    result[1] = "Critical";
+                    result[2] = "All Services Down";
+                } else if(countOutages == 0) {
+                    result[1] = "Normal";
+                    result[2] = "All Services Up";
+                } else {
+                    result[1] = "Minor";
+                    result[2] = "Some Services Down";
+                }
+            }
+            return result;
+        } finally {
+            d.cleanUp();
         }
-        return result;
     }
 
     /**
@@ -243,17 +270,21 @@ public class PathOutageFactory extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
-        Connection conn = Vault.getDbConnection();
+        final Connection conn = Vault.getDbConnection();
+        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+
         String[] result = new String[4];
         int nodeCount=0;
         int count = 0;
 
         try {
-
-            PreparedStatement stmt0 = conn.prepareStatement(GET_NODELABEL_BY_IP);
+            final PreparedStatement stmt0 = conn.prepareStatement(GET_NODELABEL_BY_IP);
+            d.watch(stmt0);
             stmt0.setString(1, criticalPathIp);
 
-            ResultSet rs0 = stmt0.executeQuery();
+            final ResultSet rs0 = stmt0.executeQuery();
+            d.watch(rs0);
+
             while (rs0.next()) {
                 count++;
                 result[0] = rs0.getString(1);
@@ -266,43 +297,60 @@ public class PathOutageFactory extends Object {
             stmt0.close();
 
             count = 0;
-            PreparedStatement stmt1 = conn.prepareStatement(GET_NODEID_BY_IP);
+            final PreparedStatement stmt1 = conn.prepareStatement(GET_NODEID_BY_IP);
+            d.watch(stmt1);
             stmt1.setString(1, criticalPathIp);
 
-            ResultSet rs1 = stmt1.executeQuery();
+            final ResultSet rs1 = stmt1.executeQuery();
+            d.watch(rs1);
+
             while (rs1.next()) {
                 result[1] = rs1.getString(1);
             }
+
             rs1.close();
             stmt1.close();
 
-            PreparedStatement stmt2 = conn.prepareStatement(COUNT_NODES_IN_PATH);
+            final PreparedStatement stmt2 = conn.prepareStatement(COUNT_NODES_IN_PATH);
+            d.watch(stmt2);
             stmt2.setString(1, criticalPathIp);
             stmt2.setString(2, criticalPathServiceName);
 
-            ResultSet rs2 = stmt2.executeQuery();
+            final ResultSet rs2 = stmt2.executeQuery();
+            d.watch(rs2);
+
             while (rs2.next()) {
                 nodeCount = rs2.getInt(1);
             }
             result[2] = Integer.toString(nodeCount);
+
             rs2.close();
             stmt2.close();
 
-            PreparedStatement stmt = conn.prepareStatement(IS_CRITICAL_PATH_MANAGED);
+            final PreparedStatement stmt = conn.prepareStatement(IS_CRITICAL_PATH_MANAGED);
+            d.watch(stmt);
             stmt.setString(1, criticalPathIp);
             stmt.setString(2, criticalPathServiceName);
-            ResultSet rs = stmt.executeQuery();
+
+            final ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
             while (rs.next()) {
                 count = rs.getInt(1);
             }
+
             rs.close();
             stmt.close();
+
             if(count > 0) {
-                PreparedStatement stmt3 = conn.prepareStatement(GET_CRITICAL_PATH_STATUS);
+                final PreparedStatement stmt3 = conn.prepareStatement(GET_CRITICAL_PATH_STATUS);
+                d.watch(stmt3);
                 stmt3.setString(1, criticalPathIp);
                 stmt3.setString(2, criticalPathServiceName);
 
-                ResultSet rs3 = stmt3.executeQuery();
+                final ResultSet rs3 = stmt3.executeQuery();
+                d.watch(rs3);
+
                 while (rs3.next()) {
                     count = rs3.getInt(1);
                 }
@@ -314,13 +362,14 @@ public class PathOutageFactory extends Object {
                 while (rs3.next()) {
                     result[3] = rs3.getString(1);
                 }
+
                 rs3.close();
                 stmt3.close();
             } else {
                 result[3] = "Cleared";
             }
         } finally {
-            Vault.releaseDbConnection(conn);
+            d.cleanUp();
         }
         return result;
     }

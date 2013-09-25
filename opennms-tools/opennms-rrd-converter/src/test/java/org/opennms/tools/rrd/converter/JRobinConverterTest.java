@@ -591,6 +591,14 @@ public class JRobinConverterTest {
         }
     }
 
+    @Test
+    public void testCleaner() throws Exception {
+        createMockSineRrds(null);
+        RrdCleaner cleaner = new RrdCleaner();
+        List<File> rrds = cleaner.findRrds(new File("src/test/rrds"));
+        assertEquals(14, rrds.size()); // 13 single-metric JRBs plus 1 temporal file
+    }
+
     protected void checkArchive(final RrdDb rrd, final Integer nanSample, final Integer numberSample, final Double numberValue, final Integer archiveIndex, final Integer numDses, final Integer dsIndex, String dsName) throws RrdException, IOException {
         LogUtils.debugf(this, "checking archive %s for consistency", rrd);
         final Archive archive = rrd.getArchive(archiveIndex);

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS SystemDef, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS SystemDef, Inc.
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ * OpenNMS(R) is a registered trademark of The OpenNMS SystemDef, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Table;
 
 /**
@@ -41,23 +41,18 @@ import com.vaadin.ui.Table;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class SystemDefTable extends Table {
+public class SystemDefTable extends Table {
 
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "name", "oid", "count" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "System Definition", "OID", "# Groups" };
+    /** The SNMP System Definitions Container. */
+    private OnmsBeanContainer<SystemDef> container = new OnmsBeanContainer<SystemDef>(SystemDef.class);
 
     /**
      * Instantiates a new system definition table.
      *
-     * @param group the OpenNMS Data Collection Group
+     * @param systemDefs the system definitions
      */
-    public SystemDefTable(final DatacollectionGroup group) {
-        BeanContainer<String,SystemDef> container = new BeanContainer<String,SystemDef>(SystemDef.class);
-        container.setBeanIdProperty("name");
-        container.addAll(group.getSystemDefCollection());
+    public SystemDefTable(final List<SystemDef> systemDefs) {
+        container.addAll(systemDefs);
         setContainerDataSource(container);
         addStyleName("light");
         setImmediate(true);
@@ -66,51 +61,55 @@ public abstract class SystemDefTable extends Table {
         setHeight("250px");
         addGeneratedColumn("count", new ColumnGenerator() {
             @Override
-            @SuppressWarnings("unchecked")
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
-                return item.getBean().getCollect() == null ? 0 : item.getBean().getCollect().getIncludeGroupCount();
+                final SystemDef s = container.getItem(itemId).getBean();
+                return s.getCollect() == null ? 0 : s.getCollect().getIncludeGroupCount();
             }
         });
         addGeneratedColumn("oid", new ColumnGenerator() {
             @Override
-            @SuppressWarnings("unchecked")
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(itemId);
-                final SystemDef s = item.getBean();
+                final SystemDef s = container.getItem(itemId).getBean();
                 final String value = s.getSysoid() == null ? s.getSysoidMask() : s.getSysoid();
                 return value == null ? "N/A" : value;
             }
         });
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    BeanItem<SystemDef> item = (BeanItem<SystemDef>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
-                }
-            }
-        });
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "name", "oid", "count" });
+        setColumnHeaders(new String[] { "System Definition", "OID", "# SystemDefs" });
     }
 
     /**
-     * Update external source.
+     * Gets the systemDef.
      *
-     * @param item the item
+     * @param systemDefId the systemDef ID (the Item ID associated with the container)
+     * @return the event
      */
-    public abstract void updateExternalSource(BeanItem<SystemDef> item);
-
-    /**
-     * Adds a system definition.
-     *
-     * @param systemDef the system definition
-     */
-    @SuppressWarnings("unchecked")
-    public void addSystemDef(SystemDef systemDef) {
-        ((BeanContainer<String,SystemDef>) getContainerDataSource()).addBean(systemDef);
+    public SystemDef getSystemDef(Object systemDefId) {
+        return container.getItem(systemDefId).getBean();
     }
 
+    /**
+     * Adds the system definition.
+     *
+     * @param systemDef the new system definition
+     * @return the systemDefId
+     */
+    public Object addSystemDef(SystemDef systemDef) {
+        Object systemDefId = container.addOnmsBean(systemDef);
+        select(systemDefId);
+        return systemDefId;
+    }
+
+    /**
+     * Gets the systemDefs.
+     *
+     * @return the systemDefs
+     */
+    public List<SystemDef> getSystemDefs() {
+        List<SystemDef> systemDefs = new ArrayList<SystemDef>();
+        for (Object itemId : container.getItemIds()) {
+            systemDefs.add(container.getItem(itemId).getBean());
+        }
+        return systemDefs;
+    }
 }

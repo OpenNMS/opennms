@@ -35,7 +35,6 @@ import org.opennms.dashboard.client.*;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.dao.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -342,7 +341,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     protected boolean isDashboardRole() {
         boolean isDashboardRole = true;
         SecurityContext context = SecurityContextHolder.getContext();
-        if((context != null) && !(context.toString().contains(org.opennms.web.springframework.security.Authentication.ROLE_DASHBOARD))) {
+        if((context != null) && !(context.toString().contains(org.opennms.web.api.Authentication.ROLE_DASHBOARD))) {
             isDashboardRole = false;
         }
         LOG.debug("User {} is in dashboard role? {}", getUsername(), isDashboardRole);

@@ -41,7 +41,7 @@
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.web.pathOutage.*,
-        org.opennms.web.springframework.security.Authentication,
+        org.opennms.web.api.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -210,15 +210,11 @@
 	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
 	for (final ConditionalPageNavEntry link : navLinks) {
 	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
-	    switch(displayStatus) {
-		    case DISPLAY_NO_LINK:
-		        renderedLinks.add(link.getName());
-		        break;
-		    case DISPLAY_LINK:
-		        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
-		        break;
-		    case NO_DISPLAY:
-		        break;
+	    if (displayStatus == null) continue;
+	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
+	        renderedLinks.add(link.getName());
+	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	

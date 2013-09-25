@@ -11,6 +11,16 @@
   <description>
     OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.
   </description>
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <comments>
+        This Maven metadata is provided for informational purposes only. For specific licensing 
+        questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
+      </comments>
+    </license>
+  </licenses>
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.opennms.org/</url>
@@ -357,7 +367,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -581,6 +591,7 @@
           <source>1.6</source>
           <target>1.6</target>
           <encoding>UTF-8</encoding>
+          <optimize>true</optimize>
         </configuration>
       </plugin>
       <plugin>
@@ -762,7 +773,7 @@
     <maven.surefire.report.plugin.version>2.15</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
-    <antlr.version>2.7.6</antlr.version>
+    <antlr.version>2.7.7</antlr.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -848,12 +859,13 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
-    <gwtVersion>2.3.0</gwtVersion>
-    <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
+    <ecjVersion>4.2.2</ecjVersion>
+    <gwtVersion>2.5.1</gwtVersion>
+    <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
-    <jettyVersion>7.6.10.v20130312</jettyVersion>
+    <jettyVersion>7.6.12.v20130726</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
@@ -870,7 +882,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.0.7.RELEASE</springVersion>
+    <springVersion>3.1.4.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.6.8</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
@@ -1264,6 +1276,12 @@
         <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.http-remoting</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>opennms-remote-poller-windows</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -2008,13 +2026,6 @@
         <artifactId>opennms-webapp</artifactId>
         <version>${project.version}</version>
         <type>tar.gz</type>
-        <classifier>web-inf</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>tar.gz</type>
         <classifier>lib</classifier>
       </dependency>
       <dependency>
@@ -2662,6 +2673,11 @@
         <groupId>org.eclipse.jetty.orbit</groupId>
         <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
         <version>1.2.0.v201112081803</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>4.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>

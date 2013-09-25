@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -54,14 +55,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.MockDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.test.DaoTestConfigBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -155,6 +157,13 @@ public abstract class AbstractSpringJerseyRestTestCase {
         System.err.println("------------------------------------------------------------------------------");
     }
 
+    protected void cleanUpImports() {
+        final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
+        while (fileIterator.hasNext()) {
+            fileIterator.next().delete();
+        }
+    }
+
     protected MockServletContext getServletContext() {
     	return servletContext;
     }
@@ -215,7 +224,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
 			// FIXME: remove when we update to Spring 3.1
 			public void setContentType(final String contentType) {
 				super.setContentType(contentType);
-				super.addHeader("Content-Type", contentType);
 			}
 
 		};
@@ -254,8 +262,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
             assertNotNull(header);
-            final String location = header.toString();
-            assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
+            final String location = URLDecoder.decode(header.toString(), "UTF-8");
+            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
+            assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
         }
         return response;
     }
@@ -419,8 +428,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected String sendRequest(MockHttpServletRequest request, int expectedStatus, final String expectedUrlSuffix) throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
-        String xml = response.getContentAsString();
-        if (xml != null) {
+        final String xml = response.getContentAsString();
+        if (xml != null && !xml.isEmpty()) {
             try {
                 System.err.println(StringUtils.prettyXml(xml));
             } catch (Exception e) {
@@ -432,6 +441,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
             final String location = response.getHeader("Location").toString();
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
+        Thread.sleep(50);
         return xml;
     }
     
@@ -471,17 +481,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
 	protected void createNode() throws Exception {
-	    String node = "<node label=\"TestMachine\">" +
-	    "<labelSource>H</labelSource>" +
-	    "<sysContact>The Owner</sysContact>" +
-	    "<sysDescription>" +
-	    "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-	    "</sysDescription>" +
-	    "<sysLocation>DevJam</sysLocation>" +
-	    "<sysName>TestMachine</sysName>" +
-	    "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-	    "<type>A</type>" +
-	    "</node>";
+	    String node = "<node type=\"A\" label=\"TestMachine\">" +
+	            "<labelSource>H</labelSource>" +
+	            "<sysContact>The Owner</sysContact>" +
+	            "<sysDescription>" +
+	            "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+	            "</sysDescription>" +
+	            "<sysLocation>DevJam</sysLocation>" +
+	            "<sysName>TestMachine</sysName>" +
+	            "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+	            "</node>";
 	    sendPost("/nodes", node, 303, "/nodes/1");
 	}
 
@@ -526,7 +535,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 	    String service = "<category name=\"Routers\">" +
 	        "<description>Core Routers</description>" +
 	        "</category>";
-	    sendPost("/nodes/1/categories", service, 303, "/nodes/1/categories/Routers");
+	    sendPost("/categories", service, 303, "/categories/Routers");
 	}
 
     public void setWebAppContext(WebApplicationContext webAppContext) {

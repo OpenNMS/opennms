@@ -30,12 +30,10 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -52,24 +50,21 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
-	
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 3665919460707298011L;
-
-    /** The Table. */
-    private final Table table = new Table();
 
     /** The Container. */
-    private final BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+    private final OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete", this);
 
     /**
      * Instantiates a new MIB object field.
@@ -77,27 +72,19 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @param resourceTypes the available resource types
      */
     public MibObjField(final List<String> resourceTypes) {
-        container.setBeanIdProperty("oid");
-        table.setContainerDataSource(container);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"oid", "instance", "alias", "type"});
-        table.setColumnHeader("oid", "OID");
-        table.setColumnHeader("instance", "Instance");
-        table.setColumnHeader("alias", "Alias");
-        table.setColumnHeader("type", "Type");
+        table.setVisibleColumns(new Object[] { "oid", "instance", "alias", "type" });
+        table.setColumnHeaders(new String[] { "OID", "Instance", "Alias", "Type" });
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("250px");
         table.setWidth("100%");
         table.setTableFieldFactory(new MibObjFieldFactory(resourceTypes));
 
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
-        setBuffered(true);
         setValidationVisible(true);
     }
 
@@ -123,29 +110,21 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof List<?>) {
-            List<MibObj> beans = (List<MibObj>) value;
-            container.removeAllItems();
-            container.addAll(beans);
-            table.setPageLength(beans.size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
+    protected void setInternalValue(ArrayList<MibObj> mibObjects) {
+        super.setInternalValue(mibObjects); // TODO Is this required ?
+        container.removeAllItems();
+        container.addAll(mibObjects);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public ArrayList<MibObj> getValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>(); 
+    protected ArrayList<MibObj> getInternalValue() {
+        ArrayList<MibObj> beans = new ArrayList<MibObj>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
@@ -181,7 +160,7 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      */
     @Override
     public boolean isValid() {
-        return table.isValid(); // FIXME This is not working
+        return super.isValid() && table.isValid(); // FIXME This is not working
     }
 
     /**
@@ -189,8 +168,11 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      */
     private void addHandler() {
         MibObj obj = new MibObj();
-        obj.setOid("1.1.1.1");
-        container.addBean(obj);
+        obj.setOid(".1.1.1.1");
+        obj.setInstance("0");
+        obj.setType("gauge");
+        obj.setAlias("test");
+        table.select(container.addOnmsBean(obj));
     }
 
     /**
@@ -203,7 +185,7 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",
+                               "Do you really want to remove the selected MIB Object?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

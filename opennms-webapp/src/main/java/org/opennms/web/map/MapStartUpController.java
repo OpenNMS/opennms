@@ -40,7 +40,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.web.map.view.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,6 @@ import org.springframework.web.servlet.ModelAndView;
  * @version $Id: $
  * @since 1.8.1
  */
-@SuppressWarnings("deprecation")
 public class MapStartUpController extends MapsLoggingController {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MapStartUpController.class);
@@ -93,7 +91,7 @@ public class MapStartUpController extends MapsLoggingController {
 	            LOG.debug("MapStartUp for user:{}", user);
 
 			bw.write(ResponseAssembler.getStartupResponse(manager.getProperties(
-			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))));
+			                          request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN))));
 		} catch (Throwable e) {
 			LOG.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));

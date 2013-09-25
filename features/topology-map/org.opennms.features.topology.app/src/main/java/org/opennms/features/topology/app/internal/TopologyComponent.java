@@ -237,6 +237,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         m_graphContainer.getSelectionManager().deselectAll();
         m_graphContainer.getSelectionManager().selectVertexRefs( m_graphContainer.getVertexRefForest(vertexRefsToSelect) );
         m_blockSelectionEvents = false;
+        updateMenuItems();
     }
     
 	private void selectEdge(String edgeKey) {

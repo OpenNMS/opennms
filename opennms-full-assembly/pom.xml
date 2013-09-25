@@ -275,13 +275,6 @@
       <classifier>meta-inf</classifier>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-webapp</artifactId>
-      <type>tar.gz</type>
-      <classifier>web-inf</classifier>
-      <version>${project.version}</version>
-    </dependency>
 <!--
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
@@ -290,12 +283,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-      <type>tar.gz</type>
-      <classifier>jnlp</classifier>
-      <version>${project.version}</version>
-    </dependency>
 -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -537,6 +524,13 @@
   </dependencies>
 
   <repositories>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
     <repository>
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>

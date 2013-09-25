@@ -3,8 +3,8 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="238px" height="181.5px" viewBox="0 0 238 181.5" enable-background="new 0 0 238 181.5" xml:space="preserve">
-<g id="mx9600_icons">
-	<g id="mx9600_external_rollover">
+<g id="mx9600_icons" display="none">
+	<g id="mx9600_external_rollover" display="inline">
 		<g id="Group">
 			<path id="Rectangle" fill="#36516C" stroke="#36516C" stroke-width="1.5" d="M0.98,174.25h117.6V0.42H0.98V174.25z"/>
 			<path id="Rectangle_1_" fill="#FFFFFF" d="M86.12,12.43v3.74h5.19v-3.74H86.12L86.12,12.43z"/>
@@ -60,7 +60,7 @@
 			<path id="Shape_14_" fill="#BDBEC0" d="M98.72,122.93H0.86v-8.188h97.86V122.93L98.72,122.93z"/>
 		</g>
 	</g>
-	<g id="mx9600_external">
+	<g id="mx9600_external" display="inline">
 		<g id="Group_2_">
 			<path id="Rectangle_35_" fill="#547EA8" stroke="#547EA8" stroke-width="1.5" d="M0.98,0.42v173.84h117.6V0.42H0.98L0.98,0.42z"
 				/>
@@ -117,12 +117,68 @@
 			<path id="Shape_29_" fill="#BDBEC0" d="M98.72,122.93H0.86v-8.188h97.86V122.93L98.72,122.93z"/>
 		</g>
 	</g>
-	<path id="mx9600_external_active" fill="none" stroke="#91C054" stroke-width="5" d="M0,0v175h119V0H0z"/>
+	<g id="mx9600_external_active" display="inline">
+		<g id="Group_11_">
+			<path id="Rectangle_166_" fill="#91C054" stroke="#91C054" stroke-width="1.5" d="M0,0v173.84h117.6V0H0L0,0z"/>
+			<path id="Rectangle_165_" fill="#FFFFFF" d="M85.14,12.01v3.74h5.19v-3.74H85.14L85.14,12.01z"/>
+			<path id="Rectangle_164_" fill="#FFFFFF" d="M97.18,12.01v3.74h5.189v-3.74H97.18L97.18,12.01z"/>
+		</g>
+		<g id="Group_10_" transform="translate(10.000000, 20.000000)">
+			<path id="Shape_44_" fill="#BDBEC0" d="M97.741,8.32H-0.12V0.13l97.861-0.01V8.32L97.741,8.32z"/>
+			<path id="Rectangle_163_" fill="#FFFFFF" d="M0.17,11.29v90.8h5.42v-90.8H0.17L0.17,11.29z"/>
+			<path id="Rectangle_162_" fill="#FFFFFF" d="M7.15,11.29v90.8h5.42v-90.8H7.15L7.15,11.29z"/>
+			<path id="Rectangle_161_" fill="#FFFFFF" d="M14.33,11.29v90.8h5.41v-90.8H14.33L14.33,11.29z"/>
+			<path id="Rectangle_160_" fill="#FFFFFF" d="M21.32,11.29v90.8h5.42v-90.8H21.32L21.32,11.29z"/>
+			<path id="Rectangle_159_" fill="#FFFFFF" d="M28.37,11.29v90.8h5.42v-90.8H28.37L28.37,11.29z"/>
+			<path id="Rectangle_158_" fill="#FFFFFF" d="M35.42,11.29v90.8h5.41v-90.8H35.42L35.42,11.29z"/>
+			<path id="Rectangle_157_" fill="#FFFFFF" d="M42.47,11.29v90.8h5.42v-90.8H42.47L42.47,11.29z"/>
+			<path id="Rectangle_156_" fill="#FFFFFF" d="M49.52,11.29v90.8h5.42v-90.8H49.52L49.52,11.29z"/>
+			<path id="Rectangle_155_" fill="#FFFFFF" d="M56.84,11.29v90.8h5.42v-90.8H56.84L56.84,11.29z"/>
+			<path id="Rectangle_154_" fill="#FFFFFF" d="M64,11.29v90.8h5.41v-90.8H64L64,11.29z"/>
+			<path id="Rectangle_153_" fill="#FFFFFF" d="M71.32,11.29v90.8h5.41v-90.8H71.32L71.32,11.29z"/>
+			<path id="Rectangle_152_" fill="#FFFFFF" d="M78.331,11.29v90.8h5.42v-90.8H78.331L78.331,11.29z"/>
+			<path id="Rectangle_151_" fill="#FFFFFF" d="M85.34,11.29v90.8h5.42v-90.8H85.34L85.34,11.29z"/>
+			<path id="Rectangle_150_" fill="#FFFFFF" d="M92.19,11.29v90.8h5.42v-90.8H92.19L92.19,11.29z"/>
+			<path id="Rectangle_149_" fill="#BDBEC0" d="M50.86,124.939v22.17h46.85v-22.17H50.86L50.86,124.939z"/>
+			<path id="Rectangle_148_" fill="#BDBEC0" d="M-0.13,124.939v22.17h46.85v-22.17H-0.13L-0.13,124.939z"/>
+			<path id="Rectangle_147_" fill="#91C054" d="M44.03,76.57v2.81h2.36v-2.81H44.03L44.03,76.57z"/>
+			<path id="Rectangle_146_" fill="#91C054" d="M44.03,72.721v2.812h2.36v-2.812H44.03L44.03,72.721z"/>
+			<path id="Rectangle_145_" fill="#91C054" d="M44.03,68.53v2.81h2.36v-2.81H44.03L44.03,68.53z"/>
+			<path id="Rectangle_144_" fill="#91C054" d="M44.41,64.67v2.81h1.69v-2.81H44.41L44.41,64.67z"/>
+			<path id="Rectangle_143_" fill="#91C054" d="M51.19,76.57v2.81h2.35v-2.81H51.19L51.19,76.57z"/>
+			<path id="Rectangle_142_" fill="#91C054" d="M51.19,72.721v2.812h2.35v-2.812H51.19L51.19,72.721z"/>
+			<path id="Rectangle_141_" fill="#91C054" d="M51.19,68.53v2.81h2.35v-2.81H51.19L51.19,68.53z"/>
+			<path id="Rectangle_140_" fill="#91C054" d="M51.549,64.67v2.81h1.691v-2.81H51.549L51.549,64.67z"/>
+			<path id="Shape_43_" fill="#91C054" d="M73.43,31.34v-2.99h1.811v2.99H73.43L73.43,31.34z"/>
+			<path id="Shape_42_" fill="#91C054" d="M65.47,31.34v-2.99h1.819v2.99H65.47L65.47,31.34z"/>
+			<path id="Shape_41_" fill="#91C054" d="M73.43,51.44v-2.99h1.811v2.99H73.43L73.43,51.44z"/>
+			<path id="Shape_40_" fill="#91C054" d="M65.47,51.44v-2.99h1.819v2.99H65.47L65.47,51.44z"/>
+			<path id="Shape_39_" fill="#91C054" d="M73.43,70.11v-2.99h1.811v2.99H73.43L73.43,70.11z"/>
+			<path id="Shape_38_" fill="#91C054" d="M65.47,70.11v-2.99h1.819v2.99H65.47L65.47,70.11z"/>
+			<path id="Shape_37_" fill="#91C054" d="M73.43,90.83v-2.99h1.811v2.99H73.43L73.43,90.83z"/>
+			<path id="Shape_36_" fill="#91C054" d="M79.991,31.34v-2.99h1.819v2.99H79.991L79.991,31.34z"/>
+			<path id="Shape_35_" fill="#91C054" d="M79.991,51.44v-2.99h1.819v2.99H79.991L79.991,51.44z"/>
+			<path id="Shape_34_" fill="#91C054" d="M79.991,70.11v-2.99h1.819v2.99H79.991L79.991,70.11z"/>
+			<path id="Shape_33_" fill="#91C054" d="M79.991,90.83v-2.99h1.819v2.99H79.991L79.991,90.83z"/>
+			<path id="Shape_32_" fill="#91C054" d="M65.47,90.83v-2.99h1.819v2.99H65.47L65.47,90.83z"/>
+			<path id="Rectangle_139_" fill="#91C054" d="M8.12,18.85v34.87h1.23V18.85H8.12L8.12,18.85z"/>
+			<path id="Rectangle_138_" fill="#91C054" d="M10.38,18.85v34.87h1.23V18.85H10.38L10.38,18.85z"/>
+			<path id="Rectangle_137_" fill="#91C054" d="M22.29,18.85v34.87h1.23V18.85H22.29L22.29,18.85z"/>
+			<path id="Rectangle_136_" fill="#91C054" d="M24.55,18.85v34.87h1.23V18.85H24.55L24.55,18.85z"/>
+			<path id="Rectangle_135_" fill="#91C054" d="M8.12,59.67v34.88h1.23V59.67H8.12L8.12,59.67z"/>
+			<path id="Rectangle_134_" fill="#91C054" d="M10.38,59.67v34.88h1.23V59.67H10.38L10.38,59.67z"/>
+			<path id="Rectangle_133_" fill="#91C054" d="M22.29,59.67v34.88h1.23V59.67H22.29L22.29,59.67z"/>
+			<path id="Rectangle_132_" fill="#91C054" d="M24.55,59.67v34.88h1.23V59.67H24.55L24.55,59.67z"/>
+			<path id="Shape_31_" fill="#BDBEC0" d="M97.741,112.38H-0.12v-8.19h97.861V112.38L97.741,112.38z"/>
+			<path id="Shape_30_" fill="#BDBEC0" d="M97.741,122.51H-0.12v-8.188h97.861V122.51L97.741,122.51z"/>
+		</g>
+	</g>
 </g>
-<g id="ex2020_icons">
+<g id="ex2020_icons" display="none">
 	<g id="ex2020_external">
-		<path id="Rectangle_70_" fill="#547EA8" stroke="#547EA8" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78H0.77z"/>
-		<g id="Group_4_" transform="translate(52.000000, 12.000000)">
+		<path id="Rectangle_70_" display="inline" fill="#547EA8" stroke="#547EA8" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78
+			H0.77z"/>
+		<g id="Group_4_" transform="translate(52.000000, 12.000000)" display="inline">
 			<path id="Rectangle_71_" fill="#FFFFFF" d="M24.11,0.18v6.25h22.97V0.18H24.11z"/>
 			<path id="Rectangle_72_" fill="#547EA8" d="M25.97,0.91v4.43h2.23V0.91H25.97z"/>
 			<path id="Rectangle_73_" fill="#547EA8" d="M29.35,0.91v4.43h2.23V0.91H29.35z"/>
@@ -138,11 +194,11 @@
 			<path id="Rectangle_83_" fill="#547EA8" d="M15.49,0.91v4.43h2.23V0.91H15.49z"/>
 			<path id="Rectangle_84_" fill="#547EA8" d="M18.87,0.91v4.43h2.23V0.91H18.87z"/>
 		</g>
-		<g id="Group_5_" transform="translate(101.000000, 15.000000)">
+		<g id="Group_5_" transform="translate(101.000000, 15.000000)" display="inline">
 			<path id="Rectangle_85_" fill="#FFFFFF" d="M0.23,0.33v3.21h6.4V0.33H0.23z"/>
 			<path id="Rectangle_86_" fill="#FFFFFF" d="M8.37,0.33v3.21h6.4V0.33H8.37z"/>
 		</g>
-		<g id="Group_6_" transform="translate(52.000000, 4.000000)">
+		<g id="Group_6_" transform="translate(52.000000, 4.000000)" display="inline">
 			<path id="Rectangle_87_" fill="#FFFFFF" d="M24.11,0.25V6.5h22.97V0.25H24.11z"/>
 			<path id="Rectangle_88_" fill="#547EA8" d="M25.97,0.98v4.43h2.23V0.98H25.97z"/>
 			<path id="Rectangle_89_" fill="#547EA8" d="M29.35,0.98v4.43h2.23V0.98H29.35z"/>
@@ -160,8 +216,9 @@
 		</g>
 	</g>
 	<g id="ex2020_external_rollover">
-		<path id="Rectangle_101_" fill="#36516C" stroke="#36516C" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78H0.77z"/>
-		<g id="Group_7_" transform="translate(52.000000, 12.000000)">
+		<path id="Rectangle_101_" display="inline" fill="#36516C" stroke="#36516C" stroke-width="1.5" d="M0.77,0.78v21.17h117.589V0.78
+			H0.77z"/>
+		<g id="Group_7_" transform="translate(52.000000, 12.000000)" display="inline">
 			<path id="Rectangle_102_" fill="#FFFFFF" d="M24.11,0.18v6.25h22.97V0.18H24.11z"/>
 			<path id="Rectangle_103_" fill="#36516C" d="M25.97,0.91v4.43h2.23V0.91H25.97z"/>
 			<path id="Rectangle_104_" fill="#36516C" d="M29.35,0.91v4.43h2.23V0.91H29.35z"/>
@@ -177,11 +234,11 @@
 			<path id="Rectangle_114_" fill="#36516C" d="M15.49,0.91v4.43h2.23V0.91H15.49z"/>
 			<path id="Rectangle_115_" fill="#36516C" d="M18.87,0.91v4.43h2.23V0.91H18.87z"/>
 		</g>
-		<g id="Group_8_" transform="translate(101.000000, 15.000000)">
+		<g id="Group_8_" transform="translate(101.000000, 15.000000)" display="inline">
 			<path id="Rectangle_116_" fill="#FFFFFF" d="M0.23,0.33v3.21h6.4V0.33H0.23z"/>
 			<path id="Rectangle_117_" fill="#FFFFFF" d="M8.37,0.33v3.21h6.4V0.33H8.37z"/>
 		</g>
-		<g id="Group_9_" transform="translate(52.000000, 4.000000)">
+		<g id="Group_9_" transform="translate(52.000000, 4.000000)" display="inline">
 			<path id="Rectangle_118_" fill="#FFFFFF" d="M24.11,0.25V6.5h22.97V0.25H24.11z"/>
 			<path id="Rectangle_119_" fill="#36516C" d="M25.97,0.98v4.43h2.23V0.98H25.97z"/>
 			<path id="Rectangle_120_" fill="#36516C" d="M29.35,0.98v4.43h2.23V0.98H29.35z"/>
@@ -198,7 +255,45 @@
 			<path id="Rectangle_131_" fill="#36516C" d="M18.87,0.98v4.43h2.23V0.98H18.87z"/>
 		</g>
 	</g>
-	<path id="ex2020_external_active" fill="none" stroke="#91C054" stroke-width="5" d="M0,0v22h119V0H0z"/>
+	<g id="ex2020_external_active" display="inline">
+		<path id="Rectangle_197_" fill="#91C054" stroke="#91C054" stroke-width="1.5" d="M0,0v21.17h117.589V0H0z"/>
+		<g id="Group_14_" transform="translate(52.000000, 12.000000)">
+			<path id="Rectangle_196_" fill="#FFFFFF" d="M23.339-0.6v6.25H46.31V-0.6H23.339z"/>
+			<path id="Rectangle_195_" fill="#91C054" d="M25.201,0.13v4.43h2.229V0.13H25.201z"/>
+			<path id="Rectangle_194_" fill="#91C054" d="M28.58,0.13v4.43h2.23V0.13H28.58z"/>
+			<path id="Rectangle_193_" fill="#91C054" d="M31.96,0.13v4.43h2.229V0.13H31.96z"/>
+			<path id="Rectangle_192_" fill="#91C054" d="M35.339,0.13v4.43h2.23V0.13H35.339z"/>
+			<path id="Rectangle_191_" fill="#91C054" d="M38.72,0.13v4.43h2.23V0.13H38.72z"/>
+			<path id="Rectangle_190_" fill="#91C054" d="M42.1,0.13v4.43h2.22V0.13H42.1z"/>
+			<path id="Rectangle_189_" fill="#FFFFFF" d="M-0.66-0.6v6.25h22.97V-0.6H-0.66z"/>
+			<path id="Rectangle_188_" fill="#91C054" d="M1.2,0.13v4.43h2.23V0.13H1.2z"/>
+			<path id="Rectangle_187_" fill="#91C054" d="M4.58,0.13v4.43h2.23V0.13H4.58z"/>
+			<path id="Rectangle_186_" fill="#91C054" d="M7.96,0.13v4.43h2.23V0.13H7.96z"/>
+			<path id="Rectangle_185_" fill="#91C054" d="M11.339,0.13v4.43h2.23V0.13H11.339z"/>
+			<path id="Rectangle_184_" fill="#91C054" d="M14.72,0.13v4.43h2.23V0.13H14.72z"/>
+			<path id="Rectangle_183_" fill="#91C054" d="M18.1,0.13v4.43h2.229V0.13H18.1z"/>
+		</g>
+		<g id="Group_13_" transform="translate(101.000000, 15.000000)">
+			<path id="Rectangle_182_" fill="#FFFFFF" d="M-0.54-0.45v3.21h6.4v-3.21H-0.54z"/>
+			<path id="Rectangle_181_" fill="#FFFFFF" d="M7.6-0.45v3.21H14v-3.21H7.6z"/>
+		</g>
+		<g id="Group_12_" transform="translate(52.000000, 4.000000)">
+			<path id="Rectangle_180_" fill="#FFFFFF" d="M23.339-0.53v6.25H46.31v-6.25H23.339z"/>
+			<path id="Rectangle_179_" fill="#91C054" d="M25.201,0.2v4.43h2.229V0.2H25.201z"/>
+			<path id="Rectangle_178_" fill="#91C054" d="M28.58,0.2v4.43h2.23V0.2H28.58z"/>
+			<path id="Rectangle_177_" fill="#91C054" d="M31.96,0.2v4.43h2.229V0.2H31.96z"/>
+			<path id="Rectangle_176_" fill="#91C054" d="M35.339,0.2v4.43h2.23V0.2H35.339z"/>
+			<path id="Rectangle_175_" fill="#91C054" d="M38.72,0.2v4.43h2.23V0.2H38.72z"/>
+			<path id="Rectangle_174_" fill="#91C054" d="M42.1,0.2v4.43h2.22V0.2H42.1z"/>
+			<path id="Rectangle_173_" fill="#FFFFFF" d="M-0.66-0.53v6.25h22.97v-6.25H-0.66z"/>
+			<path id="Rectangle_172_" fill="#91C054" d="M1.2,0.2v4.43h2.23V0.2H1.2z"/>
+			<path id="Rectangle_171_" fill="#91C054" d="M4.58,0.2v4.43h2.23V0.2H4.58z"/>
+			<path id="Rectangle_170_" fill="#91C054" d="M7.96,0.2v4.43h2.23V0.2H7.96z"/>
+			<path id="Rectangle_169_" fill="#91C054" d="M11.339,0.2v4.43h2.23V0.2H11.339z"/>
+			<path id="Rectangle_168_" fill="#91C054" d="M14.72,0.2v4.43h2.23V0.2H14.72z"/>
+			<path id="Rectangle_167_" fill="#91C054" d="M18.1,0.2v4.43h2.229V0.2H18.1z"/>
+		</g>
+	</g>
 </g>
 <g id="generic_icon_1_">
 	
@@ -788,9 +883,11 @@ SuTwd6QV4t0ymKQjugm4pQq4+WBD/2wYuMPH8PEvATeVAdztCrxtSvruUN8lPYApqRs4krdQgbRM
 SeBy9ffiDIk7DNzhY/j4+CSu603uVOqxCQURXRbAMsCbpwBcpM5i9aeWtgkwqdnDqvLwMXz8i8CN
 lNQdUADtVWef+ndKgTv6PwIMAE0J8s3+DtYZAAAAAElFTkSuQmCC">
 	</image>
-	<path id="generic_active" fill="none" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="M231.17,58.49
-		c0,8.13-4.061,12.01-12,12.01h-204c-9.17,0-12-3.33-12-12.01V15.28c0-8.95,3.67-11.78,12-11.78h204c10.17,0,12,4.2,12,11.78V58.49z
-		"/>
+	<g id="generic_active">
+	    <path opacity="0.5" fill="#91C054" stroke="#91C054" stroke-width="5" stroke-miterlimit="10" d="
+		    M231.17,58.49c0,8.13-4.061,12.01-12,12.01h-204c-9.17,0-12-3.33-12-12.01V15.28c0-8.95,3.67-11.78,12-11.78h204
+		    c10.17,0,12,4.2,12,11.78V58.49z"/>
+	</g>
 </g>
 <g id="cloud_icon" display="none">
 	

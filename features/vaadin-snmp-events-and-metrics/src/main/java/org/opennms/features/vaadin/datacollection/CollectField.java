@@ -62,31 +62,29 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add Group", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete Selected", this);
 
     /**
      * Instantiates a new collect field.
      *
+     * @param caption the caption
      * @param groups the available groups
      */
-    public CollectField(List<String> groups) {
+    public CollectField(String caption, List<String> groups) {
+        setCaption(caption);
         listField.setRows(10);
 
         for (String group : groups) {
             groupField.addItem(group);
         }
 
-        add = new Button("Add Group", (Button.ClickListener) this);
-        delete = new Button("Delete Selected", (Button.ClickListener) this);
         toolbar.addComponent(delete);
         toolbar.addComponent(groupField);
         toolbar.addComponent(add);
         toolbar.setVisible(listField.isReadOnly());
-
-        setBuffered(true);
     }
 
     /* (non-Javadoc)

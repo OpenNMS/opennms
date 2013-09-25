@@ -29,13 +29,11 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -56,27 +54,28 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
 
-    /** The Table. */
-    private final Table table = new Table();
-
     /** The Container. */
-    private final BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
+    private final OnmsBeanContainer<Maskelement> container = new OnmsBeanContainer<Maskelement>(Maskelement.class);
+
+    /** The Table. */
+    private final Table table = new Table(null, container);
 
     /** The Toolbar. */
     private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private final Button add;
+    private final Button add = new Button("Add", this);
 
     /** The delete button. */
-    private final Button delete;
+    private final Button delete = new Button("Delete", this);
 
     /**
      * Instantiates a new mask element field.
+     *
+     * @param caption the caption
      */
-    public MaskElementField() {
-        container.setBeanIdProperty("mename");
-        table.setContainerDataSource(container);
+    public MaskElementField(String caption) {
+        setCaption(caption);
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
         table.setColumnHeader("mename", "Element Name");
@@ -97,8 +96,6 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
-        add = new Button("Add", (Button.ClickListener) this);
-        delete = new Button("Delete", (Button.ClickListener) this);
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
@@ -109,7 +106,7 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     @Override
     public Component initContent() {
-        VerticalLayout layout = new VerticalLayout();
+        final VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
@@ -126,29 +123,20 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
+     * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof ArrayList<?>) {
-            @SuppressWarnings("unchecked")
-            ArrayList<Maskelement> beans = (ArrayList<Maskelement>) value;
-            container.removeAllItems();
-            container.addAll(beans);
-            table.setPageLength(beans.size());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
+    protected void setInternalValue(ArrayList<Maskelement> maskElements) {
+        super.setInternalValue(maskElements); // TODO Is this required ?
+        container.removeAllItems();
+        container.addAll(maskElements);
     }
 
     /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#getValue()
+     * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    public ArrayList<Maskelement> getValue() {
+    protected ArrayList<Maskelement> getInternalValue() {
         ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
@@ -185,8 +173,8 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     private void addHandler() {
         Maskelement e = new Maskelement();
-        e.setMename("??"); // A non null value is required here.
-        container.addBean(e);
+        e.setMename("??");
+        container.addOnmsBean(e);
     }
 
     /**
@@ -199,7 +187,7 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the selected Mask Element field ?<br/>This action cannot be undone.",
+                               "Do you really want to remove the selected Mask Element field ?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

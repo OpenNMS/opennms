@@ -45,7 +45,7 @@
 	session="true"
 	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.event.*,
-		org.opennms.web.springframework.security.Authentication,
+		org.opennms.web.api.Authentication,
 		org.opennms.web.servlet.MissingParameterException
 	"
 %>

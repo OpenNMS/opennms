@@ -103,7 +103,7 @@ public class OpenMapController extends MapsLoggingController {
 		
 		String user = request.getRemoteUser();
 		
-		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ROLE_ADMIN))) {
+		if ((request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN))) {
 			LOG.info("{} has Admin admin Role", user);
 		}					
 

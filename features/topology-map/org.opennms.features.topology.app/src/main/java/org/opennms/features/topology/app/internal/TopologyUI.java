@@ -32,12 +32,14 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -47,13 +49,14 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.osgi.*;
-import org.opennms.features.topology.api.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.osgi.*;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -63,8 +66,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -74,7 +76,7 @@ import java.util.List;
 	"handleTimeoutInTopology.js"
 })
 @PreserveOnRefresh
-public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
+public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
@@ -100,7 +102,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private boolean m_showHeader = true;
     private OnmsHeaderProvider m_headerProvider = null;
     private String m_userName;
-    private OnmsServiceManager serviceManager;
+    private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
 
@@ -130,7 +132,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
 
         //create VaadinApplicationContext
-        m_applicationContext = serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
+        m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
             @Override
             public VaadinApplicationContext create(OnmsServiceManager manager) {
                 VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
@@ -140,7 +142,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        m_verticesUpdateManager = new OsgiVerticesUpdateManager(serviceManager, m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         loadUserSettings(m_applicationContext);
         setupListeners();
@@ -152,6 +154,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_selectionManager.addSelectionListener(m_verticesUpdateManager);
         m_verticesUpdateManager.selectionChanged(m_selectionManager);
         m_verticesUpdateManager.graphChanged(m_graphContainer);
+
+        m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);
     }
 
     private void setupListeners() {
@@ -174,11 +178,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private void setupErrorHandler() {
+        
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler(){
 
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.ERROR_MESSAGE);
+                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
                 LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
@@ -314,10 +319,32 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
+        final Button historyBackBtn = new Button("<<");
+        historyBackBtn.setDescription("Click to go back");
+        historyBackBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.back()");
+            }
+        });
+
+        final Button historyForwardBtn = new Button(">>");
+        historyForwardBtn.setDescription("Click to go forward");
+        historyForwardBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.forward()");
+            }
+        });
+
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setWidth("31px");
         toolbar.addComponent(panBtn);
         toolbar.addComponent(selectBtn);
+
+        HorizontalLayout historyButtonLayout = new HorizontalLayout();
+        historyButtonLayout.addComponent(historyBackBtn);
+        historyButtonLayout.addComponent(historyForwardBtn);
 
         HorizontalLayout semanticLayout = new HorizontalLayout();
 
@@ -332,6 +359,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
         mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
         mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
+        mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
         mapLayout.setSizeFull();
 
         return mapLayout;
@@ -352,6 +380,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if (fragment != null) {
             LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", m_userName, fragment);
             Page.getCurrent().setUriFragment(fragment);
+            m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
         }
     }
 
@@ -724,10 +753,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     public void setServiceManager(BundleContext bundleContext) {
-        this.serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
+        this.m_serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
     }
 
     public VaadinApplicationContext getApplicationContext() {
         return m_applicationContext;
+    }
+
+    @Override
+    @EventConsumer
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+
+        Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
+        Set<VertexRef> vertexRefs = event.getVertexRefs();
+        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
+            m_selectionManager.setSelectedVertexRefs(vertexRefs);
+        }
+
+
     }
 }

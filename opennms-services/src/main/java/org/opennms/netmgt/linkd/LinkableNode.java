@@ -58,7 +58,7 @@ public class LinkableNode {
     
     private String m_cdpDeviceId;
     
-	private String m_lldpSysname;
+    private String m_lldpSysname;
     
     private String m_lldpChassisId;
     
@@ -66,6 +66,14 @@ public class LinkableNode {
     
     private InetAddress m_ospfRouterId;
     
+    private String m_isisSysId;
+
+    public String getIsisSysId() {
+        return m_isisSysId;
+    }
+    public void setIsisSysId(String isisSysId) {
+        m_isisSysId = isisSysId;
+    }
     public String getCdpDeviceId() {
 		return m_cdpDeviceId;
 	}
@@ -106,6 +114,8 @@ public class LinkableNode {
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
 
     private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+    
+    private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
         
     private boolean m_hasrouteinterfaces = false;
 	
@@ -184,6 +194,13 @@ public class LinkableNode {
 	        m_ospfinterfaces = ospfinterfaces;
 	    }
 	    
+	    public List<IsisISAdjInterface> getIsisInterfaces() {
+	        return m_isisinterfaces;
+	    }
+	    
+	    public void setIsisInterfaces(List<IsisISAdjInterface> isisinterfaces) {
+	        m_isisinterfaces = isisinterfaces;
+	    }
 	/**
 	 * <p>getCdpInterfaces</p>
 	 *

@@ -158,7 +158,6 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/meta-inf.xml</descriptor>
-            <descriptor>src/assembly/web-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
         </configuration>
@@ -402,6 +401,11 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
       <type>pom</type>
@@ -604,28 +608,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.extremecomponents</groupId>
-      <artifactId>extremecomponents</artifactId>
-      <scope>${onmsLibScope}</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!--
-
-      JMesa is the latest version of the extremecomponents library. We
-      should eventually migrate our code to use it.
-
-    <dependency>
-      <groupId>org.jmesa</groupId>
-      <artifactId>jmesa</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    -->
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -660,6 +642,32 @@
       <artifactId>struts</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+
+    <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
+    <!-- these should all be <scope>compile</scope> -->
+
+    <dependency>
+      <groupId>org.extremecomponents</groupId>
+      <artifactId>extremecomponents</artifactId>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--
+
+      JMesa is the latest version of the extremecomponents library. We
+      should eventually migrate our code to use it.
+
+    <dependency>
+      <groupId>org.jmesa</groupId>
+      <artifactId>jmesa</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    -->
 
     <!-- test dependencies -->
     <dependency>

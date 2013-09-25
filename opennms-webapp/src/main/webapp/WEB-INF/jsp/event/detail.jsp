@@ -221,7 +221,7 @@
       </table>
 
       <% 
-      if( ( request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
+      if( ( request.isUserInRole( org.opennms.web.api.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.api.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>

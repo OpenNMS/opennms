@@ -27,12 +27,13 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.vaadin.ui.Alignment;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,7 +90,6 @@ public class CriteriaBuilderComponent extends Panel {
          */
         renderComponents();
 
-        m_criteriaLayout.setMargin(true);
         m_criteriaLayout.setSpacing(true);
 
         setSizeFull();
@@ -107,39 +107,82 @@ public class CriteriaBuilderComponent extends Panel {
         m_criteriaLayout.removeAllComponents();
 
         boolean isFirst = true;
+        boolean isLast;
 
-        for (final CriteriaRestrictionComponent criteriaRestrictionComponent : m_criteriaRestrictionComponents) {
+        for (int i = 0; i < m_criteriaRestrictionComponents.size(); i++) {
+            final CriteriaRestrictionComponent criteriaRestrictionComponent = m_criteriaRestrictionComponents.get(i);
+            final int index = i;
+
+            isLast = (i == m_criteriaRestrictionComponents.size() - 1);
+
             criteriaRestrictionComponent.getRightLayout().removeAllComponents();
 
-            if (!isFirst) {
-                Button minusButton = new Button("-");
-                minusButton.setStyleName("small");
+            Button plusButton = new Button();
+            plusButton.setStyleName("small");
+            plusButton.setIcon(new ThemeResource("../runo/icons/16/document-add.png"));
 
-                minusButton.addClickListener(new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        m_criteriaRestrictionComponents.remove(criteriaRestrictionComponent);
-                        renderComponents();
-                    }
-                });
+            Button minusButton = new Button();
+            minusButton.setStyleName("small");
+            minusButton.setIcon(new ThemeResource("../runo/icons/16/document-delete.png"));
 
-                criteriaRestrictionComponent.getRightLayout().addComponent(minusButton);
-                criteriaRestrictionComponent.getRightLayout().setComponentAlignment(minusButton, Alignment.MIDDLE_RIGHT);
+            Button upButton = new Button();
+            upButton.setStyleName("small");
+            upButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+
+            Button downButton = new Button();
+            downButton.setStyleName("small");
+            downButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+
+            criteriaRestrictionComponent.getRightLayout().addComponent(upButton);
+            criteriaRestrictionComponent.getRightLayout().addComponent(downButton);
+            criteriaRestrictionComponent.getRightLayout().addComponent(plusButton);
+            criteriaRestrictionComponent.getRightLayout().addComponent(minusButton);
+
+            if (m_criteriaRestrictionComponents.size() == 1) {
+                minusButton.setEnabled(false);
+                upButton.setEnabled(false);
+                downButton.setEnabled(false);
             } else {
-                Button plusButton = new Button("+");
-                plusButton.setStyleName("small");
+                if (isFirst) {
+                    upButton.setEnabled(false);
+                }
 
-                plusButton.addClickListener(new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        m_criteriaRestrictionComponents.add(new CriteriaRestrictionComponent(m_criteriaBuilderHelper, "Limit(10)"));
-                        renderComponents();
-                    }
-                });
-
-                criteriaRestrictionComponent.getRightLayout().addComponent(plusButton);
-                criteriaRestrictionComponent.getRightLayout().setComponentAlignment(plusButton, Alignment.MIDDLE_RIGHT);
-
-                isFirst = false;
+                if (isLast) {
+                    downButton.setEnabled(false);
+                }
             }
+
+            upButton.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    Collections.swap(m_criteriaRestrictionComponents, index, index - 1);
+                    renderComponents();
+                }
+            });
+
+            downButton.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    Collections.swap(m_criteriaRestrictionComponents, index, index + 1);
+                    renderComponents();
+                }
+            });
+
+            minusButton.addClickListener(new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    m_criteriaRestrictionComponents.remove(criteriaRestrictionComponent);
+                    renderComponents();
+                }
+            });
+
+            plusButton.addClickListener(new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    m_criteriaRestrictionComponents.add(index + 1, new CriteriaRestrictionComponent(m_criteriaBuilderHelper, "Limit(10)"));
+                    renderComponents();
+                }
+            });
+
+            isFirst = false;
 
             m_criteriaLayout.addComponent(criteriaRestrictionComponent);
         }

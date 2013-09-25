@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
+import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;
@@ -81,6 +82,11 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         m_leftLayout = new HorizontalLayout();
 
         setSpacing(true);
+        setMargin(true);
+
+        Page.getCurrent().getStyles().add(".criteriaBackground { background:#dddddd; }");
+
+        addStyleName("criteriaBackground");
 
         /**
          * Adding the restriction's select box

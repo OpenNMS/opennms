@@ -248,18 +248,18 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         // set the parent vertex
         // hostSystemVertex.setParent(datacenterVertex);
-        setParent(hostSystemVertex, datacenterVertex);
+        if (!hostSystemVertex.equals(datacenterVertex)) setParent(hostSystemVertex, datacenterVertex);
 
         for (String network : networks) {
             AbstractVertex networkVertex = addNetworkVertex(vmwareManagementServer + "/" + network, moIdToName.get(network));
             // networkVertex.setParent(datacenterVertex);
-            setParent(networkVertex, datacenterVertex);
+            if (!networkVertex.equals(datacenterVertex)) setParent(networkVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + network, hostSystemVertex, networkVertex);
         }
         for (String datastore : datastores) {
             AbstractVertex datastoreVertex = addDatastoreVertex(vmwareManagementServer + "/" + datastore, moIdToName.get(datastore));
             // datastoreVertex.setParent(datacenterVertex);
-            setParent(datastoreVertex, datacenterVertex);
+            if (!datastoreVertex.equals(datacenterVertex)) setParent(datastoreVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + datastore, hostSystemVertex, datastoreVertex);
         }
     }
@@ -345,7 +345,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         if (containsVertexId(vmwareManagementServer + "/" + vmwareHostSystemId)) {
             // and set the parent vertex
             // virtualMachineVertex.setParent(datacenterVertex);
-            setParent(virtualMachineVertex, datacenterVertex);
+            if (!virtualMachineVertex.equals(datacenterVertex)) setParent(virtualMachineVertex, datacenterVertex);
         } else {
             addHostSystemVertex(vmwareManagementServer + "/" + vmwareHostSystemId, moIdToName.get(vmwareHostSystemId) + " (not in database)", "", -1, "unknown");
         }

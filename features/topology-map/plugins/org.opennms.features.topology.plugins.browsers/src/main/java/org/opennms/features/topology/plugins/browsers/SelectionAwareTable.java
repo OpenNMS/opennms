@@ -32,7 +32,7 @@ import com.vaadin.ui.Table;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.osgi.EventConsumer;
+import org.opennms.osgi.EventConsumer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -118,5 +118,16 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     @EventConsumer
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         m_container.verticesUpdated(event);
+    }
+
+    /**
+     * Make sure that the OnmsDaoContainer cache is reset.
+     */
+    @Override
+    public void resetPageBuffer() {
+        if (m_container != null && m_container.getCache() != null && m_container.getPage() != null) {
+            m_container.getCache().reload(m_container.getPage());
+        }
+        super.resetPageBuffer();
     }
 }

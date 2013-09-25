@@ -31,15 +31,12 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.osgi.OnmsServiceManager;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A OSGI-variant of the {@link VerticesUpdateManager}
@@ -47,98 +44,80 @@ import java.util.List;
 public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
 
     // the session scope.
-    private final VaadinApplicationContext applicationContext;
-    private final OnmsServiceManager serviceManager;
+    private final VaadinApplicationContext m_applicationContext;
+    private final OnmsServiceManager m_serviceManager;
 
     public OsgiVerticesUpdateManager(OnmsServiceManager serviceManager, VaadinApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-        this.serviceManager = serviceManager;
+        m_applicationContext = applicationContext;
+        m_serviceManager = serviceManager;
     }
 
     /**
-     * The focus of node ids. If a selection is made only the selected ids are in focus.
-     * If no selection is made all visible (or displayable) node ids are in focus.
+     * The selected VertexRefs. If a selection is made only the selected VertexRefs are in focus.
+     * If no selection is made all visible (or displayable) VertexRefs are in focus.
      */
-    private final List<Integer> nodeIdFocus = new ArrayList<Integer>();
+    private final Set<VertexRef> m_selectedVertices = Collections.synchronizedSet(new HashSet<VertexRef>());
 
     /**
-     * The currently displayable node ids.
+     * The currently displayable VertexRefs.
      */
-    private final List<Integer> displaybleNodeIds = new ArrayList<Integer>();
+    private final Set<VertexRef> m_displayableVertexRefs = Collections.synchronizedSet(new HashSet<VertexRef>());
 
     /**
-     * The currently selected node ids.
+     * The currently selected VertexRefs.
      */
-    private final List<Integer> selectedNodeIds = new ArrayList<Integer>();
+    private final Set<VertexRef> m_verticesInFocus = Collections.synchronizedSet(new HashSet<VertexRef>());
 
     @Override
-    public void graphChanged(GraphContainer graphContainer) {
-        if (graphContainer == null) return;
-
-        // set displayable Node Ids
-        List<Integer> newDisplaybleNodeIds = extractNodeIds(new ArrayList<VertexRef>(graphContainer.getGraph().getDisplayVertices()));
-        if (!displaybleNodeIds.equals(newDisplaybleNodeIds)) {
-            synchronized (displaybleNodeIds) {
-                displaybleNodeIds.clear();
-                displaybleNodeIds.addAll(newDisplaybleNodeIds);
+    public void graphChanged(GraphContainer graphContainer){
+        if(graphContainer == null) return;
+        Set<VertexRef> newDisplayableVertexRefs = new HashSet<VertexRef>(graphContainer.getGraph().getDisplayVertices());
+        if(!m_displayableVertexRefs.equals(newDisplayableVertexRefs)){
+            synchronized (m_displayableVertexRefs){
+                m_displayableVertexRefs.clear();
+                m_displayableVertexRefs.addAll(newDisplayableVertexRefs);
             }
         }
 
-        // set node ids in focus
-        List<Integer> nodeIdsInFocus = getNodeIdsInFocus();
-        fireFocusChanged(nodeIdsInFocus);
+        fireVertexRefsUpdated(getVerticesInFocus());
+
     }
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
-        if (selectionContext == null) return;
-        List<Integer> newSelectedNodeIds =  extractNodeIds(selectionContext.getSelectedVertexRefs());
-        if (!newSelectedNodeIds.equals(selectedNodeIds)) {
-            synchronized (selectedNodeIds) {
-                selectedNodeIds.clear();
-                selectedNodeIds.addAll(newSelectedNodeIds);
+        if(selectionContext == null) return;
+        Collection<VertexRef> selectedVertexRefs = selectionContext.getSelectedVertexRefs();
+        if(!selectedVertexRefs.equals(m_selectedVertices)) {
+            synchronized (m_selectedVertices) {
+                m_selectedVertices.clear();
+                m_selectedVertices.addAll(selectedVertexRefs);
             }
         }
-        fireFocusChanged(getNodeIdsInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus());
+
     }
 
-    private List<Integer> getNodeIdsInFocus() {
-        if (selectedNodeIds.isEmpty()) return displaybleNodeIds;
-        return selectedNodeIds;
-    }
-
-    /**
-     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
-     * For a vertex with namespace "node" the "getId()" method always returns the node id.
-     *
-     * @param vertices
-     * @return
-     */
-    private List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
-        List<Integer> nodeIdList = new ArrayList<Integer>();
-        for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    nodeIdList.add(Integer.valueOf(eachRef.getId()));
-                } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
-                }
-            }
-        }
-        return nodeIdList;
+    private Set<VertexRef> getVerticesInFocus() {
+        if(m_selectedVertices.isEmpty()) return m_displayableVertexRefs;
+        return m_selectedVertices;
     }
 
     /**
      * Notifies all listeners that the focus of the vertices has changed.
-     * @param newNodeIdFocus
+     * @param newVertexRefs
      */
-    synchronized private void fireFocusChanged(List<Integer> newNodeIdFocus) {
-        if (newNodeIdFocus.equals(nodeIdFocus)) return;
-        synchronized(nodeIdFocus) {
-            nodeIdFocus.clear();
-            nodeIdFocus.addAll(newNodeIdFocus);
+    synchronized private void fireVertexRefsUpdated(Collection<? extends VertexRef> newVertexRefs) {
+        if(newVertexRefs.equals(m_verticesInFocus)) return;
+        synchronized (m_verticesInFocus){
+            m_verticesInFocus.clear();
+            m_verticesInFocus.addAll(newVertexRefs);
         }
-        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableList(nodeIdFocus));
-        applicationContext.getEventProxy(serviceManager).fireEvent(updateEvent);
+        boolean displayedSelected = false;
+        if (m_displayableVertexRefs.size() == m_verticesInFocus.size()) {
+            displayedSelected = true;
+        }
+
+        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), displayedSelected);
+        m_applicationContext.getEventProxy(m_serviceManager).fireEvent(updateEvent);
     }
 }

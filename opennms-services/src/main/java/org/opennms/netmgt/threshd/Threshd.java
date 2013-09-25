@@ -262,10 +262,13 @@ public final class Threshd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStop() {
-		m_scheduler.stop();
-        m_receiver.close();
-
-        m_scheduler = null;
+        if (m_scheduler != null) {
+            m_scheduler.stop();
+            m_scheduler = null;
+        }
+        if (m_receiver != null) {
+            m_receiver.close();
+        }
 	}
 
     /**

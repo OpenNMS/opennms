@@ -53,7 +53,10 @@ import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -90,6 +93,9 @@ public class NodeRestService extends OnmsRestService {
     
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private CategoryDao m_categoryDao;
     
     @Autowired
     private EventProxy m_eventProxy;
@@ -273,16 +279,6 @@ public class NodeRestService extends OnmsRestService {
     }
 
     /**
-     * <p>getCategoryResource</p>
-     *
-     * @return a {@link org.opennms.web.rest.OnmsCategoryResource} object.
-     */
-    @Path("{nodeCriteria}/categories")
-    public OnmsCategoryResource getCategoryResource() {
-        return m_context.getResource(OnmsCategoryResource.class);
-    }
-
-    /**
      * <p>getAssetRecordResource</p>
      *
      * @return a {@link org.opennms.web.rest.AssetRecordResource} object.
@@ -291,6 +287,140 @@ public class NodeRestService extends OnmsRestService {
     public AssetRecordResource getAssetRecordResource() {
         return m_context.getResource(AssetRecordResource.class);
     }
+
+
+    @GET
+    @Path("/{nodeCriteria}/categories")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public OnmsCategoryCollection getCategoriesForNode(@PathParam("nodeCriteria") String nodeCriteria) {
+        readLock();
+
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+            }
+            return new OnmsCategoryCollection(node.getCategories());
+        } finally {
+            readUnlock();
+        }
+    }
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Path("/{nodeCriteria}/categories/{categoryName}")
+    public OnmsCategory getCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
+        readLock();
+
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
+            }
+            return getCategory(node, categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Path("/{nodeCriteria}/categories")
+    public Response addCategoryToNode(@PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
+        if (category == null) throw getException(Status.BAD_REQUEST, "Category must not be null.");
+        return addCategoryToNode(nodeCriteria,  category.getName());
+    }
+    
+    @PUT
+    @Path("/{nodeCriteria}/categories/{categoryName}")
+    public Response addCategoryToNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+        writeLock();
+
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "addCategory: Can't find node " + nodeCriteria);
+            }
+            OnmsCategory found = m_categoryDao.findByName(categoryName);
+            if (found == null) {
+                throw getException(Status.BAD_REQUEST, "addCategory: Can't find category " + categoryName);
+            }
+            if (!node.getCategories().contains(found)) {
+                LOG.debug("addCategory: Adding category {} to node {}", found, nodeCriteria);
+                node.addCategory(found);
+                m_nodeDao.save(node);
+                return Response.seeOther(getRedirectUri(m_uriInfo, categoryName)).build();
+            } else {
+                throw getException(Status.BAD_REQUEST, "addCategory: Category '{}' already added to node '{}'", categoryName, nodeCriteria);
+            }
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("/{nodeCriteria}/categories/{categoryName}")
+    public Response updateCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
+        writeLock();
+
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "updateCategory: Can't find node " + nodeCriteria);
+            }
+            OnmsCategory category = getCategory(node, categoryName);
+            if (category == null) {
+                throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
+            }
+            LOG.debug("updateCategory: updating category {}", category);
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
+            for(String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    String stringValue = params.getFirst(key);
+                    Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                }
+            }
+            LOG.debug("updateCategory: category {} updated", category);
+            m_nodeDao.saveOrUpdate(node);
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("/{nodeCriteria}/categories/{categoryName}")
+    public Response removeCategoryFromNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
+        writeLock();
+
+        try {
+            OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteCaegory: Can't find node " + nodeCriteria);
+            }
+            OnmsCategory category = getCategory(node, categoryName);
+            if (category == null) {
+                throw getException(Status.BAD_REQUEST, "deleteCaegory: Category " + categoryName + " not found on node " + nodeCriteria);
+            }
+            LOG.debug("deleteCaegory: deleting category {} from node {}", categoryName, nodeCriteria);
+            node.getCategories().remove(category);
+            m_nodeDao.saveOrUpdate(node);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    private OnmsCategory getCategory(OnmsNode node, String categoryName) {
+        for (OnmsCategory category : node.getCategories()) {
+            if (category.getName().equals(categoryName)) {
+                return category;
+            }
+        }
+        return null;
+    }
+
     
     private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
         final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
@@ -298,5 +428,5 @@ public class NodeRestService extends OnmsRestService {
         bldr.addParam("nodelabel", nodeLabel);
         m_eventProxy.send(bldr.getEvent());
     }
-    
+
 }

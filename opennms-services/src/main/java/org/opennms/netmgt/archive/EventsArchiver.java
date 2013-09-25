@@ -460,8 +460,7 @@ public class EventsArchiver {
         
         // initialize the prepared statements
         try {
-            m_eventsGetStmt =
-                m_conn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
+            m_eventsGetStmt = m_conn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
             m_eventDeleteStmt = m_conn.prepareStatement(DB_DELETE_EVENT);
         } catch (SQLException e) {
             LOG.error("EventsArchiver: Exception in opening the database connection or in the prepared statement for the get events", e);

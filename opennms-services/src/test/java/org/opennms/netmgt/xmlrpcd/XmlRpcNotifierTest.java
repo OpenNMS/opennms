@@ -79,7 +79,7 @@ public class XmlRpcNotifierTest  {
 
     private static final int s_unknownNodeId = 2;
 
-    private static int s_port = 9000;
+    private static int s_port = 59000;
     
     private static final boolean USE_DIFFERENT_PORT_PER_TEST = false;
 

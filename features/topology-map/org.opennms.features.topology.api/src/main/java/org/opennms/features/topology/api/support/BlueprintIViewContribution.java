@@ -32,7 +32,9 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.osgi.VaadinApplicationContext;
+import org.opennms.osgi.EventProxyAware;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
@@ -52,12 +54,23 @@ public class BlueprintIViewContribution implements IViewContribution {
         // Get the component by asking the blueprint container to instantiate a prototype bean
         Component component = (Component)m_container.getComponentInstance(m_beanId);
         BundleContext bundleContext = (BundleContext) m_container.getComponentInstance("blueprintBundleContext");
-        applicationContext.getEventProxy(bundleContext).addPossibleEventConsumer(component);
+        EventProxy eventProxy = applicationContext.getEventProxy(bundleContext);
+        eventProxy.addPossibleEventConsumer(component);
+
+        injectEventProxy(component, eventProxy);
+
         return component;
 
     }
 
-	/**
+    private void injectEventProxy(Component component, EventProxy eventProxy) {
+        if(component instanceof EventProxyAware){
+            ((EventProxyAware)component).setEventProxy(eventProxy);
+        }
+
+    }
+
+    /**
 	 * Returns null.
 	 */
 	@Override

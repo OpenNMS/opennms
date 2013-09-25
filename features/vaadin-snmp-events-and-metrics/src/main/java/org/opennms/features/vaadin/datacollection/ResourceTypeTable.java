@@ -27,12 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Table;
 
 /**
@@ -41,58 +41,62 @@ import com.vaadin.ui.Table;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public abstract class ResourceTypeTable extends Table {
+public class ResourceTypeTable extends Table {
 
-    /** The Constant COLUMN_NAMES. */
-    public static final Object[] COLUMN_NAMES = new String[] { "label", "name" };
-
-    /** The Constant COLUMN_LABELS. */
-    public static final String[] COLUMN_LABELS = new String[] { "Resource Type Label", "Resource Type Name" };
+    /** The Resource Type Container. */
+    private OnmsBeanContainer<ResourceType> container = new OnmsBeanContainer<ResourceType>(ResourceType.class);
 
     /**
      * Instantiates a new resource type table.
      *
-     * @param group the OpenNMS Data Collection Group
+     * @param resourceTypes the resource types
      */
-    public ResourceTypeTable(final DatacollectionGroup group) {
-        BeanContainer<String,ResourceType> container = new BeanContainer<String,ResourceType>(ResourceType.class);
-        container.setBeanIdProperty("name");
-        container.addAll(group.getResourceTypeCollection());
+    public ResourceTypeTable(final List<ResourceType> resourceTypes) {
+        container.addAll(resourceTypes);
         setContainerDataSource(container);
         addStyleName("light");
         setImmediate(true);
         setSelectable(true);
-        setVisibleColumns(COLUMN_NAMES);
-        setColumnHeaders(COLUMN_LABELS);
+        setVisibleColumns(new Object[] { "label", "name" });
+        setColumnHeaders(new String[] { "Resource Type Label", "Resource Type Name" });
         setWidth("100%");
         setHeight("250px");
-        addValueChangeListener(new Property.ValueChangeListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (getValue() != null) {
-                    BeanItem<ResourceType> item = (BeanItem<ResourceType>) getContainerDataSource().getItem(getValue());
-                    updateExternalSource(item);
-                }
-            }
-        });
     }
 
     /**
-     * Update external source.
+     * Gets the resource type.
      *
-     * @param item the item
+     * @param resourceTypeId the resourceType ID (the Item ID associated with the container)
+     * @return the resource type
      */
-    public abstract void updateExternalSource(BeanItem<ResourceType> item);
+    public ResourceType getResourceType(Object resourceTypeId) {
+        return container.getItem(resourceTypeId).getBean();
+    }
 
     /**
-     * Adds a resource type.
+     * Adds the resource type.
      *
-     * @param resourceType the resource type
+     * @param resourceType the new resource type
+     * @return the resourceTypeId
      */
-    @SuppressWarnings("unchecked")
-    public void addResourceType(ResourceType resourceType) {
-        ((BeanContainer<String,ResourceType>) getContainerDataSource()).addBean(resourceType);
+    public Object addResourceType(ResourceType resourceType) {
+        Object resourceTypeId = container.addOnmsBean(resourceType);
+        select(resourceTypeId);
+        return resourceTypeId;
+
+    }
+
+    /**
+     * Gets the resource type.
+     *
+     * @return the resource type
+     */
+    public List<ResourceType> getResourceTypes() {
+        List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
+        for (Object itemId : container.getItemIds()) {
+            resourceTypes.add(container.getItem(itemId).getBean());
+        }
+        return resourceTypes;
     }
 
 }
