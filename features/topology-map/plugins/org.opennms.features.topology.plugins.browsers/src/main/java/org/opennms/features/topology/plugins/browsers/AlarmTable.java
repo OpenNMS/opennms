@@ -38,6 +38,8 @@ import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextAware;
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -49,7 +51,7 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
-public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, EventProxyAware {
+public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
 
 	private static final String ACTION_CLEAR = "Clear";
 	private static final String ACTION_ESCALATE = "Escalate";
@@ -58,7 +60,8 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
-    public EventProxy m_eventProxy;
+    private EventProxy m_eventProxy;
+    private VaadinApplicationContext vaadinApplicationContext;
 
     private class CheckboxButton extends Button {
 
@@ -218,29 +221,15 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		super.containerItemSetChange(event);
 	}
 
-    @Override
-    public void setEventProxy(EventProxy eventProxy) {
-        m_eventProxy = eventProxy;
-        NodeSelectionLinkGenerator generator = (NodeSelectionLinkGenerator) getColumnGenerator("nodeLabel");
-        generator.setEventProxy(eventProxy);
-    }
-
 	@Override
 	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		super.setColumnGenerators(generators);
 		for (final Object key : generators.keySet()) {
-
-            Object generatorObj = generators.get(key);
-            if(generatorObj instanceof NodeSelectionLinkGenerator){
-                NodeSelectionLinkGenerator nodeLinkGenerator = (NodeSelectionLinkGenerator)generatorObj;
-                nodeLinkGenerator.setEventProxy(m_eventProxy);
-            }
-
             // If any of the column generators are {@link CheckboxGenerator} instances,
             // then connect it to the buttons.
 			try {
-
+                Object generatorObj = generators.get(key);
                 CheckboxGenerator generator = (CheckboxGenerator) generatorObj;
 				m_submitButton.setCheckboxGenerator(generator);
 				m_selectAllButton.setCheckboxGenerator(generator);
@@ -267,8 +256,13 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 			};
 		}
 	}
-	
+
+    @Override
+    public void setVaadinApplicationContext(VaadinApplicationContext vaadinApplicationContext) {
+        this.vaadinApplicationContext = vaadinApplicationContext;
+    }
+
 	private String getUser() {
-	    return "admin"; // TODO use real user name
+        return vaadinApplicationContext.getUsername();
 	}
 }

@@ -57,6 +57,9 @@ public class OnmsUser implements UserDetails {
     
     @XmlElement(name="user-comments", required=false)
 	private String m_comments;
+
+    @XmlElement(name="email", required=false)
+    private String m_email;
     
     @XmlElement(name="password", required=false)
 	private String m_password;
@@ -76,39 +79,19 @@ public class OnmsUser implements UserDetails {
 	    m_username = username;
     }
 
-    /**
-	 * <p>getComments</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
 	public String getComments() {
 		return m_comments;
 	}
 	
-	/**
-	 * <p>setComments</p>
-	 *
-	 * @param comments a {@link java.lang.String} object.
-	 */
 	public void setComments(String comments) {
 		m_comments = comments;
 	}
 	
-	/**
-	 * <p>getPassword</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
     @Override
 	public String getPassword() {
 		return m_password;
 	}
 	
-	/**
-	 * <p>setPassword</p>
-	 *
-	 * @param password a {@link java.lang.String} object.
-	 */
 	public void setPassword(String password) {
 		m_password = password;
 	}
@@ -121,39 +104,19 @@ public class OnmsUser implements UserDetails {
 	    m_passwordSalted = passwordSalted;
 	}
 	
-	/**
-	 * <p>getFullName</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
 	public String getFullName() {
 		return m_fullName;
 	}
 	
-	/**
-	 * <p>setFullName</p>
-	 *
-	 * @param fullName a {@link java.lang.String} object.
-	 */
 	public void setFullName(String fullName) {
 		m_fullName = fullName;
 	}
 	
-	/**
-	 * <p>getUsername</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
     @Override
 	public String getUsername() {
 		return m_username;
 	}
 	
-	/**
-	 * <p>setUsername</p>
-	 *
-	 * @param username a {@link java.lang.String} object.
-	 */
 	public void setUsername(String username) {
 		m_username = username;
 	}
@@ -166,11 +129,6 @@ public class OnmsUser implements UserDetails {
 	    m_dutySchedule = dutySchedule;
     }
     
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -180,60 +138,30 @@ public class OnmsUser implements UserDetails {
             .toString();
     }
 
-	/**
-	 * <p>getAuthorities</p>
-	 *
-	 * @return an array of {@link GrantedAuthority} objects.
-	 */
     @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return m_authorities;
 	}
 	
-	/**
-	 * <p>setAuthorities</p>
-	 *
-	 * @param authorities an array of {@link GrantedAuthority} objects.
-	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		m_authorities = authorities;
 	}
 
-	/**
-	 * <p>isAccountNonExpired</p>
-	 *
-	 * @return a boolean.
-	 */
     @Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
 
-	/**
-	 * <p>isAccountNonLocked</p>
-	 *
-	 * @return a boolean.
-	 */
     @Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 
-	/**
-	 * <p>isCredentialsNonExpired</p>
-	 *
-	 * @return a boolean.
-	 */
     @Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
 
-	/**
-	 * <p>isEnabled</p>
-	 *
-	 * @return a boolean.
-	 */
     @Override
 	public boolean isEnabled() {
 		return true;
@@ -246,4 +174,11 @@ public class OnmsUser implements UserDetails {
     	m_authorities = authorities;
     }
 
+    public String getEmail() {
+        return m_email;
+    }
+
+    public void setEmail(String email) {
+        m_email = email;
+    }
 }

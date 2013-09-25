@@ -86,7 +86,7 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 			    // alarm still exists, show alarm details
 				try {
 					source.getUI().addWindow(
-						new InfoWindow(new URL(Page.getCurrent().getLocation().toURL(), "../../alarm/detail.htm?id=" + alarmId), new LabelCreator() {
+						new InfoWindow(new URL(Page.getCurrent().getLocation().toURL(), "/opennms/alarm/detail.htm?id=" + alarmId), new LabelCreator() {
 								
 							@Override
 							public String getLabel() {

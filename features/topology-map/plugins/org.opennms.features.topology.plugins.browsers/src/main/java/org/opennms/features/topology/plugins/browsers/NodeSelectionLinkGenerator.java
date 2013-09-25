@@ -28,23 +28,23 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.*;
-
-import org.opennms.features.topology.api.*;
-
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
 
-public class NodeSelectionLinkGenerator implements ColumnGenerator {
+import java.util.*;
+
+public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAware {
 
     private class NSLGVertexRef extends AbstractVertexRef{
 
