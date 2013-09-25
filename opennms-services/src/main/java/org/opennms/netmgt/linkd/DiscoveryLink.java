@@ -591,7 +591,11 @@ public final class DiscoveryLink implements ReadyRunnable {
         for (LinkableNode linknode1: m_cdpNodes.values()) {
             LOG.info("getLinksFromCdp: parsing cdp device {} with cdpDeviceId {} using Cisco Discovery Protocol",linknode1.getNodeId(), linknode1.getCdpDeviceId());
             for (CdpInterface cdpiface1: linknode1.getCdpInterfaces()) {
-                LOG.info("getLinksFromCdp: found  cdpTargetDeviceId {} ", cdpiface1.getCdpTargetDeviceId());
+                if (cdpiface1 == null) {
+                    LOG.warn("getLinksFromCdp: cdp interface null found on target device node {} for cdpTargetDeviceId {} ", linknode1.getNodeId());
+                    continue;
+                }
+                LOG.info("getLinksFromCdp: parsing cdpInterface {} ", cdpiface1);
                 if (cdpiface1.getCdpTargetDeviceId() != null) {
                     LinkableNode linknode2 = m_cdpNodes.get(cdpiface1.getCdpTargetDeviceId());
                     if (linknode2 == null) {
@@ -600,10 +604,15 @@ public final class DiscoveryLink implements ReadyRunnable {
                     }
                     if (linknode1.getNodeId() >= linknode2.getNodeId())
                         continue;
-                    LOG.info("getLinksFromCdp: cdpdevice found node {} for cdpTargetDeviceId {} ", linknode2.getNodeId(), cdpiface1.getCdpTargetDeviceId());
+                    LOG.info("getLinksFromCdp: found node {} for cdpTargetDeviceId {} ", linknode2.getNodeId(), cdpiface1.getCdpTargetDeviceId());
                     
                     for (CdpInterface cdpiface2: linknode2.getCdpInterfaces()) {
-                        if (cdpiface2 != null && cdpiface2.getCdpTargetDeviceId() != null 
+                        if (cdpiface2 == null) {
+                            LOG.warn("getLinksFromCdp: cdp interface null found on target device node {} for cdpTargetDeviceId {} ", linknode2.getNodeId(), cdpiface1.getCdpTargetDeviceId());
+                            continue;
+                        }
+                        LOG.info("getLinksFromCdp: parsing target cdpInterface {} ", cdpiface2);
+                        if ( cdpiface2.getCdpTargetDeviceId() != null 
                                 && cdpiface2.getCdpTargetDeviceId().equals(linknode1.getCdpDeviceId()) 
                                 && cdpiface1.getCdpIfName().equals(cdpiface2.getCdpTargetIfName())
                                 && cdpiface2.getCdpIfName().equals(cdpiface1.getCdpTargetIfName())) {
