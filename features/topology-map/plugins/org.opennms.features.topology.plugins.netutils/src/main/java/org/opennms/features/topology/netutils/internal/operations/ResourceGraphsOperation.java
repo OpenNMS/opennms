@@ -38,8 +38,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.ResourceGraphsWindow;
 
-import com.vaadin.server.Page;
-
 public class ResourceGraphsOperation extends AbstractOperation {
 
     private String m_resourceGraphListURL;
@@ -47,10 +45,10 @@ public class ResourceGraphsOperation extends AbstractOperation {
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        String label = "";
-        int nodeID = -1;
-
         try {
+            String label = "";
+            int nodeID = -1;
+
             if (targets != null) {
                 for (final VertexRef target : targets) {
                     final String labelValue = getLabelValue(operationContext, target);
@@ -59,38 +57,42 @@ public class ResourceGraphsOperation extends AbstractOperation {
                     if  (nodeValue != null && nodeValue > 0) {
                         label = labelValue == null? "" : labelValue;
                         nodeID = nodeValue.intValue();
+                        break;
                     }
                 }
             }
+
             final Node node = new Node(nodeID, null, label);
 
-            final URL baseURL = Page.getCurrent().getLocation().toURL();
-
-            final URL nodeURL;
-
+            final String url;
             if (node.getNodeID() >= 0) {
-                nodeURL = new URL(baseURL, getResourceGraphNodeURL() + "[" + node.getNodeID() + "]");
+                url = getResourceGraphNodeURL() + "[" + node.getNodeID() + "]";
             } else {
-                nodeURL = new URL(baseURL, getResourceGraphListURL());
+                url = getResourceGraphListURL();
             }
 
-            operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(node, nodeURL));
+            final URL fullUrl = new URL(getFullUrl(url));
+            operationContext.getMainWindow().addWindow(new ResourceGraphsWindow(node, fullUrl));
+            return null;
         } catch (final Exception e) {
-            e.printStackTrace();
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException("Failed to create resource graph window.", e);
+            }
         }
-        return null;
     }
-    
+
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
         if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-        	return true;
+            return true;
         } else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
             return true;
-        }else {
+        } else {
             return false;
         }
-        
+
     }
 
     @Override
@@ -102,14 +104,14 @@ public class ResourceGraphsOperation extends AbstractOperation {
         return m_resourceGraphListURL;
     }
 
-    public void setResourceGraphListURL(String resourceGraphListURL) {
-        this.m_resourceGraphListURL = resourceGraphListURL;
+    public void setResourceGraphListURL(final String resourceGraphListURL) {
+        m_resourceGraphListURL = resourceGraphListURL;
     }
-    
+
     public String getResourceGraphNodeURL() {
         return m_resourceGraphNodeURL;
     }
-    
+
     public void setResourceGraphNodeURL(final String resourceGraphNodeURL) {
         m_resourceGraphNodeURL = resourceGraphNodeURL;
     }

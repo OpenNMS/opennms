@@ -187,6 +187,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.opennms.features.topology.plugins</groupId>
+			<artifactId>browsers</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.opennms.features.geocoder</groupId>
 			<artifactId>org.opennms.features.geocoder.api</artifactId>
 		</dependency>
