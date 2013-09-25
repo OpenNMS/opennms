@@ -32,14 +32,12 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -54,6 +52,7 @@ import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMen
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.osgi.*;
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -93,7 +92,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
-    private HorizontalSplitPanel m_treeMapSplitPanel;
+    private AbsoluteLayout m_mapAbsoluteLayout;
     private final Label m_zoomLevelLabel = new Label("0"); 
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
@@ -216,11 +215,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_rootLayout.addComponent(m_layout);
         m_rootLayout.setExpandRatio(m_layout, 1);
 
-        m_treeMapSplitPanel = new HorizontalSplitPanel();
-        m_treeMapSplitPanel.setFirstComponent(createWestLayout());
-        m_treeMapSplitPanel.setSecondComponent(createMapLayout());
-        m_treeMapSplitPanel.setSplitPosition(222, Unit.PIXELS);
-        m_treeMapSplitPanel.setSizeFull();
+        //TODO: Don't create a horizontal Split container here, no need. Remove and use the absolute
+        m_mapAbsoluteLayout = new AbsoluteLayout();
+        m_mapAbsoluteLayout.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
+        m_mapAbsoluteLayout.setSizeFull();
 
 
 
@@ -228,7 +226,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
-            m_layout.addComponent(m_treeMapSplitPanel);
+            m_layout.addComponent(m_mapAbsoluteLayout);
         }
 
         if(m_treeWidgetManager.widgetCount() != 0) {
@@ -335,6 +333,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
+        SearchBox searchBox = new SearchBox();
+
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setWidth("31px");
         toolbar.addComponent(panBtn);
@@ -354,10 +354,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         AbsoluteLayout mapLayout = new AbsoluteLayout();
 
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-        mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
-        mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
-        mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
+        mapLayout.addComponent(slider, "top: 50px; left: 20px; z-index:1000;");
+        mapLayout.addComponent(toolbar, "top: 370px; left: 12px;");
+        mapLayout.addComponent(semanticLayout, "top: 420px; left: 2px;");
         mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
+        mapLayout.addComponent(searchBox, "top:5px; left:5px;");
         mapLayout.setSizeFull();
 
         return mapLayout;
@@ -414,10 +415,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             synchronized (m_layout) {
                 m_layout.removeAllComponents();
                 if(widgetManager.widgetCount() == 0) {
-                    m_layout.addComponent(m_treeMapSplitPanel);
+                    m_layout.addComponent(m_mapAbsoluteLayout);
                 } else {
                     VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                    bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                    bottomLayoutBar.setFirstComponent(m_mapAbsoluteLayout);
                     // Split the screen 70% top, 30% bottom
                     bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                     bottomLayoutBar.setSizeFull();
