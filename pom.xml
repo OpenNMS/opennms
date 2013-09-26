@@ -905,6 +905,7 @@
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <ecjVersion>4.2.2</ecjVersion>
+    <guavaVersion>13.0</guavaVersion>
     <gwtVersion>2.5.1</gwtVersion>
     <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
@@ -2450,7 +2451,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>13.0</version>
+        <version>${guavaVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
