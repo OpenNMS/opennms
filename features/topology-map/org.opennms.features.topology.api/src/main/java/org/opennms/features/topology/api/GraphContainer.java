@@ -39,35 +39,35 @@ import com.vaadin.data.Property;
 
 public interface GraphContainer extends DisplayState {
 
-	public interface ChangeListener {
-		public void graphChanged(GraphContainer graphContainer);
-	}
+    public interface ChangeListener {
+        public void graphChanged(GraphContainer graphContainer);
+    }
 
-	GraphProvider getBaseTopology();
+    GraphProvider getBaseTopology();
 
-	void setBaseTopology(GraphProvider graphProvider);
+    void setBaseTopology(GraphProvider graphProvider);
 
-	Criteria[] getCriteria();
+    Criteria[] getCriteria();
 
-	void setCriteria(Criteria critiera);
+    void setCriteria(Criteria critiera);
 
-	void removeCriteria(Criteria criteria);
+    void removeCriteria(Criteria criteria);
 
-	void addChangeListener(ChangeListener listener);
+    void addChangeListener(ChangeListener listener);
 
-	void removeChangeListener(ChangeListener listener);
+    void removeChangeListener(ChangeListener listener);
 
-	SelectionManager getSelectionManager();
+    SelectionManager getSelectionManager();
 
-	void setSelectionManager(SelectionManager selectionManager);
+    void setSelectionManager(SelectionManager selectionManager);
 
-	Graph getGraph();
+    Graph getGraph();
 
-	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
-    
-	MapViewManager getMapViewManager();
+    Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
 
-	Property<Double> getScaleProperty();
+    MapViewManager getMapViewManager();
+
+    Property<Double> getScaleProperty();
 
     StatusProvider getStatusProvider();
 

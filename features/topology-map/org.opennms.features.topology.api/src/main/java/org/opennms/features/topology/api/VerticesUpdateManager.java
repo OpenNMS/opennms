@@ -28,10 +28,9 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.VertexRef;
-
-import java.util.List;
 import java.util.Set;
+
+import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
  * A VerticesUpdateManager is responsible to publish all nodeIds

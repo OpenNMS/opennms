@@ -8,6 +8,21 @@ xsi:schemaLocation="
   <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
+  <bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
+  <bean id="selectionCheckboxGenerator" class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
+    <argument value="id" />
+  </bean>
+  <bean id="severityGenerator" class="org.opennms.features.topology.plugins.browsers.SeverityGenerator" />
+  <bean id="nodeIdSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+    <argument value="nodeId" />
+  </bean>
+  <bean id="alarmIdColumnLinkGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+    <argument ref="alarmDao" />
+    <argument value="id" />
+  </bean>
+  <bean id="serviceTypeGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator" />
+  <bean id="inetAddressGenerator" class="org.opennms.features.topology.plugins.browsers.InetAddressGenerator" />
+
   <!-- Wrap the DAO in a Vaadin container -->
   <bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
     <argument ref="alarmDao" />
@@ -24,37 +39,17 @@ xsi:schemaLocation="
     <property name="sortContainerPropertyId" value="id" />
     <property name="sortAscending" value="false" />
 
-    <property name="cellStyleGenerator">
-      <bean class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
-    </property>
+    <property name="cellStyleGenerator" ref="alarmTableCellStyleGenerator" />
+
     <property name="columnGenerators">
       <map>
-        <entry key="selection">
-          <bean class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
-            <argument value="id" />
-          </bean>
-        </entry>
-        <entry key="severity">
-          <bean class="org.opennms.features.topology.plugins.browsers.SeverityGenerator" />
-        </entry>
-        <entry key="nodeLabel">
-          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
-            <argument value="nodeId" />
-          </bean>
-        </entry>
-        <entry key="id">
-        	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
-        		<argument ref="alarmDao" />
-        		<argument value="id" />
-        	</bean>
-        </entry>
+        <entry key="selection" value-ref="selectionCheckboxGenerator" />
+        <entry key="severity" value-ref="severityGenerator" />
+        <entry key="nodeLabel" value-ref="nodeIdSelectionLinkGenerator" />
+        <entry key="id" value-ref="alarmIdColumnLinkGenerator" />
         <!--
-        <entry key="serviceType">
-          <bean class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator" />
-        </entry>
-        <entry key="ipAddr">
-          <bean class="org.opennms.features.topology.plugins.browsers.InetAddressGenerator" />
-        </entry>
+        <entry key="serviceType" value-ref="serviceTypeGenerator" />
+        <entry key="ipAddr" value-ref="inetAddressGenerator" />
         -->
       </map>
     </property>
@@ -109,6 +104,11 @@ xsi:schemaLocation="
     <argument ref="nodeDao" />
   </bean>
 
+  <bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+    <argument value="id" />
+  </bean>
+  <bean id="ipInterfaceGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator" />
+
   <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.NodeTable" scope="prototype">
     <argument value="Nodes" />
     <argument ref="nodeDaoContainer" />
@@ -125,19 +125,9 @@ xsi:schemaLocation="
 
     <property name="columnGenerators">
       <map>
-        <entry key="id">
-          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
-            <argument value="id" />
-          </bean>
-        </entry>
-        <entry key="label">
-          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
-            <argument value="id" />
-          </bean>
-        </entry>
-        <entry key="primaryInterface">
-          <bean class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator" />
-        </entry>
+        <entry key="id" value-ref="nodeTableSelectionLinkGenerator" />
+        <entry key="label" value-ref="nodeTableSelectionLinkGenerator" />
+        <entry key="primaryInterface" value-ref="ipInterfaceGenerator" />
       </map>
     </property>
     <property name="visibleColumns">
