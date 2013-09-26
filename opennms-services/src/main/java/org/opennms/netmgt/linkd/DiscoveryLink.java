@@ -613,13 +613,16 @@ public final class DiscoveryLink implements ReadyRunnable {
                         }
                         LOG.info("getLinksFromCdp: parsing target cdpInterface {} ", cdpiface2);
                         if ( cdpiface2.getCdpTargetDeviceId() != null 
-                                && cdpiface2.getCdpTargetDeviceId().equals(linknode1.getCdpDeviceId()) 
-                                && cdpiface1.getCdpIfName().equals(cdpiface2.getCdpTargetIfName())
-                                && cdpiface2.getCdpIfName().equals(cdpiface1.getCdpTargetIfName())) {
-                            NodeToNodeLink cdpLink = new NodeToNodeLink(linknode2.getNodeId(), cdpiface2.getCdpIfIndex());
-                            cdpLink.setNodeparentid(linknode1.getNodeId());
-                            cdpLink.setParentifindex(cdpiface1.getCdpIfIndex());
-                            addNodetoNodeLink(cdpLink);
+                                && cdpiface2.getCdpTargetDeviceId().equals(linknode1.getCdpDeviceId())) {
+                                if(    (cdpiface1.getCdpIfName() != null && cdpiface1.getCdpIfName().equals(cdpiface2.getCdpTargetIfName()))
+                                    || (cdpiface2.getCdpIfName() != null && cdpiface2.getCdpIfName().equals(cdpiface1.getCdpTargetIfName()))
+                                    ) {
+                            
+                                    NodeToNodeLink cdpLink = new NodeToNodeLink(linknode2.getNodeId(), cdpiface2.getCdpIfIndex());
+                                    cdpLink.setNodeparentid(linknode1.getNodeId());
+                                    cdpLink.setParentifindex(cdpiface1.getCdpIfIndex());
+                                    addNodetoNodeLink(cdpLink);
+                                }
                         }
                     }
                 } else if (cdpiface1.getCdpTargetNodeId() != null) {
