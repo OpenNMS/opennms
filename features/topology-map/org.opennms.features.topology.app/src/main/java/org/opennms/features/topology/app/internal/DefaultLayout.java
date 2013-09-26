@@ -24,6 +24,9 @@ public class DefaultLayout implements Layout {
 
 	@Override
 	public Point getLocation(VertexRef v) {
+		if (v == null) {
+			throw new IllegalArgumentException("Cannot fetch location of null vertex");
+		}
 		Point p = m_locations.get(v);
 		Point location = (p == null ? new Point(0, 0) : p);
 		return location;
@@ -31,16 +34,25 @@ public class DefaultLayout implements Layout {
 	
 	@Override
 	public void setLocation(VertexRef v, int x, int y) {
+		if (v == null) {
+			throw new IllegalArgumentException("Cannot set location of null vertex");
+		}
 		setLocation(v, new Point(x, y));
 	}
 
 	@Override
 	public void setLocation(VertexRef v, Point location) {
+		if (v == null) {
+			throw new IllegalArgumentException("Cannot set location of null vertex");
+		}
 		m_locations.put(v, location);
 	}
 
 	@Override
 	public Point getInitialLocation(VertexRef v) {
+		if (v == null) {
+			throw new IllegalArgumentException("Cannot get initial location of null vertex");
+		}
 		Vertex parent = m_graphContainer.getBaseTopology().getParent(v);
 		return parent == null ? getLocation(v) : getLocation(parent);
 	}

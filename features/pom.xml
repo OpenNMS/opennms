@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
-    <module>acl</module>
     <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>

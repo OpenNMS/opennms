@@ -16,6 +16,8 @@ import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
 import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.PaintException;
 
@@ -28,6 +30,7 @@ public class GraphPainter extends BaseGraphVisitor {
 	private final TopologyComponentState m_componentState;
     private final List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
     private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
+    private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
 	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
@@ -85,14 +88,22 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void visitEdge(Edge edge) throws PaintException {
-		SharedEdge e = new SharedEdge();
-		e.setKey(edge.getKey());
-		e.setSourceKey(getSourceKey(edge));
-		e.setTargetKey(getTargetKey(edge));
-		e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
-		e.setCssClass(getStyleName(edge));
-		e.setTooltipText(getTooltipText(edge));
-		m_edges.add(e);
+		String sourceKey = getSourceKey(edge);
+		String targetKey = getTargetKey(edge);
+		if (sourceKey == null) {
+			s_log.debug("Discarding edge with no source vertex in the base topology: {}", edge);
+		} else if (targetKey == null) {
+			s_log.debug("Discarding edge with no target vertex in the base topology: {}", edge);
+		} else {
+			SharedEdge e = new SharedEdge();
+			e.setKey(edge.getKey());
+			e.setSourceKey(sourceKey);
+			e.setTargetKey(targetKey);
+			e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
+			e.setCssClass(getStyleName(edge));
+			e.setTooltipText(getTooltipText(edge));
+			m_edges.add(e);
+		}
 	}
 
 	/**

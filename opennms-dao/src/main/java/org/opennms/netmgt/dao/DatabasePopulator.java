@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -43,6 +47,7 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -106,6 +111,31 @@ import org.springframework.transaction.support.TransactionOperations;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
+	
+	public static interface Extension<T extends OnmsDao> {
+		DaoSupport<T> getDaoSupport();
+		void onPopulate(DatabasePopulator populator, T dao);
+		void onShutdown(DatabasePopulator populator, T dao);
+	}
+	
+	public static class DaoSupport<T extends OnmsDao> {
+		private final Class<T> daoClass;
+		private final T daoObject;
+		
+		public DaoSupport(Class<T> daoClass, T daoObject) {
+			this.daoClass = daoClass;
+			this.daoObject = daoObject;
+		}
+		
+		public Class<T> getDaoClass() {
+			return this.daoClass;
+		}
+		
+		public T getDao() {
+			return this.daoObject;
+		}
+	}
+	
     private static final Logger LOG = LoggerFactory.getLogger(DatabasePopulator.class);
 
     private DistPollerDao m_distPollerDao;
@@ -136,7 +166,36 @@ public class DatabasePopulator {
     private OnmsNode m_node6;
     
     private boolean m_populateInSeparateTransaction = true;
+    private final List<Extension> extensions = new ArrayList<Extension>();
+    
+    private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
+    
+    public <T extends OnmsDao> T lookupDao(Class<? super OnmsDao> daoClass) {
+    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    		if (eachDaoClass.isAssignableFrom(daoClass)) {
+    			return (T)daoRegistry.get(eachDaoClass);
+    		}
+    	}
+    	return null;
+    }
 
+    public void registerDao(Class<? super OnmsDao> daoClass, OnmsDao dao) {
+    	if (dao == null || daoClass == null) return;
+    	// check if not already added
+    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    		if (eachDaoClass.isAssignableFrom(daoClass)) {
+    			return; // a super class for this is already added (ignore)
+    		}
+    	}
+    	// adding
+    	daoRegistry.put(daoClass, dao);
+    }
+    
+    public void addExtension(Extension extension) {
+    	if (extension == null) return;
+    	extensions.add(extension);
+    }
+    
     public boolean populateInSeparateTransaction() {
         return m_populateInSeparateTransaction;
     }
@@ -190,6 +249,19 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        
+        LOG.debug("= DatabasePopulatorExtension Reset Starting =");
+    	for (Extension eachExtension : extensions) {
+    			DaoSupport daoSupport = eachExtension.getDaoSupport();
+    			OnmsDao dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
+
+    			eachExtension.onShutdown(this, dao);
+    			if (dao != null) {
+    				dao.flush();
+    			}
+    	}
+    	LOG.debug("= DatabasePopulatorExtension Reset Finished =");
+        
         m_dataLinkInterfaceDao.flush();
         m_outageDao.flush();
         m_userNotificationDao.flush();
@@ -200,6 +272,7 @@ public class DatabasePopulator {
         m_ipInterfaceDao.flush();
         m_nodeDao.flush();
         m_serviceTypeDao.flush();
+        
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
 
@@ -313,6 +386,21 @@ public class DatabasePopulator {
         def.setPriority(1L);
         m_locationMonitorDao.saveMonitoringLocationDefinition(def);
 
+        LOG.debug("= DatabasePopulatorExtension Populate Starting =");
+        for (Extension eachExtension : extensions) {
+        	DaoSupport daoSupport = eachExtension.getDaoSupport();
+        	OnmsDao dao = daoSupport != null ? daoSupport.getDao() : null;
+        	Class<? super OnmsDao> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
+        	registerDao(daoClass, dao);
+
+        	dao = lookupDao(daoClass);
+        	eachExtension.onPopulate(this, dao);
+        	if (dao != null) {
+        		dao.flush();
+        	}
+        }
+        LOG.debug("= DatabasePopulatorExtension Populate Finished =");
+        
         LOG.debug("==== DatabasePopulator Finished ====");
     }
 

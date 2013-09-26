@@ -29,9 +29,11 @@
 package org.opennms.web.event.filter;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.web.event.AcknowledgeType;
+import org.opennms.web.event.EventQueryParms;
 import org.opennms.web.event.SortStyle;
 import org.opennms.web.filter.Filter;
 
@@ -83,9 +85,27 @@ public class EventCriteria {
      *
      * @param ackType a {@link org.opennms.web.event.AcknowledgeType} object.
      * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @Deprecated use {@link #EventCriteria(Filter[], AcknowledgeType)} instead.
      */
+    @Deprecated
     public EventCriteria(AcknowledgeType ackType, Filter[] filters) {
         this(filters, null, ackType, -1, -1);
+    }
+    
+    public EventCriteria(Filter[] filters, AcknowledgeType ackType) {
+    	this(filters, null, ackType, -1, -1);
+    }
+    
+    public EventCriteria(List<Filter> filterList, AcknowledgeType ackType) {
+    	this (filterList == null ? new Filter[0] : filterList.toArray(new Filter[filterList.size()]), ackType);
+    }
+    
+    public EventCriteria(List<Filter> filterList, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
+    	this(filterList == null ? new Filter[0] : filterList.toArray(new Filter[filterList.size()]), sortStyle, ackType, limit, offset);
+    }
+    
+    public EventCriteria(EventQueryParms parms) {
+    	this(parms.filters, parms.sortStyle, parms.ackType, parms.limit, parms.limit * parms.multiple);
     }
 
     /**
@@ -104,6 +124,7 @@ public class EventCriteria {
         m_limit = limit;
         m_offset = offset;
     }
+    
     
     /**
      * <p>visit</p>

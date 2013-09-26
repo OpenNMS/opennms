@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.osgi.EventProxyAware;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
@@ -50,24 +51,29 @@ public class BlueprintIViewContribution implements IViewContribution {
 	}
 
     @Override
-    public Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext) {
+    public Component getView(VaadinApplicationContext vaadinApplicationContext, WidgetContext widgetContext) {
         // Get the component by asking the blueprint container to instantiate a prototype bean
         Component component = (Component)m_container.getComponentInstance(m_beanId);
         BundleContext bundleContext = (BundleContext) m_container.getComponentInstance("blueprintBundleContext");
-        EventProxy eventProxy = applicationContext.getEventProxy(bundleContext);
+        EventProxy eventProxy = vaadinApplicationContext.getEventProxy(bundleContext);
         eventProxy.addPossibleEventConsumer(component);
 
         injectEventProxy(component, eventProxy);
+        injectVaadinApplicationContext(component, vaadinApplicationContext);
 
         return component;
-
     }
 
     private void injectEventProxy(Component component, EventProxy eventProxy) {
         if(component instanceof EventProxyAware){
             ((EventProxyAware)component).setEventProxy(eventProxy);
         }
+    }
 
+    private void injectVaadinApplicationContext(Component component, VaadinApplicationContext vaadinApplicationContext) {
+        if (component instanceof VaadinApplicationContextAware) {
+            ((VaadinApplicationContextAware)component).setVaadinApplicationContext(vaadinApplicationContext);
+        }
     }
 
     /**

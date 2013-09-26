@@ -217,6 +217,9 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
     }
 
     void load(URI url) throws JAXBException, MalformedURLException {
+    	if (url == null) {
+    		throw new IllegalArgumentException("URI for SimpleGraphProvider configuration must not be null");
+    	}
     	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
     	Unmarshaller u = jc.createUnmarshaller();
     	WrappedGraph graph = (WrappedGraph) u.unmarshal(url.toURL());

@@ -28,7 +28,9 @@
 
 package org.opennms.web.alarm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.servlet.ServletContext;
@@ -343,5 +345,18 @@ public abstract class AlarmUtil extends Object {
         filter = new AfterLastEventTimeFilter(now.getTime());
 
         return filter;
+    }
+
+    public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        List<Filter> filterList = new ArrayList<Filter>();
+        if (filterStrings != null) {
+            for (String filterString : filterStrings) {
+                Filter filter = AlarmUtil.getFilter(filterString, servletContext);
+                if (filter != null) {
+                    filterList.add(filter);
+                }
+            }
+        }
+        return filterList;
     }
 }

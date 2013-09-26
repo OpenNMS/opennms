@@ -456,7 +456,12 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @Override
     public void save(final T entity) throws DataAccessException {
-        getHibernateTemplate().save(entity);
+        try {
+            getHibernateTemplate().save(entity);
+        } catch (final DataAccessException e) {
+            logExtraSaveOrUpdateExceptionInformation(entity, e);
+            throw e;
+        }
     }
 
     /**

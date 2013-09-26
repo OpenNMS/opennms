@@ -33,6 +33,8 @@ import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,12 +43,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener {
+public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware {
 
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
+	private List<String> nonCollapsibleColumns = new ArrayList<String>();
+	private EventProxy eventProxy;
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
@@ -127,5 +131,25 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
             m_container.getCache().reload(m_container.getPage());
         }
         super.resetPageBuffer();
+    }
+
+    @Override
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+
+        // set EventProxy on all ColumnGenerators
+        for (Object eachPropertyId : getContainerPropertyIds()) {
+            ColumnGenerator columnGenerator = getColumnGenerator(eachPropertyId);
+            if (columnGenerator != null && EventProxyAware.class.isAssignableFrom(columnGenerator.getClass())) {
+                ((EventProxyAware) columnGenerator).setEventProxy(eventProxy);
+            }
+        }
+    }
+
+    protected EventProxy getEventProxy() {
+        if (eventProxy != null) {
+            return eventProxy;
+        }
+        throw new IllegalArgumentException("EventProxy should not be null!");
     }
 }
