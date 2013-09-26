@@ -113,8 +113,15 @@ public class RequisitionAccessService {
             return pending;
         }
 
-        public void save(final Requisition requisition) {
+        private void save(final Requisition requisition) {
             m_pending = requisition;
+        }
+
+        void addOrReplaceRequisition(final Requisition requisition) {
+            if (requisition != null) {
+                requisition.updateDateStamp();
+                save(requisition);
+            }
         }
 
         void addOrReplaceNode(final RequisitionNode node) {
@@ -611,7 +618,7 @@ public class RequisitionAccessService {
     public void addOrReplaceRequisition(final Requisition requisition) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
-                getAccessor(requisition.getForeignSource()).save(requisition);
+                getAccessor(requisition.getForeignSource()).addOrReplaceRequisition(requisition);
             }
         });
     }
