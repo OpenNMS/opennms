@@ -30,17 +30,19 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.Point;
 import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 
 import com.google.gwt.core.client.GWT;
@@ -52,6 +54,8 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(NodeMapComponent.class)
 public class NodeMapConnector extends AbstractComponentConnector {
+    private Logger LOG = Logger.getLogger(getClass().getName());
+
     private static final long serialVersionUID = 3902997653175283284L;
     private Map<String, Icon> m_icons;
 
@@ -67,6 +71,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     public void onStateChanged(final StateChangeEvent stateChangeEvent) {
+        LOG.info("onStateChanged(" + stateChangeEvent + ")");
         // Handle all common Vaadin features first
         super.onStateChanged(stateChangeEvent);
 
@@ -79,16 +84,27 @@ public class NodeMapConnector extends AbstractComponentConnector {
         }
 
         if (stateChangeEvent.hasPropertyChanged("nodeIds")) {
-
+            final List<Integer> nodeIds = getState().nodeIds;
+            LOG.info("nodeIds has changed to: " + getState().nodeIds);
+            if (nodeIds != null && nodeIds.size() > 0) {
+                final StringBuilder sb = new StringBuilder("nodeId in ");
+                final Iterator<Integer> i = nodeIds.iterator();
+                while (i.hasNext()) {
+                    sb.append(i.next());
+                    if (i.hasNext()) sb.append(", ");
+                }
+                getWidget().setSearchString(sb.toString());
+            }
         }
     }
 
     private void updateNodes() {
+        final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
+
         if (getState().nodes.isEmpty()) {
+            getWidget().setMarkers(featureCollection);
             return;
         }
-
-        final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
 
         for (final MapNode node : getState().nodes) {
             final JSNodeMarker marker = new JSNodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));

@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
 import org.opennms.features.topology.plugins.browsers.SelectionAwareTable;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,6 +255,38 @@ public class NodeMapsApplication extends UI {
     protected void init(final VaadinRequest vaadinRequest) {
         m_request = vaadinRequest;
         LOG.debug("initializing");
+
+        final VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
+        final UI currentUI = UI.getCurrent();
+        context.setSessionId(currentUI.getSession().getSession().getId());
+        context.setUiId(currentUI.getUIId());
+        context.setUsername(vaadinRequest.getRemoteUser());
+
+        m_alarmTable.setVaadinApplicationContext(context);
+        final EventProxy eventProxy = new EventProxy() {
+            @Override public <T> void fireEvent(final T eventObject) {
+                LOG.debug("got event: {}", eventObject);
+                if (eventObject instanceof VerticesUpdateEvent) {
+                    final VerticesUpdateEvent event = (VerticesUpdateEvent)eventObject;
+                    final List<Integer> nodeIds = new ArrayList<Integer>();
+                    for (final VertexRef ref : event.getVertexRefs()) {
+                        if ("nodes".equals(ref.getNamespace()) && ref.getId() != null) {
+                            nodeIds.add(Integer.valueOf(ref.getId()));
+                        }
+                    }
+                    m_mapWidgetComponent.setSelectedNodes(nodeIds);
+                    return;
+                }
+                LOG.warn("Unsure how to deal with event: {}", eventObject);
+            }
+            @Override public <T> void addPossibleEventConsumer(final T possibleEventConsumer) {
+                LOG.debug("(ignoring) add consumer: {}", possibleEventConsumer);
+                /* throw new UnsupportedOperationException("Not yet implemented!"); */
+            }
+        };
+
+        m_alarmTable.setEventProxy(eventProxy);
+        m_nodeTable.setEventProxy(eventProxy);
 
         createMapPanel(vaadinRequest.getParameter("search"));
         createRootLayout();

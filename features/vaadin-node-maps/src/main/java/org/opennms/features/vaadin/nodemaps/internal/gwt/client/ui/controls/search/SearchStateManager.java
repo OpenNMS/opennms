@@ -1,12 +1,12 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class SearchStateManager {
     static Logger logger = Logger.getLogger(SearchStateManager.class.getName());

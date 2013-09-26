@@ -372,6 +372,9 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     @Override
     public void setSearchString(final String searchString) {
         m_searchString = searchString;
+        if (m_searchControl != null) {
+            m_searchControl.replaceSearchWith(searchString);
+        }
     }
 
     @Override

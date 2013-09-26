@@ -219,5 +219,6 @@ public class MapWidgetComponent extends NodeMapComponent {
 
     public void setSearchString(final String searchString) {
         m_searchString = searchString;
+        
     }
 }

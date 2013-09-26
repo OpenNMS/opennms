@@ -64,6 +64,26 @@
 	box-shadow: 0 1px 7px #999;
 	margin-left: 13px;
 	margin-top: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	color: black;
+}
+
+.leaflet-control-container .search-input {
+	position:relative;
+	float:left;
+	background:#fff;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	border: 1px solid #888;
+	background-color: rgba(255, 255, 255, 0.8);
+	z-index:1001;	
+	box-shadow: 0 1px 7px #999;
+	margin-left: 13px;
+	margin-top: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	color: black;
 }
 

@@ -62,7 +62,7 @@
                     <noServer>true</noServer>
                     <draftCompile>false</draftCompile>
                     <compileReport>false</compileReport>
-                    <style>OBF</style>
+                    <style>DETAILED</style>
                     <strict>true</strict>
                     <runTarget>http://localhost:8980/opennms/node-maps</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>

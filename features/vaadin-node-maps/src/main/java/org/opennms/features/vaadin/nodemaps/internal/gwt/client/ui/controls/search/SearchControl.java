@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class SearchControl extends Control {
-    Logger logger = Logger.getLogger(getClass().getName());
+    private Logger LOG = Logger.getLogger(getClass().getName());
     private static final HashMap<String, String> m_labels;
     static {
         m_labels = new HashMap<String,String>();
@@ -73,7 +73,7 @@ public class SearchControl extends Control {
     public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer, final SearchOptions options) {
         super(JSObject.createJSObject());
         setJSObject(SearchControlImpl.create(this, options.getJSObject()));
-        logger.log(Level.INFO, "new SearchControl()");
+        LOG.log(Level.INFO, "new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
         m_selectionModel = new SingleSelectionModel<NodeMarker>();
@@ -92,7 +92,7 @@ public class SearchControl extends Control {
     }
 
     public Element doOnAdd(final JavaScriptObject map) {
-        logger.log(Level.INFO, "onAdd() called");
+        LOG.log(Level.INFO, "onAdd() called");
 
         m_container.add(m_inputBox);
         m_container.add(m_submitIcon);
@@ -102,7 +102,7 @@ public class SearchControl extends Control {
     }
 
     public SearchControl doOnRemove(final JavaScriptObject map) {
-        logger.log(Level.INFO, "onRemove() called");
+        LOG.log(Level.INFO, "onRemove() called");
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
         return this;
     }
@@ -252,7 +252,7 @@ public class SearchControl extends Control {
 
                 if (search != null && (search.contains(":") || search.contains("="))) {
                     final String searchKey = search.replaceAll("[\\:\\=].*$", "").toLowerCase();
-                    logger.log(Level.INFO, "searchKey = " + searchKey);
+                    LOG.log(Level.INFO, "searchKey = " + searchKey);
 
                     final Map<String,String> props = marker.getProperties();
 
@@ -320,5 +320,14 @@ public class SearchControl extends Control {
         }
 
 
+    }
+
+    public void replaceSearchWith(final String newSearchString) {
+        if (m_inputBox != null) {
+            m_inputBox.setValue(newSearchString, false);
+            /* m_searchConsumer.setSearchString(newSearchString); */
+            // it's the search consumer's job to trigger an update in any UI elements
+            m_searchConsumer.refresh();
+        }
     }
 }

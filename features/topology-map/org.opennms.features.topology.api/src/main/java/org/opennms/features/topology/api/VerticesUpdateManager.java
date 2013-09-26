@@ -66,5 +66,10 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
         public boolean allVerticesSelected(){
             return m_displayingAllVertices;
         }
+        
+        @Override
+        public String toString() {
+            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + "]";
+        }
     }
 }
