@@ -39,7 +39,7 @@ public interface Operation {
     public final static String OPERATION_LABEL = "operation.label";
     
     public interface Undoer {
-        public void undo(OperationContext operationContext);
+        void undo(OperationContext operationContext);
     }
     
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext);
