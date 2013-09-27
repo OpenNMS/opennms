@@ -644,6 +644,9 @@ sub put {
 	$put->content_type('application/x-www-form-urlencoded');
 	$put->content($arguments);
 	my $response = $BROWSER->request($put);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -656,6 +659,9 @@ sub remove {
 
 	my $delete = HTTP::Request->new(DELETE => $url_root . $base . '/' . $path );
 	my $response = $BROWSER->request($delete);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -673,6 +679,9 @@ sub post {
 	$post->content_type('application/xml');
 	$post->content($twig->sprint);
 	my $response = $BROWSER->request($post);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}

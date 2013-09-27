@@ -1216,7 +1216,7 @@ create table assets (
         vmwaremanagedobjectid	varchar(70),
         vmwaremanagedentitytype	varchar(70),
         vmwaremanagementserver	varchar(70),
-        vmwaretopologyinfo	varchar(1023),
+        vmwaretopologyinfo	text,
         vmwarestate	varchar(255),
         
     constraint pk_assetID primary key (id),

@@ -269,6 +269,7 @@ public class VmwareViJavaAccessTest {
             cimObjects.add(cimInstance);
         }
 
+        expect(mockHostSystem.getName()).andReturn("mockesxi01.local").anyTimes();
         expect(mockHostSystem.getHostNetworkSystem()).andReturn(mockHostNetworkSystem).anyTimes();
         expect(mockHostSystem.acquireCimServicesTicket()).andReturn(hostServiceTicket).anyTimes();
         expect(mockHostNetworkSystem.getNetworkInfo()).andReturn(hostNetworkInfo).anyTimes();
@@ -420,7 +421,7 @@ public class VmwareViJavaAccessTest {
 
         try {
             returnedCimObjects = vmwareViJavaAccess.queryCimObjects(mockHostSystem, "cimClass");
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
 

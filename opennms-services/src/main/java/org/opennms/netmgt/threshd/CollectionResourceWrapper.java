@@ -342,8 +342,8 @@ public class CollectionResourceWrapper {
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.value +"@"+ last.timestamp), current);
             if (last == null) {
-                LOG.info("getCounterValue: unknown last value, ignoring current");
                 m_localCache.put(id, Double.NaN);
+                LOG.info("getCounterValue: unknown last value for {}, ignoring current", id);
             } else {                
                 Double delta = current.doubleValue() - last.value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
@@ -365,7 +365,9 @@ public class CollectionResourceWrapper {
                 // no delta across a time interval of zero.
                 long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
                 if (interval > 0) {
-                    m_localCache.put(id, delta / interval);
+                    final Double value = (delta/interval);
+                    LOG.debug("getCounterValue: id={}, value={}, delta={}, interval={}", id, value, delta, interval);
+                    m_localCache.put(id, value);
                 } else {
                     LOG.info("getCounterValue: invalid zero-length rate interval for {}, returning rate of zero", id);
                     m_localCache.put(id, 0.0);
