@@ -28,18 +28,17 @@
 
 package org.opennms.features.topology.app.internal;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -65,7 +64,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -103,6 +105,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
+    private boolean autoRefreshEnabled = true;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -141,6 +144,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
+
+        // add refresher to auto reload data
+        Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(5000);
+        refresher.addListener(new Refresher.RefreshListener() {
+            @Override
+            public void refresh(Refresher refresher) {
+                if (autoRefreshEnabled) {
+                    m_log.debug("Refresh UI");
+                    getGraphContainer().getBaseTopology().refresh();
+                    getGraphContainer().redoLayout();
+
+                    TopologyUI.this.markAsDirtyRecursive();
+                }
+            }
+        });
+        addExtension(refresher);
 
         loadUserSettings(m_applicationContext);
         setupListeners();
@@ -317,6 +337,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
+        final Button autoRefreshToggleButton = new Button("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
+        autoRefreshToggleButton.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                autoRefreshEnabled = !autoRefreshEnabled;
+                autoRefreshToggleButton.setCaption("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
+            }
+        });
+
         final Button historyBackBtn = new Button("<<");
         historyBackBtn.setDescription("Click to go back");
         historyBackBtn.addClickListener(new ClickListener() {
@@ -341,6 +370,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         toolbar.addComponent(selectBtn);
 
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
+        historyButtonLayout.addComponent(autoRefreshToggleButton);
         historyButtonLayout.addComponent(historyBackBtn);
         historyButtonLayout.addComponent(historyForwardBtn);
 
