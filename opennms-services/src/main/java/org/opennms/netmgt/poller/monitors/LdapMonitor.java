@@ -209,7 +209,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
                 // do a quick search and see if any results come back
                 boolean attributeOnly = true;
-                String attrs[] = { LDAPConnection.NO_ATTRS };
+                String[] attrs = { LDAPConnection.NO_ATTRS };
                 int searchScope = LDAPConnection.SCOPE_ONE;
 
                 LOG.debug("running search {} from {}", searchFilter, searchBase);

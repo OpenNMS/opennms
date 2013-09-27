@@ -607,7 +607,7 @@ public class VmwareViJavaAccess {
         if (m_serviceInstance != null) {
             String apiVersion = m_serviceInstance.getAboutInfo().getApiVersion();
 
-            String arr[] = apiVersion.split("\\.");
+            String[] arr = apiVersion.split("\\.");
 
             if (arr.length > 1) {
                 int apiMajorVersion = Integer.valueOf(arr[0]);

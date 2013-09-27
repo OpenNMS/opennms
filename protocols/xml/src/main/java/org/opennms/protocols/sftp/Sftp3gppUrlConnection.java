@@ -180,7 +180,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             m_urlProperties = new HashMap<String,String>();
             if (url.getQuery() != null) {
                 for (String pair : url.getQuery().split("&")) {
-                    String data[] = pair.split("=");
+                    String[] data = pair.split("=");
                     m_urlProperties.put(data[0].toLowerCase(), data[1]);
                 }
             }

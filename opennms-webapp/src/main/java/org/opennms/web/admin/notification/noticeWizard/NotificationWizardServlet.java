@@ -194,8 +194,7 @@ public class NotificationWizardServlet extends HttpServlet {
         if ("rebuild".equals(userAction)) {
             final Map<String, Object> params = new HashMap<String, Object>();
             params.put("newRule", request.getParameter("newRule"));
-
-            final String services[] = request.getParameterValues("services");
+            final String[] services = request.getParameterValues("services");
             if (services != null) {
                 params.put("services", services);
             }
@@ -218,7 +217,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         final StringBuffer rule = new StringBuffer(ruleString);
 
-        final String services[] = request.getParameterValues("services");
+        final String[] services = request.getParameterValues("services");
         if (services != null) {
             rule.append(" & ").append(" (");
 
@@ -232,7 +231,7 @@ public class NotificationWizardServlet extends HttpServlet {
             rule.append(" )");
         }
 
-        final String notServices[] = request.getParameterValues("notServices");
+        final String[] notServices = request.getParameterValues("notServices");
         if (notServices != null) {
             rule.append(" & ").append(" (");
 

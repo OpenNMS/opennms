@@ -67,7 +67,6 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	/**
 	 * This object relays registration events to update the lists of vertex and edge providers.
 	 */
-	private final ProviderManager m_providerManager;
 	private final Map<String, VertexProvider> m_vertexProviders = new HashMap<String, VertexProvider>();
 	private final Map<String, EdgeProvider> m_edgeProviders = new HashMap<String, EdgeProvider>();
 	private final Set<VertexListener> m_vertexListeners = new CopyOnWriteArraySet<VertexListener>();
@@ -75,17 +74,16 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	
 	public MergingGraphProvider(GraphProvider baseGraphProvider, ProviderManager providerManager) {
 		m_baseGraphProvider = baseGraphProvider;
-		m_providerManager = providerManager;
-		
-		for(VertexProvider vertexProvider : m_providerManager.getVertexListeners()) {
+
+		for(VertexProvider vertexProvider : providerManager.getVertexListeners()) {
 			addVertexProvider(vertexProvider);
 		}
 		
-		for(EdgeProvider edgeProvider : m_providerManager.getEdgeListeners()) {
+		for(EdgeProvider edgeProvider : providerManager.getEdgeListeners()) {
 			addEdgeProvider(edgeProvider);
 		}
 		
-		m_providerManager.addProviderListener(this);
+		providerManager.addProviderListener(this);
 	}
 	
 	@Override

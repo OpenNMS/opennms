@@ -66,9 +66,6 @@ public class MibConsolePanel extends Panel implements Logger {
     /** The log content. */
     private final VerticalLayout logContent;
 
-    /** The clear button. */
-    private final Button clearButton;
-
     /**
      * Instantiates a new MIB Console Panel.
      */
@@ -76,7 +73,7 @@ public class MibConsolePanel extends Panel implements Logger {
         super("MIB Console");
         addStyleName("light");
 
-        clearButton = new Button("Clear Log");
+        Button clearButton = new Button("Clear Log");
         clearButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {

@@ -53,8 +53,8 @@ public abstract class IpAddressUtils {
     
     public static boolean verifyIpMatch(String hostAddress, String ipMatch) {
         
-        String hostOctets[] = hostAddress.split("\\.", 0);
-        String matchOctets[] = ipMatch.split("\\.", 0);
+        String[] hostOctets = hostAddress.split("\\.", 0);
+        String[] matchOctets = ipMatch.split("\\.", 0);
         for (int i = 0; i < 4; i++) {
             if (!matchNumericListOrRange(hostOctets[i], matchOctets[i]))
                 return false;
@@ -75,7 +75,7 @@ public abstract class IpAddressUtils {
     */
     public static boolean matchNumericListOrRange(String value, String patterns) {
         
-        String patternList[] = patterns.split(",", 0);
+        String[] patternList = patterns.split(",", 0);
         for (int i = 0; i < patternList.length; i++) {
             if (matchRange(value, patternList[i]))
                 return true;
@@ -99,7 +99,7 @@ public abstract class IpAddressUtils {
         else if (dashCount > 1)
             return false;
         else if (dashCount == 1) {
-            String ar[] = pattern.split("-");
+            String[] ar = pattern.split("-");
             int rangeBegin = Integer.parseInt(ar[0]);
             int rangeEnd = Integer.parseInt(ar[1]);
             int ip = Integer.parseInt(value);

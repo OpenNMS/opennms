@@ -182,7 +182,7 @@ public final class MimeTypes
             return null;
         }
 
-        int dot = file.lastIndexOf(".");
+        int dot = file.lastIndexOf('.');
         if (dot < 0) {
             return null;
         }

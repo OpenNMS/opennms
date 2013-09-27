@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;

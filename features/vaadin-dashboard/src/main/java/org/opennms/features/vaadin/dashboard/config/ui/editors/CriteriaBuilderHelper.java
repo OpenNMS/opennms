@@ -229,10 +229,10 @@ public class CriteriaBuilderHelper {
      * @param configurationString the criteria configuration string
      */
     public void parseConfiguration(CriteriaBuilder criteriaBuilder, String configurationString) {
-        String entries[] = configurationString.split("(?<=[\\)])\\.");
+        String[] entries = configurationString.split("(?<=[\\)])\\.");
 
         for (String entry : entries) {
-            String entryParts[] = entry.split("(?<!\\\\)[\\(\\),]", -1);
+            String[] entryParts = entry.split("(?<!\\\\)[\\(\\),]", -1);
             CriteriaRestriction criteriaRestriction = CriteriaRestriction.valueOfIgnoreCase(entryParts[0]);
             criteriaRestriction.addRestrictionToCriteriaBuilder(this, criteriaBuilder, Arrays.copyOfRange(entryParts, 1, entryParts.length));
         }

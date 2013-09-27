@@ -43,7 +43,7 @@ import org.opennms.netmgt.model.RrdRepository;
 
 public class MockDataCollectionConfig implements DataCollectionConfigDao {
     
-    public static final String initalMibObjects[][] = {
+    public static final String[][] initalMibObjects = {
         {
             "sysLocation", ".1.3.6.1.2.1.1.6", "0", "string"
         },

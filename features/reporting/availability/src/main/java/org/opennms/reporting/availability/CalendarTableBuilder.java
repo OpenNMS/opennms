@@ -108,10 +108,10 @@ public class CalendarTableBuilder {
 			int dayInNextMonth;
 			int firstDayOfWeek;
 					   	
-		   	String monthNames[] = new DateFormatSymbols(m_locale).getMonths();
+		   	String[] monthNames = new DateFormatSymbols(m_locale).getMonths();
 		   	m_calTable.setMonth(monthNames[month]);
 		   	
-			String dayNames[] = new DateFormatSymbols(m_locale).getShortWeekdays();
+			String[] dayNames = new DateFormatSymbols(m_locale).getShortWeekdays();
 		   	DaysOfWeek titleDays = new DaysOfWeek();
 			
 		    int dayOfWeek;

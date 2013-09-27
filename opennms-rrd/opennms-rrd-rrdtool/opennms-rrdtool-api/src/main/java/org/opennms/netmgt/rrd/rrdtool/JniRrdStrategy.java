@@ -525,7 +525,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
                 if ((line = reader.readLine()) == null) {
                     throw new IOException("No output from the createGraph() command");
                 }
-                String s[] = line.split("x");
+                String[] s = line.split("x");
                 width = Integer.parseInt(s[0]);
                 height = Integer.parseInt(s[1]);
                 
@@ -551,8 +551,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         }
 
         // Creating Graph Details
-        RrdGraphDetails details = new JniGraphDetails(width, height, printLines, pngStream);
-        return details;
+        return new JniGraphDetails(width, height, printLines, pngStream);
     }
 
     /** {@inheritDoc} */

@@ -329,7 +329,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private List<String> getList(String array[]) {
+    private List<String> getList(String[] array) {
         List<String> newList = new ArrayList<String>();
 
         if (array != null) {

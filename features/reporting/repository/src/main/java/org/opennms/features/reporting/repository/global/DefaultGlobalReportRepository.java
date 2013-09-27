@@ -71,7 +71,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Separator for repositoryId and reportId.
      */
-    private final String REPOSITORY_REPORT_SEP = "_";
+    private static final String REPOSITORY_REPORT_SEP = "_";
 
     /**
      * List of repositories managed by this class.

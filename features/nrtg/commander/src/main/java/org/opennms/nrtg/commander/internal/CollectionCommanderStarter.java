@@ -47,7 +47,7 @@ public class CollectionCommanderStarter {
 
     private static AbstractApplicationContext context;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         context = new AnnotationConfigApplicationContext(AppConfig.class);
         context.registerShutdownHook();
         new CollectionCommanderStarter().start();

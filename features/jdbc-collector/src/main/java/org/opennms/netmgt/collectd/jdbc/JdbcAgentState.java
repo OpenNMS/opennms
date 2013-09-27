@@ -53,9 +53,6 @@ public class JdbcAgentState {
     private boolean m_useDataSourceName;
     private String m_dataSourceName;
     
-    private String m_driverClass;
-    private String m_dbUser;
-    private String m_dbPass;
     private String m_dbUrl;
     
     Driver m_driver = null;
@@ -94,8 +91,8 @@ public class JdbcAgentState {
         
         // Extract the driver class name and create a driver class instance.
         try {
-            m_driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
-            m_driver = (Driver)Class.forName(m_driverClass).newInstance();
+            String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
+            m_driver = (Driver)Class.forName(driverClass).newInstance();
         } catch (Throwable exp) {
             throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
         }
@@ -106,12 +103,12 @@ public class JdbcAgentState {
         m_dbUrl = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), m_address);
         LOG.debug("JDBC url: {}", m_dbUrl);
 
-        m_dbUser = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
-        m_dbPass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
+        String dbUser = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
+        String dbPass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
 
         m_dbProps = new Properties();
-        m_dbProps.setProperty("user", m_dbUser);
-        m_dbProps.setProperty("password", m_dbPass);
+        m_dbProps.setProperty("user", dbUser);
+        m_dbProps.setProperty("password", dbPass);
     }
     
     public Connection getJdbcConnection() throws JdbcCollectorException {

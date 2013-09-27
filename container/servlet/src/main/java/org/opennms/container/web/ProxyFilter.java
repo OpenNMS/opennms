@@ -30,7 +30,6 @@ import org.osgi.framework.BundleContext;
 
 public final class ProxyFilter implements Filter {
     private DispatcherTracker m_dispatcherTracker;
-    private FilterConfig m_filterConfig;
 
     @Override
     public void destroy() {
@@ -39,7 +38,6 @@ public final class ProxyFilter implements Filter {
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
-        m_filterConfig = filterConfig;
         filterConfig.getServletContext().log("initializing filter config " + filterConfig);
         try {
             this.m_dispatcherTracker = new DispatcherTracker(getBundleContext(filterConfig.getServletContext()), null, filterConfig);

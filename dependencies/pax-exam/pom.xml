@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.ops4j.pax.url</groupId>
       <artifactId>pax-url-mvn</artifactId>
-      <version>1.3.5</version>
+      <version>1.3.6</version>
     </dependency>
     <!--
       Declare the version of the Karaf container so that it is available inside

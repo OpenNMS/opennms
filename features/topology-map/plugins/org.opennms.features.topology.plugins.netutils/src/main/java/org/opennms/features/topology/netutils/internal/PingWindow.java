@@ -58,7 +58,7 @@ import com.vaadin.ui.Button.ClickEvent;
 @SuppressWarnings("serial")
 public class PingWindow extends Window{
 
-	private final double sizePercentage = 0.80; // Window size proportionate to main window
+	private static final double sizePercentage = 0.80; // Window size proportionate to main window
 	protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
 	protected NativeSelect packetSizeDropdown = null; //Dropdown component for Packet Size
 	private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
@@ -70,10 +70,10 @@ public class PingWindow extends Window{
 	private VerticalLayout topLayout = null; //Contains the form components
 	private VerticalLayout bottomLayout = null; //Contains the results browser
 	private VerticalSplitPanel vSplit = null; //Splits up the top layout and bottom layout
-	private int margin = 40; //Padding around the results browser
-	private int splitHeight = 240; //Height from top of the window to the split location in pixels
-	private int topHeight = 280; //Set height size for everything above the split
-	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+	private static final int margin = 40; //Padding around the results browser
+	private static final int splitHeight = 240; //Height from top of the window to the split location in pixels
+	private static final int topHeight = 280; //Set height size for everything above the split
+	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
 	private String pingUrl;
 	
 	/**

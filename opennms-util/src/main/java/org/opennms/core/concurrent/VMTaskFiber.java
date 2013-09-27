@@ -78,11 +78,6 @@ public class VMTaskFiber implements Fiber, Runnable {
     private ClassLoader m_classLoader;
 
     /**
-     * The entry class.
-     */
-    private Class<?> m_entryClass;
-
-    /**
      * The entry method.
      */
     private Method m_entryMethod;
@@ -173,7 +168,7 @@ public class VMTaskFiber implements Fiber, Runnable {
 
         m_classLoader = new URLClassLoader(searchPaths);
 
-        m_entryClass = m_classLoader.loadClass(entryClassName);
+        Class<?> m_entryClass = m_classLoader.loadClass(entryClassName);
         m_entryMethod = findMain(m_entryClass);
         if (m_entryMethod == null)
             throw new NoSuchMethodException("main() method not found for class " + entryClassName);

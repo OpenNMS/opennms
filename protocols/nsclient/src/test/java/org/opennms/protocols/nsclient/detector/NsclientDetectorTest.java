@@ -31,7 +31,7 @@ package org.opennms.protocols.nsclient.detector;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;

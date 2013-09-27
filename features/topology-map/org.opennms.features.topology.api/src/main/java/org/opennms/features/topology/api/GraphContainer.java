@@ -49,7 +49,7 @@ public interface GraphContainer extends DisplayState {
 
 	Criteria[] getCriteria();
 
-	void setCriteria(Criteria critiera);
+	void setCriteria(Criteria criteria);
 
 	void removeCriteria(Criteria criteria);
 

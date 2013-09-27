@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import net.sourceforge.jwebunit.api.IElement;
 import net.sourceforge.jwebunit.junit.WebTester;
 

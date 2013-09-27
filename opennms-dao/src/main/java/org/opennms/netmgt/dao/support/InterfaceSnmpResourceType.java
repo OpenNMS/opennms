@@ -184,7 +184,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             String mac = "";
 
             // Strip off the MAC address from the end, if there is one
-            int dashIndex = name.lastIndexOf("-");
+            int dashIndex = name.lastIndexOf('-');
 
             if (dashIndex >= 0) {
                 desc = name.substring(0, dashIndex);

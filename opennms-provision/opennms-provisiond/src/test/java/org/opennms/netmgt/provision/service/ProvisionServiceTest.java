@@ -30,7 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.net.MalformedURLException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Ignore;

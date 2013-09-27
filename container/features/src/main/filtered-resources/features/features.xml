@@ -3,7 +3,7 @@
     <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
 
     <!-- opennms osgi core -->
-   <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
+    <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
 
     <!-- topology features -->
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features 

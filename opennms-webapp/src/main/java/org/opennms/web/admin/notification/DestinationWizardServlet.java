@@ -195,10 +195,10 @@ public class DestinationWizardServlet extends HttpServlet {
             // compare the list of targets chosen to the existing targets,
             // replacing
             // and creating new targets as necessary
-            String userTargets[] = request.getParameterValues("users");
-            String groupTargets[] = request.getParameterValues("groups");
-            String roleTargets[] = request.getParameterValues("roles");
-            String emailTargets[] = request.getParameterValues("emails");
+            String[] userTargets = request.getParameterValues("users");
+            String[] groupTargets = request.getParameterValues("groups");
+            String[] roleTargets = request.getParameterValues("roles");
+            String[] emailTargets = request.getParameterValues("emails");
 
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
@@ -346,12 +346,12 @@ public class DestinationWizardServlet extends HttpServlet {
                 // don't overwrite the email target command
                 if (targets[i].getName().indexOf("@") == -1) {
                     targets[i].removeAllCommand();
-                    String commands[] = request.getParameterValues(name + "Commands");
+                    String[] commands = request.getParameterValues(name + "Commands");
                     for (int j = 0; j < commands.length; j++) {
                         targets[i].addCommand(commands[j]);
                     }
                 }
-                String autoNotify[] =  request.getParameterValues(name + "AutoNotify");
+                String[] autoNotify =  request.getParameterValues(name + "AutoNotify");
                 if(autoNotify[0] == null) {
                     autoNotify[0] = "auto";
                 }
