@@ -22,24 +22,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -49,24 +33,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -76,24 +44,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -103,24 +55,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -130,24 +66,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -157,24 +77,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -184,24 +88,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -215,24 +103,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -242,24 +114,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -269,24 +125,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -296,24 +136,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.hibernate</groupId>
@@ -335,24 +159,8 @@
       <version>${springVersion}</version>
       <exclusions>
         <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -374,10 +182,6 @@
     <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
     </dependency>
     <dependency>
       <!-- Needed for spring-context-support -->

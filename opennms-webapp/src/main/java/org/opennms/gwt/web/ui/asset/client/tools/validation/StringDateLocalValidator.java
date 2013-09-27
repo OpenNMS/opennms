@@ -44,8 +44,6 @@ public class StringDateLocalValidator implements Validator {
 
 	private final DateTimeFormat m_formater = DateTimeFormat.getFormat("yyyy-MM-dd");
 
-	private String m_dateString = "";
-
 	/**
 	 * Validates if the string representation of given object is parseable to an
 	 * {@link Date}. The expected format is "yyyy-MM-dd". The given object will
@@ -56,8 +54,9 @@ public class StringDateLocalValidator implements Validator {
 	@Override
 	public String validate(Object object) {
 
+	    String dateString = "";
 		try {
-			m_dateString = (String) object;
+			dateString = (String) object;
 		} catch (Exception e) {
 			// GWT.LOG("DATETIMEFORMATVALIDATOR: CAN'T CAST OBJECT: " + OBJECT +
 			// " TO STRING");
@@ -65,13 +64,13 @@ public class StringDateLocalValidator implements Validator {
 			// it's a STRING-validator... so nothing happens
 		}
 
-		if (m_dateString.equals("")) {
+		if (dateString.equals("")) {
 			return "";
 		}
 
 		try {
 			// GWT.log("DateTimeFormatValidator: m_DateSting: " + m_dateString);
-			m_formater.parseStrict(m_dateString);
+			m_formater.parseStrict(dateString);
 		} catch (Exception e) {
 			// GWT.log("DateTimeFormatValidator: m_DateSting: " + m_dateString +
 			// " can't be formated by m_formater; " + "yyyy-MM-dd");

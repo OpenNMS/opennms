@@ -79,22 +79,22 @@ public class LegacyLocalReportRepository implements ReportRepository {
     /**
      * Repository tag to identify reports
      */
-    private final String REPOSITORY_ID = "local";
+    private static final String REPOSITORY_ID = "local";
 
     /**
      * Name for the local community repository
      */
-    private final String REPOSITORY_NAME = "Local Report Repository";
+    private static final String REPOSITORY_NAME = "Local Report Repository";
 
     /**
      * Description for the local community repository
      */
-    private final String REPOSITORY_DESCRIPTION = "Providing OpenNMS community reports from local disk.";
+    private static final String REPOSITORY_DESCRIPTION = "Providing OpenNMS community reports from local disk.";
 
     /**
      * URL to subscribe a repository
      */
-    private final String MANAGEMENT_URL = "blank";
+    private static final String MANAGEMENT_URL = "blank";
 
     /**
      * Default constructor creates one local repositories for OpenNMS community reports.

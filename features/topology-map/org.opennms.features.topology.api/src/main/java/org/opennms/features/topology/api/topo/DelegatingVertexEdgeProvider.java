@@ -113,13 +113,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Vertex> getVertices(Criteria criteria) {
+	public final List<Vertex> getVertices(Criteria... criteria) {
 		return m_vertexProvider.getVertices(criteria);
-	}
-
-	@Override
-	public final List<Vertex> getVertices() {
-		return m_vertexProvider.getVertices();
 	}
 
 	@Override
@@ -168,23 +163,13 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final List<Edge> getEdges(Criteria criteria) {
+	public final List<Edge> getEdges(Criteria... criteria) {
 		return m_edgeProvider.getEdges(criteria);
-	}
-
-	@Override
-	public final List<Edge> getEdges() {
-		return m_edgeProvider.getEdges();
 	}
 
 	@Override
 	public final List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		return m_edgeProvider.getEdges(references);
-	}
-
-	@Override
-	public final boolean matches(EdgeRef edgeRef, Criteria criteria) {
-		return m_edgeProvider.matches(edgeRef, criteria);
 	}
 
 	@Override

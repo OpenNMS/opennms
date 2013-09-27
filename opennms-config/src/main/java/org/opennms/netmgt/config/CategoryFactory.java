@@ -502,8 +502,7 @@ public final class CategoryFactory implements CatFactory {
             for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
                 for (final Category cat : cg.getCategories().getCategoryCollection()) {
                     if (cat.getLabel().equals(catlabel)) {
-                        String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-                        return catRule;
+                        return "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
                     }
                 }
             }

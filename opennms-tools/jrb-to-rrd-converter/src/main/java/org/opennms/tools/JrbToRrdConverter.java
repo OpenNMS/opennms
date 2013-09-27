@@ -225,7 +225,7 @@ public class JrbToRrdConverter {
      * @param args Arguments from command line
      * @throws ParseException
      */
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
 
         // Init defaults
         String rrdTool = DEFAULT_RRDTOOL;

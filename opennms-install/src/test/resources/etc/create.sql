@@ -77,6 +77,7 @@ drop table groups cascade;
 drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
+drop table filterfavorites cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -94,6 +95,9 @@ drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
+drop sequence filternextid;
+
+drop index filternamesidx;
 
 --# Begin quartz persistence 
 
@@ -196,6 +200,11 @@ create sequence pollResultNxtId minvalue 1;
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
+
+--# Sequence for the filterid column in the filterfavorites table
+--#          sequence, column, table
+--# install: filternextid filterid filterfavorites
+create sequence filternextid minvalue 1;
 
 
 --# A table to use to manage upsert access
@@ -1207,7 +1216,7 @@ create table assets (
         vmwaremanagedobjectid	varchar(70),
         vmwaremanagedentitytype	varchar(70),
         vmwaremanagementserver	varchar(70),
-        vmwaretopologyinfo	varchar(1023),
+        vmwaretopologyinfo	text,
         vmwarestate	varchar(255),
         
     constraint pk_assetID primary key (id),
@@ -2411,3 +2420,16 @@ create table accesspoints (
 
 create index accesspoint_package_idx on accesspoints(pollingpackage);
 
+--##################################################################
+--# The following command should populate the filterfavorites table
+--##################################################################
+CREATE TABLE filterfavorites (
+  filterid INTEGER NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  filtername VARCHAR(50) NOT NULL,
+  page VARCHAR(25) NOT NULL,
+  filter VARCHAR(255) NOT NULL,
+
+  CONSTRAINT pk_filterid PRIMARY KEY (filterid)
+);
+CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);

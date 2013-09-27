@@ -74,8 +74,6 @@ public class DeleteNodesServlet extends HttpServlet {
 
     private File m_rtRrdDirectory;
 
-    private ResourceService m_resourceService;
-
     /** {@inheritDoc} */
     @Override
     public void init() throws ServletException {
@@ -86,12 +84,12 @@ public class DeleteNodesServlet extends HttpServlet {
         }
 
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
+        ResourceService resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
 
-        m_snmpRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
+        m_snmpRrdDirectory = new File(resourceService.getRrdDirectory(), DefaultResourceDao.SNMP_DIRECTORY);
         LOG.debug("SNMP RRD directory: {}", m_snmpRrdDirectory);
 
-        m_rtRrdDirectory = new File(m_resourceService.getRrdDirectory(), DefaultResourceDao.RESPONSE_DIRECTORY);
+        m_rtRrdDirectory = new File(resourceService.getRrdDirectory(), DefaultResourceDao.RESPONSE_DIRECTORY);
         LOG.debug("Response time RRD directory: {}", m_rtRrdDirectory);
     }
 

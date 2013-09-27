@@ -91,8 +91,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForDomain(final String domain) {
-        List<OnmsResource> empty = Collections.emptyList();
-        return empty;
+        return Collections.emptyList();
     }
     
     /** {@inheritDoc} */

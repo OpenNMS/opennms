@@ -144,7 +144,7 @@ public class NCSAlarmController {
         parms.sortStyle = sortStyle;
         
         AlarmCriteria queryCriteria = new AlarmCriteria(filters, sortStyle, ackType, limit, limit * multiple);
-        AlarmCriteria countCriteria = new AlarmCriteria(ackType, filters);
+        AlarmCriteria countCriteria = new AlarmCriteria(filters, ackType);
 
         OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(queryCriteria));
         

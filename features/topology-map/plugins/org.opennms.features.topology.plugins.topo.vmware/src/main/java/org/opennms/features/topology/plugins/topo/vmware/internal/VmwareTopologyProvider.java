@@ -52,7 +52,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
-    private final String SPLIT_REGEXP = " *, *";
+    private static final String SPLIT_REGEXP = " *, *";
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private boolean m_generated = false;
@@ -196,10 +196,10 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         HashMap<String, String> moIdToName = new HashMap<String, String>();
 
-        String entities[] = vmwareTopologyInfo.split(SPLIT_REGEXP);
+        String[] entities = vmwareTopologyInfo.split(SPLIT_REGEXP);
 
         for (String entityAndName : entities) {
-            String splitBySlash[] = entityAndName.split("/");
+            String[] splitBySlash = entityAndName.split("/");
             String entityId = splitBySlash[0];
 
             String entityName = "unknown";
@@ -282,10 +282,10 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         HashMap<String, String> moIdToName = new HashMap<String, String>();
 
-        String entities[] = vmwareTopologyInfo.split(SPLIT_REGEXP);
+        String[] entities = vmwareTopologyInfo.split(SPLIT_REGEXP);
 
         for (String entityAndName : entities) {
-            String splitBySlash[] = entityAndName.split("/");
+            String[] splitBySlash = entityAndName.split("/");
             String entityId = splitBySlash[0];
 
             String entityName = "unknown";

@@ -282,7 +282,7 @@ public class GroupController extends AbstractController implements InitializingB
         if (!defaultMap.equals(""))
             newGroup.setDefaultMap(defaultMap);
         
-        String users[] = request.getParameterValues("selectedUsers");
+        String[] users = request.getParameterValues("selectedUsers");
         
         List<String> userList = users == null ? Collections.<String>emptyList() : Arrays.asList(users);
         

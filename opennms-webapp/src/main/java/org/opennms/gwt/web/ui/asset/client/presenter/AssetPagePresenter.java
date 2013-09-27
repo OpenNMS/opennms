@@ -148,7 +148,6 @@ public class AssetPagePresenter implements Presenter {
 	private final HandlerManager eventBus;
 	private final Display display;
 	private AssetCommand asset;
-	private AssetSuggCommand assetSugg;
 	private int nodeId;
 
 	public AssetPagePresenter(AssetServiceAsync rpcService, HandlerManager eventBus, Display view) {
@@ -229,7 +228,7 @@ public class AssetPagePresenter implements Presenter {
 
 			@Override
 			public void onSuccess(AssetSuggCommand result) {
-				assetSugg = result;
+				AssetSuggCommand assetSugg = result;
 				display.setDataSugg(assetSugg);
 			}
 		});

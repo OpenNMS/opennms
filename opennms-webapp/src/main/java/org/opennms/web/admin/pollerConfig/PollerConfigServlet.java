@@ -98,10 +98,6 @@ public class PollerConfigServlet extends HttpServlet {
 
     private Properties m_props = new Properties();
 
-    private PollerConfig m_pollerFactory = null;
-
-    private CapsdConfig m_capsdFactory = null;
-
     /**
      * <p>init</p>
      *
@@ -135,8 +131,8 @@ public class PollerConfigServlet extends HttpServlet {
         } catch (Throwable e) {
             throw new ServletException(e);
         }
-        m_capsdFactory = CapsdConfigFactory.getInstance();
-        m_capsdConfig = m_capsdFactory.getConfiguration();
+        CapsdConfig capsdFactory = CapsdConfigFactory.getInstance();
+        m_capsdConfig = capsdFactory.getConfiguration();
         if (m_capsdConfig == null) {
             throw new ServletException("Capsd Configuration file is empty");
         }
@@ -148,8 +144,8 @@ public class PollerConfigServlet extends HttpServlet {
         } catch (Throwable e) {
             throw new ServletException(e);
         }
-        m_pollerFactory = PollerConfigFactory.getInstance();
-        m_pollerConfig = m_pollerFactory.getConfiguration();
+        PollerConfig pollerFactory = PollerConfigFactory.getInstance();
+        m_pollerConfig = pollerFactory.getConfiguration();
         if (m_pollerConfig == null) {
             throw new ServletException("Poller Configuration file is empty");
         }

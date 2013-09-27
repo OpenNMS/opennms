@@ -206,8 +206,7 @@ public class Events implements Serializable {
      */
     public boolean removeEvent(
             final org.opennms.netmgt.xml.event.Event vEvent) {
-        boolean removed = _eventList.remove(vEvent);
-        return removed;
+        return _eventList.remove(vEvent);
     }
 
     /**
@@ -218,8 +217,7 @@ public class Events implements Serializable {
      */
     public org.opennms.netmgt.xml.event.Event removeEventAt(
             final int index) {
-        java.lang.Object obj = this._eventList.remove(index);
-        return (org.opennms.netmgt.xml.event.Event) obj;
+        return this._eventList.remove(index);
     }
 
     /**

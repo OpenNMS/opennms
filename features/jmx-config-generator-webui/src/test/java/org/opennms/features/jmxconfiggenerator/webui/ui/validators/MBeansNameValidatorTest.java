@@ -29,7 +29,7 @@
 package org.opennms.features.jmxconfiggenerator.webui.ui.validators;
 
 import static junit.framework.Assert.fail;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

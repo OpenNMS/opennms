@@ -216,7 +216,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             newprop = new org.opennms.netmgt.config.capsd.Property();
             if (port != null && !port.equals("")) {
                 newprop.setValue(port);
-                if (port.indexOf(":") == -1) {
+                if (port.indexOf(':') == -1) {
                     newprop.setKey("port");
                 } else {
                     newprop.setKey("ports");
@@ -229,7 +229,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 } else {
                     port = (String) props.get("service." + protocol + ".port");
                     newprop.setValue(port);
-                    if (port.indexOf(":") == -1) {
+                    if (port.indexOf(':') == -1) {
                         newprop.setKey("port");
                     } else {
                         newprop.setKey("ports");
@@ -360,7 +360,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             }
 
             newprop.setValue(port);
-            if (port.indexOf(":") != -1) {
+            if (port.indexOf(':') != -1) {
                 newprop.setKey("ports");
             } else { 
                 newprop.setKey("port");

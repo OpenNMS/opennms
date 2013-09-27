@@ -299,7 +299,7 @@ public class VmwareConfigBuilder {
 
         versionInformation = buffer.toString();
 
-        String arr[] = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
+        String[] arr = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
 
         if (arr.length > 1) {
             apiVersion = arr[0];
@@ -477,7 +477,7 @@ public class VmwareConfigBuilder {
     }
 
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname = null;
         String username = null;
         String password = null;

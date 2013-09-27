@@ -826,8 +826,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
     
     private String getLabel(final String FQDN) {
-    	if (FQDN.indexOf(".")>0 && !validate(FQDN))
-            return FQDN.substring(0, FQDN.indexOf(".")); 			
+    	if (FQDN.indexOf('.')>0 && !validate(FQDN))
+            return FQDN.substring(0, FQDN.indexOf('.'));
         return FQDN;
     }
     
@@ -844,7 +844,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     * @param ip ip address for validation
     * @return true valid ip address, false invalid ip address
     */
-    private boolean validate(final String ip) {	  
+    private boolean validate(final String ip) {
         final Matcher matcher = m_pattern.matcher(ip);
         return matcher.matches();
     }

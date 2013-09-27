@@ -2,6 +2,7 @@ package org.opennms.features.topology.plugins.ncs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -100,19 +101,13 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     }
 
     @Override
-    public boolean matches(EdgeRef edgeRef, Criteria criteria) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
-    public List<Edge> getEdges(Criteria criteria) {
-        NCSServicePathCriteria crit = (NCSServicePathCriteria) criteria;
-        return crit;
-    }
-
-    @Override
-    public List<Edge> getEdges() {
-        throw new UnsupportedOperationException("Not implemented");
+    public List<Edge> getEdges(Criteria... criteria) {
+        for (Criteria criterium : criteria) {
+            try {
+                return (NCSServicePathCriteria)criterium;
+            } catch (ClassCastException e) {}
+        }
+        return Collections.<Edge>emptyList();
     }
 
     @Override

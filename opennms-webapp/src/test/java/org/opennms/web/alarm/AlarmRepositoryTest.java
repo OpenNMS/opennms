@@ -152,9 +152,9 @@ public class AlarmRepositoryTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void testGetUnacknowledgedAlarms() {
-        OnmsCriteria acked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(AcknowledgeType.ACKNOWLEDGED, new Filter[0]));
-        OnmsCriteria unacked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]));
-        OnmsCriteria all = AlarmUtil.getOnmsCriteria(new AlarmCriteria(AcknowledgeType.BOTH, new Filter[0]));
+        OnmsCriteria acked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(new Filter[0], AcknowledgeType.ACKNOWLEDGED));
+        OnmsCriteria unacked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(new Filter[0], AcknowledgeType.UNACKNOWLEDGED));
+        OnmsCriteria all = AlarmUtil.getOnmsCriteria(new AlarmCriteria(new Filter[0], AcknowledgeType.BOTH));
         
         long countAll = m_alarmRepo.countMatchingAlarms(all);
         long countAcked = m_alarmRepo.countMatchingAlarms(acked);

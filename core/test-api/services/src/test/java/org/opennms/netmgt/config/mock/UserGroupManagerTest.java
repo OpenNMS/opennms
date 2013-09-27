@@ -47,9 +47,11 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.UserManager.ContactType;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.model.OnmsUser;
 
 public class UserGroupManagerTest {
     private GroupManager m_groupManager;
@@ -102,6 +104,29 @@ public class UserGroupManagerTest {
     @After
     public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
+    }
+    
+    @Test
+    public void testContactInfo() throws Exception {
+    	// verify that email address is loadable by default
+    	User admin = m_userManager.getUser("admin");
+    	String adminEmail = m_userManager.getContactInfo("admin",  ContactType.email);
+    	
+    	OnmsUser onmsAdmin = m_userManager.getOnmsUser("admin");
+    	String onmsAdminEmail = onmsAdmin.getEmail();
+    	
+    	assertEquals("admin@opennms.org", adminEmail);
+    	assertEquals(adminEmail, onmsAdminEmail);
+    	
+    	// verify that email is overwritten
+    	onmsAdmin.setEmail("admin@opennms.com");
+    	m_userManager.save(onmsAdmin); 
+    	assertEquals("admin@opennms.com", m_userManager.getContactInfo("admin", ContactType.email));
+
+    	m_userManager.setContactInfo("admin", ContactType.email, "admin@opennms.org"); // reset
+    	admin = m_userManager.getUser("admin"); // reload
+    	m_userManager.saveUser("admin", admin); // should be saved too
+    	assertEquals("admin@opennms.org", m_userManager.getContactInfo("admin", ContactType.email));
     }
     
     @Test

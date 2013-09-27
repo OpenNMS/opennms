@@ -44,7 +44,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;

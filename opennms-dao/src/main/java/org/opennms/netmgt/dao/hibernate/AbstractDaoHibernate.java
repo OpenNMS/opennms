@@ -452,7 +452,12 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
      */
     @Override
     public void save(final T entity) throws DataAccessException {
-        sessionFactory.getCurrentSession().save(entity);
+        try {
+            sessionFactory.getCurrentSession().save(entity);
+        } catch (final DataAccessException e) {
+            logExtraSaveOrUpdateExceptionInformation(entity, e);
+            throw e;
+        }
     }
 
     /**

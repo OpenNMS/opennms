@@ -76,8 +76,6 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private InstallerDb m_installerDb;
 
-    private ByteArrayOutputStream m_outputStream;
-
     private boolean m_setupIpLike = true;
 
     private boolean m_populateSchema = false;
@@ -259,8 +257,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     private void resetOutputStream() {
-        m_outputStream = new ByteArrayOutputStream();
-        m_installerDb.setOutputStream(new PrintStream(m_outputStream));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        m_installerDb.setOutputStream(new PrintStream(outputStream));
     }
 
     public void setupDatabase() throws TemporaryDatabaseException {

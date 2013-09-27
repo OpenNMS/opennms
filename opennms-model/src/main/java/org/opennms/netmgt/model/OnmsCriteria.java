@@ -313,8 +313,7 @@ public class OnmsCriteria implements Serializable {
             object.writeObject(this);
             object.flush();
             object.close();
-            OnmsCriteria copy = (OnmsCriteria)new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray())).readObject();
-            return copy;
+            return (OnmsCriteria)new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray())).readObject();
         } catch(Throwable t) {
             throw new HibernateException(t);
         }

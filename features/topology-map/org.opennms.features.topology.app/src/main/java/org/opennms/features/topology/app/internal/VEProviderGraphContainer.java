@@ -1,16 +1,46 @@
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.topo.*;
-import org.osgi.framework.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
     
@@ -103,16 +133,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     public class VEGraph implements Graph {
-    	
-    	private final Collection<Vertex> m_displayVertices;
-    	private final Collection<Edge> m_displayEdges;
+
+    	private final Set<Vertex> m_displayVertices = new TreeSet<Vertex>(new RefComparator());
+    	private final Set<Edge> m_displayEdges = new TreeSet<Edge>(new RefComparator());
     	private final Layout m_layout;
     	
-        public VEGraph(Layout layout, Collection<Vertex> displayVertices,
-				Collection<Edge> displayEdges) {
-			m_displayVertices = displayVertices;
-			m_displayEdges = displayEdges;
-			m_layout = layout;
+        public VEGraph(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
+        	m_layout = new DefaultLayout(VEProviderGraphContainer.this);
+        	updateLayout(displayVertices, displayEdges);
 		}
 
 		@Override
@@ -166,6 +194,27 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         	visitor.completeGraph(this);
         }
 
+		public void updateLayout(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
+			m_displayVertices.clear();
+			m_displayVertices.addAll(displayVertices);
+			m_displayEdges.clear();
+			m_displayEdges.addAll(displayEdges);
+			for (Iterator<Edge> itr = m_displayEdges.iterator(); itr.hasNext();) {
+				Edge edge = itr.next();
+				if (m_displayVertices.contains(edge.getSource().getVertex())) {
+					if (m_displayVertices.contains(edge.getTarget().getVertex())) {
+						// This edge is OK, it is attached to two vertices that are in the graph
+					} else {
+						s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
+						itr.remove();
+					}
+				} else {
+					s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
+					itr.remove();
+				}
+			}
+			s_log.debug("Created a graph with {} vertices and {} edges", m_displayVertices.size(), m_displayEdges.size());
+		}
     }
 
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
@@ -181,12 +230,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private String m_sessionId;
     private BundleContext m_bundleContext;
     
-    private final Layout m_layout;
     private VEGraph m_graph;
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
-    	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
 
@@ -297,7 +344,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	
     	List<Vertex> displayVertices = new ArrayList<Vertex>();
     	
-    	for(Vertex v : m_mergedGraphProvider.getVertices()) {
+    	for(Vertex v : m_mergedGraphProvider.getVertices(getCriteria())) {
     		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(v);
     		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_mergedGraphProvider.hasChildren(v))) {
     			displayVertices.add(v);
@@ -306,14 +353,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	
     	Set<Edge> displayEdges = new HashSet<Edge>();
 
-        final List<Edge> edges = m_mergedGraphProvider.getEdges();
+        final List<Edge> edges = m_mergedGraphProvider.getEdges(getCriteria());
         for(Edge e : edges) {
     		VertexRef source = e.getSource().getVertex();
     		VertexRef target = e.getTarget().getVertex();
 
     		Vertex displaySource = getDisplayVertex(source);
 			Vertex displayTarget = getDisplayVertex(target);
-			if (refEquals(displaySource, displayTarget)) {
+			if (displaySource == null || displayTarget == null) {
+				// skip this one
+			}
+			else if (refEquals(displaySource, displayTarget)) {
 				// skip this one
 			}
 			else if (refEquals(source, displaySource) && refEquals(target, displayTarget)) {
@@ -329,8 +379,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 				displayEdges.add(pEdge);
 			}
     	}
-    	
-    	m_graph = new VEGraph(m_layout, displayVertices, displayEdges);
+
+        if (m_graph == null) {
+            m_graph = new VEGraph(displayVertices, displayEdges);
+        } else {
+            m_graph.updateLayout(displayVertices, displayEdges);
+        }
 
         unselectVerticesWhichAreNotVisibleAnymore();
 
@@ -381,7 +435,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     		return m_mergedGraphProvider.getVertex(vertexRef);
     	} else {
     		Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
-    		return getDisplayVertex(parent);
+    		if (parent != null) {
+    			return getDisplayVertex(parent);
+    		} else {
+    			return null;
+    		}
     	}
     }
 
@@ -390,24 +448,39 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         return m_graph;
     }
 
-    @Override
-    public Criteria getCriteria(String namespace) {
-    	return m_mergedGraphProvider.getCriteria(namespace);
-    }
-    
+	private final Set<Criteria> m_criteria = new HashSet<Criteria>();
+
+	@Override
+	public Criteria[] getCriteria() {
+		return m_criteria.toArray(new Criteria[0]);
+	}
+
+	@Override
+	public void setCriteria(Criteria criteria) {
+		m_criteria.add(criteria);
+		/*
+		Set<Criteria> criterias = m_criteria.get(criteria.getNamespace());
+		if (criterias == null) {
+			criterias = new HashSet<Criteria>();
+			m_criteria.put(criteria.getNamespace(), new TreeSet<Criteria>());
+		}
+		criterias.add(criteria);
+		 */
+		rebuildGraph();
+	}
+
+	@Override
+	public void removeCriteria(Criteria criteria) {
+		m_criteria.remove(criteria);
+		/*
+		String namespace = criteria.getNamespace();
+		m_criteria.remove(namespace);
+		*/
+		rebuildGraph();
+	}
+
     public void setBundleContext(final BundleContext bundleContext) {
         m_bundleContext = bundleContext;
-    }
-    
-    public void removeCriteria(Criteria criteria) {
-        m_mergedGraphProvider.removeCriteria(criteria);
-        rebuildGraph();
-    }
-    
-    @Override
-    public void setCriteria(Criteria criteria) {
-    	m_mergedGraphProvider.setCriteria(criteria);
-        rebuildGraph();
     }
 
 	private void fireGraphChanged() {

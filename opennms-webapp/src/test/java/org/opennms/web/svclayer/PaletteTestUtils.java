@@ -31,7 +31,7 @@ package org.opennms.web.svclayer;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public abstract class PaletteTestUtils extends Assert {
 

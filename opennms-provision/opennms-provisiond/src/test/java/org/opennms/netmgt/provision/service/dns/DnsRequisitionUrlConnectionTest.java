@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;

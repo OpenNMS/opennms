@@ -322,17 +322,15 @@ public class NrtController {
         return metaData;
     }
 
-    private final String PROTOCOLDELIMITER = "_";
-    private final String METRICID_DELIMITER = "=";
+    private static final String PROTOCOLDELIMITER = "_";
+    private static final String METRICID_DELIMITER = "=";
     
     private String getProtocolFromMetaDataLine(String metaDataLine) {
-        String protocol = metaDataLine.substring(0, metaDataLine.indexOf(PROTOCOLDELIMITER));
-        return protocol;
+        return metaDataLine.substring(0, metaDataLine.indexOf(PROTOCOLDELIMITER));
     }
 
     private String getMetricIdFromMetaDataLine(String metaDataLine) {
-        String metricId = metaDataLine.substring(metaDataLine.indexOf(PROTOCOLDELIMITER) + 1, metaDataLine.lastIndexOf(METRICID_DELIMITER));
-        return metricId;
+        return metaDataLine.substring(metaDataLine.indexOf(PROTOCOLDELIMITER) + 1, metaDataLine.lastIndexOf(METRICID_DELIMITER));
     }
 
     /**

@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  */
 public class DefaultPollerSettings implements InitializingBean, PollerSettings {
     
-    private final String MONITOR_ID_KEY = "locationMonitorId";
+    private static final String MONITOR_ID_KEY = "locationMonitorId";
     
     private Resource m_configResource;
     

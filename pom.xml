@@ -145,13 +145,13 @@
   </extensions>
   <pluginManagement>
     <plugins>    
-<!--
+      <!--
       <plugin>
         <groupId>ch.elca.el4j.maven.plugins</groupId>
         <artifactId>maven-depgraph-plugin</artifactId>
         <version>1.9</version>
       </plugin>
--->
+      -->
       <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
         <artifactId>depends-maven-plugin</artifactId>
@@ -418,132 +418,161 @@
       </plugin>
       <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
       <plugin>
-      	<groupId>org.eclipse.m2e</groupId>
-      	<artifactId>lifecycle-mapping</artifactId>
-      	<version>1.0.0</version>
-      	<configuration>
-      		<lifecycleMappingMetadata>
-      			<pluginExecutions>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>org.codehaus.groovy.maven</groupId>
-      						<artifactId>gmaven-plugin</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>execute</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>org.codehaus.groovy.maven</groupId>
-      						<artifactId>gmaven-plugin</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>compile</goal>
-      							<goal>testCompile</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<execute/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							org.codehaus.mojo.webstart
-      						</groupId>
-      						<artifactId>
-      							webstart-maven-plugin
-      						</artifactId>
-      						<versionRange>[0.9,)</versionRange>
-      						<goals>
-      							<goal>jnlp-download-servlet</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							com.sun.tools.jxc.maven2
-      						</groupId>
-      						<artifactId>
-      							maven-jaxb-schemagen-plugin
-      						</artifactId>
-      						<versionRange>[1.2,)</versionRange>
-      						<goals>
-      							<goal>generate</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-      				<pluginExecution>
-      					<pluginExecutionFilter>
-      						<groupId>
-      							org.mortbay.jetty
-      						</groupId>
-      						<artifactId>
-      							jetty-jspc-maven-plugin
-      						</artifactId>
-      						<versionRange>[1.0,)</versionRange>
-      						<goals>
-      							<goal>jspc</goal>
-      						</goals>
-      					</pluginExecutionFilter>
-      					<action>
-      						<ignore/>
-      					</action>
-      				</pluginExecution>
-                  <pluginExecution>
-                    <pluginExecutionFilter>
-                      <groupId>org.codehaus.mojo</groupId>
-                      <artifactId>build-helper-plugin</artifactId>
-                      <versionRange>[1.0,)</versionRange>
-                      <goals>
-                        <goal>add-source</goal>
-                      </goals>
-                    </pluginExecutionFilter>
-                    <action>
-                      <execute>
-                        <runOnConfiguration>true</runOnConfiguration>
-                        <runOnIncremental>true</runOnIncremental>
-                      </execute>
-                    </action>
-                  </pluginExecution>
-                  <pluginExecution>
-                    <pluginExecutionFilter>
-                      <groupId>org.opennms.maven.plugins</groupId>
-                      <artifactId>castor-maven-plugin</artifactId>
-                      <versionRange>[1.0,)</versionRange>
-                      <goals>
-                        <!--
-                        <goal>add-test-source</goal>
-                        <goal>add-resource</goal>
-                        <goal>add-test-resource</goal>
-                        -->
-                        <goal>add-source</goal>
-                        <goal>generate</goal>
-                      </goals>
-                    </pluginExecutionFilter>
-                    <action>
-                      <execute>
-                        <runOnConfiguration>true</runOnConfiguration>
-                        <runOnIncremental>true</runOnIncremental>
-                      </execute>
-                    </action>
-                  </pluginExecution>
-      			</pluginExecutions>
-      		</lifecycleMappingMetadata>
-      	</configuration>
-      </plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.groovy.maven</groupId>
+                  <artifactId>gmaven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>execute</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.groovy.maven</groupId>
+                  <artifactId>gmaven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>testCompile</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>webstart-maven-plugin</artifactId>
+                  <versionRange>[0.9,)</versionRange>
+                  <goals>
+                    <goal>jnlp-download-servlet</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>axistools-maven-plugin</artifactId>
+                  <versionRange>[1.4,)</versionRange>
+                  <goals>
+                    <goal>wsdl2java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>com.sun.tools.jxc.maven2</groupId>
+                  <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                  <versionRange>[1.2,)</versionRange>
+                  <goals>
+                    <goal>generate</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.mortbay.jetty</groupId>
+                  <artifactId>jetty-jspc-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>jspc</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>build-helper-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>add-source</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute>
+                    <runOnConfiguration>true</runOnConfiguration>
+                    <runOnIncremental>true</runOnIncremental>
+                  </execute>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.opennms.maven.plugins</groupId>
+                  <artifactId>castor-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <!--
+                    <goal>add-test-source</goal>
+                    <goal>add-resource</goal>
+                    <goal>add-test-resource</goal>
+                    -->
+                    <goal>add-source</goal>
+                    <goal>generate</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute>
+                    <runOnConfiguration>true</runOnConfiguration>
+                    <runOnIncremental>true</runOnIncremental>
+                  </execute>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <versionRange>[1.0.0,)</versionRange>
+                  <goals>
+                    <goal>copy</goal>
+                    <goal>copy-dependencies</goal>
+                    <goal>unpack</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.servicemix.tooling </groupId>
+                    <artifactId>depends-maven-plugin</artifactId>
+                    <versionRange>[1.2,)</versionRange>
+                    <goals>
+                      <goal>generate-depends-file</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute/>
+                  </action>
+                </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
+      </plugin>    
     </plugins>
   </pluginManagement>
    <plugins>
@@ -871,18 +900,19 @@
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
-    <commonsIoVersion>2.0.1</commonsIoVersion>
+    <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <ecjVersion>4.2.2</ecjVersion>
+    <guavaVersion>13.0</guavaVersion>
     <gwtVersion>2.5.1</gwtVersion>
     <gwtPluginVersion>2.5.1</gwtPluginVersion>
     <httpcoreVersion>4.2.4</httpcoreVersion>
     <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.12.v20130726</jettyVersion>
-    <karafVersion>2.3.1</karafVersion>
+    <karafVersion>2.3.2</karafVersion>
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -898,9 +928,9 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.1.4.RELEASE</springVersion>
+    <springVersion>3.2.3.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.6.8</aspectjVersion>
+    <aspectjVersion>1.7.1</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
     <springLdapVersion>3.1.0.RELEASE</springLdapVersion>
@@ -2421,7 +2451,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>10.0.1</version>
+        <version>${guavaVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
@@ -2915,7 +2945,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.1</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
