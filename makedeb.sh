@@ -195,13 +195,7 @@ function main()
 
         # prime the local ~/.m2/repository
         if [ -d core/build ]; then
-            nice ./compile.pl -N install || die "unable to build top-level POM"
-            pushd core
-                nice ../compile.pl -N install || die "unable to build core POM"
-            popd
-            pushd core/build
-                nice ../../compile.pl install || die "unable to build build tools"
-            popd
+            nice ./compile.pl --projects :org.opennms.core.build --also-make install || die "unable to prime build tools"
         fi
 
         if [ -f "${HOME}/.m2/settings.xml" ]; then

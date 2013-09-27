@@ -38,7 +38,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<![CDATA[SELECT
 	categories.categoryname,
 	node.nodelabel,
-	node.nodeid
+	node.nodeid,
+	node.foreignsource,
+	node.foreignid
 FROM
 	node
 JOIN
@@ -60,6 +62,8 @@ ORDER BY
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignsource" class="java.lang.String"/>
+	<field name="foreignid" class="java.lang.String"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
@@ -158,6 +162,12 @@ ORDER BY
 				</subreportParameter>
 				<subreportParameter name="nodeid">
 					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignsource">
+					<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignid">
+					<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "DiskUsageForCTXServers_subreport1.jasper"]]></subreportExpression>
