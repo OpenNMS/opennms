@@ -103,7 +103,16 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       context-engine-id=\"testContextEngineId\" >\n" +
                 "       <specific>1.1.1.101</specific>" +
                 "   </definition>\n" + 
-                "\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsuser1\" \n" + 
+                "       context-name=\"VF:2\" >\n" +
+                "       <specific>10.11.12.13</specific>\n" +
+                "   </definition>\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsuser2\" \n" + 
+                "       context-name=\"VF:3\" auth-passphrase=\"\" auth-protocol=\"\" privacy-passphrase=\"\" privacy-protocol=\"\">\n" +
+                "       <specific>10.11.12.14</specific>\n" +
+                "   </definition>\n" + 
                 "   <definition version=\"v1\" read-community=\"rangev1\" max-vars-per-pdu=\"55\"> \n" + 
                 "       <range begin=\"10.0.0.101\" end=\"10.0.0.200\"/>\n" +
                 "   </definition>\n" + 
@@ -315,4 +324,27 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("rangev2c", agentConfig.getReadCommunity());
     }
 
+    public void testSnmpv3WithNoAuthNoPriv() throws Exception {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.13"));
+        assertEquals("opennmsuser1", agentConfig.getSecurityName());
+        assertEquals("VF:2", agentConfig.getContextName());
+        assertNull(agentConfig.getAuthProtocol());
+        assertNull(agentConfig.getPrivProtocol());
+        assertNull(agentConfig.getAuthPassPhrase());
+        assertNull(agentConfig.getPrivPassPhrase());
+        assertEquals(1, agentConfig.getSecurityLevel());
+
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.14"));
+        assertEquals("opennmsuser2", agentConfig.getSecurityName());
+        assertEquals("VF:3", agentConfig.getContextName());
+        assertEquals("", agentConfig.getAuthProtocol());
+        assertEquals("", agentConfig.getPrivProtocol());
+        assertEquals("", agentConfig.getAuthPassPhrase());
+        assertEquals("", agentConfig.getPrivPassPhrase());
+        assertEquals(1, agentConfig.getSecurityLevel());
+
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(myLocalHost()));
+        assertEquals(3, agentConfig.getSecurityLevel());
+    }
 }

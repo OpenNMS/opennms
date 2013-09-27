@@ -97,21 +97,17 @@ reset_opennms() {
 	clean_yum || die "Unable to clean up old RPM files."
 
 	do_log "removing existing opennms RPMs"
-	REPO=`cat $ME/../.nightly | grep -E '^repo:' | sed -e 's,^repo: *,,'`
-	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | xargs yum -y remove
+	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | grep -v -E '^opennms-repo-' | xargs yum -y remove
 
 	do_log "wiping out \$OPENNMS_HOME"
-	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms /etc/yum.repos.d/opennms*
+	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
-	if [ `ls "$ME"/../target/rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh $ME/../target/rpms/*.rpm"
-		rpm -Uvh "$ME"/../target/rpms/*.rpm
+	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
+		do_log "rpm -Uvh $ME/../../rpms/*.rpm"
+		rpm -Uvh "$ME"/../../rpms/*.rpm
 	else
-		do_log "installing opennms-repo-$REPO-rhel5.noarch.rpm"
-		rpm -Uvh --force http://yum.opennms.org/repofiles/opennms-repo-$REPO-rhel5.noarch.rpm
-
-		do_log "yum -y install $PACKAGES"
-		yum -y install $PACKAGES || die "Unable to install the following packages from the $REPO YUM repo: $PACKAGES"
+		echo "Unable to locate RPMs for installing!"
+		exit 1
 	fi
 }
 
@@ -173,7 +169,7 @@ run_tests() {
 
 	do_log "bamboo.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always test
+		../bin/bamboo.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 

@@ -149,8 +149,8 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-			final File file = new File(eventsDir, normalizeFilename(fieldValue));
-                        LOG.info("Adding new events file {}", file);                        
+                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
+                        LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
                     }
@@ -260,12 +260,12 @@ public class EventAdminApplication extends UI {
             }
             @Override
             public void success() {
-                Notification.show("Event file " + file.getName() + " has been successfuly saved.");
+                Notification.show("Event file " + file + " has been successfuly saved.");
                 this.setVisible(false);
             }
             @Override
             public void failure(String reason) {
-                Notification.show("Event file " + file.getName() + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
+                Notification.show("Event file " + file + " cannot be saved" + (reason == null ? "." : ", because: " + reason), Notification.Type.ERROR_MESSAGE);
             }
         };
         eventPanel.setCaption("Events from " + file);

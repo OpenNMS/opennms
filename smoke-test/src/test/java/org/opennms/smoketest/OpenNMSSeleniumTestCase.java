@@ -50,7 +50,8 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging(true, "DEBUG");
+        final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
+        MockLogAppender.setupLogging(true, logLevel);
 
         WebDriver driver = null;
 
@@ -71,7 +72,14 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         // otherwise, Firefox
         if (driver == null) {
-            driver = new FirefoxDriver();
+            //final File phantomJS = new File("/usr/local/bin/phantomjs");
+            //if (phantomJS.exists()) {
+            //    final DesiredCapabilities caps = new DesiredCapabilities();
+            //    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "/usr/local/bin/phantomjs");
+            //    driver = new PhantomJSDriver(caps);
+            //} else {
+                driver = new FirefoxDriver();
+            //}
         }
 
         String baseUrl = "http://localhost:8980/";
