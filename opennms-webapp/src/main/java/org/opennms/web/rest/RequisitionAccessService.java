@@ -256,7 +256,7 @@ public class RequisitionAccessService {
 
         void deleteInterface(final String foreignId, final String ipAddress) {
             LOG.debug("deleteInterface: Deleting interface {} from node {}/{}", ipAddress, getForeignSource(), foreignId);
-            Requisition req = getActiveRequisition(false);
+            final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -285,7 +285,7 @@ public class RequisitionAccessService {
 
         void deleteCategory(final String foreignId, final String category) {
             LOG.debug("deleteCategory: Deleting category {} from node {}/{}", category, getForeignSource(), foreignId);
-            Requisition req = getActiveRequisition(false);
+            final Requisition req = getActiveRequisition(false);
             if (req != null) {
                 final RequisitionNode node = req.getNode(foreignId);
                 if (node != null) {
@@ -769,6 +769,5 @@ public class RequisitionAccessService {
             }
         });
     }
-
 
 }
