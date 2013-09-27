@@ -51,43 +51,43 @@ public class OSGiVerticesUpdateManagerTest {
     private class DummyOnmsServiceManager implements OnmsServiceManager {
 
         @Override
-        public void registerAsService(Object object, VaadinApplicationContext applicationContext) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext) {
+           
         }
 
         @Override
-        public void registerAsService(Object object, VaadinApplicationContext applicationContext, Properties additionalProperties) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+           
         }
 
         @Override
         public <T> T getService(Class<T> clazz, VaadinApplicationContext applicationContext) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public VaadinApplicationContext createApplicationContext(VaadinApplicationContextCreator creator) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public EventRegistry getEventRegistry() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void sessionDestroyed(String s) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public void sessionInitialized(String s) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
     }
 
@@ -255,32 +255,32 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public Layout getLayout() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public Collection<Vertex> getDisplayVertices() {
-            return m_displayVertices;  //To change body of implemented methods use File | Settings | File Templates.
+            return m_displayVertices; 
         }
 
         @Override
         public Collection<Edge> getDisplayEdges() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public Edge getEdgeByKey(String edgeKey) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public Vertex getVertexByKey(String vertexKey) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void visit(GraphVisitor visitor) throws Exception {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
     }
 
@@ -293,132 +293,131 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public GraphProvider getBaseTopology() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setBaseTopology(GraphProvider graphProvider) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public Criteria[] getCriteria() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setCriteria(Criteria critiera) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public void removeCriteria(Criteria critiera) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public void addChangeListener(ChangeListener listener) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public void removeChangeListener(ChangeListener listener) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public SelectionManager getSelectionManager() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setSelectionManager(SelectionManager selectionManager) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public Graph getGraph() {
-            return m_graph;  //To change body of implemented methods use File | Settings | File Templates.
+            return m_graph; 
         }
 
         @Override
         public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public MapViewManager getMapViewManager() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public Property<Double> getScaleProperty() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public StatusProvider getStatusProvider() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setStatusProvider(StatusProvider statusProvider) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public String getUserName() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setUserName(String userName) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public String getSessionId() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void setSessionId(String sessionId) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public int getSemanticZoomLevel() {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            return 0; 
         }
 
         @Override
         public void setSemanticZoomLevel(int level) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public double getScale() {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            return 0; 
         }
 
         @Override
         public void setScale(double scale) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-            //To change body of implemented methods use File | Settings | File Templates.
+           
         }
 
         @Override
         public LayoutAlgorithm getLayoutAlgorithm() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null; 
         }
 
         @Override
         public void redoLayout() {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }

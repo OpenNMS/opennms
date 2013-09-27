@@ -68,6 +68,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -136,6 +137,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
+    private boolean autoRefreshEnabled = true;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -174,6 +176,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
+
+        // add refresher to auto reload data
+        Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(5000);
+        refresher.addListener(new Refresher.RefreshListener() {
+            @Override
+            public void refresh(Refresher refresher) {
+                if (autoRefreshEnabled) {
+                    m_log.debug("Refresh UI");
+                    getGraphContainer().getBaseTopology().refresh();
+                    getGraphContainer().redoLayout();
+
+                    TopologyUI.this.markAsDirtyRecursive();
+                }
+            }
+        });
+        addExtension(refresher);
 
         loadUserSettings(m_applicationContext);
         setupListeners();
@@ -350,6 +369,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
+        final Button autoRefreshToggleButton = new Button("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
+        autoRefreshToggleButton.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                autoRefreshEnabled = !autoRefreshEnabled;
+                autoRefreshToggleButton.setCaption("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
+            }
+        });
+
         final Button historyBackBtn = new Button("<<");
         historyBackBtn.setDescription("Click to go back");
         historyBackBtn.addClickListener(new ClickListener() {
@@ -374,6 +402,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         toolbar.addComponent(selectBtn);
 
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
+        historyButtonLayout.addComponent(autoRefreshToggleButton);
         historyButtonLayout.addComponent(historyBackBtn);
         historyButtonLayout.addComponent(historyForwardBtn);
 
