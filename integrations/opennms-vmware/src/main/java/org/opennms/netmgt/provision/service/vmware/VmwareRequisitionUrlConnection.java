@@ -98,6 +98,10 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     private boolean m_persistVMs = true;
     private boolean m_persistHosts = true;
 
+    private boolean m_topologyPortGroups = false;
+    private boolean m_topologyNetworks = true;
+    private boolean m_topologyDatastores = true;
+
     /*
      * Host system managedObjectId to name mapping
      */
@@ -156,6 +160,10 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         if (importIPv6Only) {
             m_persistIPv4 = false;
         }
+
+        m_topologyPortGroups = queryParameter("topologyPortGroups", false);
+        m_topologyNetworks = queryParameter("topologyNetworks", true);
+        m_topologyDatastores = queryParameter("topologyDatastores", true);
 
         m_importVMPoweredOn = queryParameter("importVMPoweredOn", true);
         m_importVMPoweredOff = queryParameter("importVMPoweredOff", false);
@@ -374,8 +382,6 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         // putting parents to topology information
         ManagedEntity parentEntity = managedEntity.getParent();
 
-        // TODO: Is this the best algorithm to build the topology info ?
-        // TODO: How to deal with a big list of networks on the ESX Hosts ?
         do {
             if (vmwareTopologyInfo.length() > 0) {
                 vmwareTopologyInfo.append(", ");
@@ -410,28 +416,35 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
 
             try {
-                for (Datastore datastore : hostSystem.getDatastores()) {
-                    if (vmwareTopologyInfo.length() > 0) {
-                        vmwareTopologyInfo.append(", ");
-                    }
-                    try {
-                        vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        logger.warn("Unsupported encoding '{}'", e.getMessage());
+                if (m_topologyDatastores) {
+                    for (Datastore datastore : hostSystem.getDatastores()) {
+                        if (vmwareTopologyInfo.length() > 0) {
+                            vmwareTopologyInfo.append(", ");
+                        }
+                        try {
+                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                        }
                     }
                 }
             } catch (RemoteException e) {
                 logger.warn("Cannot retrieve datastores for managedEntity '{}': '{}'", managedEntity.getMOR().getVal(), e.getMessage());
             }
+
             try {
-                for (Network network : hostSystem.getNetworks()) {
-                    if (vmwareTopologyInfo.length() > 0) {
-                        vmwareTopologyInfo.append(", ");
-                    }
-                    try {
-                        vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        logger.warn("Unsupported encoding '{}'", e.getMessage());
+                if (m_topologyNetworks) {
+                    for (Network network : hostSystem.getNetworks()) {
+                        if (vmwareTopologyInfo.length() > 0) {
+                            vmwareTopologyInfo.append(", ");
+                        }
+                        try {
+                            if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
+                                vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                        }
                     }
                 }
             } catch (RemoteException e) {
@@ -456,28 +469,34 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 }
 
                 try {
-                    for (Datastore datastore : virtualMachine.getDatastores()) {
-                        if (vmwareTopologyInfo.length() > 0) {
-                            vmwareTopologyInfo.append(", ");
-                        }
-                        try {
-                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                    if (m_topologyDatastores) {
+                        for (Datastore datastore : virtualMachine.getDatastores()) {
+                            if (vmwareTopologyInfo.length() > 0) {
+                                vmwareTopologyInfo.append(", ");
+                            }
+                            try {
+                                vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                            } catch (UnsupportedEncodingException e) {
+                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            }
                         }
                     }
                 } catch (RemoteException e) {
                     logger.warn("Cannot retrieve datastores for managedEntity '{}': '{}'", managedEntity.getMOR().getVal(), e.getMessage());
                 }
                 try {
-                    for (Network network : virtualMachine.getNetworks()) {
-                        if (vmwareTopologyInfo.length() > 0) {
-                            vmwareTopologyInfo.append(", ");
-                        }
-                        try {
-                            vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            logger.warn("Unsupported encoding '{}'", e.getMessage());
+                    if (m_topologyNetworks) {
+                        for (Network network : virtualMachine.getNetworks()) {
+                            if (vmwareTopologyInfo.length() > 0) {
+                                vmwareTopologyInfo.append(", ");
+                            }
+                            try {
+                                if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
+                                    vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                logger.warn("Unsupported encoding '{}'", e.getMessage());
+                            }
                         }
                     }
                 } catch (RemoteException e) {
@@ -667,6 +686,29 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     // create the new node...
                     RequisitionNode node = createRequisitionNode(ipAddresses, hostSystem, apiVersion, vmwareViJavaAccess);
 
+                    // add cpu
+                    try {
+                        node.putAsset(new RequisitionAsset("cpu", hostSystem.getHardware().getCpuInfo().getNumCpuCores() + " cores"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find CPU information for {}", hostSystem.getName());
+                    }
+
+                    // add memory
+                    try {
+                        node.putAsset(new RequisitionAsset("memory", Math.floor(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find Memory information for {}", hostSystem.getName());
+                    }
+
+                    // add vendor
+                    /*
+                    try {
+                        node.putAsset(new RequisitionAsset("vendor", hostSystem.getHardware().getSystemInfo().getVendor()));
+                    } catch (Exception e) {
+                        logger.debug("Can't find vendor information for {}", hostSystem.getName());
+                    }
+                    */
+
                     // ...and add it to the requisition
                     if (node != null && m_persistHosts) {
                         m_requisition.insertNode(node);
@@ -706,8 +748,21 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
                     // add the operating system
                     if (virtualMachine.getGuest().getGuestFullName() != null) {
-                        RequisitionAsset requisitionAsset = new RequisitionAsset("operatingSystem", virtualMachine.getGuest().getGuestFullName());
-                        node.putAsset(requisitionAsset);
+                        node.putAsset(new RequisitionAsset("operatingSystem", virtualMachine.getGuest().getGuestFullName()));
+                    }
+
+                    // add cpu
+                    try {
+                        node.putAsset(new RequisitionAsset("cpu", virtualMachine.getConfig().getHardware().getNumCPU() + " vCPU"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find CPU information for {}", virtualMachine.getName());
+                    }
+
+                    // add memory
+                    try {
+                        node.putAsset(new RequisitionAsset("memory", virtualMachine.getConfig().getHardware().getMemoryMB() + " MB"));
+                    } catch (Exception e) {
+                        logger.debug("Can't find Memory information for {}", virtualMachine.getName());
                     }
 
                     // ...and add it to the requisition
