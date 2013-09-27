@@ -300,6 +300,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      *
      * @param monitoringLocationResource a {@link org.springframework.core.io.Resource} object.
      */
+    @Override
     public void setMonitoringLocationConfigResource(final Resource monitoringLocationResource) {
         m_monitoringLocationConfigResource = monitoringLocationResource;
         initializeMonitoringLocationDefinition();

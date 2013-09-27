@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -44,7 +45,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -75,6 +75,9 @@ public class AuthorizationTest implements InitializingBean {
 
     @Autowired
     DatabasePopulator m_populator;
+    
+    @Autowired
+    SessionFactory m_sessionFactory;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -133,10 +136,10 @@ public class AuthorizationTest implements InitializingBean {
     }
 
     private void enableAuthorizationFilter(final String... groupNames) {
-        ((AlarmDaoHibernate)m_alarmDao).getSessionFactory().getCurrentSession().enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
+        m_sessionFactory.getCurrentSession().enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
     }
 
     private void disableAuthorizationFilter() {
-        ((AlarmDaoHibernate)m_alarmDao).getSessionFactory().getCurrentSession().disableFilter("authorizedOnly");
+    	m_sessionFactory.getCurrentSession().disableFilter("authorizedOnly");
     }
 }

@@ -49,13 +49,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
+ * 
+ * The {@link Propagation#MANDATORY} annotation is present because all of these methods
+ * assume that they are invoked inside a transaction that is initiated in the service
+ * layer of the application.
  *
  * @author ranger
  * @version $Id: $
  */
+@Transactional(propagation=Propagation.MANDATORY)
 public abstract class AbstractDaoHibernate<T, K extends Serializable> implements OnmsDao<T, K>, InitializingBean {
     
     protected SessionFactory sessionFactory;

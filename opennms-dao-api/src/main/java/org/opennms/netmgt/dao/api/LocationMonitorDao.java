@@ -38,6 +38,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.springframework.core.io.Resource;
 
 /**
  * <p>LocationMonitorDao interface.</p>
@@ -78,6 +79,9 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      */
     OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName);
     
+
+    void setMonitoringLocationConfigResource(Resource monitoringLocationResource);
+
     /**
      * <p>saveMonitoringLocationDefinition</p>
      *
