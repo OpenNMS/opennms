@@ -94,7 +94,7 @@ var RRDGraph = window['RRDGraph'] = {};
   var parse = function (config_string) {
     var result = {
       options: {
-        'start'             : +new Date() - 120000,
+        'start'             : +new Date(),
         'end'               : +new Date(),
         'step'              : 1,
         'title'             : '',
@@ -1051,6 +1051,7 @@ var RRDGraph = window['RRDGraph'] = {};
     this.extremes.x.max = Number.NEGATIVE_INFINITY;
     this.extremes.y.min = Number.POSITIVE_INFINITY;
     this.extremes.y.max = Number.NEGATIVE_INFINITY;
+    this.config.options.end = +new Date();
 
     var temp_defs = {};
     var n_defs = 0;
@@ -1080,6 +1081,13 @@ var RRDGraph = window['RRDGraph'] = {};
     }
 
     var temp_cdefs = {};
+    var special_elements = {
+      '{diffTime}': Number((this.config.options.end - this.config.options.start)/1000).toFixed(0),
+      '{startTime}': Number(this.config.options.start/1000).toFixed(0),
+      '{endTime}': Number(this.config.options.end/1000).toFixed(0),
+      '{startTimeDate}': new Date(this.config.options.start).toLocaleString(),
+      '{endTimeDate}': new Date(this.config.options.end).toLocaleString(),
+    };
 
     for (var cdef in this.config.defs.calc) {
       var rpn = this.config.defs.calc[cdef].split(',');
@@ -1092,6 +1100,8 @@ var RRDGraph = window['RRDGraph'] = {};
             stack.push(temp_defs[element]);
           } else if (element in temp_cdefs) { // CDEF
             stack.push(temp_cdefs[element]);
+          } else if (element in special_elements) { // custom elements
+            stack.push(special_elements[element]);
           } else { // operator
             RPN[element](stack);
           }
@@ -1422,8 +1432,9 @@ var RRDGraph = window['RRDGraph'] = {};
       for (var j = 0; j < line.content.length; ++j) {
         var element = line.content[j];
         if (typeof element === 'string') {
-          text.append('svg:tspan').text(element).
-            attr('xml:space', 'preserve');
+          text.append('svg:tspan').
+            attr('xml:space', 'preserve').
+            attr('id', 'cspan_' + i + '_' + j);
         } else {
           if (element.type === 'box') {
             text.append('svg:tspan').text("\u25A0 ").
@@ -1816,6 +1827,14 @@ var RRDGraph = window['RRDGraph'] = {};
       }
     }
 
+    var special_elements = {
+      '{diffTime}': Number((this.config.options.end - this.config.options.start)/1000).toFixed(0),
+      '{startTime}': Number(this.config.options.start/1000).toFixed(0),
+      '{endTime}': Number(this.config.options.end/1000).toFixed(0),
+      '{startTimeDate}': new Date(this.config.options.start).toLocaleString(),
+      '{endTimeDate}': new Date(this.config.options.end).toLocaleString(),
+    };
+
     for (var i = 0; i < this.config.legend.length; ++i) {
       var line = this.config.legend[i];
       for (var j = 0; j < line.content.length; ++j) {
@@ -1843,6 +1862,26 @@ var RRDGraph = window['RRDGraph'] = {};
             this.svg.container.select('#tspan_' + i + '_' + j).
               text(text);
           }
+        } else if (typeof element === 'string') {
+          var text = element;
+          for (var k in special_elements) {
+            if (text.indexOf(k, 0) > -1) {
+              text = text.replace(k, special_elements[k]);
+            }
+          }
+          var matches  = text.match(/(\{startTime:([^\{\}]+)\})/);
+          if (matches !== null) {
+            var sdf = new SimpleDateFormat(matches[2]);
+            text = text.replace(matches[1], sdf.format(new Date(this.config.options.start)));
+          }
+          var matches  = text.match(/(\{endTime:([^\{\}]+)\})/);
+          if (matches !== null) {
+            var sdf = new SimpleDateFormat(matches[2]);
+            text = text.replace(matches[1], sdf.format(new Date(this.config.options.end)));
+          }
+
+          this.svg.container.select('#cspan_' + i + '_' + j).
+            text(text);
         }
       }
     }

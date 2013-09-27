@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -270,18 +269,21 @@ public class VmwareCimCollector implements ServiceCollector {
 
         try {
             vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
+            int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", -1);
+            if (timeout > 0) {
+                if (!vmwareViJavaAccess.setTimeout(timeout)) {
+                    logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
+                }
+            }
         } catch (MarshalException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (ValidationException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (IOException e) {
             logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         }
 
         try {
@@ -289,11 +291,9 @@ public class VmwareCimCollector implements ServiceCollector {
         } catch (MalformedURLException e) {
             logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         } catch (RemoteException e) {
             logger.warn("Error connection VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
             return collectionSet;
-
         }
 
         HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
@@ -330,10 +330,7 @@ public class VmwareCimCollector implements ServiceCollector {
                     List<CIMObject> cimList = null;
                     try {
                         cimList = vmwareViJavaAccess.queryCimObjects(hostSystem, cimClass, InetAddressUtils.str(agent.getInetAddress()));
-                    } catch (RemoteException e) {
-                        logger.warn("Error retrieving cim values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
-                        return collectionSet;
-                    } catch (CIMException e) {
+                    } catch (Exception e) {
                         logger.warn("Error retrieving CIM values from host system '{}'. Error message: '{}'", vmwareManagedObjectId, e.getMessage());
                         return collectionSet;
                     } finally {

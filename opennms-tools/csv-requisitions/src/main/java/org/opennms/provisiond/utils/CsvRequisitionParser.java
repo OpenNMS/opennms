@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.dbcp.PoolingConnection;
+
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -337,7 +338,7 @@ public class CsvRequisitionParser {
 			
 			m_dbPass = System.getProperty(PROPERTY_DB_PW, m_dbPass);
 			System.out.println("\t"+PROPERTY_DB_PW+":"+m_dbPass);
-			
+
 			m_iplikeQuery = System.getProperty(PROPERTY_IPLIKE_QUERY, m_iplikeQuery);
 			System.out.println("\t"+PROPERTY_IPLIKE_QUERY+":"+m_iplikeQuery);
 			
