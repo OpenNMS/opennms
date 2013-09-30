@@ -139,7 +139,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
                 MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                                "Are you sure?",
                                                MessageBox.Icon.QUESTION,
-                                               "By doing this all unsafed changes in SNMP collection will be lost.",
+                                               "By doing this all unsaved changes in SNMP collection will be lost.",
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
                 mb.addStyleName(Runo.WINDOW_DIALOG);
