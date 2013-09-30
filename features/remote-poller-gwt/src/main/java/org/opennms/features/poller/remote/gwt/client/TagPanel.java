@@ -106,7 +106,7 @@ public class TagPanel extends Composite implements Collection<String> {
 
     public static class TagSelectedEvent extends GwtEvent<TagSelectedEventHandler>
     {
-        public static Type<TagSelectedEventHandler> TYPE = new Type<TagSelectedEventHandler>();
+        public static final Type<TagSelectedEventHandler> TYPE = new Type<TagSelectedEventHandler>();
 
         private final String m_tagName;
 
@@ -127,7 +127,7 @@ public class TagPanel extends Composite implements Collection<String> {
 
     public static class TagClearedEvent extends GwtEvent<TagClearedEventHandler>
     {
-        public static Type<TagClearedEventHandler> TYPE = new Type<TagClearedEventHandler>();
+        public static final Type<TagClearedEventHandler> TYPE = new Type<TagClearedEventHandler>();
 
         public TagClearedEvent() {}
 
@@ -144,7 +144,7 @@ public class TagPanel extends Composite implements Collection<String> {
     
     public static class TagResizeEvent extends GwtEvent<TagResizeEventHandler>{
 
-        public static Type<TagResizeEventHandler> TYPE = new Type<TagResizeEventHandler>();
+        public static final Type<TagResizeEventHandler> TYPE = new Type<TagResizeEventHandler>();
         @Override
         protected void dispatch(TagResizeEventHandler handler) {
             handler.onTagPanelResize();
