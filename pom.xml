@@ -128,7 +128,9 @@
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
+    <!--
     <module>opennms-qosdaemon</module>
+    -->
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
@@ -1921,11 +1923,13 @@
         <artifactId>opennms-provisiond</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-qosdaemon</artifactId>
         <version>${project.version}</version>
       </dependency>
+      -->
       <dependency>
         <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
