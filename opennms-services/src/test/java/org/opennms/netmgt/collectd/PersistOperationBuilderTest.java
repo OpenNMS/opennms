@@ -98,7 +98,7 @@ public class PersistOperationBuilderTest {
 
     private CollectionAgent getCollectionAgent() {
 
-        return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+        return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao);
     }
 
     @Test

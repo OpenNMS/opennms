@@ -74,7 +74,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -120,10 +119,6 @@ public class TcaCollectorTest implements InitializingBean {
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
-	/** The transaction manager. */
-	@Autowired
-	private PlatformTransactionManager m_transactionManager;
-	
 	@Autowired
 	private TcaDataCollectionConfigDao m_configDao;
 
@@ -167,7 +162,7 @@ public class TcaCollectorTest implements InitializingBean {
 
 		SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
-		m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+		m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao);
 		
 		TcaRrd rrd = new TcaRrd();
 		rrd.addRra("RRA:AVERAGE:0.5:1:3600");

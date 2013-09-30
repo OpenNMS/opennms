@@ -45,7 +45,6 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
@@ -65,7 +64,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
      */
-    public static CollectionAgentService create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
+    public static CollectionAgentService create(Integer ifaceId, final IpInterfaceDao ifaceDao) {
         return new DefaultCollectionAgentService(ifaceId, ifaceDao);
     }
 

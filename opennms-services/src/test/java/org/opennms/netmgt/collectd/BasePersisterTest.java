@@ -40,7 +40,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -55,7 +54,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockUtil;
-import org.springframework.transaction.PlatformTransactionManager;
 /**
  * JUnit TestCase for the BasePersister.
  * 
@@ -67,7 +65,6 @@ public class BasePersisterTest {
     private BasePersister m_persister;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
-    private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     private IpInterfaceDao m_ifDao;
     private ServiceParameters m_serviceParams;
@@ -179,7 +176,7 @@ public class BasePersisterTest {
         
         m_easyMockUtils.replayAll();
         
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+        CollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         

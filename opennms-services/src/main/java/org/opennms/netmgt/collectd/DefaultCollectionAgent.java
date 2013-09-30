@@ -35,15 +35,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
@@ -67,8 +66,8 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
-        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
+    public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao) {
+        return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao));
     }
 
     // miscellaneous junk?

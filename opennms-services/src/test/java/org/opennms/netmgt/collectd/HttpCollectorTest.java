@@ -174,7 +174,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
         m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao);
     }
 
     @After

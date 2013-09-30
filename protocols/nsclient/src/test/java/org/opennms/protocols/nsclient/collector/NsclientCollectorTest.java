@@ -37,7 +37,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.DefaultCollectionAgent;
@@ -50,10 +49,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.nsclient.AbstractNsclientTest;
-import org.opennms.protocols.nsclient.collector.NSClientCollector;
 import org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory;
 import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * <p>JUnit Test Class for NsclientCollector.</p>
@@ -62,8 +59,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @version $Id: $
  */
 public class NsclientCollectorTest extends AbstractNsclientTest {
-
-    private PlatformTransactionManager m_transactionManager;
 
     private IpInterfaceDao m_ipInterfaceDao;
 
@@ -93,7 +88,6 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         startServer("None&8&", "10");
 
         // Initialize Mocks
-        m_transactionManager = new MockPlatformTransactionManager();
         m_ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
         m_eventProxy = EasyMock.createMock(EventProxy.class);
         NetworkBuilder builder = new NetworkBuilder();
@@ -112,7 +106,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         NSClientDataCollectionConfigFactory.setInstance(new NSClientDataCollectionConfigFactory("src/test/resources/nsclient-datacollection-config.xml"));
 
         // Initialize Collection Agent
-        m_collectionAgent = DefaultCollectionAgent.create(1, m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent = DefaultCollectionAgent.create(1, m_ipInterfaceDao);
     }
 
     @After

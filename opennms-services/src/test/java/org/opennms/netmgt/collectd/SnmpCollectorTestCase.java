@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.easymock.EasyMock;
-import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -283,7 +282,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         
         m_easyMockUtils.replayAll();
         
-        m_agent = DefaultCollectionAgent.create(m_iface.getId(), m_ifaceDao, new MockPlatformTransactionManager());
+        m_agent = DefaultCollectionAgent.create(m_iface.getId(), m_ifaceDao);
         
     }
     

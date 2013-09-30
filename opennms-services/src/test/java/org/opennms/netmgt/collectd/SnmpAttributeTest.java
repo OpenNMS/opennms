@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.TestCase;
 
-import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -141,7 +140,7 @@ public class SnmpAttributeTest extends TestCase {
 
         m_mocks.replayAll();
 
-        CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, new MockPlatformTransactionManager());
+        CollectionAgent agent = DefaultCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao);
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), new MockDataCollectionConfig());
         NodeResourceType resourceType = new NodeResourceType(agent, snmpCollection);
         NodeInfo nodeInfo = resourceType.getNodeInfo();
