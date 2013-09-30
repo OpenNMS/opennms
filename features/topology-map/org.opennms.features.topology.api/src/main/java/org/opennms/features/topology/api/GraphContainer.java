@@ -63,6 +63,10 @@ public interface GraphContainer extends DisplayState {
 
 	Graph getGraph();
 
+    AutoRefreshSupport getAutoRefreshSupport();
+
+    boolean hasAutoRefreshSupport();
+
 	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
     
 	MapViewManager getMapViewManager();

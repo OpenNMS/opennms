@@ -36,9 +36,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public abstract class AbstractCheckedOperation implements CheckedOperation {
 
-	/**
-	 * Return true by default.
-	 */
 	protected boolean enabled(GraphContainer container) {
 		return true;
 	}
@@ -48,7 +45,7 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	}
 
 	/**
-	 * By default, call {@link #enabled(OperationContext)}
+	 * By default, call {@link #enabled(GraphContainer)
 	 */
 	@Override
 	public boolean enabled(List<VertexRef> vertices, OperationContext context) {
@@ -56,7 +53,7 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	}
 
 	/**
-	 * By default, call {@link #isChecked(OperationContext)}
+	 * By default, call {@link #isChecked(GraphContainer)}
 	 */
 	@Override
 	public boolean isChecked(List<VertexRef> vertices, OperationContext context) {
