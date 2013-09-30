@@ -26,38 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo;
+package org.opennms.features.topology.app.internal;
 
-import java.util.List;
+import org.opennms.features.topology.api.AutoRefreshSupport;
 
-import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+public class DefaultAutoRefreshSupport implements AutoRefreshSupport {
 
-public class ExampleOperation implements Operation {
-
+    private boolean enabled = false;
+    private long interval = 60;
 
     @Override
-    public String getId() {
-        return null;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return null;
+    public void setEnabled(boolean value) {
+        enabled = value;
     }
 
     @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean toggle() {
+        enabled = !enabled;
+        return isEnabled();
     }
 
     @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    public void setInterval(long secondsToWait) {
+        // We do not allow to set < 5 Seconds
+        if (secondsToWait < 5) {
+            secondsToWait = 5;
+        }
+        interval = secondsToWait;
     }
 
+    @Override
+    public long getInterval() {
+        return interval;
+    }
 }

@@ -1,20 +1,43 @@
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
-import org.osgi.framework.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
-    
+
     @SuppressWarnings("serial")
     public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
@@ -104,31 +127,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     public class VEGraph implements Graph {
-    	
+
     	private final Set<Vertex> m_displayVertices = new TreeSet<Vertex>(new RefComparator());
     	private final Set<Edge> m_displayEdges = new TreeSet<Edge>(new RefComparator());
     	private final Layout m_layout;
     	
-        public VEGraph(Layout layout, Collection<Vertex> displayVertices,
-				Collection<Edge> displayEdges) {
-			m_displayVertices.addAll(displayVertices);
-			m_displayEdges.addAll(displayEdges);
-			for (Iterator<Edge> itr = m_displayEdges.iterator(); itr.hasNext();) {
-				Edge edge = itr.next();
-				if (m_displayVertices.contains(edge.getSource().getVertex())) {
-					if (m_displayVertices.contains(edge.getTarget().getVertex())) {
-						// This edge is OK, it is attached to two vertices that are in the graph
-					} else {
-						s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
-						itr.remove();
-					}
-				} else {
-					s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
-					itr.remove();
-				}
-			}
-			m_layout = layout;
-			s_log.debug("Created a graph with {} vertices and {} edges", m_displayVertices.size(), m_displayEdges.size());
+        public VEGraph(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
+        	m_layout = new DefaultLayout(VEProviderGraphContainer.this);
+        	updateLayout(displayVertices, displayEdges);
 		}
 
 		@Override
@@ -182,6 +188,27 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         	visitor.completeGraph(this);
         }
 
+		public void updateLayout(Collection<Vertex> displayVertices, Collection<Edge> displayEdges) {
+			m_displayVertices.clear();
+			m_displayVertices.addAll(displayVertices);
+			m_displayEdges.clear();
+			m_displayEdges.addAll(displayEdges);
+			for (Iterator<Edge> itr = m_displayEdges.iterator(); itr.hasNext();) {
+				Edge edge = itr.next();
+				if (m_displayVertices.contains(edge.getSource().getVertex())) {
+					if (m_displayVertices.contains(edge.getTarget().getVertex())) {
+						// This edge is OK, it is attached to two vertices that are in the graph
+					} else {
+						s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
+						itr.remove();
+					}
+				} else {
+					s_log.debug("Discarding edge that is not attached to 2 vertices in the graph: {}", edge);
+					itr.remove();
+				}
+			}
+			s_log.debug("Created a graph with {} vertices and {} edges", m_displayVertices.size(), m_displayEdges.size());
+		}
     }
 
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
@@ -196,17 +223,15 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private String m_userName;
     private String m_sessionId;
     private BundleContext m_bundleContext;
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+    private AutoRefreshSupport m_autoRefreshSupport;
     
-    private final Layout m_layout;
     private VEGraph m_graph;
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
-    	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
-
-    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
     public int getSemanticZoomLevel() {
@@ -348,8 +373,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 				displayEdges.add(pEdge);
 			}
     	}
-    	
-    	m_graph = new VEGraph(m_layout, displayVertices, displayEdges);
+
+        if (m_graph == null) {
+            m_graph = new VEGraph(displayVertices, displayEdges);
+        } else {
+            m_graph.updateLayout(displayVertices, displayEdges);
+        }
 
         unselectVerticesWhichAreNotVisibleAnymore();
 
@@ -560,5 +589,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 removeCriteria(criteria);
                 break;
         }
+    }
+
+    public AutoRefreshSupport getAutoRefreshSupport() {
+        return m_autoRefreshSupport;
+    }
+
+    public boolean hasAutoRefreshSupport() {
+        return m_autoRefreshSupport != null;
+    }
+
+    public void setAutoRefreshSupport(AutoRefreshSupport autoRefreshSupport) {
+        m_autoRefreshSupport = autoRefreshSupport;
     }
 }

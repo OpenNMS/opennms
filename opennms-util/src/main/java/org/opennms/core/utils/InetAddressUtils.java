@@ -601,7 +601,7 @@ abstract public class InetAddressUtils {
                     macAddress.substring(10)
                 };
             } else {
-                throw new IllegalArgumentException("Cannot decode MAC address: " + macAddress);
+                throw new IllegalArgumentException("Cannot decode MAC address: '" + macAddress + "'");
             }
         }
         // Decode each MAC address digit into a hexadecimal byte value

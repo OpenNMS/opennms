@@ -1,10 +1,12 @@
 package org.opennms.features.topology.plugins.status.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -113,15 +115,18 @@ public class AlarmStatusProviderTest {
     @Test
     public void testGetAlarmStatus() {
         Vertex vertex = new TestVertex();
-        
-        
+        List<VertexRef> vertexList = new ArrayList<VertexRef>();
+        vertexList.add(vertex);
+
         EasyMock.expect(m_alarmDao.getNodeAlarmSummaries(EasyMock.anyInt())).andReturn(createNormalAlarmSummaryList());
         
         EasyMock.replay(m_alarmDao);
         
-        Status vertexStatus = m_statusProvider.getStatusForVertex(vertex);
-        String computeStatus = vertexStatus.computeStatus();
-        assertTrue(computeStatus.equals("indeterminate"));
+        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(vertexList);
+        assertEquals(1, statusMap.size());
+        assertEquals(statusMap.get(vertex), vertex);
+        String computeStatus = statusMap.get(vertex).computeStatus();
+        assertTrue(computeStatus.equals("major"));
         
         EasyMock.verify(m_alarmDao);
     }
@@ -129,7 +134,7 @@ public class AlarmStatusProviderTest {
 
     private List<AlarmSummary> createNormalAlarmSummaryList() {
         List<AlarmSummary> alarms = new ArrayList<AlarmSummary>();
-        alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.INDETERMINATE, 1L));
+        alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.MAJOR, 1L));
         return alarms;
     }
 

@@ -146,7 +146,7 @@ public class ThresholdingSet {
         // If size differs its because some groups where deleted.
         if (groupNameList.size() != m_thresholdGroups.size()) {
             // Deleting Groups
-            LOG.debug(logHeader + "New group name list differs from current threshold group list");
+            LOG.debug("{}: New group name list differs from current threshold group list", logHeader);
             for (Iterator<ThresholdGroup> i = m_thresholdGroups.iterator(); i.hasNext();) {
                 ThresholdGroup group = i.next();
                 if (!groupNameList.contains(group.getName())) {

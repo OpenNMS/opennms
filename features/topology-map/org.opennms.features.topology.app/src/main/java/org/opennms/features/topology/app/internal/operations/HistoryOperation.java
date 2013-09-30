@@ -80,6 +80,6 @@ public class HistoryOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 }

@@ -260,7 +260,7 @@ public class ShowNCSPathOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public NCSEdgeProvider getNcsEdgeProvider() {

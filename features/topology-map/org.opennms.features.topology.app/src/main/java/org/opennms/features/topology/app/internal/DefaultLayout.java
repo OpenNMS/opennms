@@ -2,6 +2,7 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -27,16 +29,39 @@ public class DefaultLayout implements Layout {
 		if (v == null) {
 			throw new IllegalArgumentException("Cannot fetch location of null vertex");
 		}
+		// Try to find an existing location
 		Point p = m_locations.get(v);
-		Point location = (p == null ? new Point(0, 0) : p);
-		return location;
+		if (p == null) {
+			// If there isn't one, then try to find a neighboring vertex and use it
+			// as the initial location
+			for (Edge edge : m_graphContainer.getGraph().getDisplayEdges()){
+				if (v.equals(edge.getSource().getVertex())) {
+					Point neighbor = m_locations.get(edge.getTarget().getVertex());
+					if (neighbor != null) {
+						return neighbor;
+					}
+				} else if (v.equals(edge.getTarget().getVertex())) {
+					Point neighbor = m_locations.get(edge.getSource().getVertex());
+					if (neighbor != null) {
+						return neighbor;
+					}
+				}
+			}
+			// If there are no neighbors, return the center of the layout
+			//return getBounds().getCenter();
+			return new Point(0, 0);
+		} else {
+			return p;
+		}
+	}
+	
+	@Override
+	public Map<VertexRef,Point> getLocations() {
+		return Collections.unmodifiableMap(new HashMap<VertexRef,Point>(m_locations));
 	}
 	
 	@Override
 	public void setLocation(VertexRef v, int x, int y) {
-		if (v == null) {
-			throw new IllegalArgumentException("Cannot set location of null vertex");
-		}
 		setLocation(v, new Point(x, y));
 	}
 

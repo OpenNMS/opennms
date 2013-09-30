@@ -43,7 +43,7 @@ public class HideNCSPathOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public NCSCriteriaServiceManager getNcsCriteriaServiceManager() {
