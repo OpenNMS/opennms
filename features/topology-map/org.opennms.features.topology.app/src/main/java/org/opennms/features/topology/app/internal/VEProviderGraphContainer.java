@@ -11,13 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphVisitor;
-import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.LayoutAlgorithm;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -43,7 +37,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
-    
+
     @SuppressWarnings("serial")
     public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
@@ -229,6 +223,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private String m_userName;
     private String m_sessionId;
     private BundleContext m_bundleContext;
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+    private AutoRefreshSupport m_autoRefreshSupport;
     
     private VEGraph m_graph;
     
@@ -236,8 +232,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
     	rebuildGraph();
     }
-
-    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
     public int getSemanticZoomLevel() {
@@ -595,5 +589,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 removeCriteria(criteria);
                 break;
         }
+    }
+
+    public AutoRefreshSupport getAutoRefreshSupport() {
+        return m_autoRefreshSupport;
+    }
+
+    public boolean hasAutoRefreshSupport() {
+        return m_autoRefreshSupport != null;
+    }
+
+    public void setAutoRefreshSupport(AutoRefreshSupport autoRefreshSupport) {
+        m_autoRefreshSupport = autoRefreshSupport;
     }
 }
