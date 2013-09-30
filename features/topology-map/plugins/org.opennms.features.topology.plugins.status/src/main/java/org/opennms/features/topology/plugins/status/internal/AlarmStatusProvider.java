@@ -2,33 +2,24 @@ package org.opennms.features.topology.plugins.status.internal;
 
 import java.util.*;
 
-import org.hibernate.HibernateException;
-import org.hibernate.criterion.CriteriaQuery;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.engine.TypedValue;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.slf4j.LoggerFactory;
 
 public class AlarmStatusProvider implements StatusProvider {
     
     public class AlarmStatus implements Status{
 
-        private int m_statusId;
-        private String m_label;
-        private int m_alarmCount = 0;
+        private final String m_label;
+        private final long m_alarmCount;
 
-        public AlarmStatus(int id, String label, int count) {
-            m_statusId = id;
+        public AlarmStatus(String label, long count) {
             m_label = label;
             m_alarmCount = count;
         }
@@ -59,65 +50,123 @@ public class AlarmStatusProvider implements StatusProvider {
         m_vertexProvider = vertexProvider;
     }
 
-    public AlarmDao getAlarmDao() {
-        return m_alarmDao;
-    }
-
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
     @Override
-    public Status getStatusForVertex(VertexRef vertexRef) {
-        
-        if(vertexRef.getNamespace().equals("nodes")) {
-            try {
-                Collection<Integer> nodeIds = new ArrayList<Integer>();
-                if(isGroup(vertexRef)) {
-                    addChildrenRecursively(vertexRef, nodeIds);
-                } else {
-                    nodeIds.add(Integer.valueOf(vertexRef.getId()));
+    public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices) {
+        Map<VertexRef, Status> returnMap = new HashMap<VertexRef, Status>();
+
+        // split nodes from groups and others
+        List<VertexRef> nodeRefs = getNodeVertexRefs(vertices); // nodes
+        List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
+
+        Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
+        Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdMap.keySet()); // calculate status for ALL nodes
+
+        // status for all known node ids
+        for (Integer eachNodeId : nodeIdMap.keySet()) {
+            AlarmSummary summary = nodeIdToAlarmSummaryMap.get(eachNodeId);
+            AlarmStatus status = summary == null ? createIndeterminateStatus() : createStatus(summary);
+            VertexRef ref = nodeIdMap.get(eachNodeId);
+            returnMap.put(ref, status);
+
+            LoggerFactory.getLogger(getClass()).debug("Status for node '{}' with id '{}' is: {}", ref.getLabel(), ref.getId(), status);
+        }
+
+        // calculate status for groups and nodes which are neither grop nor node
+        for (VertexRef eachRef : otherRefs) {
+            if (isGroup(eachRef)) {
+                List<AlarmSummary> alarmSummariesForGroup = new ArrayList<AlarmSummary>();
+                List<Vertex> children = getVertexProvider().getChildren(eachRef);
+                for (Vertex eachChildren : children) {
+                    AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
+                    if (eachChildrenAlarmSummary != null) {
+                        alarmSummariesForGroup.add(eachChildrenAlarmSummary);
+                    }
                 }
-                return getAlarmStatus(nodeIds);
-            } catch (NumberFormatException e) {
-                return createIndeterminateStatus();
+
+                AlarmStatus groupStatus = calculateAlarmStatusForGroup(alarmSummariesForGroup);
+                returnMap.put(eachRef, groupStatus);
+            } else {
+                returnMap.put(eachRef, createIndeterminateStatus());
             }
-        } else {
-            return createIndeterminateStatus();
         }
-        
+
+        return returnMap;
     }
 
-    @Override
-    public Collection<Status> getStatusForVertices(Collection<VertexRef> vertices) {
-        Collection<Status> verticesStatus = new ArrayList<Status>();
-        for(VertexRef vert : vertices) {
-            verticesStatus.add(getStatusForVertex(vert));
-        }
-        return verticesStatus;
-    }
+    private Map<Integer , AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
+        Map<Integer, AlarmSummary> resultMap = new HashMap<Integer, AlarmSummary>();
 
-    @Override
-    public String getNamespace() {
-        return "node-alarm-status";
-    }
-
-    private Status getAlarmStatus(Collection<Integer> nodeIds) {
         List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummaries(nodeIds.toArray(new Integer[nodeIds.size()]));
-        if(alarmSummaries != null && alarmSummaries.size() >= 1) {
-            return calculateAlarmStatus(alarmSummaries);
-        } else {
-            return createIndeterminateStatus();
+        for (AlarmSummary eachSummary : alarmSummaries) {
+            resultMap.put(eachSummary.getNodeId(), eachSummary);
         }
+
+        return resultMap;
     }
 
-    private void addChildrenRecursively(VertexRef groupRef, Collection<Integer> nodeIds) {
+    private AlarmStatus createStatus(AlarmSummary summary) {
+        AlarmStatus status = new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
+        return status;
+    }
+
+    private Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {
+        Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<Integer, VertexRef>();
+
+        for (VertexRef eachRef : inputList) {
+            if ("nodes".equals(eachRef.getNamespace())) {
+                try {
+                    Integer nodeId = Integer.parseInt(eachRef.getId());
+                    if (nodeId != null) {
+                        vertexRefToNodeIdMap.put(nodeId, eachRef);
+                    }
+                } catch (NumberFormatException nfe) {
+                    LoggerFactory.getLogger(getClass()).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
+                }
+            }
+        }
+
+        return vertexRefToNodeIdMap;
+    }
+
+    private List<VertexRef> getNodeVertexRefs(Collection<VertexRef> vertices) {
+        List<VertexRef> returnList = new ArrayList<VertexRef>();
+         for (VertexRef eachRef : vertices) {
+            if ("nodes".equals(eachRef.getNamespace())) {
+                if(isGroup(eachRef)) {
+                    addChildrenRecursively(eachRef, returnList);
+                } else {
+                    if (!returnList.contains(eachRef)) {
+                        returnList.add(eachRef);
+                    }
+                }
+            }
+         }
+        return returnList;
+    }
+
+    private List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
+        List<VertexRef> returnList = new ArrayList<VertexRef>();
+        for (VertexRef eachRef : vertices) {
+            if (!"nodes".equals(eachRef.getNamespace())) {
+                returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"
+            }
+        }
+        return returnList;
+    }
+
+    private void addChildrenRecursively(VertexRef groupRef, Collection<VertexRef> vertexRefs) {
         List<Vertex> vertices = getVertexProvider().getChildren(groupRef);
         for(Vertex vertex : vertices) {
             if(!vertex.isGroup()) {
-                nodeIds.add(vertex.getNodeID());
+                if (!vertexRefs.contains(vertex)) {
+                    vertexRefs.add(vertex);
+                }
             } else {
-                addChildrenRecursively(vertex, nodeIds);
+                addChildrenRecursively(vertex, vertexRefs);
             }
         }
     }
@@ -129,22 +178,25 @@ public class AlarmStatusProvider implements StatusProvider {
         return false;
     }
 
-    private Status createIndeterminateStatus() {
-        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getId(), OnmsSeverity.INDETERMINATE.getLabel(), 0);
+    private AlarmStatus createIndeterminateStatus() {
+        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getLabel(), 0);
     }
 
-    private AlarmStatus calculateAlarmStatus(List<AlarmSummary> alarmSummaries) {
-        Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
-            @Override
-            public int compare(AlarmSummary o1, AlarmSummary o2) {
-                return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
+    private AlarmStatus calculateAlarmStatusForGroup(List<AlarmSummary> alarmSummaries) {
+        if (!alarmSummaries.isEmpty()) {
+            Collections.sort(alarmSummaries, new Comparator<AlarmSummary>() {
+                @Override
+                public int compare(AlarmSummary o1, AlarmSummary o2) {
+                    return o1.getMaxSeverity().compareTo(o2.getMaxSeverity());
+                }
+            });
+            OnmsSeverity severity = alarmSummaries.get(0).getMaxSeverity();
+            int count = 0;
+            for (AlarmSummary eachSummary : alarmSummaries) {
+                count += eachSummary.getAlarmCount();
             }
-        });
-        OnmsSeverity severity = alarmSummaries.get(0).getMaxSeverity();
-        int count = 0;
-        for (AlarmSummary eachSummary : alarmSummaries) {
-            count += eachSummary.getAlarmCount();
+            return new AlarmStatus(severity.getLabel(), count);
         }
-        return new AlarmStatus(severity.getId(), severity.getLabel(), count);
+        return createIndeterminateStatus();
     }
 }

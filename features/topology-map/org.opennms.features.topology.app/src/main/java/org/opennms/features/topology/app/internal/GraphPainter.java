@@ -1,17 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
+import com.vaadin.server.PaintException;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
 import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
@@ -19,7 +10,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.PaintException;
+import java.util.*;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -31,8 +22,9 @@ public class GraphPainter extends BaseGraphVisitor {
     private final List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
     private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
+    private final Map<VertexRef,Status> m_statusMap = new HashMap<VertexRef, Status>();
 
-	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
+    GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
 		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
@@ -44,7 +36,16 @@ public class GraphPainter extends BaseGraphVisitor {
 	    return m_statusProvider;
 	}
 
-	@Override
+    @Override
+    public void visitGraph(Graph graph) throws PaintException {
+        if (m_statusProvider != null) {
+            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(new ArrayList<VertexRef>((graph.getDisplayVertices())));
+            m_statusMap.clear();
+            m_statusMap.putAll(newStatusMap);
+        }
+    }
+
+    @Override
 	public void visitVertex(Vertex vertex) throws PaintException {
 		Point initialLocation = m_layout.getInitialLocation(vertex);
 		Point location = m_layout.getLocation(vertex);
@@ -55,14 +56,8 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setX(location.getX());
 		v.setY(location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
-		if(m_graphContainer.getStatusProvider().getNamespace() != null) {
-            //TODO: This assumes Alarm status need to provide a better api
-            v.setStatus(getStatus(vertex));
-            v.setStatusCount(getStatusCount(vertex));
-        }
-        //TODO: remove setIconURL, we no longer are using bitmaps
-        //v.setIconUrl(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
-
+        v.setStatus(getStatus(vertex));
+        v.setStatusCount(getStatusCount(vertex));
         v.setSVGIconId(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
@@ -70,12 +65,13 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
     private String getStatusCount(Vertex vertex) {
-        Map<String,String> statusProperties = m_graphContainer.getStatusProvider().getStatusForVertex(vertex).getStatusProperties();
+        Status status = m_statusMap.get(vertex);
+        Map<String, String> statusProperties = status != null ? status.getStatusProperties() : new HashMap<String, String>();
         return statusProperties.get("statusCount") == null ? "" : statusProperties.get("statusCount");
     }
 
     private String getStatus(Vertex vertex) {
-        return m_statusProvider != null && m_statusProvider.getStatusForVertex(vertex) != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
+        return m_statusMap.get(vertex) != null ? m_statusMap.get(vertex).computeStatus() : "";
     }
 
     private static String getTooltipText(Vertex vertex) {
