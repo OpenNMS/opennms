@@ -131,7 +131,7 @@
           }
       </script>
       
-      <h3>Manage Location Monitor</h3>
+      <h3>Manage Remote Poller</h3>
       <div class="boxWrapper">
         <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
           <input type="hidden" name="monitorId" value="${monitor.id}"/>
