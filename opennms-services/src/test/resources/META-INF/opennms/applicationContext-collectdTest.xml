@@ -34,7 +34,6 @@
 		<property name="nodeDao" ref="nodeDao"/>
 		<!-- Override Eventd with the mock version -->
 		<property name="eventIpcManager" ref="mockEventIpcManager"/>
-		<property name="transactionTemplate" ref="transactionTemplate"/>
 	</bean>
 
 	<tx:annotation-driven/>

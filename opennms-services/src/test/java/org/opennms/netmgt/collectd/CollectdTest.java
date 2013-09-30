@@ -79,11 +79,6 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.SimpleTransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class CollectdTest extends TestCase {
     
@@ -100,11 +95,7 @@ public class CollectdTest extends TestCase {
 
     private MockScheduler m_scheduler;
     
-    private PlatformTransactionManager m_transactionManager;
-    
-
     private CollectdPackage m_collectdPackage;
-
 
     @Override
     protected void setUp() throws Exception {
@@ -256,12 +247,8 @@ public class CollectdTest extends TestCase {
     }
 
     public void testCreate() throws CollectionInitializationException {
-        
-        setupTransactionManager();
-        
         String svcName = "SNMP";
         setupCollector(svcName);
-        setupTransactionManager();
         
         Scheduler m_scheduler = m_easyMockUtils.createMock(Scheduler.class);
         m_collectd.setScheduler(m_scheduler);
@@ -310,8 +297,6 @@ public class CollectdTest extends TestCase {
         setupCollector(svcName);
         expect(m_ipIfDao.findByServiceType(svcName)).andReturn(new ArrayList<OnmsIpInterface>(0));
 
-        setupTransactionManager();
-
         m_easyMockUtils.replayAll();
 
         m_collectd.init();
@@ -359,8 +344,6 @@ public class CollectdTest extends TestCase {
         expect(m_collector.collect(isA(CollectionAgent.class), isA(EventProxy.class), isAMap(String.class, Object.class))).andReturn(collectionSetResult);
         setupInterface(iface);
         
-        setupTransactionManager();
-  
         expect(m_collectorConfigDao.getPackages()).andReturn(Collections.singleton(m_collectdPackage));
         
         m_easyMockUtils.replayAll();
@@ -394,18 +377,6 @@ public class CollectdTest extends TestCase {
     @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> isAMap(Class<K> keyClass, Class<V> valueClass) {
         return isA(Map.class);
-    }
-
-    private void setupTransactionManager() {
-        m_transactionManager = m_easyMockUtils.createMock(PlatformTransactionManager.class);
-        TransactionTemplate transactionTemplate = new TransactionTemplate(m_transactionManager);
-        m_collectd.setTransactionTemplate(transactionTemplate);
-        
-        expect(m_transactionManager.getTransaction(isA(TransactionDefinition.class))).andReturn(new SimpleTransactionStatus()).anyTimes();
-        m_transactionManager.rollback(isA(TransactionStatus.class));
-        expectLastCall().anyTimes();
-        m_transactionManager.commit(isA(TransactionStatus.class)); //anyTimes();
-        expectLastCall().anyTimes();
     }
 
     private void setupInterface(OnmsIpInterface iface) {
