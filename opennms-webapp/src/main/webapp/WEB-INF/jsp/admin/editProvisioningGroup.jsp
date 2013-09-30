@@ -37,10 +37,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-<style type="text/css">
-.readonly { border:0; background: lightgrey }
-</style>
-
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Requisitions" /> 
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
@@ -49,20 +45,12 @@
 	<jsp:param name="breadcrumb" value="Edit Requisition" />
 </jsp:include>
 
+<h3>Requisitioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
 
-<script type="text/javascript">
-var provisioningGroupName = '${fn:escapeXml(nodeEditForm.groupName)}';
-</script>
+ <tree:form commandName="nodeEditForm"> 
 
-<script src="<c:url value="/js/angular/angular.js"/>" type="text/javascript"></script>
-<script src="<c:url value="/js/angular/angular-resource.js"/>" type="text/javascript"></script>
-<script src="<c:url value="/js/RequisitionEditor.js"/>" type="text/javascript"></script>
-
-<div ng-app="RequisitionEditor" ng-controller='MainController'>
-
-
-<h3>Requisitioned Nodes for Group: {{requisition['@foreign-source']}}</h3>
-
+  <input type="hidden" id="groupName" name="groupName" value="${fn:escapeXml(nodeEditForm.groupName)}"/> 
+ 
  <p>
  <c:choose>
   <c:when test="${freeFormEditing == true}">
@@ -73,20 +61,6 @@ var provisioningGroupName = '${fn:escapeXml(nodeEditForm.groupName)}';
   </c:otherwise>
  </c:choose>
  </p>
- 
- <ul ng-repeat="node in requisition.node">
- 	<li>
- 		<img src="images/trash.gif" />
- 		<img src="images/modify.gif" ng-click="edit(node);"/>
- 		<label for="node-label-{{node['@foreign-id']}}">Node:</label>
- 		<input id="node-label-{{node['@foreign-id']}}" class="{{node.editting ? '' : 'readonly'}}" ng-readonly="!node.editting" type="text" value="{{node['@node-label']}}" size="48"/>
- 		<label for="node-foreign-id-{{node['@foreign-id']}}">ForeignId:</label>
- 		<input id="node-foreign-id-{{node['@foreign-id']}}" class="{{node.editting ? '' : 'readonly'}}" ng-readonly="!node.editting" type="text" value="{{node['@foreign-id']}}" size="16"/>
- 		<label for="node-site-{{node['@foreign-id']}}">Site:</label>
- 		<input id="node-site-{{node['@foreign-id']}}" class="{{node.editting ? '' : 'readonly'}}" ng-readonly="!node.editting" type="text" value="{{node['@building']}}" size="16"/>
- 	</li>
- </ul>
- <%-- 
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
 
@@ -163,6 +137,6 @@ var provisioningGroupName = '${fn:escapeXml(nodeEditForm.groupName)}';
     </tree:tree>
     
  </tree:tree>
- --%>
-</div>
+
+</tree:form> 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
