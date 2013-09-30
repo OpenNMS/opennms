@@ -158,7 +158,7 @@ public class SnmpCollectionPanel extends Panel {
             public void buttonClick(Button.ClickEvent event) {
                 ConfirmDialog.show(getUI(),
                                    "Are you sure?",
-                                   "By doing this all unsafed changes on the SNMP collection will be lost.",
+                                   "By doing this all unsaved changes on the SNMP collection will be lost.",
                                    "Yes",
                                    "No",
                                    new ConfirmDialog.Listener() {
