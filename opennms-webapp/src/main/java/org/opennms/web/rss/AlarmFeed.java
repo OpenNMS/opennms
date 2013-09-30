@@ -83,7 +83,7 @@ public class AlarmFeed extends AbstractFeed {
         if (this.getRequest().getParameter("severity") != null) {
             String sev = this.getRequest().getParameter("severity");
             for (OnmsSeverity severity : OnmsSeverity.values()) {
-                if (severity.getLabel().toLowerCase().equals(sev)) {
+                if (severity.getLabel().equalsIgnoreCase(sev)) {
                     filters.add(new SeverityFilter(severity));
                 }
             }
