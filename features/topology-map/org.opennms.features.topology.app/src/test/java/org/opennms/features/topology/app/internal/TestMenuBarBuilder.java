@@ -298,45 +298,38 @@ public class TestMenuBarBuilder {
 
             @Override
             public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public String getId() {
-                // TODO Auto-generated method stub
                 return null;
             }
 
 			@Override
 			public boolean isChecked(List<VertexRef> targets,
 					OperationContext operationContext) {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
 			public void applyHistory(GraphContainer context,
 					Map<String, String> settings) {
-				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public Map<String, String> createHistory(GraphContainer context) {
-				// TODO Auto-generated method stub
 				return null;
 			}};
 	}
@@ -386,25 +379,21 @@ public class TestMenuBarBuilder {
 
             @Override
             public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return null;
             }
 
             @Override
             public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
             public String getId() {
-                // TODO Auto-generated method stub
                 return null;
             }};
     }

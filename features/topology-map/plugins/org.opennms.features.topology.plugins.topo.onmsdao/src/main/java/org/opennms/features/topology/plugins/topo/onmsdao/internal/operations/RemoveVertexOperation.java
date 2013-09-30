@@ -81,7 +81,6 @@ public class RemoveVertexOperation implements Operation {
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return getClass().getSimpleName();
     }
 }

@@ -26,38 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo;
+package org.opennms.features.topology.api;
 
-import java.util.List;
+import org.opennms.osgi.VaadinApplicationContext;
 
-import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import java.util.Collections;
+import java.util.Map;
 
-public class ExampleOperation implements Operation {
+class UserScopedHistoryEntry<T> {
+    private final Class<? extends Operation> clazz;
 
-
-    @Override
-    public String getId() {
-        return null;
+    public UserScopedHistoryEntry(Class<? extends Operation> clazz) {
+        this.clazz = clazz;
     }
 
-    @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return null;
+    public Map<String, String> createEntry(VaadinApplicationContext applicationContext, T value) {
+        return Collections.singletonMap(createKey(applicationContext), createValue(value));
     }
 
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    public T loadEntry(VaadinApplicationContext applicationContext, Map<String, String> settings) {
+        return (T)settings.get(createKey(applicationContext));
     }
 
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        // TODO Auto-generated method stub
-        return false;
+    private String createValue(T input) {
+        if (input == null) return "";
+        if (input instanceof String) return (String)input;
+        return input.toString();
     }
 
+    private String createKey(VaadinApplicationContext context) {
+        return clazz.getName() + ";" + context.getUiId() + ";" + context.getUsername();
+    }
 }

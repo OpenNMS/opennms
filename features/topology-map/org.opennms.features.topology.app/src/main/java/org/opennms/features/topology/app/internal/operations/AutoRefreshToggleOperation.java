@@ -10,7 +10,7 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
+        return operationContext.getGraphContainer().hasAutoRefreshSupport();
     }
 
     @Override
