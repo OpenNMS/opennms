@@ -26,29 +26,46 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.osgi;
 
-import org.opennms.osgi.OnmsVaadinUIFactory;
+import com.vaadin.ui.UI;
+import org.ops4j.pax.vaadin.ApplicationFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-public class TopologyUIFactory extends OnmsVaadinUIFactory {
-    
+/**
+ * Creates an instance of a Vaadin UI object from the underlying OSGI container.
+ * It is necessary that a bean-configuration of {@link #m_uiBeanName} exists inside the blueprint.xml.
+ *
+ * @author Markus von Rüden
+ */
+public class OnmsVaadinUIFactory implements ApplicationFactory {
 
-	
-	public TopologyUIFactory(BlueprintContainer container, String uiBeanName) {
-        super(TopologyUI.class, container, uiBeanName);
-	}
+    private final BlueprintContainer m_blueprintContainer;
+    private final String m_uiBeanName;
+    private final Class<? extends UI> m_uiClass;
+
+    public OnmsVaadinUIFactory(Class<? extends UI> uiClass, BlueprintContainer blueprintContainer, String uiBeanName) {
+        m_blueprintContainer = blueprintContainer;
+        m_uiClass = uiClass;
+        m_uiBeanName = uiBeanName;
+    }
 
     @Override
     public Map<String, String> getAdditionalHeaders() {
-        final Map<String,String> headers = new HashMap<String,String>();
-        headers.put("X-UA-Compatible", "chrome=1");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
-        return headers;
+        return Collections.emptyMap();
     }
 
+    @Override
+    public UI createUI() {
+        UI ui = (UI) m_blueprintContainer.getComponentInstance(m_uiBeanName);
+        return ui;
+    }
+
+    @Override
+    public Class<? extends UI> getUIClass() {
+        return m_uiClass;
+    }
 }
