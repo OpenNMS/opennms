@@ -181,6 +181,7 @@ public class SearchControl extends Control {
             @Override
             public void clearSearchInput() {
                 m_inputBox.setValue("");
+                sendSearchStringUpdatedEvent("");
             }
 
             @Override
@@ -213,7 +214,9 @@ public class SearchControl extends Control {
             public void entrySelected() {
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
                 if (selected != null) {
-                    m_inputBox.setValue("nodeLabel=" + selected.getNodeLabel());
+                    final String newSearchString = "nodeLabel=" + selected.getNodeLabel();
+                    m_inputBox.setValue(newSearchString);
+                    sendSearchStringUpdatedEvent(newSearchString);
                 }
             }
 
