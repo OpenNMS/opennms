@@ -31,7 +31,7 @@ import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
 import com.vaadin.ui.UI;
 
-public class JmxConfigToolApplicationFactory extends AbstractApplicationFactory {
+public class JmxConfigToolUIFactory extends AbstractApplicationFactory {
 
     /* (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
