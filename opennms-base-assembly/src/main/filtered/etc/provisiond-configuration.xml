@@ -42,6 +42,18 @@
          Imports only IPv6 Interfaces
          Default: false
 
+       topologyNetworks -
+         Add the network information to the VMWare Topology
+         Default: true
+
+       topologyDatastores -
+         Add the datastores information to the VMWare Topology
+         Default: true
+
+       topologyPortGroups -
+         Add the port groups information (distributed virtual switches) to the VMWare Topology
+         Default: false
+
        importVMPoweredOn -
          Controls whether powered on machines should be imported.
          Default: true
@@ -115,6 +127,7 @@
        IMPORTANT:
        - importVMOnly and importHostOnly can't be true simultaneously.
        - importIPv4Only and importIPv6Only can't be true simultaneously.
+       - if topologyNetworks is false, the port group information won't be added.
 
      Examples for import-url-resource:
        vmware://vcenter.mydomain.org?importHostPoweredOff=true

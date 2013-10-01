@@ -26,17 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api;
 
-import java.util.Collection;
+import org.opennms.osgi.VaadinApplicationContext;
+
+import java.util.Collections;
 import java.util.Map;
 
+class UserScopedHistoryEntry<T> {
+    private final Class<? extends Operation> clazz;
 
-public interface StatusProvider {
+    public UserScopedHistoryEntry(Class<? extends Operation> clazz) {
+        this.clazz = clazz;
+    }
 
-    public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices);
+    public Map<String, String> createEntry(VaadinApplicationContext applicationContext, T value) {
+        return Collections.singletonMap(createKey(applicationContext), createValue(value));
+    }
 
-    StatusProvider NULL = new StatusProvider() {
-            @Override public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices) { return null; }
-        };
+    public T loadEntry(VaadinApplicationContext applicationContext, Map<String, String> settings) {
+        return (T)settings.get(createKey(applicationContext));
+    }
+
+    private String createValue(T input) {
+        if (input == null) return "";
+        if (input instanceof String) return (String)input;
+        return input.toString();
+    }
+
+    private String createKey(VaadinApplicationContext context) {
+        return clazz.getName() + ";" + context.getUiId() + ";" + context.getUsername();
+    }
 }

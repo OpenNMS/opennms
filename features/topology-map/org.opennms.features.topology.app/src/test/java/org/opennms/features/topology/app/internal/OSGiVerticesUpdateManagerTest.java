@@ -342,6 +342,16 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
+        public AutoRefreshSupport getAutoRefreshSupport() {
+            return null;
+        }
+
+        @Override
+        public boolean hasAutoRefreshSupport() {
+            return getAutoRefreshSupport() != null;
+        }
+
+        @Override
         public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
             return null; 
         }

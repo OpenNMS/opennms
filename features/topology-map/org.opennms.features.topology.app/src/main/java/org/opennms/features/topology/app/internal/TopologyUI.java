@@ -103,6 +103,24 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.osgi.*;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -112,6 +130,45 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
+
+    private class DynamicUpdateRefresher implements Refresher.RefreshListener {
+        private final Object lockObject = "lockObject";
+        private boolean refreshInProgress = false;
+        private long lastUpdateTime;
+
+        @Override
+        public void refresh(Refresher refresher) {
+            if (needsRefresh()) {
+                synchronized (lockObject) {
+                    refreshInProgress = true;
+
+                    m_log.debug("Refresh UI");
+                    getGraphContainer().getBaseTopology().refresh();
+                    getGraphContainer().redoLayout();
+                    TopologyUI.this.markAsDirtyRecursive();
+
+                    lastUpdateTime = System.currentTimeMillis();
+
+                    refreshInProgress = false;
+                }
+            }
+        }
+
+        private boolean needsRefresh() {
+            if (refreshInProgress) {
+                return false;
+            }
+            if (!m_graphContainer.getAutoRefreshSupport().isEnabled()) {
+                return false;
+            }
+
+            long updateDiff = System.currentTimeMillis() - lastUpdateTime;
+            return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval()*1000; // update or not
+        }
+    }
+
+	private static final long serialVersionUID = 6837501987137310938L;
+
     private Logger m_log = LoggerFactory.getLogger(getClass());
     private static final String LABEL_PROPERTY = "label";
     private TopologyComponent m_topologyComponent;
@@ -137,7 +194,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
-    private boolean autoRefreshEnabled = true;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -177,27 +233,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
-        // add refresher to auto reload data
-        Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(5000);
-        refresher.addListener(new Refresher.RefreshListener() {
-            @Override
-            public void refresh(Refresher refresher) {
-                if (autoRefreshEnabled) {
-                    m_log.debug("Refresh UI");
-                    getGraphContainer().getBaseTopology().refresh();
-                    getGraphContainer().redoLayout();
-
-                    TopologyUI.this.markAsDirtyRecursive();
-                }
-            }
-        });
-        addExtension(refresher);
-
         loadUserSettings(m_applicationContext);
         setupListeners();
         createLayouts();
         setupErrorHandler();
+        setupAutoRefresher();
 
         // notifiy osgi-listeners, otherwise initialization would not work
         m_graphContainer.addChangeListener(m_verticesUpdateManager);
@@ -238,6 +278,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 super.error(event);
             }
         });
+    }
+
+    private void setupAutoRefresher() {
+        if (m_graphContainer.hasAutoRefreshSupport()) {
+            Refresher refresher = new Refresher();
+            refresher.setRefreshInterval(5000); // ask every 5 seconds for changes
+            refresher.addListener(new DynamicUpdateRefresher());
+            addExtension(refresher);
+        }
     }
 
     private void addHeader() {
@@ -369,15 +418,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        final Button autoRefreshToggleButton = new Button("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
-        autoRefreshToggleButton.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                autoRefreshEnabled = !autoRefreshEnabled;
-                autoRefreshToggleButton.setCaption("Auto-Refresh: " + (autoRefreshEnabled ? "on" : "off"));
-            }
-        });
-
         final Button historyBackBtn = new Button("<<");
         historyBackBtn.setDescription("Click to go back");
         historyBackBtn.addClickListener(new ClickListener() {
@@ -402,7 +442,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         toolbar.addComponent(selectBtn);
 
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
-        historyButtonLayout.addComponent(autoRefreshToggleButton);
         historyButtonLayout.addComponent(historyBackBtn);
         historyButtonLayout.addComponent(historyForwardBtn);
 

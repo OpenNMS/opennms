@@ -60,6 +60,11 @@ public abstract class AbstractOperation implements Operation {
         return false;
     }
 
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
+    }
+
     protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
         Vertex vertex = getVertexItem(operationContext, target);
         return vertex == null ? null : vertex.getLabel();

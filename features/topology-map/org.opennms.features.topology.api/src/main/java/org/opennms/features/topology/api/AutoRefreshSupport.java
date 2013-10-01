@@ -26,17 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.api;
 
-import java.util.Collection;
-import java.util.Map;
+public interface AutoRefreshSupport {
+    boolean isEnabled();
 
+    void setEnabled(boolean value);
 
-public interface StatusProvider {
+    /**
+     * Toggles isEnabled and returns the new value.
+     * @return the value you would get from {@link #isEnabled()}.
+     */
+    boolean toggle();
 
-    public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices);
+    /**
+     * Sets the interval in seconds you have to wait until the next refresh is invoked.
+     * @param secondsToWait the delay until the next refresh is performed (in seconds).
+     */
+    void setInterval(long secondsToWait);
 
-    StatusProvider NULL = new StatusProvider() {
-            @Override public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices) { return null; }
-        };
+    long getInterval();
+
 }
