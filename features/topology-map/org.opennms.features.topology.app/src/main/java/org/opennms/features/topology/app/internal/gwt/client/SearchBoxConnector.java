@@ -35,6 +35,8 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
+import java.util.List;
+
 
 @Connect(org.opennms.features.topology.app.internal.ui.SearchBox.class)
 public class SearchBoxConnector extends AbstractComponentConnector {
@@ -81,4 +83,7 @@ public class SearchBoxConnector extends AbstractComponentConnector {
         m_request = request;
     }
 
+    public void selectSuggestion(List<SearchSuggestion> suggestions) {
+        m_rpc.selectSuggestion(suggestions);
+    }
 }

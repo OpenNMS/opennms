@@ -51,6 +51,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.osgi.*;
@@ -92,8 +93,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
-    private AbsoluteLayout m_mapAbsoluteLayout;
-    private final Label m_zoomLevelLabel = new Label("0"); 
+    private HorizontalSplitPanel m_treeMapSplitPanel;
+    private final Label m_zoomLevelLabel = new Label("0");
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -125,6 +126,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 	@Override
     protected void init(final VaadinRequest request) {
+        FontAwesomeIcons.load(new ThemeResource("font-awesome/css/font-awesome.min.css"));
+
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
@@ -216,9 +219,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_rootLayout.setExpandRatio(m_layout, 1);
 
         //TODO: Don't create a horizontal Split container here, no need. Remove and use the absolute
-        m_mapAbsoluteLayout = new AbsoluteLayout();
-        m_mapAbsoluteLayout.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
-        m_mapAbsoluteLayout.setSizeFull();
+        m_treeMapSplitPanel = new HorizontalSplitPanel();
+        m_treeMapSplitPanel.setFirstComponent(createWestLayout());
+        m_treeMapSplitPanel.setSecondComponent(createMapLayout());
+        m_treeMapSplitPanel.setSplitPosition(0, Unit.PIXELS);
+        m_treeMapSplitPanel.setSizeFull();
+        //m_mapAbsoluteLayout.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
+        //m_mapAbsoluteLayout.setSizeFull();
 
 
 
@@ -226,7 +233,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
-            m_layout.addComponent(m_mapAbsoluteLayout);
+            m_layout.addComponent(m_treeMapSplitPanel);
         }
 
         if(m_treeWidgetManager.widgetCount() != 0) {
@@ -252,7 +259,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         slider.setImmediate(true);
 
         final Button zoomInBtn = new Button();
-        zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
+        zoomInBtn.setHtmlContentAllowed(true);
+        zoomInBtn.setCaption("<i class=\"icon-zoom-in\"></i>");
+        //zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
         zoomInBtn.setDescription("Expand Semantic Zoom Level");
         zoomInBtn.setStyleName("semantic-zoom-button");
         zoomInBtn.addClickListener(new ClickListener() {
@@ -333,7 +342,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        SearchBox searchBox = new SearchBox();
+        SearchBox searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
 
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setWidth("31px");
@@ -415,10 +424,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             synchronized (m_layout) {
                 m_layout.removeAllComponents();
                 if(widgetManager.widgetCount() == 0) {
-                    m_layout.addComponent(m_mapAbsoluteLayout);
+                    m_layout.addComponent(m_treeMapSplitPanel);
                 } else {
                     VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                    bottomLayoutBar.setFirstComponent(m_mapAbsoluteLayout);
+                    bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
                     // Split the screen 70% top, 30% bottom
                     bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                     bottomLayoutBar.setSizeFull();
@@ -521,33 +530,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private Layout createWestLayout() {
         m_tree = createTree();
         
-        final TextField filterField = new TextField("Filter");
-        filterField.setTextChangeTimeout(200);
-        
-        final Button filterBtn = new Button("Filter");
-        filterBtn.addClickListener(new ClickListener() {
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	GCFilterableContainer container = m_tree.getContainerDataSource();
-                container.removeAllContainerFilters();
-                
-                String filterString = (String) filterField.getValue();
-                if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
-                    container.addContainerFilter(LABEL_PROPERTY, (String) filterField.getValue(), true, false);
-                    filterBtn.setCaption("Clear");
-                } else {
-                    filterField.setValue("");
-                    filterBtn.setCaption("Filter");
-                }
-                
-            }
-        });
-        
-        HorizontalLayout filterArea = new HorizontalLayout();
-        filterArea.addComponent(filterField);
-        filterArea.addComponent(filterBtn);
-        filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
         
         m_treeAccordion = new Accordion();
         m_treeAccordion.addTab(m_tree, m_tree.getTitle());
@@ -557,8 +540,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
-        absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
-        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;"); 
+        absLayout.addComponent(m_treeAccordion, "top: 25px; left: 15px; right: 15px; bottom:25px;");
         
         return absLayout;
     }

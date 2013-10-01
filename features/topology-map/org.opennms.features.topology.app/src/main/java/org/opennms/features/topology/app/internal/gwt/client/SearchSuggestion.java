@@ -65,7 +65,7 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
 
     @Override
     public String getDisplayString() {
-        return "<div><b>" + getNamespace() + ":</b>" + getLabel() + "</div>";
+        return "<div><b>" + getNamespace() + ": </b>" + getLabel() + "</div>";
     }
 
     @Override
@@ -73,5 +73,24 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
         return m_label;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
 
+        SearchSuggestion ref = (SearchSuggestion)obj;
+
+        return getNamespace().equals(ref.getNamespace()) && getVertexKey().equals(ref.getVertexKey());
+
+    }
+
+    @Override
+    public final int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getVertexKey() == null) ? 0 : getVertexKey().hashCode());
+        result = prime * result
+                + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
+        return result;
+    }
 }

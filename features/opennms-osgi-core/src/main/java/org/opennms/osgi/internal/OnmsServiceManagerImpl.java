@@ -80,7 +80,8 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     }
 
     @Override
-    public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+    public <T> List<T>
+    getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
         List<T> services = new ArrayList<T>();
         try {
             ServiceReference[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));

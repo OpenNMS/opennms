@@ -26,15 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client;
+package org.opennms.features.topology.app.internal.support;
 
-import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
 
-import java.util.List;
+public class FontAwesomeIcons {
 
-public interface SearchBoxServerRpc extends ServerRpc {
-
-    public void querySuggestions(String query, int indexFrom, int indexTo);
-    public void selectSuggestion(List<SearchSuggestion> suggestion);
-
+    public static void load(Resource css){
+        Page.getCurrent().getStyles().add(css);
+    }
 }

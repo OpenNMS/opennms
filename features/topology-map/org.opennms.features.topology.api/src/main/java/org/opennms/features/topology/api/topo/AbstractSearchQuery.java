@@ -26,15 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client;
+package org.opennms.features.topology.api.topo;
 
-import com.vaadin.shared.communication.ServerRpc;
+public abstract class AbstractSearchQuery implements SearchQuery{
 
-import java.util.List;
+    private String m_queryString;
 
-public interface SearchBoxServerRpc extends ServerRpc {
+    public AbstractSearchQuery(String queryString) {
+        m_queryString = queryString;
+    }
 
-    public void querySuggestions(String query, int indexFrom, int indexTo);
-    public void selectSuggestion(List<SearchSuggestion> suggestion);
+    public String getQueryString(){
+        return m_queryString;
+    }
 
+    @Override
+    public abstract boolean matches(VertexRef vertexRef);
 }

@@ -30,12 +30,12 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.vaadin.shared.AbstractComponentState;
 
+import java.util.Collection;
 import java.util.List;
 
 public class SearchBoxState extends AbstractComponentState {
 
     List<SearchSuggestion> m_suggestions;
-    String m_testString = "";
 
     public void setSuggestions(List<SearchSuggestion> suggestions){
         m_suggestions = suggestions;
@@ -45,11 +45,4 @@ public class SearchBoxState extends AbstractComponentState {
         return m_suggestions;
     }
 
-    public void setTestString(String testString) {
-        m_testString = testString;
-    }
-
-    public String getTestString(){
-        return m_testString;
-    }
 }

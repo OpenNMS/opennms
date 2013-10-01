@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -42,10 +43,7 @@ import com.vaadin.client.ui.VFilterSelect;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenu;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenuItem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
 
@@ -198,7 +196,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             @Override
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 SearchSuggestion selectedItem = (SearchSuggestion) event.getSelectedItem();
-                Window.alert(selectedItem.getLabel() + " :: " + selectedItem.getNamespace() + " :: " + selectedItem.getVertexKey());
+                m_connector.selectSuggestion(Arrays.asList(selectedItem));
             }
         });
 

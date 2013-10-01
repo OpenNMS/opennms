@@ -55,7 +55,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
-    private class DefaultOperationContext implements OperationContext {
+    public static class DefaultOperationContext implements OperationContext {
 
 		private final UI m_mainWindow;
 

@@ -26,15 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client;
+package org.opennms.features.topology.api.topo;
 
-import com.vaadin.shared.communication.ServerRpc;
-
-import java.util.List;
-
-public interface SearchBoxServerRpc extends ServerRpc {
-
-    public void querySuggestions(String query, int indexFrom, int indexTo);
-    public void selectSuggestion(List<SearchSuggestion> suggestion);
-
+public interface SearchQuery {
+    boolean matches(VertexRef vertexRef);
 }

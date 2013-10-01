@@ -26,15 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client;
+package org.opennms.features.topology.api.support;
 
-import com.vaadin.shared.communication.ServerRpc;
+import org.opennms.features.topology.api.Operation;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 import java.util.List;
 
-public interface SearchBoxServerRpc extends ServerRpc {
+public abstract class AbstractSearchSelectionOperation implements Operation {
 
-    public void querySuggestions(String query, int indexFrom, int indexTo);
-    public void selectSuggestion(List<SearchSuggestion> suggestion);
+    @Override
+    public abstract Undoer execute(List<VertexRef> targets, OperationContext operationContext);
 
+    @Override
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getId() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
