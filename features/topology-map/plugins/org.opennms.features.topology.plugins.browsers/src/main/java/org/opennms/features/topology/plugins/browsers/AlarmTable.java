@@ -28,11 +28,12 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.vaadin.data.Container;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.netmgt.dao.api.AlarmRepository;
@@ -42,12 +43,10 @@ import org.opennms.osgi.VaadinApplicationContextAware;
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.vaadin.data.Container;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
@@ -65,197 +64,179 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
     private class CheckboxButton extends Button {
 
-        private static final long serialVersionUID = -3595363303361200441L;
+		private static final long serialVersionUID = -3595363303361200441L;
 
-        private CheckboxGenerator m_generator;
-        private AbstractSelect m_ackCombo;
+		private CheckboxGenerator m_generator;
+		private AbstractSelect m_ackCombo;
 
-        public CheckboxButton(String string) {
-            super(string);
-            setColumnCollapsingAllowed(false);
-            addClickListener(new ClickListener() {
+		public CheckboxButton(String string) {
+			super(string);
+			setColumnCollapsingAllowed(false);
+			addClickListener(new ClickListener() {
 
-                private static final long serialVersionUID = 4351558084135658129L;
+				private static final long serialVersionUID = 4351558084135658129L;
 
-                @Override
-                public void buttonClick(final ClickEvent event) {
-                    Set<Integer> selected = m_generator.getSelectedIds(AlarmTable.this);
-                    if (selected.size() > 0) {
-                        String action = (String)m_ackCombo.getValue();
-                        if (ACTION_ACKNOWLEDGE.equals(action)) {
-                            m_alarmRepo.acknowledgeAlarms(
-                                                          ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-                                                          getUser(),
-                                                          new Date()
-                                    );
-                        } else if (ACTION_UNACKNOWLEDGE.equals(action)) {
-                            m_alarmRepo.unacknowledgeAlarms(
-                                                            ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-                                                            getUser()
-                                    );
-                        } else if (ACTION_ESCALATE.equals(action)) {
-                            m_alarmRepo.escalateAlarms(
-                                                       ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-                                                       getUser(),
-                                                       new Date()
-                                    );
-                        } else if (ACTION_CLEAR.equals(action)) {
-                            m_alarmRepo.clearAlarms(
-                                                    ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-                                                    getUser(),
-                                                    new Date()
-                                    );
-                        }
+				@Override
+				public void buttonClick(final ClickEvent event) {
+					Set<Integer> selected = m_generator.getSelectedIds(AlarmTable.this);
+					if (selected.size() > 0) {
+						String action = (String)m_ackCombo.getValue();
+						if (ACTION_ACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.acknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									getUser(),
+									new Date()
+							);
+						} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.unacknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									getUser()
+							);
+						} else if (ACTION_ESCALATE.equals(action)) {
+							m_alarmRepo.escalateAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									getUser(),
+									new Date()
+							);
+						} else if (ACTION_CLEAR.equals(action)) {
+							m_alarmRepo.clearAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									getUser(),
+									new Date()
+							);
+						}
 
-                        // Clear the checkboxes
-                        m_generator.clearSelectedIds(AlarmTable.this);
+						// Clear the checkboxes
+						m_generator.clearSelectedIds(AlarmTable.this);
 
-                        AlarmTable.this.containerItemSetChange(new Container.ItemSetChangeEvent() {
-                            private static final long serialVersionUID = 7086486972418241175L;
-                            @Override
-                            public Container getContainer() {
-                                return AlarmTable.this.getContainerDataSource();
-                            }
-                        });
-                    }
-                }
-            });
-        }
+						AlarmTable.this.containerItemSetChange(new Container.ItemSetChangeEvent() {
+							private static final long serialVersionUID = 7086486972418241175L;
+							@Override
+							public Container getContainer() {
+								return AlarmTable.this.getContainerDataSource();
+							}
+						});
+					}
+				}
+			});
+		}
 
-        public void setCombo(final AbstractSelect combo) {
-            m_ackCombo = combo;
-        }
+		public void setCombo(final AbstractSelect combo) {
+			m_ackCombo = combo;
+		}
 
-        public void setCheckboxGenerator(final CheckboxGenerator generator) {
-            m_generator = generator;
-        }
-    }
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
 
-    private class RefreshLinkButton extends Button {
+	private class SelectAllButton extends Button {
 
-        private RefreshLinkButton(String caption) {
-            super(caption);
-            setStyleName(BaseTheme.BUTTON_LINK);
-            addClickListener(new ClickListener() {
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    AlarmTable.this.refreshRowCache();
-                }
-            });
-        }
-    }
+		private CheckboxGenerator m_generator;
 
-    private class SelectAllButton extends Button {
+		public SelectAllButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addClickListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.selectAll(AlarmTable.this);
+				}
+			});
+		}
 
-        private CheckboxGenerator m_generator;
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
 
-        public SelectAllButton(String string) {
-            super(string);
-            setStyleName(BaseTheme.BUTTON_LINK);
-            addClickListener(new ClickListener() {
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    m_generator.selectAll(AlarmTable.this);
-                }
-            });
-        }
+	private class ResetSelectionButton extends Button {
 
-        public void setCheckboxGenerator(final CheckboxGenerator generator) {
-            m_generator = generator;
-        }
-    }
+		private CheckboxGenerator m_generator;
 
-    private class ResetSelectionButton extends Button {
+		public ResetSelectionButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addClickListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.clearSelectedIds(AlarmTable.this);
+				}
+			});
+		}
 
-        private CheckboxGenerator m_generator;
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
 
-        public ResetSelectionButton(String string) {
-            super(string);
-            setStyleName(BaseTheme.BUTTON_LINK);
-            addClickListener(new ClickListener() {
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    m_generator.clearSelectedIds(AlarmTable.this);
-                }
-            });
-        }
+	private final CheckboxButton m_submitButton;
+	private final NativeSelect m_ackCombo;
+	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
+	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
+	private final AlarmRepository m_alarmRepo;
+	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
-        public void setCheckboxGenerator(final CheckboxGenerator generator) {
-            m_generator = generator;
-        }
-    }
+	/**
+	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  the arguments if you put the generic types in.
+	 */
+	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
+		super(caption, container);
+		m_alarmRepo = alarmRepo;
 
-    private final CheckboxButton m_submitButton;
-    private final NativeSelect m_ackCombo;
-    private final Button m_refreshButton = new RefreshLinkButton("Refresh");
-    private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
-    private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
-    private final AlarmRepository m_alarmRepo;
-    private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
+		m_ackCombo = new NativeSelect();
+		m_ackCombo.setNullSelectionAllowed(false);
+		m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_ESCALATE);
+		m_ackCombo.addItem(ACTION_CLEAR);
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE); // Make "Acknowledge" the default value
 
-    /**
-     *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
-     *  the arguments if you put the generic types in.
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
-        super(caption, container);
-        m_alarmRepo = alarmRepo;
+		m_submitButton = new CheckboxButton("Submit");
+		m_submitButton.setCombo(m_ackCombo);
+	}
+	
+	@Override
+	public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+		for (ItemSetChangeListener listener : m_itemSetChangeListeners ) {
+			listener.containerItemSetChange(event);
+		}
+		super.containerItemSetChange(event);
+	}
 
-        m_ackCombo = new NativeSelect();
-        m_ackCombo.setNullSelectionAllowed(false);
-        m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
-        m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
-        m_ackCombo.addItem(ACTION_ESCALATE);
-        m_ackCombo.addItem(ACTION_CLEAR);
-        m_ackCombo.setValue(ACTION_ACKNOWLEDGE); // Make "Acknowledge" the default value
-
-        m_submitButton = new CheckboxButton("Submit");
-        m_submitButton.setCombo(m_ackCombo);
-    }
-
-    @Override
-    public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-        for (ItemSetChangeListener listener : m_itemSetChangeListeners ) {
-            listener.containerItemSetChange(event);
-        }
-        super.containerItemSetChange(event);
-    }
-
-    @Override
-    public void setColumnGenerators(@SuppressWarnings("rawtypes") final Map generators) {
-        super.setColumnGenerators(generators);
-        for (final Object key : generators.keySet()) {
+	@Override
+	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
+	public void setColumnGenerators(final Map generators) {
+		super.setColumnGenerators(generators);
+		for (final Object key : generators.keySet()) {
             // If any of the column generators are {@link CheckboxGenerator} instances,
             // then connect it to the buttons.
             try {
                 final Object generatorObj = generators.get(key);
                 CheckboxGenerator generator = (CheckboxGenerator) generatorObj;
-                m_submitButton.setCheckboxGenerator(generator);
-                m_selectAllButton.setCheckboxGenerator(generator);
-                m_resetButton.setCheckboxGenerator(generator);
+				m_submitButton.setCheckboxGenerator(generator);
+				m_selectAllButton.setCheckboxGenerator(generator);
+				m_resetButton.setCheckboxGenerator(generator);
 
-                m_itemSetChangeListeners.add(generator);
-            } catch (final ClassCastException e) {}
-        }
-    }
+				m_itemSetChangeListeners.add(generator);
+			} catch (final ClassCastException e) {}
+		}
+	}
 
-    @Override
-    public Component[] getExtraComponents() {
-        if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
-            return new Component[] {
-                    m_refreshButton
-            };
-        } else {
-            return new Component[] {
-                    m_refreshButton,
-                    m_selectAllButton,
-                    m_resetButton,
-                    m_ackCombo,
-                    m_submitButton
-            };
-        }
-    }
+	@Override
+	public Component[] getExtraComponents() {
+		if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
+			return new Component[0];
+		} else {
+			return new Component[] {
+				m_selectAllButton,
+				m_resetButton,
+				m_ackCombo,
+				m_submitButton
+			};
+		}
+	}
 
     @Override
     public void setVaadinApplicationContext(VaadinApplicationContext vaadinApplicationContext) {
