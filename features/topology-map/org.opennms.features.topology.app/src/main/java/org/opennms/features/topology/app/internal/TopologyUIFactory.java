@@ -28,13 +28,12 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.vaadin.ui.UI;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import com.vaadin.ui.UI;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TopologyUIFactory extends AbstractApplicationFactory {
     
@@ -61,7 +60,7 @@ public class TopologyUIFactory extends AbstractApplicationFactory {
     }
 
     @Override
-    public UI getUI() {
+    public UI createUI() {
         TopologyUI application = (TopologyUI) m_blueprintContainer.getComponentInstance(m_beanName);
         return application;
     }

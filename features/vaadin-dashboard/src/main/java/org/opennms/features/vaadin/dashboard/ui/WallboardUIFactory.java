@@ -64,7 +64,7 @@ public class WallboardUIFactory extends AbstractApplicationFactory {
      * @return the application instance
      */
     @Override
-    public UI getUI() {
+    public UI createUI() {
         return (UI) m_blueprintContainer.getComponentInstance(m_beanName);
     }
 

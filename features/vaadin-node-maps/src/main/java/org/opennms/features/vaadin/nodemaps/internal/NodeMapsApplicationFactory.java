@@ -56,7 +56,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     }
 
     @Override
-    public UI getUI() {
+    public UI createUI() {
         NodeMapsApplication application = (NodeMapsApplication) m_blueprintContainer.getComponentInstance(m_beanName);
         return application;
     }
