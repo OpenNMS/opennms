@@ -907,10 +907,6 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <!--
-    <vaadinVersion>6.8.2</vaadinVersion>
-    <vaadinVersion>7.0.0.rc2</vaadinVersion>
-    -->
     <vaadinVersion>7.1.0</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <paxVaadinVersion>0.3.1-SNAPSHOT</paxVaadinVersion>

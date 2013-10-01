@@ -38,7 +38,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
@@ -75,26 +74,16 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
     @Override
     @EventConsumer
-    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
-        LOG.debug("verticesUpdated({})", event);
-        final Set<VertexRef> vertexRefs = event.getVertexRefs();
-        final List<Integer> nodeIds = new ArrayList<Integer>();
-        for (final VertexRef vRef : vertexRefs) {
-            if(vRef.getNamespace().equals("nodes")) {
-                try {
-                    nodeIds.add(Integer.parseInt(vRef.getId()));
-                } catch (final NumberFormatException e) {
-                    //do nothing
-                }
-            }
-        }
+    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+        final NodeIdFocusToRestrictionsConverter converter = new NodeIdFocusToRestrictionsConverter() {
 
-        final List<Restriction> newRestrictions = new NodeIdFocusToRestrictionsConverter() {
             @Override
             protected Restriction createRestriction(final Integer nodeId) {
                 return new EqRestriction("id", nodeId);
             }
-        }.getRestrictions(nodeIds);
+        };
+        List<Restriction> newRestrictions = converter.getRestrictions(event.getVertexRefs());
+
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);
             getCache().reload(getPage());
