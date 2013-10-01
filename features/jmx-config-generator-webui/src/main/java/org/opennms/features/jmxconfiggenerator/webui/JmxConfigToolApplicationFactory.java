@@ -37,7 +37,7 @@ public class JmxConfigToolApplicationFactory extends AbstractApplicationFactory 
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public UI getUI() {
+    public UI createUI() {
         return new JmxConfigGeneratorApplication();
     }
 
