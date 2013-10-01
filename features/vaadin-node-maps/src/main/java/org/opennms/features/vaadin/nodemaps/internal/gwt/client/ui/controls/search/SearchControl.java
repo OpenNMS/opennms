@@ -12,10 +12,11 @@ import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
 
@@ -57,7 +58,6 @@ public class SearchControl extends Control {
 
     private HTML m_submitIcon;
 
-    private SearchConsumer m_searchConsumer;
     private MarkerContainer m_markerContainer;
     private SearchEventCallback m_changeCallback;
 
@@ -65,16 +65,12 @@ public class SearchControl extends Control {
     private SearchStateManager m_stateManager;
     private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
+    private FilteredMarkersUpdatedEventHandler m_filteredMarkersEventHandler = null;
 
-    public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer) {
-        this(searchConsumer, markerContainer, new SearchOptions());
-    }
-
-    public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer, final SearchOptions options) {
+    public SearchControl(final MarkerContainer markerContainer, final Widget root) {
         super(JSObject.createJSObject());
-        setJSObject(SearchControlImpl.create(this, options.getJSObject()));
+        setJSObject(SearchControlImpl.create(this, new SearchOptions().getJSObject()));
         LOG.log(Level.INFO, "new SearchControl()");
-        m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
         m_selectionModel = new SingleSelectionModel<NodeMarker>();
 
@@ -92,17 +88,26 @@ public class SearchControl extends Control {
     }
 
     public Element doOnAdd(final JavaScriptObject map) {
-        LOG.log(Level.INFO, "onAdd() called");
+        LOG.log(Level.INFO, "SearchControl.onAdd() called");
 
         m_container.add(m_inputBox);
         m_container.add(m_submitIcon);
         m_container.add(m_autoComplete);
 
+        m_filteredMarkersEventHandler = new FilteredMarkersUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                LOG.log(Level.INFO, "SearchControl.onFilteredMarkersUpdated()");
+                refresh();
+            }
+        };
+        DomEvent.addListener(m_filteredMarkersEventHandler);
+
         return m_container.getElement();
     }
 
     public SearchControl doOnRemove(final JavaScriptObject map) {
-        LOG.log(Level.INFO, "onRemove() called");
+        LOG.log(Level.INFO, "SearchControl.onRemove() called");
+        if (m_filteredMarkersEventHandler != null) DomEvent.removeListener(m_filteredMarkersEventHandler);
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
         return this;
     }
@@ -132,9 +137,11 @@ public class SearchControl extends Control {
         m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper) {
             @Override
             public void refresh() {
+                /*
                 m_searchConsumer.setSearchString(m_inputBox.getValue());
                 // it's the search consumer's job to trigger an update in any UI elements
                 m_searchConsumer.refresh();
+                 */
 
                 final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
@@ -150,6 +157,8 @@ public class SearchControl extends Control {
                         }
                     }
                 }
+                
+                DomEvent.send(FilteredMarkersUpdatedEvent.createEvent());
             }
 
             @Override
@@ -211,11 +220,11 @@ public class SearchControl extends Control {
         m_inputBox.getElement().setAttribute("type", "search");
         m_inputBox.setMaxLength(40);
         m_inputBox.setVisibleLength(40);
-        m_inputBox.setValue(m_searchConsumer.getSearchString());
+        m_inputBox.setValue("");
 
         DomEvent.stopEventPropagation(m_inputBox);
 
-        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox, m_searchConsumer) {
+        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox) {
             @Override protected void onEvent(final NativeEvent event) {
                 m_stateManager.handleInputEvent(event);
             }
@@ -243,7 +252,7 @@ public class SearchControl extends Control {
             @Override
             public SafeHtml render(final NodeMarker marker) {
                 final SafeHtmlBuilder builder = new SafeHtmlBuilder();
-                final String search = m_searchConsumer.getSearchString();
+                final String search = m_inputBox.getValue();
 
                 builder.appendHtmlConstant("<div class=\"autocomplete-label\">");
                 builder.appendHtmlConstant(marker.getNodeLabel());
@@ -325,9 +334,6 @@ public class SearchControl extends Control {
     public void replaceSearchWith(final String newSearchString) {
         if (m_inputBox != null) {
             m_inputBox.setValue(newSearchString, false);
-            /* m_searchConsumer.setSearchString(newSearchString); */
-            // it's the search consumer's job to trigger an update in any UI elements
-            m_searchConsumer.refresh();
         }
     }
 }

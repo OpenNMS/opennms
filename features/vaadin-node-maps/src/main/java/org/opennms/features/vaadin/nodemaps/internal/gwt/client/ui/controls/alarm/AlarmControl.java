@@ -1,40 +1,32 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.discotools.gwt.leaflet.client.controls.Control;
+import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.discotools.gwt.leaflet.client.map.Map;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
+
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.discotools.gwt.leaflet.client.map.Map;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AlarmControl extends Control {
     Logger logger = Logger.getLogger(getClass().getName());
 
     private ListBox m_severityBox;
-    private final SearchConsumer m_searchConsumer;
 
     private SearchEventCallback m_onChange;
 
-    public AlarmControl(final SearchConsumer searchConsumer) {
-        this(searchConsumer, new AlarmControlOptions());
-    }
-
-    public AlarmControl(final SearchConsumer searchConsumer, final AlarmControlOptions options) {
+    public AlarmControl() {
         super(JSObject.createJSObject());
-        setJSObject(AlarmControlImpl.create(this, options.getJSObject()));
-        logger.log(Level.INFO, "new AlarmControl()");
-        m_searchConsumer = searchConsumer;
+        setJSObject(AlarmControlImpl.create(this, new AlarmControlOptions().getJSObject()));
     }
 
     public Element doOnAdd(final JavaScriptObject map) {
@@ -60,26 +52,17 @@ public class AlarmControl extends Control {
 
         DomEvent.stopEventPropagation(m_severityBox);
 
-        m_onChange = new SearchEventCallback("change", m_severityBox, m_searchConsumer) {
+        m_onChange = new SearchEventCallback("change", m_severityBox) {
             @Override
             protected void onEvent(final NativeEvent event) {
                 final Widget widget = getWidget();
-                final SearchConsumer searchConsumer = getSearchConsumer();
                 final ListBox severityBox = (ListBox)widget;
                 final int selected = severityBox.getSelectedIndex();
                 logger.log(Level.INFO, "new selection index = " + selected);
                 final String value = severityBox.getValue(selected);
                 logger.log(Level.INFO, "new severity = " + value);
-                if (value != null && searchConsumer != null) {
-                    final int severity = Integer.valueOf(value).intValue();
-                    searchConsumer.setMinimumSeverity(severity);
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            searchConsumer.refresh();
-                            logger.log(Level.INFO, "successfully set new severity to " + severity);
-                        }
-                    });
-                }
+                final int intValue = value == null? 0 : Integer.valueOf(value);
+                DomEvent.send(AlarmSeverityUpdatedEvent.createEvent(intValue));
             }
         };
         DomEvent.addListener(m_onChange);
@@ -94,7 +77,7 @@ public class AlarmControl extends Control {
     public void doOnRemove(final JavaScriptObject map) {
         logger.log(Level.INFO, "doOnRemove() called");
         DomEvent.removeListener(m_onChange);
-        if (m_searchConsumer != null) m_searchConsumer.clearSearch();
+        DomEvent.send(AlarmSeverityUpdatedEvent.createEvent(0));
     }
 
     @Override

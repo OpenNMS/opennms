@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
@@ -15,25 +16,55 @@ public class MarkerFilterImpl implements MarkerFilter {
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(MarkerFilterImpl.class.getName());
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
-    private SearchConsumer m_searchConsumer;
+    private String m_searchString;
+    private int m_minimumSeverity = 0;
 
-    public MarkerFilterImpl(final SearchConsumer consumer) {
-        m_searchConsumer  = consumer;
+    public MarkerFilterImpl(final String searchString, final int minimumSeverity) {
+        m_searchString = searchString;
+        m_minimumSeverity = minimumSeverity;
+    }
+
+    @SuppressWarnings("unused")
+    private boolean hasChanged(final String a, final String b) {
+        if (a == null) {
+            if (b == null) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (b == null) {
+                return false;
+            } else {
+                return a.equals(b);
+            }
+        }
+    }
+
+    public void setSearchString(final String searchString) {
+        // if (hasChanged(m_searchString, searchString)) {
+            m_searchString = searchString;
+            DomEvent.send(FilterUpdatedEvent.createEvent());
+        //}
+    }
+    
+    public void setMinimumSeverity(final int minimumSeverity) {
+        // if (m_minimumSeverity != minimumSeverity) {
+            m_minimumSeverity = minimumSeverity;
+            DomEvent.send(FilterUpdatedEvent.createEvent());
+        // }
     }
 
     @Override
     public boolean matches(final NodeMarker marker) {
-        final int minimumSeverity = m_searchConsumer.getMinimumSeverity();
-        final String searchString = m_searchConsumer.getSearchString();
-
-        if (marker.getSeverity() != null && marker.getSeverity() < minimumSeverity) return false;
-        if (searchString == null || "".equals(searchString)) return true;
+        if (marker.getSeverity() != null && marker.getSeverity() < m_minimumSeverity) return false;
+        if (m_searchString == null || "".equals(m_searchString)) return true;
 
         final String searchProperty;
         final MatchType matchType;
         final List<String> searchFor = new ArrayList<String>();
 
-        final MatchResult m = m_searchPattern.exec(searchString);
+        final MatchResult m = m_searchPattern.exec(m_searchString);
         if (m != null) {
             searchProperty = m.getGroup(1);
             matchType = MatchType.fromToken(m.getGroup(2));
@@ -48,7 +79,7 @@ public class MarkerFilterImpl implements MarkerFilter {
         } else {
             searchProperty = null;
             matchType = MatchType.SUBSTRING;
-            searchFor.add(searchString);
+            searchFor.add(m_searchString);
         }
 
         final Map<String, String> markerProperties = marker.getProperties();
@@ -68,7 +99,7 @@ public class MarkerFilterImpl implements MarkerFilter {
 
     private boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, String> searchIn) {
         final String lowerSearchProperty = searchProperty.toLowerCase();
-        
+
         if ("category".equals(lowerSearchProperty) || "categories".equals(lowerSearchProperty)) {
             return matchCategory(searchIn.get("categories"), matchType, searchFor);
         } else {
@@ -86,7 +117,7 @@ public class MarkerFilterImpl implements MarkerFilter {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -107,7 +138,7 @@ public class MarkerFilterImpl implements MarkerFilter {
                 }
             }
         }
-        
+
         return false;
     }
 }

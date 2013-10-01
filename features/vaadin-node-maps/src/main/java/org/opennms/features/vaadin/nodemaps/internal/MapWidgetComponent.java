@@ -57,7 +57,6 @@ import org.springframework.transaction.support.TransactionOperations;
 public class MapWidgetComponent extends NodeMapComponent {
     private static final long serialVersionUID = -6364929103619363239L;
     private Logger m_log = LoggerFactory.getLogger(getClass());
-    private String m_searchString;
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -180,10 +179,6 @@ public class MapWidgetComponent extends NodeMapComponent {
             nodes.get(lastId).setUnackedCount(unackedCount);
         }
 
-        if (m_searchString != null) {
-            setInitialSearchString(m_searchString);
-        }
-
         m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
         m_transaction.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -218,7 +213,6 @@ public class MapWidgetComponent extends NodeMapComponent {
 
 
     public void setSearchString(final String searchString) {
-        m_searchString = searchString;
-        
+        getState().searchString = searchString;
     }
 }

@@ -23,6 +23,7 @@ import com.google.gwt.core.client.impl.SchedulerImpl;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.impl.HistoryImpl;
@@ -52,6 +53,8 @@ public class SearchStateTest {
     private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
 
+    private HandlerManager m_mockHandlerManager;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
@@ -68,7 +71,8 @@ public class SearchStateTest {
     public void setUp() throws Exception {
         m_mockSearchInput.setValue("");
         m_mockHistory.setValue("");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
+        m_mockHandlerManager = new HandlerManager(this);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_mockHandlerManager);
     }
 
     @Test
@@ -271,7 +275,7 @@ public class SearchStateTest {
     @Test
     public void testInitializingWithHistory() throws Exception {
         m_mockHistory.setValue("search/ae");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_mockHandlerManager);
         assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
 
         typeCharacter(m_searchManager, 'a');
@@ -342,7 +346,7 @@ public class SearchStateTest {
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
-        public MockSearchStateManager(final ValueItem searchString, final ValueItem history) {
+        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final HandlerManager handlerManager) {
             super(searchString, history);
         }
 

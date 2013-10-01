@@ -43,7 +43,9 @@ import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -71,12 +73,18 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     public void onStateChanged(final StateChangeEvent stateChangeEvent) {
-        LOG.info("onStateChanged(" + stateChangeEvent + ")");
+        LOG.info("NodeMapConnector.onStateChanged(" + stateChangeEvent + ")");
         // Handle all common Vaadin features first
         super.onStateChanged(stateChangeEvent);
 
-        if (stateChangeEvent.hasPropertyChanged("initialSearch")) {
-            getWidget().setSearchString(getState().initialSearch);
+        if (stateChangeEvent.hasPropertyChanged("searchString")) {
+            final String searchString = getState().searchString;
+            LOG.info("searchString has changed: " + searchString);
+            if (searchString == null) {
+                DomEvent.send(SearchStringUpdatedEvent.createEvent(""));
+            } else {
+                DomEvent.send(SearchStringUpdatedEvent.createEvent(searchString));
+            }
         }
 
         if (stateChangeEvent.hasPropertyChanged("nodes")) {
@@ -85,7 +93,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
         if (stateChangeEvent.hasPropertyChanged("nodeIds")) {
             final List<Integer> nodeIds = getState().nodeIds;
-            LOG.info("nodeIds has changed to: " + getState().nodeIds);
+            LOG.info("nodeIds has changed to: " + nodeIds);
             if (nodeIds != null && nodeIds.size() > 0) {
                 final StringBuilder sb = new StringBuilder("nodeId in ");
                 final Iterator<Integer> i = nodeIds.iterator();
@@ -93,20 +101,22 @@ public class NodeMapConnector extends AbstractComponentConnector {
                     sb.append(i.next());
                     if (i.hasNext()) sb.append(", ");
                 }
-                getWidget().setSearchString(sb.toString());
+                DomEvent.send(SearchStringUpdatedEvent.createEvent(sb.toString()));
             }
         }
     }
 
     private void updateNodes() {
+        final List<MapNode> nodes = getState().nodes;
+        LOG.info("nodes list has changed: " + nodes);
         final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
 
-        if (getState().nodes.isEmpty()) {
+        if (nodes.isEmpty()) {
             getWidget().setMarkers(featureCollection);
             return;
         }
 
-        for (final MapNode node : getState().nodes) {
+        for (final MapNode node : nodes) {
             final JSNodeMarker marker = new JSNodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
             marker.putProperty(JSNodeMarker.Property.NODE_ID, node.getNodeId());
             marker.putProperty(JSNodeMarker.Property.NODE_LABEL, node.getNodeLabel());

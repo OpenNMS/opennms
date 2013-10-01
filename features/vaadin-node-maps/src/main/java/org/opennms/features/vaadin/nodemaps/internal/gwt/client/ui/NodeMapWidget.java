@@ -30,12 +30,18 @@ import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
+import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
@@ -45,29 +51,38 @@ import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
-public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsumer {
+public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers {
     private final DivElement m_div;
     private Map m_map;
     private ILayer m_layer;
-    private MarkerContainer m_markers;
+    private MarkerContainer m_markerContainer;
     private MarkerClusterGroup m_markerClusterGroup;
     private MarkerClusterGroup[] m_stateClusterGroups;
 
     private boolean m_firstUpdate = true;
-    private int m_minimumSeverity = 0;
-    private String m_searchString = "";
     private SearchControl m_searchControl;
-    private MarkerFilter m_filter;
-    private NodeIdSelectionRpc m_rpc;
+    private MarkerFilterImpl m_filter;
+    private NodeIdSelectionRpc m_clientToServerRpc;
 
     private Logger logger = Logger.getLogger(getClass().getName());
+    private final HandlerManager m_handlerManager;
+
+    private SearchStringUpdatedEventHandler m_searchStringUpdatedHandler;
+    private AlarmSeverityUpdatedEventHandler m_alarmSeverityUpdatedHandler;
+    private FilteredMarkersUpdatedEventHandler m_filteredMarkersUpdatedHandler;
 
     public NodeMapWidget() {
+        m_handlerManager = new HandlerManager(this);
+
         m_div = Document.get().createDivElement();
         m_div.setId("gwt-map");
         m_div.getStyle().setWidth(100, Unit.PCT);
@@ -75,32 +90,68 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         setElement(m_div);
 
         setStyleName("v-openlayers");
-        logger.log(Level.INFO, "div ID = " + getElement().getId());
+        logger.log(Level.INFO, "NodeMapWidget(): div ID = " + getElement().getId());
 
-        m_filter = new MarkerFilterImpl(this);
-        m_markers = new MarkerContainer(m_filter);
-        logger.log(Level.INFO, "NodeMapWidget initialized");
-    }
+        m_filter = new MarkerFilterImpl("", 0);
+        m_markerContainer = new MarkerContainer(m_filter);
 
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-        Scheduler.get().scheduleDeferred(new Command() {
+        addAttachHandler(new Handler() {
             @Override
-            public void execute() {
-                initializeMap(m_div.getId());
+            public void onAttachOrDetach(final AttachEvent event) {
+                if (event.isAttached()) {
+                    logger.log(Level.INFO, "NodeMapWidget.onAttach()");
+
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                        @Override public void execute() {
+                            initializeMap(m_div.getId());
+                        }
+                    });
+
+                    m_markerContainer.onLoad();
+
+                    m_searchStringUpdatedHandler = new SearchStringUpdatedEventHandler() {
+                        @Override public void onEvent(final NativeEvent nativeEvent) {
+                            final SearchStringUpdatedEvent event = nativeEvent.cast();
+                            logger.log(Level.INFO, "NodeMapWidget.onSearchUpdated(" + event.getSearchString() + ")");
+                            m_filter.setSearchString(event.getSearchString());
+                        }
+                    };
+                    DomEvent.addListener(m_searchStringUpdatedHandler);
+
+                    m_alarmSeverityUpdatedHandler = new AlarmSeverityUpdatedEventHandler() {
+                        @Override public void onEvent(final NativeEvent nativeEvent) {
+                            final AlarmSeverityUpdatedEvent event = nativeEvent.cast();
+                            logger.log(Level.INFO, "NodeMapWidget.onAlarmSeverityUpdated(" + event.getMinimumSeverity() + ")");
+                            m_filter.setMinimumSeverity(event.getMinimumSeverity());
+                        }
+                    };
+                    DomEvent.addListener(m_alarmSeverityUpdatedHandler);
+
+                    m_filteredMarkersUpdatedHandler = new FilteredMarkersUpdatedEventHandler() {
+                        @Override
+                        public void onEvent(final NativeEvent nativeEvent) {
+                            logger.log(Level.INFO, "NodeMapWidget.onFilteredMarkersUpdated(), refreshing node map widgets");
+                            updateMarkerClusterLayer();
+                        }
+                    };
+                    DomEvent.addListener(m_filteredMarkersUpdatedHandler);
+                } else {
+                    logger.log(Level.INFO, "NodeMapwidget.onDetach()");
+
+                    if (m_searchStringUpdatedHandler != null) DomEvent.removeListener(m_searchStringUpdatedHandler);
+                    if (m_alarmSeverityUpdatedHandler != null) DomEvent.removeListener(m_alarmSeverityUpdatedHandler);
+                    if (m_filteredMarkersUpdatedHandler != null) DomEvent.removeListener(m_filteredMarkersUpdatedHandler);
+
+                    m_markerContainer.onUnload();
+                    destroyMap();
+                }
             }
         });
-    }
-
-    @Override
-    protected void onUnload() {
-        destroyMap();
-        super.onUnload();
+        logger.log(Level.INFO, "NodeMapWidget(): initialized");
     }
 
     private void initializeMap(final String divId) {
-        logger.log(Level.INFO, "initializing map");
+        logger.log(Level.INFO, "NodeMapWidget.initializeMap()");
 
         createMap(divId);
         // createGoogleLayer();
@@ -114,7 +165,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
         m_searchControl.focus();
 
-        logger.log(Level.INFO, "finished initializing map");
+        logger.log(Level.INFO, "NodeMapWidget.initializeMap(): finished");
     }
 
     @SuppressWarnings("unused")
@@ -123,7 +174,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         final Options googleOptions = new Options();
         googleOptions.setProperty("crs", projection);
 
-        logger.log(Level.INFO, "adding Google layer");
+        logger.log(Level.INFO, "NodeMapWidget.createGoogleLayer(): adding Google layer");
         m_layer = new GoogleLayer("SATELLITE", googleOptions);
         m_map.addLayer(m_layer, true);
     }
@@ -138,7 +189,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     }
 
     private void addTileLayer() {
-        logger.log(Level.INFO, "adding tile layer");
+        logger.log(Level.INFO, "NodeMapWidget.addTileLayer()");
         final String attribution = "Map data &copy; <a tabindex=\"-1\" href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a tabindex=\"-1\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a tabindex=\"-1\" href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
         final String url = "http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
         final Options tileOptions = new Options();
@@ -151,7 +202,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
 
     private void addMarkerLayer() {
-        logger.log(Level.INFO, "adding marker cluster layer");
+        logger.log(Level.INFO, "NodeMapWidget.addMarkerLayer()");
         final Options markerClusterOptions = new Options();
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
@@ -181,24 +232,22 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
     }
 
-
-
     private void addSearchControl() {
-        logger.log(Level.INFO, "adding search control");
-        m_searchControl = new SearchControl(this, m_markers);
+        logger.log(Level.INFO, "NodeMapWidget.addSearchControl()");
+        m_searchControl = new SearchControl(m_markerContainer, this);
         m_map.addControl(m_searchControl);
     }
 
     private void addAlarmControl() {
-        logger.log(Level.INFO, "adding alarm control");
+        logger.log(Level.INFO, "NodeMapWidget.addAlarmControl()");
         final AlarmControlOptions options = new AlarmControlOptions();
         options.setPosition("topleft");
-        final AlarmControl alarmControl = new AlarmControl(this, options);
+        final AlarmControl alarmControl = new AlarmControl();
         m_map.addControl(alarmControl);
     }
 
     private void addZoomControl() {
-        logger.log(Level.INFO, "adding zoom control");
+        logger.log(Level.INFO, "NodeMapWidget.addZoomControl()");
         m_map.addControl(new Zoom(new Options()));
     }
 
@@ -206,57 +255,50 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         return m_filter.matches(marker);
     }
 
-    @Override
-    public boolean isSearching() {
-        return m_searchString != null && !"".equals(m_searchString);
-    }
-
-    @Override
     public void refresh() {
-        if (m_markers == null) {
-            logger.log(Level.INFO, "markers not initialized yet, skipping update");
+        if (m_markerContainer == null) {
+            logger.log(Level.INFO, "NodeMapWidget.refresh(): markers not initialized yet, deferring refresh");
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+                @Override public boolean execute() {
+                    refresh();
+                    return false;
+                }
+
+            }, 1000);
             return;
         }
         if (m_markerClusterGroup == null) {
-            logger.log(Level.INFO, "marker cluster not initialized yet, skipping update");
+            logger.log(Level.INFO, "NodeMapWidget.refresh(): marker cluster not initialized yet, deferring refresh");
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+                @Override public boolean execute() {
+                    refresh();
+                    return false;
+                }
+
+            }, 1000);
             return;
         }
-
-        m_markers.refresh();
-
-        final List<Integer> nodeIds = new ArrayList<Integer>();
-        for (final JSNodeMarker marker : m_markers.getMarkers()) {
-            final Integer nodeId = marker.getNodeId();
-            if (nodeId != null) {
-                nodeIds.add(nodeId);
-            }
-        }
-        m_rpc.setSelectedNodes(nodeIds);
-
-        logger.log(Level.INFO, "processing " + m_markers.size() + " markers for the node layer");
-        // make the search control refresh with the new markers
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override public void execute() {
-                m_searchControl.refresh();
-            }
-        });
+        logger.log(Level.INFO, "NodeMapWidget.refresh()");
 
         // add new markers
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
-            final ListIterator<JSNodeMarker> m_markerIterator = m_markers.listIterator();
+            final ListIterator<JSNodeMarker> m_markerIterator = m_markerContainer.listIterator();
 
             @Override
             public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final JSNodeMarker marker = m_markerIterator.next();
-                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
+                    final Coordinates coordinates = marker.getCoordinates();
+                    if (coordinates == null) {
+                        logger.log(Level.WARNING, "NodeMapWidget.refresh(): no coordinates found for marker! " + marker);
+                        return true;
+                    }
+                    if (StatesData.inUs(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble(), StatesData.getUsShape())) {
                         int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
-                        if(!m_stateClusterGroups[stateId].hasLayer(marker)){
+                        if (!m_stateClusterGroups[stateId].hasLayer(marker)) {
                             m_stateClusterGroups[stateId].addLayer(marker);
                         }
-                    }
-
-                    else{
+                    } else {
                         if (!m_markerClusterGroup.hasLayer(marker)) {
                             m_markerClusterGroup.addLayer(marker);
                         }
@@ -264,7 +306,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
                     return true;
                 }
 
-                logger.log(Level.INFO, "finished adding visible markers");
+                logger.log(Level.INFO, "NodeMapWidget.refresh(): finished adding visible markers (" + m_markerContainer.size() + " entries)");
 
                 return false;
             }
@@ -272,30 +314,31 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
         });
 
         // remove disabled markers
+        final List<JSNodeMarker> disabledMarkers = m_markerContainer.getDisabledMarkers();
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
-            final ListIterator<JSNodeMarker> m_markerIterator = m_markers.getDisabledMarkers().listIterator();
+            final ListIterator<JSNodeMarker> m_markerIterator = disabledMarkers.listIterator();
 
             @Override
             public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final JSNodeMarker marker = m_markerIterator.next();
                     marker.closePopup();
-                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
+                    final Coordinates coordinates = marker.getCoordinates();
+                    if (coordinates == null) {
+                        logger.log(Level.WARNING, "NodeMapWidget.refresh(): no coordinates found for marker! " + marker);
+                        return true;
+                    }
+                    if (StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
                         int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
 
                         m_stateClusterGroups[stateId].removeLayer(marker);
-
-                    }
-
-                    else{
-
+                    } else {
                         m_markerClusterGroup.removeLayer(marker);
-
                     }
                     return true;
                 }
 
-                logger.log(Level.INFO, "finished removing filtered markers");
+                logger.log(Level.INFO, "NodeMapWidget.refresh(): finished removing filtered markers (" + disabledMarkers.size() + " entries)");
 
                 return false;
             }
@@ -303,33 +346,49 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
         // zoom on first run
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
+            @Override public void execute() {
                 if (m_firstUpdate) {
                     final LatLngBounds bounds = new LatLngBounds();
-                    for (final NodeMarker marker : m_markers.getMarkers()) {
-                        bounds.extend(JSNodeMarker.coordinatesToLatLng(marker.getCoordinates()));
-                    }
-                    for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
-                        bounds.extend(JSNodeMarker.coordinatesToLatLng(marker.getCoordinates()));
+                    for (final NodeMarker marker : m_markerContainer.getAllMarkers()) {
+                        final Coordinates coordinates = marker.getCoordinates();
+                        if (coordinates == null) {
+                            logger.log(Level.WARNING, "NodeMapWidget.refresh(): no coordinates found for marker! " + marker);
+                        } else {
+                            bounds.extend(JSNodeMarker.coordinatesToLatLng(coordinates));
+                        }
                     }
                     //logger.log(Level.INFO, "first update, zooming to " + bounds.toBBoxString());
                     m_map.fitBounds(bounds);
                     m_firstUpdate = false;
                 }
 
-                logger.log(Level.INFO, "finished updating marker cluster layer");
+                logger.log(Level.INFO, "NodeMapWidget.refresh(): finished updating marker cluster layer (" + m_markerContainer.size() + " entries)");
+
+                final List<Integer> nodeIds = new ArrayList<Integer>();
+                for (final JSNodeMarker marker : m_markerContainer.getMarkers()) {
+                    final Integer nodeId = marker.getNodeId();
+                    if (nodeId != null) {
+                        nodeIds.add(nodeId);
+                    }
+                }
+                m_clientToServerRpc.setSelectedNodes(nodeIds);
             }
         });
     }
 
     public void updateMarkerClusterLayer() {
         if (m_markerClusterGroup == null) {
-            logger.log(Level.INFO, "marker cluster not initialized yet, skipping update");
+            logger.log(Level.INFO, "NodeMapWidget.updateMarkerClusterLayer(): marker cluster not initialized yet, deferring update");
+            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+                @Override public boolean execute() {
+                    updateMarkerClusterLayer();
+                    return false;
+                }
+            }, 1000);
             return;
         }
 
-        logger.log(Level.INFO, "clearing existing markers");
+        logger.log(Level.INFO, "NodeMapWidget.updateMarkerClusterLayer(): clearing existing markers");
         m_markerClusterGroup.clearLayers();
         for(int i = 0; i < m_stateClusterGroups.length; i++){
             m_stateClusterGroups[i].clearLayers();
@@ -340,47 +399,20 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
 
     @Override
     public List<JSNodeMarker> getMarkers() {
-        return m_markers.getMarkers();
+        return m_markerContainer.getMarkers();
     }
 
     public void setMarkers(final List<JSNodeMarker> markers) {
-        m_markers.setMarkers(markers);
-
-        Scheduler.get().scheduleDeferred(new Command() {
-            @Override
-            public void execute() {
-                updateMarkerClusterLayer();
-            }
-        });
-    }
-
-    @Override
-    public int getMinimumSeverity() {
-        return m_minimumSeverity;
-    }
-
-    @Override
-    public void setMinimumSeverity(final int minSeverity) {
-        m_minimumSeverity = minSeverity;
-    }
-
-    @Override
-    public String getSearchString() {
-        return m_searchString;
-    }
-
-    @Override
-    public void setSearchString(final String searchString) {
-        m_searchString = searchString;
-        if (m_searchControl != null) {
-            m_searchControl.replaceSearchWith(searchString);
+        if (markers != null) {
+            m_markerContainer.setMarkers(markers);
+        } else {
+            m_markerContainer.setMarkers(new ArrayList<JSNodeMarker>());
         }
     }
 
-    @Override
     public void clearSearch() {
-        m_minimumSeverity = 0;
-        m_searchString = "";
+        DomEvent.send(SearchStringUpdatedEvent.createEvent(""));
+        DomEvent.send(AlarmSeverityUpdatedEvent.createEvent(0));
     }
 
     private final void destroyMap() {
@@ -398,6 +430,10 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     }
 
     public void setRpc(final NodeIdSelectionRpc rpc) {
-        m_rpc = rpc;
+        m_clientToServerRpc = rpc;
+    }
+
+    protected HandlerManager createHandlerManager() {
+        return m_handlerManager;
     }
 }

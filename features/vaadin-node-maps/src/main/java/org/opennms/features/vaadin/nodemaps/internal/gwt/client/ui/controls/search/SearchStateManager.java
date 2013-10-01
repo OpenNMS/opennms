@@ -3,6 +3,9 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.sea
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
@@ -139,17 +142,30 @@ public abstract class SearchStateManager {
                         } else {
                             m_state = m_state.searchInputReceived(SearchStateManager.this);
                         }
+                        DomEvent.send(SearchStringUpdatedEvent.createEvent(value));
                     }
                 });
                 break;
             }
-        } else if ("search".equals(eventType)) {
+        } else if ("search".equals(eventType) || "change".equals(eventType)) {
             final String searchString = m_valueItem.getValue();
             if ("".equals(searchString)) {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
                     public void execute() {
                         m_state = m_state.cancelSearching(SearchStateManager.this);
+                    }
+                });
+            } else {
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        if (searchString == null || "".equals(searchString)) {
+                            m_state = m_state.cancelSearching(SearchStateManager.this);
+                        } else {
+                            m_state = m_state.searchInputReceived(SearchStateManager.this);
+                        }
+                        DomEvent.send(SearchStringUpdatedEvent.createEvent(searchString));
                     }
                 });
             }

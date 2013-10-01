@@ -12,29 +12,32 @@ import org.junit.Test;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SimpleNodeMarker;
 
+import com.google.gwt.event.shared.HandlerManager;
+
 public class MarkerFilterImplTest {
+
+    private HandlerManager m_handlerManager;
 
     @Before
     public void setUp() {
         Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.FINER);
+        m_handlerManager = new HandlerManager(this);
     }
 
     @Test
     public void testEmptySearch() {
         // empty searches should always match
-        final MockSearchConsumer consumer = new MockSearchConsumer(null, 0);
-        final MarkerFilter filter = new MarkerFilterImpl(consumer);
+        final MarkerFilterImpl filter = new MarkerFilterImpl(null, 0);
         final NodeMarker marker = new SimpleNodeMarker();
         assertTrue(filter.matches(marker));
 
-        consumer.setSearchString("");
+        filter.setSearchString("");
         assertTrue(filter.matches(marker));
     }
 
     @Test
     public void testSubstringMatch() {
-        final MockSearchConsumer consumer = new MockSearchConsumer("blah", 0);
-        final MarkerFilter filter = new MarkerFilterImpl(consumer);
+        final MarkerFilterImpl filter = new MarkerFilterImpl("blah", 0);
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
         marker.setNodeLabel("this has the string blah in it");
@@ -46,7 +49,7 @@ public class MarkerFilterImplTest {
         marker.setNodeLabel("blah");
         assertTrue(filter.matches(marker));
 
-        consumer.setSearchString("nodeLabel: blah");
+        filter.setSearchString("nodeLabel: blah");
 
         marker.setNodeLabel("this has the string blah in it");
         assertTrue(filter.matches(marker));
@@ -58,7 +61,7 @@ public class MarkerFilterImplTest {
         assertTrue(filter.matches(marker));
 
         // now try categories
-        consumer.setSearchString("blah");
+        filter.setSearchString("blah");
         marker.setNodeLabel("notMatching");
         marker.addCategory("bla");
         assertFalse(filter.matches(marker));
@@ -72,7 +75,7 @@ public class MarkerFilterImplTest {
         marker.addCategory("this has the string 'blah' in it too!");
         assertTrue(filter.matches(marker));
 
-        consumer.setSearchString("category: blah");
+        filter.setSearchString("category: blah");
         marker.setNodeLabel("notMatching");
         marker.setCategoryList(new ArrayList<String>());
         marker.addCategory("bla");
@@ -90,8 +93,7 @@ public class MarkerFilterImplTest {
 
     @Test
     public void testExactMatch() {
-        final MockSearchConsumer consumer = new MockSearchConsumer("nodeLabel=blah", 0);
-        final MarkerFilter filter = new MarkerFilterImpl(consumer);
+        final MarkerFilterImpl filter = new MarkerFilterImpl("nodeLabel=blah", 0);
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
         marker.setNodeLabel("blah");
@@ -100,7 +102,7 @@ public class MarkerFilterImplTest {
         marker.setNodeLabel("ablah");
         assertFalse(filter.matches(marker));
 
-        consumer.setSearchString("category=blah");
+        filter.setSearchString("category=blah");
         marker.setNodeLabel(null);
         marker.addCategory("ablah");
         assertFalse(filter.matches(marker));
@@ -111,8 +113,7 @@ public class MarkerFilterImplTest {
 
     @Test
     public void testInMatch() {
-        final MockSearchConsumer consumer = new MockSearchConsumer("nodeLabel in foo, bar, baz", 0);
-        final MarkerFilter filter = new MarkerFilterImpl(consumer);
+        final MarkerFilterImpl filter = new MarkerFilterImpl("nodeLabel in foo, bar, baz", 0);
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
         marker.setNodeLabel("fo");
@@ -127,7 +128,7 @@ public class MarkerFilterImplTest {
         marker.setNodeLabel("baz");
         assertTrue(filter.matches(marker));
 
-        consumer.setSearchString("category in foo, bar, baz");
+        filter.setSearchString("category in foo, bar, baz");
         marker.setNodeLabel(null);
         marker.setCategoryList(new ArrayList<String>());
         marker.addCategory("ba");
@@ -140,7 +141,7 @@ public class MarkerFilterImplTest {
         marker.addCategory("baz");
         assertTrue(filter.matches(marker));
 
-        consumer.setSearchString("categories in foo, bar, baz");
+        filter.setSearchString("categories in foo, bar, baz");
         marker.setNodeLabel(null);
         marker.setCategoryList(new ArrayList<String>());
         marker.addCategory("ba");

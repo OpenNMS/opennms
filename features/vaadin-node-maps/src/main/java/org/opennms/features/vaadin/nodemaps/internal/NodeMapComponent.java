@@ -53,7 +53,7 @@ public class NodeMapComponent extends AbstractComponent {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapComponent.class);
 
     private NodeIdSelectionRpc m_rpc = new NodeIdSelectionRpc() {
-        private static final long serialVersionUID = 6827947640059117291L;
+        private static final long serialVersionUID = 3263343063196874423L;
         @Override
         public void setSelectedNodes(final List<Integer> nodeIds) {
             ((NodeMapsApplication)UI.getCurrent()).setFocusedNodes(nodeIds);
@@ -81,9 +81,9 @@ public class NodeMapComponent extends AbstractComponent {
         return (NodeMapState) super.getState();
     }
 
-    public void setInitialSearchString(final String searchString) {
-        LOG.debug("setInitialSearchString(" + searchString + ")");
-        getState().initialSearch = searchString;
+    public void setSearchString(final String searchString) {
+        LOG.debug("setSearchString(" + searchString + ")");
+        getState().searchString = searchString;
     }
     
     public void setSelectedNodes(final List<Integer> nodeIds) {

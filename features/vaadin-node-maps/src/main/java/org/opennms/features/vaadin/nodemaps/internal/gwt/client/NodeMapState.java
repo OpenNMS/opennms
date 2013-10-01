@@ -10,8 +10,9 @@ import com.vaadin.shared.AbstractComponentState;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class NodeMapState extends AbstractComponentState {
-    private static final long serialVersionUID = -2322771975142381471L;
-    public String initialSearch;
+    private static final long serialVersionUID = 1457336633817744522L;
+    public String searchString;
     public List<MapNode> nodes = new LinkedList<MapNode>();
     public List<Integer> nodeIds = new ArrayList<Integer>();
+    public int minimumSeverity;
 }
