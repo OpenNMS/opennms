@@ -220,7 +220,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
 
     /**
-     * Do not use directly. Call {@link #getNodeStatusMap
+     * Do not use directly. Call {@link #getNodeStatusString(org.opennms.netmgt.model.OnmsNode.NodeType)}
      * getInterfaceStatusMap} instead.
      */
     private static final EnumMap<NodeType, String> m_nodeStatusMap;

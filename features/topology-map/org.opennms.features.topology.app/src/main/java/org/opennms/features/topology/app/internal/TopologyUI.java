@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -75,6 +76,42 @@ import java.util.*;
 })
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
+
+    private class DynamicUpdateRefresher implements Refresher.RefreshListener {
+        private final Object lockObject = "lockObject";
+        private boolean refreshInProgress = false;
+        private long lastUpdateTime;
+
+        @Override
+        public void refresh(Refresher refresher) {
+            if (needsRefresh()) {
+                synchronized (lockObject) {
+                    refreshInProgress = true;
+
+                    m_log.debug("Refresh UI");
+                    getGraphContainer().getBaseTopology().refresh();
+                    getGraphContainer().redoLayout();
+                    TopologyUI.this.markAsDirtyRecursive();
+
+                    lastUpdateTime = System.currentTimeMillis();
+
+                    refreshInProgress = false;
+                }
+            }
+        }
+
+        private boolean needsRefresh() {
+            if (refreshInProgress) {
+                return false;
+            }
+            if (!m_graphContainer.getAutoRefreshSupport().isEnabled()) {
+                return false;
+            }
+
+            long updateDiff = System.currentTimeMillis() - lastUpdateTime;
+            return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval()*1000; // update or not
+        }
+    }
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
@@ -148,6 +185,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         setupListeners();
         createLayouts();
         setupErrorHandler();
+        setupAutoRefresher();
 
         // notifiy osgi-listeners, otherwise initialization would not work
         m_graphContainer.addChangeListener(m_verticesUpdateManager);
@@ -188,6 +226,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 super.error(event);
             }
         });
+    }
+
+    private void setupAutoRefresher() {
+        if (m_graphContainer.hasAutoRefreshSupport()) {
+            Refresher refresher = new Refresher();
+            refresher.setRefreshInterval(5000); // ask every 5 seconds for changes
+            refresher.addListener(new DynamicUpdateRefresher());
+            addExtension(refresher);
+        }
     }
 
     private void addHeader() {

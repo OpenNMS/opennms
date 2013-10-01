@@ -283,4 +283,46 @@ AND CURRENT_TIMESTAMP;</queryString>
 	    </query>
 	</queries>
     </jdbc-collection>
+    <jdbc-collection name="PostgreSQL">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <queries>
+            <query name="pg_tablespace_size" ifType="all" resourceType="pgTableSpace" instance-column="spcname">
+                <statement>
+                    <queryString>
+                    SELECT spcname, pg_tablespace_size(pg_tablespace.spcname) AS ts_size
+                    FROM pg_tablespace
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="spcname" data-source-name="spcname" alias="spcname" type="string"/>
+                    <column name="ts_size" data-source-name="ts_size" alias="ts_size" type="gauge"/>
+                </columns>
+            </query>
+            <query name="pg_stat_database" ifType="all" resourceType="pgDatabase" instance-column="datname">
+                <statement>
+                    <queryString>
+                    SELECT datname, numbackends, xact_commit, xact_rollback, blks_read, blks_hit,
+                           pg_database_size(pg_stat_database.datname) AS db_size
+                    FROM pg_stat_database
+                    WHERE datname NOT IN ('template0', 'template1')
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="datname" data-source-name="datname" alias="datname" type="string"/>
+                    <column name="numbackends" data-source-name="numbackends" alias="numbackends" type="gauge"/>
+                    <column name="xact_commit" data-source-name="xact_commit" alias="xact_commit" type="counter"/>
+                    <column name="xact_rollback" data-source-name="xact_rollback" alias="xact_rollback" type="counter"/>
+                    <column name="blks_read" data-source-name="blks_read" alias="blks_read" type="counter"/>
+                    <column name="blks_hit" data-source-name="blks_hit" alias="blks_hit" type="counter"/>
+                    <column name="db_size" data-source-name="db_size" alias="db_size" type="gauge"/>
+                </columns>
+            </query>
+        </queries>
+    </jdbc-collection>
 </jdbc-datacollection-config>

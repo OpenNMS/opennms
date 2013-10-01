@@ -22,6 +22,7 @@
         <include-collection dataCollectionGroup="Brocade"/>
         <include-collection dataCollectionGroup="Checkpoint"/>
         <include-collection dataCollectionGroup="Cisco"/>
+        <include-collection dataCollectionGroup="CLAVISTER"/>
         <include-collection dataCollectionGroup="Colubris"/>
         <include-collection dataCollectionGroup="Concord"/>
         <include-collection dataCollectionGroup="Cyclades"/>
@@ -54,6 +55,7 @@
         <include-collection dataCollectionGroup="Novell"/>
         <include-collection dataCollectionGroup="pfSense"/>
         <include-collection dataCollectionGroup="Powerware"/>
+        <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
         <include-collection dataCollectionGroup="Riverbed"/>
         <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
         <include-collection dataCollectionGroup="ServerTech"/>
