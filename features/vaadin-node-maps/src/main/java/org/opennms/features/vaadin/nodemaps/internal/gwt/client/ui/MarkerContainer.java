@@ -40,16 +40,18 @@ public class MarkerContainer implements MarkerProvider {
         DomEvent.addListener(m_filterHandler);
 
         m_markersModelUpdatedHandler = new MarkersModelUpdatedEventHandler() {
-            @Override protected void onEvent(final NativeEvent event) {
+            @Override public void onEvent(final NativeEvent event) {
                 logger.log(Level.INFO, "MarkerContainer.onMarkersModelUpdated()");
                 refresh();
             }
         };
+
+        refresh();
     }
 
     public void onUnload() {
         if (m_filterHandler != null) DomEvent.removeListener(m_filterHandler);
-        if (m_markersModelUpdatedHandler != null) DomEvent.removeListener(m_filterHandler);
+        if (m_markersModelUpdatedHandler != null) DomEvent.removeListener(m_markersModelUpdatedHandler);
     }
 
     public int size() {
@@ -87,16 +89,21 @@ public class MarkerContainer implements MarkerProvider {
 
     public void setMarkers(final List<JSNodeMarker> markers) {
         if (markers == null) {
+            logger.log(Level.INFO, "MarkerContainer.setMarkers(): clearing master marker list in the marker container.");
             if (m_markers != null) m_markers.clear();
         } else {
+            logger.log(Level.INFO, "MarkerContainer.setMarkers(): saving " + markers.size() + " markers to the master marker list in the marker container.");
             m_markers = markers;
         }
         DomEvent.send(MarkersModelUpdatedEvent.createEvent());
+        refresh();
     }
 
     public void refresh() {
+        logger.log(Level.INFO, "MarkerContainer.refresh()");
+
         final List<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
-        final List<JSNodeMarker> existingMarkers = getMarkers();
+        final List<JSNodeMarker> existingMarkers = getAllMarkers();
         if (existingMarkers != null) {
             for (final JSNodeMarker marker : existingMarkers) {
                 if (m_filter.matches(marker)) {
@@ -105,6 +112,7 @@ public class MarkerContainer implements MarkerProvider {
             }
         }
         m_filteredMarkers = markers;
+        logger.log(Level.INFO, "MarkerContainer.refresh(): out of " + getMarkers().size() + " markers, " + markers.size() + " matched the search filter.");
         DomEvent.send(FilteredMarkersUpdatedEvent.createEvent());
     }
 }

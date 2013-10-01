@@ -14,10 +14,12 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AbstractDomEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
@@ -66,6 +68,7 @@ public class SearchControl extends Control {
     private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
     private FilteredMarkersUpdatedEventHandler m_filteredMarkersEventHandler = null;
+    private SearchStringUpdatedEventHandler m_searchStringEventHandler;
 
     public SearchControl(final MarkerContainer markerContainer, final Widget root) {
         super(JSObject.createJSObject());
@@ -94,6 +97,17 @@ public class SearchControl extends Control {
         m_container.add(m_submitIcon);
         m_container.add(m_autoComplete);
 
+        /* If the backend sends a new search string, set it on the input box
+         * to make sure we're in sync, but don't re-fire events.
+         */
+        m_searchStringEventHandler = new SearchStringUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                final SearchStringUpdatedEvent event = nativeEvent.cast();
+                replaceSearchWith(event.getSearchString());
+            }
+        };
+        DomEvent.addListener(m_searchStringEventHandler);
+
         m_filteredMarkersEventHandler = new FilteredMarkersUpdatedEventHandler() {
             @Override public void onEvent(final NativeEvent nativeEvent) {
                 LOG.log(Level.INFO, "SearchControl.onFilteredMarkersUpdated()");
@@ -102,12 +116,15 @@ public class SearchControl extends Control {
         };
         DomEvent.addListener(m_filteredMarkersEventHandler);
 
+        refresh();
+
         return m_container.getElement();
     }
 
     public SearchControl doOnRemove(final JavaScriptObject map) {
         LOG.log(Level.INFO, "SearchControl.onRemove() called");
         if (m_filteredMarkersEventHandler != null) DomEvent.removeListener(m_filteredMarkersEventHandler);
+        if (m_searchStringEventHandler != null) DomEvent.removeListener(m_searchStringEventHandler);
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
         return this;
     }
@@ -225,7 +242,7 @@ public class SearchControl extends Control {
         DomEvent.stopEventPropagation(m_inputBox);
 
         m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox) {
-            @Override protected void onEvent(final NativeEvent event) {
+            @Override public void onEvent(final NativeEvent event) {
                 m_stateManager.handleInputEvent(event);
             }
         };
@@ -238,9 +255,8 @@ public class SearchControl extends Control {
         m_submitIcon.setTitle("Search locations...");
 
         DomEvent.stopEventPropagation(m_submitIcon);
-        DomEvent.addListener(new DomEventCallback("click", m_submitIcon) {
-            @Override
-            protected void onEvent(final NativeEvent event) {
+        DomEvent.addListener(new AbstractDomEventCallback("click", m_submitIcon) {
+            @Override public void onEvent(final NativeEvent event) {
                 m_inputBox.setFocus(true);
                 m_stateManager.handleSearchIconEvent(event);
             }
@@ -333,7 +349,12 @@ public class SearchControl extends Control {
 
     public void replaceSearchWith(final String newSearchString) {
         if (m_inputBox != null) {
-            m_inputBox.setValue(newSearchString, false);
+            if (newSearchString != null && !newSearchString.equals(m_inputBox.getValue())) {
+                LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): updated.");
+                m_inputBox.setValue(newSearchString, false);
+                return;
+            }
         }
+        LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): unchanged.");
     }
 }

@@ -388,6 +388,10 @@ public class SearchStateTest {
         @Override public void entrySelected() {
             System.err.println("current autocomplete entry selected!");
         }
+        
+        @Override protected void sendSearchStringUpdatedEvent(final String searchString) {
+            System.err.println("sending search string updated event: '" + searchString + "'");
+        }
 
         public boolean isInputFocused() {
             return m_inputFocused;

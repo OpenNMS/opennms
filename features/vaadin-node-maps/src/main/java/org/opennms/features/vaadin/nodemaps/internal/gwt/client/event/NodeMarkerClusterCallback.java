@@ -92,7 +92,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
 
         /*
         final Element element = popup.getJSObject().cast();
-        DomEvent.addListener(new DomEventCallback("keydown", null) {
+        DomEvent.addListener(new AbstractDomEventCallback("keydown", null) {
             @Override protected void onEvent(final NativeEvent event) {
                 VConsole.log("marker cluster popup keydown event");
             }

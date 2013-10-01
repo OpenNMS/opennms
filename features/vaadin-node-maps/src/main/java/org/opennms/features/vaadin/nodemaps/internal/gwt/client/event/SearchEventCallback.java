@@ -4,7 +4,7 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class SearchEventCallback extends DomEventCallback {
+public abstract class SearchEventCallback extends AbstractDomEventCallback {
     public SearchEventCallback(final String[] eventTypes, final Widget widget) {
         super(eventTypes, widget);
     }
@@ -14,10 +14,10 @@ public abstract class SearchEventCallback extends DomEventCallback {
     }
 
     @Override
-    protected native JSObject getCallbackFunction(final GwtCallback callback) /*-{
+    protected native JSObject getCallbackFunction(final DomEventCallback callback) /*-{
         var self = callback;
         return function(event) {
-            self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
+            self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback::onEvent(Lcom/google/gwt/dom/client/NativeEvent;)(event);
         }
     }-*/;
 }

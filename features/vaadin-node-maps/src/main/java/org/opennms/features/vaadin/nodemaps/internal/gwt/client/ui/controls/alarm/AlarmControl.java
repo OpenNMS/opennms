@@ -7,6 +7,7 @@ import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.map.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
 
@@ -23,6 +24,8 @@ public class AlarmControl extends Control {
     private ListBox m_severityBox;
 
     private SearchEventCallback m_onChange;
+
+    private AlarmSeverityUpdatedEventHandler m_alarmSeverityUpdated;
 
     public AlarmControl() {
         super(JSObject.createJSObject());
@@ -52,9 +55,16 @@ public class AlarmControl extends Control {
 
         DomEvent.stopEventPropagation(m_severityBox);
 
+        m_alarmSeverityUpdated = new AlarmSeverityUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                final AlarmSeverityUpdatedEvent event = nativeEvent.cast();
+                m_severityBox.setItemSelected(event.getMinimumSeverity(), true);
+            }
+        };
+
         m_onChange = new SearchEventCallback("change", m_severityBox) {
             @Override
-            protected void onEvent(final NativeEvent event) {
+            public void onEvent(final NativeEvent event) {
                 final Widget widget = getWidget();
                 final ListBox severityBox = (ListBox)widget;
                 final int selected = severityBox.getSelectedIndex();
@@ -76,7 +86,8 @@ public class AlarmControl extends Control {
 
     public void doOnRemove(final JavaScriptObject map) {
         logger.log(Level.INFO, "doOnRemove() called");
-        DomEvent.removeListener(m_onChange);
+        if (m_onChange != null) DomEvent.removeListener(m_onChange);
+        if (m_alarmSeverityUpdated != null) DomEvent.removeListener(m_alarmSeverityUpdated);
         DomEvent.send(AlarmSeverityUpdatedEvent.createEvent(0));
     }
 

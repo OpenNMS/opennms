@@ -1,9 +1,8 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import com.google.gwt.dom.client.Document;
 
-public abstract class FilterUpdatedEventHandler extends DomEventCallback {
+public abstract class FilterUpdatedEventHandler extends AbstractDomEventCallback {
     public FilterUpdatedEventHandler() {
-        super(FilterUpdatedEvent.TYPE, Document.get().getDocumentElement());
+        super(FilterUpdatedEvent.TYPE);
     }
 }

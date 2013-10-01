@@ -56,9 +56,9 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(NodeMapComponent.class)
 public class NodeMapConnector extends AbstractComponentConnector {
+    private static final long serialVersionUID = 1706855732145066131L;
     private Logger LOG = Logger.getLogger(getClass().getName());
 
-    private static final long serialVersionUID = 3902997653175283284L;
     private Map<String, Icon> m_icons;
 
     private NodeIdSelectionRpc m_rpc = RpcProxy.create(NodeIdSelectionRpc.class, this);
@@ -79,7 +79,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
         if (stateChangeEvent.hasPropertyChanged("searchString")) {
             final String searchString = getState().searchString;
-            LOG.info("searchString has changed: " + searchString);
+            LOG.info("NodeMapConnector.onStateChanged(): searchString is now: " + searchString);
             if (searchString == null) {
                 DomEvent.send(SearchStringUpdatedEvent.createEvent(""));
             } else {
@@ -93,7 +93,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
         if (stateChangeEvent.hasPropertyChanged("nodeIds")) {
             final List<Integer> nodeIds = getState().nodeIds;
-            LOG.info("nodeIds has changed to: " + nodeIds);
+            LOG.info("NodeMapConnector.onStateChanged(): nodeIds is now: " + nodeIds);
             if (nodeIds != null && nodeIds.size() > 0) {
                 final StringBuilder sb = new StringBuilder("nodeId in ");
                 final Iterator<Integer> i = nodeIds.iterator();
@@ -108,7 +108,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     private void updateNodes() {
         final List<MapNode> nodes = getState().nodes;
-        LOG.info("nodes list has changed: " + nodes);
+        LOG.info("NodeMapConnector.onStateChanged(): nodes list is now: " + nodes);
         final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
 
         if (nodes.isEmpty()) {

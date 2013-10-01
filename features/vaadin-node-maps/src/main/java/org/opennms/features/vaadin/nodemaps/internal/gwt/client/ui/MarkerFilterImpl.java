@@ -3,56 +3,73 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEventHandler;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
 public class MarkerFilterImpl implements MarkerFilter {
-    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(MarkerFilterImpl.class.getName());
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
-    private String m_searchString;
-    private int m_minimumSeverity = 0;
+    private DomEventCallback m_searchStringUpdatedHandler;
+    private DomEventCallback m_alarmSeverityUpdatedHandler;
+
+    String m_searchString = null;
+    int m_minimumSeverity = 0;
 
     public MarkerFilterImpl(final String searchString, final int minimumSeverity) {
         m_searchString = searchString;
         m_minimumSeverity = minimumSeverity;
+        initHandlers();
     }
 
-    @SuppressWarnings("unused")
-    private boolean hasChanged(final String a, final String b) {
-        if (a == null) {
-            if (b == null) {
-                return true;
-            } else {
-                return false;
+    protected void initHandlers() {
+        m_searchStringUpdatedHandler = new SearchStringUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                final SearchStringUpdatedEvent event = nativeEvent.cast();
+                LOG.log(Level.INFO, "MarkerFilterImpl.onSearchUpdated(" + event.getSearchString() + ")");
+                setSearchString(event.getSearchString());
             }
-        } else {
-            if (b == null) {
-                return false;
-            } else {
-                return a.equals(b);
+        };
+        DomEvent.addListener(m_searchStringUpdatedHandler);
+
+        m_alarmSeverityUpdatedHandler = new AlarmSeverityUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                final AlarmSeverityUpdatedEvent event = nativeEvent.cast();
+                LOG.log(Level.INFO, "MarkerFilterImpl.onAlarmSeverityUpdated(" + event.getMinimumSeverity() + ")");
+                setMinimumSeverity(event.getMinimumSeverity());
             }
-        }
+        };
+        DomEvent.addListener(m_alarmSeverityUpdatedHandler);
     }
 
     public void setSearchString(final String searchString) {
-        // if (hasChanged(m_searchString, searchString)) {
+        if (hasChanged(m_searchString, searchString)) {
             m_searchString = searchString;
-            DomEvent.send(FilterUpdatedEvent.createEvent());
-        //}
+            sendFilterUpdatedEvent();
+        }
     }
-    
+
     public void setMinimumSeverity(final int minimumSeverity) {
-        // if (m_minimumSeverity != minimumSeverity) {
+        if (m_minimumSeverity != minimumSeverity) {
             m_minimumSeverity = minimumSeverity;
-            DomEvent.send(FilterUpdatedEvent.createEvent());
-        // }
+            sendFilterUpdatedEvent();
+        }
+    }
+
+    void sendFilterUpdatedEvent() {
+        DomEvent.send(FilterUpdatedEvent.createEvent());
     }
 
     @Override
@@ -97,7 +114,14 @@ public class MarkerFilterImpl implements MarkerFilter {
         return false;
     }
 
-    private boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, String> searchIn) {
+    boolean hasChanged(final String a, final String b) {
+        if (a == null && b == null) return false;
+        if (a == null && b != null) return true;
+        if (a != null && b == null) return true;
+        return !a.equals(b);
+    }
+
+    boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, String> searchIn) {
         final String lowerSearchProperty = searchProperty.toLowerCase();
 
         if ("category".equals(lowerSearchProperty) || "categories".equals(lowerSearchProperty)) {
@@ -121,7 +145,7 @@ public class MarkerFilterImpl implements MarkerFilter {
         return false;
     }
 
-    private boolean matchCategory(final String categories, final MatchType matchType, final List<String> searchFor) {
+    boolean matchCategory(final String categories, final MatchType matchType, final List<String> searchFor) {
         if (categories == null) return false;
 
         for (final String category : categories.split("\\s*,\\s*")) {

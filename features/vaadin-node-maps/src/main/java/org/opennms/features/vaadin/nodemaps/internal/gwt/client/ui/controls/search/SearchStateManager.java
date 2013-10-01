@@ -142,7 +142,7 @@ public abstract class SearchStateManager {
                         } else {
                             m_state = m_state.searchInputReceived(SearchStateManager.this);
                         }
-                        DomEvent.send(SearchStringUpdatedEvent.createEvent(value));
+                        sendSearchStringUpdatedEvent(value);
                     }
                 });
                 break;
@@ -165,13 +165,17 @@ public abstract class SearchStateManager {
                         } else {
                             m_state = m_state.searchInputReceived(SearchStateManager.this);
                         }
-                        DomEvent.send(SearchStringUpdatedEvent.createEvent(searchString));
+                        sendSearchStringUpdatedEvent(searchString);
                     }
                 });
             }
         } else {
             logger.log(Level.INFO, "handleInputEvent(" + m_state + "): unhandled event: " + eventType);
         }
+    }
+
+    protected void sendSearchStringUpdatedEvent(final String value) {
+        DomEvent.send(SearchStringUpdatedEvent.createEvent(value));
     }
 
     public void reset() {
