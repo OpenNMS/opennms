@@ -72,3 +72,11 @@ Filter.
   - filteredMarkersUpdated: If the filters were re-applied to the
     marker list, fire an event.
 
+Node Map
+========
+
+The main map widget.  Handles redrawing all layers.
+
+* inputs:
+  - filteredMarkersUpdated: If the filtered markers have changed,
+    update the map layers.
