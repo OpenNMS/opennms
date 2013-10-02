@@ -51,6 +51,7 @@ import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -1024,15 +1025,15 @@ public class Collectd extends AbstractServiceDaemon implements
     }
     
     private void handleReloadDaemonConfig(Event event) {
-        final String daemonName = "Threshd";
-        boolean isTarget = false;
+        final String thresholdsDaemonName = "Threshd";
+        boolean isThresholds = false;
         for (Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
-                isTarget = true;
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && thresholdsDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
+                isThresholds = true;
                 break;
             }
         }
-        if (isTarget) {
+        if (isThresholds) {
             String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
             String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
             String targetFile = thresholdsFile; // Default
@@ -1063,19 +1064,60 @@ public class Collectd extends AbstractServiceDaemon implements
                 }
                 // Preparing successful event
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, thresholdsDaemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Throwable e) {
                 // Preparing failed event
                 LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: {}", e.getMessage(), e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, thresholdsDaemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
                 ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
             finally {
                 if (ebldr != null) {
                     getEventIpcManager().sendNow(ebldr.getEvent());
+                }
+            }
+        }
+
+        final String collectionDaemonName = "Collectd";
+        boolean isCollection = false;
+        for (Parm parm : event.getParmCollection()) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && collectionDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
+                isCollection = true;
+                break;
+            }
+        }
+        if (isCollection) {
+            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+            boolean isDataCollectionConfig = false;
+            for (Parm parm : event.getParmCollection()) {
+                if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && targetFile.equalsIgnoreCase(parm.getValue().getContent())) {
+                    isDataCollectionConfig = true;
+                    break;
+                }
+            }
+            if (isDataCollectionConfig) {
+                EventBuilder ebldr = null;
+                try {
+                    DataCollectionConfigFactory.reload();
+                    // Preparing successful event
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
+                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+                } catch (Throwable e) {
+                    // Preparing failed event
+                    LOG.error("handleReloadDaemonConfig: Error reloading data collection configuration: {}", e.getMessage(), e);
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
+                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+                    ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+                }
+                finally {
+                    if (ebldr != null) {
+                        getEventIpcManager().sendNow(ebldr.getEvent());
+                    }
                 }
             }
         }

@@ -230,4 +230,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         return null;
     }
 
+    public void reload() {
+    }
+
 }

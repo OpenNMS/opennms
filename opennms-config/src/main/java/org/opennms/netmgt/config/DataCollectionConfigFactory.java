@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.springframework.core.io.FileSystemResource;
 
@@ -68,12 +69,10 @@ public final class DataCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public static synchronized void init() throws IOException {
+        // In theory, this method should not be called, as the factory will be initialized by Spring.
+        // The file container inside DefaultDataCollectionConfigDao should handle the configuration reloading.
         if (m_singleton == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-            DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
-            dataCollectionDao.setConfigResource(new FileSystemResource(cfgFile));
-            dataCollectionDao.afterPropertiesSet();
-            m_singleton = dataCollectionDao;
+            m_singleton = BeanUtils.getBean("daoContext", "dataCollectionConfigDao", DataCollectionConfigDao.class);
         }
     }
 
@@ -85,8 +84,9 @@ public final class DataCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        init();
+        if (m_singleton == null)
+            throw new IllegalStateException("The factory has not been initialized");
+        m_singleton.reload();
     }
 
     /**
@@ -102,14 +102,14 @@ public final class DataCollectionConfigFactory {
     
     public static void main(String[] args) {
         try {
-            DataCollectionConfigFactory.init();
-            DataCollectionConfigDao config = DataCollectionConfigFactory.getInstance();
-            if (config == null) {
-                System.err.println("ERROR: can't get a reference to DataCollectionConfig object");
-            } else {
-                config.getConfiguredResourceTypes();
-                System.out.println("OK: no errors found");
-            }
+            // Because DataCollectionConfigFactory.init() requires Spring initialization, it is better to instantiate a local copy
+            // for testing the data collection configuration.
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+            DefaultDataCollectionConfigDao config = new DefaultDataCollectionConfigDao();
+            config.setConfigResource(new FileSystemResource(cfgFile));
+            config.afterPropertiesSet();
+            config.getConfiguredResourceTypes();
+            System.out.println("OK: no errors found");
         } catch (Throwable e) {
             System.err.println("ERROR: " + e.getMessage());
         }

@@ -1,6 +1,5 @@
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.ClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -12,7 +11,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 import java.util.*;
-import java.util.Timer;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;

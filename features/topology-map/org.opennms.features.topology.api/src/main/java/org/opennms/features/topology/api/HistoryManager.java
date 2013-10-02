@@ -31,8 +31,8 @@ package org.opennms.features.topology.api;
 public interface HistoryManager {
 
     public void applyHistory(String userId, String fragmentId, GraphContainer container);
-    public String getHistoryForUser(String userId);
-    public String create(String userId, GraphContainer container);
+    public String getHistoryHash(String userId);
+    public String createHistory(String userId, GraphContainer container);
 	void onBind(HistoryOperation operation);
 	void onUnbind(HistoryOperation operation);
     

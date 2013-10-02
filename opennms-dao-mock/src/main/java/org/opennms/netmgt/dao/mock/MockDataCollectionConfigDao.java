@@ -67,4 +67,9 @@ public class MockDataCollectionConfigDao implements DataCollectionConfigDao {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public void reload() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
 }

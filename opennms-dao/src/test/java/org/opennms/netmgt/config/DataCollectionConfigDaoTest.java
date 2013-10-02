@@ -26,29 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.netmgt.config;
 
-import org.opennms.osgi.OnmsVaadinUIFactory;
-import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.test.JUnitConfigurationEnvironment;
 
-public class TopologyUIFactory extends OnmsVaadinUIFactory {
-    
+import org.springframework.test.context.ContextConfiguration;
 
-	
-	public TopologyUIFactory(BlueprintContainer container, String uiBeanName) {
-        super(TopologyUI.class, container, uiBeanName);
-	}
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties = {"org.opennms.snmp.dataCollectionConfig.reloadCheckInterval=60000"})
+@JUnitTemporaryDatabase(dirtiesContext=false)
+public class DataCollectionConfigDaoTest {
 
-    @Override
-    public Map<String, String> getAdditionalHeaders() {
-        final Map<String,String> headers = new HashMap<String,String>();
-        headers.put("X-UA-Compatible", "chrome=1");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
-        return headers;
-    }
-
+   @Test
+   public void testDefaultReloadInterval() {
+       DataCollectionConfigDao config = DataCollectionConfigFactory.getInstance();
+       Assert.assertNotNull(config);
+       Assert.assertTrue(config instanceof DefaultDataCollectionConfigDao);
+       Assert.assertEquals(new Long(60000), ((DefaultDataCollectionConfigDao) config).getReloadCheckInterval());
+   }
 }
