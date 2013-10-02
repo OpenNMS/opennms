@@ -175,12 +175,6 @@ public class JettyServer extends AbstractServiceDaemon {
         handlers.addHandler(wac);
     }
 
-    /**
-     * <p>excludeCipherSuites</p>
-     * @param contextFactory 
-     * @param https_port 
-     * @param sslConnector a {@link org.eclipse.jetty.server.security.SslSocketConnector} object.
-     */
     protected void excludeCipherSuites(final SslContextFactory contextFactory, final Integer port) {
         String[] defaultExclSuites = {
                 "SSL_DHE_DSS_WITH_DES_CBC_SHA",
