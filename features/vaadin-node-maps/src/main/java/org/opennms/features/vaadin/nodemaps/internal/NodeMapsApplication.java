@@ -50,6 +50,7 @@ import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
@@ -192,12 +193,7 @@ public class NodeMapsApplication extends UI {
         final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
-        final SelectionAwareTable[] widgets = new SelectionAwareTable[] {
-                m_alarmTable,
-                m_nodeTable
-        };
-
-        for(final SelectionAwareTable view : widgets) {
+        for(final SelectionAwareTable view : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
             // Icon can be null
             tabSheet.addTab(view, (view == m_alarmTable? "Alarms":"Nodes"), null);
 
@@ -260,6 +256,9 @@ public class NodeMapsApplication extends UI {
         context.setSessionId(currentUI.getSession().getSession().getId());
         context.setUiId(currentUI.getUIId());
         context.setUsername(vaadinRequest.getRemoteUser());
+
+        Assert.notNull(m_alarmTable);
+        Assert.notNull(m_nodeTable);
 
         m_alarmTable.setVaadinApplicationContext(context);
         final EventProxy eventProxy = new EventProxy() {
@@ -346,12 +345,7 @@ public class NodeMapsApplication extends UI {
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {
-        final SelectionAwareTable[] tables = new SelectionAwareTable[] {
-                m_alarmTable,
-                m_nodeTable
-        };
-
-        for (final SelectionAwareTable view : tables) {
+        for (final SelectionAwareTable view : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
             if (view instanceof VerticesUpdateManager.VerticesUpdateListener) {
                 final VerticesUpdateManager.VerticesUpdateListener listener = (VerticesUpdateManager.VerticesUpdateListener)view;
 

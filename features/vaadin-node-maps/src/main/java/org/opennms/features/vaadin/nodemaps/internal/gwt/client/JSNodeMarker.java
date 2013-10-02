@@ -173,11 +173,12 @@ public class JSNodeMarker extends Marker implements NodeMarker {
 
     public Coordinates getCoordinates() {
         final LatLng latLng = this.getLatLng();
-        if (latLng == null) {
+        if (latLng == null || latLng.lat() == Double.NaN || latLng.lng() == Double.NaN) {
             return null;
         }
         return new Coordinates(Double.valueOf(latLng.lng()).floatValue(), Double.valueOf(latLng.lat()).floatValue());
     }
+
     public Integer getSeverity() {
         final String severity = getProperty(Property.SEVERITY);
         return severity == null? 0 : Integer.valueOf(severity);

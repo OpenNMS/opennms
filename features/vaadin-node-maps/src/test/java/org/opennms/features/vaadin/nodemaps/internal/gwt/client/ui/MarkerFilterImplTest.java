@@ -39,21 +39,6 @@ public class MarkerFilterImplTest {
     }
     
     @Test
-    public void testHasChanged() {
-        final WrappedMarkerFilterImpl filter = new WrappedMarkerFilterImpl(null, 0);
-        
-        assertTrue(filter.hasChanged("", null));
-        assertFalse(filter.hasChanged(null, null));
-        assertTrue(filter.hasChanged(null, ""));
-        assertTrue(filter.hasChanged(null, "blah"));
-        assertTrue(filter.hasChanged("blah", null));
-        assertTrue(filter.hasChanged("blah", ""));
-        assertTrue(filter.hasChanged("", "blah"));
-        assertFalse(filter.hasChanged("", ""));
-        assertFalse(filter.hasChanged("blah", "blah"));
-    }
-
-    @Test
     public void testEmptySearch() {
         // empty searches should always match
         final WrappedMarkerFilterImpl filter = new WrappedMarkerFilterImpl(null, 0);

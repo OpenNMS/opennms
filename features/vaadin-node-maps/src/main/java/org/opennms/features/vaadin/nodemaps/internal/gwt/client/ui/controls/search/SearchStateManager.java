@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -112,7 +112,7 @@ public abstract class SearchStateManager {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
                     public void execute() {
-                        m_state = m_state.cancelSearching(SearchStateManager.this);
+                        sendSearchStringSetEvent("");
                     }
                 });
                 break;
@@ -141,14 +141,15 @@ public abstract class SearchStateManager {
                             m_state = m_state.cancelSearching(SearchStateManager.this);
                         } else {
                             m_state = m_state.searchInputReceived(SearchStateManager.this);
+                            sendSearchStringSetEvent(value);
                         }
-                        sendSearchStringUpdatedEvent(value);
                     }
                 });
                 break;
             }
         } else if ("search".equals(eventType) || "change".equals(eventType)) {
             final String searchString = m_valueItem.getValue();
+            logger.log(Level.INFO, "SearchStateManager.handleInputEvent(): searchString = " + searchString);
             if ("".equals(searchString)) {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
@@ -164,18 +165,18 @@ public abstract class SearchStateManager {
                             m_state = m_state.cancelSearching(SearchStateManager.this);
                         } else {
                             m_state = m_state.searchInputReceived(SearchStateManager.this);
+                            sendSearchStringSetEvent(searchString);
                         }
-                        sendSearchStringUpdatedEvent(searchString);
                     }
                 });
             }
         } else {
-            logger.log(Level.INFO, "handleInputEvent(" + m_state + "): unhandled event: " + eventType);
+            logger.log(Level.INFO, "SearchStateManager.handleInputEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
-    protected void sendSearchStringUpdatedEvent(final String value) {
-        DomEvent.send(SearchStringUpdatedEvent.createEvent(value));
+    protected void sendSearchStringSetEvent(final String value) {
+        DomEvent.send(SearchStringSetEvent.createEvent(value));
     }
 
     public void reset() {
@@ -205,6 +206,7 @@ public abstract class SearchStateManager {
             @Override
             public SearchState cancelSearching(final SearchStateManager manager) {
                 // make sure input is focused
+                manager.clearSearchInput();
                 manager.focusInput();
                 return this;
             }
@@ -408,7 +410,7 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
-                logger.log(Level.INFO, "Current entry got selected, but there is no current entry visible!");
+                logger.log(Level.INFO, "SearchStateManager.currentEntrySelected(): Current entry got selected, but there is no current entry visible!");
                 return this;
             }
 
@@ -421,7 +423,7 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
-                logger.log(Level.INFO, "Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
+                logger.log(Level.INFO, "SearchStateManager..autocompleteStartNavigation(): Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
                 return this;
             }
 

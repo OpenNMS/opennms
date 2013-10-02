@@ -45,7 +45,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -81,9 +81,9 @@ public class NodeMapConnector extends AbstractComponentConnector {
             final String searchString = getState().searchString;
             LOG.info("NodeMapConnector.onStateChanged(): searchString is now: " + searchString);
             if (searchString == null) {
-                DomEvent.send(SearchStringUpdatedEvent.createEvent(""));
+                DomEvent.send(SearchStringSetEvent.createEvent(""));
             } else {
-                DomEvent.send(SearchStringUpdatedEvent.createEvent(searchString));
+                DomEvent.send(SearchStringSetEvent.createEvent(searchString));
             }
         }
 
@@ -101,7 +101,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
                     sb.append(i.next());
                     if (i.hasNext()) sb.append(", ");
                 }
-                DomEvent.send(SearchStringUpdatedEvent.createEvent(sb.toString()));
+                DomEvent.send(SearchStringSetEvent.createEvent(sb.toString()));
             }
         }
     }

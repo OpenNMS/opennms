@@ -389,7 +389,7 @@ public class SearchStateTest {
             System.err.println("current autocomplete entry selected!");
         }
         
-        @Override protected void sendSearchStringUpdatedEvent(final String searchString) {
+        @Override protected void sendSearchStringSetEvent(final String searchString) {
             System.err.println("sending search string updated event: '" + searchString + "'");
         }
 

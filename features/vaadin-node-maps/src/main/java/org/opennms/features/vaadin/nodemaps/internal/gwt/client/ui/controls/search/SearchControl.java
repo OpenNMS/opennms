@@ -18,9 +18,10 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AbstractDo
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
@@ -68,7 +69,7 @@ public class SearchControl extends Control {
     private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
     private FilteredMarkersUpdatedEventHandler m_filteredMarkersEventHandler = null;
-    private SearchStringUpdatedEventHandler m_searchStringEventHandler;
+    private SearchStringSetEventHandler m_searchStringEventHandler;
 
     public SearchControl(final MarkerContainer markerContainer, final Widget root) {
         super(JSObject.createJSObject());
@@ -100,9 +101,9 @@ public class SearchControl extends Control {
         /* If the backend sends a new search string, set it on the input box
          * to make sure we're in sync, but don't re-fire events.
          */
-        m_searchStringEventHandler = new SearchStringUpdatedEventHandler() {
+        m_searchStringEventHandler = new SearchStringSetEventHandler() {
             @Override public void onEvent(final NativeEvent nativeEvent) {
-                final SearchStringUpdatedEvent event = nativeEvent.cast();
+                final SearchStringSetEvent event = nativeEvent.cast();
                 replaceSearchWith(event.getSearchString());
             }
         };
@@ -154,11 +155,7 @@ public class SearchControl extends Control {
         m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper) {
             @Override
             public void refresh() {
-                /*
-                m_searchConsumer.setSearchString(m_inputBox.getValue());
-                // it's the search consumer's job to trigger an update in any UI elements
-                m_searchConsumer.refresh();
-                 */
+                sendSearchStringSetEvent(m_inputBox.getValue());
 
                 final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
@@ -181,7 +178,7 @@ public class SearchControl extends Control {
             @Override
             public void clearSearchInput() {
                 m_inputBox.setValue("");
-                sendSearchStringUpdatedEvent("");
+                sendSearchStringSetEvent("");
             }
 
             @Override
@@ -216,7 +213,7 @@ public class SearchControl extends Control {
                 if (selected != null) {
                     final String newSearchString = "nodeLabel=" + selected.getNodeLabel();
                     m_inputBox.setValue(newSearchString);
-                    sendSearchStringUpdatedEvent(newSearchString);
+                    sendSearchStringSetEvent(newSearchString);
                 }
             }
 
@@ -352,12 +349,13 @@ public class SearchControl extends Control {
 
     public void replaceSearchWith(final String newSearchString) {
         if (m_inputBox != null) {
-            if (newSearchString != null && !newSearchString.equals(m_inputBox.getValue())) {
+            final String existingSearchString = m_inputBox.getValue();
+            if (Util.hasChanged(existingSearchString, newSearchString)) {
                 LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): updated.");
                 m_inputBox.setValue(newSearchString, false);
                 return;
             }
         }
-        LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): unchanged.");
+        LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): unmodified.");
     }
 }

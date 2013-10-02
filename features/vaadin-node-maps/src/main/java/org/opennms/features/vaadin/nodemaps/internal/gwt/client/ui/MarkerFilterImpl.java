@@ -12,8 +12,9 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSever
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringUpdatedEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.regexp.shared.MatchResult;
@@ -22,7 +23,7 @@ import com.google.gwt.regexp.shared.RegExp;
 public class MarkerFilterImpl implements MarkerFilter {
     private static final Logger LOG = Logger.getLogger(MarkerFilterImpl.class.getName());
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
-    private DomEventCallback m_searchStringUpdatedHandler;
+    private DomEventCallback m_searchStringSetHandler;
     private DomEventCallback m_alarmSeverityUpdatedHandler;
 
     String m_searchString = null;
@@ -35,14 +36,14 @@ public class MarkerFilterImpl implements MarkerFilter {
     }
 
     protected void initHandlers() {
-        m_searchStringUpdatedHandler = new SearchStringUpdatedEventHandler() {
+        m_searchStringSetHandler = new SearchStringSetEventHandler() {
             @Override public void onEvent(final NativeEvent nativeEvent) {
-                final SearchStringUpdatedEvent event = nativeEvent.cast();
+                final SearchStringSetEvent event = nativeEvent.cast();
                 LOG.log(Level.INFO, "MarkerFilterImpl.onSearchUpdated(" + event.getSearchString() + ")");
                 setSearchString(event.getSearchString());
             }
         };
-        DomEvent.addListener(m_searchStringUpdatedHandler);
+        DomEvent.addListener(m_searchStringSetHandler);
 
         m_alarmSeverityUpdatedHandler = new AlarmSeverityUpdatedEventHandler() {
             @Override public void onEvent(final NativeEvent nativeEvent) {
@@ -55,16 +56,22 @@ public class MarkerFilterImpl implements MarkerFilter {
     }
 
     public void setSearchString(final String searchString) {
-        if (hasChanged(m_searchString, searchString)) {
+        if (Util.hasChanged(m_searchString, searchString)) {
+            LOG.log(Level.INFO, "MarkerFilterImpl.setSearchString(" + searchString + "): search string modified (old = '" + m_searchString + "'");
             m_searchString = searchString;
             sendFilterUpdatedEvent();
+        } else {
+            LOG.log(Level.INFO, "MarkerFilterImpl.setSearchString(" + searchString + "): search string unmodified.");
         }
     }
 
     public void setMinimumSeverity(final int minimumSeverity) {
-        if (m_minimumSeverity != minimumSeverity) {
+        if (Util.hasChanged(m_minimumSeverity, minimumSeverity)) {
+            LOG.log(Level.INFO, "MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity modified (old = '" + m_minimumSeverity + "'");
             m_minimumSeverity = minimumSeverity;
             sendFilterUpdatedEvent();
+        } else {
+            LOG.log(Level.INFO, "MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity unmodified.");
         }
     }
 
@@ -112,13 +119,6 @@ public class MarkerFilterImpl implements MarkerFilter {
         }
 
         return false;
-    }
-
-    boolean hasChanged(final String a, final String b) {
-        if (a == null && b == null) return false;
-        if (a == null && b != null) return true;
-        if (a != null && b == null) return true;
-        return !a.equals(b);
     }
 
     boolean matchProperty(final MatchType matchType, final String searchProperty, final List<String> searchFor, final Map<String, String> searchIn) {

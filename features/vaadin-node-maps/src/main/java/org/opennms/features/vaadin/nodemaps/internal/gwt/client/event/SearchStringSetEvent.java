@@ -2,13 +2,13 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.UpdateEvent;
 
-public class SearchStringUpdatedEvent extends UpdateEvent {
-    public static final String TYPE = "searchStringUpdated";
+public class SearchStringSetEvent extends UpdateEvent {
+    public static final String TYPE = "searchStringSet";
 
-    protected SearchStringUpdatedEvent() {}
+    protected SearchStringSetEvent() {}
 
-    public static final SearchStringUpdatedEvent createEvent(final String searchString)  {
-        final SearchStringUpdatedEvent event = UpdateEvent.createUpdateEvent(TYPE).cast();
+    public static final SearchStringSetEvent createEvent(final String searchString)  {
+        final SearchStringSetEvent event = UpdateEvent.createUpdateEvent(TYPE).cast();
         event.setSearchString(searchString);
         return event;
     }

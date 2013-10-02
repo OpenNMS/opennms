@@ -334,6 +334,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
                     if (m_firstUpdate) {
                         final LatLngBounds bounds = new LatLngBounds();
                         for (final NodeMarker marker : m_markerContainer.getAllMarkers()) {
+                            logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): processing marker: " + marker);
                             final Coordinates coordinates = marker.getCoordinates();
                             if (coordinates == null) {
                                 logger.log(Level.WARNING, "NodeMapWidget.zoomToFit(): no coordinates found for marker! " + marker);
