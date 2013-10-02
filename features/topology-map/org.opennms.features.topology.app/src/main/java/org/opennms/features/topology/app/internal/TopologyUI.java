@@ -417,7 +417,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // See if the history manager has an existing fragment stored for
         // this user. Do this before laying out the UI because the history
         // may change during layout.
-        String fragment = m_historyManager.getHistoryForUser(m_userName);
+        String fragment = m_historyManager.getHistoryHash(m_userName);
 
         // If there was existing history, then restore that history snapshot.
         if (fragment != null) {
@@ -741,7 +741,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            String fragment = m_historyManager.create(m_userName, m_graphContainer);
+            String fragment = m_historyManager.createHistory(m_userName, m_graphContainer);
             Page.getCurrent().setUriFragment(fragment, false);
         }
     }
