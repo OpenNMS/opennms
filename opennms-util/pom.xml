@@ -30,16 +30,12 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
       <groupId>xalan</groupId>
       <artifactId>serializer</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.core</groupId>
+          <artifactId>org.opennms.core.lib</artifactId>
+      </dependency>
   </dependencies>
 </project>
