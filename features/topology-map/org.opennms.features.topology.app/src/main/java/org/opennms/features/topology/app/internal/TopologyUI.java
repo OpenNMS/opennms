@@ -104,6 +104,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
@@ -130,6 +133,8 @@ import java.util.*;
 })
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
+
+    public static final String PARAMETER_FOCUS_NODES = "focusNodes";
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
         private final Object lockObject = "lockObject";
@@ -169,7 +174,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 	private static final long serialVersionUID = 6837501987137310938L;
 
-    private Logger m_log = LoggerFactory.getLogger(getClass());
+    private static Logger m_log = LoggerFactory.getLogger(TopologyUI.class);
     private static final String LABEL_PROPERTY = "label";
     private TopologyComponent m_topologyComponent;
     private VertexSelectionTree m_tree;
@@ -234,6 +239,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         loadUserSettings(m_applicationContext);
+        loadVertexHopCriteria(request, m_graphContainer);
         setupListeners();
         createLayouts();
         setupErrorHandler();
@@ -255,6 +261,34 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_graphContainer.getMapViewManager().addListener(this);
         m_commandManager.addMenuItemUpdateListener(this);
         m_commandManager.addCommandUpdateListener(this);
+    }
+
+    private static void loadVertexHopCriteria(VaadinRequest request, GraphContainer graphContainer) {
+        String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
+        if (nodeIds == null) {
+            return;
+        }
+        Collection<Integer> refs = new TreeSet<Integer>();
+        for (String nodeId : nodeIds.split(",")) {
+            try {
+                refs.add(Integer.parseInt(nodeId));
+            } catch (NumberFormatException e) {
+                m_log.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
+            }
+        }
+        // If we found valid node IDs in the list...
+        if (refs.size() > 0) {
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopProviderForContainer(graphContainer);
+            // Clear the exiting focus node list
+            criteria.clear();
+            for (Integer ref : refs) {
+                // Add a new focus node reference to the VertexHopCriteria
+                criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
+            }
+        } else {
+            // Don't do anything... we didn't find any focus nodes in the parameter so don't alter
+            // any existing VertexHopCriteria
+        }
     }
 
     private void createLayouts() {
