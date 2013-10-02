@@ -28,10 +28,8 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -89,7 +87,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
             getCache().reload(getPage());
             fireItemSetChangedEvent();
         } else {
-            LOG.warning("Selection has not changed: " + nodeIds);
+            LOG.warn("Selection has not changed.");
         }
     }
 }
