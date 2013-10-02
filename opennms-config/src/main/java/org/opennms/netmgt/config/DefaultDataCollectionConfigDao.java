@@ -631,4 +631,9 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return groups;
     }
 
+    @Override
+    public void reload() {
+        loadConfig(getConfigResource());
+    }
+
 }
