@@ -26,6 +26,9 @@
     margin: 0px;
 }
 
+/**
+* Button Styles
+*/
 div.v-button.v-button-toolbar-button.toolbar-button > span {
 	padding: 4px 4px 0 1px;
 }
@@ -49,6 +52,27 @@ div.v-table-header-wrap {
 .semantic-zoom-button .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }
+
+.v-slot-slider-tool{
+    padding: 0px 0 2px 6px;
+}
+/**
+* End Button styles
+*/
+
+/**
+* Toolbar spacing
+*/
+.v-vertical > .v-spacing {
+    height: 10px;
+}
+
+.v-horizontal > .v-spacing {
+    width: 5px;
+}
+/**
+* End toolbar spacing
+*/
 
 .edge {
 	stroke: #ccc;
@@ -303,3 +327,9 @@ div.v-table-header-wrap {
 }
 
 /*** End Vertex Styles***/
+
+/** SearchBox Styles **/
+.search-token-field {
+    background-color: green;
+    color: black;
+}

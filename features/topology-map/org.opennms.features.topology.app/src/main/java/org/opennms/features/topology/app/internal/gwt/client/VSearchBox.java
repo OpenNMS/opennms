@@ -31,6 +31,9 @@ package org.opennms.features.topology.app.internal.gwt.client;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.builder.client.DomDivBuilder;
+import com.google.gwt.dom.builder.shared.DivBuilder;
+import com.google.gwt.dom.builder.shared.HtmlDivBuilder;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -40,6 +43,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.vaadin.client.ui.VFilterSelect;
+import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenu;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenuItem;
 
@@ -48,12 +52,11 @@ import java.util.*;
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
 
 
-
     public class CustomDisplay extends SuggestBox.SuggestionDisplay{
 
         private final SuggestionMenu m_suggestionMenu;
-        private final PopupPanel m_suggestionPopup;
 
+        private final PopupPanel m_suggestionPopup;
         public CustomDisplay() {
             m_suggestionMenu = new SuggestionMenu();
             m_suggestionPopup = createPopup();
@@ -67,7 +70,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             return p;
         }
 
-
         @Override
         protected SuggestOracle.Suggestion getCurrentSelection() {
             if (!isSuggestionListShowing()) {
@@ -76,6 +78,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             SuggestionMenuItem item = m_suggestionMenu.getSelectedItem();
             return item == null ? null : item.getSuggestion();
         }
+
 
         @Override
         protected void hideSuggestions() {
@@ -140,8 +143,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             m_suggestionPopup.showRelativeTo(suggestBox);
 
         }
-    }
 
+    }
     public class RemoteSuggestOracle extends SuggestOracle{
 
         RemoteSuggestOracle(){
@@ -151,35 +154,37 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         public boolean isDisplayStringHTML() {
             return true;
         }
+
         @Override
         public void requestSuggestions(Request request, Callback callback) {
             m_connector.query(request, callback, m_indexFrom, m_indexTo);
         }
-
     }
 
     private Map<String, String> m_valueMap;
-    private int m_indexFrom = 0;
 
+    private int m_indexFrom = 0;
     private int m_indexTo = 0;
+
     private int m_findExactMatchesTotal = 0;
     private int m_findExactMatchesFound = 0;
     private ArrayList<String> m_findExactMatchesNot = new ArrayList<String>();
     private static final String DISPLAY_SEPARATOR = ", ";
     private static final String VALUE_DELIM = ";";
-
     private static final int PAGE_Size = 15;
+
     private static final int DELAY = 1000;
     private static final int FIND_EXACT_MATCH_QUERY_LIMIT = 20;
     private boolean m_isMultiValued = true;
     private SearchBoxConnector m_connector;
     private static VSearchComboBoxUiBinder uiBinder = GWT.create(VSearchComboBoxUiBinder.class);
     interface VSearchComboBoxUiBinder extends UiBinder<Widget, VSearchBox> {}
-
     @UiField
     FlowPanel m_componentHolder;
-    SuggestBox m_suggestBox;
 
+    VerticalPanel m_selectionContainer;
+
+    SuggestBox m_suggestBox;
     public VSearchBox(){
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -210,30 +215,43 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         m_componentHolder.setSize("250px", "50px");
         m_componentHolder.add(m_suggestBox);
-    }
 
+        m_selectionContainer = new VerticalPanel();
+        m_componentHolder.add(m_selectionContainer);
+    }
 
     @Override
     public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
         SuggestOracle.Suggestion suggestion = event.getSelectedItem();
     }
 
+
     @Override
     public void onKeyUp(KeyUpEvent event) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private void queryOptions(String queryString, int indexFrom, int indexTo, SuggestOracle.Callback callback, SuggestOracle.Request request) {
-        m_connector.query(request, callback, indexFrom, indexTo);
-    }
-
-    private void findExactMatches(){
-
-    }
-
-
     public void setSearchBoxConnector(SearchBoxConnector connector) {
         m_connector = connector;
+    }
+
+
+    public void setSelected(List<SearchSuggestion> selected) {
+        m_selectionContainer.clear();
+        for (SearchSuggestion searchSuggestion : selected) {
+            SearchTokenField field = new SearchTokenField(searchSuggestion);
+            field.setRemoveCallback(new SearchTokenField.RemoveCallback() {
+                @Override
+                public void onRemove(SearchSuggestion searchSuggestion) {
+                    m_connector.removeSelected(searchSuggestion);
+                }
+            });
+            m_selectionContainer.add(field);
+        }
+    }
+
+    public void setFocused(List<SearchSuggestion> focused) {
+
     }
 
 

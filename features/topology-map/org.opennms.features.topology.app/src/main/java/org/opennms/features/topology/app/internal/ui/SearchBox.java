@@ -33,6 +33,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.*;
 import com.vaadin.ui.AbstractComponent;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
@@ -43,7 +46,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 
-public class SearchBox extends AbstractComponent{
+public class SearchBox extends AbstractComponent implements SelectionListener {
 
     Multimap<SearchProvider, SearchSuggestion> m_suggestionMap;
     private OperationContext m_operationContext;
@@ -72,7 +75,19 @@ public class SearchBox extends AbstractComponent{
 
         }
 
+        @Override
+        public void removeSelected(SearchSuggestion searchSuggestion) {
+            SelectionManager selectionManager = m_operationContext.getGraphContainer().getSelectionManager();
+            selectionManager.deselectVertexRefs(Lists.newArrayList(mapToVertexRef(searchSuggestion)));
+        }
+
     };
+
+    public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
+        m_serviceManager = serviceManager;
+        m_operationContext = operationContext;
+        init();
+    }
 
     private List<SearchSuggestion> getQueryResults(final String query) {
         m_suggestionMap.clear();
@@ -94,33 +109,35 @@ public class SearchBox extends AbstractComponent{
         return Lists.newArrayList(values);
     }
 
-    public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
-        m_serviceManager = serviceManager;
-        m_operationContext = operationContext;
-        init();
-    }
-
     private List<SearchSuggestion> mapToSuggestions(List<VertexRef> vertexRefs) {
-        List<SearchSuggestion> suggestions = new ArrayList<SearchSuggestion>();
-        for(VertexRef vertexRef : vertexRefs){
-            SearchSuggestion suggestion = new SearchSuggestion();
-            suggestion.setNamespace(vertexRef.getNamespace());
-            suggestion.setVertexKey(vertexRef.getId());
-            suggestion.setLabel(vertexRef.getLabel());
-            suggestions.add(suggestion);
-        }
+        return Lists.transform(vertexRefs, new Function<VertexRef, SearchSuggestion>(){
+            @Override
+            public SearchSuggestion apply(@Nullable VertexRef vertexRef) {
+                return mapToSearchSuggestion(vertexRef);
+            }
+        });
 
-        return suggestions;
     }
 
     private List<VertexRef> mapToVertexRefs(List<SearchSuggestion> suggestion){
         return Lists.transform(suggestion, new Function<SearchSuggestion, VertexRef>(){
             @Override
             public VertexRef apply(@Nullable SearchSuggestion input) {
-                AbstractVertexRef vertexRef = new AbstractVertexRef(input.getNamespace(), input.getVertexKey(), input.getLabel());
-                return vertexRef;
+                return mapToVertexRef(input);
             }
         });
+    }
+
+    private VertexRef mapToVertexRef(SearchSuggestion suggestion) {
+        return new AbstractVertexRef(suggestion.getNamespace(), suggestion.getVertexKey(), suggestion.getLabel());
+    }
+
+    private SearchSuggestion mapToSearchSuggestion(VertexRef vertexRef) {
+        SearchSuggestion suggestion = new SearchSuggestion();
+        suggestion.setNamespace(vertexRef.getNamespace());
+        suggestion.setVertexKey(vertexRef.getId());
+        suggestion.setLabel(vertexRef.getLabel());
+        return suggestion;
     }
 
     @Override
@@ -135,6 +152,15 @@ public class SearchBox extends AbstractComponent{
         setImmediate(true);
 
         m_suggestionMap = HashMultimap.create();
+    }
+
+    @Override
+    public void selectionChanged(SelectionContext selectionContext) {
+        List<SearchSuggestion> selected = Lists.newArrayList();
+
+        List<VertexRef> vertexRefs = Lists.newArrayList(selectionContext.getSelectedVertexRefs());
+        getState().setSelected(mapToSuggestions(vertexRefs));
+
     }
 
     private class ContainsSearchQuery extends AbstractSearchQuery implements SearchQuery {

@@ -28,10 +28,6 @@
 
 package org.opennms.features.topology.api.topo;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
 
@@ -39,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static sun.misc.Version.println;
 
 public class AbstractSearchProviderTest {
 

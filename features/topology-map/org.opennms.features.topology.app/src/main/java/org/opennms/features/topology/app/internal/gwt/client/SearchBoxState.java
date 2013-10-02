@@ -36,6 +36,8 @@ import java.util.List;
 public class SearchBoxState extends AbstractComponentState {
 
     List<SearchSuggestion> m_suggestions;
+    List<SearchSuggestion> m_selected;
+    List<SearchSuggestion> m_focused;
 
     public void setSuggestions(List<SearchSuggestion> suggestions){
         m_suggestions = suggestions;
@@ -43,6 +45,22 @@ public class SearchBoxState extends AbstractComponentState {
 
     public List<SearchSuggestion> getSuggestions(){
         return m_suggestions;
+    }
+
+    public void setSelected(List<SearchSuggestion> selected){
+        m_selected = selected;
+    }
+
+    public List<SearchSuggestion> getSelected(){
+        return m_selected;
+    }
+
+    public void setFocused(List<SearchSuggestion> focused) {
+        m_focused = focused;
+    }
+
+    public List<SearchSuggestion> getFocused() {
+        return m_selected;
     }
 
 }

@@ -66,6 +66,11 @@ public class SearchBoxConnector extends AbstractComponentConnector {
                 m_callback.onSuggestionsReady(m_request, response);
             }
 
+        } else if (stateChangeEvent.hasPropertyChanged("selected")) {
+            getWidget().setSelected(getState().getSelected());
+
+        } else if (stateChangeEvent.hasPropertyChanged("focused")) {
+            getWidget().setFocused(getState().getFocused());
         }
 
     }
@@ -85,5 +90,9 @@ public class SearchBoxConnector extends AbstractComponentConnector {
 
     public void selectSuggestion(List<SearchSuggestion> suggestions) {
         m_rpc.selectSuggestion(suggestions);
+    }
+
+    public void removeSelected(SearchSuggestion searchSuggestion) {
+        m_rpc.removeSelected(searchSuggestion);
     }
 }
