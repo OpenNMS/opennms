@@ -53,14 +53,14 @@ License:		LGPL/GPL
 Group:			Applications/System
 BuildArch:		noarch
 
-Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
+Source:			opennms-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires(pre):		opennms-webui      >= %{version}-%{release}
-Requires:		opennms-webui      >= %{version}-%{release}
-Requires(pre):		opennms-core        = %{version}-%{release}
-Requires:		opennms-core        = %{version}-%{release}
+Requires(pre):		%{name}-webui      >= %{version}-%{release}
+Requires:		%{name}-webui      >= %{version}-%{release}
+Requires(pre):		%{name}-core        = %{version}-%{release}
+Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 8.1
 Requires:		postgresql-server  >= 8.1
 
@@ -74,7 +74,7 @@ Prefix: %{logdir}
 %description
 OpenNMS is an enterprise-grade network management platform.
 
-This package used to contain what is now in the "opennms-core" package.
+This package used to contain what is now in the "%{name}-core" package.
 It now exists to give a reasonable default installation of OpenNMS.
 
 When you install this package, you will likely also need to install the
@@ -111,7 +111,7 @@ The logs and data directories are relocatable.  By default, they are:
 If you wish to install them to an alternate location, use the --relocate rpm
 option, like so:
 
-  rpm -i --relocate %{logdir}=/mnt/netapp/opennms-logs opennms-core.rpm
+  rpm -i --relocate %{logdir}=/mnt/netapp/opennms-logs %{name}-core-%{version}-%{release}.rpm
 
 %{extrainfo}
 %{extrainfo2}
@@ -148,10 +148,10 @@ The OpenNMS distributed monitor.  For details, see:
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
-Provides:	opennms-webui = %{version}-%{release}
-Obsoletes:	opennms-webapp < 1.3.11
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+Provides:	%{name}-webui = %{version}-%{release}
+Obsoletes:	%{name}-webapp < 1.3.11
 
 %description webapp-jetty
 The web UI for OpenNMS.  This is the Jetty version, which runs
@@ -164,30 +164,30 @@ embedded in the main OpenNMS core process.
 %package plugins
 Summary:	All Plugins for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-plugin-provisioning-dns
-Requires:	opennms-plugin-provisioning-dns
-Requires(pre):	opennms-plugin-provisioning-link
-Requires:	opennms-plugin-provisioning-link
-Requires(pre):	opennms-plugin-provisioning-map
-Requires:	opennms-plugin-provisioning-map
-Requires(pre):	opennms-plugin-provisioning-rancid
-Requires:	opennms-plugin-provisioning-rancid
-Requires(pre):	opennms-plugin-provisioning-snmp-asset
-Requires:	opennms-plugin-provisioning-snmp-asset
-Requires(pre):	opennms-plugin-ticketer-centric
-Requires:	opennms-plugin-ticketer-centric
-Requires(pre):	opennms-plugin-protocol-cifs
-Requires:	opennms-plugin-protocol-cifs
-Requires(pre):	opennms-plugin-protocol-dhcp
-Requires:	opennms-plugin-protocol-dhcp
-Requires(pre):	opennms-plugin-protocol-nsclient
-Requires:	opennms-plugin-protocol-nsclient
-Requires(pre):	opennms-plugin-protocol-radius
-Requires:	opennms-plugin-protocol-radius
-Requires(pre):	opennms-plugin-protocol-xml
-Requires:	opennms-plugin-protocol-xml
-Requires(pre):	opennms-plugin-protocol-xmp
-Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	%{name}-plugin-provisioning-dns
+Requires:	%{name}-plugin-provisioning-dns
+Requires(pre):	%{name}-plugin-provisioning-link
+Requires:	%{name}-plugin-provisioning-link
+Requires(pre):	%{name}-plugin-provisioning-map
+Requires:	%{name}-plugin-provisioning-map
+Requires(pre):	%{name}-plugin-provisioning-rancid
+Requires:	%{name}-plugin-provisioning-rancid
+Requires(pre):	%{name}-plugin-provisioning-snmp-asset
+Requires:	%{name}-plugin-provisioning-snmp-asset
+Requires(pre):	%{name}-plugin-ticketer-centric
+Requires:	%{name}-plugin-ticketer-centric
+Requires(pre):	%{name}-plugin-protocol-cifs
+Requires:	%{name}-plugin-protocol-cifs
+Requires(pre):	%{name}-plugin-protocol-dhcp
+Requires:	%{name}-plugin-protocol-dhcp
+Requires(pre):	%{name}-plugin-protocol-nsclient
+Requires:	%{name}-plugin-protocol-nsclient
+Requires(pre):	%{name}-plugin-protocol-radius
+Requires:	%{name}-plugin-protocol-radius
+Requires(pre):	%{name}-plugin-protocol-xml
+Requires:	%{name}-plugin-protocol-xml
+Requires(pre):	%{name}-plugin-protocol-xmp
+Requires:	%{name}-plugin-protocol-xmp
 
 %description plugins
 This installs all optional plugins for OpenNMS.
@@ -199,8 +199,8 @@ This installs all optional plugins for OpenNMS.
 %package plugin-provisioning-dns
 Summary:	DNS Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
@@ -213,8 +213,8 @@ provisioned nodes.
 %package plugin-provisioning-link
 Summary:	Link Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-link
 The link provisioning adapter creates links between provisioned nodes based on naming
@@ -228,8 +228,8 @@ status of the map links based on data link events.
 %package plugin-provisioning-map
 Summary:	Map Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-map
 The map provisioning adapter will automatically create maps when nodes are provisioned
@@ -242,8 +242,8 @@ in OpenNMS.
 %package plugin-provisioning-rancid
 Summary:	RANCID Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
@@ -256,8 +256,8 @@ RANCID's device database when OpenNMS provisions nodes.
 %package plugin-provisioning-snmp-asset
 Summary:	SNMP Asset Provisioning Adapter for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
@@ -270,8 +270,8 @@ fields with data fetched from SNMP GET requests.
 %package plugin-protocol-cifs
 Summary:	CIFS Poller Plugin for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
@@ -283,8 +283,8 @@ The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 %package plugin-protocol-dhcp
 Summary:	DHCP Poller and Detector Plugin for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-dhcp
 The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
@@ -297,8 +297,8 @@ poller monitor for DHCP.
 %package plugin-protocol-nsclient
 Summary:	NSCLIENT Plugin Support for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-nsclient
 The NSClient protocol plugin provides a capsd plugin and poller monitor for NSClient
@@ -311,8 +311,8 @@ and NSClient++.
 %package plugin-protocol-radius
 Summary:	RADIUS Plugin Support for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
@@ -325,8 +325,8 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %package plugin-protocol-xml
 Summary:	XML Collector for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-xml
 The XML protocol plugin provides a collector for XML data.
@@ -338,8 +338,8 @@ The XML protocol plugin provides a collector for XML data.
 %package plugin-protocol-xmp
 Summary:	XMP Poller for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-xmp
 The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
@@ -351,8 +351,8 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 %package plugin-collector-juniper-tca
 Summary:	Juniper TCA Collector for OpenNMS
 Group:		Applications/System
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-collector-juniper-tca
 The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
@@ -363,7 +363,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 
 %prep
 
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/opennms-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -427,7 +427,7 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+tar zxvf $RPM_BUILD_DIR/opennms-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -450,7 +450,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr $RPM_BUILD_DIR/opennms-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
