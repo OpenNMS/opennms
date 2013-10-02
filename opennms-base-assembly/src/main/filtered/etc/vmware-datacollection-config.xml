@@ -480,6 +480,7 @@
                 <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
                 <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
                 <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
+                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
                 <attrib name="net.errorsRx.summation" alias="NetErrorsRxSum" type="Gauge"/>
                 <attrib name="net.errorsTx.summation" alias="NetErrorsTxSum" type="Gauge"/>
                 <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
