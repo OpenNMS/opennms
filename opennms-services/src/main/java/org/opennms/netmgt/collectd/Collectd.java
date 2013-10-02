@@ -1108,7 +1108,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
                 } catch (Throwable e) {
                     // Preparing failed event
-                    log().error("handleReloadDaemonConfig: Error reloading data collection configuration: " + e.getMessage(), e);
+                    LOG.error("handleReloadDaemonConfig: Error reloading data collection configuration: {}", e.getMessage(), e);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
                     ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
