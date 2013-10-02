@@ -5,16 +5,25 @@ import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.TemporaryGeocoderException;
 
-import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.AdvancedGeoCoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
 import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
 
 public class GoogleGeocoderService implements GeocoderService {
-    final private Geocoder m_geocoder = new Geocoder();
+    final private AdvancedGeoCoder m_geocoder = new AdvancedGeoCoder();
+
+    public GoogleGeocoderService() {
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final Integer httpProxyPort = Integer.getInteger("http.proxyPort");
+
+        if (proxyHost != null && httpProxyPort != null) {
+            m_geocoder.getHttpClient().getHostConfiguration().setProxy(proxyHost, httpProxyPort);
+        }
+    }
 
     @Override
-    public Coordinates getCoordinates(final String address) throws GeocoderException {
+    public synchronized Coordinates getCoordinates(final String address) throws GeocoderException {
         final GeocoderRequest request = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
         final GeocodeResponse response = m_geocoder.geocode(request);
 
