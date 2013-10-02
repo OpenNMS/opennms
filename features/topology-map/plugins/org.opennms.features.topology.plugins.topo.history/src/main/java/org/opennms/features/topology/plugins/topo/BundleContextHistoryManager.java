@@ -54,7 +54,7 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
 		Properties props = loadProperties(m_bundleContext);
 		String historyXml = toXML(hist);
 		
-		cleanUp(userId, props);
+		//cleanUp(userId, props);
 		
 		props.put(hist.getFragment(), historyXml);
 		props.put(userId, hist.getFragment());
