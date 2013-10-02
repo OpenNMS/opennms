@@ -89,7 +89,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
             getCache().reload(getPage());
             fireItemSetChangedEvent();
         } else {
-            LOG.warn("Selection has not changed: {}", nodeIds);
+            LOG.warning("Selection has not changed: " + nodeIds);
         }
     }
 }
