@@ -40,8 +40,10 @@ public class GraphPainter extends BaseGraphVisitor {
     public void visitGraph(Graph graph) throws PaintException {
         if (m_statusProvider != null) {
             Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(new ArrayList<VertexRef>((graph.getDisplayVertices())));
-            m_statusMap.clear();
-            m_statusMap.putAll(newStatusMap);
+            if (newStatusMap != null) {
+                m_statusMap.clear();
+                m_statusMap.putAll(newStatusMap);
+            }
         }
     }
 
