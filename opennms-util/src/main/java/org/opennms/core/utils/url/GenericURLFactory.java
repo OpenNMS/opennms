@@ -105,7 +105,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      *
      * @param protocol    name as {@link java.lang.String} object.
      * @param classname   full qualified classname as {@link java.lang.String} object.
-     * @param defaultPort the default port for given protocol as {@java.lang.int} object.
+     * @param defaultPort the default port for given protocol as {@link java.lang.Integer} object.
      */
     public void addURLConnection(String protocol, String classname, int defaultPort) {
         urlConnections.put(protocol, classname);
@@ -156,7 +156,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      * Create stream handler
      *
      * @param protocol name as {@link java.lang.String} object.
-     * @return a {@java.net.URLStreamHandler} object.
+     * @return a {@link java.net.URLStreamHandler} object.
      */
     @SuppressWarnings("unchecked")
     @Override
