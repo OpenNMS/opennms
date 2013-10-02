@@ -41,6 +41,7 @@ import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -62,6 +63,19 @@ import org.slf4j.LoggerFactory;
  */
 public class VertexHopGraphProvider implements GraphProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
+
+	public static VertexHopCriteria getVertexHopProviderForContainer(GraphContainer graphContainer) {
+		for (Criteria criteria : graphContainer.getCriteria()) {
+			try {
+				VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
+				return hopCriteria;
+			} catch (ClassCastException e) {}
+		}
+
+		VertexHopCriteria hopCriteria = new VertexHopCriteria();
+		graphContainer.setCriteria(hopCriteria);
+		return hopCriteria;
+	}
 
 	public static class VertexHopCriteria implements Criteria {
 
@@ -118,6 +132,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public int size() {
 			return m_vertices.size();
+		}
+
+		public void clear() {
+			m_vertices.clear();
 		}
 	}
 
