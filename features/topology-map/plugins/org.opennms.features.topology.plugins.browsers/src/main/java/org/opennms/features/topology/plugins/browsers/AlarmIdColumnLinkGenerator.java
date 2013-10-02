@@ -43,71 +43,70 @@ import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
-    final static private Logger LOG = LoggerFactory.getLogger(AlarmIdColumnLinkGenerator.class);
+	private static final long serialVersionUID = 621311104480258016L;
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmIdColumnLinkGenerator.class);
+	private final String alarmIdPropertyName;
+	private final AlarmDao alarmDao;
+	
+	/**
+	 * @param alarmIdPropertyName Property name of the alarm Id property (e.g. "id")
+	 */
+	public AlarmIdColumnLinkGenerator(final AlarmDao alarmDao, final String alarmIdPropertyName) {
+		this.alarmIdPropertyName = alarmIdPropertyName;
+		this.alarmDao = alarmDao;
+	}
 
-    private static final long serialVersionUID = 7212711788117805336L;
+	@Override
+	public Object generateCell(final Table source, Object itemId, Object columnId) {
+		if (source == null) return null; // no source
+		Property<Integer> alarmIdProperty = source.getContainerProperty(itemId,  alarmIdPropertyName);
+		final Integer alarmId = alarmIdProperty.getValue(); 
+		if (alarmId == null) return null; // no value
 
-    private final String alarmIdPropertyName;
-    private final AlarmDao alarmDao;
-
-    /**
-     * @param alarmIdPropertyName Property name of the alarm Id property (e.g. "id")
-     */
-    public AlarmIdColumnLinkGenerator(final AlarmDao alarmDao, final String alarmIdPropertyName) {
-        this.alarmIdPropertyName = alarmIdPropertyName;
-        this.alarmDao = alarmDao;
-    }
-
-    @Override
-    public Object generateCell(final Table source, Object itemId, Object columnId) {
-        if (source == null) return null; // no source
-
-        @SuppressWarnings("unchecked")
-        final Property<Integer> alarmIdProperty = source.getContainerProperty(itemId,  alarmIdPropertyName);
-        final Integer alarmId = alarmIdProperty.getValue(); 
-        if (alarmId == null) return null; // no value
-
-        // create Link
-        final Button button = new Button("" + alarmId);
-        button.setStyleName(BaseTheme.BUTTON_LINK);
-        button.addClickListener(new ClickListener() {
-            private static final long serialVersionUID = 5584857900214126800L;
+		// create Link
+		Button button = new Button("" + alarmId);
+		button.setStyleName(BaseTheme.BUTTON_LINK);
+		button.addClickListener(new ClickListener() {
+            private static final long serialVersionUID = 3698209256202413810L;
 
             @Override
-            public void buttonClick(final ClickEvent event) {
-                // try if alarm is there, otherwise show information dialog
-                final OnmsAlarm alarm = alarmDao.get(alarmId);
-                if (alarm == null) {
-                    new DialogWindow(source.getUI(), "Alarm does not exist!", "The alarm information cannot be shown. \nThe alarm does not exist anymore. \n\nPlease refresh the Alarm Table.");
-                    return;
-                }
+			public void buttonClick(ClickEvent event) {
+			    // try if alarm is there, otherwise show information dialog
+			    OnmsAlarm alarm = alarmDao.get(alarmId);
+			    if (alarm == null) {
+		           new DialogWindow(source.getUI(), 
+		                         "Alarm does not exist!", 
+		                         "The alarm information cannot be shown. \nThe alarm does not exist anymore. \n\nPlease refresh the Alarm Table.");
+			        return;
+			    }
+			    
+			    // alarm still exists, show alarm details
+		                final URI currentLocation = Page.getCurrent().getLocation();
+		                final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+		                final String redirectFragment = contextRoot + "/alarm/detail.htm?id=" + alarmId;
+		                LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
 
-                // alarm still exists, show alarm details
-                final URI currentLocation = Page.getCurrent().getLocation();
-                final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                final String redirectFragment = contextRoot + "/alarm/detail.htm?id=" + alarmId;
-                LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
-
-                try {
-                    final InfoWindow window = new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new LabelCreator() {
-                        @Override
-                        public String getLabel() {
-                            return "Alarm Info " + alarmId;
-                        }
-                    });
-                    source.getUI().addWindow(window);
-                } catch (final MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return button;
-    }
+		                try {
+					source.getUI().addWindow(
+						new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new LabelCreator() {
+								
+							@Override
+							public String getLabel() {
+								return "Alarm Info " + alarmId;
+							}
+						}));
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		return button;
+	}
 }

@@ -28,46 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.WidgetManager;
-import org.opennms.features.topology.api.WidgetUpdateListener;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextCreator;
-import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -80,29 +40,13 @@ import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
@@ -128,8 +72,8 @@ import java.util.*;
 @SuppressWarnings("serial")
 @Theme("topo_default")
 @JavaScript({
-    "http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js",
-    "chromeFrameCheck.js"
+	"http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js",
+	"chromeFrameCheck.js"
 })
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
@@ -175,20 +119,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private static final long serialVersionUID = 6837501987137310938L;
 
     private static Logger m_log = LoggerFactory.getLogger(TopologyUI.class);
-    private static final String LABEL_PROPERTY = "label";
-    private TopologyComponent m_topologyComponent;
-    private VertexSelectionTree m_tree;
-    private final GraphContainer m_graphContainer;
+	private static final String LABEL_PROPERTY = "label";
+	private TopologyComponent m_topologyComponent;
+	private VertexSelectionTree m_tree;
+	private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final CommandManager m_commandManager;
-    private MenuBar m_menuBar;
-    private TopoContextMenu m_contextMenu;
-    private VerticalLayout m_layout;
-    private VerticalLayout m_rootLayout;
-    private final IconRepositoryManager m_iconRepositoryManager;
-    private WidgetManager m_widgetManager;
-    private WidgetManager m_treeWidgetManager;
-    private Accordion m_treeAccordion;
+	private MenuBar m_menuBar;
+	private TopoContextMenu m_contextMenu;
+	private VerticalLayout m_layout;
+	private VerticalLayout m_rootLayout;
+	private final IconRepositoryManager m_iconRepositoryManager;
+	private WidgetManager m_widgetManager;
+	private WidgetManager m_treeWidgetManager;
+	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private final Label m_zoomLevelLabel = new Label("0"); 
     private final HistoryManager m_historyManager;
@@ -220,7 +164,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_graphContainer.setSelectionManager(selectionManager);
     }
 
-    @Override
+	@Override
     protected void init(final VaadinRequest request) {
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
@@ -302,7 +246,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private void setupErrorHandler() {
-
+        
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler(){
 
             @Override
@@ -524,7 +468,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void updateAccordionView(WidgetManager treeWidgetManager) {
         if (m_treeAccordion != null) {
             m_treeAccordion.removeAllComponents();
-
+            
             m_treeAccordion.addTab(m_tree, m_tree.getTitle());
             for(IViewContribution widget : treeWidgetManager.getWidgets()) {
                 if(widget.getIcon() != null) {
@@ -559,7 +503,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
                     m_layout.addComponent(bottomLayoutBar);
                 }
-                m_layout.markAsDirty();
+                m_layout.requestRepaint();
             }
         }
         // TODO: Integrate contextmenu with the Connector/Extension pattern
@@ -577,7 +521,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Use an absolute layout for the bottom panel
         AbsoluteLayout bottomLayout = new AbsoluteLayout();
         bottomLayout.setSizeFull();
-
+        
         final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
@@ -644,7 +588,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         return bottomLayout;
     }
-
+    
 
     /**
      * Creates the west area layout including the
@@ -652,20 +596,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
      * 
      * @return
      */
-    private Layout createWestLayout() {
+	private Layout createWestLayout() {
         m_tree = createTree();
-
+        
         final TextField filterField = new TextField("Filter");
         filterField.setTextChangeTimeout(200);
-
+        
         final Button filterBtn = new Button("Filter");
         filterBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                GCFilterableContainer container = m_tree.getContainerDataSource();
+            	GCFilterableContainer container = m_tree.getContainerDataSource();
                 container.removeAllContainerFilters();
-
+                
                 String filterString = (String) filterField.getValue();
                 if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
                     container.addContainerFilter(LABEL_PROPERTY, (String) filterField.getValue(), true, false);
@@ -674,84 +618,84 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     filterField.setValue("");
                     filterBtn.setCaption("Filter");
                 }
-
+                
             }
         });
-
+        
         HorizontalLayout filterArea = new HorizontalLayout();
         filterArea.addComponent(filterField);
         filterArea.addComponent(filterBtn);
         filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
-
+        
         m_treeAccordion = new Accordion();
         m_treeAccordion.addTab(m_tree, m_tree.getTitle());
         m_treeAccordion.setWidth("100%");
         m_treeAccordion.setHeight("100%");
-
+        
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
         absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
         absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;"); 
-
+        
         return absLayout;
     }
 
     private VertexSelectionTree createTree() {
-        VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
-        tree.setMultiSelect(true);
-        tree.setImmediate(true);
-        tree.setItemCaptionPropertyId(LABEL_PROPERTY);
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
+		tree.setMultiSelect(true);
+		tree.setImmediate(true);
+		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
 
-        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-            Object item = it.next();
-            tree.expandItemsRecursively(item);
-        }
+		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
+			Object item = it.next();
+			tree.expandItemsRecursively(item);
+		}
+		
+		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 
-        m_graphContainer.getSelectionManager().addSelectionListener(tree);
+		return tree;
+	}
 
-        return tree;
-    }
+	@Override
+	public void updateMenuItems() {
+		updateMenuItems(m_menuBar.getItems());
+	}
 
-    @Override
-    public void updateMenuItems() {
-        updateMenuItems(m_menuBar.getItems());
-    }
-
-    private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
-        for(TopoContextMenuItem contextItem : items) {
-            if(contextItem.hasChildren()) {
-                updateContextMenuItems(target, contextItem.getChildren());
-            } else {
-                m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, this);
-            }
-        }
-    }
+	private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
+		for(TopoContextMenuItem contextItem : items) {
+			if(contextItem.hasChildren()) {
+				updateContextMenuItems(target, contextItem.getChildren());
+			} else {
+				m_commandManager.updateContextMenuItem(target, contextItem, m_graphContainer, this);
+			}
+		}
+	}
 
 
-    private void updateMenuItems(List<MenuItem> menuItems) {
-        for(MenuItem menuItem : menuItems) {
-            if(menuItem.hasChildren()) {
-                updateMenuItems(menuItem.getChildren());
-            }else {
-                m_commandManager.updateMenuItem(menuItem, m_graphContainer, this);
-            }
-        }
-    }
+	private void updateMenuItems(List<MenuItem> menuItems) {
+		for(MenuItem menuItem : menuItems) {
+			if(menuItem.hasChildren()) {
+				updateMenuItems(menuItem.getChildren());
+			}else {
+				m_commandManager.updateMenuItem(menuItem, m_graphContainer, this);
+			}
+		}
+	}
 
-    @Override
-    public void menuBarUpdated(CommandManager commandManager) {
-        if(m_menuBar != null) {
-            m_rootLayout.removeComponent(m_menuBar);
-        }
+	@Override
+	public void menuBarUpdated(CommandManager commandManager) {
+		if(m_menuBar != null) {
+			m_rootLayout.removeComponent(m_menuBar);
+		}
 
-        if(m_contextMenu != null) {
-            m_contextMenu.detach();
-        }
+		if(m_contextMenu != null) {
+			m_contextMenu.detach();
+		}
 
-        m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
-        m_menuBar.setWidth(100, Unit.PERCENTAGE);
-        // Set expand ratio so that extra space is not allocated to this vertical component
+		m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
+		m_menuBar.setWidth(100, Unit.PERCENTAGE);
+		// Set expand ratio so that extra space is not allocated to this vertical component
         if (m_showHeader) {
             m_rootLayout.addComponent(m_menuBar, 1);
         } else {
@@ -759,17 +703,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
 
-        m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
-        m_contextMenu.setAsContextMenuOf(this);
-        updateMenuItems();
-    }
-
-    @Override
-    public void show(Object target, int left, int top) {
-        updateContextMenuItems(target, m_contextMenu.getItems());
-        m_contextMenu.setTarget(target);
-        m_contextMenu.open(left, top);
-    }
+		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
+		m_contextMenu.setAsContextMenuOf(this);
+		updateMenuItems();
+	}
+	
+        @Override
+	public void show(Object target, int left, int top) {
+		updateContextMenuItems(target, m_contextMenu.getItems());
+		m_contextMenu.setTarget(target);
+		m_contextMenu.open(left, top);
+	}
 
     public WidgetManager getWidgetManager() {
         return m_widgetManager;
@@ -806,7 +750,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_treeWidgetManager != null) {
             m_treeWidgetManager.removeUpdateListener(this);
         }
-
+        
         m_treeWidgetManager = treeWidgetManager;
         m_treeWidgetManager.addUpdateListener(this);
     }
@@ -819,7 +763,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 
     int m_settingFragment = 0;
-
+    
     @Override
     public void uriFragmentChanged(UriFragmentChangedEvent event) {
         m_settingFragment++;
@@ -896,15 +840,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     @Override
     @EventConsumer
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
+
         Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
         Set<VertexRef> vertexRefs = event.getVertexRefs();
         if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
-    }
 
-    @Override
-    public String toString() {
-        return "TopologyUI@" + hashCode();
+
     }
 }

@@ -28,6 +28,14 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import com.vaadin.ui.Table;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,85 +43,74 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.EventProxy;
-import org.opennms.osgi.EventProxyAware;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vaadin.ui.Table;
-
 public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware {
-    private static final Logger LOG = LoggerFactory.getLogger(SelectionAwareTable.class);
 
-    private static final long serialVersionUID = 2679707472234320144L;
-    private final OnmsDaoContainer<?,? extends Serializable> m_container;
-    private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
-    private List<String> nonCollapsibleColumns = new ArrayList<String>();
+	private static final long serialVersionUID = 2761774077365441249L;
+
+	private final OnmsDaoContainer<?,? extends Serializable> m_container;
+	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
+	private List<String> nonCollapsibleColumns = new ArrayList<String>();
     private EventProxy eventProxy;
 
-    /**
-     *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
-     *  the arguments if you put the generic types in.
-     */
-    public SelectionAwareTable(final String caption, OnmsDaoContainer<?, ? extends Serializable> container) {
-        super(caption, container);
-        m_container = container;
-    }
+	/**
+	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  the arguments if you put the generic types in.
+	 */
+	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
+		super(caption, container);
+		m_container = container;
+	}
 
-    /**
-     * Call this method before any of the {@link SelectionNotifier} methods to ensure
-     * that the {@link SelectionListener} instances are registered with all of the
-     * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
-     */
-    public void setColumnGenerators(@SuppressWarnings("rawtypes") Map generators) {
-        for (final Object key : generators.keySet()) {
-            super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
-            // If any of the column generators are {@link SelectionNotifier} instances,
-            // then register this component as a listener for events that they generate.
-            try {
-                m_selectionNotifiers.add((SelectionNotifier)generators.get(key));
-            } catch (ClassCastException e) {}
-        }
-    }
+	/**
+	 * Call this method before any of the {@link SelectionNotifier} methods to ensure
+	 * that the {@link SelectionListener} instances are registered with all of the
+	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
+	 */
+	public void setColumnGenerators(@SuppressWarnings("unchecked") Map generators) {
+		for (Object key : generators.keySet()) {
+			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
+			// If any of the column generators are {@link SelectionNotifier} instances,
+			// then register this component as a listener for events that they generate.
+			try {
+				m_selectionNotifiers.add((SelectionNotifier)generators.get(key));
+			} catch (ClassCastException e) {}
+		}
+	}
 
-    /**
-     * Call this method before any of the {@link SelectionNotifier} methods to ensure
-     * that the {@link SelectionListener} instances are registered with all of the
-     * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
-     */
-    @Override
-    public void setCellStyleGenerator(CellStyleGenerator generator) {
-        super.setCellStyleGenerator(generator);
-    }
+	/**
+	 * Call this method before any of the {@link SelectionNotifier} methods to ensure
+	 * that the {@link SelectionListener} instances are registered with all of the
+	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
+	 */
+	@Override
+	public void setCellStyleGenerator(CellStyleGenerator generator) {
+		super.setCellStyleGenerator(generator);
+	}
 
-    @Override
-    public String toString() {
-        Object value = getValue();
-        if (value == null) {
-            return null;
-        } else {
-            return value.toString();
-        }
-    }
-
-    /**
-     * Sets the non collapsbile columns.
-     * @param nonCollapsibleColumns
-     */
-    public void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
-        // set all elements to collapsible
-        for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
-            setColumnCollapsible(eachPropertyId,  true);
-        }
-
-        // set new value
-        if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
+	@Override
+	public String toString() {
+		Object value = getValue();
+		if (value == null) {
+			return null;
+		} else {
+			return value.toString();
+		}
+	}
+	
+	/**
+	 * Sets the non collapsbile columns.
+	 * @param nonCollapsibleColumns
+	 */
+	public void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
+	    // set all elements to collapsible
+	    for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
+	        setColumnCollapsible(eachPropertyId,  true);
+	    }
+	    
+	    // set new value
+	    if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
         this.nonCollapsibleColumns = nonCollapsibleColumns;
-
+        
         // set non collapsible
         for (Object eachPropertyId : this.nonCollapsibleColumns) {
             setColumnCollapsible(eachPropertyId,  false);
@@ -135,11 +132,6 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
             m_container.getCache().reload(m_container.getPage());
         }
         super.resetPageBuffer();
-    }
-
-    public void refreshRowCache() {
-        LOG.debug("refreshRowCache()");
-        super.refreshRowCache();
     }
 
     @Override

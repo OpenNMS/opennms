@@ -28,9 +28,6 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -40,25 +37,26 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.osgi.EventConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeDaoContainer.class);
-    private static final long serialVersionUID = -5697472655705494537L;
 
-    public NodeDaoContainer(final NodeDao dao) {
-        super(OnmsNode.class, dao);
+	private static final long serialVersionUID = -5697472655705494537L;
+
+	public NodeDaoContainer(NodeDao dao) {
+		super(OnmsNode.class, dao);
         addBeanToHibernatePropertyMapping("primaryInterface", "ipInterfaces.ipAddress");
-    }
+	}
+
+	@Override
+	protected Integer getId(OnmsNode bean){
+		return bean == null ? null : bean.getId();
+	}
 
     @Override
-    protected Integer getId(final OnmsNode bean) {
-        return bean == null ? null : bean.getId();
-    }
-
-    @Override
-    protected void addAdditionalCriteriaOptions(final Criteria criteria, final Page page, final boolean doOrder) {
+    protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
         if (!doOrder) return;
         criteria.setAliases(Arrays.asList(new Alias[] {
                 new Alias("ipInterfaces", "ipInterfaces", Alias.JoinType.LEFT_JOIN, new EqRestriction("ipInterfaces.isSnmpPrimary", PrimaryType.PRIMARY))
@@ -66,7 +64,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
     }
 
     @Override
-    protected void doItemAddedCallBack(final int rowNumber, final Integer id, final OnmsNode eachBean) {
+    protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
         eachBean.getPrimaryInterface();
     }
 
@@ -76,7 +74,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
         final NodeIdFocusToRestrictionsConverter converter = new NodeIdFocusToRestrictionsConverter() {
 
             @Override
-            protected Restriction createRestriction(final Integer nodeId) {
+            protected Restriction createRestriction(Integer nodeId) {
                 return new EqRestriction("id", nodeId);
             }
         };
@@ -86,8 +84,6 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
             setRestrictions(newRestrictions);
             getCache().reload(getPage());
             fireItemSetChangedEvent();
-        } else {
-            LOG.warn("Selection has not changed.");
         }
     }
 }

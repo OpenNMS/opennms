@@ -51,14 +51,13 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
 
-    private static final String ACTION_CLEAR = "Clear";
-    private static final String ACTION_ESCALATE = "Escalate";
-    private static final String ACTION_UNACKNOWLEDGE = "Unacknowledge";
-    private static final String ACTION_ACKNOWLEDGE = "Acknowledge";
+	private static final String ACTION_CLEAR = "Clear";
+	private static final String ACTION_ESCALATE = "Escalate";
+	private static final String ACTION_UNACKNOWLEDGE = "Unacknowledge";
+	private static final String ACTION_ACKNOWLEDGE = "Acknowledge";
 
-    private static final long serialVersionUID = -1384405693333129773L;
+	private static final long serialVersionUID = -1384405693333129773L;
 
-    @SuppressWarnings("unused")
     private EventProxy m_eventProxy;
     private VaadinApplicationContext vaadinApplicationContext;
 
@@ -212,8 +211,8 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		for (final Object key : generators.keySet()) {
             // If any of the column generators are {@link CheckboxGenerator} instances,
             // then connect it to the buttons.
-            try {
-                final Object generatorObj = generators.get(key);
+			try {
+                Object generatorObj = generators.get(key);
                 CheckboxGenerator generator = (CheckboxGenerator) generatorObj;
 				m_submitButton.setCheckboxGenerator(generator);
 				m_selectAllButton.setCheckboxGenerator(generator);
@@ -243,7 +242,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
         this.vaadinApplicationContext = vaadinApplicationContext;
     }
 
-    private String getUser() {
+	private String getUser() {
         return vaadinApplicationContext.getUsername();
-    }
+	}
 }

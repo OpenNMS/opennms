@@ -33,7 +33,8 @@ import com.vaadin.ui.Component;
 import org.opennms.osgi.VaadinApplicationContext;
 
 public interface IViewContribution {
+
     Component getView(VaadinApplicationContext applicationContext, WidgetContext widgetContext);
     String getTitle();
-    Resource getIcon();
+	Resource getIcon();
 }

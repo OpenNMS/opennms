@@ -50,74 +50,75 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
+
     private class DefaultOperationContext implements OperationContext {
 
-        private final UI m_mainWindow;
+		private final UI m_mainWindow;
 
         private final GraphContainer m_graphContainer;
         private final DisplayLocation m_displayLocation;
         private boolean m_checked = false;
-        public DefaultOperationContext(UI mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
-            m_mainWindow = mainWindow;
-            m_graphContainer = graphContainer;
-            m_displayLocation = displayLocation;
-        }
+		public DefaultOperationContext(UI mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
+			m_mainWindow = mainWindow;
+			m_graphContainer = graphContainer;
+			m_displayLocation = displayLocation;
+		}
 
-        @Override
-        public UI getMainWindow() {
-            return m_mainWindow;
-        }
+		@Override
+		public UI getMainWindow() {
+			return m_mainWindow;
+		}
 
-        @Override
-        public GraphContainer getGraphContainer() {
-            return m_graphContainer;
-        }
+		@Override
+		public GraphContainer getGraphContainer() {
+			return m_graphContainer;
+		}
 
-        @Override
-        public DisplayLocation getDisplayLocation() {
-            return m_displayLocation;
-        }
+                @Override
+		public DisplayLocation getDisplayLocation() {
+			return m_displayLocation;
+		}
 
-        public void setChecked(boolean checked) {
-            m_checked = checked;
-        }
+		public void setChecked(boolean checked) {
+			m_checked = checked;
+		}
 
-        @Override
-        public boolean isChecked() {
-            return m_checked;
-        }
+		@Override
+		public boolean isChecked() {
+			return m_checked;
+		}
 
-    }
+	}
 
-    private class ContextMenuListener implements ContextMenu.ContextMenuItemClickListener {
+	private class ContextMenuListener implements ContextMenu.ContextMenuItemClickListener {
 
-        private final OperationContext m_opContext;
+		private final OperationContext m_opContext;
         private final TopoContextMenu m_topoContextMenu;
 
         public ContextMenuListener(OperationContext opContext, TopoContextMenu topoContextMenu) {
-            m_opContext = opContext;
+			m_opContext = opContext;
             m_topoContextMenu = topoContextMenu;
-        }
+		}
 
-        @Override
-        public void contextMenuItemClicked(ContextMenuItemClickEvent event) {
-            Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
-            //TODO: Do some implementation here for execute
-            if (operation != null) {
-                try {
-                    operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
-                } catch (final RuntimeException e) {
-                    LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);
-                }
-            }
-        }
+		@Override
+		public void contextMenuItemClicked(ContextMenuItemClickEvent event) {
+			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
+			//TODO: Do some implementation here for execute
+			if (operation != null) {
+			    try {
+				operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
+			    } catch (final RuntimeException e) {
+			        LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);
+			    }
+			}
+		}
 
     }
-    private final List<Command> m_commandList = new CopyOnWriteArrayList<Command>();
+	private final List<Command> m_commandList = new CopyOnWriteArrayList<Command>();
 
     private final List<Command> m_commandHistoryList = new ArrayList<Command>();
     private final List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
@@ -127,251 +128,249 @@ public class CommandManager {
     private final Map<MenuBar.Command, Operation> m_commandToOperationMap = new HashMap<MenuBar.Command, Operation>();
     private final Map<ContextMenuItem, Operation> m_contextMenuItemsToOperationMap = new HashMap<ContextMenuItem, Operation>();
     public CommandManager() {
-    }
-    public void addCommand(Command command) {
-        m_commandList.add(command);
-        updateCommandListeners();
-    }
+	}
+	public void addCommand(Command command) {
+		m_commandList.add(command);
+		updateCommandListeners();
+	}
 
-    private void updateCommandListeners() {
-        for (CommandUpdateListener listener : m_updateListeners) {
-            listener.menuBarUpdated(this);
-        }
+	private void updateCommandListeners() {
+		for (CommandUpdateListener listener : m_updateListeners) {
+			listener.menuBarUpdated(this);
+		}
 
-    }
+	}
 
-    public void addCommandUpdateListener(CommandUpdateListener listener) {
-        m_updateListeners.add(listener);
-    }
+	public void addCommandUpdateListener(CommandUpdateListener listener) {
+		m_updateListeners.add(listener);
+	}
 
     public void removeCommandUpdateListener(TopologyUI components) {
         m_updateListeners.remove(components);
     }
 
-    public void addMenuItemUpdateListener(MenuItemUpdateListener listener) {
-        m_menuItemUpdateListeners.add(listener);
-    }
+	public void addMenuItemUpdateListener(MenuItemUpdateListener listener) {
+		m_menuItemUpdateListeners.add(listener);
+	}
 
-    public void removeMenuItemUpdateListener(MenuItemUpdateListener listener) {
-        m_menuItemUpdateListeners.remove(listener);
-    }
+	public void removeMenuItemUpdateListener(MenuItemUpdateListener listener) {
+		m_menuItemUpdateListeners.remove(listener);
+	}
 
-    MenuBar getMenuBar(GraphContainer graphContainer, UI mainWindow) {
-        OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
-        MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
-        menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
-        menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
+	MenuBar getMenuBar(GraphContainer graphContainer, UI mainWindow) {
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
+		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
+		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
+		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
 
-        for (Command command : m_commandList) {
-            String menuPosition = command.getMenuPosition();
-            MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
-            updateCommandToOperationMap(command, menuCommand);
-            menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
-        }
-        MenuBar menuBar = menuBarBuilder.get();
-        return menuBar;
-    }
+		for (Command command : m_commandList) {
+			String menuPosition = command.getMenuPosition();
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
+			updateCommandToOperationMap(command, menuCommand);
+			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
+		}
+		MenuBar menuBar = menuBarBuilder.get();
+		return menuBar;
+	}
 
-    /**
-     * Gets the ContextMenu addon for the app based on OSGi Operations
-     * @param graphContainer
-     * @param mainWindow
-     * @return
-     */
-    public TopoContextMenu getContextMenu(GraphContainer graphContainer, UI mainWindow) {
-        OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
-        ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
-        Map<String, Operation> operationMap = new HashMap<String, Operation>();
-        for (Command command : m_commandList) {
-            if (command.isAction()) {
-                String contextPosition = command.getContextMenuPosition();
-                contextMenuBuilder.addMenuCommand(command, contextPosition);
-                operationMap.put(command.toString(), command.getOperation());
-            }
-        }
-        TopoContextMenu contextMenu = contextMenuBuilder.get();
-        contextMenu.addItemClickListener(new ContextMenuListener(opContext, contextMenu));
+	/**
+	 * Gets the ContextMenu addon for the app based on OSGi Operations
+	 * @param graphContainer
+	 * @param mainWindow
+	 * @return
+	 */
+	public TopoContextMenu getContextMenu(GraphContainer graphContainer, UI mainWindow) {
+		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
+		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
+		Map<String, Operation> operationMap = new HashMap<String, Operation>();
+		for (Command command : m_commandList) {
+			if (command.isAction()) {
+				String contextPosition = command.getContextMenuPosition();
+				contextMenuBuilder.addMenuCommand(command, contextPosition);
+				operationMap.put(command.toString(), command.getOperation());
+			}
+		}
+		TopoContextMenu contextMenu = contextMenuBuilder.get();
+		contextMenu.addItemClickListener(new ContextMenuListener(opContext, contextMenu));
 
-        updateContextCommandToOperationMap(contextMenu.getItems());
-        return contextMenu;
-    }
+		updateContextCommandToOperationMap(contextMenu.getItems());
+		return contextMenu;
+	}
 
-    private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
-        for(TopoContextMenuItem item : items) {
-            if(item.hasChildren() && !item.hasOperation()) {
-                updateContextCommandToOperationMap(item.getChildren());
-            }else {
-                m_contextMenuItemsToOperationMap.put(item.getItem(), item.getOperation());
-            }
-        }
-    }
+	private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
+	    for(TopoContextMenuItem item : items) {
+	        if(item.hasChildren() && !item.hasOperation()) {
+	            updateContextCommandToOperationMap(item.getChildren());
+	        }else {
+	            m_contextMenuItemsToOperationMap.put(item.getItem(), item.getOperation());
+	        }
+	    }
+	}
 
-    private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
-        m_commandToOperationMap.put(menuCommand, command.getOperation());
-    }
+	private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
+		m_commandToOperationMap.put(menuCommand, command.getOperation());
+	}
 
-    public MenuBar.Command menuCommand(final Command command,
-            final GraphContainer graphContainer, final UI mainWindow,
-            final OperationContext operationContext) {
+	public MenuBar.Command menuCommand(final Command command,
+			final GraphContainer graphContainer, final UI mainWindow,
+			final OperationContext operationContext) {
 
-        return new MenuBar.Command() {
-            private static final long serialVersionUID = 1542437659855341046L;
+		return new MenuBar.Command() {
 
-            @Override
-            public void menuSelected(MenuItem selectedItem) {
-                List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+                        @Override
+			public void menuSelected(MenuItem selectedItem) {
+				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
-                DefaultOperationContext context = (DefaultOperationContext) operationContext;
-                context.setChecked(selectedItem.isChecked());
+				DefaultOperationContext context = (DefaultOperationContext) operationContext;
+				context.setChecked(selectedItem.isChecked());
 
-                command.doCommand(targets, operationContext);
-                m_commandHistoryList.add(command);
-                updateMenuItemListeners();
-            }
-        };
-    }
+				command.doCommand(targets, operationContext);
+				m_commandHistoryList.add(command);
+				updateMenuItemListeners();
+			}
+		};
+	}
 
-    protected void updateMenuItemListeners() {
-        for(MenuItemUpdateListener listener : m_menuItemUpdateListeners) {
-            listener.updateMenuItems();
-        }
-    }
+	protected void updateMenuItemListeners() {
+		for(MenuItemUpdateListener listener : m_menuItemUpdateListeners) {
+			listener.updateMenuItems();
+		}
+	}
 
-    public List<Command> getHistoryList() {
-        return m_commandHistoryList;
-    }
+	public List<Command> getHistoryList() {
+		return m_commandHistoryList;
+	}
 
-    public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
-        return m_commandToOperationMap.get(command);
-    }
+	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
+		return m_commandToOperationMap.get(command);
+	}
 
-    public synchronized void onBind(Command command) {
-        try {
-            addCommand(command);
-        } catch (Throwable e) {
-            LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
-        }
-    }
+	public synchronized void onBind(Command command) {
+		try {
+			addCommand(command);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+		}
+	}
 
-    public synchronized void onUnbind(Command command) {
-        try {
-            removeCommand(command);
-        } catch (Throwable e) {
-            LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
-        }
-    }
+	public synchronized void onUnbind(Command command) {
+		try {
+			removeCommand(command);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+		}
+	}
 
-    public void onBind(Operation operation, Map<String, String> props) {
-        OperationCommand operCommand = new OperationCommand(null, operation, props);
-        addCommand(operCommand);
-    }
+	public void onBind(Operation operation, Map<String, String> props) {
+		OperationCommand operCommand = new OperationCommand(null, operation, props);
+		addCommand(operCommand);
+	}
 
-    public void onUnbind(Operation operation, Map<String, String> props) {
-        removeCommand(operation);
-    }
+	public void onUnbind(Operation operation, Map<String, String> props) {
+		removeCommand(operation);
+	}
 
-    private void removeCommand(Operation operation) {
-        for (Command command : m_commandList) {
-            if (command.getOperation() == operation) {
-                removeCommand(command); 
-            }
-        }
-    }
+	private void removeCommand(Operation operation) {
+		for (Command command : m_commandList) {
+			if (command.getOperation() == operation) {
+				removeCommand(command); 
+			}
+		}
+	}
 
-    private void removeCommand(Command command) {
-        m_commandList.remove(command);
-        updateCommandListeners();
-    }
+	private void removeCommand(Command command) {
+		m_commandList.remove(command);
+		updateCommandListeners();
+	}
 
-    public void setTopLevelMenuOrder(List<String> menuOrderList) {
-        if (m_topLevelMenuOrder == menuOrderList) return;
-        m_topLevelMenuOrder.clear();
-        m_topLevelMenuOrder.addAll(menuOrderList);
+	public void setTopLevelMenuOrder(List<String> menuOrderList) {
+		if (m_topLevelMenuOrder == menuOrderList) return;
+		m_topLevelMenuOrder.clear();
+		m_topLevelMenuOrder.addAll(menuOrderList);
 
-    }
+	}
 
     public void updateMenuConfig(Dictionary<String,?> props) {
         List<String> topLevelOrder = Arrays.asList(props
-                                                   .get("toplevelMenuOrder").toString().split(","));
+                .get("toplevelMenuOrder").toString().split(","));
         setTopLevelMenuOrder(topLevelOrder);
 
-        for (String topLevelItem : topLevelOrder) {
-            if (!topLevelItem.equals("Additions")) {
-                String key = "submenu." + topLevelItem + ".groups";
-                addOrUpdateGroupOrder(topLevelItem,
-                                      Arrays.asList(props.get(key).toString().split(",")));
-            }
-        }
-        addOrUpdateGroupOrder(
-                              "Default",
-                              Arrays.asList(props.get("submenu.Default.groups").toString()
-                                            .split(",")));
+		for (String topLevelItem : topLevelOrder) {
+			if (!topLevelItem.equals("Additions")) {
+				String key = "submenu." + topLevelItem + ".groups";
+				addOrUpdateGroupOrder(topLevelItem,
+						Arrays.asList(props.get(key).toString().split(",")));
+			}
+		}
+		addOrUpdateGroupOrder(
+				"Default",
+				Arrays.asList(props.get("submenu.Default.groups").toString()
+						.split(",")));
 
-        updateCommandListeners();
+		updateCommandListeners();
 
-    }
+	}
 
-    public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
-        if (!m_subMenuGroupOrder.containsKey(key)) {
-            m_subMenuGroupOrder.put(key, orderSet);
-        } else {
-            m_subMenuGroupOrder.remove(key);
-            m_subMenuGroupOrder.put(key, orderSet);
-        }
+	public void addOrUpdateGroupOrder(String key, List<String> orderSet) {
+		if (!m_subMenuGroupOrder.containsKey(key)) {
+			m_subMenuGroupOrder.put(key, orderSet);
+		} else {
+			m_subMenuGroupOrder.remove(key);
+			m_subMenuGroupOrder.put(key, orderSet);
+		}
 
-    }
+	}
 
-    public Map<String, List<String>> getMenuOrderConfig() {
-        return m_subMenuGroupOrder;
-    }
+	public Map<String, List<String>> getMenuOrderConfig() {
+		return m_subMenuGroupOrder;
+	}
 
-    public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, UI mainWindow) {
-        DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
-        Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
-
-        //Check for null because separators have no Operation
-        
-        try {
-            if(operation != null) {
-                List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
-                boolean visibility = operation.display(selectedVertices, operationContext);
-                menuItem.setVisible(visibility);
-                boolean enabled = operation.enabled(selectedVertices, operationContext);
-                menuItem.setEnabled(enabled);
+	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, UI mainWindow) {
+		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
+		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
+		
+		//Check for null because separators have no Operation
+		
+		try {
+		if(operation != null) {
+    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+			boolean visibility = operation.display(selectedVertices, operationContext);
+    		menuItem.setVisible(visibility);
+    		boolean enabled = operation.enabled(selectedVertices, operationContext);
+    		menuItem.setEnabled(enabled);
     
-                if (operation instanceof CheckedOperation) {
-                    if (!menuItem.isCheckable()) {
-                        menuItem.setCheckable(true);
-                    }
+    		if (operation instanceof CheckedOperation) {
+    			if (!menuItem.isCheckable()) {
+    				menuItem.setCheckable(true);
+    			}
     
-                    menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
-                }
-            }
-        } catch (final RuntimeException e) {
-            LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
-        }
-    }
+    			menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
+    		}
+		}
+		} catch (final RuntimeException e) {
+		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
+		}
+	}
 
     public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
         DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
-
+        
         ContextMenuItem ctxMenuItem = contextItem.getItem();
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
-
+     
         List<VertexRef> targets = asVertexList(target);
         // TODO: Figure out how to do this in the new contextmenu
 
+        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
         try {
-            //ctxMenuItem.setVisible(operation.display(targets, operationContext));
-            ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
         } catch (final RuntimeException e) {
             LoggerFactory.getLogger(this.getClass()).warn("updateContextMenuItem: operation failed", e);
         }
-
     }
 
-    private List<VertexRef> asVertexList(Object target) {
-        return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
-    }
+	private List<VertexRef> asVertexList(Object target) {
+		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
+	}
 
 }
