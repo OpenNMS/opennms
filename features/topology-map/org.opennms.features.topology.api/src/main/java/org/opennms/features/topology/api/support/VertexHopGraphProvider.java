@@ -93,28 +93,19 @@ public class VertexHopGraphProvider implements GraphProvider {
 		private static final long serialVersionUID = 2904432878716561926L;
 
 		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
-		//private int m_hops;
 
 		public VertexHopCriteria() {
 			super();
-			//m_hops = hops;
 		}
 
-		public VertexHopCriteria(Collection<VertexRef> objects/*, int hops */) {
+		public VertexHopCriteria(Collection<VertexRef> objects) {
 			m_vertices.addAll(objects);
-			//m_hops = hops;
 		}
 
 		@Override
 		public ElementType getType() {
 			return ElementType.VERTEX;
 		}
-
-		/*
-		public int getHops() {
-			return m_hops;
-		}
-		 */
 
 		/**
 		 * TODO: This return value doesn't matter since we just delegate
@@ -147,6 +138,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public Set<VertexRef> getVertices() {
 			return Collections.unmodifiableSet(m_vertices);
+		}
+
+		public void addAll(Collection<VertexRef> refs) {
+			m_vertices.addAll(refs);
 		}
 	}
 

@@ -183,17 +183,18 @@ public class SavedHistory {
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
         // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
 
-        // Remove any existing VertexHopCriteria
-        for (Criteria criteria : graphContainer.getCriteria()) {
-            try {
-                VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
-                graphContainer.removeCriteria(hopCriteria);
-            } catch (ClassCastException e) {}
-        }
-
         if (m_focusVertices.size() > 0) {
-            VertexHopCriteria criteria = new VertexHopCriteria(m_focusVertices);
-            graphContainer.setCriteria(criteria);
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+            // Clear existing focus nodes
+            criteria.clear();
+            // Add focus nodes from history
+            criteria.addAll(m_focusVertices);
+        } else {
+            // Remove any existing VertexHopCriteria
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer, false);
+            if (criteria != null) {
+                graphContainer.removeCriteria(criteria);
+            }
         }
 
         // Apply the history for each registered HistoryOperation

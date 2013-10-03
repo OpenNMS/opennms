@@ -38,18 +38,16 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.NodeInfoWindow;
 
-import com.vaadin.server.Page;
-
 public class NodeInfoOperation extends AbstractOperation {
     private String m_nodePageURL;
     private String m_nodeListURL;
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        String label = "";
-        int nodeID = -1;
-
         try {
+            String label = "";
+            int nodeID = -1;
+
             if (targets != null) {
                 for (final VertexRef target : targets) {
                     final String labelValue = getLabelValue(operationContext, target);
@@ -58,46 +56,50 @@ public class NodeInfoOperation extends AbstractOperation {
                     if (nodeValue != null && nodeValue > 0) {
                         label = labelValue == null? "" : labelValue;
                         nodeID = nodeValue.intValue();
+                        break;
                     }
                 }
             }
 
             final Node node = new Node(nodeID, null, label);
 
-            final URL baseURL = Page.getCurrent().getLocation().toURL();
-
-            final URL nodeURL;
+            final String url;
             if (node.getNodeID() >= 0) {
-                nodeURL = new URL(baseURL, getNodePageURL() + "" + node.getNodeID());
+                url = getNodePageURL() + node.getNodeID();
             } else {
-                nodeURL = new URL(baseURL, getNodeListURL());
+                url = getNodeListURL();
             }
 
-            operationContext.getMainWindow().addWindow(new NodeInfoWindow(node, nodeURL));
-        } catch (Exception e) {
-            e.printStackTrace();
+            final URL fullUrl = new URL(getFullUrl(url));
+            operationContext.getMainWindow().addWindow(new NodeInfoWindow(node, fullUrl));
+            return null;
+        } catch (final Exception e) {
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException("Failed to create node window.", e);
+            }
         }
-        return null;
     }
-    
+
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-    	if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-    		return true;
-    	}
-    	else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
+        if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
+            return true;
+        }
+        else if(targets != null && targets.size() > 0 && targets.get(0) != null) {
             return true;
         }else {
             return false;
         }
-        
+
     }
 
     @Override
     public String getId() {
         return "contextNodeInfo";
     }
-    
+
     public String getNodePageURL() {
         return m_nodePageURL;
     }
@@ -110,8 +112,8 @@ public class NodeInfoOperation extends AbstractOperation {
         return m_nodeListURL;
     }
 
-    public void setNodeListURL(String nodeListURL) {
-        this.m_nodeListURL = nodeListURL;
+    public void setNodeListURL(final String nodeListURL) {
+        m_nodeListURL = nodeListURL;
     }
 
 }

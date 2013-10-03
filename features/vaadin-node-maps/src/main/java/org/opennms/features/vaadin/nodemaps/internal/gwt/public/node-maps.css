@@ -30,7 +30,11 @@
 	background-color: rgba(51,102,0,0.8);
 }
 
-.leaflet-container .leaflet-control-alarm {
+.leaflet-control-container .leaflet-control {
+	z-index: 1010;
+}
+
+.leaflet-control-container .leaflet-control-alarm {
 	position:relative;
 	float:left;
 	background:#fff;
@@ -47,7 +51,7 @@
 	color: black;
 }
 
-.leaflet-container .leaflet-control-search {
+.leaflet-control-container .leaflet-control-search {
 	position:relative;
 	float:left;
 	background:#fff;
@@ -60,6 +64,26 @@
 	box-shadow: 0 1px 7px #999;
 	margin-left: 13px;
 	margin-top: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	color: black;
+}
+
+.leaflet-control-container .search-input {
+	position:relative;
+	float:left;
+	background:#fff;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	border: 1px solid #888;
+	background-color: rgba(255, 255, 255, 0.8);
+	z-index:1001;	
+	box-shadow: 0 1px 7px #999;
+	margin-left: 13px;
+	margin-top: 12px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	color: black;
 }
 
@@ -107,7 +131,7 @@ td.severity.Normal {
 	border-top: 0;
 }
 
-.leaflet-control-search .search-input {
+.leaflet-control .search-input {
 	display:block;
 	float:left;
 	background: #fff;
@@ -118,7 +142,7 @@ td.severity.Normal {
 	margin:2px 0 2px 2px;
 }
 
-.leaflet-control-search .search-button {
+.leaflet-control .search-button {
 	display:block;
 	float:left;
 	width:22px;
@@ -127,11 +151,11 @@ td.severity.Normal {
 	border-radius:4px;
 }
 
-.leaflet-control-search .search-button:hover {
+.leaflet-control .search-button:hover {
 	background: url('images/search-icon.png') no-repeat 0 -21px;
 }
 
-.leaflet-control-search .search-autocomplete {
+.leaflet-control .search-autocomplete {
 	max-width: 500px;
 	max-height: 300px;
 
@@ -144,12 +168,12 @@ td.severity.Normal {
 	margin:2px 0 2px 2px;
 	box-shadow: 0 1px 5px #999;
 	
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: auto;
 	word-wrap: break-word;
 }
 
-.leaflet-control-search .search-autocomplete ul {
+.leaflet-control .search-autocomplete ul {
 	list-style-type: none;
 	padding: 2px;
 	margin: 0;
