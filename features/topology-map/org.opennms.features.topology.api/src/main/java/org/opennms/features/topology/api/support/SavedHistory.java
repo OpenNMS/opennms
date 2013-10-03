@@ -22,6 +22,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,10 @@ public class SavedHistory {
     @XmlElement(name="selection")
     @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
     private Set<VertexRef> m_selectedVertices;
+
+    @XmlElement(name="focus")
+    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
+    private Set<VertexRef> m_focusVertices;
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.
@@ -79,16 +85,28 @@ public class SavedHistory {
             graphContainer.getMapViewManager().getCurrentBoundingBox(),
             saveLocations(graphContainer.getGraph()),
             getUnmodifiableSet(graphContainer.getSelectionManager().getSelectedVertexRefs()),
+            getFocusVertices(graphContainer),
             getOperationSettings(graphContainer, operations)
         );
+        // TODO Why is this here? We just called this function in the constructor call.
         saveLocations(graphContainer.getGraph());
     }
 
-    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Map<String,String> operationSettings) {
+    protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
+        VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer, false);
+        if (criteria == null) {
+            return Collections.emptySet();
+        } else {
+            return criteria.getVertices();
+        }
+    }
+
+    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Set<VertexRef> focusVertices, Map<String,String> operationSettings) {
         m_szl = szl;
         m_boundBox = box;
         m_locations = locations;
         m_selectedVertices = selectedVertices;
+        m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
         LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
     }
@@ -148,11 +166,36 @@ public class SavedHistory {
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
 
+        CRC32 focusCrc = new CRC32();
+        for(VertexRef entry : m_focusVertices) {
+            try {
+                focusCrc.update(entry.getNamespace().getBytes("UTF-8"));
+                focusCrc.update(entry.getId().getBytes("UTF-8"));
+            } catch(UnsupportedEncodingException e) {
+                // Impossible on modern JVMs
+            }
+        }
+        retval.append(String.format(",(%X)", focusCrc.getValue()));
+
         return retval.toString();
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
         // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+
+        if (m_focusVertices.size() > 0) {
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+            // Clear existing focus nodes
+            criteria.clear();
+            // Add focus nodes from history
+            criteria.addAll(m_focusVertices);
+        } else {
+            // Remove any existing VertexHopCriteria
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer, false);
+            if (criteria != null) {
+                graphContainer.removeCriteria(criteria);
+            }
+        }
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {

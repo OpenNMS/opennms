@@ -138,65 +138,61 @@ public class BundleContextHistoryManagerTest  {
         // save again (nothing should change)
         String historyHash2 = historyManager.createHistory(admin, graphContainerMock);
         SavedHistory savedHistory2 = historyManager.getHistory(admin, historyHash2);
-        Properties properties2 = loadProperties();
+        properties = loadProperties();
         Assert.assertNotNull(savedHistory2);
-        Assert.assertNotNull(properties2);
-        Assert.assertEquals(2, properties2.size()); // user -> historyId and historyId -> historyContent
-        Assert.assertTrue(properties2.containsKey(admin));
-        Assert.assertTrue(properties2.containsKey(historyHash2));
-        Assert.assertEquals(properties2.get(admin), historyHash2);
-        Assert.assertNotNull(properties2.get(historyHash2));
-        properties2 = null;   // no access to this field after this line!
+        Assert.assertNotNull(properties);
+        Assert.assertEquals(2, properties.size()); // user -> historyId and historyId -> historyContent
+        Assert.assertTrue(properties.containsKey(admin));
+        Assert.assertTrue(properties.containsKey(historyHash2));
+        Assert.assertEquals(properties.get(admin), historyHash2);
+        Assert.assertNotNull(properties.get(historyHash2));
 
         // change entry for user "admin"
         displayableVertices.add(new TestVertex("200"));
         String historyHash3 = historyManager.createHistory(admin, graphContainerMock);
         SavedHistory savedHistory3 = historyManager.getHistory(admin, historyHash3);
-        Properties properties3 = loadProperties();
+        properties = loadProperties();
         Assert.assertNotNull(savedHistory3);
-        Assert.assertNotNull(properties3);
-        Assert.assertEquals(2, properties3.size());   // user -> historyId and historyId -> historyContent
-        Assert.assertTrue(properties3.containsKey(admin));
-        Assert.assertTrue(properties3.containsKey(historyHash3));
-        Assert.assertFalse(properties3.containsKey(historyHash2)); // this should be removed
-        Assert.assertNotNull(properties3.get(historyHash3));
-        properties3 = null;  // no access to this field after this line!
+        Assert.assertNotNull(properties);
+        Assert.assertEquals(3, properties.size());   // user -> historyId and historyId -> historyContent
+        Assert.assertTrue(properties.containsKey(admin));
+        Assert.assertTrue(properties.containsKey(historyHash3));
+        Assert.assertTrue(properties.containsKey(historyHash2)); // this should not be removed
+        Assert.assertNotNull(properties.get(historyHash3));
 
         // create an entry for another user, but with same historyHash
         String historyHash4 = historyManager.createHistory(user1, graphContainerMock);
         SavedHistory savedHistory4 = historyManager.getHistory(admin, historyHash3);
-        Properties properties4 = loadProperties();
+        properties = loadProperties();
         Assert.assertEquals(historyHash3, historyHash4);
         Assert.assertNotNull(savedHistory4);
-        Assert.assertNotNull(properties4);
-        Assert.assertEquals(3, properties4.size()); // user -> historyId and historyId -> historyContent
-        Assert.assertTrue(properties4.containsKey(user1));
-        Assert.assertTrue(properties4.containsKey(admin));
-        Assert.assertTrue(properties4.containsKey(historyHash4));
-        Assert.assertEquals(historyHash4, properties4.get(admin));
-        Assert.assertEquals(historyHash4, properties4.get(user1));
-        Assert.assertNotNull(properties4.get(historyHash4));
-        properties4 = null;  // no access to this field after this line!
+        Assert.assertNotNull(properties);
+        Assert.assertEquals(4, properties.size()); // user -> historyId and historyId -> historyContent
+        Assert.assertTrue(properties.containsKey(user1));
+        Assert.assertTrue(properties.containsKey(admin));
+        Assert.assertTrue(properties.containsKey(historyHash4));
+        Assert.assertEquals(historyHash4, properties.get(admin));
+        Assert.assertEquals(historyHash4, properties.get(user1));
+        Assert.assertNotNull(properties.get(historyHash4));
 
         // change entry for user1
         displayableVertices.remove(0);
         String historyHash5 = historyManager.createHistory(user1, graphContainerMock);
         SavedHistory savedHistory5 = historyManager.getHistory(user1, historyHash3);
-        Properties properties5 = loadProperties();
+        properties = loadProperties();
         Assert.assertNotNull(savedHistory5);
-        Assert.assertNotNull(properties5);
-        Assert.assertEquals(4, properties5.size());   // user -> historyId and historyId -> historyContent
-        Assert.assertTrue(properties5.containsKey(admin));
-        Assert.assertTrue(properties5.containsKey(user1));
-        Assert.assertTrue(properties5.containsKey(historyHash4));
-        Assert.assertTrue(properties5.containsKey(historyHash5));
-        Assert.assertNotNull(properties5.get(historyHash5));
-        Assert.assertEquals(historyHash4, properties5.get(admin));
-        Assert.assertEquals(historyHash5, properties5.get(user1));
-        properties5 = null;  // no access to this field after this line!
+        Assert.assertNotNull(properties);
+        Assert.assertEquals(5, properties.size());   // user -> historyId and historyId -> historyContent
+        Assert.assertTrue(properties.containsKey(admin));
+        Assert.assertTrue(properties.containsKey(user1));
+        Assert.assertTrue(properties.containsKey(historyHash4));
+        Assert.assertTrue(properties.containsKey(historyHash5));
+        Assert.assertNotNull(properties.get(historyHash5));
+        Assert.assertEquals(historyHash4, properties.get(admin));
+        Assert.assertEquals(historyHash5, properties.get(user1));
     }
 
-    private Properties loadProperties() throws IOException {
+    private static Properties loadProperties() throws IOException {
         Properties props = new Properties();
         props.load(new FileInputStream(new File(DATA_FILE_NAME)));
         return props;
