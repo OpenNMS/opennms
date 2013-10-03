@@ -28,32 +28,40 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.ui.Connect;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.Point;
-import org.opennms.features.vaadin.nodemaps.internal.NodeMap;
+import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.communication.RpcProxy;
+import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.shared.ui.Connect;
 
-@Connect(NodeMap.class)
+@Connect(NodeMapComponent.class)
 public class NodeMapConnector extends AbstractComponentConnector {
+    private static final long serialVersionUID = 1706855732145066131L;
+    private Logger LOG = Logger.getLogger(getClass().getName());
 
     private Map<String, Icon> m_icons;
 
+    private NodeIdSelectionRpc m_rpc = RpcProxy.create(NodeIdSelectionRpc.class, this);
 
     public NodeMapConnector() {
         initializeIcons();
@@ -64,40 +72,63 @@ public class NodeMapConnector extends AbstractComponentConnector {
     }-*/;
 
     @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+    public void onStateChanged(final StateChangeEvent stateChangeEvent) {
+        LOG.info("NodeMapConnector.onStateChanged(" + stateChangeEvent + ")");
         // Handle all common Vaadin features first
         super.onStateChanged(stateChangeEvent);
 
-        if (stateChangeEvent.hasPropertyChanged("initialSearch")) {
-            getWidget().setSearchString(getState().initialSearch);
+        if (stateChangeEvent.hasPropertyChanged("searchString")) {
+            final String searchString = getState().searchString;
+            LOG.info("NodeMapConnector.onStateChanged(): searchString is now: " + searchString);
+            if (searchString == null) {
+                DomEvent.send(SearchStringSetEvent.createEvent(""));
+            } else {
+                DomEvent.send(SearchStringSetEvent.createEvent(searchString));
+            }
         }
 
         if (stateChangeEvent.hasPropertyChanged("nodes")) {
             updateNodes();
         }
 
+        if (stateChangeEvent.hasPropertyChanged("nodeIds")) {
+            final List<Integer> nodeIds = getState().nodeIds;
+            LOG.info("NodeMapConnector.onStateChanged(): nodeIds is now: " + nodeIds);
+            if (nodeIds != null && nodeIds.size() > 0) {
+                final StringBuilder sb = new StringBuilder("nodeId in ");
+                final Iterator<Integer> i = nodeIds.iterator();
+                while (i.hasNext()) {
+                    sb.append(i.next());
+                    if (i.hasNext()) sb.append(", ");
+                }
+                DomEvent.send(SearchStringSetEvent.createEvent(sb.toString()));
+            }
+        }
     }
 
     private void updateNodes() {
-        if (getState().nodes.isEmpty()) {
+        final List<MapNode> nodes = getState().nodes;
+        LOG.info("NodeMapConnector.onStateChanged(): nodes list is now: " + nodes);
+        final List<JSNodeMarker> featureCollection = new ArrayList<JSNodeMarker>();
+
+        if (nodes.isEmpty()) {
+            getWidget().setMarkers(featureCollection);
             return;
         }
 
-        final List<NodeMarker> featureCollection = new ArrayList<NodeMarker>();
+        for (final MapNode node : nodes) {
+            final JSNodeMarker marker = new JSNodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
+            marker.putProperty(JSNodeMarker.Property.NODE_ID, node.getNodeId());
+            marker.putProperty(JSNodeMarker.Property.NODE_LABEL, node.getNodeLabel());
+            marker.putProperty(JSNodeMarker.Property.FOREIGN_SOURCE, node.getForeignSource());
+            marker.putProperty(JSNodeMarker.Property.FOREIGN_ID, node.getForeignId());
+            marker.putProperty(JSNodeMarker.Property.DESCRIPTION, node.getDescription());
+            marker.putProperty(JSNodeMarker.Property.MAINTCONTRACT, node.getMaintcontract());
+            marker.putProperty(JSNodeMarker.Property.IP_ADDRESS, node.getIpAddress());
+            marker.putProperty(JSNodeMarker.Property.SEVERITY, node.getSeverity());
+            marker.putProperty(JSNodeMarker.Property.SEVERITY_LABEL, node.getSeverityLabel());
 
-        for (MapNode node : getState().nodes) {
-            final NodeMarker marker = new NodeMarker(new LatLng(node.getLatitude(), node.getLongitude()));
-            marker.putProperty(NodeMarker.Property.NODE_ID, node.getNodeId());
-            marker.putProperty(NodeMarker.Property.NODE_LABEL, node.getNodeLabel());
-            marker.putProperty(NodeMarker.Property.FOREIGN_SOURCE, node.getForeignSource());
-            marker.putProperty(NodeMarker.Property.FOREIGN_ID, node.getForeignId());
-            marker.putProperty(NodeMarker.Property.DESCRIPTION, node.getDescription());
-            marker.putProperty(NodeMarker.Property.MAINTCONTRACT, node.getMaintcontract());
-            marker.putProperty(NodeMarker.Property.IP_ADDRESS, node.getIpAddress());
-            marker.putProperty(NodeMarker.Property.SEVERITY, node.getSeverity());
-            marker.putProperty(NodeMarker.Property.SEVERITY_LABEL, node.getSeverityLabel());
-
-            List<String> categories = node.getCategories();
+            final List<String> categories = node.getCategories();
             if (categories != null) {
                 marker.setCategories(categories.toArray(new String[]{}));
             }
@@ -124,7 +155,9 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(NodeMapWidget.class);
+        final NodeMapWidget widget = GWT.create(NodeMapWidget.class);
+        widget.setRpc(m_rpc);
+        return widget;
     }
 
     @Override

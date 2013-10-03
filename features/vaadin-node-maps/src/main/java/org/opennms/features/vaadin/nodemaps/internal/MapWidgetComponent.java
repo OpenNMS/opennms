@@ -28,6 +28,11 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
@@ -35,25 +40,23 @@ import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
-public class MapWidgetComponent extends NodeMap {
-
+public class MapWidgetComponent extends NodeMapComponent {
+    private static final long serialVersionUID = -6364929103619363239L;
     private Logger m_log = LoggerFactory.getLogger(getClass());
-    private String m_searchString;
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -176,10 +179,6 @@ public class MapWidgetComponent extends NodeMap {
             nodes.get(lastId).setUnackedCount(unackedCount);
         }
 
-        if (m_searchString != null) {
-            setInitialSearchString(m_searchString);
-        }
-
         m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
         m_transaction.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -214,6 +213,6 @@ public class MapWidgetComponent extends NodeMap {
 
 
     public void setSearchString(final String searchString) {
-        m_searchString = searchString;
+        getState().searchString = searchString;
     }
 }
