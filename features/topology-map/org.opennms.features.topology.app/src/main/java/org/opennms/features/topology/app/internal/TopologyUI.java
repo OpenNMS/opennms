@@ -222,7 +222,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
         // If we found valid node IDs in the list...
         if (refs.size() > 0) {
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopProviderForContainer(graphContainer);
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
             // Clear the exiting focus node list
             criteria.clear();
             for (Integer ref : refs) {
