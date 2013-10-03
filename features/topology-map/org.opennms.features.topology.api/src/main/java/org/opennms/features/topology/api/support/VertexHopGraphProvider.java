@@ -64,17 +64,28 @@ import org.slf4j.LoggerFactory;
 public class VertexHopGraphProvider implements GraphProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-	public static VertexHopCriteria getVertexHopProviderForContainer(GraphContainer graphContainer) {
-		for (Criteria criteria : graphContainer.getCriteria()) {
-			try {
-				VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
-				return hopCriteria;
-			} catch (ClassCastException e) {}
+	public static VertexHopCriteria getVertexHopCriteriaForContainer(GraphContainer graphContainer) {
+		return getVertexHopCriteriaForContainer(graphContainer, true);
+	}
+
+	public static VertexHopCriteria getVertexHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
+		Criteria[] criteria = graphContainer.getCriteria();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					VertexHopCriteria hopCriteria = (VertexHopCriteria)criterium;
+					return hopCriteria;
+				} catch (ClassCastException e) {}
+			}
 		}
 
-		VertexHopCriteria hopCriteria = new VertexHopCriteria();
-		graphContainer.setCriteria(hopCriteria);
-		return hopCriteria;
+		if (createIfAbsent) {
+			VertexHopCriteria hopCriteria = new VertexHopCriteria();
+			graphContainer.setCriteria(hopCriteria);
+			return hopCriteria;
+		} else {
+			return null;
+		}
 	}
 
 	public static class VertexHopCriteria implements Criteria {
@@ -82,28 +93,19 @@ public class VertexHopGraphProvider implements GraphProvider {
 		private static final long serialVersionUID = 2904432878716561926L;
 
 		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
-		//private int m_hops;
 
 		public VertexHopCriteria() {
 			super();
-			//m_hops = hops;
 		}
 
-		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
+		public VertexHopCriteria(Collection<VertexRef> objects) {
 			m_vertices.addAll(objects);
-			//m_hops = hops;
 		}
 
 		@Override
 		public ElementType getType() {
 			return ElementType.VERTEX;
 		}
-
-		/*
-		public int getHops() {
-			return m_hops;
-		}
-		 */
 
 		/**
 		 * TODO: This return value doesn't matter since we just delegate
@@ -122,7 +124,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 			m_vertices.remove(ref);
 		}
 
-		public void clear(VertexRef ref) {
+		public void clear() {
 			m_vertices.clear();
 		}
 
@@ -134,8 +136,12 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return m_vertices.size();
 		}
 
-		public void clear() {
-			m_vertices.clear();
+		public Set<VertexRef> getVertices() {
+			return Collections.unmodifiableSet(m_vertices);
+		}
+
+		public void addAll(Collection<VertexRef> refs) {
+			m_vertices.addAll(refs);
 		}
 	}
 
