@@ -32,10 +32,9 @@ package org.opennms.features.topology.app.internal.ui;
 import com.google.common.base.Function;
 import com.google.common.collect.*;
 import com.vaadin.ui.AbstractComponent;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
@@ -46,7 +45,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 
-public class SearchBox extends AbstractComponent implements SelectionListener {
+public class SearchBox extends AbstractComponent implements SelectionListener, GraphContainer.ChangeListener {
 
     Multimap<SearchProvider, SearchSuggestion> m_suggestionMap;
     private OperationContext m_operationContext;
@@ -69,16 +68,39 @@ public class SearchBox extends AbstractComponent implements SelectionListener {
             for(SearchProvider key : keys){
                 if(m_suggestionMap.get(key).contains(selectedSuggestion.get(0))){
                     key.getSelectionOperation().execute(mapToVertexRefs(selectedSuggestion), m_operationContext);
+
                     break;
                 }
             }
 
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            criteria.addAll(mapToVertexRefs(selectedSuggestion));
+            m_operationContext.getGraphContainer().redoLayout();
         }
 
         @Override
         public void removeSelected(SearchSuggestion searchSuggestion) {
             SelectionManager selectionManager = m_operationContext.getGraphContainer().getSelectionManager();
             selectionManager.deselectVertexRefs(Lists.newArrayList(mapToVertexRef(searchSuggestion)));
+        }
+
+        @Override
+        public void removeFocused(SearchSuggestion searchSuggestion) {
+
+            for (Criteria criteria : m_operationContext.getGraphContainer().getCriteria()) {
+                try {
+                    VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
+                    hopCriteria.remove(mapToVertexRef(searchSuggestion));
+
+                    // If there are no remaining focus vertices in the criteria, then
+                    // just remove it completely.
+                    if (hopCriteria.size() == 0) {
+                        m_operationContext.getGraphContainer().removeCriteria(criteria);
+                    }
+                } catch (ClassCastException e) {}
+            }
+
+            m_operationContext.getGraphContainer().redoLayout();
         }
 
     };
@@ -160,6 +182,14 @@ public class SearchBox extends AbstractComponent implements SelectionListener {
 
         List<VertexRef> vertexRefs = Lists.newArrayList(selectionContext.getSelectedVertexRefs());
         getState().setSelected(mapToSuggestions(vertexRefs));
+
+    }
+
+    @Override
+    public void graphChanged(GraphContainer graphContainer) {
+        VertexHopCriteria hopCriteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+
+        getState().setFocused(mapToSuggestions(Lists.newArrayList(hopCriteria.getVertices())));
 
     }
 

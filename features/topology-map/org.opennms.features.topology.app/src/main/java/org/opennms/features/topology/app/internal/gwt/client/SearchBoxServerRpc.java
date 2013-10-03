@@ -37,4 +37,5 @@ public interface SearchBoxServerRpc extends ServerRpc {
     public void querySuggestions(String query, int indexFrom, int indexTo);
     public void selectSuggestion(List<SearchSuggestion> suggestion);
     public void removeSelected(SearchSuggestion searchSuggestion);
+    public void removeFocused(SearchSuggestion searchSuggestion);
 }

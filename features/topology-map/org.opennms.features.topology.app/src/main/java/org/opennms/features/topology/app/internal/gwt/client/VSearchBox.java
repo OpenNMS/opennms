@@ -183,6 +183,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     FlowPanel m_componentHolder;
 
     VerticalPanel m_selectionContainer;
+    VerticalPanel m_focusedContainer;
 
     SuggestBox m_suggestBox;
     public VSearchBox(){
@@ -218,6 +219,9 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         m_selectionContainer = new VerticalPanel();
         m_componentHolder.add(m_selectionContainer);
+
+        m_focusedContainer = new VerticalPanel();
+        m_componentHolder.add(m_focusedContainer);
     }
 
     @Override
@@ -251,6 +255,17 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     }
 
     public void setFocused(List<SearchSuggestion> focused) {
+        m_focusedContainer.clear();
+        for(SearchSuggestion searchSuggestion : focused){
+            SearchTokenField field = new SearchTokenField(searchSuggestion);
+            field.setRemoveCallback(new SearchTokenField.RemoveCallback() {
+                @Override
+                public void onRemove(SearchSuggestion searchSuggestion) {
+                    m_connector.removeFocused(searchSuggestion);
+                }
+            });
+            m_focusedContainer.add(field);
+        }
 
     }
 

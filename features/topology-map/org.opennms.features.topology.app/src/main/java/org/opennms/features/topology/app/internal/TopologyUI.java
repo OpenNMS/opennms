@@ -461,6 +461,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         SearchBox searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
         m_selectionManager.addSelectionListener(searchBox);
+        m_graphContainer.addChangeListener(searchBox);
 
         //History Button Layout
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
