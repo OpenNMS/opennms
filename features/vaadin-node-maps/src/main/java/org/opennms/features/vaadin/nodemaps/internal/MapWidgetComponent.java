@@ -40,6 +40,8 @@ import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.features.geocoder.TemporaryGeocoderException;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.VMapWidget;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -126,6 +128,12 @@ public class MapWidgetComponent extends NodeMapComponent {
                 } else {
                     m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
                     final Coordinates coordinates = getCoordinates(addressString);
+                    
+                    if (coordinates == null) {
+                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+                        continue;
+                    }
+
                     geolocation.setLongitude(coordinates.getLongitude());
                     geolocation.setLatitude(coordinates.getLatitude());
                     updatedAssets.add(assets);
@@ -202,10 +210,13 @@ public class MapWidgetComponent extends NodeMapComponent {
         Coordinates coordinates = null;
         try {
             coordinates = m_geocoderService.getCoordinates(address);
+            if (coordinates == null) {
+                coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+            }
+        } catch (final TemporaryGeocoderException e) {
+            m_log.debug("Failed to find coordinates for address '{}' due to a temporary failure.", address);
         } catch (final GeocoderException e) {
-            m_log.debug("Failed to find coordinates for address {}", address);
-        }
-        if (coordinates == null) {
+            m_log.debug("Failed to find coordinates for address '{}'.", address);
             coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
         }
         return coordinates;
