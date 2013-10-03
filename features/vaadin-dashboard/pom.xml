@@ -190,8 +190,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ops4j.pax.vaadin</groupId>
-            <artifactId>service</artifactId>
+            <groupId>org.opennms.osgi</groupId>
+            <artifactId>opennms-osgi-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Vaadin Dependencies -->

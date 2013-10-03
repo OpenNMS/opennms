@@ -1,5 +1,12 @@
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
@@ -9,8 +16,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class StatusSelector {
     private static class StatusSelectorOperation extends AbstractCheckedOperation{
@@ -25,13 +30,13 @@ public class StatusSelector {
 
         @Override
         public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-            execute(operationContext.getGraphContainer());
+            toggle(operationContext.getGraphContainer());
             return null;
         }
 
-        private void execute(GraphContainer container) {
+        private void toggle(GraphContainer container) {
             LoggerFactory.getLogger(getClass()).debug("Active status provider is: {}", m_statusProvider);
-            if(isChecked(container)) {
+            if(container.getStatusProvider() == m_statusProvider) {
                 container.setStatusProvider(StatusProvider.NULL);
             } else {
                 container.setStatusProvider(m_statusProvider);
@@ -51,9 +56,7 @@ public class StatusSelector {
         @Override
         protected boolean isChecked(GraphContainer container) {
             StatusProvider activeStatusProvider = container.getStatusProvider();
-            if (activeStatusProvider == null) container.setStatusProvider(m_statusProvider); // enable this status-provider
-            return !StatusProvider.NULL.equals(activeStatusProvider)  // not NULL-Provider
-                    && m_statusProvider.equals(activeStatusProvider); // but selected
+            return m_statusProvider.equals(activeStatusProvider);
         }
 
         @Override
@@ -63,8 +66,10 @@ public class StatusSelector {
 
         @Override
         public void applyHistory(GraphContainer container, Map<String, String> settings) {
-            if("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
-                execute(container);
+            if(Boolean.TRUE.toString().equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
+                container.setStatusProvider(m_statusProvider);
+            } else {
+                container.setStatusProvider(StatusProvider.NULL);
             }
         }
 

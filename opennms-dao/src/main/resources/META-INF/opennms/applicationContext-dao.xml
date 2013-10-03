@@ -341,15 +341,14 @@
     <constructor-arg value="${opennms.home}/etc/datacollection" />
   </bean>
 
-  <!-- Default: reload datacollection config every 10 minutes -->
-  <bean id="dataCollectionConfigReloadInterval" class="java.lang.Long">
-    <constructor-arg value="0" />
+  <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
+    <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
   </bean>
 
   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
     <property name="configResource" ref="dataCollectionConfigResourceLocation" />
     <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
-    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadInterval" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
   </bean>
 
   <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

@@ -115,4 +115,5 @@ public interface DataCollectionConfigDao {
 
     List<String> getAvailableMibGroups();
 
+    void reload();
 }

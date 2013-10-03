@@ -3,6 +3,7 @@ package org.opennms.features.topology.app.internal.operations;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,20 +34,23 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-       return execute(operationContext.getGraphContainer());
+       return toggle(operationContext.getGraphContainer());
+    }
+
+    @Override
+    public Map<String, String> createHistory(GraphContainer container){
+        return Collections.singletonMap(this.getClass().getName(), Boolean.toString(isChecked(container)));
     }
 
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
-        if (container.getAutoRefreshSupport() != null) {
-            String autoRefreshEnabledString = settings.get(getClass().getName());
-            boolean autoRefreshEnabled = Boolean.valueOf(autoRefreshEnabledString);
+        if (container.hasAutoRefreshSupport()) {
+            boolean autoRefreshEnabled = Boolean.TRUE.toString().equals(settings.get(getClass().getName()));
             container.getAutoRefreshSupport().setEnabled(autoRefreshEnabled);
         }
-        execute(container);
     }
 
-    private Undoer execute(final GraphContainer container) {
+    private static Undoer toggle(final GraphContainer container) {
         if (container.hasAutoRefreshSupport()) {
             container.getAutoRefreshSupport().toggle();
         }
@@ -54,7 +58,7 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
         return new Undoer() {
             @Override
             public void undo(OperationContext operationContext) {
-                execute(operationContext.getGraphContainer()); // toggle again
+                toggle(operationContext.getGraphContainer()); // toggle again
             }
         };
     }
