@@ -1,5 +1,28 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.discotools.gwt.leaflet.client.controls.Control;
+import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AbstractDomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
+
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -18,25 +41,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SearchControl extends Control {
-    Logger logger = Logger.getLogger(getClass().getName());
+    private Logger LOG = Logger.getLogger(getClass().getName());
     private static final HashMap<String, String> m_labels;
     static {
         m_labels = new HashMap<String,String>();
@@ -51,10 +58,9 @@ public class SearchControl extends Control {
     private HTMLPanel m_container;
     private SearchTextBox m_inputBox;
     private HistoryWrapper m_historyWrapper;
-    
+
     private HTML m_submitIcon;
 
-    private SearchConsumer m_searchConsumer;
     private MarkerContainer m_markerContainer;
     private SearchEventCallback m_changeCallback;
 
@@ -62,16 +68,13 @@ public class SearchControl extends Control {
     private SearchStateManager m_stateManager;
     private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
+    private FilteredMarkersUpdatedEventHandler m_filteredMarkersEventHandler = null;
+    private SearchStringSetEventHandler m_searchStringEventHandler;
 
-    public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer) {
-        this(searchConsumer, markerContainer, new SearchOptions());
-    }
-
-    public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer, final SearchOptions options) {
+    public SearchControl(final MarkerContainer markerContainer, final Widget root) {
         super(JSObject.createJSObject());
-        setJSObject(SearchControlImpl.create(this, options.getJSObject()));
-        logger.log(Level.INFO, "new SearchControl()");
-        m_searchConsumer = searchConsumer;
+        setJSObject(SearchControlImpl.create(this, new SearchOptions().getJSObject()));
+        LOG.log(Level.INFO, "new SearchControl()");
         m_markerContainer = markerContainer;
         m_selectionModel = new SingleSelectionModel<NodeMarker>();
 
@@ -89,23 +92,46 @@ public class SearchControl extends Control {
     }
 
     public Element doOnAdd(final JavaScriptObject map) {
-        logger.log(Level.INFO, "onAdd() called");
-        
+        LOG.log(Level.INFO, "SearchControl.onAdd() called");
+
         m_container.add(m_inputBox);
         m_container.add(m_submitIcon);
         m_container.add(m_autoComplete);
+
+        /* If the backend sends a new search string, set it on the input box
+         * to make sure we're in sync, but don't re-fire events.
+         */
+        m_searchStringEventHandler = new SearchStringSetEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                final SearchStringSetEvent event = nativeEvent.cast();
+                replaceSearchWith(event.getSearchString());
+            }
+        };
+        DomEvent.addListener(m_searchStringEventHandler);
+
+        m_filteredMarkersEventHandler = new FilteredMarkersUpdatedEventHandler() {
+            @Override public void onEvent(final NativeEvent nativeEvent) {
+                LOG.log(Level.INFO, "SearchControl.onFilteredMarkersUpdated()");
+                refresh();
+            }
+        };
+        DomEvent.addListener(m_filteredMarkersEventHandler);
+
+        refresh();
 
         return m_container.getElement();
     }
 
     public SearchControl doOnRemove(final JavaScriptObject map) {
-        logger.log(Level.INFO, "onRemove() called");
+        LOG.log(Level.INFO, "SearchControl.onRemove() called");
+        if (m_filteredMarkersEventHandler != null) DomEvent.removeListener(m_filteredMarkersEventHandler);
+        if (m_searchStringEventHandler != null) DomEvent.removeListener(m_searchStringEventHandler);
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
         return this;
     }
 
     public void refresh() {
-        final List<NodeMarker> markers = m_markerContainer.getMarkers();
+        final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
         m_autoComplete.setRowData(markers);
     }
 
@@ -129,11 +155,9 @@ public class SearchControl extends Control {
         m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper) {
             @Override
             public void refresh() {
-                m_searchConsumer.setSearchString(m_inputBox.getValue());
-                // it's the search consumer's job to trigger an update in any UI elements
-                m_searchConsumer.refresh();
+                sendSearchStringSetEvent(m_inputBox.getValue());
 
-                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
                 final NodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
                 if (selected == null) {
@@ -147,18 +171,21 @@ public class SearchControl extends Control {
                         }
                     }
                 }
+                
+                DomEvent.send(FilteredMarkersUpdatedEvent.createEvent());
             }
 
             @Override
             public void clearSearchInput() {
                 m_inputBox.setValue("");
+                sendSearchStringSetEvent("");
             }
 
             @Override
             public void focusAutocomplete() {
                 m_autoComplete.setFocus(true);
                 if (m_selectionModel.getSelectedObject() == null) {
-                    final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                    final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                     if (markers.size() > 0) {
                         m_selectionModel.setSelected(markers.get(0), true);
                     }
@@ -167,7 +194,7 @@ public class SearchControl extends Control {
 
             @Override
             public void showAutocomplete() {
-                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 if (markers.size() > 0) {
                     m_selectionModel.setSelected(markers.get(0), true);
                 }
@@ -184,7 +211,9 @@ public class SearchControl extends Control {
             public void entrySelected() {
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
                 if (selected != null) {
-                    m_inputBox.setValue("nodeLabel=" + selected.getNodeLabel());
+                    final String newSearchString = "nodeLabel=" + selected.getNodeLabel();
+                    m_inputBox.setValue(newSearchString);
+                    sendSearchStringSetEvent(newSearchString);
                 }
             }
 
@@ -192,7 +221,7 @@ public class SearchControl extends Control {
             public void focusInput() {
                 m_inputBox.setFocus(true);
             }
-            
+
         };
     }
 
@@ -208,12 +237,12 @@ public class SearchControl extends Control {
         m_inputBox.getElement().setAttribute("type", "search");
         m_inputBox.setMaxLength(40);
         m_inputBox.setVisibleLength(40);
-        m_inputBox.setValue(m_searchConsumer.getSearchString());
+        m_inputBox.setValue("");
 
         DomEvent.stopEventPropagation(m_inputBox);
 
-        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox, m_searchConsumer) {
-            @Override protected void onEvent(final NativeEvent event) {
+        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox) {
+            @Override public void onEvent(final NativeEvent event) {
                 m_stateManager.handleInputEvent(event);
             }
         };
@@ -226,9 +255,8 @@ public class SearchControl extends Control {
         m_submitIcon.setTitle("Search locations...");
 
         DomEvent.stopEventPropagation(m_submitIcon);
-        DomEvent.addListener(new DomEventCallback("click", m_submitIcon) {
-            @Override
-            protected void onEvent(final NativeEvent event) {
+        DomEvent.addListener(new AbstractDomEventCallback("click", m_submitIcon) {
+            @Override public void onEvent(final NativeEvent event) {
                 m_inputBox.setFocus(true);
                 m_stateManager.handleSearchIconEvent(event);
             }
@@ -240,27 +268,31 @@ public class SearchControl extends Control {
             @Override
             public SafeHtml render(final NodeMarker marker) {
                 final SafeHtmlBuilder builder = new SafeHtmlBuilder();
-                final String searchString = m_searchConsumer.getSearchString().toLowerCase();
+                final String search = m_inputBox.getValue();
 
                 builder.appendHtmlConstant("<div class=\"autocomplete-label\">");
                 builder.appendHtmlConstant(marker.getNodeLabel());
                 builder.appendHtmlConstant("</div>");
                 String additionalSearchInfo = null;
-                if (searchString.contains(":") || searchString.contains("=")) {
-                    final String searchKey = searchString.replaceAll("[\\:\\=].*$", "").toLowerCase();
-                    logger.log(Level.INFO, "searchKey = " + searchKey);
+
+                if (search != null && (search.contains(":") || search.contains("="))) {
+                    final String searchKey = search.replaceAll("[\\:\\=].*$", "").toLowerCase();
+                    LOG.log(Level.INFO, "searchKey = " + searchKey);
+
+                    final Map<String,String> props = marker.getProperties();
 
                     if ("category".equals(searchKey) || "categories".equals(searchKey)) {
-                        final String categoryString = marker.getCategoriesAsString();
-                        if (categoryString.length() > 0) {
-                            additionalSearchInfo = categoryString;
+                        final String catString = props.get("categories");
+                        if (catString != null) {
+                            additionalSearchInfo = catString;
                         }
                     }
 
-                    for (final String key : marker.getTextPropertyNames()) {
-                        final String lowerKey = key.toLowerCase();
-                        if (lowerKey.equals(searchKey) && m_labels.containsKey(lowerKey)) {
-                            additionalSearchInfo = m_labels.get(lowerKey) + ": " + marker.getProperty(key);
+                    for (final Map.Entry<String,String> entry : props.entrySet()) {
+                        final String key = entry.getKey().toLowerCase();
+                        final Object value = entry.getValue();
+                        if (key.equals(searchKey) && m_labels.containsKey(key)) {
+                            additionalSearchInfo = m_labels.get(key) + ": " + value;
                             break;
                         }
                     }
@@ -268,8 +300,8 @@ public class SearchControl extends Control {
 
                 if (additionalSearchInfo != null) {
                     builder.appendHtmlConstant("<div class=\"autocomplete-additional-info\">")
-                        .appendHtmlConstant(additionalSearchInfo)
-                        .appendHtmlConstant("</div>");
+                    .appendHtmlConstant(additionalSearchInfo)
+                    .appendHtmlConstant("</div>");
                 }
 
                 return builder.toSafeHtml();
@@ -311,7 +343,19 @@ public class SearchControl extends Control {
         public void setValue(final String value) {
             History.newItem(value);
         }
-        
 
+
+    }
+
+    public void replaceSearchWith(final String newSearchString) {
+        if (m_inputBox != null) {
+            final String existingSearchString = m_inputBox.getValue();
+            if (Util.hasChanged(existingSearchString, newSearchString)) {
+                LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): updated.");
+                m_inputBox.setValue(newSearchString, false);
+                return;
+            }
+        }
+        LOG.log(Level.INFO, "SearchControl.replaceSearchWith(" + newSearchString + "): unmodified.");
     }
 }

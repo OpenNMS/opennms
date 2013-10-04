@@ -39,6 +39,7 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -55,7 +56,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.osgi.*;
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -134,7 +137,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
-    private final Label m_zoomLevelLabel = new Label("0"); 
+    private final Label m_zoomLevelLabel = new Label("0");
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -166,6 +169,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 	@Override
     protected void init(final VaadinRequest request) {
+        FontAwesomeIcons.load(new ThemeResource("font-awesome/css/font-awesome.min.css"));
+
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
@@ -295,13 +300,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_rootLayout.addComponent(m_layout);
         m_rootLayout.setExpandRatio(m_layout, 1);
 
+        //TODO: Don't create a horizontal Split container here, no need. Remove and use the absolute
         m_treeMapSplitPanel = new HorizontalSplitPanel();
         m_treeMapSplitPanel.setFirstComponent(createWestLayout());
         m_treeMapSplitPanel.setSecondComponent(createMapLayout());
-        m_treeMapSplitPanel.setSplitPosition(222, Unit.PIXELS);
+        m_treeMapSplitPanel.setSplitPosition(0, Unit.PIXELS);
         m_treeMapSplitPanel.setSizeFull();
-
-
 
         menuBarUpdated(m_commandManager);
         if(m_widgetManager.widgetCount() != 0) {
@@ -318,25 +322,78 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private AbsoluteLayout createMapLayout() {
         final Property<Double> scale = m_graphContainer.getScaleProperty();
 
+        m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
+
         m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
         m_topologyComponent.setSizeFull();
         m_topologyComponent.addMenuItemStateListener(this);
         m_topologyComponent.addVertexUpdateListener(this);
 
         final Slider slider = new Slider(0, 1);
-
         slider.setPropertyDataSource(scale);
         slider.setResolution(1);
-        slider.setHeight("300px");
+        slider.setHeight("200px");
         slider.setOrientation(SliderOrientation.VERTICAL);
 
         slider.setImmediate(true);
 
-        final Button zoomInBtn = new Button();
-        zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
-        zoomInBtn.setDescription("Expand Semantic Zoom Level");
-        zoomInBtn.setStyleName("semantic-zoom-button");
-        zoomInBtn.addClickListener(new ClickListener() {
+        final NativeButton magnifyBtn = new NativeButton();
+        magnifyBtn.setHtmlContentAllowed(true);
+        magnifyBtn.setCaption("<i class=\"" + FontAwesomeIcons.Icon.zoom_in.stylename() + "\" ></i>");
+        magnifyBtn.setStyleName("icon-button");
+        magnifyBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if(slider.getValue() < 1){
+                    slider.setValue(Math.min(1, slider.getValue() + 0.25));
+                }
+            }
+        });
+
+        final NativeButton demagnifyBtn = new NativeButton();
+        demagnifyBtn.setHtmlContentAllowed(true);
+        demagnifyBtn.setCaption("<i class=\"" + FontAwesomeIcons.Icon.zoom_out.stylename() + "\" ></i>");
+        demagnifyBtn.setStyleName("icon-button");
+        demagnifyBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if(slider.getValue() != 0){
+                    slider.setValue(Math.max(0, slider.getValue() - 0.25));
+                }
+            }
+        });
+
+        VerticalLayout sliderLayout = new VerticalLayout();
+        sliderLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        sliderLayout.addComponent(magnifyBtn);
+        sliderLayout.addComponent(slider);
+        sliderLayout.addComponent(demagnifyBtn);
+
+        final Button szlOutBtn = new Button();
+        szlOutBtn.setHtmlContentAllowed(true);
+        szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
+        szlOutBtn.setDescription("Collapse Semantic Zoom Level");
+        szlOutBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
+                if (szl > 0) {
+                    szl--;
+                    m_graphContainer.setSemanticZoomLevel(szl);
+                    setSemanticZoomLevel(szl);
+                    saveHistory();
+                } else if(szl == 0){
+                    szlOutBtn.setEnabled(false);
+                }
+
+            }
+        });
+
+        final Button szlInBtn = new Button();
+        szlInBtn.setHtmlContentAllowed(true);
+        szlInBtn.setCaption(FontAwesomeIcons.Icon.arrow_up.variant());
+        szlInBtn.setDescription("Expand Semantic Zoom Level");
+        szlInBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
@@ -345,24 +402,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 m_graphContainer.setSemanticZoomLevel(szl);
                 setSemanticZoomLevel(szl);
                 saveHistory();
-            }
-        });
-
-        Button zoomOutBtn = new Button();
-        zoomOutBtn.setIcon(new ThemeResource("images/minus.png"));
-        zoomOutBtn.setDescription("Collapse Semantic Zoom Level");
-        zoomOutBtn.setStyleName("semantic-zoom-button");
-        zoomOutBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
                 if(szl > 0) {
-                    szl--;
-                    m_graphContainer.setSemanticZoomLevel(szl);
-                    setSemanticZoomLevel(szl);
-                    saveHistory();
+                    szlOutBtn.setEnabled(true);
                 }
-
             }
         });
 
@@ -396,7 +438,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        final Button historyBackBtn = new Button("<<");
+        final Button historyBackBtn = new Button(FontAwesomeIcons.Icon.arrow_left.variant());
+        historyBackBtn.setHtmlContentAllowed(true);
         historyBackBtn.setDescription("Click to go back");
         historyBackBtn.addClickListener(new ClickListener() {
             @Override
@@ -405,7 +448,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        final Button historyForwardBtn = new Button(">>");
+        final Button historyForwardBtn = new Button(FontAwesomeIcons.Icon.arrow_right.variant());
+        historyForwardBtn.setHtmlContentAllowed(true);
         historyForwardBtn.setDescription("Click to go forward");
         historyForwardBtn.addClickListener(new ClickListener() {
             @Override
@@ -414,29 +458,59 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        VerticalLayout toolbar = new VerticalLayout();
-        toolbar.setWidth("31px");
-        toolbar.addComponent(panBtn);
-        toolbar.addComponent(selectBtn);
 
+        SearchBox searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
+        m_selectionManager.addSelectionListener(searchBox);
+        m_graphContainer.addChangeListener(searchBox);
+
+        //History Button Layout
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
+        historyButtonLayout.setSpacing(true);
         historyButtonLayout.addComponent(historyBackBtn);
         historyButtonLayout.addComponent(historyForwardBtn);
 
+        //Semantic Controls Layout
         HorizontalLayout semanticLayout = new HorizontalLayout();
-
-        semanticLayout.addComponent(zoomInBtn);
+        semanticLayout.setSpacing(true);
+        semanticLayout.addComponent(szlInBtn);
         semanticLayout.addComponent(m_zoomLevelLabel);
-        semanticLayout.addComponent(zoomOutBtn);
+        semanticLayout.addComponent(szlOutBtn);
         semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
+
+        Label historyLabel = new Label("History");
+        VerticalLayout historyCtrlLayout = new VerticalLayout();
+        historyCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        historyCtrlLayout.addComponent(historyLabel);
+        historyCtrlLayout.addComponent(historyButtonLayout);
+
+        VerticalLayout controlLayout = new VerticalLayout();
+        controlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        controlLayout.addComponent(panBtn);
+        controlLayout.addComponent(selectBtn);
+
+        VerticalLayout semanticCtrlLayout = new VerticalLayout();
+        semanticCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        semanticCtrlLayout.addComponent(new Label("Semantic Level"));
+        semanticCtrlLayout.addComponent(semanticLayout);
+
+        //Vertical Layout for all tools on right side
+        VerticalLayout toolbar = new VerticalLayout();
+        toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        toolbar.setSpacing(true);
+        toolbar.addComponent(historyCtrlLayout);
+        toolbar.addComponent(sliderLayout);
+        toolbar.addComponent(controlLayout);
+        toolbar.addComponent(semanticCtrlLayout);
+
 
         AbsoluteLayout mapLayout = new AbsoluteLayout();
 
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-        mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
-        mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
-        mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
-        mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
+        //mapLayout.addComponent(sliderLayout, "top: 50px; right: 20px;");
+        mapLayout.addComponent(toolbar, "top: 10px; right: 10px;");
+        //mapLayout.addComponent(semanticLayout, "top: 420px; right: 5px;");
+        //mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
+        mapLayout.addComponent(searchBox, "top:5px; left:5px;");
         mapLayout.setSizeFull();
 
         return mapLayout;
@@ -599,33 +673,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 	private Layout createWestLayout() {
         m_tree = createTree();
         
-        final TextField filterField = new TextField("Filter");
-        filterField.setTextChangeTimeout(200);
-        
-        final Button filterBtn = new Button("Filter");
-        filterBtn.addClickListener(new ClickListener() {
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	GCFilterableContainer container = m_tree.getContainerDataSource();
-                container.removeAllContainerFilters();
-                
-                String filterString = (String) filterField.getValue();
-                if(!filterString.equals("") && filterBtn.getCaption().toLowerCase().equals("filter")) {
-                    container.addContainerFilter(LABEL_PROPERTY, (String) filterField.getValue(), true, false);
-                    filterBtn.setCaption("Clear");
-                } else {
-                    filterField.setValue("");
-                    filterBtn.setCaption("Filter");
-                }
-                
-            }
-        });
-        
-        HorizontalLayout filterArea = new HorizontalLayout();
-        filterArea.addComponent(filterField);
-        filterArea.addComponent(filterBtn);
-        filterArea.setComponentAlignment(filterBtn, Alignment.BOTTOM_CENTER);
         
         m_treeAccordion = new Accordion();
         m_treeAccordion.addTab(m_tree, m_tree.getTitle());
@@ -635,8 +683,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         AbsoluteLayout absLayout = new AbsoluteLayout();
         absLayout.setWidth("100%");
         absLayout.setHeight("100%");
-        absLayout.addComponent(filterArea, "top: 25px; left: 15px;");
-        absLayout.addComponent(m_treeAccordion, "top: 75px; left: 15px; right: 15px; bottom:25px;"); 
+        absLayout.addComponent(m_treeAccordion, "top: 25px; left: 15px; right: 15px; bottom:25px;");
         
         return absLayout;
     }

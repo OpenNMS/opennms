@@ -78,7 +78,7 @@ public class OnmsGeolocationTest {
     }
 
     @Test
-    public void testUSAddress() {
+    public void testAddress() {
         assertEquals(m_expectedAddress, m_geolocation.asAddressString());
     }
 }

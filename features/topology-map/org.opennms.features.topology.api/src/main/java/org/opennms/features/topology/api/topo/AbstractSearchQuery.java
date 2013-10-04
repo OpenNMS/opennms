@@ -26,9 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.api.topo;
 
-public interface WidgetUpdateListener {
+public abstract class AbstractSearchQuery implements SearchQuery{
 
-    public void widgetListUpdated(WidgetManager widgetManager);
+    private String m_queryString;
+
+    public AbstractSearchQuery(String queryString) {
+        m_queryString = queryString;
+    }
+
+    public String getQueryString(){
+        return m_queryString;
+    }
+
+    @Override
+    public abstract boolean matches(VertexRef vertexRef);
 }

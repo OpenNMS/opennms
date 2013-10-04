@@ -55,7 +55,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
-    private class DefaultOperationContext implements OperationContext {
+    public static class DefaultOperationContext implements OperationContext {
 
 		private final UI m_mainWindow;
 
@@ -109,8 +109,11 @@ public class CommandManager {
 			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
 			//TODO: Do some implementation here for execute
 			if (operation != null) {
-
+			    try {
 				operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
+			    } catch (final RuntimeException e) {
+			        LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);
+			    }
 			}
 		}
 
@@ -327,6 +330,8 @@ public class CommandManager {
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
+		
+		try {
 		if(operation != null) {
     		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
@@ -342,6 +347,9 @@ public class CommandManager {
     			menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
     		}
 		}
+		} catch (final RuntimeException e) {
+		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
+		}
 	}
 
     public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, UI mainWindow) {
@@ -354,8 +362,11 @@ public class CommandManager {
         // TODO: Figure out how to do this in the new contextmenu
 
         //ctxMenuItem.setVisible(operation.display(targets, operationContext));
+        try {
         ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
-
+        } catch (final RuntimeException e) {
+            LoggerFactory.getLogger(this.getClass()).warn("updateContextMenuItem: operation failed", e);
+        }
     }
 
 	private List<VertexRef> asVertexList(Object target) {

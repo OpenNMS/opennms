@@ -28,23 +28,48 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import com.vaadin.ui.AbstractComponent;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
-import org.opennms.netmgt.model.*;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.NodeIdSelectionRpc;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGeolocation;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.UI;
 
-public class NodeMap extends AbstractComponent {
+public class NodeMapComponent extends AbstractComponent {
+    private static final long serialVersionUID = 3L;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeMapComponent.class);
 
-    private static final long serialVersionUID = 2L;
+    private NodeIdSelectionRpc m_rpc = new NodeIdSelectionRpc() {
+        private static final long serialVersionUID = 3263343063196874423L;
+        @Override
+        public void setSelectedNodes(final List<Integer> nodeIds) {
+            ((NodeMapsApplication)UI.getCurrent()).setFocusedNodes(nodeIds);
+        }
+    };
 
-    public NodeMap() {
+    public NodeMapComponent() {
+        registerRpc(m_rpc);
+    }
+
+    protected NodeIdSelectionRpc getRpc() {
+        return m_rpc;
     }
 
     public void showNodes(final Map<Integer, NodeEntry> nodeEntries) {
-        List<MapNode> nodes = new LinkedList<MapNode>();
+        final List<MapNode> nodes = new LinkedList<MapNode>();
         for (final NodeEntry node : nodeEntries.values()) {
             nodes.add(node.createNode());
         }
@@ -56,8 +81,14 @@ public class NodeMap extends AbstractComponent {
         return (NodeMapState) super.getState();
     }
 
-    public void setInitialSearchString(String searchString) {
-        getState().initialSearch = searchString;
+    public void setSearchString(final String searchString) {
+        LOG.debug("setSearchString(" + searchString + ")");
+        getState().searchString = searchString;
+    }
+    
+    public void setSelectedNodes(final List<Integer> nodeIds) {
+        LOG.debug("setSelectedNodes(" + nodeIds + ")");
+        getState().nodeIds = nodeIds;
     }
 
     // TODO: combine this class and MapNode?
@@ -109,7 +140,7 @@ public class NodeMap extends AbstractComponent {
             m_severity = severity;
         }
 
-        public MapNode createNode(){
+        public MapNode createNode() {
             MapNode node = new MapNode();
             node.setLatitude(m_latitude);
             node.setLongitude(m_longitude);
@@ -135,5 +166,4 @@ public class NodeMap extends AbstractComponent {
             m_unackedCount = unackedCount;
         }
     }
-
 }

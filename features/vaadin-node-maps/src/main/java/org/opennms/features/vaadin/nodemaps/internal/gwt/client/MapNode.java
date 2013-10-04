@@ -1,11 +1,14 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
-public class MapNode {
+public class MapNode implements Serializable {
+    private static final long serialVersionUID = -8153594123122717289L;
+
     private double latitude;
     private double longitude;
     private String nodeId;
