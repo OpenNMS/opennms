@@ -166,15 +166,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     private int m_indexFrom = 0;
     private int m_indexTo = 0;
 
-    private int m_findExactMatchesTotal = 0;
-    private int m_findExactMatchesFound = 0;
-    private ArrayList<String> m_findExactMatchesNot = new ArrayList<String>();
-    private static final String DISPLAY_SEPARATOR = ", ";
-    private static final String VALUE_DELIM = ";";
-    private static final int PAGE_Size = 15;
-
-    private static final int DELAY = 1000;
-    private static final int FIND_EXACT_MATCH_QUERY_LIMIT = 20;
     private boolean m_isMultiValued = true;
     private SearchBoxConnector m_connector;
     private static VSearchComboBoxUiBinder uiBinder = GWT.create(VSearchComboBoxUiBinder.class);
@@ -193,10 +184,16 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     @Override
     public void onLoad(){
+        this.setStyleName("topology-search");
         TextBoxBase textField = new TextBox();
+        textField.setWidth("245px");
+        textField.setStyleName("topology-search-box");
+        textField.getElement().setAttribute("placeholder", "Search...");
+        textField.setFocus(true);
         RemoteSuggestOracle oracle = new RemoteSuggestOracle();
 
         m_suggestBox = new SuggestBox(oracle, textField);
+
 
         m_suggestBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>() {
             @Override
@@ -214,7 +211,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_suggestBox.addSelectionHandler(this);
         m_suggestBox.addKeyUpHandler(this);
 
-        m_componentHolder.setSize("250px", "50px");
+        m_componentHolder.setWidth("245px");
         m_componentHolder.add(m_suggestBox);
 
         m_selectionContainer = new VerticalPanel();

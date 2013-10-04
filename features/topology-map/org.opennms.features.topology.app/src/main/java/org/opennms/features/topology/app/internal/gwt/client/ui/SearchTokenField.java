@@ -86,7 +86,6 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
-        setStyleName("search-token-field");
         setLabel(m_suggestion.getLabel());
         setNamespace(m_suggestion.getNamespace());
 
