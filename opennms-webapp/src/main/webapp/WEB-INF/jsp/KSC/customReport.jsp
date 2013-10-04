@@ -84,7 +84,7 @@
     function cancelReport()
     {
         if (confirm("Do you really want to cancel configuration changes?")) {
-            setLocation("index.jsp");
+            setLocation("KSC/index.htm");
         }
     }
     
