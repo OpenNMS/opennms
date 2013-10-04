@@ -511,7 +511,7 @@ public abstract class JMXCollector implements ServiceCollector {
         if (objectName == null) {
             return "NULL";
         }
-        return objectName.replaceAll("[.:=,]", "_");
+        return objectName.replaceAll("[.:=,\\s]", "_");
     }
     
     /*
