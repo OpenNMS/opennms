@@ -513,7 +513,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(toolbar, "top: 10px; right: 10px;");
         mapLayout.addComponent(searchBox, "top:5px; left:5px;");
-        mapLayout.addComponent(locationToolLayout, "top: 5px; left: 50%");
+        //mapLayout.addComponent(locationToolLayout, "top: 5px; left: 50%");
         mapLayout.setSizeFull();
 
         return mapLayout;
