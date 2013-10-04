@@ -174,10 +174,10 @@ public class OnmsIpRouteInterface {
             return null;
         }
         
-        public static RouteType OTHER = new RouteType(ROUTE_TYPE_OTHER);
-        public static RouteType INVALID = new RouteType(ROUTE_TYPE_INVALID);
-        public static RouteType DIRECT = new RouteType(ROUTE_TYPE_DIRECT);
-        public static RouteType INDIRECT = new RouteType(ROUTE_TYPE_INDIRECT);
+        public static final RouteType OTHER = new RouteType(ROUTE_TYPE_OTHER);
+        public static final RouteType INVALID = new RouteType(ROUTE_TYPE_INVALID);
+        public static final RouteType DIRECT = new RouteType(ROUTE_TYPE_DIRECT);
+        public static final RouteType INDIRECT = new RouteType(ROUTE_TYPE_INDIRECT);
 
     }
    @Id

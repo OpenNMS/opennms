@@ -59,7 +59,7 @@ public abstract class BasicScheduleUtils {
     /**
      * The day of the week values to name mapping
      */
-    protected static ThreadLocal<Map<String,Integer>> m_dayOfWeekMap = new ThreadLocal<Map<String,Integer>>() {
+    protected static final ThreadLocal<Map<String,Integer>> m_dayOfWeekMap = new ThreadLocal<Map<String,Integer>>() {
         @Override protected Map<String,Integer> initialValue() {
             final Map<String,Integer> map = new HashMap<String,Integer>();
             map.put("sunday", Calendar.SUNDAY);
@@ -74,9 +74,9 @@ public abstract class BasicScheduleUtils {
     };
 
     /** Constant <code>FORMAT1="dd-MMM-yyyy HH:mm:ss"</code> */
-    public static String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
+    public static final String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
     /** Constant <code>FORMAT2="HH:mm:ss"</code> */
-    public static String FORMAT2 = "HH:mm:ss";
+    public static final String FORMAT2 = "HH:mm:ss";
 
     /**
      * <p>isTimeInSchedule</p>

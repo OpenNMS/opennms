@@ -975,7 +975,7 @@ public class InstallerDb {
         final Matcher m = Pattern.compile(regex).matcher(getSql());
 
         while (m.find()) {
-            if (m.group(itemGroup).toLowerCase().equals(item)) {
+            if (m.group(itemGroup).equalsIgnoreCase(item)) {
                 return m.group(returnGroup);
             }
         }

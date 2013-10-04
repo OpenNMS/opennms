@@ -74,8 +74,8 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     
     public static class CreateCommand {
     	
+    	private static final String OPERATION = "create";
     	String filename;
-    	final String operation = "create";
     	String parameter;
     	
 		public CreateCommand(String filename, String parameter) {
@@ -86,7 +86,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
 		
             @Override
 		public String toString() {
-			return operation + " " + filename + " " + parameter;
+			return OPERATION + " " + filename + " " + parameter;
 		}
 		
     }
