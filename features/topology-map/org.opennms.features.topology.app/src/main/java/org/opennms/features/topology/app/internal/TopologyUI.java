@@ -28,6 +28,53 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HistoryManager;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextCreator;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -39,38 +86,30 @@ import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Slider;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.ui.SearchBox;
-import org.opennms.osgi.*;
-import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -82,6 +121,8 @@ import java.util.*;
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
     public static final String PARAMETER_FOCUS_NODES = "focusNodes";
+    private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
+
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
 
         private final Object lockObject = "lockObject";
@@ -192,6 +233,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         loadUserSettings(m_applicationContext);
         loadVertexHopCriteria(request, m_graphContainer);
+        loadSemanticZoomLevel(request, m_graphContainer);
         setupListeners();
         createLayouts();
         setupErrorHandler();
@@ -237,9 +279,23 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 // Add a new focus node reference to the VertexHopCriteria
                 criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
             }
+            // Set the semantic zoom level to 1 by default
+            graphContainer.setSemanticZoomLevel(1);
         } else {
             // Don't do anything... we didn't find any focus nodes in the parameter so don't alter
             // any existing VertexHopCriteria
+        }
+    }
+
+    private static void loadSemanticZoomLevel(VaadinRequest request, GraphContainer graphContainer) {
+        String szl = request.getParameter(PARAMETER_SEMANTIC_ZOOM_LEVEL);
+        if (szl == null) {
+            return;
+        }
+        try {
+            graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
+        } catch (NumberFormatException e) {
+            m_log.warn("Invalid SZL found in {} parameter: {}", PARAMETER_FOCUS_NODES, szl);
         }
     }
 

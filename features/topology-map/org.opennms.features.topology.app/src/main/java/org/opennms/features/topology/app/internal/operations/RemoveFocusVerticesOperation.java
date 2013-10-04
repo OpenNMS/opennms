@@ -34,9 +34,8 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class RemoveFocusVerticesOperation implements Constants, Operation {
@@ -47,28 +46,30 @@ public class RemoveFocusVerticesOperation implements Constants, Operation {
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		for (Criteria criteria : graphContainer.getCriteria()) {
-			try {
-				VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
-				for (VertexRef target : targets) {
-					hopCriteria.remove(target);
-				}
+		VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer, false);
 
-				// If there are no remaining focus vertices in the criteria, then
-				// just remove it completely.
-				if (hopCriteria.size() == 0) {
-					graphContainer.removeCriteria(criteria);
-				}
-			} catch (ClassCastException e) {}
+		if (criteria == null) {
+			// Don't do anything... there is no existing VertexHopCriteria
+		} else {
+			for (VertexRef target : targets) {
+				criteria.remove(target);
+			}
+
+			// If there are no remaining focus vertices in the criteria, then
+			// just remove it completely.
+			if (criteria.size() == 0) {
+				graphContainer.removeCriteria(criteria);
+			}
+
+			graphContainer.redoLayout();
 		}
 
-		graphContainer.redoLayout();
 		return null;
 	}
 
 	@Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
+		return enabled(targets, operationContext);
 	}
 
 	@Override
@@ -77,15 +78,16 @@ public class RemoveFocusVerticesOperation implements Constants, Operation {
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		for (Criteria criteria : graphContainer.getCriteria()) {
-			try {
-				VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
-				for (VertexRef target : targets) {
-					if (hopCriteria.contains(target)) {
-						return true;
-					}
+		VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer, false);
+		if (criteria == null) {
+			return false;
+		} else {
+			for (VertexRef target : targets) {
+				// If any of the vertices are currently in the criteria, return true
+				if (criteria.contains(target)) {
+					return true;
 				}
-			} catch (ClassCastException e) {}
+			}
 		}
 
 		return false;

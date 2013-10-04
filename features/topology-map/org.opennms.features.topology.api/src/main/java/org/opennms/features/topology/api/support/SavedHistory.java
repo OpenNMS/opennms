@@ -218,12 +218,29 @@ public class SavedHistory {
     
     @Override
     public String toString() {
-        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment());
+        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment()).append(": ");
+        boolean first = true;
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
-            retval.append(",[").append(entry.getKey()).append("->").append(entry.getValue()).append("]");
+            if (first) { first = false; } else { retval.append(","); }
+            retval.append(entry.getKey()).append("->").append(entry.getValue());
         }
-        for (VertexRef entry : m_selectedVertices) {
-            retval.append(",[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+        if (m_selectedVertices.size() > 0) {
+            first = true;
+            retval.append(",selectedVertices->{");
+            for (VertexRef entry : m_selectedVertices) {
+                if (first) { first = false; } else { retval.append(","); }
+                retval.append("[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+            }
+            retval.append("}");
+        }
+        if (m_focusVertices.size() > 0) {
+            first = true;
+            retval.append(",focusVertices->{");
+            for (VertexRef entry : m_focusVertices) {
+                if (first) { first = false; } else { retval.append(","); }
+                retval.append("[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
+            }
+            retval.append("}");
         }
         return retval.toString();
     }
