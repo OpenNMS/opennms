@@ -125,6 +125,11 @@ public class AbstractSearchProviderTest {
                 return null;
             }
 
+            @Override
+            public boolean supportsPrefix(String searchPrefix) {
+                return false;
+            }
+
         };
     }
 

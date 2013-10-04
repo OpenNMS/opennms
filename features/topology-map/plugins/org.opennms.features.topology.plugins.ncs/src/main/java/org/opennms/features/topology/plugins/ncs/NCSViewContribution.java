@@ -155,4 +155,9 @@ public class NCSViewContribution implements IViewContribution, SearchProvider {
         };
     }
 
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.equals("service=");
+    }
+
 }

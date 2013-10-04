@@ -66,14 +66,22 @@ public class SearchBoxConnector extends AbstractComponentConnector {
                 m_callback.onSuggestionsReady(m_request, response);
             }
 
-        } else if (stateChangeEvent.hasPropertyChanged("selected")) {
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("selected")) {
             getWidget().setSelected(getState().getSelected());
 
-        } else if (stateChangeEvent.hasPropertyChanged("focused")) {
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("focused")) {
             getWidget().setFocused(getState().getFocused());
         }
 
     }
+
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 
     @Override
     public VSearchBox createWidget(){

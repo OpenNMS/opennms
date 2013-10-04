@@ -72,9 +72,9 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
-            criteria.addAll(mapToVertexRefs(selectedSuggestion));
-            m_operationContext.getGraphContainer().redoLayout();
+            //VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            //criteria.addAll(mapToVertexRefs(selectedSuggestion));
+            //m_operationContext.getGraphContainer().redoLayout();
         }
 
         @Override
@@ -112,22 +112,44 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private List<SearchSuggestion> getQueryResults(final String query) {
         m_suggestionMap.clear();
+
+        String searchPrefix = getQueryPrefix(query);
+
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
 
 
+
+
+        for(SearchProvider provider : providers) {
+            if(searchPrefix != null && provider.supportsPrefix(searchPrefix)) {
+                String queryOnly = query.replace(searchPrefix, "");
+                m_suggestionMap.putAll(provider, mapToSuggestions(provider.query( getSearchQuery(queryOnly) )));
+            } else{
+                m_suggestionMap.putAll(provider, mapToSuggestions(provider.query( getSearchQuery(query) )));
+            }
+
+        }
+
+        Collection<SearchSuggestion> values = m_suggestionMap.values();
+        return Lists.newArrayList(values);
+    }
+
+    private SearchQuery getSearchQuery(String query) {
         SearchQuery searchQuery;
         if(query.equals("*")){
             searchQuery = new AllSearchQuery(query);
         } else{
             searchQuery = new ContainsSearchQuery(query);
         }
+        return searchQuery;
+    }
 
-        for(SearchProvider provider : providers) {
-            m_suggestionMap.putAll(provider, mapToSuggestions(provider.query(searchQuery)));
+    public String getQueryPrefix(String query){
+        String prefix = null;
+        if(query.contains("=")){
+            prefix = query.substring(0, query.indexOf('=') + 1);
         }
-
-        Collection<SearchSuggestion> values = m_suggestionMap.values();
-        return Lists.newArrayList(values);
+        return prefix;
     }
 
     private List<SearchSuggestion> mapToSuggestions(List<VertexRef> vertexRefs) {
@@ -188,7 +210,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     public void graphChanged(GraphContainer graphContainer) {
         VertexHopCriteria hopCriteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
 
-        getState().setFocused(mapToSuggestions(Lists.newArrayList(hopCriteria.getVertices())));
+        Set<VertexRef> vertices = hopCriteria.getVertices();
+        getState().setFocused(mapToSuggestions(Lists.newArrayList(vertices)));
 
     }
 

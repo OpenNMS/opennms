@@ -49,6 +49,10 @@ public class SearchTokenField extends Composite {
         void onRemove(SearchSuggestion searchSuggestion);
     }
 
+    public interface FocusCallback{
+        void onFocus(SearchSuggestion searchSuggestion);
+    }
+
 
     private static SearchTokenFieldUiBinder uiBinder = GWT.create(SearchTokenFieldUiBinder.class);
     public interface SearchTokenFieldUiBinder extends UiBinder<Widget, SearchTokenField>{}
@@ -62,8 +66,12 @@ public class SearchTokenField extends Composite {
     @UiField
     Anchor m_closeBtn;
 
+    @UiField
+    Anchor m_focusOnBtn;
+
     private SearchSuggestion m_suggestion;
     private RemoveCallback m_removeCallback;
+    private FocusCallback m_focusCallback;
 
     public SearchTokenField(SearchSuggestion searchSuggestion) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -100,6 +108,13 @@ public class SearchTokenField extends Composite {
     void handleClick(ClickEvent event) {
         if (m_removeCallback != null) {
             m_removeCallback.onRemove(m_suggestion);
+        }
+    }
+
+    @UiHandler("m_focusOnBtn")
+    void handleFocusClick(ClickEvent event){
+        if(m_focusCallback != null){
+            m_focusCallback.onFocus(m_suggestion);
         }
     }
 }

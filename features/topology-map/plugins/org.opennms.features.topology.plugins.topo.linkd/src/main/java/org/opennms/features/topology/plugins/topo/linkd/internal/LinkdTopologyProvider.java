@@ -603,6 +603,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         };
     }
 
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.contains("nodes=");
+    }
+
     private static String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];

@@ -82,12 +82,12 @@ import java.util.*;
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
     public static final String PARAMETER_FOCUS_NODES = "focusNodes";
-
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
+
         private final Object lockObject = "lockObject";
+
         private boolean refreshInProgress = false;
         private long lastUpdateTime;
-
         @Override
         public void refresh(Refresher refresher) {
             if (needsRefresh()) {
@@ -105,7 +105,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 }
             }
         }
-
         private boolean needsRefresh() {
             if (refreshInProgress) {
                 return false;
@@ -117,25 +116,27 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             long updateDiff = System.currentTimeMillis() - lastUpdateTime;
             return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval()*1000; // update or not
         }
+
     }
 
-	private static final long serialVersionUID = 6837501987137310938L;
-
+    private static final long serialVersionUID = 6837501987137310938L;
     private static Logger m_log = LoggerFactory.getLogger(TopologyUI.class);
-	private static final String LABEL_PROPERTY = "label";
-	private TopologyComponent m_topologyComponent;
-	private VertexSelectionTree m_tree;
-	private final GraphContainer m_graphContainer;
+
+    private static final String LABEL_PROPERTY = "label";
+
+    private TopologyComponent m_topologyComponent;
+    private VertexSelectionTree m_tree;
+    private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final CommandManager m_commandManager;
-	private MenuBar m_menuBar;
-	private TopoContextMenu m_contextMenu;
-	private VerticalLayout m_layout;
-	private VerticalLayout m_rootLayout;
-	private final IconRepositoryManager m_iconRepositoryManager;
-	private WidgetManager m_widgetManager;
-	private WidgetManager m_treeWidgetManager;
-	private Accordion m_treeAccordion;
+    private MenuBar m_menuBar;
+    private TopoContextMenu m_contextMenu;
+    private VerticalLayout m_layout;
+    private VerticalLayout m_rootLayout;
+    private final IconRepositoryManager m_iconRepositoryManager;
+    private WidgetManager m_widgetManager;
+    private WidgetManager m_treeWidgetManager;
+    private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private final Label m_zoomLevelLabel = new Label("0");
     private final HistoryManager m_historyManager;
@@ -146,6 +147,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
+    private Button m_panBtn;
+    private Button m_selectBtn;
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -409,31 +412,31 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
 
-        final Button panBtn = new Button();
-        panBtn.setIcon(new ThemeResource("images/cursor_drag_arrow.png"));
-        panBtn.setDescription("Pan Tool");
-        panBtn.setStyleName("toolbar-button down");
+        m_panBtn = new Button();
+        m_panBtn.setIcon(new ThemeResource("images/cursor_drag_arrow.png"));
+        m_panBtn.setDescription("Pan Tool");
+        m_panBtn.setStyleName("toolbar-button down");
 
-        final Button selectBtn = new Button();
-        selectBtn.setIcon(new ThemeResource("images/selection.png"));
-        selectBtn.setDescription("Selection Tool");
-        selectBtn.setStyleName("toolbar-button");
-        selectBtn.addClickListener(new ClickListener() {
+        m_selectBtn = new Button();
+        m_selectBtn.setIcon(new ThemeResource("images/selection.png"));
+        m_selectBtn.setDescription("Selection Tool");
+        m_selectBtn.setStyleName("toolbar-button");
+        m_selectBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                selectBtn.setStyleName("toolbar-button down");
-                panBtn.setStyleName("toolbar-button");
+                m_selectBtn.setStyleName("toolbar-button down");
+                m_panBtn.setStyleName("toolbar-button");
                 m_topologyComponent.setActiveTool("select");
             }
         });
 
-        panBtn.addClickListener(new ClickListener() {
+        m_panBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                panBtn.setStyleName("toolbar-button down");
-                selectBtn.setStyleName("toolbar-button");
+                m_panBtn.setStyleName("toolbar-button down");
+                m_selectBtn.setStyleName("toolbar-button");
                 m_topologyComponent.setActiveTool("pan");
             }
         });
@@ -485,8 +488,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         VerticalLayout controlLayout = new VerticalLayout();
         controlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        controlLayout.addComponent(panBtn);
-        controlLayout.addComponent(selectBtn);
+        controlLayout.addComponent(m_panBtn);
+        controlLayout.addComponent(m_selectBtn);
 
         VerticalLayout semanticCtrlLayout = new VerticalLayout();
         semanticCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -502,19 +505,49 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         toolbar.addComponent(controlLayout);
         toolbar.addComponent(semanticCtrlLayout);
 
+        HorizontalLayout locationToolLayout = createLocationToolLayout();
+
 
         AbsoluteLayout mapLayout = new AbsoluteLayout();
 
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-        //mapLayout.addComponent(sliderLayout, "top: 50px; right: 20px;");
         mapLayout.addComponent(toolbar, "top: 10px; right: 10px;");
-        //mapLayout.addComponent(semanticLayout, "top: 420px; right: 5px;");
-        //mapLayout.addComponent(historyButtonLayout, "top: 5px; right: 10px;");
         mapLayout.addComponent(searchBox, "top:5px; left:5px;");
+        mapLayout.addComponent(locationToolLayout, "top: 5px; left: 50%");
         mapLayout.setSizeFull();
 
         return mapLayout;
 
+    }
+
+    private HorizontalLayout createLocationToolLayout() {
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setSpacing(true);
+        layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
+        Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
+        showAllMapBtn.setHtmlContentAllowed(true);
+        showAllMapBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+
+
+            }
+        });
+
+        Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
+        centerSelectionBtn.setHtmlContentAllowed(true);
+        centerSelectionBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+
+        layout.addComponent(centerSelectionBtn);
+        layout.addComponent(showAllMapBtn);
+
+        return layout;
     }
 
     private void loadUserSettings(VaadinApplicationContext context) {
@@ -866,6 +899,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
+        //After selection always set the pantool back to active tool
+        if(m_panBtn != null && !m_panBtn.getStyleName().equals("toolbar-button down")){
+            m_panBtn.setStyleName("toolbar-button down");
+        }
+        if(m_selectBtn != null && m_selectBtn.getStyleName().equals("toolbar-button down")){
+            m_selectBtn.setStyleName("toolbar-button");
+        }
+        if(m_topologyComponent != null) m_topologyComponent.setActiveTool("pan");
         saveHistory();
     }
 

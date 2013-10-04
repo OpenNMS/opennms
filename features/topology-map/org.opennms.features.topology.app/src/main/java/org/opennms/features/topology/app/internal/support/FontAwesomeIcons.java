@@ -327,7 +327,9 @@ public class FontAwesomeIcons {
         reply("&#xf112;"), 
         github_alt("&#xf113;"), 
         folder_close_alt("&#xf114;"), 
-        folder_open_alt("&#xf115;");
+        folder_open_alt("&#xf115;"),
+        location_arrow("&#xf124")
+        ;
 
         private final String id;
 

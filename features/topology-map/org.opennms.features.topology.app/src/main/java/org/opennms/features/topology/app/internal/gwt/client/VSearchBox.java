@@ -221,6 +221,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_componentHolder.add(m_selectionContainer);
 
         m_focusedContainer = new VerticalPanel();
+        m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        m_focusedContainer.setTitle("Focused Vertices");
         m_componentHolder.add(m_focusedContainer);
     }
 
@@ -269,5 +271,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     }
 
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 
 }

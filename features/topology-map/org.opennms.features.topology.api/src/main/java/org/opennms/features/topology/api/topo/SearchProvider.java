@@ -35,4 +35,5 @@ import java.util.List;
 public interface SearchProvider {
     List<VertexRef> query(SearchQuery searchQuery);
     AbstractSearchSelectionOperation getSelectionOperation();
+    boolean supportsPrefix(String searchPrefix);
 }
