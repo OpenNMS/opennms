@@ -41,7 +41,6 @@ import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.osgi.OnmsServiceManager;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 
@@ -134,7 +133,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     private List<SearchSuggestion> mapToSuggestions(List<VertexRef> vertexRefs) {
         return Lists.transform(vertexRefs, new Function<VertexRef, SearchSuggestion>(){
             @Override
-            public SearchSuggestion apply(@Nullable VertexRef vertexRef) {
+            public SearchSuggestion apply(VertexRef vertexRef) {
                 return mapToSearchSuggestion(vertexRef);
             }
         });
@@ -144,7 +143,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     private List<VertexRef> mapToVertexRefs(List<SearchSuggestion> suggestion){
         return Lists.transform(suggestion, new Function<SearchSuggestion, VertexRef>(){
             @Override
-            public VertexRef apply(@Nullable SearchSuggestion input) {
+            public VertexRef apply(SearchSuggestion input) {
                 return mapToVertexRef(input);
             }
         });
