@@ -34,8 +34,9 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.SnmpAgentConfigFactory;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.ResourceDao;
+import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -57,6 +58,7 @@ public class NrtController {
 
     private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
     private GraphDao m_graphDao;
+    private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
@@ -205,9 +207,8 @@ public class NrtController {
 
     private List<CollectionJob> createCollectionJobs(OnmsResource reportResource, PrefabGraph prefabGraph, String nrtCollectionTaskId) {
         List<CollectionJob> collectionJobs = new ArrayList<CollectionJob>();
-
         OnmsResource nodeResource = reportResource.getParent();
-        OnmsNode node = (OnmsNode) nodeResource.getEntity();
+        OnmsNode node = m_nodeDao.get(nodeResource.getName());
         Integer nodeId = node.getId();
         Date createTimestamp = new Date();
 
@@ -360,6 +361,10 @@ public class NrtController {
         return metricIdsByProtocol;
     }
 
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+    
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
