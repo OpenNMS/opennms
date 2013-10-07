@@ -71,7 +71,6 @@ public interface OnmsServiceManager extends SessionListener {
      *
      * @param clazz              The type of the service. Must not be null.
      * @param applicationContext The session-scope. Must not be null.
-     * @return
      */
     <T> T getService(Class<T> clazz, VaadinApplicationContext applicationContext);
 
@@ -81,7 +80,6 @@ public interface OnmsServiceManager extends SessionListener {
      * @param clazz                the type of the service. Must not be null.
      * @param applicationContext   The session scope. Must not be null.
      * @param additionalProperties optional additional propeties. Must not be null.
-     * @return
      */
     <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties);
 

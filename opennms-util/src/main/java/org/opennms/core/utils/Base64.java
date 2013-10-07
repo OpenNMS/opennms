@@ -33,7 +33,7 @@ package org.opennms.core.utils;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public final class Base64 extends Object {
+public final class Base64 {
     /**
      * <P>
      * The base64 encoding map. Using 6-bit values it is possible to map 24-bits

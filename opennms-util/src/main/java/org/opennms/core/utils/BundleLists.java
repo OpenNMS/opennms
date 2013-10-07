@@ -38,7 +38,7 @@ import java.util.StringTokenizer;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
-public class BundleLists extends Object {
+public class BundleLists {
 
     /**
      * Parses a string into an array of substrings, using a comma as a delimiter
@@ -109,7 +109,7 @@ public class BundleLists extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer strings = new StringBuffer();
+        StringBuilder strings = new StringBuilder();
 
         for (int i = 0; i < objArray.length; i++) {
             strings.append(objArray[i].toString());

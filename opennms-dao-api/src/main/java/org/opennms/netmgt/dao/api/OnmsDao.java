@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.model.OnmsCriteria;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * <p>OnmsDao interface.</p>
+ * OnmsDao interface.
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
  */
 public interface OnmsDao<T, K extends Serializable> {
     
@@ -44,121 +46,42 @@ public interface OnmsDao<T, K extends Serializable> {
      */
     void lock();
 
-    
-    /**
-     * <p>initialize</p>
-     *
-     * @param obj a {@link java.lang.Object} object.
-     * @param <T> a T object.
-     * @param <K> a K object.
-     */
     void initialize(Object obj);
 
-    /**
-     * <p>flush</p>
-     */
     void flush();
 
-    /**
-     * <p>clear</p>
-     */
     void clear();
 
-    /**
-     * <p>countAll</p>
-     *
-     * @return a int.
-     */
     int countAll();
 
-    /**
-     * <p>delete</p>
-     *
-     * @param entity a T object.
-     */
     void delete(T entity);
 
-    /**
-     * <p>delete</p>
-     *
-     * @param key a K object.
-     */
     void delete(K key);
 
-    /**
-     * <p>findAll</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     List<T> findAll();
     
-    /**
-     * <p>findMatching</p>
-     *
-     * @param criteria a {@link org.opennms.core.criteria.Criteria} object.
-     * @return a {@link java.util.List} object.
-     */
     List<T> findMatching(Criteria criteria);
 
     /**
-     * <p>findMatching</p>
-     *
-     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
-     * @return a {@link java.util.List} object.
+     * @deprecated use {@link #findMatching(Criteria)} instead.
      */
     List<T> findMatching(OnmsCriteria criteria);
 
-    /**
-     * <p>countMatching</p>
-     *
-     * @param onmsCrit a {@link org.opennms.core.criteria.Criteria} object.
-     * @return a int.
-     */
     int countMatching(final Criteria onmsCrit);
 
     /**
-     * <p>countMatching</p>
-     *
-     * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
-     * @return a int.
+     * @deprecated use {@link #countMatching(Criteria)} instead.
      */
     int countMatching(final OnmsCriteria onmsCrit);
     
-    /**
-     * <p>get</p>
-     *
-     * @param id a K object.
-     * @return a T object.
-     */
     T get(K id);
 
-    /**
-     * <p>load</p>
-     *
-     * @param id a K object.
-     * @return a T object.
-     */
     T load(K id);
 
-    /**
-     * <p>save</p>
-     *
-     * @param entity a T object.
-     */
     void save(T entity);
 
-    /**
-     * <p>saveOrUpdate</p>
-     *
-     * @param entity a T object.
-     */
     void saveOrUpdate(T entity);
 
-    /**
-     * <p>update</p>
-     *
-     * @param entity a T object.
-     */
     void update(T entity);
 
 }

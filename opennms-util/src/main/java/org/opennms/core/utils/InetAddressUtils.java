@@ -28,15 +28,6 @@
 
 package org.opennms.core.utils;
 
-import java.math.BigInteger;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.AAAARecord;
@@ -45,6 +36,15 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
+
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>Abstract InetAddressUtils class.</p>
@@ -134,12 +134,6 @@ abstract public class InetAddressUtils {
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
-    /**
-     * <p>getInetAddress</p>
-     *
-     * @param ipAddrOctets an array of byte.
-     * @return a {@link java.net.InetAddress} object.
-     */
     public static InetAddress getInetAddress(final int[] octets, final int offset, final int length) {
 		final byte[] addressBytes = new byte[length];
     	for (int i = 0; i < addressBytes.length; i++) {
@@ -148,17 +142,11 @@ abstract public class InetAddressUtils {
     	return getInetAddress(addressBytes);
     }
 
-    /**
-     * <p>getInetAddress</p>
-     *
-     * @param ipAddrOctets an array of byte.
-     * @return a {@link java.net.InetAddress} object.
-     */
     public static InetAddress getInetAddress(final byte[] ipAddrOctets) {
         try {
             return InetAddress.getByAddress(ipAddrOctets);
         } catch (final UnknownHostException e) {
-            throw new IllegalArgumentException("Invalid IPAddress " + ArrayUtils.toString(ipAddrOctets) + " with length " + ipAddrOctets.length);
+            throw new IllegalArgumentException("Invalid IPAddress " + Arrays.toString(ipAddrOctets) + " with length " + ipAddrOctets.length);
         }
 
     }
@@ -398,11 +386,7 @@ abstract public class InetAddressUtils {
         final byte[] begin = InetAddressUtils.toIpAddrBytes(beginString);
         if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
             final byte[] end = InetAddressUtils.toIpAddrBytes(endString);
-            if (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0) {
-                return true;
-            } else { 
-                return false;
-            }
+            return (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0);
         } else if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0) {
             return true;
         } else { 
@@ -412,11 +396,7 @@ abstract public class InetAddressUtils {
 
     public static boolean inSameScope(final InetAddress addr1, final InetAddress addr2) {
         if (addr1 instanceof Inet4Address) {
-            if (addr2 instanceof Inet4Address) {
-                return true;
-            } else {
-                return false;
-            }
+            return (addr2 instanceof Inet4Address);
         } else {
             if (addr2 instanceof Inet4Address) {
                 return false;
@@ -429,15 +409,9 @@ abstract public class InetAddressUtils {
 
     public static boolean isInetAddressInRange(final byte[] addr, final byte[] begin, final byte[] end) {
         if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) > 0) {
-            if (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0) {
-                return true;
-            } else { 
-                return false;
-            }
-        } else if (s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0) {
-            return true;
-        } else { 
-            return false;
+            return (s_BYTE_ARRAY_COMPARATOR.compare(addr, end) <= 0);
+        } else {
+            return s_BYTE_ARRAY_COMPARATOR.compare(addr, begin) == 0;
         }
     }
 
@@ -449,7 +423,7 @@ abstract public class InetAddressUtils {
         if (cidr < 0 || cidr > 32) {
             throw new IllegalArgumentException("Illegal IPv4 CIDR mask length: " + cidr);
         }
-        StringBuffer binaryString = new StringBuffer();
+        StringBuilder binaryString = new StringBuilder();
         int i = 0;
         for (; i < cidr; i++) {
             binaryString.append('1');
@@ -468,7 +442,7 @@ abstract public class InetAddressUtils {
         if (cidr < 0 || cidr > 128) {
             throw new IllegalArgumentException("Illegal IPv6 CIDR mask length: " + cidr);
         }
-        StringBuffer binaryString = new StringBuffer();
+        StringBuilder binaryString = new StringBuilder();
         int i = 0;
         for (; i < cidr; i++) {
             binaryString.append('1');
@@ -614,7 +588,7 @@ abstract public class InetAddressUtils {
     
     public static String macAddressBytesToString(byte[] macAddress) {
         if (macAddress.length != 6) {
-            throw new IllegalArgumentException("Cannot decode MAC address: " + ArrayUtils.toString(macAddress));
+            throw new IllegalArgumentException("Cannot decode MAC address: " + Arrays.toString(macAddress));
         }
         
         return String.format(

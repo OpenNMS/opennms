@@ -53,12 +53,12 @@ import java.sql.SQLException;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
-public class SimpleDbConnectionFactory extends Object implements DbConnectionFactory {
-    protected String url = null;
+public class SimpleDbConnectionFactory implements DbConnectionFactory {
+    private String url = null;
 
-    protected String username = null;
+    private String username = null;
 
-    protected String password = null;
+    private String password = null;
 
     /**
      * {@inheritDoc}
@@ -69,7 +69,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      * will be made using the credentials.
      */
     @Override
-    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
+    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException {
         if (dbUrl == null || dbDriver == null || username == null || password == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
