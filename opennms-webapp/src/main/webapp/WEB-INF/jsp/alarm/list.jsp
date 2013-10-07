@@ -427,7 +427,7 @@
             <% } %>
           <br />
             <% if(alarms[i].getServiceName() != null && alarms[i].getServiceName() != "") { %>
-              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId(), getServletContext()); %>
               <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
@@ -441,7 +441,7 @@
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId(), getServletContext()), true)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
                 </nobr>
               <% } %>                            
             <% } %>

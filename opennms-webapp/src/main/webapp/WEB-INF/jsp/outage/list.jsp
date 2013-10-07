@@ -175,10 +175,10 @@
                 <c:out value="<%=outages[i].getServiceName()%>"/>
               <% } %>                
               
-              <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId(), getServletContext()); %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, serviceFilter, true)%>" title="Show only outages with this service type"><%=ZOOM_IN_ICON%></a>
-                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeServiceFilter(outages[i].getServiceId()), true)%>" title="Do not show outages for this service"><%=DISCARD_ICON%></a>
+                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeServiceFilter(outages[i].getServiceId(), getServletContext()), true)%>" title="Do not show outages for this service"><%=DISCARD_ICON%></a>
               <% } %>              
             <% } %>          
           </td>
