@@ -99,7 +99,7 @@ public abstract class OutageUtil extends Object {
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(OutageIdFilter.TYPE)) {
             filter = new OutageIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeForeignSourceFilter.TYPE)) {
@@ -109,7 +109,7 @@ public abstract class OutageUtil extends Object {
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(LostServiceDateBeforeFilter.TYPE)) {
             filter = new LostServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(LostServiceDateAfterFilter.TYPE)) {

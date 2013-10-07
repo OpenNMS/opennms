@@ -467,7 +467,7 @@ public class OutageFactory extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -503,8 +503,8 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId) throws SQLException {
-        return (getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
+    public static Outage[] getOutagesForService(int serviceId, ServletContext servletContext) throws SQLException {
+        return (getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, servletContext));
     }
 
     /**
@@ -517,12 +517,12 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId, SortStyle sortStyle, OutageType outType) throws SQLException {
+    public static Outage[] getOutagesForService(int serviceId, SortStyle sortStyle, OutageType outType, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -538,9 +538,9 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int serviceId, boolean includeResolved) throws SQLException {
+    public static Outage[] getOutagesForService(int serviceId, boolean includeResolved, ServletContext servletContext) throws SQLException {
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForService(serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType, servletContext);
 
         return outages;
     }
