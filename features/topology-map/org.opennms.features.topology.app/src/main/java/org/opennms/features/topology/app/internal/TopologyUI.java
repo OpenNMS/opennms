@@ -552,16 +552,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         semanticCtrlLayout.addComponent(new Label("Semantic Level"));
         semanticCtrlLayout.addComponent(semanticLayout);
 
+        HorizontalLayout locationToolLayout = createLocationToolLayout();
+
         //Vertical Layout for all tools on right side
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         toolbar.setSpacing(true);
         toolbar.addComponent(historyCtrlLayout);
+        toolbar.addComponent(locationToolLayout);
         toolbar.addComponent(sliderLayout);
         toolbar.addComponent(controlLayout);
         toolbar.addComponent(semanticCtrlLayout);
-
-        HorizontalLayout locationToolLayout = createLocationToolLayout();
 
 
         AbsoluteLayout mapLayout = new AbsoluteLayout();
@@ -583,20 +584,21 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
         showAllMapBtn.setHtmlContentAllowed(true);
+        showAllMapBtn.setDescription("Show All Map");
         showAllMapBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-
-
+                m_topologyComponent.showAllMap();
             }
         });
 
         Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
         centerSelectionBtn.setHtmlContentAllowed(true);
+        centerSelectionBtn.setDescription("Center On Selection");
         centerSelectionBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                //To change body of implemented methods use File | Settings | File Templates.
+                m_topologyComponent.centerMapOnSelection();
             }
         });
 

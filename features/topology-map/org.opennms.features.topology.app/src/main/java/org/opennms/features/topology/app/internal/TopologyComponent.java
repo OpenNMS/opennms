@@ -322,6 +322,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
     }
 
+    public void showAllMap(){
+        getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
+    }
+
+    public void centerMapOnSelection(){
+        computeBoundsForSelected(m_graphContainer.getSelectionManager());
+    }
+
     private void computeBoundsForSelected(SelectionContext selectionContext) {
         if(selectionContext.getSelectedVertexRefs().size() > 0) {
             Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
