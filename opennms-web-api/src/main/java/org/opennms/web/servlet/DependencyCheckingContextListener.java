@@ -56,7 +56,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        Boolean skipJvm = new Boolean(System.getProperty("opennms.skipjvmcheck"));
+        Boolean skipJvm = Boolean.valueOf(System.getProperty("opennms.skipjvmcheck"));
         if (!skipJvm) {
             checkJvmName(event.getServletContext());
         }

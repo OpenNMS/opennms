@@ -731,7 +731,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 */
         @Override
 	public String getStats() { 
-		return (m_stats == null ? "No Stats Available" : m_stats.toString()); 
+		return (m_stats == null ? "No Stats Available" : m_stats); 
 	}
 
 }

@@ -116,7 +116,7 @@ public class SupportController extends AbstractController implements Initializin
         String body = request.getParameter("text").trim();
         final String includeReport = request.getParameter("include-report");
         final boolean report  = Boolean.parseBoolean(includeReport);
-        LOG.debug("include report?: {} (parsed as {})", includeReport, new Boolean(report));
+        LOG.debug("include report?: {} (parsed as {})", includeReport, Boolean.valueOf(report));
 
         final RTUser user = rt.getUserInfo(rt.getUsername());
 

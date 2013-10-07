@@ -263,7 +263,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	 * @return stats
 	 */
 	public String getStats() { 
-		return (m_stats == null ? "QoSDrx.getStats(): No Stats Available" : m_stats.toString());
+		return (m_stats == null ? "QoSDrx.getStats(): No Stats Available" : m_stats);
 	}
 
 

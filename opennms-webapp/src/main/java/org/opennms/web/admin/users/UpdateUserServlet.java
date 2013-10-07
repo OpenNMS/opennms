@@ -171,7 +171,7 @@ public class UpdateUserServlet extends HttpServlet {
                 if (deleteFlag == null) {
                     for (int i = 0; i < 7; i++) {
                         String curDayFlag = request.getParameter("duty" + duties + days.format(i));
-                        newSchedule.add(new Boolean(curDayFlag != null));
+                        newSchedule.add(Boolean.valueOf(curDayFlag != null));
                     }
 
                     int startTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "Begin"));
