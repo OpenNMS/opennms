@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
+import org.discotools.gwt.leaflet.client.controls.zoom.ZoomOptions;
 import org.discotools.gwt.leaflet.client.crs.epsg.EPSG3857;
 import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
@@ -206,8 +207,6 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
             m_stateClusterGroups[i].on("clustertouchend", callback);
             m_map.addLayer(m_stateClusterGroups[i]);
         }
-
-
     }
 
     private void addSearchControl() {
@@ -226,7 +225,9 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
 
     private void addZoomControl() {
         logger.log(Level.INFO, "NodeMapWidget.addZoomControl()");
-        m_map.addControl(new Zoom(new Options()));
+        final ZoomOptions options = new ZoomOptions();
+        options.setPosition("topright");
+        m_map.addControl(new Zoom(options));
     }
 
     public boolean markerShouldBeVisible(final JSNodeMarker marker) {
