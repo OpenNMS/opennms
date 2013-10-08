@@ -8,4 +8,5 @@
         <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
     </g:HTMLPanel>
 
+
 </ui:UiBinder>

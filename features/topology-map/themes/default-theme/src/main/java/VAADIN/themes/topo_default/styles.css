@@ -173,8 +173,17 @@ div.v-table-header-wrap {
 
 /** SearchBox Styles **/
 .search-token-field {
-    background-color: green;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+    background-color: #00B4F0;
     color: black;
+	padding: 2px 5px 2px 5px;
+	margin: 1px;
+}
+
+.search-token-namespace{
+	font-weight: bold;
 }
 
 .gwt-SuggestBox {
