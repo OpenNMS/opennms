@@ -249,6 +249,13 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                     m_connector.removeSelected(searchSuggestion);
                 }
             });
+            field.setCenterOnCallback(new SearchTokenField.CenterOnSuggestionCallback() {
+                @Override
+                public void onCenter(SearchSuggestion searchSuggestion) {
+                    m_connector.centerOnSuggestion(searchSuggestion);
+                }
+            });
+
             m_selectionContainer.add(field);
         }
     }

@@ -107,4 +107,12 @@ public class SearchBoxConnector extends AbstractComponentConnector {
     public void removeFocused(SearchSuggestion searchSuggestion) {
         m_rpc.removeFocused(searchSuggestion);
     }
+
+    public void addToFocus(SearchSuggestion searchSugestion){
+        m_rpc.addToFocus(searchSugestion);
+    }
+
+    public void centerOnSuggestion(SearchSuggestion searchSuggestion) {
+        m_rpc.centerOnSearchSuggestion(searchSuggestion);
+    }
 }

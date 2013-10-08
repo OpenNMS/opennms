@@ -441,12 +441,16 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     m_graphContainer.setSemanticZoomLevel(szl);
                     setSemanticZoomLevel(szl);
                     saveHistory();
-                } else if(szl == 0){
+                }
+                if(szl == 0){
                     szlOutBtn.setEnabled(false);
                 }
 
             }
         });
+        if( m_graphContainer.getSemanticZoomLevel() == 0){
+           szlOutBtn.setEnabled(false);
+        }
 
         final Button szlInBtn = new Button();
         szlInBtn.setHtmlContentAllowed(true);
@@ -536,10 +540,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         semanticLayout.addComponent(szlOutBtn);
         semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
 
-        Label historyLabel = new Label("History");
         VerticalLayout historyCtrlLayout = new VerticalLayout();
         historyCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        historyCtrlLayout.addComponent(historyLabel);
         historyCtrlLayout.addComponent(historyButtonLayout);
 
         VerticalLayout controlLayout = new VerticalLayout();
@@ -549,7 +551,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         VerticalLayout semanticCtrlLayout = new VerticalLayout();
         semanticCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        semanticCtrlLayout.addComponent(new Label("Semantic Level"));
         semanticCtrlLayout.addComponent(semanticLayout);
 
         HorizontalLayout locationToolLayout = createLocationToolLayout();

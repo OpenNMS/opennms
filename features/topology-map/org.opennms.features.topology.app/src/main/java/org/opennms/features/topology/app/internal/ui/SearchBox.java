@@ -102,6 +102,21 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             m_operationContext.getGraphContainer().redoLayout();
         }
 
+        @Override
+        public void addToFocus(SearchSuggestion suggestion) {
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            criteria.add(mapToVertexRef(suggestion));
+
+            m_operationContext.getGraphContainer().redoLayout();
+        }
+
+        @Override
+        public void centerOnSearchSuggestion(SearchSuggestion searchSuggestion){
+            GraphContainer graphContainer = m_operationContext.getGraphContainer();
+            MapViewManager mapViewManager = graphContainer.getMapViewManager();
+            mapViewManager.setBoundingBox(graphContainer.getGraph().getLayout().computeBoundingBox(Lists.newArrayList(mapToVertexRef(searchSuggestion))));
+        }
+
     };
 
     public SearchBox(OnmsServiceManager serviceManager, OperationContext operationContext) {
