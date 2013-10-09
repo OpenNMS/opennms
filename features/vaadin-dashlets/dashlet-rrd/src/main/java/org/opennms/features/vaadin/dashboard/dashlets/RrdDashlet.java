@@ -28,10 +28,7 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
@@ -181,14 +178,18 @@ public class RrdDashlet extends VerticalLayout implements Dashlet {
         /**
          * adding the components
          */
-        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-            for (int y = 0; y < m_gridLayout.getRows(); y++) {
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
                 String graphUrl = m_dashletSpec.getParameters().get("graphUrl" + i);
 
                 if (graphUrl != null && !"".equals(graphUrl)) {
-                    Image image = new Image(m_dashletSpec.getParameters().get("nodeLabel" + i) + ", " + m_dashletSpec.getParameters().get("graphId" + i), new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(m_dashletSpec.getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
-                    m_gridLayout.addComponent(image, x, y);
-                    m_gridLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+                    Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(m_dashletSpec.getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
+                    VerticalLayout verticalLayout = new VerticalLayout();
+                    verticalLayout.addComponent(new Label(m_dashletSpec.getParameters().get("nodeLabel" + i)));
+                    verticalLayout.addComponent(new Label(m_dashletSpec.getParameters().get("resourceTypeLabel" + i) + ": " + m_dashletSpec.getParameters().get("resourceLabel" + i)));
+                    verticalLayout.addComponent(image);
+                    m_gridLayout.addComponent(verticalLayout, x, y);
+                    m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
                 }
                 i++;
             }
