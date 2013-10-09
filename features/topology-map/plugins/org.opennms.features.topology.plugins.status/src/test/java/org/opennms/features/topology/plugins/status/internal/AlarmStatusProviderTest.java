@@ -115,7 +115,8 @@ public class AlarmStatusProviderTest {
         List<VertexRef> vertexList = new ArrayList<VertexRef>();
         vertexList.add(vertex);
 
-        EasyMock.expect(m_alarmDao.getNodeAlarmSummaries(EasyMock.anyInt())).andReturn(createNormalAlarmSummaryList());
+        EasyMock.expect(
+                m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(EasyMock.<List<Integer>>anyObject())).andReturn(createNormalAlarmSummaryList());
         
         EasyMock.replay(m_alarmDao);
         
