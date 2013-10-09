@@ -84,8 +84,11 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinResponse;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
@@ -215,8 +218,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     protected void init(final VaadinRequest request) {
         FontAwesomeIcons.load(new ThemeResource("font-awesome/css/font-awesome.min.css"));
 
-        m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
-        m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+        m_headerHtml = getHeader(new HttpServletRequestVaadinImpl(request));
 
         //create VaadinApplicationContext
         m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
@@ -231,9 +233,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
+        // Add a request handler that parses incoming focusNode and szl query parameters
+        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
+            @Override
+            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+                loadVertexHopCriteria(request, m_graphContainer);
+                loadSemanticZoomLevel(request, m_graphContainer);
+                return false; // No response was written
+            }
+        });
+
         loadUserSettings(m_applicationContext);
         loadVertexHopCriteria(request, m_graphContainer);
         loadSemanticZoomLevel(request, m_graphContainer);
+        // Set the algorithm last so that the criteria and SZLs are 
+        // in place before we run the layout algorithm.
+        m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
         setupListeners();
         createLayouts();
         setupErrorHandler();
@@ -273,6 +288,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // If we found valid node IDs in the list...
         if (refs.size() > 0) {
             VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+            if (criteria.size() == refs.size()) {
+                boolean criteriaChanged = false;
+                for (Integer ref : refs) {
+                    if (!criteria.contains(new AbstractVertexRef("nodes", String.valueOf(ref)))) {
+                        criteriaChanged = true;;
+                    }
+                }
+                // If all of the refs in the query string are already in the filter, then
+                // just return without altering it
+                if (!criteriaChanged) {
+                    return;
+                }
+            }
+
             // Clear the exiting focus node list
             criteria.clear();
             for (Integer ref : refs) {
@@ -280,7 +309,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
             }
             // Set the semantic zoom level to 1 by default
-            graphContainer.setSemanticZoomLevel(1);
+            if (graphContainer.getSemanticZoomLevel() == 1) {
+                // Manually redo the layout
+                graphContainer.redoLayout();
+            } else {
+                // This call will redo the layout
+                graphContainer.setSemanticZoomLevel(1);
+            }
         } else {
             // Don't do anything... we didn't find any focus nodes in the parameter so don't alter
             // any existing VertexHopCriteria
@@ -621,7 +656,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // If there was existing history, then restore that history snapshot.
         if (fragment != null) {
             LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", m_userName, fragment);
-            Page.getCurrent().setUriFragment(fragment);
+            Page page = Page.getCurrent();
+            if (page != null) {
+                page.setUriFragment(fragment);
+            }
             m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
         }
     }
@@ -914,7 +952,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void saveHistory() {
         if (m_settingFragment == 0) {
             String fragment = m_historyManager.createHistory(m_userName, m_graphContainer);
-            Page.getCurrent().setUriFragment(fragment, false);
+            Page page = Page.getCurrent();
+            if (page != null) {
+                page.setUriFragment(fragment, false);
+            }
         }
     }
 
