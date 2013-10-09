@@ -136,7 +136,16 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
         Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
         columns = kscReport.getGraphs_per_line();
+
+        if (columns == 0) {
+            columns = 1;
+        }
+
         rows = kscReport.getGraphCount() / columns;
+
+        if (rows == 0) {
+            rows = 1;
+        }
 
         if (kscReport.getGraphCount() % columns > 0) {
             rows++;
