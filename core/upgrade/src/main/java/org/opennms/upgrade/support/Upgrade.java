@@ -131,7 +131,7 @@ public class Upgrade {
             log("- Running pre-execution phase\n");
             upg.preExecute();
         } catch (OnmsUpgradeException e) {
-            log("  Warning: can't run the pre-execute phase because: %s\n", e.getMessage());
+            log("  Ignoring: %s\n", e.getMessage());
             return;
         }
         try {

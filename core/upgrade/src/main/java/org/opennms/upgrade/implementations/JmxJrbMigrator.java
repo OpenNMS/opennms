@@ -114,7 +114,30 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
-        log("FIXME: Not implemented yet.\n"); // FIXME Not implemented yet.
+        File versionFile = new File(ConfigFileConstants.getHome(), "jetty-webapps/opennms/WEB-INF/version.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(versionFile));
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't load " + versionFile);
+        }
+        String version = properties.getProperty("version.display");
+        log("Installed version: %s\n", version);
+        if (version == null) {
+            throw new OnmsUpgradeException("Can't retrive OpenNMS version");
+        }
+        String[] a = version.split("\\.");
+        boolean isValid = false;
+        try {
+            isValid = Integer.parseInt(a[0]) == 1 && Integer.parseInt(a[1]) == 12 && Integer.parseInt(a[2].replaceFirst("[^\\d].+", "")) >= 2;
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't process the OpenNMS version");
+        }
+        if (isValid) {
+            // TODO: Create a backup of the JMX files
+        } else {
+            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + version);
+        }
     }
 
     /* (non-Javadoc)
@@ -122,7 +145,7 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        log("FIXME: Not implemented yet.\n"); // FIXME Not implemented yet.
+        log("TODO: Remove the backup.\n"); // FIXME Not implemented yet.
     }
 
     /* (non-Javadoc)
@@ -130,7 +153,7 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        log("FIXME: Not implemented yet.\n"); // FIXME Not implemented yet.
+        log("TODO: Restore the backup.\n"); // FIXME Not implemented yet.
     }
 
     /* (non-Javadoc)
