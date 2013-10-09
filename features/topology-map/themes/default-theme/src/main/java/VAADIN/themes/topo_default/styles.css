@@ -182,6 +182,10 @@ div.v-table-header-wrap {
 	margin: 1px;
 }
 
+.search-token-field a:hover{
+	color:white;
+}
+
 .search-token-namespace{
 	font-weight: bold;
 }

@@ -98,7 +98,12 @@ public class SearchTokenField extends Composite {
     private void init() {
         if (m_suggestion.isFocused()) {
             m_focusBtn.setStyleName("icon-eye-close");
+            m_focusBtn.setTitle("Remove from focus");
+        } else{
+            m_focusBtn.setTitle("Add to focus");
         }
+        m_focusBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+
 
         m_closeBtn.setTitle("Remove Selected");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
