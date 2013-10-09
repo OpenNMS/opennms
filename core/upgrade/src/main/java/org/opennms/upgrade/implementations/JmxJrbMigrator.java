@@ -29,11 +29,16 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.jrobin.core.RrdDb;
@@ -45,7 +50,6 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.upgrade.api.OnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
@@ -76,6 +80,9 @@ public class JmxJrbMigrator implements OnmsUpgrade {
 
     /** The RRD properties. */
     private Properties rrdProperties;
+
+    /** The JMX resource directories. */
+    private List<File> jmxResourceDirectories;
 
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
@@ -134,7 +141,10 @@ public class JmxJrbMigrator implements OnmsUpgrade {
             throw new OnmsUpgradeException("Can't process the OpenNMS version");
         }
         if (isValid) {
-            // TODO: Create a backup of the JMX files
+            for (File jmxResourceDir : getJmxResourceDirectories()) {
+                log("backing up %s\n", jmxResourceDir);
+                zipDir(jmxResourceDir.getAbsolutePath() + ".zip", jmxResourceDir);
+            }
         } else {
             throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + version);
         }
@@ -145,7 +155,11 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        log("TODO: Remove the backup.\n"); // FIXME Not implemented yet.
+        log("Removing backup files");
+        for (File jmxResourceDir : getJmxResourceDirectories()) {
+            File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
+            zip.delete();
+        }
     }
 
     /* (non-Javadoc)
@@ -153,7 +167,17 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        log("TODO: Restore the backup.\n"); // FIXME Not implemented yet.
+        try {
+            for (File jmxResourceDir : getJmxResourceDirectories()) {
+                File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
+                FileUtils.deleteDirectory(jmxResourceDir);
+                jmxResourceDir.mkdirs();
+                unzipDir(zip, jmxResourceDir);
+                zip.delete();
+            }
+        } catch (IOException e) {
+            throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
+        }
     }
 
     /* (non-Javadoc)
@@ -167,36 +191,72 @@ public class JmxJrbMigrator implements OnmsUpgrade {
             System.setProperty("opennms.home", "/opt/opennms");
         }
         try {
-            CollectdConfiguration config = getCollectdConfiguration();
             final boolean isRrdtool = isRrdToolEnabled();
             final boolean storeByGroup = isStoreByGroupEnabled();
             log("Is RRDtool enabled ? %s\n", isRrdtool);
             log("Is storeByGroup enabled ? %s\n", storeByGroup);
-            List<String> services = getJmxServices(config);
-            for (String service : services) {
-                log("Checking service %s\n", service);
-                Service svc = getServiceObject(config, service);
-                String friendlyName = getSvcPropertyValue(svc, "friendly-name");
-                String collection = getSvcPropertyValue(svc, "collection");
-                RrdRepository repo = JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collection);
-                for (File nodeDir : repo.getRrdBaseDir().listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.matches("\\d+");
-                    }
-                })) {
-                    File resourceDir = new File(nodeDir, friendlyName);
-                    if (resourceDir.exists()) {
-                        if (storeByGroup) {
-                            processGroupFiles(resourceDir, isRrdtool);
-                        } else {
-                            processSingleFiles(resourceDir, isRrdtool);
-                        }
-                    }
+            for (File jmxResourceDir : getJmxResourceDirectories()) {
+                if (storeByGroup) {
+                    processGroupFiles(jmxResourceDir, isRrdtool);
+                } else {
+                    processSingleFiles(jmxResourceDir, isRrdtool);
                 }
             }
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Gets the JMX resource directories.
+     *
+     * @return the JMX resource directories
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private List<File> getJmxResourceDirectories() throws OnmsUpgradeException {
+        if (jmxResourceDirectories == null) {
+            jmxResourceDirectories = new ArrayList<File>();
+            CollectdConfiguration config;
+            try {
+                config = getCollectdConfiguration();
+            } catch (Exception e) {
+                throw new OnmsUpgradeException("Can't upgrade the JRBs because " + e.getMessage(), e);
+            }
+            List<String> services = getJmxServices(config);
+            List<String> jmxFriendlyNames = new ArrayList<String>();
+            for (String service : services) {
+                Service svc = getServiceObject(config, service);
+                String friendlyName = getSvcPropertyValue(svc, "friendly-name");
+                jmxFriendlyNames.add(friendlyName);
+            }
+            File rrdDir = new File(JMXDataCollectionConfigFactory.getInstance().getRrdPath());
+            findJmxDirectories(rrdDir, jmxFriendlyNames, jmxResourceDirectories);
+        }
+        return jmxResourceDirectories;
+    }
+
+    /**
+     * Find JMX directories.
+     *
+     * @param rrdDir the RRD directory
+     * @param jmxfriendlyNames the JMX friendly names
+     * @param jmxDirectories the target list for JMX directories
+     */
+    private void findJmxDirectories(final File rrdDir, final List<String> jmxfriendlyNames, final List<File> jmxDirectories) {
+        File[] files = rrdDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                boolean valid = false;
+                for (String friendlyName : jmxfriendlyNames) {
+                    if (file.getName().equals(friendlyName)) {
+                        valid = true;
+                    }
+                }
+                if (valid) {
+                    jmxDirectories.add(file);
+                }
+                findJmxDirectories(file, jmxfriendlyNames, jmxDirectories);
+            }
         }
     }
 
@@ -492,7 +552,6 @@ public class JmxJrbMigrator implements OnmsUpgrade {
         for (Collector c : config.getCollectorCollection()) {
             // The following code has been made that way to avoid a dependency with opennms-services
             if (c.getClassName().matches(".*(JBoss|JMXSecure|Jsr160|MX4J)Collector$")) {
-                log("Adding service %s (%s)\n", c.getService(), c.getClassName());
                 services.add(c.getService());
             }
         }
@@ -531,6 +590,84 @@ public class JmxJrbMigrator implements OnmsUpgrade {
             }
         }
         return null;
+    }
+
+    /**
+     * ZIP a directory.
+     *
+     * @param zipFileName the ZIP file name
+     * @param sourceFolder the source folder object
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void zipDir(String zipFileName, File sourceFolder) throws OnmsUpgradeException {
+        try {
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
+            log("Creating %s\n", zipFileName);
+            addDir(sourceFolder, out);
+            out.close();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't create " + zipFileName + " because " + e.getMessage());
+        }
+    }
+
+    /**
+     * UNZIP a directory.
+     *
+     * @param zipFileName the ZIP file name
+     * @param outputFolder the output folder object
+     */
+    private void unzipDir(File zipFileName, File outputFolder) throws OnmsUpgradeException {
+        byte[] buffer = new byte[1024];
+        try {
+            if (!outputFolder.exists()) {
+                outputFolder.mkdirs();
+            }
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileName));
+            ZipEntry ze = zis.getNextEntry();
+            while (ze != null) {
+                String fileName = ze.getName();
+                File newFile = new File(outputFolder, fileName);
+                log("  Unzip %s\n", newFile.getAbsoluteFile());
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't unzip files because " + e.getMessage()); 
+        }
+    }
+
+    /**
+     * Adds a directory to a ZIP file.
+     *
+     * @param dirObj the directory object
+     * @param out the ZIP output stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void addDir(File dirObj, ZipOutputStream out) throws IOException {
+        File[] files = dirObj.listFiles();
+        byte[] tmpBuf = new byte[1024];
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isDirectory()) {
+                addDir(files[i], out);
+                continue;
+            }
+            FileInputStream in = new FileInputStream(files[i]);
+            log("  Adding: %s\n", files[i].getName());
+            out.putNextEntry(new ZipEntry(files[i].getName()));
+            int len;
+            while ((len = in.read(tmpBuf)) > 0) {
+                out.write(tmpBuf, 0, len);
+            }
+            out.closeEntry();
+            in.close();
+        }
     }
 
     /**
