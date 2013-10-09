@@ -87,7 +87,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) ");
         sql.append("FROM OnmsAlarm AS alarm ");
         sql.append ("LEFT JOIN alarm.node AS node ");
-        sql.append("WHERE node.id IS NOT NULL AND alarm.severity > 3 AND alarm.alarmAckTime IS NULL");
+        sql.append("WHERE node.id IS NOT NULL AND alarm.severity > 3 AND alarm.alarmAckTime IS NULL ");
         sql.append("GROUP BY node.id, node.label ");
         sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
         return findObjects(AlarmSummary.class, sql.toString());
