@@ -72,9 +72,9 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
-            //VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
-            //criteria.addAll(mapToVertexRefs(selectedSuggestion));
-            //m_operationContext.getGraphContainer().redoLayout();
+            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            criteria.addAll(mapToVertexRefs(selectedSuggestion));
+            m_operationContext.getGraphContainer().redoLayout();
         }
 
         @Override

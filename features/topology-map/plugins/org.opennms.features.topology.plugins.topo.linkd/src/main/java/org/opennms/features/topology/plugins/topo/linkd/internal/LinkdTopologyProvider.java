@@ -594,9 +594,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             @Override
             public Undoer execute(List<VertexRef> refs, OperationContext operationContext) {
 
-                GraphContainer m_graphContainer = operationContext.getGraphContainer();
-                Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
-                m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
+                //GraphContainer m_graphContainer = operationContext.getGraphContainer();
+                //Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
+                //m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
 
                 return null;
             }

@@ -168,7 +168,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     public void setSelected(List<SearchSuggestion> selected) {
         m_selectionContainer.clear();
-        for (SearchSuggestion searchSuggestion : selected) {
+        /*for (SearchSuggestion searchSuggestion : selected) {
             SearchTokenField field = new SearchTokenField(searchSuggestion);
             field.setRemoveCallback(new SearchTokenField.RemoveCallback() {
                 @Override
@@ -180,7 +180,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             field.setFocusCallback(new DefaultFocusCallback());
 
             m_selectionContainer.add(field);
-        }
+        }*/
     }
 
     public void setFocused(List<SearchSuggestion> focused) {
