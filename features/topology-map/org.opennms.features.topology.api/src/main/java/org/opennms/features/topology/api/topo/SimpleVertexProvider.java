@@ -208,7 +208,7 @@ public class SimpleVertexProvider implements VertexProvider {
 				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid vertex: {}", vertex);
 				continue;
 			}
-			LoggerFactory.getLogger(this.getClass()).debug("Adding vertex: {}", vertex);
+			LoggerFactory.getLogger(this.getClass()).trace("Adding vertex: {}", vertex);
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}
