@@ -28,53 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.WidgetManager;
-import org.opennms.features.topology.api.WidgetUpdateListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.ui.SearchBox;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextCreator;
-import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -113,6 +66,51 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HistoryManager;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextCreator;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -127,38 +125,58 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
-
         private final Object lockObject = "lockObject";
-
         private boolean refreshInProgress = false;
         private long lastUpdateTime;
+
         @Override
         public void refresh(Refresher refresher) {
             if (needsRefresh()) {
-                synchronized (lockObject) {
-                    refreshInProgress = true;
+                refreshUI();
+            }
+            updateCounter();
+        }
 
-                    m_log.debug("Refresh UI");
-                    getGraphContainer().getBaseTopology().refresh();
-                    getGraphContainer().redoLayout();
-                    TopologyUI.this.markAsDirtyRecursive();
+        private void refreshUI() {
+            synchronized (lockObject) {
+                refreshInProgress = true;
 
-                    lastUpdateTime = System.currentTimeMillis();
+                getGraphContainer().getBaseTopology().refresh();
+                getGraphContainer().redoLayout();
+                TopologyUI.this.markAsDirtyRecursive();
 
-                    refreshInProgress = false;
-                }
+                lastUpdateTime = System.currentTimeMillis();
+                refreshInProgress = false;
             }
         }
+
+        private void updateCounter() {
+            if (m_graphContainer.getAutoRefreshSupport().isEnabled()) {
+                final long interval = m_graphContainer.getAutoRefreshSupport().getInterval(); //in seconds
+                final long diff = System.currentTimeMillis() - lastUpdateTime;
+                final long secondsPassed = diff / 1000;
+                final long secondsLeft = interval - secondsPassed;
+                m_refreshCounter.setCaption(Long.toString(secondsLeft));
+                m_refreshCounter.setDescription(secondsLeft + " seconds until next refresh");
+                m_refreshCounter.setEnabled(true);
+            } else {
+                m_refreshCounter.setCaption("");
+                m_refreshCounter.setDescription("Auto-Refresh is disabled");
+                m_refreshCounter.setEnabled(false);
+            }
+        }
+
         private boolean needsRefresh() {
             if (refreshInProgress) {
                 return false;
             }
+
             if (!m_graphContainer.getAutoRefreshSupport().isEnabled()) {
                 return false;
             }
 
             long updateDiff = System.currentTimeMillis() - lastUpdateTime;
-            return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval()*1000; // update or not
+            return updateDiff >= m_graphContainer.getAutoRefreshSupport().getInterval() * 1000; // update or not
         }
 
     }
@@ -193,6 +211,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private VerticesUpdateManager m_verticesUpdateManager;
     private Button m_panBtn;
     private Button m_selectBtn;
+    private final Label m_refreshCounter = new Label();
 
     private String getHeader(HttpServletRequest request) {
         if(m_headerProvider == null) {
@@ -360,7 +379,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void setupAutoRefresher() {
         if (m_graphContainer.hasAutoRefreshSupport()) {
             Refresher refresher = new Refresher();
-            refresher.setRefreshInterval(5000); // ask every 5 seconds for changes
+            refresher.setRefreshInterval(1000); // ask every 1 seconds for changes
             refresher.addListener(new DynamicUpdateRefresher());
             addExtension(refresher);
         }
@@ -467,19 +486,18 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         szlOutBtn.setHtmlContentAllowed(true);
         szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
         szlOutBtn.setDescription("Collapse Semantic Zoom Level");
+        szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
         szlOutBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
+                int szl = m_graphContainer.getSemanticZoomLevel();
                 if (szl > 0) {
                     szl--;
                     m_graphContainer.setSemanticZoomLevel(szl);
                     setSemanticZoomLevel(szl);
                     saveHistory();
-                } else if(szl == 0){
-                    szlOutBtn.setEnabled(false);
                 }
-
+                szlOutBtn.setEnabled(szl > 0);
             }
         });
 
@@ -491,14 +509,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public void buttonClick(ClickEvent event) {
-                int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
+                int szl = m_graphContainer.getSemanticZoomLevel();
                 szl++;
                 m_graphContainer.setSemanticZoomLevel(szl);
                 setSemanticZoomLevel(szl);
                 saveHistory();
-                if(szl > 0) {
-                    szlOutBtn.setEnabled(true);
-                }
+                szlOutBtn.setEnabled(szl > 0);
             }
         });
 
@@ -571,20 +587,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         semanticLayout.addComponent(szlOutBtn);
         semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
 
-        Label historyLabel = new Label("History");
         VerticalLayout historyCtrlLayout = new VerticalLayout();
         historyCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        historyCtrlLayout.addComponent(historyLabel);
         historyCtrlLayout.addComponent(historyButtonLayout);
 
-        VerticalLayout controlLayout = new VerticalLayout();
+        HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         controlLayout.addComponent(m_panBtn);
         controlLayout.addComponent(m_selectBtn);
 
         VerticalLayout semanticCtrlLayout = new VerticalLayout();
         semanticCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        semanticCtrlLayout.addComponent(new Label("Semantic Level"));
         semanticCtrlLayout.addComponent(semanticLayout);
 
         HorizontalLayout locationToolLayout = createLocationToolLayout();
@@ -593,6 +606,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         toolbar.setSpacing(true);
+        if (m_graphContainer.hasAutoRefreshSupport()) {
+            toolbar.addComponent(m_refreshCounter);
+        }
         toolbar.addComponent(historyCtrlLayout);
         toolbar.addComponent(locationToolLayout);
         toolbar.addComponent(sliderLayout);
