@@ -195,7 +195,13 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         suggestion.setNamespace(vertexRef.getNamespace());
         suggestion.setVertexKey(vertexRef.getId());
         suggestion.setLabel(vertexRef.getLabel());
+        suggestion.setFocused(checkIfFocused(vertexRef));
         return suggestion;
+    }
+
+    private boolean checkIfFocused(VertexRef vertexRef) {
+        VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+        return criteria.contains(vertexRef);
     }
 
     @Override

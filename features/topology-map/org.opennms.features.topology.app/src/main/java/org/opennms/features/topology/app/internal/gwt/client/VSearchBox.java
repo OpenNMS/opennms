@@ -51,100 +51,27 @@ import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
 
+    public class DefaultFocusCallback implements SearchTokenField.FocusCallback{
 
-    public class CustomDisplay extends SuggestBox.SuggestionDisplay{
-
-        private final SuggestionMenu m_suggestionMenu;
-
-        private final PopupPanel m_suggestionPopup;
-        public CustomDisplay() {
-            m_suggestionMenu = new SuggestionMenu();
-            m_suggestionPopup = createPopup();
-        }
-
-        protected PopupPanel createPopup() {
-            PopupPanel p = new PopupPanel(true, false);
-            p.setStyleName("gwt-SuggestBoxPopup");
-            p.setPreviewingAllNativeEvents(true);
-            //p.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
-            return p;
+        @Override
+        public void onFocus(SearchSuggestion searchSuggestion) {
+            m_connector.addToFocus(searchSuggestion);
         }
 
         @Override
-        protected SuggestOracle.Suggestion getCurrentSelection() {
-            if (!isSuggestionListShowing()) {
-                return null;
-            }
-            SuggestionMenuItem item = m_suggestionMenu.getSelectedItem();
-            return item == null ? null : item.getSuggestion();
+        public void onRemoveFocus(SearchSuggestion searchSuggestion) {
+            m_connector.removeFocused(searchSuggestion);
         }
-
-
-        @Override
-        protected void hideSuggestions() {
-            m_suggestionPopup.hide();
-        }
-
-        @Override
-        protected void moveSelectionDown() {
-            if (isSuggestionListShowing()) {
-                m_suggestionMenu.selectItem(m_suggestionMenu.getSelectedItemIndex() + 1);
-            }
-        }
-
-        private boolean isSuggestionListShowing() {
-            return m_suggestionPopup.isShowing();
-        }
-
-        @Override
-        protected void moveSelectionUp() {
-            if (isSuggestionListShowing()) {
-
-                if (m_suggestionMenu.getSelectedItemIndex() == -1) {
-                    m_suggestionMenu.selectItem(m_suggestionMenu.getNumItems() - 1);
-                } else {
-                    m_suggestionMenu.selectItem(m_suggestionMenu.getSelectedItemIndex() - 1);
-                }
-            }
-        }
-
-        @Override
-        protected void showSuggestions(SuggestBox suggestBox, Collection<? extends SuggestOracle.Suggestion> suggestions, boolean isDisplayStringHTML, boolean isAutoSelectEnabled, final SuggestBox.SuggestionCallback callback) {
-            boolean anySuggestions = (suggestions != null && suggestions.size() > 0);
-
-            boolean hideWhenEmpty = true;
-            if (!anySuggestions && hideWhenEmpty) {
-                hideSuggestions();
-                return;
-            }
-
-            if (m_suggestionPopup.isAttached()) {
-                m_suggestionPopup.hide();
-            }
-
-            m_suggestionMenu.clearItems();
-
-            for(final SuggestOracle.Suggestion curSuggestion : suggestions) {
-                Scheduler.ScheduledCommand command = new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                       callback.onSuggestionSelected(curSuggestion);
-                    }
-                };
-
-                final SuggestionMenuItem menuitem = new SuggestionMenuItem(curSuggestion, isDisplayStringHTML, command);
-
-                m_suggestionMenu.addItem(menuitem);
-            }
-
-            m_suggestionPopup.addAutoHidePartner(suggestBox.getElement());
-
-            // Show the popup under the TextBox.
-            m_suggestionPopup.showRelativeTo(suggestBox);
-
-        }
-
     }
+
+    public class DefaultCenterOnCallback implements SearchTokenField.CenterOnSuggestionCallback{
+
+        @Override
+        public void onCenter(SearchSuggestion searchSuggestion) {
+            m_connector.centerOnSuggestion(searchSuggestion);
+        }
+    }
+
     public class RemoteSuggestOracle extends SuggestOracle{
 
         RemoteSuggestOracle(){
@@ -249,12 +176,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                     m_connector.removeSelected(searchSuggestion);
                 }
             });
-            field.setCenterOnCallback(new SearchTokenField.CenterOnSuggestionCallback() {
-                @Override
-                public void onCenter(SearchSuggestion searchSuggestion) {
-                    m_connector.centerOnSuggestion(searchSuggestion);
-                }
-            });
+            field.setCenterOnCallback(new DefaultCenterOnCallback());
+            field.setFocusCallback(new DefaultFocusCallback());
 
             m_selectionContainer.add(field);
         }
@@ -270,6 +193,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                     m_connector.removeFocused(searchSuggestion);
                 }
             });
+            field.setFocusCallback(new DefaultFocusCallback());
+            field.setCenterOnCallback(new DefaultCenterOnCallback());
             m_focusedContainer.add(field);
         }
 

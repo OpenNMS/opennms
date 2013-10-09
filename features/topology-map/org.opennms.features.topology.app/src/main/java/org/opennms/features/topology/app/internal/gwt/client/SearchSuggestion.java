@@ -38,6 +38,7 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
     String m_label;
     String m_vertexKey;
     String m_namespace;
+    boolean m_focused = false;
 
     public void setLabel(String label){
         m_label = label;
@@ -92,5 +93,13 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
         result = prime * result
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
+    }
+
+    public void setFocused(boolean focused) {
+        m_focused = focused;
+    }
+
+    public boolean isFocused() {
+        return m_focused;
     }
 }

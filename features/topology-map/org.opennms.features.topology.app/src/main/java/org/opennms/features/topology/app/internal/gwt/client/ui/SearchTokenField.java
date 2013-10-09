@@ -52,6 +52,7 @@ public class SearchTokenField extends Composite {
 
     public interface FocusCallback{
         void onFocus(SearchSuggestion searchSuggestion);
+        void onRemoveFocus(SearchSuggestion searchSuggestion);
     }
 
     public interface CenterOnSuggestionCallback{
@@ -74,6 +75,9 @@ public class SearchTokenField extends Composite {
     @UiField
     Anchor m_centerSuggestionBtn;
 
+    @UiField
+    Anchor m_focusBtn;
+
     private SearchSuggestion m_suggestion;
     private RemoveCallback m_removeCallback;
     private FocusCallback m_focusCallback;
@@ -92,6 +96,10 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
+        if (m_suggestion.isFocused()) {
+            m_focusBtn.setStyleName("icon-eye-close");
+        }
+
         m_closeBtn.setTitle("Remove Selected");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
 
@@ -130,9 +138,22 @@ public class SearchTokenField extends Composite {
     }
 
     @UiHandler("m_centerSuggestionBtn")
-    void handleFocusClick(ClickEvent event){
+    void handleCenterOnClick(ClickEvent event){
         if(m_centerOnCallback != null){
             m_centerOnCallback.onCenter(m_suggestion);
         }
     }
+
+    @UiHandler("m_focusBtn")
+    void handleFocusClick(ClickEvent event) {
+        if(m_focusCallback != null){
+            if(m_suggestion.isFocused()){
+                m_focusCallback.onRemoveFocus(m_suggestion);
+            }else{
+                m_focusCallback.onFocus(m_suggestion);
+            }
+
+        }
+    }
+
 }

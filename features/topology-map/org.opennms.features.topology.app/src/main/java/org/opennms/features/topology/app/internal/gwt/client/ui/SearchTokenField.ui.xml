@@ -4,8 +4,9 @@
 
     <g:HTMLPanel styleName="search-token-field">
         <span ui:field="m_namespace" class="search-token-namespace"></span>: <span class="search-token-label" ui:field="m_label" />
-        <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow pointer-cursor"></g:Anchor>
-        <g:Anchor ui:field="m_closeBtn" styleName="icon-remove pointer-cursor" ></g:Anchor>
+        <g:Anchor ui:field="m_focusBtn" styleName="icon-eye-open"></g:Anchor>
+        <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>
+        <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
     </g:HTMLPanel>
 
 
