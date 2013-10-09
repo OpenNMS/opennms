@@ -28,22 +28,13 @@
 
 package org.opennms.netmgt.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -65,6 +56,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -282,10 +281,10 @@ public class AlarmDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testAlarmSummary_WithEmptyNodeIdsArray() {
-        List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(new Integer[0]);
+        List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
         Assert.assertNotNull(summary); // the result does not really matter, as long as we get a result
         summary = null;
-        summary = m_alarmDao.getNodeAlarmSummaries((Integer[])null);
+        summary = m_alarmDao.getNodeAlarmSummaries();
         Assert.assertNotNull(summary);
     }
 

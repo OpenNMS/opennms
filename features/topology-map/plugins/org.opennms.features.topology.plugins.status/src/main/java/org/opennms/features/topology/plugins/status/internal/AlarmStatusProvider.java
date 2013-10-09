@@ -1,7 +1,5 @@
 package org.opennms.features.topology.plugins.status.internal;
 
-import java.util.*;
-
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -11,6 +9,15 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class AlarmStatusProvider implements StatusProvider {
     
@@ -100,7 +107,7 @@ public class AlarmStatusProvider implements StatusProvider {
     private Map<Integer , AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
         Map<Integer, AlarmSummary> resultMap = new HashMap<Integer, AlarmSummary>();
 
-        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummaries(nodeIds.toArray(new Integer[nodeIds.size()]));
+        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<Integer>(nodeIds));
         for (AlarmSummary eachSummary : alarmSummaries) {
             resultMap.put(eachSummary.getNodeId(), eachSummary);
         }
