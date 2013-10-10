@@ -30,37 +30,24 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.builder.client.DomDivBuilder;
-import com.google.gwt.dom.builder.shared.DivBuilder;
-import com.google.gwt.dom.builder.shared.HtmlDivBuilder;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.vaadin.client.ui.VFilterSelect;
 import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField;
-import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenu;
-import org.opennms.features.topology.app.internal.gwt.client.ui.SuggestionMenuItem;
 
 import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
 
-    public class DefaultFocusCallback implements SearchTokenField.FocusCallback{
+    public class DefaultSelectionCallback implements SearchTokenField.SelectionCallback {
 
         @Override
-        public void onFocus(SearchSuggestion searchSuggestion) {
-            m_connector.addToFocus(searchSuggestion);
-        }
-
-        @Override
-        public void onRemoveFocus(SearchSuggestion searchSuggestion) {
-            m_connector.removeFocused(searchSuggestion);
+        public void onSelection(SearchSuggestion searchSuggestion) {
+            m_connector.selectSuggestion(Arrays.asList(searchSuggestion));
         }
     }
 
@@ -177,6 +164,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
+            field.setSelectionCallback(new DefaultSelectionCallback());
             m_focusedContainer.add(field);
         }
 

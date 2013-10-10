@@ -29,12 +29,9 @@
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -47,9 +44,8 @@ public class SearchTokenField extends Composite {
         void onRemove(SearchSuggestion searchSuggestion);
     }
 
-    public interface FocusCallback{
-        void onFocus(SearchSuggestion searchSuggestion);
-        void onRemoveFocus(SearchSuggestion searchSuggestion);
+    public interface SelectionCallback {
+        void onSelection(SearchSuggestion searchSuggestion);
     }
 
     public interface CenterOnSuggestionCallback{
@@ -77,7 +73,7 @@ public class SearchTokenField extends Composite {
 
     private SearchSuggestion m_suggestion;
     private RemoveCallback m_removeCallback;
-    private FocusCallback m_focusCallback;
+    private SelectionCallback m_selectionCallback;
     private CenterOnSuggestionCallback m_centerOnCallback;
 
     public SearchTokenField(SearchSuggestion searchSuggestion) {
@@ -123,8 +119,8 @@ public class SearchTokenField extends Composite {
         m_centerOnCallback = callback;
     }
 
-    public void setFocusCallback(FocusCallback callback) {
-        m_focusCallback = callback;
+    public void setSelectionCallback(SelectionCallback callback) {
+        m_selectionCallback = callback;
     }
 
     public void setNamespace(String namespace) {
@@ -151,12 +147,8 @@ public class SearchTokenField extends Composite {
 
     @UiHandler("m_focusBtn")
     void handleFocusClick(ClickEvent event) {
-        if(m_focusCallback != null){
-            if(m_suggestion.isFocused()){
-                m_focusCallback.onRemoveFocus(m_suggestion);
-            }else{
-                m_focusCallback.onFocus(m_suggestion);
-            }
+        if(m_selectionCallback != null){
+            m_selectionCallback.onSelection(m_suggestion);
 
         }
     }

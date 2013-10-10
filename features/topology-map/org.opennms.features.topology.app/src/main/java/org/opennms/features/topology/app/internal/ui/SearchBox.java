@@ -35,6 +35,9 @@ import com.vaadin.ui.AbstractComponent;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.CategoryHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.NcsHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
@@ -132,9 +135,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
 
-
-
-
         for(SearchProvider provider : providers) {
             if(searchPrefix != null && provider.supportsPrefix(searchPrefix)) {
                 String queryOnly = query.replace(searchPrefix, "");
@@ -229,6 +229,20 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     @Override
     public void graphChanged(GraphContainer graphContainer) {
+        Criteria[] criterium = graphContainer.getCriteria();
+        for(Criteria criteria : criterium){
+            if(criteria instanceof FocusNodeHopCriteria){
+
+            } else if(criteria instanceof CategoryHopCriteria){
+
+            } else if(criteria instanceof NcsHopCriteria) {
+
+            } else if (criteria instanceof VertexHopCriteria) {
+
+            }
+        }
+
+
         FocusNodeHopCriteria hopCriteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
 
         Set<VertexRef> vertices = hopCriteria.getVertices();
