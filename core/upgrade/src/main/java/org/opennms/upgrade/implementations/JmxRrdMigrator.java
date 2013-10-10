@@ -29,20 +29,15 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.jrobin.core.RrdDb;
-import org.opennms.core.utils.AlphaNumeric;
+
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
@@ -50,11 +45,11 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.upgrade.api.OnmsUpgrade;
+import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
- * The Class JRB Migrator for JMX Collector.
+ * The Class RRD/JRB Migrator for JMX Collector.
  * 
  * <p>The fix for the following issues is going to break existing collected data specially for JRBs.
  * For this reason, these files must be updated too.</p>
@@ -69,20 +64,16 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * <li>NMS-5824</li>
  * </ul>
  * 
- * FIXME: Implement preExecute, postExecute and roll-back properly.
- * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class JmxJrbMigrator implements OnmsUpgrade {
-
-    /** The main properties. */
-    private Properties mainProperties;
-
-    /** The RRD properties. */
-    private Properties rrdProperties;
+public class JmxRrdMigrator extends AbstractOnmsUpgrade {
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
+
+    public JmxRrdMigrator() throws OnmsUpgradeException {
+        super();
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
@@ -90,14 +81,6 @@ public class JmxJrbMigrator implements OnmsUpgrade {
     @Override
     public int getOrder() {
         return 1;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.upgrade.api.OnmsUpgrade#getId()
-     */
-    @Override
-    public String getId() {
-        return getClass().getName();
     }
 
     /* (non-Javadoc)
@@ -142,7 +125,7 @@ public class JmxJrbMigrator implements OnmsUpgrade {
         }
         if (isValid) {
             for (File jmxResourceDir : getJmxResourceDirectories()) {
-                log("backing up %s\n", jmxResourceDir);
+                log("Backing up %s\n", jmxResourceDir);
                 zipDir(jmxResourceDir.getAbsolutePath() + ".zip", jmxResourceDir);
             }
         } else {
@@ -155,10 +138,12 @@ public class JmxJrbMigrator implements OnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        log("Removing backup files");
         for (File jmxResourceDir : getJmxResourceDirectories()) {
             File zip = new File(jmxResourceDir.getAbsolutePath() + ".zip");
-            zip.delete();
+            if (zip.exists()) {
+                log("Removing backup %s\n", zip);
+                zip.delete();
+            }
         }
     }
 
@@ -400,32 +385,6 @@ public class JmxJrbMigrator implements OnmsUpgrade {
     }
 
     /**
-     * Gets the fixed file name.
-     *
-     * @param oldFile the old file
-     * @return the fixed file name
-     */
-    private String getFixedFileName(String oldFile) {
-        return AlphaNumeric.parseAndReplace(oldFile, '_');
-    }
-
-    /**
-     * Gets the files.
-     *
-     * @param resourceDir the resource directory
-     * @param ext the file extension
-     * @return the files
-     */
-    private File[] getFiles(final File resourceDir, final String ext) {
-        return resourceDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-    }
-
-    /**
      * Update JRB.
      *
      * @param jrbFile the JRB file
@@ -455,90 +414,6 @@ public class JmxJrbMigrator implements OnmsUpgrade {
             return parts[0] +  parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1);
         }
         return dsName;
-    }
-
-    /**
-     * Load properties.
-     *
-     * @param properties the properties
-     * @param fileName the file name
-     * @throws OnmsUpgradeException 
-     */
-    private void loadProperties(Properties properties, String fileName) throws OnmsUpgradeException {
-        try {
-            File propertiesFile = ConfigFileConstants.getConfigFileByName(fileName);
-            properties.load(new FileInputStream(propertiesFile));
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't load " + fileName);
-        }
-    }
-
-    /**
-     * Gets the main properties.
-     *
-     * @return the main properties
-     * @throws OnmsUpgradeException 
-     */
-    private Properties getMainProperties() throws OnmsUpgradeException {
-        if (mainProperties == null) {
-            mainProperties = new Properties();
-            loadProperties(mainProperties, "opennms.properties");
-        }
-        return mainProperties;
-    }
-
-    /**
-     * Gets the RRD properties.
-     *
-     * @return the RRD properties
-     * @throws OnmsUpgradeException 
-     */
-    private Properties getRrdProperties() throws OnmsUpgradeException {
-        if (rrdProperties == null) {
-            rrdProperties = new Properties();
-            loadProperties(rrdProperties, "rrd-configuration.properties");
-        }
-        return mainProperties;
-    }
-
-    /**
-     * Checks if is storeByGroup enabled.
-     *
-     * @return true, if is storeByGroup enabled
-     */
-    private boolean isStoreByGroupEnabled() {
-        try {
-            return Boolean.parseBoolean(getMainProperties().getProperty("org.opennms.rrd.storeByGroup", "false"));
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Checks if is RRDtool enabled.
-     *
-     * @return true, if is RRDtool enabled
-     */
-    private boolean isRrdToolEnabled() {
-        try {
-            String strategy = getRrdProperties().getProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-            return strategy.endsWith(".JniRrdStrategy");
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Gets the RRD extension.
-     *
-     * @return the RRD extension
-     */
-    private String getRrdExtension() {
-        try {
-            return getRrdProperties().getProperty("org.opennms.rrd.fileExtension", ".jrb");
-        } catch (Exception e) {
-            return ".jrb";
-        }
     }
 
     /**
@@ -590,94 +465,6 @@ public class JmxJrbMigrator implements OnmsUpgrade {
             }
         }
         return null;
-    }
-
-    /**
-     * ZIP a directory.
-     *
-     * @param zipFileName the ZIP file name
-     * @param sourceFolder the source folder object
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
-     */
-    private void zipDir(String zipFileName, File sourceFolder) throws OnmsUpgradeException {
-        try {
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
-            log("Creating %s\n", zipFileName);
-            addDir(sourceFolder, out);
-            out.close();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't create " + zipFileName + " because " + e.getMessage());
-        }
-    }
-
-    /**
-     * UNZIP a directory.
-     *
-     * @param zipFileName the ZIP file name
-     * @param outputFolder the output folder object
-     */
-    private void unzipDir(File zipFileName, File outputFolder) throws OnmsUpgradeException {
-        byte[] buffer = new byte[1024];
-        try {
-            if (!outputFolder.exists()) {
-                outputFolder.mkdirs();
-            }
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileName));
-            ZipEntry ze = zis.getNextEntry();
-            while (ze != null) {
-                String fileName = ze.getName();
-                File newFile = new File(outputFolder, fileName);
-                log("  Unzip %s\n", newFile.getAbsoluteFile());
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                }
-                fos.close();
-                ze = zis.getNextEntry();
-            }
-            zis.closeEntry();
-            zis.close();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't unzip files because " + e.getMessage()); 
-        }
-    }
-
-    /**
-     * Adds a directory to a ZIP file.
-     *
-     * @param dirObj the directory object
-     * @param out the ZIP output stream
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    private void addDir(File dirObj, ZipOutputStream out) throws IOException {
-        File[] files = dirObj.listFiles();
-        byte[] tmpBuf = new byte[1024];
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                addDir(files[i], out);
-                continue;
-            }
-            FileInputStream in = new FileInputStream(files[i]);
-            log("  Adding: %s\n", files[i].getName());
-            out.putNextEntry(new ZipEntry(files[i].getName()));
-            int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
-            }
-            out.closeEntry();
-            in.close();
-        }
-    }
-
-    /**
-     * Log.
-     *
-     * @param msgFormat the message format
-     * @param args the message's arguments
-     */
-    protected void log(String msgFormat, Object... args) {
-        System.out.printf("  " + msgFormat, args);
     }
 
 }

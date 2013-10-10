@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.vmmgr.ControllerUtils;
+import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeComparator;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -104,7 +105,7 @@ public class Upgrade {
         try {
             return ControllerUtils.getController().status() == 0;
         } catch (Exception e) {
-            log("  Warning: can't retrieve OpeNNMS status (assuming it is not running).");
+            log("Warning: can't retrieve OpeNNMS status (assuming it is not running).\n");
             return false;
         }
     }
@@ -128,6 +129,10 @@ public class Upgrade {
      */
     protected void executeUpgrade(OnmsUpgrade upg) {
         try {
+            if (wasExecuted(upg)) {
+                log("  Task %s was already executed at %s\n", upg.getId(), getUpgradeStatus().getLastExecutionTime(upg));
+                return;
+            }
             log("- Running pre-execution phase\n");
             upg.preExecute();
         } catch (OnmsUpgradeException e) {
@@ -191,7 +196,14 @@ public class Upgrade {
             provider.addIncludeFilter(new AssignableTypeFilter(OnmsUpgrade.class));
             Set<BeanDefinition> components = provider.findCandidateComponents(getClassScope());
             for (BeanDefinition component : components) {
+                if (component.isAbstract()) {
+                    continue;
+                }
                 Class<?> cls = Class.forName(component.getBeanClassName());
+                if (cls.getAnnotation(Ignore.class) != null) {
+                    continue;
+                }
+                log("Found upgrade task %s\n", cls.getName());
                 OnmsUpgrade upgrade = (OnmsUpgrade) cls.newInstance();
                 upgrades.add(upgrade);
             }
@@ -213,21 +225,17 @@ public class Upgrade {
         List<OnmsUpgrade> upgradeObjects = getUpgradeObjects();
         for (OnmsUpgrade upg : upgradeObjects) {
             log("Processing %s : %s\n", upg.getId(), upg.getDescription());
-            if (wasExecuted(upg)) {
-                log("  Task %s was already executed at %s\n", upg.getId(), getUpgradeStatus().getLastExecutionTime(upg));
-            } else {
-                if (isOpennmsRunning()) {
-                    if (upg.requiresOnmsRunning()) {
-                        executeUpgrade(upg);
-                    } else {
-                        log("  Class %s requires OpenNMS to be stopped but it is running\n", upg.getId());
-                    }
+            if (isOpennmsRunning()) {
+                if (upg.requiresOnmsRunning()) {
+                    executeUpgrade(upg);
                 } else {
-                    if (upg.requiresOnmsRunning()) {
-                        log("  Class %s requires OpenNMS to be running but it is stopped\n", upg.getId());
-                    } else {
-                        executeUpgrade(upg);
-                    }
+                    log("  Class %s requires OpenNMS to be stopped but it is running\n", upg.getId());
+                }
+            } else {
+                if (upg.requiresOnmsRunning()) {
+                    log("  Class %s requires OpenNMS to be running but it is stopped\n", upg.getId());
+                } else {
+                    executeUpgrade(upg);
                 }
             }
         }

@@ -25,26 +25,27 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.upgrade.tests;
+package org.opennms.upgrade.tests.bad;
 
+import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-import org.opennms.upgrade.support.UpgradeHelper;
 
 /**
- * The Class TestUpgradeNothing.
+ * The Class TestAbstract.
  * <p>This is an example implementation for the JUnit tests.</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class TestUpgradeNothing implements OnmsUpgrade {
+@Ignore
+public abstract class TestAbstract implements OnmsUpgrade {
 
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
      */
     @Override
     public int getOrder() {
-        return 100;
+        return 25;
     }
 
     /* (non-Javadoc)
@@ -60,7 +61,7 @@ public class TestUpgradeNothing implements OnmsUpgrade {
      */
     @Override
     public String getDescription() {
-        return "Testing class - do nothing";
+        return "Testing Ignore";
     }
 
     /* (non-Javadoc)
@@ -68,6 +69,7 @@ public class TestUpgradeNothing implements OnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        throw new RuntimeException("This should not be called");
     }
 
     /* (non-Javadoc)
@@ -75,6 +77,7 @@ public class TestUpgradeNothing implements OnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
+        throw new RuntimeException("This should not be called");
     }
 
     /* (non-Javadoc)
@@ -82,7 +85,7 @@ public class TestUpgradeNothing implements OnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        UpgradeHelper.addRolledBack(getId());
+        throw new RuntimeException("This should not be called");
     }
 
     /* (non-Javadoc)
@@ -90,7 +93,7 @@ public class TestUpgradeNothing implements OnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        UpgradeHelper.addExecuted(getId());
+        throw new RuntimeException("This should not be called");
     }
 
     /* (non-Javadoc)

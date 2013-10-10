@@ -28,7 +28,6 @@
 
 package org.opennms.upgrade.api;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface OnmsUpgrade.
  * <p>All the post-processing scripts must implement this class.</p>
