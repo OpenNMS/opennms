@@ -238,8 +238,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		// If we didn't find any matching nodes among the focus nodes...
 		if (nextHops.size() < 1) {
-			// ...then just return the full list of vertices
-			return allVertices;
+			// ...then return an empty list of vertices
+			return Collections.emptyList();
 		}
 
 		// Put a limit on the SZL in case we infinite loop for some reason
