@@ -147,29 +147,6 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 	}
 
-	public static class CategoryHopCriteria extends VertexHopCriteria {
-
-		private final String m_categoryName;
-
-		public CategoryHopCriteria(String categoryName) {
-			m_categoryName = categoryName;
-		}
-
-		/**
-		 * TODO: This return value doesn't matter since we just delegate
-		 * to the m_delegate provider.
-		 */
-		@Override
-		public String getNamespace() {
-			return "nodes";
-		}
-
-		public Set<VertexRef> getVertices() {
-			// TODO Query for nodes inside category
-			return Collections.emptySet();
-		}
-	}
-
 	public static class NcsHopCriteria extends VertexHopCriteria {
 		
 		private final long m_ncsServiceId;	
