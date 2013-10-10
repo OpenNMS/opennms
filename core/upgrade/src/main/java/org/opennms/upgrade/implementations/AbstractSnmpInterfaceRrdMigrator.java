@@ -27,17 +27,34 @@
  *******************************************************************************/
 package org.opennms.upgrade.implementations;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.jrobin.core.RrdDb;
+import org.opennms.core.utils.StringUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.jrobin.AggregateTimeSeriesDataSource;
+import org.opennms.jrobin.RrdDatabase;
+import org.opennms.jrobin.RrdDatabaseWriter;
+import org.opennms.jrobin.RrdEntry;
+import org.opennms.jrobin.TimeSeriesDataSource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.rrdtool.RRD;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * The Abstract Class RRD/JRB Migrator for SNMP Interfaces Data
@@ -138,13 +155,118 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
     /**
      * Merge.
      *
-     * @param oldFile the old file
-     * @param newFile the new file
+     * @param oldDir the old directory
+     * @param newDir the new directory
+     * @throws OnmsUpgradeException the onms upgrade exception
      */
-    protected void merge(File oldFile, File newFile) {
-        log("Merging data from %s to %s\n", oldFile, newFile);
+    protected void merge(File oldDir, File newDir) throws OnmsUpgradeException {
+        log("Merging data from %s to %s\n", oldDir, newDir);
+        if (newDir.exists()) {
+            for (File source : getFiles(oldDir, getRrdExtension())) {
+                File dest = new File(newDir, source.getName());
+                if (dest.exists()) {
+                    if (isRrdToolEnabled()) {
+                        mergeRrd(source, dest);
+                    } else {
+                        mergeJrb(source, dest);
+                    }
+                } else {
+                    log("  Warning: %s doesn't exist\n", dest);
+                }
+            }
+        } else {
+            log("  renaming %s to %s\n", oldDir.getName(), newDir.getName());
+            oldDir.renameTo(newDir);
+        }
+    }
 
-        // FIXME Must be implemented
+    // https://bitbucket.org/ctheune/rrdmerge/
+    // https://github.com/jbuchbinder/rrd-merge
+    /**
+     * Merge RRDs.
+     *
+     * @param source the source RRD
+     * @param dest the destination RRD
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void mergeRrd(File source, File dest) throws OnmsUpgradeException {
+        log("  merging RRD %s\n", source.getName());
+        RRD rrdSrc = loadRrd(source);
+        RRD rrdDst = loadRrd(dest);
+        try {
+            rrdDst.merge(rrdSrc);
+            JaxbUtils.marshal(rrdDst, new FileWriter(dest));
+        } catch (Exception e) {
+            log("  Warning: ignoring merge because %s.\n", e.getMessage());
+        }
+    }
+
+    /**
+     * Merge JRBs.
+     *
+     * @param source the source JRB
+     * @param dest the destination JRB
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void mergeJrb(File source, File dest) throws OnmsUpgradeException {
+        log("  merging JRB %s\n", source.getName());
+        try {
+            final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
+            rrds.add(new RrdDatabase(new RrdDb(source, true)));
+            rrds.add(new RrdDatabase(new RrdDb(dest, true)));
+            final TimeSeriesDataSource dataSource = new AggregateTimeSeriesDataSource(rrds);
+            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
+            final RrdDb outputRrd = new RrdDb(outputFile);
+            final RrdDatabaseWriter writer = new RrdDatabaseWriter(outputRrd);
+            final long endTime = dataSource.getEndTime();
+            final long startTime = dataSource.getStartTime();
+            for (long time = startTime; time <= endTime; time += dataSource.getNativeStep()) {
+                final RrdEntry entry = dataSource.getDataAt(time);
+                writer.write(entry);
+            }
+            dataSource.close();
+            outputRrd.close();
+            dest.delete();
+            outputFile.renameTo(dest);
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't merge JRBs because " + e.getMessage());
+        }
+    }
+
+    /**
+     * Loads the RRD.
+     *
+     * @param rrdFile the RRD file
+     * @return the RRD
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected RRD loadRrd(File rrdFile) throws OnmsUpgradeException {
+        String rrdBinary = System.getProperty("rrd.binary");
+        if (rrdBinary == null) {
+            throw new OnmsUpgradeException("rrd.binary property must be set");
+        }
+        String command = rrdBinary + " dump " + rrdFile.getAbsolutePath();
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
+        RRD rrd = null;
+        try {
+            Process process = Runtime.getRuntime().exec(commandArray);
+            byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());             
+            String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+            if (errors.length() > 0) {
+                throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+            }
+            BufferedReader reader = null;
+            try {
+                InputStream is = new ByteArrayInputStream(byteArray);
+                reader = new BufferedReader(new InputStreamReader(is));
+                rrd = JaxbUtils.unmarshal(RRD.class, reader);
+            } finally {
+                reader.close();
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't execute command '" + command + "' because " + e.getMessage());
+        }
+        return rrd;
     }
 
     /**

@@ -40,7 +40,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
-    <dependency>
+    <dependency> <!-- Offline version -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provisiond</artifactId>
     </dependency>
