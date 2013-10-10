@@ -38,10 +38,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 
 public class SearchTokenField extends Composite {
@@ -62,6 +59,9 @@ public class SearchTokenField extends Composite {
 
     private static SearchTokenFieldUiBinder uiBinder = GWT.create(SearchTokenFieldUiBinder.class);
     public interface SearchTokenFieldUiBinder extends UiBinder<Widget, SearchTokenField>{}
+
+    @UiField
+    HTMLPanel m_tokenField;
 
     @UiField
     SpanElement m_namespace;
@@ -162,6 +162,11 @@ public class SearchTokenField extends Composite {
             }
 
         }
+    }
+
+    @UiHandler("m_tokenField")
+    void handleTokenClick(ClickEvent event){
+        
     }
 
 }

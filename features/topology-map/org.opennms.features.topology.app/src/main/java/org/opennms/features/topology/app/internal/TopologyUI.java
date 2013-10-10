@@ -639,7 +639,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
         showAllMapBtn.setHtmlContentAllowed(true);
-        showAllMapBtn.setDescription("Show All Map");
+        showAllMapBtn.setDescription("Show Entire Map");
         showAllMapBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
