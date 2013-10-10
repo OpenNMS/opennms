@@ -64,23 +64,23 @@ import org.slf4j.LoggerFactory;
 public class VertexHopGraphProvider implements GraphProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-	public static VertexHopCriteria getVertexHopCriteriaForContainer(GraphContainer graphContainer) {
-		return getVertexHopCriteriaForContainer(graphContainer, true);
+	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer) {
+		return getFocusNodeHopCriteriaForContainer(graphContainer, true);
 	}
 
-	public static VertexHopCriteria getVertexHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
+	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
 		Criteria[] criteria = graphContainer.getCriteria();
 		if (criteria != null) {
 			for (Criteria criterium : criteria) {
 				try {
-					VertexHopCriteria hopCriteria = (VertexHopCriteria)criterium;
+					FocusNodeHopCriteria hopCriteria = (FocusNodeHopCriteria)criterium;
 					return hopCriteria;
 				} catch (ClassCastException e) {}
 			}
 		}
 
 		if (createIfAbsent) {
-			VertexHopCriteria hopCriteria = new VertexHopCriteria();
+			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
 			graphContainer.setCriteria(hopCriteria);
 			return hopCriteria;
 		} else {
@@ -88,23 +88,25 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 	}
 
-	public static class VertexHopCriteria implements Criteria {
+	public abstract static class VertexHopCriteria implements Criteria {
+		@Override
+		public ElementType getType() {
+			return ElementType.VERTEX;
+		}
+	}
+
+	public static class FocusNodeHopCriteria extends VertexHopCriteria {
 
 		private static final long serialVersionUID = 2904432878716561926L;
 
 		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
 
-		public VertexHopCriteria() {
+		public FocusNodeHopCriteria() {
 			super();
 		}
 
-		public VertexHopCriteria(Collection<VertexRef> objects) {
+		public FocusNodeHopCriteria(Collection<VertexRef> objects) {
 			m_vertices.addAll(objects);
-		}
-
-		@Override
-		public ElementType getType() {
-			return ElementType.VERTEX;
 		}
 
 		/**
@@ -142,6 +144,53 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public void addAll(Collection<VertexRef> refs) {
 			m_vertices.addAll(refs);
+		}
+	}
+
+	public static class CategoryHopCriteria extends VertexHopCriteria {
+
+		private final String m_categoryName;
+
+		public CategoryHopCriteria(String categoryName) {
+			m_categoryName = categoryName;
+		}
+
+		/**
+		 * TODO: This return value doesn't matter since we just delegate
+		 * to the m_delegate provider.
+		 */
+		@Override
+		public String getNamespace() {
+			return "nodes";
+		}
+
+		public Set<VertexRef> getVertices() {
+			// TODO Query for nodes inside category
+			return Collections.emptySet();
+		}
+	}
+
+	public static class NcsHopCriteria extends VertexHopCriteria {
+		
+		private final long m_ncsServiceId;	
+		
+		public NcsHopCriteria(long ncsServiceId) {
+			m_ncsServiceId = ncsServiceId;
+		}
+
+		/**
+		 * TODO: This return value doesn't matter since we just delegate
+		 * to the m_delegate provider.
+		 */
+		@Override
+		public String getNamespace() {
+			return "nodes";
+		}
+
+		public Set<VertexRef> getVertices() {
+			// TODO Use NCSEdgeProvider to query for vertices that are attached
+			// to the NCS edges for the service ID
+			return Collections.emptySet();
 		}
 	}
 
@@ -217,7 +266,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		// Find the vertices that match a required HopDistanceCriteria
 		for (Criteria criterium : criteria) {
 			try {
-				VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
+				FocusNodeHopCriteria hdCriteria = (FocusNodeHopCriteria)criterium;
 				for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
 					Vertex vertex = itr.next();
 					if (hdCriteria.contains(vertex)) {
@@ -238,8 +287,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		// If we didn't find any matching nodes among the focus nodes...
 		if (nextHops.size() < 1) {
-			// ...then just return the full list of vertices
-			return allVertices;
+			// ...then return an empty list of vertices
+			return Collections.emptyList();
 		}
 
 		// Put a limit on the SZL in case we infinite loop for some reason

@@ -39,7 +39,7 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public Map<String, String> createHistory(GraphContainer container){
-        return Collections.singletonMap(this.getClass().getName(), Boolean.toString(isChecked(container)));
+        return Collections.singletonMap(getClass().getName(), Boolean.toString(isChecked(container)));
     }
 
     @Override

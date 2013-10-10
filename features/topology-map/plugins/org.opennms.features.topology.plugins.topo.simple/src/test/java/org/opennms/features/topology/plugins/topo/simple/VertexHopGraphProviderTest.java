@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 
@@ -41,7 +41,7 @@ public class VertexHopGraphProviderTest {
 	
 	@Test
 	public void testGraphProvider() {
-		VertexHopCriteria criteria = new VertexHopCriteria();
+		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria();
 		criteria.add(new AbstractVertexRef("nodes", "g0"));
 		m_provider.getVertices(criteria);
 
