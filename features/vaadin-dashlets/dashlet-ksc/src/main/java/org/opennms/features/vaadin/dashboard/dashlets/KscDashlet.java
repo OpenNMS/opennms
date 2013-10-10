@@ -1,6 +1,8 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
@@ -181,6 +183,10 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
          * adding the components
          */
 
+        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+
         for (int y = 0; y < m_gridLayout.getRows(); y++) {
             for (int x = 0; x < m_gridLayout.getColumns(); x++) {
 
@@ -197,11 +203,66 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
                     String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
 
                     Image image = new Image(null, new ExternalResource(urlString));
+
                     VerticalLayout verticalLayout = new VerticalLayout();
-                    verticalLayout.addComponent(new Label(data.get("nodeLabel")));
-                    verticalLayout.addComponent(new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel")));
+
+                    HorizontalLayout horizontalLayout = new HorizontalLayout();
+                    horizontalLayout.addStyleName("box");
+                    horizontalLayout.setWidth("100%");
+                    horizontalLayout.setHeight("42px");
+
+                    VerticalLayout leftLayout = new VerticalLayout();
+                    leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                    leftLayout.addStyleName("margin");
+
+                    Label labelTitle;
+
+                    if (graph.getTitle() == null || "".equals(graph.getTitle())) {
+                        labelTitle = new Label("&nbsp;");
+                        labelTitle.setContentMode(ContentMode.HTML);
+                    } else {
+                        labelTitle = new Label(graph.getTitle());
+                    }
+
+                    labelTitle.addStyleName("text");
+
+                    Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                    labelFrom.addStyleName("text");
+
+                    Label labelTo = new Label("To: " + endTime.getTime().toString());
+                    labelTo.addStyleName("text");
+
+                    Label labelNodeLabel = new Label(data.get("nodeLabel"));
+                    labelNodeLabel.addStyleName("text");
+
+                    Label labelResourceLabel = new Label(data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
+                    labelResourceLabel.addStyleName("text");
+
+                    leftLayout.addComponent(labelTitle);
+                    leftLayout.addComponent(labelFrom);
+                    leftLayout.addComponent(labelTo);
+
+                    VerticalLayout rightLayout = new VerticalLayout();
+                    rightLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+                    rightLayout.addStyleName("margin");
+
+                    rightLayout.addComponent(labelNodeLabel);
+                    rightLayout.addComponent(labelResourceLabel);
+
+                    horizontalLayout.addComponent(leftLayout);
+                    horizontalLayout.addComponent(rightLayout);
+
+                    horizontalLayout.setExpandRatio(leftLayout, 1.0f);
+                    horizontalLayout.setExpandRatio(rightLayout, 1.0f);
+
+                    verticalLayout.addComponent(horizontalLayout);
                     verticalLayout.addComponent(image);
+                    verticalLayout.setWidth(image.getWidth() + "px");
+
                     m_gridLayout.addComponent(verticalLayout, x, y);
+
+                    verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
+                    verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
                     m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
                 }
                 i++;
