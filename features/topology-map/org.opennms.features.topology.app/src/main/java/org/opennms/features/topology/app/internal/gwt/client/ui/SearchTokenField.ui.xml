@@ -2,7 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
-    <g:HTMLPanel ui:field="m_tokenField" styleName="search-token-field">
+    <g:HTMLPanel styleName="search-token-field">
         <span ui:field="m_namespace" class="search-token-namespace"></span>: <span class="search-token-label" ui:field="m_label" />
         <g:Anchor ui:field="m_focusBtn" styleName="icon-eye-open"></g:Anchor>
         <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>

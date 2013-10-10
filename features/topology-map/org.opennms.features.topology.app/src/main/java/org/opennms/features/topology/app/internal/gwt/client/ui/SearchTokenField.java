@@ -61,9 +61,6 @@ public class SearchTokenField extends Composite {
     public interface SearchTokenFieldUiBinder extends UiBinder<Widget, SearchTokenField>{}
 
     @UiField
-    HTMLPanel m_tokenField;
-
-    @UiField
     SpanElement m_namespace;
 
     @UiField
@@ -164,9 +161,5 @@ public class SearchTokenField extends Composite {
         }
     }
 
-    @UiHandler("m_tokenField")
-    void handleTokenClick(ClickEvent event){
-        
-    }
 
 }
