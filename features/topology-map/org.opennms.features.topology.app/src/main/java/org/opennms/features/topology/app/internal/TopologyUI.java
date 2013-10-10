@@ -311,7 +311,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 boolean criteriaChanged = false;
                 for (Integer ref : refs) {
                     if (!criteria.contains(new AbstractVertexRef("nodes", String.valueOf(ref)))) {
-                        criteriaChanged = true;;
+                        criteriaChanged = true;
                     }
                 }
                 // If all of the refs in the query string are already in the filter, then

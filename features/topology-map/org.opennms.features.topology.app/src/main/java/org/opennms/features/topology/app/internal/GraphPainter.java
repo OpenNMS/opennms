@@ -39,7 +39,7 @@ public class GraphPainter extends BaseGraphVisitor {
     @Override
     public void visitGraph(Graph graph) throws PaintException {
         if (m_statusProvider != null) {
-            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(new ArrayList<VertexRef>((graph.getDisplayVertices())));
+            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<VertexRef>((graph.getDisplayVertices())));
             if (newStatusMap != null) {
                 m_statusMap.clear();
                 m_statusMap.putAll(newStatusMap);

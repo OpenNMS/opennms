@@ -45,6 +45,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.slf4j.LoggerFactory;
 
 @JavaScript({"gwt/public/topologywidget/js/d3.v3.js", "gwt/public/topologywidget/js/d3.interpolate-zoom.v0.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
@@ -207,8 +208,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         try {
             graph.visit(painter);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
         }
     }
 
@@ -300,6 +300,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         getViewManager().setMapBounds(graph.getLayout().getBounds());
         computeBoundsForSelected(m_graphContainer.getSelectionManager());
+        updateGraph();
     }
 
     /**
