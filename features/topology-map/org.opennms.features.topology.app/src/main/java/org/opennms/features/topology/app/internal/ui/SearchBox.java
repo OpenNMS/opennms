@@ -34,7 +34,7 @@ import com.google.common.collect.*;
 import com.vaadin.ui.AbstractComponent;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxState;
@@ -72,7 +72,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
             criteria.addAll(mapToVertexRefs(selectedSuggestion));
             m_operationContext.getGraphContainer().redoLayout();
         }
@@ -88,7 +88,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
             for (Criteria criteria : m_operationContext.getGraphContainer().getCriteria()) {
                 try {
-                    VertexHopCriteria hopCriteria = (VertexHopCriteria)criteria;
+                    FocusNodeHopCriteria hopCriteria = (FocusNodeHopCriteria)criteria;
                     hopCriteria.remove(mapToVertexRef(searchSuggestion));
 
                     // If there are no remaining focus vertices in the criteria, then
@@ -104,7 +104,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
         @Override
         public void addToFocus(SearchSuggestion suggestion) {
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
             criteria.add(mapToVertexRef(suggestion));
 
             m_operationContext.getGraphContainer().redoLayout();
@@ -200,7 +200,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private boolean checkIfFocused(VertexRef vertexRef) {
-        VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(m_operationContext.getGraphContainer());
+        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
         return criteria.contains(vertexRef);
     }
 
@@ -229,7 +229,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     @Override
     public void graphChanged(GraphContainer graphContainer) {
-        VertexHopCriteria hopCriteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+        FocusNodeHopCriteria hopCriteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
 
         Set<VertexRef> vertices = hopCriteria.getVertices();
         getState().setFocused(mapToSuggestions(Lists.newArrayList(vertices)));

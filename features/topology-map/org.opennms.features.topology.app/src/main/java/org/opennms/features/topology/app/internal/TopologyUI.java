@@ -55,7 +55,7 @@ import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -308,7 +308,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
         // If we found valid node IDs in the list...
         if (refs.size() > 0) {
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
             if (criteria.size() == refs.size()) {
                 boolean criteriaChanged = false;
                 for (Integer ref : refs) {
