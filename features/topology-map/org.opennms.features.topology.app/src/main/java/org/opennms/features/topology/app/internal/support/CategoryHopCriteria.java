@@ -53,6 +53,7 @@ public class CategoryHopCriteria extends VertexHopCriteria {
 		return m_categoryName;
 	}
 
+	@Override
 	public Set<VertexRef> getVertices() {
 		OnmsCategory category = m_categoryDao.findByName(m_categoryName);
 		if (m_categoryDao == null) {
