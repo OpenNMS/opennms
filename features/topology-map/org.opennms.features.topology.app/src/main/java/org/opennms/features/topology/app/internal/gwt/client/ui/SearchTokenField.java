@@ -130,13 +130,4 @@ public class SearchTokenField extends Composite {
         }
     }
 
-    @UiHandler("m_focusBtn")
-    void handleFocusClick(ClickEvent event) {
-        if(m_selectionCallback != null){
-            m_selectionCallback.onSelection(m_suggestion);
-
-        }
-    }
-
-
 }
