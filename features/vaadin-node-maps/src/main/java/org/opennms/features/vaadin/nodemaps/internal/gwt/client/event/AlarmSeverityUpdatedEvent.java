@@ -1,25 +1,58 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.UpdateEvent;
 
-public class AlarmSeverityUpdatedEvent extends UpdateEvent {
-    public static final String TYPE = "alarmSeverityUpdated";
+public class AlarmSeverityUpdatedEvent extends OpenNMSEvent<AlarmSeverityUpdatedEventHandler> {
+    public static Type<AlarmSeverityUpdatedEventHandler> TYPE = new Type<AlarmSeverityUpdatedEventHandler>();
+    private final int m_severity;
 
-    protected AlarmSeverityUpdatedEvent() {
-        super();
+    public AlarmSeverityUpdatedEvent(final int severity) {
+        m_severity = severity;
     }
 
-    public static final AlarmSeverityUpdatedEvent createEvent(final int minimumSeverity) {
-        final AlarmSeverityUpdatedEvent event = UpdateEvent.createUpdateEvent(TYPE).cast();
-        event.setMinimumSeverity(minimumSeverity);
-        return event;
+    public int getSeverity() {
+        return m_severity;
     }
 
-    protected final native void setMinimumSeverity(final int minimumSeverity) /*-{
-        this.minimumSeverity = minimumSeverity;
-    }-*/;
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<AlarmSeverityUpdatedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-    public final native int getMinimumSeverity() /*-{
-        return this.minimumSeverity;
-    }-*/;
+    @Override
+    public void dispatch(final AlarmSeverityUpdatedEventHandler handler) {
+        handler.onAlarmSeverityUpdated(this);
+    }
+
+    @Override
+    public String toDebugString() {
+        return "event: AlarmSeverityUpdatedEvent: severity=" + m_severity;
+    }
 }

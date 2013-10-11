@@ -1,17 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc. OpenNMS(R) is
- * a registered trademark of The OpenNMS Group, Inc. OpenNMS(R) is free
- * software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later version.
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details. You should have received a copy of the GNU General Public
- * License along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/ http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
@@ -35,7 +47,9 @@ import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
@@ -48,16 +62,13 @@ import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
-public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers {
+public class NodeMapWidget extends Widget implements MarkerProvider, FilteredMarkersUpdatedEventHandler {
     private final DivElement m_div;
     private Map m_map;
     private ILayer m_layer;
@@ -70,13 +81,13 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
     private MarkerFilterImpl m_filter;
     private NodeIdSelectionRpc m_clientToServerRpc;
 
-    private Logger logger = Logger.getLogger(getClass().getName());
-    private final HandlerManager m_handlerManager;
+    private OpenNMSEventManager m_eventManager;
 
-    private FilteredMarkersUpdatedEventHandler m_filteredMarkersUpdatedHandler;
+    private Logger logger = Logger.getLogger(getClass().getName());
 
     public NodeMapWidget() {
-        m_handlerManager = new HandlerManager(this);
+        m_eventManager = new OpenNMSEventManager();
+        m_eventManager.addHandler(FilteredMarkersUpdatedEvent.TYPE, this);
 
         m_div = Document.get().createDivElement();
         m_div.setId("gwt-map");
@@ -87,38 +98,27 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
         setStyleName("v-openlayers");
         logger.log(Level.INFO, "NodeMapWidget(): div ID = " + getElement().getId());
 
-        m_filter = new MarkerFilterImpl("", 0);
-        m_markerContainer = new MarkerContainer(m_filter);
-
         addAttachHandler(new Handler() {
             @Override
             public void onAttachOrDetach(final AttachEvent event) {
                 if (event.isAttached()) {
                     logger.log(Level.INFO, "NodeMapWidget.onAttach()");
 
+                    m_filter = new MarkerFilterImpl("", 0, m_eventManager);
+                    m_markerContainer = new MarkerContainer(m_filter, m_eventManager);
+
+                    m_filter.onLoad();
+                    m_markerContainer.onLoad();
+
                     Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                         @Override public void execute() {
                             initializeMap(m_div.getId());
                         }
                     });
-
-                    m_markerContainer.onLoad();
-
-                    updateMarkerClusterLayer();
-                    m_filteredMarkersUpdatedHandler = new FilteredMarkersUpdatedEventHandler() {
-                        @Override
-                        public void onEvent(final NativeEvent nativeEvent) {
-                            logger.log(Level.INFO, "NodeMapWidget.onFilteredMarkersUpdated(), refreshing node map widgets");
-                            updateMarkerClusterLayer();
-                        }
-                    };
-                    DomEvent.addListener(m_filteredMarkersUpdatedHandler);
                 } else {
                     logger.log(Level.INFO, "NodeMapwidget.onDetach()");
-
-                    if (m_filteredMarkersUpdatedHandler != null) DomEvent.removeListener(m_filteredMarkersUpdatedHandler);
-
-                    m_markerContainer.onUnload();
+                    if (m_markerContainer != null) m_markerContainer.onUnload();
+                    if (m_filter != null) m_filter.onUnload();
                     destroyMap();
                 }
             }
@@ -139,8 +139,9 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
         addAlarmControl();
         addZoomControl();
 
-        m_searchControl.focus();
+        m_searchControl.focusInputBox();
 
+        m_eventManager.fireEvent(new ComponentInitializedEvent(NodeMapConnector.class.getName()));
         logger.log(Level.INFO, "NodeMapWidget.initializeMap(): finished");
     }
 
@@ -211,7 +212,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
 
     private void addSearchControl() {
         logger.log(Level.INFO, "NodeMapWidget.addSearchControl()");
-        m_searchControl = new SearchControl(m_markerContainer, this);
+        m_searchControl = new SearchControl(m_markerContainer, this, m_eventManager);
         m_map.addControl(m_searchControl);
     }
 
@@ -219,7 +220,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
         logger.log(Level.INFO, "NodeMapWidget.addAlarmControl()");
         final AlarmControlOptions options = new AlarmControlOptions();
         options.setPosition("topleft");
-        final AlarmControl alarmControl = new AlarmControl();
+        final AlarmControl alarmControl = new AlarmControl(m_eventManager);
         m_map.addControl(alarmControl);
     }
 
@@ -287,11 +288,11 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
                     }
                     return true;
                 }
-        
+
                 logger.log(Level.INFO, "NodeMapWidget.addNewMarkers(): finished adding visible markers (" + m_markerContainer.size() + " entries)");
                 return false;
             }
-        
+
         });
     }
 
@@ -301,7 +302,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
         logger.log(Level.INFO, "NodeMapWidget.removeDisabledMarkers(): removing " + disabledMarkers.size() + " disabled markers from the map.");
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<JSNodeMarker> m_markerIterator = disabledMarkers.listIterator();
-        
+
             @Override public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final JSNodeMarker marker = m_markerIterator.next();
@@ -319,7 +320,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
                     }
                     return true;
                 }
-        
+
                 logger.log(Level.INFO, "NodeMapWidget.removeDisabledMarkers(): finished removing filtered markers (" + disabledMarkers.size() + " entries)");
                 return false;
             }
@@ -333,19 +334,25 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override public void execute() {
                     if (m_firstUpdate) {
-                        final LatLngBounds bounds = new LatLngBounds();
-                        for (final NodeMarker marker : m_markerContainer.getAllMarkers()) {
-                            logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): processing marker: " + marker);
-                            final Coordinates coordinates = marker.getCoordinates();
-                            if (coordinates == null) {
-                                logger.log(Level.WARNING, "NodeMapWidget.zoomToFit(): no coordinates found for marker! " + marker);
-                            } else {
-                                bounds.extend(JSNodeMarker.coordinatesToLatLng(coordinates));
+                        final List<JSNodeMarker> allMarkers = m_markerContainer.getAllMarkers();
+
+                        if (allMarkers.size() == 0) {
+                            logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): no bounds yet, skipping.");
+                        } else {
+                            final LatLngBounds bounds = new LatLngBounds();
+                            for (final NodeMarker marker : allMarkers) {
+                                logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): processing marker: " + marker);
+                                final Coordinates coordinates = marker.getCoordinates();
+                                if (coordinates == null) {
+                                    logger.log(Level.WARNING, "NodeMapWidget.zoomToFit(): no coordinates found for marker! " + marker);
+                                } else {
+                                    bounds.extend(JSNodeMarker.coordinatesToLatLng(coordinates));
+                                }
                             }
+                            logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): setting boundary to " + bounds.toBBoxString() + ".");
+                            m_map.fitBounds(bounds);
+                            m_firstUpdate = false;
                         }
-                        logger.log(Level.INFO, "NodeMapWidget.zoomToFit(): setting boundary to " + bounds.toBBoxString());
-                        m_map.fitBounds(bounds);
-                        m_firstUpdate = false;
                     }
                 }
             });
@@ -399,7 +406,12 @@ public class NodeMapWidget extends Widget implements MarkerProvider, HasHandlers
         m_clientToServerRpc = rpc;
     }
 
-    protected HandlerManager createHandlerManager() {
-        return m_handlerManager;
+    @Override public void onFilteredMarkersUpdatedEvent(final FilteredMarkersUpdatedEvent event) {
+        logger.log(Level.INFO, "NodeMapWidget.onFilteredMarkersUpdated(), refreshing node map widgets");
+        updateMarkerClusterLayer();
+    }
+
+    public OpenNMSEventManager getEventManager() {
+        return m_eventManager;
     }
 }

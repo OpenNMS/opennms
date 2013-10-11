@@ -1,82 +1,99 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
-public class MarkerFilterImpl implements MarkerFilter {
+public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEventHandler, SearchStringSetEventHandler {
     private static final Logger LOG = Logger.getLogger(MarkerFilterImpl.class.getName());
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
-    private DomEventCallback m_searchStringSetHandler;
-    private DomEventCallback m_alarmSeverityUpdatedHandler;
+
+    private OpenNMSEventManager m_eventManager;
 
     String m_searchString = null;
     int m_minimumSeverity = 0;
 
-    public MarkerFilterImpl(final String searchString, final int minimumSeverity) {
+    public MarkerFilterImpl(final String searchString, final int minimumSeverity, final OpenNMSEventManager openNMSEventManager) {
         m_searchString = searchString;
         m_minimumSeverity = minimumSeverity;
-        initHandlers();
+        m_eventManager = openNMSEventManager;
     }
 
-    protected void initHandlers() {
-        m_searchStringSetHandler = new SearchStringSetEventHandler() {
-            @Override public void onEvent(final NativeEvent nativeEvent) {
-                final SearchStringSetEvent event = nativeEvent.cast();
-                LOG.log(Level.INFO, "MarkerFilterImpl.onSearchUpdated(" + event.getSearchString() + ")");
-                setSearchString(event.getSearchString());
-            }
-        };
-        DomEvent.addListener(m_searchStringSetHandler);
+    public void onLoad() {
+        m_eventManager.addHandler(SearchStringSetEvent.TYPE, this);
+        m_eventManager.addHandler(AlarmSeverityUpdatedEvent.TYPE, this);
+        m_eventManager.fireEvent(new ComponentInitializedEvent(MarkerFilterImpl.class.getName()));
+    }
 
-        m_alarmSeverityUpdatedHandler = new AlarmSeverityUpdatedEventHandler() {
-            @Override public void onEvent(final NativeEvent nativeEvent) {
-                final AlarmSeverityUpdatedEvent event = nativeEvent.cast();
-                LOG.log(Level.INFO, "MarkerFilterImpl.onAlarmSeverityUpdated(" + event.getMinimumSeverity() + ")");
-                setMinimumSeverity(event.getMinimumSeverity());
-            }
-        };
-        DomEvent.addListener(m_alarmSeverityUpdatedHandler);
+    public void onUnload() {
+        m_eventManager.removeHandler(AlarmSeverityUpdatedEvent.TYPE, this);
+        m_eventManager.removeHandler(SearchStringSetEvent.TYPE, this);
     }
 
     public void setSearchString(final String searchString) {
         if (Util.hasChanged(m_searchString, searchString)) {
-            LOG.log(Level.INFO, "MarkerFilterImpl.setSearchString(" + searchString + "): search string modified (old = '" + m_searchString + "'");
+            LOG.info("MarkerFilterImpl.setSearchString(" + searchString + "): search string modified (old = '" + m_searchString + "'");
             m_searchString = searchString;
             sendFilterUpdatedEvent();
         } else {
-            LOG.log(Level.INFO, "MarkerFilterImpl.setSearchString(" + searchString + "): search string unmodified.");
+            LOG.info("MarkerFilterImpl.setSearchString(" + searchString + "): search string unmodified.");
         }
     }
 
     public void setMinimumSeverity(final int minimumSeverity) {
         if (Util.hasChanged(m_minimumSeverity, minimumSeverity)) {
-            LOG.log(Level.INFO, "MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity modified (old = '" + m_minimumSeverity + "'");
+            LOG.info("MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity modified (old = '" + m_minimumSeverity + "'");
             m_minimumSeverity = minimumSeverity;
             sendFilterUpdatedEvent();
         } else {
-            LOG.log(Level.INFO, "MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity unmodified.");
+            LOG.info("MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity unmodified.");
         }
     }
 
     void sendFilterUpdatedEvent() {
-        DomEvent.send(FilterUpdatedEvent.createEvent());
+        m_eventManager.fireEvent(new FilterUpdatedEvent());
     }
 
     @Override
@@ -164,5 +181,17 @@ public class MarkerFilterImpl implements MarkerFilter {
         }
 
         return false;
+    }
+
+    @Override
+    public void onAlarmSeverityUpdated(final AlarmSeverityUpdatedEvent event) {
+        LOG.info("MarkerFilterImpl.onAlarmSeverityUpdated(" + event.getSeverity() + ")");
+        setMinimumSeverity(event.getSeverity());
+    }
+
+    @Override
+    public void onSearchStringSet(final SearchStringSetEvent event) {
+        LOG.info("MarkerFilterImpl.onSearchStringSet(" + event.getSearchString() + ")");
+        setSearchString(event.getSearchString());
     }
 }

@@ -26,36 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.logging.Logger;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.shared.EventHandler;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+public abstract class SearchEventHandler implements ChangeHandler, KeyDownHandler, CutHandler, PasteHandler, SearchHandler {
+    public SearchEventHandler() {
+    }
 
-public interface MarkerFilter {
-    public static enum MatchType {
-        // substring search
-        SUBSTRING,
-        // exact match
-        EXACT,
-        // search in a comma-separated list
-        IN;
+    public void onChange(final ChangeEvent event)   { this.onEvent(event); }
+    public void onKeyDown(final KeyDownEvent event) { this.onEvent(event); }
+    public void onCut(final CutEvent event)         { this.onEvent(event); }
+    public void onPaste(final PasteEvent event)     { this.onEvent(event); }
+    public void onSearch(final SearchEvent event)   { this.onEvent(event); }
 
-        public static final Logger LOG = Logger.getLogger(MatchType.class.getName());
-
-        public static MatchType fromToken(final String token) {
-            if ("in".equals(token) || " in ".equals(token)) {
-                return MatchType.IN;
-            } else if ("=".equals(token)) {
-                return MatchType.EXACT;
-            } else if (":".equals(token)) {
-                return MatchType.SUBSTRING;
-            } else {
-                LOG.warning("Unknown match token: " + token + ", blowing things up!");
-                return null;
-            }
-        }
-    };
-
-    public abstract boolean matches(final NodeMarker marker);
+    protected abstract void onEvent(DomEvent<? extends EventHandler> event);
 }
+

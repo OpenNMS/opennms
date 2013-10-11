@@ -26,36 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.logging.Logger;
+import com.google.gwt.event.shared.EventHandler;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+/**
+ * Handler for {@link PasteEvent} events.
+ */
+public interface PasteHandler extends EventHandler {
 
-public interface MarkerFilter {
-    public static enum MatchType {
-        // substring search
-        SUBSTRING,
-        // exact match
-        EXACT,
-        // search in a comma-separated list
-        IN;
-
-        public static final Logger LOG = Logger.getLogger(MatchType.class.getName());
-
-        public static MatchType fromToken(final String token) {
-            if ("in".equals(token) || " in ".equals(token)) {
-                return MatchType.IN;
-            } else if ("=".equals(token)) {
-                return MatchType.EXACT;
-            } else if (":".equals(token)) {
-                return MatchType.SUBSTRING;
-            } else {
-                LOG.warning("Unknown match token: " + token + ", blowing things up!");
-                return null;
-            }
-        }
-    };
-
-    public abstract boolean matches(final NodeMarker marker);
+    /**
+     * Called when a Paste event is fired.
+     * 
+     * @param event the {@link PasteEvent} that was fired
+     */
+    void onPaste(PasteEvent event);
 }

@@ -26,36 +26,46 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.logging.Logger;
+import com.google.gwt.event.dom.client.DomEvent;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+/**
+ * Represents a native change event.
+ */
+public class SearchEvent extends DomEvent<SearchHandler> {
 
-public interface MarkerFilter {
-    public static enum MatchType {
-        // substring search
-        SUBSTRING,
-        // exact match
-        EXACT,
-        // search in a comma-separated list
-        IN;
+    /**
+     * Event type for Search events. Represents the meta-data associated with this
+     * event.
+     */
+    private static final Type<SearchHandler> TYPE = new Type<SearchHandler>("search", new SearchEvent());
 
-        public static final Logger LOG = Logger.getLogger(MatchType.class.getName());
+    /**
+     * Gets the event type associated with change events.
+     * 
+     * @return the handler type
+     */
+    public static Type<SearchHandler> getType() {
+        return TYPE;
+    }
 
-        public static MatchType fromToken(final String token) {
-            if ("in".equals(token) || " in ".equals(token)) {
-                return MatchType.IN;
-            } else if ("=".equals(token)) {
-                return MatchType.EXACT;
-            } else if (":".equals(token)) {
-                return MatchType.SUBSTRING;
-            } else {
-                LOG.warning("Unknown match token: " + token + ", blowing things up!");
-                return null;
-            }
-        }
-    };
+    /**
+     * Protected constructor, use
+     * {@link DomEvent#fireNativeEvent(com.google.gwt.dom.client.NativeEvent, com.google.gwt.event.shared.HasHandlers)}
+     * to fire change events.
+     */
+    protected SearchEvent() {
+    }
 
-    public abstract boolean matches(final NodeMarker marker);
+    @Override
+    public final Type<SearchHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(final SearchHandler handler) {
+        handler.onSearch(this);
+    }
+
 }

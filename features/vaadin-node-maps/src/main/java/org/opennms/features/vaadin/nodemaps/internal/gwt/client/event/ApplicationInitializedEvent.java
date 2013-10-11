@@ -26,36 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
-import java.util.logging.Logger;
 
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+public class ApplicationInitializedEvent extends OpenNMSEvent<ApplicationInitializedEventHandler> {
+    public static Type<ApplicationInitializedEventHandler> TYPE = new Type<ApplicationInitializedEventHandler>();
 
-public interface MarkerFilter {
-    public static enum MatchType {
-        // substring search
-        SUBSTRING,
-        // exact match
-        EXACT,
-        // search in a comma-separated list
-        IN;
+    public ApplicationInitializedEvent() {
+    }
 
-        public static final Logger LOG = Logger.getLogger(MatchType.class.getName());
+    @Override
+    public com.google.gwt.event.shared.GwtEvent.Type<ApplicationInitializedEventHandler> getAssociatedType() {
+        return TYPE;
+    }
 
-        public static MatchType fromToken(final String token) {
-            if ("in".equals(token) || " in ".equals(token)) {
-                return MatchType.IN;
-            } else if ("=".equals(token)) {
-                return MatchType.EXACT;
-            } else if (":".equals(token)) {
-                return MatchType.SUBSTRING;
-            } else {
-                LOG.warning("Unknown match token: " + token + ", blowing things up!");
-                return null;
-            }
-        }
-    };
+    @Override
+    public void dispatch(final ApplicationInitializedEventHandler handler) {
+        handler.onApplicationInitialized(this);
+    }
 
-    public abstract boolean matches(final NodeMarker marker);
+    @Override
+    public String toDebugString() {
+        return "event: ApplicationInitializedEvent:";
+    }
 }
