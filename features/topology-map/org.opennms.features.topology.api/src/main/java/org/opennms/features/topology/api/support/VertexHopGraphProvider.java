@@ -291,6 +291,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 			currentHops.addAll(nextHops);
 			nextHops.clear();
 
+			Map<VertexRef,Set<EdgeRef>> edges = m_delegate.getEdgeIdsForVertices(currentHops.toArray(new VertexRef[0]));
+
 			for (VertexRef vertex : currentHops) {
 
 				// Mark the current vertex as belonging to a particular SZL
@@ -302,7 +304,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 				retval.add(getVertex(vertex));
 
 				// Fetch all edges attached to this vertex
-				for (EdgeRef edgeRef : m_delegate.getEdgeIdsForVertex(vertex)) {
+				for (EdgeRef edgeRef : edges.get(vertex)) {
 					Edge edge = m_delegate.getEdge(edgeRef);
 
 					// Find everything attached to those edges
@@ -458,6 +460,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 	@Override
 	public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
 		return m_delegate.getEdgeIdsForVertex(vertex);
+	}
+
+	/**
+	 * TODO This will miss edges provided by auxiliary edge providers
+	 */
+	@Override
+	public Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
+		return m_delegate.getEdgeIdsForVertices(vertices);
 	}
 
 	@Override
