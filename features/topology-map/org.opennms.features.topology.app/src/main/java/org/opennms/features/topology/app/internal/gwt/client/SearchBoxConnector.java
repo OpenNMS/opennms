@@ -69,7 +69,8 @@ public class SearchBoxConnector extends AbstractComponentConnector {
         }
 
         if (stateChangeEvent.hasPropertyChanged("selected")) {
-            getWidget().setSelected(getState().getSelected());
+            //deduplicate the list of selected and have it change the token field background
+            //or something
 
         }
 

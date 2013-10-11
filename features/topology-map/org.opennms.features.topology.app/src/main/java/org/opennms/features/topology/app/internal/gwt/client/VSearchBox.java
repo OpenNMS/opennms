@@ -112,7 +112,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     @Override
     public void onLoad(){
         this.setStyleName("topology-search");
-        TextBoxBase textField = new TextBox();
+        final TextBoxBase textField = new TextBox();
         textField.setWidth("245px");
         textField.setStyleName("topology-search-box");
         textField.getElement().setAttribute("placeholder", "Search...");
@@ -126,6 +126,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             @Override
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 SearchSuggestion selectedItem = (SearchSuggestion) event.getSelectedItem();
+                textField.setText("");
                 m_connector.selectSuggestion(Arrays.asList(selectedItem));
             }
         });
@@ -165,24 +166,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_connector = connector;
     }
 
-
-    public void setSelected(List<SearchSuggestion> selected) {
-        m_selectionContainer.clear();
-        /*for (SearchSuggestion searchSuggestion : selected) {
-            SearchTokenField field = new SearchTokenField(searchSuggestion);
-            field.setRemoveCallback(new SearchTokenField.RemoveCallback() {
-                @Override
-                public void onRemove(SearchSuggestion searchSuggestion) {
-                    m_connector.removeSelected(searchSuggestion);
-                }
-            });
-            field.setCenterOnCallback(new DefaultCenterOnCallback());
-            field.setFocusCallback(new DefaultFocusCallback());
-
-            m_selectionContainer.add(field);
-        }*/
-    }
-
     public void setFocused(List<SearchSuggestion> focused) {
         m_focusedContainer.clear();
         for(SearchSuggestion searchSuggestion : focused){
@@ -193,7 +176,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                     m_connector.removeFocused(searchSuggestion);
                 }
             });
-            field.setFocusCallback(new DefaultFocusCallback());
             field.setCenterOnCallback(new DefaultCenterOnCallback());
             m_focusedContainer.add(field);
         }

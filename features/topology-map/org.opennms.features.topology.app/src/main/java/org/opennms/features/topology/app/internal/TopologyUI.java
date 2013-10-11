@@ -28,6 +28,53 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HistoryManager;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextCreator;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -66,51 +113,6 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.WidgetManager;
-import org.opennms.features.topology.api.WidgetUpdateListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.ui.SearchBox;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextCreator;
-import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -306,7 +308,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
         // If we found valid node IDs in the list...
         if (refs.size() > 0) {
-            VertexHopCriteria criteria = VertexHopGraphProvider.getVertexHopCriteriaForContainer(graphContainer);
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
             if (criteria.size() == refs.size()) {
                 boolean criteriaChanged = false;
                 for (Integer ref : refs) {
@@ -639,7 +641,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
         showAllMapBtn.setHtmlContentAllowed(true);
-        showAllMapBtn.setDescription("Show All Map");
+        showAllMapBtn.setDescription("Show Entire Map");
         showAllMapBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
