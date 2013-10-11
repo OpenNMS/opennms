@@ -34,20 +34,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
-import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.jrobin.AggregateTimeSeriesDataSource;
-import org.opennms.jrobin.RrdDatabase;
-import org.opennms.jrobin.RrdDatabaseWriter;
-import org.opennms.jrobin.RrdEntry;
-import org.opennms.jrobin.TimeSeriesDataSource;
+import org.opennms.jrobin.RrdMerge;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -216,21 +209,8 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
     protected void mergeJrb(File source, File dest) {
         log("  merging JRB %s into %s\n", source, dest);
         try {
-            final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
-            rrds.add(new RrdDatabase(new RrdDb(source, true)));
-            rrds.add(new RrdDatabase(new RrdDb(dest, true)));
-            final TimeSeriesDataSource dataSource = new AggregateTimeSeriesDataSource(rrds);
-            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            final RrdDb outputRrd = new RrdDb(outputFile);
-            final RrdDatabaseWriter writer = new RrdDatabaseWriter(outputRrd);
-            final long endTime = dataSource.getEndTime();
-            final long startTime = dataSource.getStartTime();
-            for (long time = startTime; time <= endTime; time += dataSource.getNativeStep()) {
-                final RrdEntry entry = dataSource.getDataAt(time);
-                writer.write(entry);
-            }
-            dataSource.close();
-            outputRrd.close();
+            RrdMerge merge = new RrdMerge();
+            File outputFile = merge.mergeJrbs(source, dest);
             dest.delete();
             outputFile.renameTo(dest);
         } catch (Exception e) {
