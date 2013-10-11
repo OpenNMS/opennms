@@ -15,7 +15,7 @@
     can depend on to use Twitter4J
   </description>
   <properties>
-    <twitter4jVersion>[2.0,)</twitter4jVersion>
+    <twitter4jVersion>2.0.10</twitter4jVersion>
   </properties>
   <dependencies>
     <dependency>
