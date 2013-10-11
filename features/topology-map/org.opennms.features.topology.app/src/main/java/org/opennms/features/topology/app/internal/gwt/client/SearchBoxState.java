@@ -30,14 +30,15 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.vaadin.shared.AbstractComponentState;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class SearchBoxState extends AbstractComponentState {
 
-    List<SearchSuggestion> m_suggestions;
-    List<SearchSuggestion> m_selected;
-    List<SearchSuggestion> m_focused;
+    List<SearchSuggestion> m_suggestions = new ArrayList<SearchSuggestion>();
+    List<SearchSuggestion> m_selected = new ArrayList<SearchSuggestion>();
+    List<SearchSuggestion> m_focused = new ArrayList<SearchSuggestion>();
 
     public void setSuggestions(List<SearchSuggestion> suggestions){
         m_suggestions = suggestions;

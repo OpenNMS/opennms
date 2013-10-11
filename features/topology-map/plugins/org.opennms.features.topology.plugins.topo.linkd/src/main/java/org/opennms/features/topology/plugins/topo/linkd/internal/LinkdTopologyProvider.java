@@ -588,19 +588,17 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public AbstractSearchSelectionOperation getSelectionOperation() {
-        return new AbstractSearchSelectionOperation() {
+    public void onSelectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        GraphContainer m_graphContainer = operationContext.getGraphContainer();
+        VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
+        m_graphContainer.getSelectionManager().setSelectedVertexRefs(Lists.newArrayList(vertexRef));
+    }
 
-            @Override
-            public Undoer execute(List<VertexRef> refs, OperationContext operationContext) {
-
-                //GraphContainer m_graphContainer = operationContext.getGraphContainer();
-                //Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
-                //m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
-
-                return null;
-            }
-        };
+    @Override
+    public void onDeselectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        GraphContainer graphContainer = operationContext.getGraphContainer();
+        VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
+        graphContainer.getSelectionManager().deselectVertexRefs(Lists.newArrayList(vertexRef));
     }
 
     @Override
@@ -611,7 +609,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     @Override
     public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
         //That's bloody confusing, A hack for later
-        return Lists.newArrayList((VertexRef)new AbstractVertexRef(searchResult.getId(), searchResult.getNamespace(), searchResult.getLabel()));
+        return Lists.newArrayList((VertexRef)new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
     }
 
     private static String getIfStatusString(int ifStatusNum) {

@@ -47,7 +47,12 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         @Override
         public void onSelection(SearchSuggestion searchSuggestion) {
-            m_connector.selectSuggestion(Arrays.asList(searchSuggestion));
+            m_connector.selectSuggestion(searchSuggestion);
+        }
+
+        @Override
+        public void onDeselection(SearchSuggestion searchSuggestion) {
+            m_connector.removeSelected(searchSuggestion);
         }
     }
 
@@ -114,7 +119,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 SearchSuggestion selectedItem = (SearchSuggestion) event.getSelectedItem();
                 textField.setText("");
-                m_connector.selectSuggestion(Arrays.asList(selectedItem));
+                m_connector.addToFocus(selectedItem);
             }
         });
 
@@ -155,6 +160,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     public void setFocused(List<SearchSuggestion> focused) {
         m_focusedContainer.clear();
+        log(focused);
         for(SearchSuggestion searchSuggestion : focused){
             SearchTokenField field = new SearchTokenField(searchSuggestion);
             field.setRemoveCallback(new SearchTokenField.RemoveCallback() {
@@ -165,6 +171,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
             field.setSelectionCallback(new DefaultSelectionCallback());
+
             m_focusedContainer.add(field);
         }
 

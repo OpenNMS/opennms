@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
 
 import java.util.ArrayList;
@@ -121,8 +122,12 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public AbstractSearchSelectionOperation getSelectionOperation() {
-                return null;
+            public void onSelectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+            }
+
+            @Override
+            public void onDeselectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override

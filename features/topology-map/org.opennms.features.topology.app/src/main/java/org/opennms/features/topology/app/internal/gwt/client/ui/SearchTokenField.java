@@ -46,12 +46,13 @@ public class SearchTokenField extends Composite {
 
     public interface SelectionCallback {
         void onSelection(SearchSuggestion searchSuggestion);
+
+        void onDeselection(SearchSuggestion searchSuggestion);
     }
 
     public interface CenterOnSuggestionCallback{
         void onCenter(SearchSuggestion searchSuggestion);
     }
-
 
     private static SearchTokenFieldUiBinder uiBinder = GWT.create(SearchTokenFieldUiBinder.class);
     public interface SearchTokenFieldUiBinder extends UiBinder<Widget, SearchTokenField>{}
