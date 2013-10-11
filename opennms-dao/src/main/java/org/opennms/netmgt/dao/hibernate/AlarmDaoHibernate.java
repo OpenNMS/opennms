@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-
-import java.util.List;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -56,6 +57,9 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds) {
+        if (nodeIds.size() < 1) {
+            return Collections.emptyList();
+        }
         StringBuilder sql = new StringBuilder();
         //count(*) - count(alarm.alarmAckTime) counts only the unacknowledged alarms
         sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary( node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) ) ");
