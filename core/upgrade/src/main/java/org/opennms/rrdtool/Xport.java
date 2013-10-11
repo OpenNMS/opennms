@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class XPort (the XML representation of the 'rrdtool xport' command).
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

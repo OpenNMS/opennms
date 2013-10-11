@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The Class RRD (Round Robin Database).
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class XRow (XPort Row).
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement(name="row")
 @XmlAccessorType(XmlAccessType.FIELD)

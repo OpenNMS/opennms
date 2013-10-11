@@ -41,18 +41,22 @@ import org.opennms.core.xml.JaxbUtils;
 public class RrdParsingTest {
 
     /**
-     * Parses the RRD.
+     * Parses a simple RRD.
      *
      * @throws Exception the exception
      */
     @Test
-    public void parseRrd() throws Exception {
+    public void parseRrdSimple() throws Exception {
         RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump.xml"));
         Assert.assertNotNull(rrd);
         Assert.assertEquals(new Long(300), rrd.getStep());
         Assert.assertEquals(new Long(1233926670), rrd.getLastUpdate());
         Assert.assertEquals("ifInDiscards", rrd.getDataSources().get(0).getName());
+        Assert.assertEquals(DSType.COUNTER, rrd.getDataSources().get(0).getType());
         Assert.assertEquals(new Integer(0), rrd.getDataSources().get(0).getUnknownSec());
+
+        Assert.assertEquals(CFType.AVERAGE, rrd.getRras().get(0).getConsolidationFunction());
+        Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
 
         Assert.assertEquals(new Integer(1), rrd.getRras().get(0).getPdpPerRow());
         Assert.assertEquals(new Long(1233321900), rrd.getStartTimestamp(rrd.getRras().get(0)));
@@ -62,6 +66,33 @@ public class RrdParsingTest {
         Assert.assertEquals(new Long(1202342400), rrd.getStartTimestamp(rrd.getRras().get(4)));
     }
 
+    /**
+     * Parses the RRD with computed DS.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void parseRrdWithComputedDs() throws Exception {
+        RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
+        Assert.assertNotNull(rrd);
+    }
+
+    /**
+     * Parses the RRD with aberrant behavior detection.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void parseRrdWithAberrantBehaviorDetection() throws Exception {
+        RRD rrd = JaxbUtils.unmarshal(RRD.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
+        Assert.assertNotNull(rrd);
+    }
+
+    /**
+     * Parses the Xport.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void parseXport() throws Exception {
         Xport xport = JaxbUtils.unmarshal(Xport.class, new File("src/test/resources/rrd-xport.xml"));

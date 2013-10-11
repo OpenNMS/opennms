@@ -27,43 +27,30 @@
  *******************************************************************************/
 package org.opennms.rrdtool;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * The Class Row.
+ * The Class DSAdapter.
+ * <p>The XML representation sometimes contain spaces when defining the data source.</p>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Row {
+public class DSAdapter extends XmlAdapter<String, DSType> {
 
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
-
-    /**
-     * Gets the values.
-     *
-     * @return the values
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
-    public List<Double> getValues() {
-        return values;
+    @Override
+    public String marshal(DSType type) throws Exception {
+        return type == null ? null : type.value();
     }
 
-    /**
-     * Sets the values.
-     *
-     * @param values the new values
+    /* (non-Javadoc)
+     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    @Override
+    public DSType unmarshal(String value) throws Exception {
+        return value == null ? null : DSType.fromValue(value.trim());
     }
 
 }

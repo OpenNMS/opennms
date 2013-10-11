@@ -41,10 +41,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Params {
 
-    /** The XFF.
-     */
+    /** The XFF. */
     @XmlElement
     private Double xff = 0.5;
+
+    /** The delta position. */
+    @XmlElement(name="delta_pos")
+    private Double deltaPos;
+
+    /** The delta negative. */
+    @XmlElement(name="delta_neg")
+    private Double deltaNeg;
+
+    /** The window length. */
+    @XmlElement(name="window_len")
+    private Integer windowLen;
+
+    /** The failure threshold. */
+    @XmlElement(name="failure_threshold")
+    private Integer failureThreshold;
+
+    /** The hw alpha. */
+    @XmlElement(name="hw_alpha")
+    private Double hwAlpha;
+
+    /** The hw beta. */
+    @XmlElement(name="hw_beta")
+    private Double hwBeta;
+
+    /** The seasonal gamma. */
+    @XmlElement(name="seasonal_gamma")
+    private Double seasonalGamma;
+
+    /** The seasonal smooth index. */
+    @XmlElement(name="seasonal_smooth_idx")
+    private Integer seasonalSmoothIdx;
+
+    /** The dependent RRA index. */
+    @XmlElement(name="dependent_rra_idx")
+    private Integer dependentRraIdx;
+
 
     /**
      * Gets the XFF.
@@ -66,6 +102,168 @@ public class Params {
      */
     public void setXff(Double xff) {
         this.xff = xff;
+    }
+
+    /**
+     * Gets the delta position.
+     *
+     * @return the delta position
+     */
+    public Double getDeltaPos() {
+        return deltaPos;
+    }
+
+    /**
+     * Sets the delta position.
+     *
+     * @param deltaPos the new delta position
+     */
+    public void setDeltaPos(Double deltaPos) {
+        this.deltaPos = deltaPos;
+    }
+
+    /**
+     * Gets the delta negative.
+     *
+     * @return the delta negative
+     */
+    public Double getDeltaNeg() {
+        return deltaNeg;
+    }
+
+    /**
+     * Sets the delta negative.
+     *
+     * @param deltaNeg the new delta negative
+     */
+    public void setDeltaNeg(Double deltaNeg) {
+        this.deltaNeg = deltaNeg;
+    }
+
+    /**
+     * Gets the window length.
+     *
+     * @return the window length
+     */
+    public Integer getWindowLen() {
+        return windowLen;
+    }
+
+    /**
+     * Sets the window length.
+     *
+     * @param windowLen the new window length
+     */
+    public void setWindowLen(Integer windowLen) {
+        this.windowLen = windowLen;
+    }
+
+    /**
+     * Gets the failure threshold.
+     *
+     * @return the failure threshold
+     */
+    public Integer getFailureThreshold() {
+        return failureThreshold;
+    }
+
+    /**
+     * Sets the failure threshold.
+     *
+     * @param failureThreshold the new failure threshold
+     */
+    public void setFailureThreshold(Integer failureThreshold) {
+        this.failureThreshold = failureThreshold;
+    }
+
+    /**
+     * Gets the dependent RRA index.
+     *
+     * @return the dependent RRA index
+     */
+    public Integer getDependentRraIdx() {
+        return dependentRraIdx;
+    }
+
+    /**
+     * Sets the dependent RRA index.
+     *
+     * @param dependentRraIdx the new dependent RRA index
+     */
+    public void setDependentRraIdx(Integer dependentRraIdx) {
+        this.dependentRraIdx = dependentRraIdx;
+    }
+
+    /**
+     * Gets the hw alpha.
+     *
+     * @return the hw alpha
+     */
+    public Double getHwAlpha() {
+        return hwAlpha;
+    }
+
+    /**
+     * Sets the hw alpha.
+     *
+     * @param hwAlpha the new hw alpha
+     */
+    public void setHwAlpha(Double hwAlpha) {
+        this.hwAlpha = hwAlpha;
+    }
+
+    /**
+     * Gets the hw beta.
+     *
+     * @return the hw beta
+     */
+    public Double getHwBeta() {
+        return hwBeta;
+    }
+
+    /**
+     * Sets the hw beta.
+     *
+     * @param hwBeta the new hw beta
+     */
+    public void setHwBeta(Double hwBeta) {
+        this.hwBeta = hwBeta;
+    }
+
+    /**
+     * Gets the seasonal gamma.
+     *
+     * @return the seasonal gamma
+     */
+    public Double getSeasonalGamma() {
+        return seasonalGamma;
+    }
+
+    /**
+     * Sets the seasonal gamma.
+     *
+     * @param seasonalGamma the new seasonal gamma
+     */
+    public void setSeasonalGamma(Double seasonalGamma) {
+        this.seasonalGamma = seasonalGamma;
+    }
+
+    /**
+     * Gets the seasonal smooth index.
+     *
+     * @return the seasonal smooth index
+     */
+    public Integer getSeasonalSmoothIdx() {
+        return seasonalSmoothIdx;
+    }
+
+    /**
+     * Sets the seasonal smooth index.
+     *
+     * @param seasonalSmoothIdx the new seasonal smooth index
+     */
+    public void setSeasonalSmoothIdx(Integer seasonalSmoothIdx) {
+        this.seasonalSmoothIdx = seasonalSmoothIdx;
     }
 
 }

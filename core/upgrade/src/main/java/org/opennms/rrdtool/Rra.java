@@ -38,14 +38,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class RRA (Round Robin Archives).
+ * <p>Warning: This representation doesn't support Aberrant Behavior Detection with Holt-Winters Forecasting</p>
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Rra {
 
-    /** The consolidation function. */
+    /** The consolidation function (AVERAGE, MIN, MAX, LAST). */
     @XmlElement(name="cf")
-    private String consolidationFunction;
+    private CFType consolidationFunction;
 
     /** The PDP (Primary Data Points) per row. */
     @XmlElement(name="pdp_per_row")
@@ -70,7 +73,7 @@ public class Rra {
      *
      * @return the consolidation function
      */
-    public String getConsolidationFunction() {
+    public CFType getConsolidationFunction() {
         return consolidationFunction;
     }
 
@@ -79,7 +82,7 @@ public class Rra {
      *
      * @param consolidationFunction the new consolidation function
      */
-    public void setConsolidationFunction(String consolidationFunction) {
+    public void setConsolidationFunction(CFType consolidationFunction) {
         this.consolidationFunction = consolidationFunction;
     }
 
@@ -121,7 +124,8 @@ public class Rra {
 
     /**
      * Format equals.
-     *
+     * TODO: Check the parameters and the RRA data sources
+     * 
      * @param rra the RRA object
      * @return true, if successful
      */
@@ -140,14 +144,6 @@ public class Rra {
                 return false;
         }
         else if (rra.pdpPerRow != null)
-            return false;
-
-        if (this.parameters.getXff() != null) {
-            if (rra.parameters.getXff() == null) return false;
-            else if (!(this.parameters.getXff().equals(rra.parameters.getXff()))) 
-                return false;
-        }
-        else if (rra.parameters.getXff() != null)
             return false;
 
         if (this.rows != null) {

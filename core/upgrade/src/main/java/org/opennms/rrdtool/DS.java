@@ -46,7 +46,7 @@ public class DS {
     private String name;
 
     /** The type of the datasource. */
-    private String type;
+    private DSType type;
 
     /** The minimum heartbeat. */
     private Integer minHeartbeat = 0;
@@ -66,6 +66,9 @@ public class DS {
     /** The unknown seconds. */
     private Integer unknownSec = 0;
 
+    /** The CDEF (Computed Datasource). */
+    private String cdef;
+
     /**
      * Gets the name.
      *
@@ -78,6 +81,7 @@ public class DS {
 
     /**
      * Sets the name.
+     * <p>The XML may contain spaces that must be removed.</p>
      *
      * @param name the new name
      */
@@ -90,8 +94,9 @@ public class DS {
      *
      * @return the type
      */
-    @XmlElement
-    public String getType() {
+    @XmlElement(required=true)
+    @XmlJavaTypeAdapter(DSAdapter.class)
+    public DSType getType() {
         return type;
     }
 
@@ -100,8 +105,8 @@ public class DS {
      *
      * @param type the new type
      */
-    public void setType(String type) {
-        this.type = type == null ? null : type.trim();
+    public void setType(DSType type) {
+        this.type = type;
     }
 
     /**
@@ -221,6 +226,25 @@ public class DS {
     }
 
     /**
+     * Gets the CDEF.
+     *
+     * @return the CDEF
+     */
+    public String getCdef() {
+        return cdef;
+    }
+
+    /**
+     * Sets the CDEF.
+     * <p>The XML may contain spaces that must be removed.</p>
+     *
+     * @param cdef the new CDEF
+     */
+    public void setCdef(String cdef) {
+        this.cdef = cdef == null ? null : cdef.trim();
+    }
+
+    /**
      * Format equals.
      *
      * @param ds the DS object
@@ -265,6 +289,14 @@ public class DS {
                 return false;
         }
         else if (ds.max != null)
+            return false;
+
+        if (this.cdef != null) {
+            if (ds.cdef == null) return false;
+            else if (!(this.cdef.equals(ds.cdef))) 
+                return false;
+        }
+        else if (ds.cdef != null)
             return false;
 
         return true;

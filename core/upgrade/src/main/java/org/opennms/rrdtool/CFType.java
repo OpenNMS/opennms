@@ -27,43 +27,72 @@
  *******************************************************************************/
 package org.opennms.rrdtool;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * The Class Row.
- * 
- * @author Alejandro Galue <agalue@opennms.org>
+ * The Enumeration CFType (Consolidation Function Type)
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Row {
-
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
+public enum CFType {
 
     /**
-     * Gets the values.
-     *
-     * @return the values
+     * RRA:AVERAGE:xff:steps:rows
      */
-    public List<Double> getValues() {
-        return values;
+    AVERAGE,
+
+    /**
+     * RRA:MIN:xff:steps:rows
+     */
+    MIN,
+
+    /**
+     * RRA:MAX:xff:steps:rows
+     */
+    MAX,
+
+    /**
+     * RRA:LAST:xff:steps:rows
+     */
+    LAST,
+
+    /**
+     * RRA:HWPREDICT:rows:alpha:beta:seasonal period[:rra-num]
+     */
+    HWPREDICT,
+
+    /**
+     * RRA:SEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]
+     */
+    SEASONAL,
+
+    /**
+     * RRA:DEVSEASONAL:seasonal period:gamma:rra-num[:smoothing-window=fraction]
+     */
+    DEVSEASONAL,
+
+    /** 
+     * RRA:DEVPREDICT:rows:rra-num
+     */
+    DEVPREDICT,
+
+    /**
+     * RRA:FAILURES:rows:threshold:window length:rra-num
+     */
+    FAILURES;
+
+    /**
+     * Gets the CF Value.
+     *
+     * @return the string representation of the consolidation function
+     */
+    public String value() {
+        return name();
     }
 
     /**
-     * Sets the values.
+     * From value.
      *
-     * @param values the new values
+     * @param v the string name of the CF
+     * @return the consolidation function type
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    public static CFType fromValue(String v) {
+        return v == null ? null : valueOf(v.trim());
     }
-
 }

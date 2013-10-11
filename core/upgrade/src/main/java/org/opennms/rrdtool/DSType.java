@@ -27,43 +27,49 @@
  *******************************************************************************/
 package org.opennms.rrdtool;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
 /**
- * The Class Row.
+ * The Enumeration DSType (Data Source Type).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Row {
+@XmlEnum
+@XmlType(name = "type")
+public enum DSType {
 
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
+    /** The gauge data source. */
+    GAUGE,
+
+    /** The counter data source. */
+    COUNTER,
+
+    /** The derive data source. */
+    DERIVE,
+
+    /** The absolute data source. */
+    ABSOLUTE,
+
+    /** The compute data source. */
+    COMPUTE;
 
     /**
-     * Gets the values.
+     * Gets the DS Value.
      *
-     * @return the values
+     * @return the string representation of the data source
      */
-    public List<Double> getValues() {
-        return values;
+    public String value() {
+        return name();
     }
 
     /**
-     * Sets the values.
+     * From value.
      *
-     * @param values the new values
+     * @param v the string name of the DS
+     * @return the data source type
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    public static DSType fromValue(String v) {
+        return v == null ? null : valueOf(v.trim());
     }
-
 }
