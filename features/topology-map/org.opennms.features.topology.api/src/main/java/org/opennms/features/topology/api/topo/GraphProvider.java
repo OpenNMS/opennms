@@ -29,6 +29,8 @@
 package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
@@ -54,6 +56,12 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 	Vertex addGroup(String label, String iconKey);
 
 	EdgeRef[] getEdgeIdsForVertex(VertexRef vertex);
+
+	/**
+	 * This function can be used for efficiency when you need the {@link EdgeRef}
+	 * instances for a large number of vertices.
+	 */
+	Map<VertexRef,Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertex);
 
 	void addEdges(Edge... edges);
 
