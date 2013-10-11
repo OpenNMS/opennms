@@ -89,9 +89,21 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
 	public abstract static class VertexHopCriteria implements Criteria {
+		private String label = "";
+
 		@Override
 		public ElementType getType() {
 			return ElementType.VERTEX;
+		}
+
+		public abstract Set<VertexRef> getVertices();
+
+		public String getLabel() {
+			return label;
+		}
+
+		public void setLabel(String label) {
+			this.label = label;
 		}
 	}
 
@@ -138,6 +150,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return m_vertices.size();
 		}
 
+		@Override
 		public Set<VertexRef> getVertices() {
 			return Collections.unmodifiableSet(m_vertices);
 		}
@@ -147,6 +160,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 	}
 
+	/*
+
+	We don't need this... we'll just use the {@link FocusNodeHopCriteria}
+
 	public static class NcsHopCriteria extends VertexHopCriteria {
 		
 		private final long m_ncsServiceId;	
@@ -155,10 +172,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 			m_ncsServiceId = ncsServiceId;
 		}
 
-		/**
+		/ **
 		 * TODO: This return value doesn't matter since we just delegate
 		 * to the m_delegate provider.
-		 */
+		 * /
 		@Override
 		public String getNamespace() {
 			return "nodes";
@@ -170,6 +187,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return Collections.emptySet();
 		}
 	}
+	*/
 
 	private final GraphProvider m_delegate;
 
