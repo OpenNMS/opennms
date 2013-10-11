@@ -41,5 +41,5 @@ public abstract class AbstractSearchQuery implements SearchQuery{
     }
 
     @Override
-    public abstract boolean matches(VertexRef vertexRef);
+    public abstract boolean matches(String label);
 }

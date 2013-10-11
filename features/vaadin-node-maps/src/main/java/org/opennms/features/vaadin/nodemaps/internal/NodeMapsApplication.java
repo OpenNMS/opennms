@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
@@ -332,8 +331,18 @@ public class NodeMapsApplication extends UI {
                 headerLayout.addStyleName("onmsheader");
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
-                IOUtils.closeQuietly(is);
+                closeQuietly(is);
                 LOG.debug("failed to get header layout data", e);
+            }
+        }
+    }
+
+    private void closeQuietly(InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (final IOException closeE) {
+                LOG.debug("failed to close HTML input stream", closeE);
             }
         }
     }

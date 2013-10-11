@@ -181,7 +181,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid edge: {}", edge);
 				continue;
 			}
-			LoggerFactory.getLogger(this.getClass()).debug("Adding edge: {}", edge);
+			LoggerFactory.getLogger(this.getClass()).trace("Adding edge: {}", edge);
 			m_edgeMap.put(edge.getId(), edge);
 		}
 	}

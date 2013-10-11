@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.status.internal;
+package org.opennms.features.topology.app.internal;
 
 import com.vaadin.data.Item;
 import org.easymock.EasyMock;
@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.topo.AbstractRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -100,12 +101,17 @@ public class AlarmStatusProviderTest {
     
     private AlarmDao m_alarmDao;
     private AlarmStatusProvider m_statusProvider;
+    private VertexProvider m_vertexProvider;
     
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_statusProvider = new AlarmStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
+
+        m_vertexProvider = EasyMock.createMock(VertexProvider.class);
+        EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<Vertex>());
+        EasyMock.replay(m_vertexProvider);
     }
     
     
@@ -115,11 +121,12 @@ public class AlarmStatusProviderTest {
         List<VertexRef> vertexList = new ArrayList<VertexRef>();
         vertexList.add(vertex);
 
-        EasyMock.expect(m_alarmDao.getNodeAlarmSummaries(EasyMock.anyInt())).andReturn(createNormalAlarmSummaryList());
+        EasyMock.expect(
+                m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(EasyMock.<List<Integer>>anyObject())).andReturn(createNormalAlarmSummaryList());
         
         EasyMock.replay(m_alarmDao);
         
-        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(vertexList);
+        Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList);
         assertEquals(1, statusMap.size());
         assertEquals(vertex, new ArrayList<VertexRef>(statusMap.keySet()).get(0));
         String computeStatus = statusMap.get(vertex).computeStatus();

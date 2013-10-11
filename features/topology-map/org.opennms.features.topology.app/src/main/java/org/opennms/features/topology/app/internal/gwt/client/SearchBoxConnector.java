@@ -66,14 +66,23 @@ public class SearchBoxConnector extends AbstractComponentConnector {
                 m_callback.onSuggestionsReady(m_request, response);
             }
 
-        } else if (stateChangeEvent.hasPropertyChanged("selected")) {
-            getWidget().setSelected(getState().getSelected());
+        }
 
-        } else if (stateChangeEvent.hasPropertyChanged("focused")) {
+        if (stateChangeEvent.hasPropertyChanged("selected")) {
+            //deduplicate the list of selected and have it change the token field background
+            //or something
+
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("focused")) {
             getWidget().setFocused(getState().getFocused());
         }
 
     }
+
+    private static native void log(Object message) /*-{
+        $wnd.console.debug(message);
+    }-*/;
 
     @Override
     public VSearchBox createWidget(){
@@ -98,5 +107,13 @@ public class SearchBoxConnector extends AbstractComponentConnector {
 
     public void removeFocused(SearchSuggestion searchSuggestion) {
         m_rpc.removeFocused(searchSuggestion);
+    }
+
+    public void addToFocus(SearchSuggestion searchSugestion){
+        m_rpc.addToFocus(searchSugestion);
+    }
+
+    public void centerOnSuggestion(SearchSuggestion searchSuggestion) {
+        m_rpc.centerOnSearchSuggestion(searchSuggestion);
     }
 }

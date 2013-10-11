@@ -564,8 +564,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			public void call(GWTVertex t, int index) {
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
-					// TODO: Figure out how to do this in the new GWT
-                    m_client.getVTooltip().setPopupPosition(event.getClientX(), event.getClientY());
+                    m_client.getVTooltip().setPopupPosition(event.getClientX() + 20, event.getClientY() + 20);
                     m_client.getVTooltip().show();
 					event.stopPropagation();
 					event.preventDefault();

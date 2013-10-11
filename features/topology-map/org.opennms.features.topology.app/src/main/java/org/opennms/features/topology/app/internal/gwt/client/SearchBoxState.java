@@ -60,7 +60,7 @@ public class SearchBoxState extends AbstractComponentState {
     }
 
     public List<SearchSuggestion> getFocused() {
-        return m_selected;
+        return m_focused;
     }
 
 }

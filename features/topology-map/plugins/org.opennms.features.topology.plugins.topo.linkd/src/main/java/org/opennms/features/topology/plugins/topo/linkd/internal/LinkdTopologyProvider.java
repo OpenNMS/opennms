@@ -574,17 +574,17 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public List<VertexRef> query(SearchQuery searchQuery) {
+    public List<SearchResult> query(SearchQuery searchQuery) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
-        List<VertexRef> vertRefs = Lists.newArrayList();
+        List<SearchResult> searchResults = Lists.newArrayList();
 
         for(Vertex vertex : vertices){
-            if(searchQuery.matches(vertex)) {
-                vertRefs.add(vertex);
+            if(searchQuery.matches(vertex.getLabel())) {
+                searchResults.add(new SearchResult(vertex));
             }
         }
 
-        return vertRefs;
+        return searchResults;
     }
 
     @Override
@@ -594,13 +594,24 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             @Override
             public Undoer execute(List<VertexRef> refs, OperationContext operationContext) {
 
-                GraphContainer m_graphContainer = operationContext.getGraphContainer();
-                Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
-                m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
+                //GraphContainer m_graphContainer = operationContext.getGraphContainer();
+                //Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
+                //m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
 
                 return null;
             }
         };
+    }
+
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.contains("nodes=");
+    }
+
+    @Override
+    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        //That's bloody confusing, A hack for later
+        return Lists.newArrayList((VertexRef)new AbstractVertexRef(searchResult.getId(), searchResult.getNamespace(), searchResult.getLabel()));
     }
 
     private static String getIfStatusString(int ifStatusNum) {

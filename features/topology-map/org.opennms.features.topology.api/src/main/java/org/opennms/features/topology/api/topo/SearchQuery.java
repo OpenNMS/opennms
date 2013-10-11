@@ -29,5 +29,5 @@
 package org.opennms.features.topology.api.topo;
 
 public interface SearchQuery {
-    boolean matches(VertexRef vertexRef);
+    boolean matches(String searchResult);
 }

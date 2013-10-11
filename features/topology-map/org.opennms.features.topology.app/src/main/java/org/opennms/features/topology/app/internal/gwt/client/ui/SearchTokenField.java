@@ -29,24 +29,27 @@
 package org.opennms.features.topology.app.internal.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 
 public class SearchTokenField extends Composite {
 
     public interface RemoveCallback{
         void onRemove(SearchSuggestion searchSuggestion);
+    }
+
+    public interface SelectionCallback {
+        void onSelection(SearchSuggestion searchSuggestion);
+    }
+
+    public interface CenterOnSuggestionCallback{
+        void onCenter(SearchSuggestion searchSuggestion);
     }
 
 
@@ -62,8 +65,13 @@ public class SearchTokenField extends Composite {
     @UiField
     Anchor m_closeBtn;
 
+    @UiField
+    Anchor m_centerSuggestionBtn;
+
     private SearchSuggestion m_suggestion;
     private RemoveCallback m_removeCallback;
+    private SelectionCallback m_selectionCallback;
+    private CenterOnSuggestionCallback m_centerOnCallback;
 
     public SearchTokenField(SearchSuggestion searchSuggestion) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -78,7 +86,11 @@ public class SearchTokenField extends Composite {
     }
 
     private void init() {
-        setStyleName("search-token-field");
+        m_closeBtn.setTitle("Remove from focus");
+        m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+
+        m_centerSuggestionBtn.setTitle("Center On Map");
+        m_centerSuggestionBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);
         setLabel(m_suggestion.getLabel());
         setNamespace(m_suggestion.getNamespace());
 
@@ -86,6 +98,14 @@ public class SearchTokenField extends Composite {
 
     public void setRemoveCallback(RemoveCallback callback) {
         m_removeCallback = callback;
+    }
+
+    public void setCenterOnCallback(CenterOnSuggestionCallback callback){
+        m_centerOnCallback = callback;
+    }
+
+    public void setSelectionCallback(SelectionCallback callback) {
+        m_selectionCallback = callback;
     }
 
     public void setNamespace(String namespace) {
@@ -102,4 +122,21 @@ public class SearchTokenField extends Composite {
             m_removeCallback.onRemove(m_suggestion);
         }
     }
+
+    @UiHandler("m_centerSuggestionBtn")
+    void handleCenterOnClick(ClickEvent event){
+        if(m_centerOnCallback != null){
+            m_centerOnCallback.onCenter(m_suggestion);
+        }
+    }
+
+    @UiHandler("m_focusBtn")
+    void handleFocusClick(ClickEvent event) {
+        if(m_selectionCallback != null){
+            m_selectionCallback.onSelection(m_suggestion);
+
+        }
+    }
+
+
 }

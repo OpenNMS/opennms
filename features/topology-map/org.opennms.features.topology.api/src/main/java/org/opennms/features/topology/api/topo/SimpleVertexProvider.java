@@ -193,7 +193,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	private void removeVertices(List<? extends VertexRef> all) {
 		for(VertexRef vertex : all) {
-			LoggerFactory.getLogger(this.getClass()).debug("Removing vertex: {}", vertex);
+			LoggerFactory.getLogger(this.getClass()).trace("Removing vertex: {}", vertex);
 			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
 			// Remove the vertex from the parent and child maps
@@ -208,7 +208,7 @@ public class SimpleVertexProvider implements VertexProvider {
 				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid vertex: {}", vertex);
 				continue;
 			}
-			LoggerFactory.getLogger(this.getClass()).debug("Adding vertex: {}", vertex);
+			LoggerFactory.getLogger(this.getClass()).trace("Adding vertex: {}", vertex);
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}

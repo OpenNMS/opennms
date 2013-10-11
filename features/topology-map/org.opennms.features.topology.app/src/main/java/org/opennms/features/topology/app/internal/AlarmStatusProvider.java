@@ -1,6 +1,4 @@
-package org.opennms.features.topology.plugins.status.internal;
-
-import java.util.*;
+package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
@@ -12,9 +10,18 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class AlarmStatusProvider implements StatusProvider {
     
-    public class AlarmStatus implements Status{
+    public class AlarmStatus implements Status {
 
         private final String m_label;
         private final long m_alarmCount;
@@ -40,26 +47,17 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private AlarmDao m_alarmDao;
-    private VertexProvider m_vertexProvider;
-    
-    public VertexProvider getVertexProvider() {
-        return m_vertexProvider;
-    }
-
-    public void setVertexProvider(VertexProvider vertexProvider) {
-        m_vertexProvider = vertexProvider;
-    }
 
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(Collection<VertexRef> vertices) {
+    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices) {
         Map<VertexRef, Status> returnMap = new HashMap<VertexRef, Status>();
 
         // split nodes from groups and others
-        List<VertexRef> nodeRefs = getNodeVertexRefs(vertices); // nodes
+        List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices); // nodes
         List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
@@ -75,11 +73,11 @@ public class AlarmStatusProvider implements StatusProvider {
             LoggerFactory.getLogger(getClass()).debug("Status for node '{}' with id '{}' is: {}", ref.getLabel(), ref.getId(), status);
         }
 
-        // calculate status for groups and nodes which are neither grop nor node
+        // calculate status for groups and nodes which are neither group nor node
         for (VertexRef eachRef : otherRefs) {
             if (isGroup(eachRef)) {
                 List<AlarmSummary> alarmSummariesForGroup = new ArrayList<AlarmSummary>();
-                List<Vertex> children = getVertexProvider().getChildren(eachRef);
+                List<Vertex> children = vertexProvider.getChildren(eachRef);
                 for (Vertex eachChildren : children) {
                     AlarmSummary eachChildrenAlarmSummary = nodeIdToAlarmSummaryMap.get(eachChildren.getNodeID());
                     if (eachChildrenAlarmSummary != null) {
@@ -100,7 +98,7 @@ public class AlarmStatusProvider implements StatusProvider {
     private Map<Integer , AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
         Map<Integer, AlarmSummary> resultMap = new HashMap<Integer, AlarmSummary>();
 
-        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummaries(nodeIds.toArray(new Integer[nodeIds.size()]));
+        List<AlarmSummary> alarmSummaries = m_alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(new ArrayList<Integer>(nodeIds));
         for (AlarmSummary eachSummary : alarmSummaries) {
             resultMap.put(eachSummary.getNodeId(), eachSummary);
         }
@@ -132,12 +130,12 @@ public class AlarmStatusProvider implements StatusProvider {
         return vertexRefToNodeIdMap;
     }
 
-    private List<VertexRef> getNodeVertexRefs(Collection<VertexRef> vertices) {
+    private List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<VertexRef>();
          for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isGroup(eachRef)) {
-                    addChildrenRecursively(eachRef, returnList);
+                    addChildrenRecursively(vertexProvider, eachRef, returnList);
                 } else {
                     if (!returnList.contains(eachRef)) {
                         returnList.add(eachRef);
@@ -158,15 +156,15 @@ public class AlarmStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private void addChildrenRecursively(VertexRef groupRef, Collection<VertexRef> vertexRefs) {
-        List<Vertex> vertices = getVertexProvider().getChildren(groupRef);
+    private void addChildrenRecursively(VertexProvider vertexProvider, VertexRef groupRef, Collection<VertexRef> vertexRefs) {
+        List<Vertex> vertices = vertexProvider.getChildren(groupRef);
         for(Vertex vertex : vertices) {
             if(!vertex.isGroup()) {
                 if (!vertexRefs.contains(vertex)) {
                     vertexRefs.add(vertex);
                 }
             } else {
-                addChildrenRecursively(vertex, vertexRefs);
+                addChildrenRecursively(vertexProvider, vertex, vertexRefs);
             }
         }
     }

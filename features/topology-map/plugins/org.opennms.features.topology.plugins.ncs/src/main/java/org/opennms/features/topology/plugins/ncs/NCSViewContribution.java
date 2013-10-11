@@ -120,18 +120,17 @@ public class NCSViewContribution implements IViewContribution, SearchProvider {
 	}
 
     @Override
-    public List<VertexRef> query(SearchQuery searchQuery) {
-        List<VertexRef> vertexRefs = Lists.newArrayList();
+    public List<SearchResult> query(SearchQuery searchQuery) {
+        List<SearchResult> searchResults = Lists.newArrayList();
 
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {
-            VertexRef vRef = new AbstractVertexRef("ncs service", String.valueOf(component.getId()), component.getName());
-            if(searchQuery.matches(vRef)) {
-                vertexRefs.add(vRef);
+            if(searchQuery.matches(component.getName())) {
+                searchResults.add(new SearchResult(String.valueOf(component.getId()), "ncs service", component.getName()));
             }
 
         }
-        return vertexRefs;
+        return searchResults;
     }
 
     @Override
@@ -153,6 +152,16 @@ public class NCSViewContribution implements IViewContribution, SearchProvider {
                 return null;
             }
         };
+    }
+
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.equals("ncs=");
+    }
+
+    @Override
+    public List<VertexRef> getVertexRefsBy(SearchResult suggestionId) {
+        return Lists.newArrayList();
     }
 
 }

@@ -28,13 +28,52 @@
 
 package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
+public class SearchResult{
 
-import java.util.List;
+    private final String m_id;
+    private final String m_namespace;
+    private final String m_label;
 
-public interface SearchProvider {
-    List<SearchResult> query(SearchQuery searchQuery);
-    AbstractSearchSelectionOperation getSelectionOperation();
-    boolean supportsPrefix(String searchPrefix);
-    List<VertexRef> getVertexRefsBy(SearchResult searchResult);
+    public SearchResult(String id, String namespace, String label){
+        m_id = id;
+        m_namespace = namespace;
+        m_label = label;
+    }
+
+    public SearchResult(VertexRef vertexRef) {
+        this(vertexRef.getId(), vertexRef.getNamespace(), vertexRef.getLabel());
+    }
+
+    public String getId() {
+        return m_id;
+    }
+
+    public String getNamespace() {
+        return m_namespace;
+    }
+
+    public String getLabel() {
+        return m_label;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+
+        SearchResult ref = (SearchResult)obj;
+
+        return getNamespace().equals(ref.getNamespace()) && getId().equals(ref.getId());
+
+    }
+
+    @Override
+    public final int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+        result = prime * result
+                + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
+        return result;
+    }
 }

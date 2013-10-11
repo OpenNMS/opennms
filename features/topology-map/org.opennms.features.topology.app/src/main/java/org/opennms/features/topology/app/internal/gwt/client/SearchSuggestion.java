@@ -30,14 +30,13 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.google.gwt.user.client.ui.SuggestOracle;
 
-import java.io.Serializable;
-
 public class SearchSuggestion implements SuggestOracle.Suggestion {
 
 
     String m_label;
-    String m_vertexKey;
+    String m_id;
     String m_namespace;
+    boolean m_focused = false;
 
     public void setLabel(String label){
         m_label = label;
@@ -47,12 +46,12 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
         return m_label;
     }
 
-    public void setVertexKey(String key) {
-        m_vertexKey = key;
+    public void setId(String id) {
+        m_id = id;
     }
 
-    public String getVertexKey(){
-        return m_vertexKey;
+    public String getId(){
+        return m_id;
     }
 
     public void setNamespace(String namespace) {
@@ -80,7 +79,7 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
 
         SearchSuggestion ref = (SearchSuggestion)obj;
 
-        return getNamespace().equals(ref.getNamespace()) && getVertexKey().equals(ref.getVertexKey());
+        return getNamespace().equals(ref.getNamespace()) && getId().equals(ref.getId());
 
     }
 
@@ -88,9 +87,17 @@ public class SearchSuggestion implements SuggestOracle.Suggestion {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getVertexKey() == null) ? 0 : getVertexKey().hashCode());
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
+    }
+
+    public void setFocused(boolean focused) {
+        m_focused = focused;
+    }
+
+    public boolean isFocused() {
+        return m_focused;
     }
 }

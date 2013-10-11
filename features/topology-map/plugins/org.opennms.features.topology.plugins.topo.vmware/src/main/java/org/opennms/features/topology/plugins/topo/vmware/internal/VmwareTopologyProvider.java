@@ -208,7 +208,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
                 try {
                     entityName = new String(URLDecoder.decode(splitBySlash[1], "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
 
@@ -294,7 +294,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
                 try {
                     entityName = new String(URLDecoder.decode(splitBySlash[1], "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
 
