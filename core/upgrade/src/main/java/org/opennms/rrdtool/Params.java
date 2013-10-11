@@ -34,31 +34,38 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class Params.
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Params {
 
-    /** The xff. */
+    /** The XFF.
+     */
     @XmlElement
     private Double xff = 0.5;
 
     /**
-     * Gets the xff.
+     * Gets the XFF.
+     * 
+     * <p>XFF The xfiles factor defines what part of a consolidation interval may be made up from *UNKNOWN* data while the consolidated
+     * value is still regarded as known. It is given as the ratio of allowed *UNKNOWN* PDPs to the number of PDPs in the interval.
+     * Thus, it ranges from 0 to 1 (exclusive).</p>
      *
-     * @return the xff
+     * @return the XFF
      */
     public Double getXff() {
         return xff;
     }
 
     /**
-     * Sets the xff.
+     * Sets the XFF.
      *
-     * @param xff the new xff
+     * @param xff the new XFF
      */
     public void setXff(Double xff) {
         this.xff = xff;
     }
-    
+
 }

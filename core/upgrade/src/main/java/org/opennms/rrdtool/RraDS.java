@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class RraDS.
+ * The Class RraDS (RRA Data Source).
  */
 @XmlRootElement(name="ds")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -37,21 +37,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The Class RRD.
+ * The Class RRD (Round Robin Database).
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RRD {
 
-    /** The version. */
+    /** The version of the RRD Dump. */
     @XmlElement
     private String version;
 
-    /** The step. */
+    /** The step (interval) expressed in seconds. */
     @XmlElement
     private Long step;
 
-    /** The lastupdate. */
+    /** The last update time stamp, expressed in seconds since 1970-01-01 UTC. */
     @XmlElement
     @XmlJavaTypeAdapter(LongAdapter.class)
     private Long lastupdate;

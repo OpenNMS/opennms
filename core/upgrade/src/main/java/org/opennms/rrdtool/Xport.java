@@ -37,13 +37,13 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class Xport.
+ * The Class XPort (the XML representation of the 'rrdtool xport' command).
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Xport {
 
-    /** The meta. */
+    /** The meta data. */
     @XmlElement
     private Meta meta;
 
@@ -53,20 +53,20 @@ public class Xport {
     private List<XRow> rows = new ArrayList<XRow>();
 
     /**
-     * Gets the meta.
+     * Gets the meta data.
      *
-     * @return the meta
+     * @return the meta data
      */
-    protected Meta getMeta() {
+    public Meta getMeta() {
         return meta;
     }
 
     /**
-     * Sets the meta.
+     * Sets the meta data.
      *
-     * @param meta the new meta
+     * @param meta the new meta data
      */
-    protected void setMeta(Meta meta) {
+    public void setMeta(Meta meta) {
         this.meta = meta;
     }
 

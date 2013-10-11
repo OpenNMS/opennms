@@ -34,28 +34,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The Class DS.
+ * The Class DS (Data Source).
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class DS {
 
-    /** The name. */
+    /** The name of the database. */
     private String name;
 
-    /** The type. */
+    /** The type of the datasource. */
     private String type;
 
     /** The minimum heartbeat. */
     private Integer minHeartbeat = 0;
 
-    /** The minimum. */
-    private Double min = Double.NaN;
+    /** The minimum value of the data source. Defaults to 'U' */
+    private Double min = null;
 
-    /** The maximum. */
-    private Double max = Double.NaN;
+    /** The maximum value of the data source. Defaults to 'U'. */
+    private Double max = null;
 
-    /** The last data source. */
+    /** The last time stamp of the data source, expressed in seconds since 1970-01-01 UTC. */
     private Long lastDs;
 
     /** The value. */
@@ -103,9 +105,9 @@ public class DS {
     }
 
     /**
-     * Gets the min heartbeat.
+     * Gets the minimum heartbeat.
      *
-     * @return the min heartbeat
+     * @return the minimum heartbeat
      */
     @XmlElement(name="minimal_heartbeat")
     public Integer getMinHeartbeat() {
@@ -113,18 +115,18 @@ public class DS {
     }
 
     /**
-     * Sets the min heartbeat.
+     * Sets the minimum heartbeat.
      *
-     * @param minHeartbeat the new min heartbeat
+     * @param minHeartbeat the new minimum heartbeat
      */
     public void setMinHeartbeat(Integer minHeartbeat) {
         this.minHeartbeat = minHeartbeat;
     }
 
     /**
-     * Gets the min.
+     * Gets the minimum value.
      *
-     * @return the min
+     * @return the minimum value
      */
     @XmlElement
     public Double getMin() {
@@ -132,18 +134,18 @@ public class DS {
     }
 
     /**
-     * Sets the min.
+     * Sets the minimum value.
      *
-     * @param min the new min
+     * @param min the new minimum value
      */
     public void setMin(Double min) {
         this.min = min;
     }
 
     /**
-     * Gets the max.
+     * Gets the maximum value.
      *
-     * @return the max
+     * @return the maximum value
      */
     @XmlElement
     public Double getMax() {
@@ -151,18 +153,19 @@ public class DS {
     }
 
     /**
-     * Sets the max.
+     * Sets the maximum value.
      *
-     * @param max the new max
+     * @param max the new maximum value
      */
     public void setMax(Double max) {
         this.max = max;
     }
 
     /**
-     * Gets the last data source.
+     * Gets the last data source time stamp.
+     * <p>Expressed in seconds since 1970-01-01 UTC</p>
      *
-     * @return the last data source
+     * @return the last data source time stamp
      */
     @XmlElement(name="last_ds")
     @XmlJavaTypeAdapter(LongAdapter.class)
@@ -171,9 +174,9 @@ public class DS {
     }
 
     /**
-     * Sets the last data source.
+     * Sets the last data source time stamp.
      *
-     * @param lastDs the new last data source
+     * @param lastDs the new last data source time stamp
      */
     public void setLastDs(Long lastDs) {
         this.lastDs = lastDs;

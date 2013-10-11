@@ -34,16 +34,12 @@ import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 
 /**
- * The Class XportTest.
+ * The Class RRD Parsing Test.
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 public class RrdParsingTest {
-    
-    @Test
-    public void play()  {
-        Double d1 = Double.NaN;
-        Double d2 = Double.NaN;
-        Assert.assertTrue(d1.equals(d2));
-    }
+
     /**
      * Parses the RRD.
      *
@@ -64,5 +60,17 @@ public class RrdParsingTest {
         Assert.assertEquals(new Long(1228572000), rrd.getStartTimestamp(rrd.getRras().get(1)));
         Assert.assertEquals(new Integer(288), rrd.getRras().get(4).getPdpPerRow());
         Assert.assertEquals(new Long(1202342400), rrd.getStartTimestamp(rrd.getRras().get(4)));
+    }
+
+    @Test
+    public void parseXport() throws Exception {
+        Xport xport = JaxbUtils.unmarshal(Xport.class, new File("src/test/resources/rrd-xport.xml"));
+        Assert.assertNotNull(xport);
+        Assert.assertEquals(new Integer(300), xport.getMeta().getStep());
+        Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
+        Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
+        Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));
+        Assert.assertEquals(new Long(1206312900), xport.getRows().get(0).getTimestamp());
+        Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
     }
 }

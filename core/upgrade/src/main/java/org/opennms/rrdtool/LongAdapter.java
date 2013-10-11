@@ -31,6 +31,9 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * The Class LongAdapter.
+ * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 public class LongAdapter extends XmlAdapter<String, Long> {
 

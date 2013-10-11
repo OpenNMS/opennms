@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class RRA.
+ * The Class RRA (Round Robin Archives).
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -47,7 +47,7 @@ public class Rra {
     @XmlElement(name="cf")
     private String consolidationFunction;
 
-    /** The pdp per row. */
+    /** The PDP (Primary Data Points) per row. */
     @XmlElement(name="pdp_per_row")
     private Integer pdpPerRow;
 
@@ -56,10 +56,11 @@ public class Rra {
     @XmlElementWrapper(name="database")
     private List<Row> rows = new ArrayList<Row>();
 
+    /** The parameters. */
     @XmlElement(name="params")
     private Params parameters = new Params();
 
-    /** The rows. */
+    /** The CDP Data. */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
     private List<RraDS> dataSources = new ArrayList<RraDS>();
@@ -83,18 +84,18 @@ public class Rra {
     }
 
     /**
-     * Gets the pdp per row.
+     * Gets the PDP (Primary Data Points) per row.
      *
-     * @return the pdp per row
+     * @return the PDP (Primary Data Points) per row
      */
     public Integer getPdpPerRow() {
         return pdpPerRow;
     }
 
     /**
-     * Sets the pdp per row.
+     * Sets the PDP (Primary Data Points) per row.
      *
-     * @param pdpPerRow the new pdp per row
+     * @param pdpPerRow the new PDP (Primary Data Points) per row
      */
     public void setPdpPerRow(Integer pdpPerRow) {
         this.pdpPerRow = pdpPerRow;

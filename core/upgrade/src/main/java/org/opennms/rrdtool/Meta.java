@@ -38,39 +38,42 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Class Meta.
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Meta {
 
-    /** The start. */
+    /** The start time expressed in seconds since 1970-01-01 UTC. */
     @XmlElement
     private Long start;
 
-    /** The step. */
-    @XmlElement
-    private Integer step;
-
-    /** The end. */
+    /** The end time expressed in seconds since 1970-01-01 UTC. */
     @XmlElement
     private Long end;
 
-    /** The rows. */
+    /** The step (interval) time expressed in seconds. */
+    @XmlElement
+    private Integer step;
+
+    /** The number of rows. */
     @XmlElement
     private Integer rows;
 
-    /** The columns. */
+    /** The number of columns. */
     @XmlElement
     private Integer columns;
 
-    /** The entries. */
+    /** The legend entries. */
     @XmlElement(name="entry")
-    @XmlElementWrapper(name="legeng")
-    private List<String> entries = new ArrayList<String>();
+    @XmlElementWrapper(name="legend")
+    private List<String> legends = new ArrayList<String>();
 
     /**
      * Gets the start.
-     *
+     * <p>The start time expressed in seconds since 1970-01-01 UTC.</p>
+     * 
      * @return the start
      */
     public Long getStart() {
@@ -87,25 +90,8 @@ public class Meta {
     }
 
     /**
-     * Gets the step.
-     *
-     * @return the step
-     */
-    public Integer getStep() {
-        return step;
-    }
-
-    /**
-     * Sets the step.
-     *
-     * @param step the new step
-     */
-    public void setStep(Integer step) {
-        this.step = step;
-    }
-
-    /**
      * Gets the end.
+     * <p>The end time expressed in seconds since 1970-01-01 UTC</p>
      *
      * @return the end
      */
@@ -120,6 +106,25 @@ public class Meta {
      */
     public void setEnd(Long end) {
         this.end = end;
+    }
+
+    /**
+     * Gets the step.
+     * <p>The step (interval) time expressed in seconds</p>
+     * 
+     * @return the step
+     */
+    public Integer getStep() {
+        return step;
+    }
+
+    /**
+     * Sets the step.
+     *
+     * @param step the new step
+     */
+    public void setStep(Integer step) {
+        this.step = step;
     }
 
     /**
@@ -159,21 +164,21 @@ public class Meta {
     }
 
     /**
-     * Gets the entries.
+     * Gets the legend entries.
      *
-     * @return the entries
+     * @return the legend entries
      */
-    public List<String> getEntries() {
-        return entries;
+    public List<String> getLegends() {
+        return legends;
     }
 
     /**
-     * Sets the entries.
+     * Sets the legend entries.
      *
-     * @param entries the new entries
+     * @param entries the new legend entries
      */
-    public void setEntries(List<String> entries) {
-        this.entries = entries;
+    public void setLegends(List<String> entries) {
+        this.legends = entries;
     }
 
 }

@@ -36,13 +36,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class XRow.
+ * The Class XRow (XPort Row).
  */
-@XmlRootElement
+@XmlRootElement(name="row")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XRow {
 
-    /** The timestamp. */
+    /** The time stamp expressed in seconds since 1970-01-01 UTC. */
     @XmlElement(name="t")
     private Long timestamp;
     
@@ -51,18 +51,19 @@ public class XRow {
     private List<Double> values = new ArrayList<Double>();
 
     /**
-     * Gets the timestamp.
-     *
-     * @return the timestamp
+     * Gets the time stamp.
+     * <p>Expressed in seconds since 1970-01-01 UTC</p>
+     * 
+     * @return the time stamp
      */
     public Long getTimestamp() {
         return timestamp;
     }
 
     /**
-     * Sets the timestamp.
+     * Sets the time stamp.
      *
-     * @param timestamp the new timestamp
+     * @param timestamp the new time stamp
      */
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
