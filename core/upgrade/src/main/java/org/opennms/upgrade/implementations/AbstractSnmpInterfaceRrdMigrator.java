@@ -157,9 +157,8 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
      *
      * @param oldDir the old directory
      * @param newDir the new directory
-     * @throws OnmsUpgradeException the onms upgrade exception
      */
-    protected void merge(File oldDir, File newDir) throws OnmsUpgradeException {
+    protected void merge(File oldDir, File newDir) {
         log("Merging data from %s to %s\n", oldDir, newDir);
         if (newDir.exists()) {
             for (File source : getFiles(oldDir, getRrdExtension())) {
@@ -187,15 +186,22 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
      *
      * @param source the source RRD
      * @param dest the destination RRD
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    private void mergeRrd(File source, File dest) throws OnmsUpgradeException {
-        log("  merging RRD %s\n", source.getName());
-        RRD rrdSrc = loadRrd(source);
-        RRD rrdDst = loadRrd(dest);
+    protected void mergeRrd(File source, File dest) {
+        log("  merging RRD %s into %s\n", source, dest);
         try {
+            RRD rrdSrc = dumpRrd(source);
+            RRD rrdDst = dumpRrd(dest);
+            if (rrdSrc == null || rrdDst == null) {
+                log("  Warning: can't load RRDs (ingoring merge).\n");
+            }
             rrdDst.merge(rrdSrc);
-            JaxbUtils.marshal(rrdDst, new FileWriter(dest));
+            File xmlDest = new File(dest + ".xml");
+            JaxbUtils.marshal(rrdDst, new FileWriter(xmlDest));
+            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
+            restoreRrd(xmlDest, outputFile);
+            dest.delete();
+            outputFile.renameTo(dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -206,10 +212,9 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
      *
      * @param source the source JRB
      * @param dest the destination JRB
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    private void mergeJrb(File source, File dest) throws OnmsUpgradeException {
-        log("  merging JRB %s\n", source.getName());
+    protected void mergeJrb(File source, File dest) {
+        log("  merging JRB %s into %s\n", source, dest);
         try {
             final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
             rrds.add(new RrdDatabase(new RrdDb(source, true)));
@@ -229,44 +234,63 @@ public abstract class AbstractSnmpInterfaceRrdMigrator extends AbstractOnmsUpgra
             dest.delete();
             outputFile.renameTo(dest);
         } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't merge JRBs because " + e.getMessage());
+            log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
     }
 
     /**
-     * Loads the RRD.
+     * Dumps the RRD.
      *
      * @param rrdFile the RRD file
      * @return the RRD
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     * 
+     * @throws Exception the exception
      */
-    protected RRD loadRrd(File rrdFile) throws OnmsUpgradeException {
+    protected RRD dumpRrd(File rrdFile) throws Exception {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
-            throw new OnmsUpgradeException("rrd.binary property must be set");
+            throw new IllegalArgumentException("rrd.binary property must be set");
         }
         String command = rrdBinary + " dump " + rrdFile.getAbsolutePath();
         String[] commandArray = StringUtils.createCommandArray(command, '@');
         RRD rrd = null;
+        Process process = Runtime.getRuntime().exec(commandArray);
+        byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
+        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        if (errors.length() > 0) {
+            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+        }
+        BufferedReader reader = null;
         try {
-            Process process = Runtime.getRuntime().exec(commandArray);
-            byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());             
-            String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
-            if (errors.length() > 0) {
-                throw new OnmsUpgradeException("RRDtool command fail: " + errors);
-            }
-            BufferedReader reader = null;
-            try {
-                InputStream is = new ByteArrayInputStream(byteArray);
-                reader = new BufferedReader(new InputStreamReader(is));
-                rrd = JaxbUtils.unmarshal(RRD.class, reader);
-            } finally {
-                reader.close();
-            }
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't execute command '" + command + "' because " + e.getMessage());
+            InputStream is = new ByteArrayInputStream(byteArray);
+            reader = new BufferedReader(new InputStreamReader(is));
+            rrd = JaxbUtils.unmarshal(RRD.class, reader);
+        } finally {
+            reader.close();
         }
         return rrd;
+    }
+
+    /**
+     * Restores the RRD.
+     *
+     * @param xmlFile the XML file
+     * @param targetFile the target file
+     * 
+     * @throws Exception the exception
+     */
+    protected void restoreRrd(File xmlFile, File targetFile) throws Exception {
+        String rrdBinary = System.getProperty("rrd.binary");
+        if (rrdBinary == null) {
+            throw new IllegalArgumentException("rrd.binary property must be set");
+        }
+        String command = rrdBinary + " restore " + xmlFile.getAbsolutePath() + " " + targetFile.getAbsolutePath();
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
+        Process process = Runtime.getRuntime().exec(commandArray);
+        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        if (errors.length() > 0) {
+            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+        }
     }
 
     /**

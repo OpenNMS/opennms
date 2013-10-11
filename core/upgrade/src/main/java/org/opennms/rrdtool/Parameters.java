@@ -33,29 +33,33 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class Params.
+ * The Class RRA Parameters.
+ * 
+ * <ul>
+ * <li><b>param.hwpredict:</b> hw_alpha, hw_beta, dependent_rra_idx</li>
+ * <li><b>param.seasonal:</b> seasonal_gamma, seasonal_smooth_idx, smoothing_window?, dependent_rra_idx</li>
+ * <li><b>param.failures:</b> delta_pos, delta_neg, window_len, failure_threshold</li>
+ * <li><b>param.devpredict:</b> dependent_rra_idx</li>
+ * <li><b>param.avg_min_max:</b> xff</li>
+ * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
+@XmlRootElement(name="params")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Params {
-
-    /** The XFF. */
-    @XmlElement
-    private Double xff = 0.5;
-
-    /** The delta position. */
-    @XmlElement(name="delta_pos")
-    private Double deltaPos;
+public class Parameters {
 
     /** The delta negative. */
     @XmlElement(name="delta_neg")
     private Double deltaNeg;
 
-    /** The window length. */
-    @XmlElement(name="window_len")
-    private Integer windowLen;
+    /** The delta position. */
+    @XmlElement(name="delta_pos")
+    private Double deltaPos;
+
+    /** The dependent RRA index. */
+    @XmlElement(name="dependent_rra_idx")
+    private Integer dependentRraIdx;
 
     /** The failure threshold. */
     @XmlElement(name="failure_threshold")
@@ -77,31 +81,34 @@ public class Params {
     @XmlElement(name="seasonal_smooth_idx")
     private Integer seasonalSmoothIdx;
 
-    /** The dependent RRA index. */
-    @XmlElement(name="dependent_rra_idx")
-    private Integer dependentRraIdx;
+    /** The failure threshold. */
+    @XmlElement(name="smoothing_window")
+    private Integer smoothingWindow;
 
+    /** The window length. */
+    @XmlElement(name="window_len")
+    private Integer windowLen;
+
+    /** The XFF. */
+    @XmlElement(name="xff")
+    private Double xff = 0.5;
 
     /**
-     * Gets the XFF.
-     * 
-     * <p>XFF The xfiles factor defines what part of a consolidation interval may be made up from *UNKNOWN* data while the consolidated
-     * value is still regarded as known. It is given as the ratio of allowed *UNKNOWN* PDPs to the number of PDPs in the interval.
-     * Thus, it ranges from 0 to 1 (exclusive).</p>
+     * Gets the delta negative.
      *
-     * @return the XFF
+     * @return the delta negative
      */
-    public Double getXff() {
-        return xff;
+    public Double getDeltaNeg() {
+        return deltaNeg;
     }
 
     /**
-     * Sets the XFF.
+     * Sets the delta negative.
      *
-     * @param xff the new XFF
+     * @param deltaNeg the new delta negative
      */
-    public void setXff(Double xff) {
-        this.xff = xff;
+    public void setDeltaNeg(Double deltaNeg) {
+        this.deltaNeg = deltaNeg;
     }
 
     /**
@@ -123,39 +130,21 @@ public class Params {
     }
 
     /**
-     * Gets the delta negative.
+     * Gets the dependent RRA index.
      *
-     * @return the delta negative
+     * @return the dependent RRA index
      */
-    public Double getDeltaNeg() {
-        return deltaNeg;
+    public Integer getDependentRraIdx() {
+        return dependentRraIdx;
     }
 
     /**
-     * Sets the delta negative.
+     * Sets the dependent RRA index.
      *
-     * @param deltaNeg the new delta negative
+     * @param dependentRraIdx the new dependent RRA index
      */
-    public void setDeltaNeg(Double deltaNeg) {
-        this.deltaNeg = deltaNeg;
-    }
-
-    /**
-     * Gets the window length.
-     *
-     * @return the window length
-     */
-    public Integer getWindowLen() {
-        return windowLen;
-    }
-
-    /**
-     * Sets the window length.
-     *
-     * @param windowLen the new window length
-     */
-    public void setWindowLen(Integer windowLen) {
-        this.windowLen = windowLen;
+    public void setDependentRraIdx(Integer dependentRraIdx) {
+        this.dependentRraIdx = dependentRraIdx;
     }
 
     /**
@@ -174,24 +163,6 @@ public class Params {
      */
     public void setFailureThreshold(Integer failureThreshold) {
         this.failureThreshold = failureThreshold;
-    }
-
-    /**
-     * Gets the dependent RRA index.
-     *
-     * @return the dependent RRA index
-     */
-    public Integer getDependentRraIdx() {
-        return dependentRraIdx;
-    }
-
-    /**
-     * Sets the dependent RRA index.
-     *
-     * @param dependentRraIdx the new dependent RRA index
-     */
-    public void setDependentRraIdx(Integer dependentRraIdx) {
-        this.dependentRraIdx = dependentRraIdx;
     }
 
     /**
@@ -264,6 +235,64 @@ public class Params {
      */
     public void setSeasonalSmoothIdx(Integer seasonalSmoothIdx) {
         this.seasonalSmoothIdx = seasonalSmoothIdx;
+    }
+
+    /**
+     * Gets the smoothing window.
+     *
+     * @return the smoothing window
+     */
+    public Integer getSmoothingWindow() {
+        return smoothingWindow;
+    }
+
+    /**
+     * Sets the smoothing window.
+     *
+     * @param smoothingWindow the new smoothing window
+     */
+    public void setSmoothingWindow(Integer smoothingWindow) {
+        this.smoothingWindow = smoothingWindow;
+    }
+
+    /**
+     * Gets the window length.
+     *
+     * @return the window length
+     */
+    public Integer getWindowLen() {
+        return windowLen;
+    }
+
+    /**
+     * Sets the window length.
+     *
+     * @param windowLen the new window length
+     */
+    public void setWindowLen(Integer windowLen) {
+        this.windowLen = windowLen;
+    }
+
+    /**
+     * Gets the XFF.
+     * 
+     * <p>XFF The xfiles factor defines what part of a consolidation interval may be made up from *UNKNOWN* data while the consolidated
+     * value is still regarded as known. It is given as the ratio of allowed *UNKNOWN* PDPs to the number of PDPs in the interval.
+     * Thus, it ranges from 0 to 1 (exclusive).</p>
+     *
+     * @return the XFF
+     */
+    public Double getXff() {
+        return xff;
+    }
+
+    /**
+     * Sets the XFF.
+     *
+     * @param xff the new XFF
+     */
+    public void setXff(Double xff) {
+        this.xff = xff;
     }
 
 }

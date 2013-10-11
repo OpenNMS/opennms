@@ -66,4 +66,17 @@ public class Row {
         this.values = values;
     }
 
+    /**
+     * Checks if is all the values are NaN.
+     *
+     * @return true, if all the values are NaN.
+     */
+    public boolean isNan() {
+        for (Double v : values) {
+            if (!v.isNaN()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

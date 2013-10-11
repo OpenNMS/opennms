@@ -157,10 +157,10 @@ public class RRD {
     }
 
     /**
-     * Gets the start timestamp.
+     * Gets the start time stamp, expressed in seconds since 1970-01-01 UTC.
      *
      * @param rra the RRA
-     * @return the start timestamp
+     * @return the start time stamp (in seconds)
      */
     public Long getStartTimestamp(Rra rra) {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
@@ -168,18 +168,76 @@ public class RRD {
         }
         return getEndTimestamp(rra) - getStep() * rra.getPdpPerRow() * rra.getRows().size();
     }
-    
+
     /**
-     * Gets the end timestamp.
+     * Gets the end time stamp, expressed in seconds since 1970-01-01 UTC.
      *
      * @param rra the RRA
-     * @return the end timestamp
+     * @return the end time stamp (in seconds)
      */
     public Long getEndTimestamp(Rra rra) {
         if (getLastUpdate() == null || getStep() == null || rra == null) {
             return null;
         }
         return getLastUpdate() - getLastUpdate() % (getStep() * rra.getPdpPerRow()) + (getStep() * rra.getPdpPerRow());
+    }
+
+    /**
+     * Finds the row time stamp, expressed in seconds since 1970-01-01 UTC.
+     *
+     * @param rra the RRA object
+     * @param row the Row object
+     * @return the long
+     */
+    public Long findTimestampByRow(Rra rra, Row row) {
+        int rowNumber = rra.getRows().indexOf(row);
+        if (rowNumber < 0) {
+            return null;
+        }
+        return getStartTimestamp(rra) + rowNumber * rra.getPdpPerRow() * getStep();
+    }
+
+    /**
+     * Gets the row that corresponds to a specific time stamp (expressed in seconds since 1970-01-01 UTC).
+     *
+     * @param rra the RRA
+     * @param timestamp the row time stamp
+     * @return the row object
+     */
+    public Row findRowByTimestamp(Rra rra, Long timestamp) {
+        try {
+            Long n = (timestamp - getStartTimestamp(rra)) / (rra.getPdpPerRow() * getStep());
+            return rra.getRows().get(n.intValue());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Merge.
+     * <p>Merge the content of rrdSrc into this RRD.</p>
+     * <p>The format must be equal in order to perform the merge operation.</p>
+     * 
+     * @param rrdSrc the RRD source
+     * @throws IllegalArgumentException the illegal argument exception
+     */
+    public void merge(RRD rrdSrc) throws IllegalArgumentException {
+        if (!formatEquals(rrdSrc)) {
+            throw new IllegalArgumentException("Invalid RRD format");
+        }
+        int rraNum = 0;
+        for (Rra rra : rrdSrc.getRras()) {
+            for (Row row : rra.getRows()) {
+                if (!row.isNan()) {
+                    Long ts = rrdSrc.findTimestampByRow(rra, row);
+                    Row localRow = findRowByTimestamp(rras.get(rraNum), ts);
+                    if (localRow != null) {
+                        localRow.setValues(row.getValues());
+                    }
+                }
+            }
+            rraNum++;
+        }
     }
 
     /**
@@ -224,32 +282,6 @@ public class RRD {
         }
 
         return true;
-    }
-
-    /**
-     * Merge.
-     * <p>Merge the content of rrdSrc into this RRD.</p>
-     * <p>The format must be equal in order to perform the merge operation.</p>
-     * 
-     * @param rrdSrc the RRD source
-     * @throws IllegalArgumentException the illegal argument exception
-     */
-    public void merge(RRD rrdSrc) throws IllegalArgumentException {
-        if (!formatEquals(rrdSrc)) {
-            throw new IllegalArgumentException("Invalid RRD format");
-        }
-        for (int i=0; i < rras.size(); i++) {
-            for (int j=0; j < rras.get(i).getRows().size(); j++) {
-                Row local  = rras.get(i).getRows().get(j);
-                Row source = rrdSrc.getRras().get(i).getRows().get(j);
-                for (int k=0; k < local.getValues().size(); k++) {
-                    Double v = source.getValues().get(k);
-                    if (!v.isNaN()) {
-                        local.getValues().set(k, v);
-                    }
-                }
-            }
-        }
     }
 
 }

@@ -61,7 +61,7 @@ public class Rra {
 
     /** The parameters. */
     @XmlElement(name="params")
-    private Params parameters = new Params();
+    private Parameters parameters = new Parameters();
 
     /** The CDP Data. */
     @XmlElement(name="ds")

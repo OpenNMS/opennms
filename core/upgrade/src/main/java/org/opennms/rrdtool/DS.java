@@ -35,6 +35,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The Class DS (Data Source).
+ * <ul>
+ * <li><b>ds.decl.normal:</b> minimal_heartbeat, min, max</li>
+ * <li><b>ds.decl.cdef:</b> cdef</li>
+ * <li><b>ds.decl:</b> name, type, (ds.decl.normal | ds.decl.cdef), last_ds, value, unknown_sec</li>
+ * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */

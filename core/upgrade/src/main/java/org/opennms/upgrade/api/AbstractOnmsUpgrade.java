@@ -105,6 +105,9 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param properties the properties
      */
     protected void registerProperties(Properties properties) {
+        if (properties == null) {
+            return;
+        }
         for (Object o : properties.keySet()) {
             String key = (String) o;
             System.setProperty(key, properties.getProperty(key));

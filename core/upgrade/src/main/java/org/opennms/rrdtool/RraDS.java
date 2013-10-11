@@ -33,7 +33,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class RraDS (RRA Data Source).
+ * The Class RraDS (RRA CDP Data Source).
+ * 
+ * <ul>
+ * <li><b>ds.cdp.hwpredict:</b> intercept, last_intercept, slope, last_slope, nan_count, last_nan_count</li>
+ * <li><b>ds.cdp.seasonal:</b> seasonal, last_seasonal, init_flag</li>
+ * <li><b>ds.cdp.failures:</b> history</li>
+ * <li><b>ds.cdp.avg_min_max:</b> value, unknown_datapoints</li>
+ * <li><b>ds.cdp:</b> primary_value, secondary_value, (ds.cdp.hwpredict | ds.cdp.seasonal | ds.cdp.failures | ds.cdp.avg_min_max)?</li>
+ * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
@@ -41,25 +49,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RraDS {
 
-    /** The primary value. */
-    @XmlElement(name="primary_value")
-    private Double primaryValue = 0.0;
-
-    /** The secondary value. */
-    @XmlElement(name="secondary_value")
-    private Double secondaryValue = 0.0;
-
-    /** The value. */
-    @XmlElement(name="value")
-    private Double value;
-
-    /** The unknown data points. */
-    @XmlElement(name="unknown_datapoints")
-    private Long unknownDataPoints = 0L;
-
     /** The history. */
     @XmlElement(name="history")
-    private String history; // TODO Is String the proper type here ?
+    private String history;
+
+    /** The init flag. */
+    @XmlElement(name="init_flag")
+    private Integer initFlag = 1;
 
     /** The intercept. */
     @XmlElement(name="intercept")
@@ -69,105 +65,45 @@ public class RraDS {
     @XmlElement(name="last_intercept")
     private Double lastIntercept = Double.NaN;
 
-    /** The slope. */
-    @XmlElement(name="slope")
-    private Double slope = Double.NaN;
-
-    /** The last slope. */
-    @XmlElement(name="last_slope")
-    private Double lastSlope = Double.NaN;
-
-    /** The nan count. */
-    @XmlElement(name="nan_count")
-    private Integer nanCount = 1;
-
-    /** The last nan count. */
+    /** The last NaN count. */
     @XmlElement(name="last_nan_count")
     private Integer lastNanCount = 1;
-
-    /** The seasonal. */
-    @XmlElement(name="seasonal")
-    private Double seasonal = Double.NaN;
 
     /** The last seasonal. */
     @XmlElement(name="last_seasonal")
     private Double lastSeasonal = Double.NaN;
 
-    /** The init flag. */
-    @XmlElement(name="init_flag")
-    private Integer initFlag = 1;
+    /** The last slope. */
+    @XmlElement(name="last_slope")
+    private Double lastSlope = Double.NaN;
 
-    /**
-     * Gets the primary value.
-     *
-     * @return the primary value
-     */
-    public Double getPrimaryValue() {
-        return primaryValue;
-    }
+    /** The NaN count. */
+    @XmlElement(name="nan_count")
+    private Integer nanCount = 1;
 
-    /**
-     * Sets the primary value.
-     *
-     * @param primaryValue the new primary value
-     */
-    public void setPrimaryValue(Double primaryValue) {
-        this.primaryValue = primaryValue;
-    }
+    /** The primary value. */
+    @XmlElement(name="primary_value")
+    private Double primaryValue = 0.0;
 
-    /**
-     * Gets the secondary value.
-     *
-     * @return the secondary value
-     */
-    public Double getSecondaryValue() {
-        return secondaryValue;
-    }
+    /** The seasonal. */
+    @XmlElement(name="seasonal")
+    private Double seasonal = Double.NaN;
 
-    /**
-     * Sets the secondary value.
-     *
-     * @param secondaryValue the new secondary value
-     */
-    public void setSecondaryValue(Double secondaryValue) {
-        this.secondaryValue = secondaryValue;
-    }
+    /** The secondary value. */
+    @XmlElement(name="secondary_value")
+    private Double secondaryValue = 0.0;
 
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public Double getValue() {
-        return value;
-    }
+    /** The slope. */
+    @XmlElement(name="slope")
+    private Double slope = Double.NaN;
 
-    /**
-     * Sets the value.
-     *
-     * @param value the new value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
+    /** The unknown data points. */
+    @XmlElement(name="unknown_datapoints")
+    private Long unknownDataPoints = 0L;
 
-    /**
-     * Gets the unknown data points.
-     *
-     * @return the unknown data points
-     */
-    public Long getUnknownDataPoints() {
-        return unknownDataPoints;
-    }
-
-    /**
-     * Sets the unknown data points.
-     *
-     * @param unknownDataPoints the new unknown data points
-     */
-    public void setUnknownDataPoints(Long unknownDataPoints) {
-        this.unknownDataPoints = unknownDataPoints;
-    }
+    /** The value. */
+    @XmlElement(name="value")
+    private Double value;
 
     /**
      * Gets the history.
@@ -185,6 +121,24 @@ public class RraDS {
      */
     public void setHistory(String history) {
         this.history = history;
+    }
+
+    /**
+     * Gets the inits the flag.
+     *
+     * @return the inits the flag
+     */
+    public Integer getInitFlag() {
+        return initFlag;
+    }
+
+    /**
+     * Sets the inits the flag.
+     *
+     * @param initFlag the new inits the flag
+     */
+    public void setInitFlag(Integer initFlag) {
+        this.initFlag = initFlag;
     }
 
     /**
@@ -224,93 +178,21 @@ public class RraDS {
     }
 
     /**
-     * Gets the slope.
+     * Gets the last NaN count.
      *
-     * @return the slope
-     */
-    public Double getSlope() {
-        return slope;
-    }
-
-    /**
-     * Sets the slope.
-     *
-     * @param slope the new slope
-     */
-    public void setSlope(Double slope) {
-        this.slope = slope;
-    }
-
-    /**
-     * Gets the last slope.
-     *
-     * @return the last slope
-     */
-    public Double getLastSlope() {
-        return lastSlope;
-    }
-
-    /**
-     * Sets the last slope.
-     *
-     * @param lastSlope the new last slope
-     */
-    public void setLastSlope(Double lastSlope) {
-        this.lastSlope = lastSlope;
-    }
-
-    /**
-     * Gets the nan count.
-     *
-     * @return the nan count
-     */
-    public Integer getNanCount() {
-        return nanCount;
-    }
-
-    /**
-     * Sets the nan count.
-     *
-     * @param nanCount the new nan count
-     */
-    public void setNanCount(Integer nanCount) {
-        this.nanCount = nanCount;
-    }
-
-    /**
-     * Gets the last nan count.
-     *
-     * @return the last nan count
+     * @return the last NaN count
      */
     public Integer getLastNanCount() {
         return lastNanCount;
     }
 
     /**
-     * Sets the last nan count.
+     * Sets the last NaN count.
      *
-     * @param lastNanCount the new last nan count
+     * @param lastNanCount the new last NaN count
      */
     public void setLastNanCount(Integer lastNanCount) {
         this.lastNanCount = lastNanCount;
-    }
-
-    /**
-     * Gets the seasonal.
-     *
-     * @return the seasonal
-     */
-    public Double getSeasonal() {
-        return seasonal;
-    }
-
-    /**
-     * Sets the seasonal.
-     *
-     * @param seasonal the new seasonal
-     */
-    public void setSeasonal(Double seasonal) {
-        this.seasonal = seasonal;
     }
 
     /**
@@ -332,21 +214,147 @@ public class RraDS {
     }
 
     /**
-     * Gets the inits the flag.
+     * Gets the last slope.
      *
-     * @return the inits the flag
+     * @return the last slope
      */
-    public Integer getInitFlag() {
-        return initFlag;
+    public Double getLastSlope() {
+        return lastSlope;
     }
 
     /**
-     * Sets the inits the flag.
+     * Sets the last slope.
      *
-     * @param initFlag the new inits the flag
+     * @param lastSlope the new last slope
      */
-    public void setInitFlag(Integer initFlag) {
-        this.initFlag = initFlag;
+    public void setLastSlope(Double lastSlope) {
+        this.lastSlope = lastSlope;
+    }
+
+    /**
+     * Gets the NaN count.
+     *
+     * @return the NaN count
+     */
+    public Integer getNanCount() {
+        return nanCount;
+    }
+
+    /**
+     * Sets the NaN count.
+     *
+     * @param nanCount the new NaN count
+     */
+    public void setNanCount(Integer nanCount) {
+        this.nanCount = nanCount;
+    }
+
+    /**
+     * Gets the primary value.
+     *
+     * @return the primary value
+     */
+    public Double getPrimaryValue() {
+        return primaryValue;
+    }
+
+    /**
+     * Sets the primary value.
+     *
+     * @param primaryValue the new primary value
+     */
+    public void setPrimaryValue(Double primaryValue) {
+        this.primaryValue = primaryValue;
+    }
+
+    /**
+     * Gets the seasonal.
+     *
+     * @return the seasonal
+     */
+    public Double getSeasonal() {
+        return seasonal;
+    }
+
+    /**
+     * Sets the seasonal.
+     *
+     * @param seasonal the new seasonal
+     */
+    public void setSeasonal(Double seasonal) {
+        this.seasonal = seasonal;
+    }
+
+    /**
+     * Gets the secondary value.
+     *
+     * @return the secondary value
+     */
+    public Double getSecondaryValue() {
+        return secondaryValue;
+    }
+
+    /**
+     * Sets the secondary value.
+     *
+     * @param secondaryValue the new secondary value
+     */
+    public void setSecondaryValue(Double secondaryValue) {
+        this.secondaryValue = secondaryValue;
+    }
+
+    /**
+     * Gets the slope.
+     *
+     * @return the slope
+     */
+    public Double getSlope() {
+        return slope;
+    }
+
+    /**
+     * Sets the slope.
+     *
+     * @param slope the new slope
+     */
+    public void setSlope(Double slope) {
+        this.slope = slope;
+    }
+
+    /**
+     * Gets the unknown data points.
+     *
+     * @return the unknown data points
+     */
+    public Long getUnknownDataPoints() {
+        return unknownDataPoints;
+    }
+
+    /**
+     * Sets the unknown data points.
+     *
+     * @param unknownDataPoints the new unknown data points
+     */
+    public void setUnknownDataPoints(Long unknownDataPoints) {
+        this.unknownDataPoints = unknownDataPoints;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
+    public Double getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
+     */
+    public void setValue(Double value) {
+        this.value = value;
     }
 
 }
