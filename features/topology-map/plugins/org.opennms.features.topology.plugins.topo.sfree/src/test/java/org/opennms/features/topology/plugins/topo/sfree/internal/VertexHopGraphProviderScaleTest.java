@@ -2,11 +2,15 @@ package org.opennms.features.topology.plugins.topo.sfree.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class VertexHopGraphProviderScaleTest {
@@ -20,7 +24,7 @@ public class VertexHopGraphProviderScaleTest {
 	public void setUp() {
 
 		SFreeTopologyProvider baseProvider = new SFreeTopologyProvider();
-		baseProvider.setNodeCount(8000);
+		baseProvider.setNodeCount(10000);
 		baseProvider.setConnectedness(1.5);
 		baseProvider.load(SFreeTopologyProvider.ERDOS_RENIS);
 		
@@ -53,18 +57,23 @@ public class VertexHopGraphProviderScaleTest {
 		
 		System.err.printf("Focus Nodes: %s\n", criteria.getVertices());
 		
-		int count = 1;
 		long start = System.nanoTime();
-		int found = 0;
-		for(int i = 0; i < count; i++) {
-			found += m_provider.getVertices(criteria).size();
-		}
+		List<Vertex> vertices2 = m_provider.getVertices(criteria);
 		long end = System.nanoTime();
 		
-		double time = (end-start)/(count*1000000.0);
-		System.err.printf("ElapsedTime = %f ms\n", time);
-		System.err.printf("%d, %d, %f, %f\n", m_vertexCount, m_edgeCount, time, found/((double)count));
-		
+		double time = (end-start)/(1000000.0);
 
+		System.err.printf("ElapsedTime = %f ms\n", time);
+		System.err.printf("%d, %d, %f, %d\n", m_vertexCount, m_edgeCount, time, vertices2.size());
+		
+		//assertEquals(vertices1.size(), vertices2.size());
+//		Collections.sort(vertices1);
+//		Collections.sort(vertices2);
+//		System.err.println(vertices1);
+//		System.err.println(vertices2);
+//		vertices1.removeAll(vertices2);
+//		
+//		System.err.println(vertices1);
 	}
+
 }
