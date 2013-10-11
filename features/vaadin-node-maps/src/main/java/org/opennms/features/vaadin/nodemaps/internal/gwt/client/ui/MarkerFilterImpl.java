@@ -110,12 +110,14 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
             searchProperty = m.getGroup(1);
             matchType = MatchType.fromToken(m.getGroup(2));
 
+            final String searchCriteria = m.getGroup(3);
             if (matchType == MatchType.IN) {
-                for (final String s : m.getGroup(3).split("\\s*,\\s*")) {
+                final String ignoreParens = searchCriteria.replaceAll("^\\s*\\(\\s*(.*)\\s*\\)\\s*$", "$1");
+                for (final String s : ignoreParens.split("\\s*,\\s*")) {
                     searchFor.add(s);
                 }
             } else {
-                searchFor.add(m.getGroup(3));
+                searchFor.add(searchCriteria);
             }
         } else {
             searchProperty = null;

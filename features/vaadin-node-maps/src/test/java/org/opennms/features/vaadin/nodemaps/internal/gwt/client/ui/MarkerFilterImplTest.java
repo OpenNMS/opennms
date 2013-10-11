@@ -149,6 +149,20 @@ public class MarkerFilterImplTest {
         marker.setNodeLabel("baz");
         assertTrue(filter.matches(marker));
 
+        filter.setSearchString("nodeLabel in (foo, bar, baz)");
+
+        marker.setNodeLabel("fo");
+        assertFalse(filter.matches(marker));
+
+        marker.setNodeLabel("foo");
+        assertTrue(filter.matches(marker));
+
+        marker.setNodeLabel("bara");
+        assertFalse(filter.matches(marker));
+
+        marker.setNodeLabel("baz");
+        assertTrue(filter.matches(marker));
+
         filter.setSearchString("category in foo, bar, baz");
         marker.setNodeLabel(null);
         marker.setCategoryList(new ArrayList<String>());
