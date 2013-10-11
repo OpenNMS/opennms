@@ -35,7 +35,6 @@ import com.vaadin.ui.AbstractComponent;
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.NcsHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SearchBoxServerRpc;
