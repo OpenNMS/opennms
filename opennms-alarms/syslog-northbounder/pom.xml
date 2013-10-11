@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.syslog4j</groupId>
       <artifactId>syslog4j</artifactId>
-      <version>0.9.30</version>
+      <version>0.9.30-ONMS-1.0</version>
       <exclusions>
         <exclusion>
           <groupId>commons-pool</groupId>
