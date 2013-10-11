@@ -199,9 +199,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private VerticalLayout m_rootLayout;
     private final IconRepositoryManager m_iconRepositoryManager;
     private WidgetManager m_widgetManager;
-    private WidgetManager m_treeWidgetManager;
+    /*private WidgetManager m_treeWidgetManager;*/
     private Accordion m_treeAccordion;
-    private HorizontalSplitPanel m_treeMapSplitPanel;
+    private AbsoluteLayout m_treeMapSplitPanel;
     private final Label m_zoomLevelLabel = new Label("0");
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
@@ -416,10 +416,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_rootLayout.setExpandRatio(m_layout, 1);
 
         //TODO: Don't create a horizontal Split container here, no need. Remove and use the absolute
-        m_treeMapSplitPanel = new HorizontalSplitPanel();
-        m_treeMapSplitPanel.setFirstComponent(createWestLayout());
-        m_treeMapSplitPanel.setSecondComponent(createMapLayout());
-        m_treeMapSplitPanel.setSplitPosition(0, Unit.PIXELS);
+        m_treeMapSplitPanel = new AbsoluteLayout();
+        m_treeMapSplitPanel.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
         m_treeMapSplitPanel.setSizeFull();
 
         menuBarUpdated(m_commandManager);
@@ -427,10 +425,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             updateWidgetView(m_widgetManager);
         }else {
             m_layout.addComponent(m_treeMapSplitPanel);
-        }
-
-        if(m_treeWidgetManager.widgetCount() != 0) {
-            updateAccordionView(m_treeWidgetManager);
         }
     }
 
@@ -821,7 +815,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
      * 
      * @return
      */
-	private Layout createWestLayout() {
+	/*private Layout createWestLayout() {
         m_tree = createTree();
         
 
@@ -837,9 +831,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         absLayout.addComponent(m_treeAccordion, "top: 25px; left: 15px; right: 15px; bottom:25px;");
         
         return absLayout;
-    }
+    }*/
 
-    private VertexSelectionTree createTree() {
+    /*private VertexSelectionTree createTree() {
 		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
@@ -853,7 +847,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 
 		return tree;
-	}
+	}*/
 
 	@Override
 	public void updateMenuItems() {
@@ -932,27 +926,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(!isClosing()) {
             if(widgetManager == m_widgetManager) {
                 updateWidgetView(widgetManager);
-            }else if(widgetManager == m_treeWidgetManager) {
-                updateAccordionView(widgetManager);
             }
         }
     }
-
-
-    public WidgetManager getTreeWidgetManager() {
-        return m_treeWidgetManager;
-    }
-
-
-    public void setTreeWidgetManager(WidgetManager treeWidgetManager) {
-        if(m_treeWidgetManager != null) {
-            m_treeWidgetManager.removeUpdateListener(this);
-        }
-        
-        m_treeWidgetManager = treeWidgetManager;
-        m_treeWidgetManager.addUpdateListener(this);
-    }
-
 
     @Override
     public GraphContainer getGraphContainer() {
