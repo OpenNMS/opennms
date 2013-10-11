@@ -43,7 +43,6 @@ import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.osgi.OnmsServiceManager;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 
