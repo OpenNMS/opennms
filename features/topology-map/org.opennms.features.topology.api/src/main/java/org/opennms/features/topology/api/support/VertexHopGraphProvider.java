@@ -253,10 +253,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 	public Set<VertexRef> getFocusNodes(Criteria... criteria) {
 		Set<VertexRef> focusNodes = new HashSet<VertexRef>();
 		for(Criteria criterium : criteria) {
-			if (criterium instanceof FocusNodeHopCriteria) {
-				FocusNodeHopCriteria hopCriterium = (FocusNodeHopCriteria)criterium;
+			try {
+				VertexHopCriteria hopCriterium = (VertexHopCriteria)criterium;
 				focusNodes.addAll(hopCriterium.getVertices());
-			}
+			} catch (ClassCastException e) {}
 		}
 		return focusNodes;
 	}
