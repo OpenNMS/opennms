@@ -161,7 +161,7 @@ public class WebNotificationRepositoryFilterTest implements InitializingBean {
         Notification[] notifs = m_daoNotificationRepo.getMatchingNotifications(new NotificationCriteria());
         System.out.println(notifs[0].getServiceId());
         
-        ServiceFilter filter = new ServiceFilter(1);
+        ServiceFilter filter = new ServiceFilter(1, null);
         assert1Result(filter);
     }
     
