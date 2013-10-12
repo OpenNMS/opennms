@@ -1,30 +1,39 @@
 package org.opennms.features.topology.plugins.ncs;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree;
+import com.google.common.collect.Sets;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NCSViewContribution implements SearchProvider {
-	
+
+    public class NCSHopCriteria extends VertexHopCriteria{
+
+        private final Set<VertexRef> m_vertices;
+
+        public NCSHopCriteria(Set<VertexRef> vertices, String label){
+            m_vertices = vertices;
+            setLabel(label);
+        }
+
+        @Override
+        public Set<VertexRef> getVertices() {
+            return m_vertices;
+        }
+
+        @Override
+        public String getNamespace() {
+            return "ncs service";
+        }
+    }
+
 	private NCSComponentRepository m_ncsComponentRepository;
 	private NCSEdgeProvider m_ncsEdgeProvider;
     private NCSCriteriaServiceManager m_serviceManager;
@@ -78,7 +87,7 @@ public class NCSViewContribution implements SearchProvider {
     }
 
     @Override
-    public void onSelectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
         m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
@@ -89,7 +98,7 @@ public class NCSViewContribution implements SearchProvider {
     }
 
     @Override
-    public void onDeselectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
         if(m_serviceManager.isCriteriaRegistered("ncsPath", operationContext.getGraphContainer().getSessionId())) {
@@ -106,8 +115,27 @@ public class NCSViewContribution implements SearchProvider {
     @Override
     public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
-
         return getVertexRefsForEdges(criteria);
     }
+
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+        container.setCriteria(new NCSHopCriteria(Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+    }
+
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        Criteria[] criterias = container.getCriteria();
+        for (Criteria criteria : criterias) {
+            try {
+                NCSHopCriteria ncsHopCriteria = (NCSHopCriteria) criteria;
+                if(ncsHopCriteria.getLabel().toLowerCase().equals(searchResult.getLabel().toLowerCase())){
+                    container.removeCriteria(ncsHopCriteria);
+                }
+            } catch (ClassCastException e) {}
+        }
+    }
+
 
 }

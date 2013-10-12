@@ -315,7 +315,8 @@ public class VertexHopGraphProvider implements GraphProvider {
 					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertexRef.toString());
 				}
 				m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
-				neighbors.addAll(neighborMap.get(vertexRef));
+                Set<VertexRef> refs = neighborMap.get(vertexRef);
+                neighbors.addAll(refs);
 				processed.add(getVertex(vertexRef));
 			}
 

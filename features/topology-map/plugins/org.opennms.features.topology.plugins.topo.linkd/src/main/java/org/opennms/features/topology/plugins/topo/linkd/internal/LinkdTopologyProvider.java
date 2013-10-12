@@ -45,6 +45,7 @@ import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -588,14 +589,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public void onSelectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         GraphContainer m_graphContainer = operationContext.getGraphContainer();
         VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
         m_graphContainer.getSelectionManager().setSelectedVertexRefs(Lists.newArrayList(vertexRef));
     }
 
     @Override
-    public void onDeselectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         GraphContainer graphContainer = operationContext.getGraphContainer();
         VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
         graphContainer.getSelectionManager().deselectVertexRefs(Lists.newArrayList(vertexRef));
@@ -608,8 +609,19 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        //That's bloody confusing, A hack for later
-        return Lists.newArrayList((VertexRef)new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
+        criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
+    }
+
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
+        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getLabel()));
     }
 
     private static String getIfStatusString(int ifStatusNum) {

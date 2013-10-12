@@ -56,6 +56,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="nodeDao"/>
     </bean>
 
+    <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider">
+        <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
+            <argument ref="categoryDao"/>
+            <argument ref="nodeDao"/>
+        </bean>
+    </service>
+
     <!-- status provider -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 

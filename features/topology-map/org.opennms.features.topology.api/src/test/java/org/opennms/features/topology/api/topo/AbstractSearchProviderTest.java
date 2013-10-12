@@ -29,8 +29,10 @@
 package org.opennms.features.topology.api.topo;
 
 import org.junit.Test;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,12 +124,12 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public void onSelectSearchResult(SearchResult searchResult, OperationContext operationContext) {
+            public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
             }
 
             @Override
-            public void onDeselectSearchResult(SearchResult searchResult, OperationContext operationContext) {
-                //To change body of implemented methods use File | Settings | File Templates.
+            public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+
             }
 
             @Override
@@ -136,8 +138,18 @@ public class AbstractSearchProviderTest {
             }
 
             @Override
-            public List<VertexRef> getVertexRefsBy(SearchResult suggestionId) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+                return null;
+            }
+
+            @Override
+            public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+
+            }
+
+            @Override
+            public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+
             }
 
         };
