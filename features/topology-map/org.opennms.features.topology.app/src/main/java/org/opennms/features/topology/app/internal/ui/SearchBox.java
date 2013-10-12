@@ -167,18 +167,23 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         String searchPrefix = getQueryPrefix(query);
 
         List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
+        List<SearchResult> results = Lists.newArrayList();
 
         for(SearchProvider provider : providers) {
             if(searchPrefix != null && provider.supportsPrefix(searchPrefix)) {
                 String queryOnly = query.replace(searchPrefix, "");
-                m_suggestionMap.putAll(provider, provider.query( getSearchQuery(queryOnly) ));
+                List<SearchResult> q = provider.query(getSearchQuery(queryOnly));
+                results.addAll(q);
+                m_suggestionMap.putAll(provider, q);
             } else{
-                m_suggestionMap.putAll(provider, provider.query(getSearchQuery(query)));
+                List<SearchResult> q = provider.query(getSearchQuery(query));
+                results.addAll(q);
+                m_suggestionMap.putAll(provider, q);
             }
 
         }
 
-        return mapToSuggestions(Lists.newArrayList(m_suggestionMap.values()));
+        return mapToSuggestions(results);
     }
 
 
