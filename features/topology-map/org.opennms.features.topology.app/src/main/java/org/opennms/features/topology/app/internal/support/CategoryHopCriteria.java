@@ -22,6 +22,7 @@ public class CategoryHopCriteria extends VertexHopCriteria {
 
 	public CategoryHopCriteria(String categoryName) {
 		m_categoryName = categoryName;
+        setLabel(m_categoryName);
 	}
 
 	public CategoryDao getCategoryDao() {
@@ -46,7 +47,7 @@ public class CategoryHopCriteria extends VertexHopCriteria {
 	 */
 	@Override
 	public String getNamespace() {
-		return "nodes";
+		return "category";
 	}
 
 	public String getCategoryName() {

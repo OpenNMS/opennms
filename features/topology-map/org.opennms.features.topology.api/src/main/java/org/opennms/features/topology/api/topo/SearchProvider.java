@@ -28,13 +28,19 @@
 
 package org.opennms.features.topology.api.topo;
 
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 
 import java.util.List;
 
 public interface SearchProvider {
     List<SearchResult> query(SearchQuery searchQuery);
-    AbstractSearchSelectionOperation getSelectionOperation();
+    void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
+    void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     boolean supportsPrefix(String searchPrefix);
     List<VertexRef> getVertexRefsBy(SearchResult searchResult);
+    void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
+    void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
 }

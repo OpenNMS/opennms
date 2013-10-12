@@ -32,6 +32,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -248,94 +250,87 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return szl == null ? 0 : szl;
 	}
 
-	@Override
-	public List<Vertex> getVertices(Criteria... criteria) {
-		List<Vertex> retval = new ArrayList<Vertex>();
-		List<VertexRef> currentHops = new ArrayList<VertexRef>();
-		List<VertexRef> nextHops = new ArrayList<VertexRef>();
-		List<Vertex> allVertices = new ArrayList<Vertex>();
-
-		// Get the entire list of vertices
-		allVertices.addAll(m_delegate.getVertices(criteria));
-
-		// Find the vertices that match a required HopDistanceCriteria
-		for (Criteria criterium : criteria) {
+	public Set<VertexRef> getFocusNodes(Criteria... criteria) {
+		Set<VertexRef> focusNodes = new HashSet<VertexRef>();
+		for(Criteria criterium : criteria) {
 			try {
-				FocusNodeHopCriteria hdCriteria = (FocusNodeHopCriteria)criterium;
-				for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
-					Vertex vertex = itr.next();
-					if (hdCriteria.contains(vertex)) {
-						// Put the vertex into the return value and remove it
-						// from the list of all eligible vertices
-						retval.add(vertex);
-						nextHops.add(vertex);
-						itr.remove();
-						LOG.debug("Added {} to selected vertex list", vertex);
-					}
-				}
+				VertexHopCriteria hopCriterium = (VertexHopCriteria)criterium;
+				focusNodes.addAll(hopCriterium.getVertices());
 			} catch (ClassCastException e) {}
 		}
+		return focusNodes;
+	}
+	
+	public int getMaxSemanticZoomLevel(Criteria... criteria) {
+		return 100;
+	}
 
+	@Override
+	public List<Vertex> getVertices(Criteria... criteria) {
+
+		Set<VertexRef> focusNodes = getFocusNodes(criteria);
+		int maxSemanticZoomLevel = getMaxSemanticZoomLevel(criteria);
+		
 		// Clear the existing semantic zoom level values
 		m_semanticZoomLevels.clear();
 		int semanticZoomLevel = 0;
 
 		// If we didn't find any matching nodes among the focus nodes...
-		if (nextHops.size() < 1) {
+		if (focusNodes.size() < 1) {
 			// ...then return an empty list of vertices
 			return Collections.emptyList();
 		}
+		
 
+		Map<VertexRef, Set<VertexRef>> neighborMap = new HashMap<VertexRef, Set<VertexRef>>();
+		List<Edge> edges = m_delegate.getEdges(criteria);
+		for(Edge edge : edges) {
+			VertexRef src = edge.getSource().getVertex();
+			VertexRef tgt = edge.getTarget().getVertex();
+			Set<VertexRef> srcNeighbors = neighborMap.get(src);
+			if (srcNeighbors == null) {
+				srcNeighbors = new HashSet<VertexRef>();
+				neighborMap.put(src, srcNeighbors);
+			}
+			srcNeighbors.add(tgt);
+			
+			Set<VertexRef> tgtNeighbors = neighborMap.get(tgt);
+			if (tgtNeighbors == null) {
+				tgtNeighbors = new HashSet<VertexRef>();
+				neighborMap.put(tgt, tgtNeighbors);
+			}
+			tgtNeighbors.add(src);
+		}
+		
+		Set<Vertex> processed = new HashSet<Vertex>();
+		Set<VertexRef> neighbors = new HashSet<VertexRef>();
+		Set<VertexRef> workingSet = new HashSet<VertexRef>(focusNodes);
 		// Put a limit on the SZL in case we infinite loop for some reason
-		while (semanticZoomLevel < 100 && nextHops.size() > 0) {
-			currentHops.addAll(nextHops);
-			nextHops.clear();
+		while (semanticZoomLevel < maxSemanticZoomLevel && workingSet.size() > 0) {
+			System.err.printf("SZL: %d, hops: %d\n", semanticZoomLevel, workingSet.size());
+			neighbors.clear();
 
-			Map<VertexRef,Set<EdgeRef>> edges = m_delegate.getEdgeIdsForVertices(currentHops.toArray(new VertexRef[0]));
-
-			for (VertexRef vertex : currentHops) {
-
-				// Mark the current vertex as belonging to a particular SZL
-				if (m_semanticZoomLevels.get(vertex) != null) {
-					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertex.toString());
+			for(VertexRef vertexRef : workingSet) {
+				if (m_semanticZoomLevels.containsKey(vertexRef)) {
+					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertexRef.toString());
 				}
-				m_semanticZoomLevels.put(vertex, semanticZoomLevel);
-				// Put the vertex into the full list of vertices that is returned
-				retval.add(getVertex(vertex));
-
-				// Fetch all edges attached to this vertex
-				for (EdgeRef edgeRef : edges.get(vertex)) {
-					Edge edge = m_delegate.getEdge(edgeRef);
-
-					// Find everything attached to those edges
-					VertexRef nextVertex = null;
-					if (vertex.equals(edge.getSource().getVertex())) {
-						nextVertex = edge.getTarget().getVertex();
-					} else if (vertex.equals(edge.getTarget().getVertex())) {
-						nextVertex = edge.getSource().getVertex();
-					} else {
-						throw new IllegalStateException(String.format("Vertex %s was not the source or target of edge %s", vertex.toString(), edge.toString()));
-					}
-
-					// If we haven't assigned a SZL to the vertices that were located,
-					// then put the vertex into the next collection of hops
-					if (allVertices.contains(nextVertex)) {
-						nextHops.add(nextVertex);
-						allVertices.remove(nextVertex);
-					}
-				}
+				m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
+                Set<VertexRef> refs = neighborMap.get(vertexRef);
+                neighbors.addAll(refs);
+				processed.add(getVertex(vertexRef));
 			}
 
-			// Clear the temp list of current hops
-			currentHops.clear();
+			neighbors.removeAll(processed);
+			
+			workingSet.clear();
+			workingSet.addAll(neighbors);
 
 			// Increment the semantic zoom level
 			semanticZoomLevel++;
 		}
 
-		return retval;
+		return new ArrayList<Vertex>(processed);
 	}
-
 	/**
 	 * TODO: OVERRIDE THIS FUNCTION?
 	 */
