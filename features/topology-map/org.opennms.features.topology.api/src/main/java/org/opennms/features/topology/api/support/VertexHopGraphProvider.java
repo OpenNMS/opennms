@@ -45,6 +45,7 @@ import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -90,8 +91,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 	}
 
-	public abstract static class VertexHopCriteria implements Criteria {
+	public abstract static class VertexHopCriteria extends Criteria {
 		private String label = "";
+        private String m_id = "";
 
 		@Override
 		public ElementType getType() {
@@ -107,6 +109,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 		public void setLabel(String label) {
 			this.label = label;
 		}
+
+        public void setId(String id){
+            m_id = id;
+        }
+
+        public String getId(){
+            return m_id;
+        }
 	}
 
 	public static class FocusNodeHopCriteria extends VertexHopCriteria {
@@ -132,7 +142,17 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return "nodes";
 		}
 
-		public void add(VertexRef ref) {
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return false;
+        }
+
+        public void add(VertexRef ref) {
 			m_vertices.add(ref);
 		}
 

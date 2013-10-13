@@ -112,6 +112,6 @@ public class SearchBoxConnector extends AbstractComponentConnector {
     }
 
     public void centerOnSuggestion(SearchSuggestion searchSuggestion) {
-        m_rpc.centerAndSelectSearchSuggestion(searchSuggestion);
+        m_rpc.centerSearchSuggestion(searchSuggestion);
     }
 }

@@ -50,7 +50,21 @@ public class CategoryHopCriteria extends VertexHopCriteria {
 		return "category";
 	}
 
-	public String getCategoryName() {
+    @Override
+    public int hashCode() {
+        return m_categoryName.hashCode();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof CategoryHopCriteria){
+            CategoryHopCriteria c = (CategoryHopCriteria) obj;
+            return c.m_categoryName.equals(m_categoryName);
+        }
+        return false;
+    }
+
+    public String getCategoryName() {
 		return m_categoryName;
 	}
 

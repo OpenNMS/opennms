@@ -43,4 +43,5 @@ public interface SearchProvider {
     List<VertexRef> getVertexRefsBy(SearchResult searchResult);
     void addVertexHopCriteria(SearchResult searchResult, GraphContainer container);
     void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container);
+    void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer);
 }

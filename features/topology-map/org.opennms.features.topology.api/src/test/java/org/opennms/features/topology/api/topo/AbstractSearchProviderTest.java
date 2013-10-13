@@ -152,6 +152,10 @@ public class AbstractSearchProviderTest {
 
             }
 
+            @Override
+            public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+            }
+
         };
     }
 

@@ -104,8 +104,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)){
-                    //maybe add or change this method to onfocus
-                    //key.onFocusSearchResult(searchResult, m_operationContext);
+                    key.onFocusSearchResult(searchResult, m_operationContext);
                     key.addVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
 
                     break;
@@ -123,8 +122,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
-                    //maybe change method call to on defocus
-                    //key.onDefocusSearchResult(searchResult, m_operationContext);
+                    key.onDefocusSearchResult(searchResult, m_operationContext);
                     key.removeVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
 
                     break;
@@ -136,7 +134,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         }
 
         @Override
-        public void centerAndSelectSearchSuggestion(SearchSuggestion searchSuggestion){
+        public void centerSearchSuggestion(SearchSuggestion searchSuggestion){
             SearchResult searchResult = new SearchResult(searchSuggestion.getId(), searchSuggestion.getNamespace(), searchSuggestion.getLabel());
 
             List<VertexRef> vRefs = null;
@@ -144,7 +142,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             for(SearchProvider key : keys){
                 Collection<SearchResult> searchResults = m_suggestionMap.get(key);
                 if(searchResults.contains(searchResult)) {
-                    key.onFocusSearchResult(searchResult, m_operationContext);
+                    key.onCenterSearchResult(searchResult, m_operationContext.getGraphContainer());
+                    //key.onFocusSearchResult(searchResult, m_operationContext);
                     vRefs = key.getVertexRefsBy(searchResult);
                     break;
                 }
@@ -174,11 +173,20 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 String queryOnly = query.replace(searchPrefix, "");
                 List<SearchResult> q = provider.query(getSearchQuery(queryOnly));
                 results.addAll(q);
-                m_suggestionMap.putAll(provider, q);
+                if(m_suggestionMap.containsKey(provider)){
+                    m_suggestionMap.get(provider).addAll(q);
+                } else{
+                    m_suggestionMap.putAll(provider, q);
+                }
+
             } else{
                 List<SearchResult> q = provider.query(getSearchQuery(query));
                 results.addAll(q);
-                m_suggestionMap.putAll(provider, q);
+                if (m_suggestionMap.containsKey(provider)) {
+                    m_suggestionMap.get(provider).addAll(q);
+                } else {
+                    m_suggestionMap.putAll(provider, q);
+                }
             }
 
         }
@@ -290,6 +298,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if(criteria != nodeCriteria){
                     VertexHopCriteria crit = (VertexHopCriteria) criteria;
                     SearchSuggestion suggestion = new SearchSuggestion();
+                    suggestion.setId(crit.getId());
                     suggestion.setLabel(crit.getLabel());
                     suggestion.setNamespace(crit.getNamespace());
 
