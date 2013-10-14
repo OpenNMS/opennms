@@ -67,6 +67,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
@@ -88,7 +89,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private static final Logger LOG = Logger.getLogger(NodeMapWidget.class.getName());
 
     private SimplePanel m_mapPanel = new SimplePanel();
-    private AbsolutePanel m_overlayPanel = new AbsolutePanel();
+    // private AbsolutePanel m_overlayPanel = new AbsolutePanel();
 
     public NodeMapWidget() {
         m_eventManager = new OpenNMSEventManager();
@@ -104,10 +105,13 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         this.setWidth("100%");
         this.setHeight("100%");
 
+        /*
         m_overlayPanel.setWidth("100%");
         m_overlayPanel.setHeight("100%");
         m_overlayPanel.getElement().getStyle().setZIndex(2000);
+        m_overlayPanel.getElement().setId("node-map-overlay");
         this.add(m_overlayPanel);
+        */
 
         this.add(m_mapPanel);
         m_div = m_mapPanel.getElement().cast();
@@ -115,6 +119,8 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
         setStyleName("v-openlayers");
         LOG.info("NodeMapWidget(): div ID = " + m_div.getId());
+
+        // addPassThroughHandlers();
 
         addAttachHandler(new Handler() {
             @Override
@@ -157,8 +163,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         addAlarmControl();
         addZoomControl();
 
-        m_searchControl.focusInputBox();
-
+        m_searchControl.focusInput();
         m_eventManager.fireEvent(new ComponentInitializedEvent(NodeMapConnector.class.getName()));
         LOG.info("NodeMapWidget.initializeMap(): finished");
     }
@@ -237,7 +242,13 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         } else {
             LOG.info("NodeMapWidget.addSearchControl(): id = " + id);
         }
-        m_overlayPanel.add(m_searchControl, 5, 5);
+        final HTMLPanel mapParent = HTMLPanel.wrap(m_mapPanel.getParent().getElement());
+        final Style searchStyle = m_searchControl.getElement().getStyle();
+        searchStyle.setPosition(Position.ABSOLUTE);
+        searchStyle.setTop(5, Unit.PX);
+        searchStyle.setLeft(5, Unit.PX);
+        searchStyle.setZIndex(2000);
+        mapParent.add(m_searchControl);
     }
 
     private void addAlarmControl() {

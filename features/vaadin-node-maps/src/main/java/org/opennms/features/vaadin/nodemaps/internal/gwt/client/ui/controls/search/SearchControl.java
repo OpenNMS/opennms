@@ -31,7 +31,6 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.sea
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -54,17 +53,17 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.event.shared.EventHandler;
@@ -78,7 +77,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdatedEventHandler, SearchStringSetEventHandler {
@@ -136,14 +134,6 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         });
     }
 
-    public void focusInputBox() {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override public void execute() {
-                m_inputBox.setFocus(true);
-            }
-        });
-    }
-
     public Element doOnAdd() {
         LOG.info("SearchControl.onAdd() called");
 
@@ -159,36 +149,30 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         final SearchEventHandler searchEventHandler = new SearchEventHandler() {
             @Override protected void onEvent(final DomEvent<? extends EventHandler> event) {
                 m_stateManager.handleInputEvent(event.getNativeEvent());
-                event.stopPropagation();
             }
             
         };
+        
+        m_autoComplete.addHandler(new KeyDownHandler() {
+            @Override public void onKeyDown(final KeyDownEvent event) {
+                m_stateManager.handleAutocompleteEvent(event.getNativeEvent());
+            }
+        }, KeyDownEvent.getType());
 
         m_inputBox.addKeyDownHandler(searchEventHandler);
         m_inputBox.addChangeHandler(searchEventHandler);
+        m_inputBox.addClickHandler(new ClickHandler() {
+            @Override public void onClick(final ClickEvent event) {
+                SearchEvent.fireNativeEvent(Document.get().createChangeEvent(), m_inputBox);
+            }
+        });
         m_inputBox.addHandler(searchEventHandler, CutEvent.getType());
         m_inputBox.addHandler(searchEventHandler, PasteEvent.getType());
         m_inputBox.addHandler(searchEventHandler, SearchEvent.getType());
-        m_inputBox.addClickHandler(new ClickHandler() {
-            @Override public void onClick(final ClickEvent event) {
-                m_inputBox.setFocus(true);
-                event.stopPropagation();
-            }
-        });
-
-        m_autoComplete.addHandler(searchEventHandler, KeyDownEvent.getType());
-        m_autoComplete.addHandler(searchEventHandler, ChangeEvent.getType());
-        m_autoComplete.addHandler(searchEventHandler, CutEvent.getType());
-        m_autoComplete.addHandler(searchEventHandler, PasteEvent.getType());
-        m_autoComplete.addHandler(searchEventHandler, SearchEvent.getType());
-
         m_submitIcon.addClickHandler(new ClickHandler() {
             @Override public void onClick(final ClickEvent event) {
                 m_stateManager.handleSearchIconEvent(event.getNativeEvent());
-                focusInputBox();
-                event.stopPropagation();
             }
-            
         });
 
         //refresh();
@@ -231,17 +215,23 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
                 final NodeMarker selected = m_selectionModel.getSelectedObject();
                 final NodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
                 if (selected == null) {
-                    if (firstMarker != null) m_selectionModel.setSelected(firstMarker, true);
+                    /* if (firstMarker != null) m_selectionModel.setSelected(firstMarker, true); */
                 } else {
-                    if (!markers.contains(selected)) {
+                    if (markers.contains(selected)) {
+                        m_selectionModel.setSelected(selected, true);
+                    }
+                    /*
+                    if (!markers.contains(selected) && firstMarker != null) {
                         if (firstMarker != null) {
                             m_selectionModel.setSelected(firstMarker, true);
-                        } else {
-                            m_selectionModel.setSelected(selected, false);
                         }
+                    } else {
+                        m_selectionModel.setSelected(selected, false);
                     }
+                    */
                 }
                 
+                updateMatchCount(markers.size());
                 m_eventManager.fireEvent(new FilteredMarkersUpdatedEvent());
             }
 
@@ -253,33 +243,30 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
             }
 
             @Override
-            public void focusAutocomplete() {
+            public void focusAutocompleteWidget() {
                 LOG.info("SearchControl.SearchStateManager.focusAutocomplete()");
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override public void execute() {
-                        if (m_selectionModel.getSelectedObject() == null) {
-                            final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
-                            if (markers.size() > 0) {
-                                m_selectionModel.setSelected(markers.get(0), true);
-                            }
-                        }
-
-                        m_inputBox.getElement().blur();
-                        m_autoComplete.getElement().focus();
+                final NodeMarker selected = m_selectionModel.getSelectedObject();
+                if (selected == null) {
+                    final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
+                    if (markers.size() > 0) {
+                        m_selectionModel.setSelected(markers.get(0), true);
                     }
-                });
+                }
+                m_autoComplete.setFocus(true);
             }
 
             @Override
             public void showAutocomplete() {
                 LOG.info("SearchControl.SearchStateManager.showAutocomplete()");
+                /*
                 final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
                 if (markers.size() > 0) {
                     m_selectionModel.setSelected(markers.get(0), true);
                 }
+                */
                 m_autoComplete.setVisible(true);
                 updateAutocompleteStyle(m_autoComplete);
-                m_autoComplete.getElement().focus();
+                // m_autoComplete.setFocus(true);
             }
 
             @Override
@@ -295,7 +282,8 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
                 if (selected != null) {
                     final String newSearchString = "nodeLabel=" + selected.getNodeLabel();
                     m_inputBox.setValue(newSearchString);
-                    focusInputBox();
+                    m_selectionModel.setSelected(selected, false);
+                    m_inputBox.setFocus(true);
                     sendSearchStringSetEvent(newSearchString);
                 } else {
                     LOG.warning("entrySelected() but nothing in the selection model.");
@@ -305,43 +293,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
             @Override
             public void focusInput() {
                 LOG.info("SearchControl.SearchStateManager.focusInput()");
-                focusInputBox();
-            }
-
-            @Override
-            public void goDown() {
-                LOG.info("SearchControl.SearchStateManager.goDown()");
-                final SelectionModel<? super NodeMarker> sm = m_autoComplete.getSelectionModel();
-                final ListIterator<JSNodeMarker> iterator = m_markerContainer.getMarkers().listIterator();
-                while (iterator.hasNext()) {
-                    final JSNodeMarker marker = iterator.next();
-                    if (sm.isSelected(marker) && iterator.hasNext()) {
-                        LOG.info("SearchControl.SearchStateManager.goDown(): selected = " + marker);
-                        final JSNodeMarker nextMarker = iterator.next();
-                        sm.setSelected(marker, false);
-                        sm.setSelected(nextMarker, true);
-                        return;
-                    }
-                }
-                LOG.info("SearchControl.SearchStateManager.goDown(): no selected marker found");
-            }
-
-            @Override
-            public void goUp() {
-                final SelectionModel<? super NodeMarker> sm = m_autoComplete.getSelectionModel();
-                final List<JSNodeMarker> markers = m_markerContainer.getMarkers();
-                final ListIterator<JSNodeMarker> iterator = markers.listIterator(markers.size());
-                while (iterator.hasPrevious()) {
-                    final JSNodeMarker marker = iterator.previous();
-                    if (sm.isSelected(marker) && iterator.hasPrevious()) {
-                        final JSNodeMarker previousMarker = iterator.previous();
-                        sm.setSelected(marker, false);
-                        sm.setSelected(previousMarker, true);
-                        LOG.info("SearchControl.SearchStateManager.goUp(): selected = " + marker);
-                        return;
-                    }
-                }
-                LOG.info("SearchControl.SearchStateManager.goUp(): no selected marker found");
+                m_inputBox.setFocus(true);
             }
         };
     }
@@ -358,8 +310,9 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
     private void initializeContainerWidget() {
         this.setStylePrimaryName("leaflet-control-search");
         this.addStyleName("leaflet-control");
-        this.setWidth("100%");
-        this.setHeight("100%");
+        this.getElement().getStyle().setOverflow(Overflow.VISIBLE);
+        // this.setWidth("100%");
+        // this.setHeight("100%");
     }
 
     private void initializeInputWidget() {
@@ -371,7 +324,6 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         m_inputBox.setVisibleLength(40);
         m_inputBox.setValue("");
         setIdIfMissing(m_inputBox, "searchControl.searchInput");
-        // DomEvent.stopEventPropagation(m_inputBox);
     }
 
     private void initializeSubmitWidget() {
@@ -379,8 +331,6 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         m_submitIcon.addStyleName("search-button");
         m_submitIcon.setTitle("Search locations...");
         setIdIfMissing(m_submitIcon, "searchControl.searchInput");
-
-        // DomEvent.stopEventPropagation(m_submitIcon);
     }
 
     private void initializeCellAutocompleteWidget() {
@@ -449,11 +399,10 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
 
         m_autoComplete = new CellList<NodeMarker>(cell);
         m_autoComplete.setSelectionModel(m_selectionModel);
-        m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+        m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
         m_autoComplete.setVisible(false);
         m_autoComplete.addStyleName("search-autocomplete");
         setIdIfMissing(m_autoComplete, "searchControl.autoComplete");
-        //DomEvent.stopEventPropagation(m_autoComplete);
     }
 
     private class HistoryWrapper implements ValueItem {
@@ -490,5 +439,9 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
     @Override
     public void onSearchStringSet(final SearchStringSetEvent event) {
         replaceSearchWith(event.getSearchString());
+    }
+
+    public void focusInput() {
+        m_inputBox.setFocus(true);
     }
 }

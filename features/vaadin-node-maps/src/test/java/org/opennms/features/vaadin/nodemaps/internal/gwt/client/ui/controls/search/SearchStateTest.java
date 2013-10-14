@@ -1,11 +1,13 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.logging.Logger;
 
+import org.easymock.IAnswer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -321,6 +323,14 @@ public class SearchStateTest {
         final NativeEvent event = PowerMock.createMock(NativeEvent.class);
         expect(event.getType()).andReturn(type).anyTimes();
         expect(event.getKeyCode()).andReturn(keyCode).anyTimes();
+        event.stopPropagation();
+        expectLastCall().andAnswer(new IAnswer<Void>() {
+            @Override
+            public Void answer() throws Throwable {
+                LOG.info("stopPropagation() called on event(" + type + ", " + keyCode + ")");
+                return null;
+            }
+        }).anyTimes();
         PowerMock.replay(event);
         return event;
     }
@@ -362,7 +372,7 @@ public class SearchStateTest {
             m_autocompleteFocused = false;
         }
 
-        @Override public void focusAutocomplete() {
+        @Override public void focusAutocompleteWidget() {
             System.err.println("focusing autocomplete!");
             m_inputFocused = false;
             m_autocompleteFocused = true;
@@ -401,16 +411,6 @@ public class SearchStateTest {
 
         public Object isAutocompleteFocused() {
             return m_autocompleteFocused;
-        }
-
-        @Override
-        public void goDown() {
-            System.err.println("went down");
-        }
-
-        @Override
-        public void goUp() {
-            System.err.println("went up");
         }
 
     }

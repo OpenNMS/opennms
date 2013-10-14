@@ -40,7 +40,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 
 public abstract class SearchStateManager {
-    static Logger logger = Logger.getLogger(SearchStateManager.class.getName());
+    private static final Logger LOG = Logger.getLogger(SearchStateManager.class.getName());
 
     private SearchState m_state;
     private ValueItem m_valueItem;
@@ -83,7 +83,7 @@ public abstract class SearchStateManager {
     public boolean handleAutocompleteEvent(final NativeEvent event) {
         final String eventType = event.getType();
         final int eventKeyCode = event.getKeyCode();
-        logger.info("handleAutocompleteEvent(" + m_state + "): received " + eventType + " (keyCode = " + eventKeyCode + ")");
+        LOG.info("handleAutocompleteEvent(" + m_state + "): received " + eventType + " (keyCode = " + eventKeyCode + ")");
 
         if ("keydown".equals(eventType)) {
             switch (eventKeyCode) {
@@ -105,22 +105,6 @@ public abstract class SearchStateManager {
                 });
                 event.stopPropagation();
                 break;
-            case KeyCodes.KEY_UP:
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        m_state = m_state.goUp(SearchStateManager.this);
-                    }
-                });
-                break;
-            case KeyCodes.KEY_DOWN:
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        m_state = m_state.goDown(SearchStateManager.this);
-                    }
-                });
-                break;
             }
         } else if ("click".equals(eventType) || "touchstart".equals(eventType)) {
             // someone clicked on an entry
@@ -133,7 +117,7 @@ public abstract class SearchStateManager {
             event.stopPropagation();
             return true;
         } else {
-            logger.info("handleAutocompleteEvent(" + m_state + "): unhandled event: " + eventType);
+            LOG.info("handleAutocompleteEvent(" + m_state + "): unhandled event: " + eventType);
             return true;
         }
         return false;
@@ -141,7 +125,7 @@ public abstract class SearchStateManager {
 
     public void handleSearchIconEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        logger.info("handleSearchIconEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        LOG.info("handleSearchIconEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("click".equals(eventType) || "touchstart".equals(eventType)) {
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -151,13 +135,13 @@ public abstract class SearchStateManager {
                 }
             });
         } else {
-            logger.info("handleSearchIconEvent(" + m_state + "): unhandled event: " + eventType);
+            LOG.info("handleSearchIconEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
     public void handleInputEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        logger.info("handleInputEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        LOG.info("handleInputEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("keydown".equals(eventType)) {
             switch (event.getKeyCode()) {
@@ -165,17 +149,10 @@ public abstract class SearchStateManager {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
                     public void execute() {
-                        sendSearchStringSetEvent("");
+                        m_state = m_state.cancelSearching(SearchStateManager.this);
                     }
                 });
-                break;
-            case KeyCodes.KEY_UP:
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        m_state = m_state.goUp(SearchStateManager.this);
-                    }
-                });
+                event.stopPropagation();
                 break;
             case KeyCodes.KEY_DOWN:
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -184,6 +161,7 @@ public abstract class SearchStateManager {
                         m_state = m_state.goDown(SearchStateManager.this);
                     }
                 });
+                event.stopPropagation();
                 break;
             case KeyCodes.KEY_ENTER:
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -192,6 +170,7 @@ public abstract class SearchStateManager {
                         m_state = m_state.finishedSearching(SearchStateManager.this);
                     }
                 });
+                event.stopPropagation();
                 break;
             default:
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -210,7 +189,7 @@ public abstract class SearchStateManager {
             }
         } else if ("search".equals(eventType) || "change".equals(eventType)) {
             final String searchString = m_valueItem.getValue();
-            logger.info("SearchStateManager.handleInputEvent(): searchString = " + searchString);
+            LOG.info("SearchStateManager.handleInputEvent(): searchString = " + searchString);
             if ("".equals(searchString)) {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
@@ -232,7 +211,7 @@ public abstract class SearchStateManager {
                 });
             }
         } else {
-            logger.info("SearchStateManager.handleInputEvent(" + m_state + "): unhandled event: " + eventType);
+            LOG.info("SearchStateManager.handleInputEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
@@ -260,8 +239,8 @@ public abstract class SearchStateManager {
         NOT_SEARCHING {
             @Override
             public SearchState initialize(final SearchStateManager manager) {
-                manager.focusInput();
                 manager.hideAutocomplete();
+                manager.focusInput();
                 return this;
             }
 
@@ -277,13 +256,13 @@ public abstract class SearchStateManager {
             public SearchState goDown(final SearchStateManager manager) {
                 // if we're not searching, starting navigation won't do anything because
                 // we don't have a search phrase yet
-                logger.info("WARNING: attempting to go down, but we're not searching!");
+                LOG.info("WARNING: attempting to go down, but we're not searching!");
                 return this;
             }
 
             @Override
             public SearchState goUp(final SearchStateManager manager) {
-                logger.info("WARNING: attempting to go up, but we're not searching!");
+                LOG.info("WARNING: attempting to go up, but we're not searching!");
                 return this;
             }
 
@@ -297,20 +276,20 @@ public abstract class SearchStateManager {
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 // if we're not searching, we can't finish :)
-                logger.info("WARNING: attempting to finish, but we're not searching!");
+                LOG.info("WARNING: attempting to finish, but we're not searching!");
                 return this;
             }
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // if we're not searching, we can't select an entry
-                logger.info("WARNING: attempting to finish, but we're not searching!");
+                LOG.info("WARNING: attempting to finish, but we're not searching!");
                 return this;
             }
 
             @Override
             public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
-                logger.info("WARNING: match count updated, but we're not searching!");
+                LOG.info("WARNING: match count updated, but we're not searching!");
                 return this;
             }
         },
@@ -318,16 +297,16 @@ public abstract class SearchStateManager {
         SEARCHING_AUTOCOMPLETE_VISIBLE {
             @Override
             public SearchState initialize(final SearchStateManager manager) {
-                manager.focusInput();
                 manager.showAutocomplete();
+                manager.focusInput();
                 manager.refresh();
                 return this;
             }
 
             @Override
             public SearchState cancelSearching(final SearchStateManager manager) {
-                manager.clearSearchInput();
                 manager.hideAutocomplete();
+                manager.clearSearchInput();
                 manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
@@ -337,24 +316,22 @@ public abstract class SearchStateManager {
             public SearchState goDown(final SearchStateManager manager) {
                 // we are already searching with autocomplete visible, but input came
                 // to the input box, so we return focus to the autocomplete box
-                manager.focusAutocomplete();
-                manager.goDown();
+                manager.focusAutocompleteWidget();
+                // manager.goDown();
                 return SEARCHING_AUTOCOMPLETE_ACTIVE;
             }
 
             @Override
             public SearchState goUp(final SearchStateManager manager) {
-                // we are already searching with autocomplete visible, but input came
-                // to the input box, so we return focus to the autocomplete box
-                manager.focusAutocomplete();
-                manager.goUp();
-                return SEARCHING_AUTOCOMPLETE_ACTIVE;
+                // We are already searching with autocomplete visible, which means
+                // focus is still set to the input box.  Nothing should happen.
+                manager.focusAutocompleteWidget();
+                return SEARCHING_AUTOCOMPLETE_VISIBLE;
             }
 
             @Override
             public SearchState searchInputReceived(final SearchStateManager manager) {
-                // we're still searching, so show/update autocomplete, and
-                // then update markers
+                // we're still searching, so just make sure data is up-to-date
                 manager.refresh();
                 return this;
             }
@@ -370,8 +347,8 @@ public abstract class SearchStateManager {
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // the user has clicked an entry
-                manager.hideAutocomplete();
                 manager.entrySelected();
+                manager.hideAutocomplete();
                 manager.updateHistorySearchString();
                 manager.refresh();
                 return SEARCHING_FINISHED;
@@ -393,15 +370,15 @@ public abstract class SearchStateManager {
             @Override
             public SearchState initialize(final SearchStateManager manager) {
                 manager.showAutocomplete();
-                manager.focusAutocomplete();
+                manager.focusAutocompleteWidget();
                 manager.refresh();
                 return this;
             }
 
             @Override
             public SearchState cancelSearching(final SearchStateManager manager) {
-                manager.clearSearchInput();
                 manager.hideAutocomplete();
+                manager.clearSearchInput();
                 manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
@@ -426,24 +403,26 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState goDown(final SearchStateManager manager) {
-                manager.focusAutocomplete();
-                manager.goDown();
+                // manager.focusAutocomplete();
+                // manager.goDown();
+                LOG.warning("Somehow we got a \"down\" event, but the autocomplete listbox should be handling this.  Weird.");
                 return this;
             }
 
             @Override
             public SearchState goUp(final SearchStateManager manager) {
-                manager.focusAutocomplete();
-                manager.goUp();
+                // manager.focusAutocomplete();
+                // manager.goUp();
+                LOG.warning("Somehow we got an \"up\" event, but the autocomplete listbox should be handling this.  Weird.");
                 return this;
             }
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // the user has clicked an entry or hit enter
-                logger.info("currentEntrySelected()");
-                manager.hideAutocomplete();
+                LOG.info("currentEntrySelected()");
                 manager.entrySelected();
+                manager.hideAutocomplete();
                 manager.focusInput();
                 manager.updateHistorySearchString();
                 manager.refresh();
@@ -476,7 +455,6 @@ public abstract class SearchStateManager {
             public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
                 manager.focusInput();
-                manager.hideAutocomplete();
                 manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
@@ -493,7 +471,7 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
-                logger.info("SearchStateManager.currentEntrySelected(): Current entry got selected, but there is no current entry visible!");
+                LOG.info("SearchStateManager.currentEntrySelected(): Current entry got selected, but there is no current entry visible!");
                 return this;
             }
 
@@ -506,13 +484,13 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState goDown(final SearchStateManager manager) {
-                logger.info("SearchStateManager.goDown(): Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
+                LOG.info("SearchStateManager.goDown(): Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
                 return this;
             }
 
             @Override
             public SearchState goUp(final SearchStateManager manager) {
-                logger.info("SearchStateManager.goUp(): Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
+                LOG.info("SearchStateManager.goUp(): Autocomplete is already hidden because of a previous match count update, this doesn't make sense!");
                 return this;
             }
 
@@ -551,13 +529,14 @@ public abstract class SearchStateManager {
                 // we're "finished" searching, but if the user wishes to start navigation again,
                 // they can hit the down-arrow to re-open autocomplete and resume searching
                 manager.showAutocomplete();
-                manager.focusAutocomplete();
+                manager.focusAutocompleteWidget();
                 manager.refresh();
                 return SEARCHING_AUTOCOMPLETE_ACTIVE;
             }
 
             @Override
             public SearchState goUp(final SearchStateManager manager) {
+                LOG.warning("Somehow we got an \"up\" event, but the autocomplete listbox should be handling this.  Weird.");
                 // we're "finished" searching, so going up won't do anything
                 return this;
             }
@@ -567,20 +546,19 @@ public abstract class SearchStateManager {
                 // user has focused the input box and started typing again
                 manager.refresh();
                 manager.showAutocomplete();
-                manager.focusInput();
                 return SEARCHING_AUTOCOMPLETE_VISIBLE;
             }
 
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 // we're already finished searching... finish... again?
-                logger.info("WARNING: attempting to finish search, but we're already finished!");
+                LOG.info("WARNING: attempting to finish search, but we're already finished!");
                 return this;
             }
 
             @Override
             public SearchState currentEntrySelected(final SearchStateManager manager) {
-                logger.info("WARNING: attempting to select an entry, but we're already finished!");
+                LOG.info("WARNING: attempting to select an entry, but we're already finished!");
                 return this;
             }
 
@@ -615,10 +593,8 @@ public abstract class SearchStateManager {
     public abstract void entrySelected();
     public abstract void clearSearchInput();
     public abstract void focusInput();
-    public abstract void focusAutocomplete();
+    public abstract void focusAutocompleteWidget();
     public abstract void showAutocomplete();
     public abstract void hideAutocomplete();
-    public abstract void goDown();
-    public abstract void goUp();
 }
 

@@ -120,6 +120,10 @@ td.severity.Normal {
 	background-color: rgba(51,102,0,0.8);
 }
 
+#node-map-overlay {
+	pointer-events: none;
+}
+
 .leaflet-popup-content .node {
 	word-wrap: break-word;
 }
@@ -162,7 +166,7 @@ td.severity.Normal {
 	background-color: rgba(255, 255, 255, 0.95);
 	border:1px solid #666;
 	border-radius:2px;
-	padding:0 2px 0 2px;
+	padding:0;
 	margin:2px 0 2px 2px;
 	box-shadow: 0 1px 5px #999;
 	
@@ -173,10 +177,13 @@ td.severity.Normal {
 
 .leaflet-control .search-autocomplete ul {
 	list-style-type: none;
-	padding: 2px;
+	padding: 0;
 	margin: 0;
 }
 
+.autocomplete-entry {
+	padding: 5px;
+}
 .autocomplete-additional-info {
 	font-style: italic;
 	font-size: smaller;
