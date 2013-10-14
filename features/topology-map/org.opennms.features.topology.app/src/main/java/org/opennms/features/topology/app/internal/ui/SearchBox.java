@@ -129,6 +129,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
+            removeIfSpecialURLCase(searchResult);
+
             m_operationContext.getGraphContainer().redoLayout();
 
         }
@@ -149,6 +151,16 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
+            //Hack for now, change to a better way.
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
+            AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+            if(criteria.getVertices().contains(vertexRef)){
+                if(vRefs == null){
+                    vRefs = Lists.newArrayList();
+                }
+                vRefs.add(vertexRef);
+            }
+
             GraphContainer graphContainer = m_operationContext.getGraphContainer();
             MapViewManager mapViewManager = graphContainer.getMapViewManager();
             mapViewManager.setBoundingBox(graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
@@ -161,6 +173,15 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         m_operationContext = operationContext;
         init();
     }
+
+    public void removeIfSpecialURLCase(SearchResult searchResult) {
+        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
+        AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        if(criteria.getVertices().contains(vertexRef)){
+            criteria.remove(vertexRef);
+        }
+    }
+
 
     private List<SearchSuggestion> getQueryResults(final String query) {
         String searchPrefix = getQueryPrefix(query);
