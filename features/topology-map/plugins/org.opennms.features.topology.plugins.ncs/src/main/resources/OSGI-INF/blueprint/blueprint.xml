@@ -58,12 +58,7 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 		<property name="ncsCriteriaServiceManager" ref="ncsCriteriaServiceManager" />
 	</bean>
 
-	<service interface="org.opennms.features.topology.api.IViewContribution" ref="viewContribution" >
-		<description>Service Tree IViewContribution service.</description>
-		<service-properties>
-			<entry key="location" value="left"/>
-		</service-properties>
-	</service>
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="viewContribution"/>
 
 	<bean id="ncsEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeProvider">
 		<description>This EdgeProvider exposes edges between nodes that are implied by NCSComponents.</description>

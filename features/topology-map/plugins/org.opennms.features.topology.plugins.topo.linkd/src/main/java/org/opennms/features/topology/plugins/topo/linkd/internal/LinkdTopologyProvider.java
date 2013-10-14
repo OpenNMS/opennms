@@ -32,6 +32,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -40,18 +41,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleLeafVertex;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.WrappedEdge;
-import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedGroup;
-import org.opennms.features.topology.api.topo.WrappedLeafVertex;
-import org.opennms.features.topology.api.topo.WrappedVertex;
+import com.google.common.collect.Lists;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -63,8 +58,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.LoggerFactory;
 
-public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
-    
+public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider, SearchProvider {
+
     private class LinkStateMachine {
         LinkState m_upState;
         LinkState m_downState;
@@ -579,7 +574,58 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         JAXB.marshal(graph, new File(m_configurationFile));
     }
 
-      private static String getIfStatusString(int ifStatusNum) {
+    @Override
+    public List<SearchResult> query(SearchQuery searchQuery) {
+        List<Vertex> vertices = m_vertexProvider.getVertices();
+        List<SearchResult> searchResults = Lists.newArrayList();
+
+        for(Vertex vertex : vertices){
+            if(searchQuery.matches(vertex.getLabel())) {
+                searchResults.add(new SearchResult(vertex));
+            }
+        }
+
+        return searchResults;
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+
+    }
+
+    @Override
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+
+    }
+
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.contains("nodes=");
+    }
+
+    @Override
+    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        return Lists.newArrayList((VertexRef)getVertex(searchResult.getNamespace(), searchResult.getId()));  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
+        criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
+    }
+
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
+        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getId()));
+    }
+
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+
+    }
+
+    private static String getIfStatusString(int ifStatusNum) {
           if (ifStatusNum < OPER_ADMIN_STATUS.length) {
               return OPER_ADMIN_STATUS[ifStatusNum];
           } else {

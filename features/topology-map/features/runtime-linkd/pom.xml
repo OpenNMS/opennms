@@ -58,11 +58,6 @@
       <artifactId>linkd</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>status</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
 </project>

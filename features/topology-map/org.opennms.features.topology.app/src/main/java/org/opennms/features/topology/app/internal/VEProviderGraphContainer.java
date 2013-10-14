@@ -442,7 +442,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         return m_graph;
     }
 
-	private final Set<Criteria> m_criteria = new HashSet<Criteria>();
+	private final Set<Criteria> m_criteria = new LinkedHashSet<Criteria>();
 
 	@Override
 	public Criteria[] getCriteria() {

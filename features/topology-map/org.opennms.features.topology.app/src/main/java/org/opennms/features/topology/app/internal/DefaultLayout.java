@@ -105,7 +105,7 @@ public class DefaultLayout implements Layout {
     
     @Override
     public BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs) {
-        if(vertRefs.size() > 0) {
+        if(vertRefs != null && vertRefs.size() > 0) {
             BoundingBox boundingBox = new BoundingBox();
             for(VertexRef vertRef : vertRefs) {
                 boundingBox.addBoundingbox( computeBoundingBox(this, vertRef) );

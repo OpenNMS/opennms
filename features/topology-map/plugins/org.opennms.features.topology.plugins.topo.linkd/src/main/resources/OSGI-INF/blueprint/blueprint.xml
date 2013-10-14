@@ -33,12 +33,18 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
         <property name="configurationFile" value="${configurationFile}"/>
+        <property name="addNodeWithoutLink" value="true"/>
     </bean>
     
+    <!-- 
+      Wrap the Linkd provider in a provider that calculates SZL based on hop distance from a set of
+      focal vertices
+    -->
     <bean id="topologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
         <argument ref="topologyProvider"/>
     </bean>
-    
+
+    <!--
     <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="topologyProvider">
         <service-properties>
             <entry key="label" value="Linkd"/>
@@ -56,33 +62,29 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <entry key="label" value="Linkd"/>
         </service-properties>
     </service>
+    -->
         
     <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="topologyHopProvider">
         <service-properties>
-            <entry key="label" value="Linkd (Hop)"/>
+            <entry key="label" value="Linkd"/>
         </service-properties>
     </service>
 
     <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="topologyHopProvider">
         <service-properties>
-            <entry key="label" value="Linkd (Hop)"/>
+            <entry key="label" value="Linkd"/>
         </service-properties>
     </service>
         
     <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="topologyHopProvider">
         <service-properties>
-            <entry key="label" value="Linkd (Hop)"/>
+            <entry key="label" value="Linkd"/>
         </service-properties>
-    </service>
-        
-    <service interface="org.opennms.features.topology.api.Operation" >
-      	<service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Refresh?group=start"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation"/>
     </service>
 
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="topologyProvider" />
+
+    <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
       	<service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -92,6 +94,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <argument ref="topologyProvider"/>
         </bean>
     </service>
+    -->
     
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">

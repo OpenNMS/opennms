@@ -90,6 +90,7 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
 	 * @param userId The user we want to clean up the history entries for.
 	 * @param properties The already loaded properties, where the user and the history is stored in.
 	 */
+    // TODO this cleanup does not work, because the history button uses the existing fragments. We need an aging algorithm for that
 	private void cleanUp(String userId, Properties properties) {
 		// we only need to cleanup if there is a entry
 		if (properties.containsKey(userId)) { 

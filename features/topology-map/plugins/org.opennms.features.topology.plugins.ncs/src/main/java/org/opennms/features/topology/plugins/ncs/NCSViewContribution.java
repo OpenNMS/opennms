@@ -1,114 +1,86 @@
 package org.opennms.features.topology.plugins.ncs;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.support.FilterableHierarchicalContainer;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.VertexRef;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
+import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class NCSViewContribution implements IViewContribution {
-	
+public class NCSViewContribution implements SearchProvider {
+
+    public class NCSHopCriteria extends VertexHopCriteria{
+
+        private final Set<VertexRef> m_vertices;
+
+        public NCSHopCriteria(String id, HashSet<VertexRef> vertexRefs, String label) {
+            setId(id);
+            m_vertices = vertexRefs;
+            setLabel(label);
+        }
+
+        @Override
+        public Set<VertexRef> getVertices() {
+            return m_vertices;
+        }
+
+        @Override
+        public String getNamespace() {
+            return "ncs";
+        }
+
+        @Override
+        public int hashCode() {
+            return m_vertices.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof NCSHopCriteria){
+                NCSHopCriteria c = (NCSHopCriteria) obj;
+                return c.m_vertices.equals(m_vertices);
+            }
+            return false;
+        }
+    }
+
 	private NCSComponentRepository m_ncsComponentRepository;
 	private NCSEdgeProvider m_ncsEdgeProvider;
     private NCSCriteriaServiceManager m_serviceManager;
     private int m_serviceCount = 0;
+    NCSServiceContainer m_container;
 
     public void setNcsComponentRepository(NCSComponentRepository ncsComponentRepository) {
 		m_ncsComponentRepository = ncsComponentRepository;
-	}
-
-    @Override
-    public Component getView(final VaadinApplicationContext applicationContext, final WidgetContext widgetContext) {
-		final Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
-		tree.setMultiSelect(true);
-		tree.setImmediate(true);
-		tree.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		tree.setItemCaptionPropertyId("name");
-		tree.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -7443836886894714291L;
-			
-			public void valueChange(ValueChangeEvent event) {
-				Collection<Long> selectedIds = new HashSet<Long>( (Collection<Long>) event.getProperty().getValue() );
-				
-				Collection<Long> nonSelectableIds = new ArrayList<Long>();
-				
-				for(Long id : selectedIds) {
-				    boolean isRoot = (Boolean) tree.getItem(id).getItemProperty("isRoot").getValue();
-				    if(id < 0 && isRoot) {
-				        nonSelectableIds.add(id);
-				    }
-				}
-				selectedIds.removeAll(nonSelectableIds);
-				for(Long id : nonSelectableIds) {
-				    tree.unselect(id);
-				}
-				
-				Criteria criteria = NCSEdgeProvider.createCriteria(selectedIds);
-				
-				m_serviceManager.registerCriteria(criteria, widgetContext.getGraphContainer().getSessionId());
-                if(m_serviceManager.isCriteriaRegistered("ncsPath", widgetContext.getGraphContainer().getSessionId())) {
-                    m_serviceManager.unregisterCriteria("ncsPath", widgetContext.getGraphContainer().getSessionId());
-                }
-				selectVerticesForEdge(criteria, widgetContext.getGraphContainer().getSelectionManager());
-			}
-		});
-		
-		
-		
-		m_serviceManager.addCriteriaServiceListener(new ServiceListener() {
-
-            @Override
-            public void serviceChanged(ServiceEvent event) {
-                if(event.getType() == ServiceEvent.UNREGISTERING) {
-                    //tree.setValue( tree.getNullSelectionItemId() );
-                }
-            }
-            
-		}, widgetContext.getGraphContainer().getSessionId(), "ncs");
-		
-		return tree;
+        m_container = new NCSServiceContainer(m_ncsComponentRepository);
 	}
 
     protected void selectVerticesForEdge(Criteria criteria, SelectionManager selectionManager) {
-	    List<VertexRef> vertexRefs = new ArrayList<VertexRef>();
-	    List<Edge> edges = m_ncsEdgeProvider.getEdges(criteria);
-	    for(Edge ncsEdge : edges) {
-	        vertexRefs.add(ncsEdge.getSource().getVertex());
-	        vertexRefs.add(ncsEdge.getTarget().getVertex());
-	    }
-	    selectionManager.setSelectedVertexRefs(vertexRefs);
+	    selectionManager.setSelectedVertexRefs(getVertexRefsForEdges(criteria));
 	    
     }
 
-    @Override
-	public String getTitle() {
-		return "Services";
-	}
+    protected void deselectVerticesForEgde(Criteria criteria, SelectionManager selectionManager) {
+        selectionManager.deselectVertexRefs(getVertexRefsForEdges(criteria));
+    }
 
-	@Override
-	public Resource getIcon() {
-		return null;
-	}
-	
+    private List<VertexRef> getVertexRefsForEdges(Criteria criteria) {
+        List<VertexRef> vertexRefs = Lists.newArrayList();
+        List<Edge> edges = m_ncsEdgeProvider.getEdges(criteria);
+        for(Edge ncsEdge : edges) {
+            vertexRefs.add(ncsEdge.getSource().getVertex());
+            vertexRefs.add(ncsEdge.getTarget().getVertex());
+        }
+        return vertexRefs;
+    }
+
 	public void setNcsEdgeProvider(NCSEdgeProvider ncsEdgeProvider) {
         m_ncsEdgeProvider = ncsEdgeProvider;
     }
@@ -116,5 +88,78 @@ public class NCSViewContribution implements IViewContribution {
 	public void setNcsCriteriaServiceManager(NCSCriteriaServiceManager manager) {
 	    m_serviceManager = manager;
 	}
+
+    @Override
+    public List<SearchResult> query(SearchQuery searchQuery) {
+        List<SearchResult> searchResults = Lists.newArrayList();
+
+        List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
+        for (NCSComponent component : components) {
+            if(searchQuery.matches(component.getName())) {
+                searchResults.add(new SearchResult(String.valueOf(component.getId()), "ncs", component.getName()));
+            }
+
+        }
+        return searchResults;
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+
+        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", operationContext.getGraphContainer().getSessionId())) {
+            m_serviceManager.unregisterCriteria("ncsPath", operationContext.getGraphContainer().getSessionId());
+        }
+
+    }
+
+    @Override
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", operationContext.getGraphContainer().getSessionId())) {
+            m_serviceManager.unregisterCriteria("ncsPath", operationContext.getGraphContainer().getSessionId());
+        }
+
+    }
+
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return searchPrefix.equals("ncs=");
+    }
+
+    @Override
+    public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+        return getVertexRefsForEdges(criteria);
+    }
+
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+        container.setCriteria(new NCSHopCriteria(searchResult.getId(), Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+    }
+
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+        container.removeCriteria(new NCSHopCriteria(searchResult.getId(), Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", container.getSessionId())) {
+            m_serviceManager.unregisterCriteria("ncsPath", container.getSessionId());
+        }
+    }
+
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+        Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
+
+        m_serviceManager.registerCriteria(criteria, graphContainer.getSessionId());
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", graphContainer.getSessionId())) {
+            m_serviceManager.unregisterCriteria("ncsPath", graphContainer.getSessionId());
+        }
+    }
+
 
 }

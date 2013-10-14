@@ -103,7 +103,7 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 							}
 						}));
 				} catch (MalformedURLException e) {
-					e.printStackTrace();
+					LOG.error(e.getMessage(), e);
 				}
 			}
 		});

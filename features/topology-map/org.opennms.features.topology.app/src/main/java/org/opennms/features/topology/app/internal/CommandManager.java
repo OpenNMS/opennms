@@ -50,12 +50,12 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 public class CommandManager {
 
-    private class DefaultOperationContext implements OperationContext {
+    public static class DefaultOperationContext implements OperationContext {
 
 		private final UI m_mainWindow;
 
@@ -161,7 +161,7 @@ public class CommandManager {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
-		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
+		menuBarBuilder.setSubMenuGroupOrder(m_subMenuGroupOrder);
 
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();

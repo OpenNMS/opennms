@@ -133,7 +133,7 @@ public class AlarmQueryServlet extends HttpServlet {
         // convenient syntax for ServiceFilter
         String service = request.getParameter("service");
         if (service != null && !service.equals(AlarmUtil.ANY_SERVICES_OPTION)) {
-            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
+            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service), getServletContext()));
         }
 
         // convenient syntax for IPLikeFilter
