@@ -1,11 +1,11 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.List;
 
 import com.vaadin.shared.AbstractComponentState;
 
-public class TopologyComponentState extends AbstractComponentState {
+public class TopologyComponentState extends AbstractComponentState implements Serializable {
 
     private int m_boundX;
     private int m_boundY;
@@ -15,6 +15,7 @@ public class TopologyComponentState extends AbstractComponentState {
     private List<SharedVertex> m_vertices;
     private List<SharedEdge> m_edges;
     private List<String> m_svgDefs;
+    private boolean m_highlightFocus = false;
 
     public void setBoundX(int boundX) {
         m_boundX = boundX;
@@ -79,5 +80,12 @@ public class TopologyComponentState extends AbstractComponentState {
     public List<String> getSVGDefFiles() {
         return m_svgDefs;
     }
-    
+
+    public void setHighlightFocus(boolean bool) {
+        m_highlightFocus = bool;
+    }
+
+    public boolean isHighlightFocus(){
+        return m_highlightFocus;
+    }
 }
