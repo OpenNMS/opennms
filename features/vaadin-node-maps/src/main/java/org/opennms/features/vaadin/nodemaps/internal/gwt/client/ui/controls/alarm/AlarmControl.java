@@ -34,19 +34,25 @@ import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.map.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AbstractDomEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 
 public class AlarmControl extends Control implements AlarmSeverityUpdatedEventHandler {
     Logger logger = Logger.getLogger(getClass().getName());
+
+    private boolean m_listenerInitialized = false;
 
     private ListBox m_severityBox;
     private OpenNMSEventManager m_eventManager;
@@ -86,6 +92,31 @@ public class AlarmControl extends Control implements AlarmSeverityUpdatedEventHa
                 logger.info("new severity = " + value);
                 final int intValue = value == null? 0 : Integer.valueOf(value).intValue();
                 m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(intValue));
+                event.stopPropagation();
+            }
+        });
+        /*
+        m_severityBox.addClickHandler(new ClickHandler() {
+            @Override public void onClick(final ClickEvent event) {
+                logger.info("AlarmControl.severityBox.onClick()");
+                m_severityBox.fireEvent(event);
+                event.stopPropagation();
+            }
+        });
+        */
+
+        DomEvent.addListener(new AbstractDomEventCallback(new String[] {"keydown", "keyup", "keypress", "input", "cut", "paste", "click", "dblclick", "mousedown", "mouseup", "touchstart", "touchend", "scrollstart", "scrollstop"}, m_severityBox) {
+            @Override
+            public void onEvent(final NativeEvent event) {
+                if (!m_listenerInitialized) {
+                    logger.info("Reinitializing event listening for severityBox");
+                    DOM.setEventListener(m_severityBox.getElement(), m_severityBox);
+                    m_listenerInitialized = true;
+                }
+
+                logger.info("Rethrowing event to severity box: " + event.getType());
+                com.google.gwt.event.dom.client.DomEvent.fireNativeEvent(event, m_severityBox);
+                // event.stopPropagation();
             }
         });
 

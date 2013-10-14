@@ -36,12 +36,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.CutEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
@@ -57,7 +54,6 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
@@ -69,6 +65,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -77,13 +75,13 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
 
-public class SearchControl extends Control implements FilteredMarkersUpdatedEventHandler, SearchStringSetEventHandler {
+public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdatedEventHandler, SearchStringSetEventHandler {
     private Logger LOG = Logger.getLogger(getClass().getName());
 
     private static final HashMap<String, String> m_labels;
@@ -97,7 +95,6 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         m_labels.put("foreignid", "Foreign&nbsp;ID");
     }
 
-    private HTMLPanel m_container;
     private SearchTextBox m_inputBox;
     private HistoryWrapper m_historyWrapper;
 
@@ -113,8 +110,7 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
     private OpenNMSEventManager m_eventManager;
 
     public SearchControl(final MarkerContainer markerContainer, final Widget root, final OpenNMSEventManager eventManager) {
-        super(JSObject.createJSObject());
-        setJSObject(SearchControlImpl.create(this, new SearchOptions().getJSObject()));
+        super();
         LOG.info("new SearchControl()");
 
         m_eventManager = eventManager;
@@ -128,6 +124,16 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         initializeSubmitWidget();
         initializeCellAutocompleteWidget();
         initializeSearchStateManager();
+        
+        addAttachHandler(new Handler() {
+            @Override public void onAttachOrDetach(final AttachEvent event) {
+                if (event.isAttached()) {
+                    doOnAdd();
+                } else {
+                    doOnRemove();
+                }
+            }
+        });
     }
 
     public void focusInputBox() {
@@ -138,12 +144,12 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         });
     }
 
-    public Element doOnAdd(final JavaScriptObject map) {
+    public Element doOnAdd() {
         LOG.info("SearchControl.onAdd() called");
 
-        m_container.add(m_inputBox);
-        m_container.add(m_submitIcon);
-        m_container.add(m_autoComplete);
+        this.add(m_inputBox);
+        this.add(m_submitIcon);
+        this.add(m_autoComplete);
 
         /* If the backend sends a new search string, set it on the input box
          * to make sure we're in sync, but don't re-fire events.
@@ -188,10 +194,10 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         //refresh();
         m_eventManager.fireEvent(new ComponentInitializedEvent(AlarmControl.class.getName()));
 
-        return m_container.getElement();
+        return this.getElement();
     }
 
-    public SearchControl doOnRemove(final JavaScriptObject map) {
+    public SearchControl doOnRemove() {
         LOG.info("SearchControl.onRemove() called");
         return this;
     }
@@ -208,12 +214,9 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
 
         final Style style = widget.getElement().getStyle();
         // ugh
-        style.setZIndex(1001);
         style.setPosition(Position.ABSOLUTE);
-        final int left = 5;
-        final int top = m_container.getOffsetHeight() + 5;
-        style.setLeft(left, Unit.PX);
-        style.setTop(top, Unit.PX);
+        style.setLeft(5, Unit.PX);
+        style.setTop(25, Unit.PX);
         m_updated.add(widget);
     }
 
@@ -343,9 +346,20 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         };
     }
 
+    private void setIdIfMissing(final Widget widget, final String id) {
+        if (widget.getElement() != null) {
+            final String existingId = widget.getElement().getId();
+            if (existingId == null || "".equals(existingId)) {
+                widget.getElement().setId(id);
+            }
+        }
+    }
+
     private void initializeContainerWidget() {
-        m_container = new HTMLPanel("<div class\"leaflet-control-search\"></div>");
-        m_container.addStyleName("leaflet-control");
+        this.setStylePrimaryName("leaflet-control-search");
+        this.addStyleName("leaflet-control");
+        this.setWidth("100%");
+        this.setHeight("100%");
     }
 
     private void initializeInputWidget() {
@@ -356,7 +370,7 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         m_inputBox.setMaxLength(40);
         m_inputBox.setVisibleLength(40);
         m_inputBox.setValue("");
-
+        setIdIfMissing(m_inputBox, "searchControl.searchInput");
         // DomEvent.stopEventPropagation(m_inputBox);
     }
 
@@ -364,6 +378,7 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         m_submitIcon = new HTML();
         m_submitIcon.addStyleName("search-button");
         m_submitIcon.setTitle("Search locations...");
+        setIdIfMissing(m_submitIcon, "searchControl.searchInput");
 
         // DomEvent.stopEventPropagation(m_submitIcon);
     }
@@ -437,7 +452,7 @@ public class SearchControl extends Control implements FilteredMarkersUpdatedEven
         m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
         m_autoComplete.setVisible(false);
         m_autoComplete.addStyleName("search-autocomplete");
-
+        setIdIfMissing(m_autoComplete, "searchControl.autoComplete");
         //DomEvent.stopEventPropagation(m_autoComplete);
     }
 
