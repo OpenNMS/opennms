@@ -90,6 +90,16 @@ public class NCSViewContribution implements SearchProvider {
 	}
 
     @Override
+    public String getSearchProviderNamespace() {
+        return "ncs";
+    }
+
+    @Override
+    public boolean contributesTo(String namespace) {
+        return "nodes".equals(namespace);
+    }
+
+    @Override
     public List<SearchResult> query(SearchQuery searchQuery) {
         List<SearchResult> searchResults = Lists.newArrayList();
 

@@ -36,6 +36,8 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHo
 import java.util.List;
 
 public interface SearchProvider {
+    String getSearchProviderNamespace();
+    public boolean contributesTo(String namespace);
     List<SearchResult> query(SearchQuery searchQuery);
     void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext);
     void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext);

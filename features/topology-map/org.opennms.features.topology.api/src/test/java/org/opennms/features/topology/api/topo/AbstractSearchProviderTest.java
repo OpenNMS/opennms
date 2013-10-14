@@ -113,6 +113,16 @@ public class AbstractSearchProviderTest {
             List<VertexRef> m_vertexRefs = getVertexRefs();
 
             @Override
+            public String getSearchProviderNamespace() {
+                return "test-namespace";
+            }
+
+            @Override
+            public boolean contributesTo(String namespace) {
+                return false;
+            }
+
+            @Override
             public List<SearchResult> query(SearchQuery searchQuery) {
                 List<SearchResult> verts = new ArrayList<SearchResult>();
                 for (VertexRef vertexRef : m_vertexRefs) {

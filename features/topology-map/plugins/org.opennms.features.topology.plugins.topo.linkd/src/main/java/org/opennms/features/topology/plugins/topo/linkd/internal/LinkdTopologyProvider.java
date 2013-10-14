@@ -575,6 +575,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
+    public String getSearchProviderNamespace() {
+        return "nodes";
+    }
+
+    @Override
     public List<SearchResult> query(SearchQuery searchQuery) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();

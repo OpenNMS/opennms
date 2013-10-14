@@ -51,6 +51,16 @@ public class CategorySearchProvider implements SearchProvider{
     }
 
     @Override
+    public String getSearchProviderNamespace() {
+        return "category";
+    }
+
+    @Override
+    public boolean contributesTo(String namespace) {
+        return "nodes".equals(namespace);
+    }
+
+    @Override
     public List<SearchResult> query(SearchQuery searchQuery) {
         List<String> categories = m_categoryDao.getAllCategoryNames();
         List<SearchResult> results = Lists.newArrayList();
