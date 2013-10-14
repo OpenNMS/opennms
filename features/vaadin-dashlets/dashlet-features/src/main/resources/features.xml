@@ -25,5 +25,8 @@
     <feature name="dashlet-ksc" version="${pom.version}">
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-ksc/${pom.version}</bundle>
     </feature>
+    <feature name="dashlet-topology" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
+    </feature>
 
 </features>

@@ -219,7 +219,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         if(m_headerProvider == null) {
             return "";
         } else {
-            return m_headerProvider.getHeaderHtml(request);
+            String headerHtml = m_headerProvider.getHeaderHtml(request);
+
+            /**
+             * Adding some magic to hide the header when displayed inside an iFrame
+             */
+
+            headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
+
+            return headerHtml;
         }
     }
 

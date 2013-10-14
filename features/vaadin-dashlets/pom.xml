@@ -23,6 +23,7 @@
         <module>dashlet-rtc</module>
         <module>dashlet-rrd</module>
         <module>dashlet-ksc</module>
+        <module>dashlet-topology</module>
         <module>dashlet-features</module>
     </modules>
 </project>
