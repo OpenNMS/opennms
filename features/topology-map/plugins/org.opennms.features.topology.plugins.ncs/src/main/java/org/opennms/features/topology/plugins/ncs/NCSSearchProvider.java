@@ -118,10 +118,10 @@ public class NCSSearchProvider implements SearchProvider {
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
-        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
         if(m_serviceManager.isCriteriaRegistered(NAMESPACE, operationContext.getGraphContainer().getSessionId())) {
             m_serviceManager.unregisterCriteria(NAMESPACE, operationContext.getGraphContainer().getSessionId());
         }
+        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
 
     }
 
@@ -166,10 +166,10 @@ public class NCSSearchProvider implements SearchProvider {
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
-        m_serviceManager.registerCriteria(criteria, graphContainer.getSessionId());
         if(m_serviceManager.isCriteriaRegistered(NAMESPACE, graphContainer.getSessionId())) {
             m_serviceManager.unregisterCriteria(NAMESPACE, graphContainer.getSessionId());
         }
+        m_serviceManager.registerCriteria(criteria, graphContainer.getSessionId());
     }
 
 
