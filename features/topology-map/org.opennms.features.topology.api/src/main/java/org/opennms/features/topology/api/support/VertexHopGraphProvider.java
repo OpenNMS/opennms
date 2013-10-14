@@ -316,8 +316,13 @@ public class VertexHopGraphProvider implements GraphProvider {
 				}
 				m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
                 Set<VertexRef> refs = neighborMap.get(vertexRef);
-                neighbors.addAll(refs);
-				processed.add(getVertex(vertexRef));
+                if (refs != null) {
+                	neighbors.addAll(refs);
+                }
+                Vertex vertex = getVertex(vertexRef);
+                if (vertex != null) {
+                	processed.add(getVertex(vertexRef));
+                }
 			}
 
 			neighbors.removeAll(processed);
