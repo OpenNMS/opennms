@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NCSViewContribution implements SearchProvider {
+public class NCSSearchProvider implements SearchProvider {
 
     public class NCSHopCriteria extends VertexHopCriteria{
 
@@ -33,7 +33,7 @@ public class NCSViewContribution implements SearchProvider {
 
         @Override
         public String getNamespace() {
-            return "ncs";
+            return NAMESPACE;
         }
 
         @Override
@@ -51,7 +51,8 @@ public class NCSViewContribution implements SearchProvider {
         }
     }
 
-	private NCSComponentRepository m_ncsComponentRepository;
+    private static final String NAMESPACE = "ncs";
+    private NCSComponentRepository m_ncsComponentRepository;
 	private NCSEdgeProvider m_ncsEdgeProvider;
     private NCSCriteriaServiceManager m_serviceManager;
     private int m_serviceCount = 0;
@@ -91,7 +92,7 @@ public class NCSViewContribution implements SearchProvider {
 
     @Override
     public String getSearchProviderNamespace() {
-        return "ncs";
+        return NAMESPACE;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class NCSViewContribution implements SearchProvider {
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {
             if(searchQuery.matches(component.getName())) {
-                searchResults.add(new SearchResult(String.valueOf(component.getId()), "ncs", component.getName()));
+                searchResults.add(new SearchResult(String.valueOf(component.getId()), NAMESPACE, component.getName()));
             }
 
         }
@@ -118,8 +119,8 @@ public class NCSViewContribution implements SearchProvider {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
         m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
-        if(m_serviceManager.isCriteriaRegistered("ncsPath", operationContext.getGraphContainer().getSessionId())) {
-            m_serviceManager.unregisterCriteria("ncsPath", operationContext.getGraphContainer().getSessionId());
+        if(m_serviceManager.isCriteriaRegistered(NAMESPACE, operationContext.getGraphContainer().getSessionId())) {
+            m_serviceManager.unregisterCriteria(NAMESPACE, operationContext.getGraphContainer().getSessionId());
         }
 
     }
@@ -128,8 +129,8 @@ public class NCSViewContribution implements SearchProvider {
     public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
-        if(m_serviceManager.isCriteriaRegistered("ncsPath", operationContext.getGraphContainer().getSessionId())) {
-            m_serviceManager.unregisterCriteria("ncsPath", operationContext.getGraphContainer().getSessionId());
+        if(m_serviceManager.isCriteriaRegistered(NAMESPACE, operationContext.getGraphContainer().getSessionId())) {
+            m_serviceManager.unregisterCriteria(NAMESPACE, operationContext.getGraphContainer().getSessionId());
         }
 
     }
@@ -156,8 +157,8 @@ public class NCSViewContribution implements SearchProvider {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
         container.removeCriteria(new NCSHopCriteria(searchResult.getId(), Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
 
-        if(m_serviceManager.isCriteriaRegistered("ncsPath", container.getSessionId())) {
-            m_serviceManager.unregisterCriteria("ncsPath", container.getSessionId());
+        if(m_serviceManager.isCriteriaRegistered(NAMESPACE, container.getSessionId())) {
+            m_serviceManager.unregisterCriteria(NAMESPACE, container.getSessionId());
         }
     }
 
@@ -166,8 +167,8 @@ public class NCSViewContribution implements SearchProvider {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
 
         m_serviceManager.registerCriteria(criteria, graphContainer.getSessionId());
-        if(m_serviceManager.isCriteriaRegistered("ncsPath", graphContainer.getSessionId())) {
-            m_serviceManager.unregisterCriteria("ncsPath", graphContainer.getSessionId());
+        if(m_serviceManager.isCriteriaRegistered(NAMESPACE, graphContainer.getSessionId())) {
+            m_serviceManager.unregisterCriteria(NAMESPACE, graphContainer.getSessionId());
         }
     }
 
