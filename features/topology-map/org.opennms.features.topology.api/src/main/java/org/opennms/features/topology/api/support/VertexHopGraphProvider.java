@@ -150,14 +150,17 @@ public class VertexHopGraphProvider implements GraphProvider {
 
         public void add(VertexRef ref) {
 			m_vertices.add(ref);
+            setDirty(true);
 		}
 
 		public void remove(VertexRef ref) {
 			m_vertices.remove(ref);
+            setDirty(true);
 		}
 
 		public void clear() {
 			m_vertices.clear();
+            setDirty(true);
 		}
 
 		public boolean contains(VertexRef ref) {
@@ -179,8 +182,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public void addAll(Collection<VertexRef> refs) {
 			m_vertices.addAll(refs);
+            setDirty(true);
 		}
-	}
+    }
 
     private final GraphProvider m_delegate;
 	private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();

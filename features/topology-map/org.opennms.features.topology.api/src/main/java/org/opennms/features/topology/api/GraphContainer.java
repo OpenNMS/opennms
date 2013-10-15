@@ -28,15 +28,12 @@
 
 package org.opennms.features.topology.api;
 
+import com.vaadin.data.Property;
 import java.util.Collection;
-
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import com.vaadin.data.Property;
 
 public interface GraphContainer extends DisplayState {
 
@@ -51,15 +48,6 @@ public interface GraphContainer extends DisplayState {
     Criteria[] getCriteria();
 
     void setCriteria(Criteria criteria);
-
-    /**
-     *  This function is a hack for the {@link FocusNodeHopCriteria}. Because
-     *  it is updated in place, we don't call setCriteria() or removeCriteria()
-     *  and we need the same event handling to take place.
-     *  
-     * @param criteria
-     */
-    void criteriaUpdated(Criteria criteria);
 
     void removeCriteria(Criteria criteria);
 
@@ -86,12 +74,6 @@ public interface GraphContainer extends DisplayState {
     StatusProvider getStatusProvider();
 
     void setStatusProvider(StatusProvider statusProvider);
-
-    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
-    String getUserName();
-
-    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setUserName(String userName);
 
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();

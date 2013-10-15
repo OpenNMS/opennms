@@ -234,7 +234,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private AutoRefreshSupport m_autoRefreshSupport;
     
     private VEGraph m_graph;
-    private AtomicBoolean m_graphDirty = new AtomicBoolean(Boolean.TRUE);
+    private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
 
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
         m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
@@ -256,7 +256,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         criteria.setSemanticZoomLevel(level);
 
         if(oldLevel != m_semanticZoomLevel) {
-            m_graphDirty.set(Boolean.TRUE);
+            setDirty(true);
         }
     }
 
@@ -323,13 +323,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setBaseTopology(GraphProvider graphProvider) {
         m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
     
     @Override
     public void setStatusProvider(StatusProvider statusProvider) {
         m_statusProvider = statusProvider;
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
 
     @Override
@@ -344,22 +344,22 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     public void addVertexProvider(VertexProvider vertexProvider) {
         m_mergedGraphProvider.addVertexProvider(vertexProvider);
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
 
     public void removeVertexProvider(VertexProvider vertexProvider) {
         m_mergedGraphProvider.removeVertexProvider(vertexProvider);
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
 
     public void addEdgeProvider(EdgeProvider edgeProvider) {
         m_mergedGraphProvider.addEdgeProvider(edgeProvider);
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
 
     public void removeEdgeProvider(EdgeProvider edgeProvider) {
     	m_mergedGraphProvider.removeEdgeProvider(edgeProvider);
-        m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
     }
 
     private void rebuildGraph() {
@@ -464,16 +464,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public Graph getGraph() {
-        synchronized(m_graphDirty) {
-            if (m_graphDirty.get() == Boolean.TRUE) {
+        synchronized(m_containerDirty) {
+            if (isDirty() || isCriteriaDirty()) {
                 rebuildGraph();
-                m_graphDirty.set(Boolean.FALSE);
+                setDirty(false);
+                setCriteriaDirty(false);
             }
         }
         return m_graph;
     }
 
-	private final Set<Criteria> m_criteria = new LinkedHashSet<Criteria>();
+    private final Set<Criteria> m_criteria = new LinkedHashSet<Criteria>();
 
 	@Override
 	public Criteria[] getCriteria() {
@@ -483,18 +484,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	@Override
 	public void setCriteria(Criteria criteria) {
 		m_criteria.add(criteria);
-		m_graphDirty.set(Boolean.TRUE);
-	}
-
-	@Override
-	public void criteriaUpdated(Criteria criteria) {
-		m_graphDirty.set(Boolean.TRUE);
+        setDirty(true);
 	}
 
 	@Override
 	public void removeCriteria(Criteria criteria) {
 		m_criteria.remove(criteria);
-		m_graphDirty.set(Boolean.TRUE);
+		setDirty(true);
 	}
 
     public void setBundleContext(final BundleContext bundleContext) {
@@ -538,26 +534,26 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider) {
-		m_graphDirty.set(Boolean.TRUE);
+		setDirty(true);
 	}
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
 			Collection<? extends Edge> added, Collection<? extends Edge> updated,
 			Collection<String> removedEdgeIds) {
-		m_graphDirty.set(Boolean.TRUE);
+		setDirty(true);
 	}
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider) {
-		m_graphDirty.set(Boolean.TRUE);
+		setDirty(true);
 	}
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider,
 			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
 			Collection<String> removedVertexIds) {
-		m_graphDirty.set(Boolean.TRUE);
+		setDirty(true);
 	}
 
     @Override
@@ -569,16 +565,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public StatusProvider getStatusProvider() {
         return m_statusProvider;
     }
-
-	@Override
-	public String getUserName() {
-		return m_userName;
-	}
-
-	@Override
-	public void setUserName(String userName) {
-		m_userName = userName;
-	}
 
     @Override
     public String getSessionId() {
@@ -625,5 +611,36 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     public void setAutoRefreshSupport(AutoRefreshSupport autoRefreshSupport) {
         m_autoRefreshSupport = autoRefreshSupport;
+    }
+
+    private void setDirty(boolean isDirty) {
+        synchronized (m_containerDirty) {
+            m_containerDirty.set(isDirty);
+        }
+    }
+
+    private boolean isDirty() {
+        synchronized (m_containerDirty) {
+            return m_containerDirty.get();
+        }
+    }
+
+    private boolean isCriteriaDirty() {
+        synchronized (m_criteria) {
+            for (Criteria eachCriteria : m_criteria) {
+                if (eachCriteria.isDirty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void setCriteriaDirty(boolean isDirty) {
+        synchronized (m_criteria) {
+            for (Criteria eachCriteria : m_criteria) {
+                eachCriteria.resetDirty();
+            }
+        }
     }
 }

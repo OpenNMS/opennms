@@ -31,7 +31,7 @@ package org.opennms.features.topology.api.support;
 import org.opennms.features.topology.api.topo.Criteria;
 
 public class SemanticZoomLevelCriteria extends Criteria {
-	private int m_szl = 0;
+	private int m_szl;
 
 	public SemanticZoomLevelCriteria(int szl) {
 		m_szl = szl;
@@ -58,6 +58,7 @@ public class SemanticZoomLevelCriteria extends Criteria {
 
 	public void setSemanticZoomLevel(int szl) {
 		m_szl = szl;
+        setDirty(true);
 	}
 
 	@Override

@@ -186,7 +186,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         AbstractVertexRef vertexRef = new AbstractVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
         if(criteria.contains(vertexRef)){
             criteria.remove(vertexRef);
-            m_operationContext.getGraphContainer().criteriaUpdated(criteria);
         }
     }
 

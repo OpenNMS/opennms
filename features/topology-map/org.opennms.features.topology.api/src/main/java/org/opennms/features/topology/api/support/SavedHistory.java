@@ -188,7 +188,6 @@ public class SavedHistory {
             criteria.clear();
             // Add focus nodes from history
             criteria.addAll(m_focusVertices);
-            graphContainer.criteriaUpdated(criteria);
         } else {
             // Remove any existing VertexHopCriteria
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);

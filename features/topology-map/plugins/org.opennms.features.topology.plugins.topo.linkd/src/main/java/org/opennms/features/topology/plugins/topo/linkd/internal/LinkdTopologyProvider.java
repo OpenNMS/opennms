@@ -635,14 +635,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
         criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
-        container.criteriaUpdated(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
         criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getId()));
-        container.criteriaUpdated(criteria);
     }
 
     @Override
@@ -732,6 +730,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
+    // TODO MVR we have to check if the getVertex(...) will do the trick (see addVertexHopCriteria()) method
     public VertexRef getDefaultFocus() {
         OnmsNode node = m_topologyDao.getDefaultFocusPoint();
         if (node != null) {
