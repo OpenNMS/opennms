@@ -2,6 +2,8 @@ package org.opennms.features.topology.app.internal;
 
 import com.vaadin.server.PaintException;
 import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
 import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
@@ -63,8 +65,27 @@ public class GraphPainter extends BaseGraphVisitor {
         v.setSVGIconId(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
+        v.setStyleName(getVertexStyle(vertex));
 		m_vertices.add(v);
 	}
+
+    private String getVertexStyle(Vertex vertex) {
+        StringBuilder style = new StringBuilder();
+        style.append("vertex");
+        if(isSelected(m_graphContainer.getSelectionManager(), vertex)){
+            style.append(" selected");
+        }
+
+        if(m_componentState.isHighlightFocus()) {
+            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_graphContainer);
+            if(!criteria.getVertices().contains(vertex)) {
+                style.append(" opacity-50");
+            }
+        }
+
+        return style.toString();
+
+    }
 
     private String getStatusCount(Vertex vertex) {
         Status status = m_statusMap.get(vertex);
@@ -98,7 +119,13 @@ public class GraphPainter extends BaseGraphVisitor {
 			e.setSourceKey(sourceKey);
 			e.setTargetKey(targetKey);
 			e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
-			e.setCssClass(getStyleName(edge));
+
+            if(m_componentState.isHighlightFocus()){
+                e.setCssClass(getStyleName(edge) + " opacity-50");
+            }else{
+                e.setCssClass(getStyleName(edge));
+            }
+
 			e.setTooltipText(getTooltipText(edge));
 			m_edges.add(e);
 		}

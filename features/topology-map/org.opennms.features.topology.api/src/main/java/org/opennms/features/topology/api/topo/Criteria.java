@@ -34,19 +34,29 @@ package org.opennms.features.topology.api.topo;
  * @author brozow
  *
  */
-public interface Criteria {
-	
-	
-	enum ElementType { GRAPH, VERTEX, EDGE }
-	
+public abstract class Criteria {
+
+
+
+
+    public enum ElementType { GRAPH, VERTEX, EDGE;}
 	/**
 	 * This criteria applies to only providers of the indicated type
 	 */
-	public ElementType getType();
-	
+	public abstract ElementType getType();
+
 	/**
 	 * This criteria only applies to providers for this namespace
 	 */
-	public String getNamespace();
+	public abstract String getNamespace();
+
+
+    @Override
+    public abstract int hashCode();
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+
 
 }

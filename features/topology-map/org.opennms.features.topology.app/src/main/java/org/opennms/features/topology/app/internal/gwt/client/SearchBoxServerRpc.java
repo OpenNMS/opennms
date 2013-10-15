@@ -39,5 +39,5 @@ public interface SearchBoxServerRpc extends ServerRpc {
     public void removeSelected(SearchSuggestion searchSuggestion);
     public void addToFocus(SearchSuggestion searchSuggestion);
     public void removeFocused(SearchSuggestion searchSuggestion);
-    public void centerAndSelectSearchSuggestion(SearchSuggestion searchSuggestion);
+    public void centerSearchSuggestion(SearchSuggestion searchSuggestion);
 }
