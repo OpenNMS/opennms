@@ -282,6 +282,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 	
 	public int getMaxSemanticZoomLevel(Criteria... criteria) {
+		for (Criteria criterium : criteria) {
+			// See if there is a SemanticZoomLevelCriteria set and if so, use it
+			// to restrict the number of times we iterate over the graph
+			try {
+				SemanticZoomLevelCriteria szlCriteria = (SemanticZoomLevelCriteria)criterium;
+				return szlCriteria.getSemanticZoomLevel();
+			} catch (ClassCastException e) {}
+		}
 		return 100;
 	}
 
@@ -326,8 +334,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		Set<VertexRef> neighbors = new HashSet<VertexRef>();
 		Set<VertexRef> workingSet = new HashSet<VertexRef>(focusNodes);
 		// Put a limit on the SZL in case we infinite loop for some reason
-		while (semanticZoomLevel < maxSemanticZoomLevel && workingSet.size() > 0) {
-			System.err.printf("SZL: %d, hops: %d\n", semanticZoomLevel, workingSet.size());
+		while (semanticZoomLevel <= maxSemanticZoomLevel && workingSet.size() > 0) {
 			neighbors.clear();
 
 			for(VertexRef vertexRef : workingSet) {
