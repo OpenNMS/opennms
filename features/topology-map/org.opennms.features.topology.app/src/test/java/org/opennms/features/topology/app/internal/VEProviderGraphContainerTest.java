@@ -115,7 +115,7 @@ public class VEProviderGraphContainerTest {
 		
 		reset();
 		
-		m_graphContainer.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
+		m_graphContainer.addCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
 		
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");

@@ -387,8 +387,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
     @Override
-    public VertexRef getDefaultFocus() {
-        return m_baseGraphProvider.getDefaultFocus();
+    public Criteria getDefaultCriteria() {
+        return m_baseGraphProvider.getDefaultCriteria();
     }
 
     /**
@@ -681,7 +681,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
         @Override
-        public VertexRef getDefaultFocus() {
+        public Criteria getDefaultCriteria() {
             return null;
         }
 

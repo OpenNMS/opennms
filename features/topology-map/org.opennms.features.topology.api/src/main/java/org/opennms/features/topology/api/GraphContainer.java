@@ -47,9 +47,12 @@ public interface GraphContainer extends DisplayState {
 
     Criteria[] getCriteria();
 
-    void setCriteria(Criteria criteria);
+    void addCriteria(Criteria criteria);
 
     void removeCriteria(Criteria criteria);
+
+    // clears all criteria which are currently sets
+    void clearCriteria();
 
     void addChangeListener(ChangeListener listener);
 

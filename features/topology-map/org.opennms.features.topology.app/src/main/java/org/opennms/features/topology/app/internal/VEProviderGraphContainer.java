@@ -272,7 +272,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		}
 
 		SemanticZoomLevelCriteria hopCriteria = new SemanticZoomLevelCriteria(graphContainer.getSemanticZoomLevel());
-		graphContainer.setCriteria(hopCriteria);
+		graphContainer.addCriteria(hopCriteria);
 		return hopCriteria;
 	}
 
@@ -468,7 +468,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             if (isDirty() || isCriteriaDirty()) {
                 rebuildGraph();
                 setDirty(false);
-                setCriteriaDirty(false);
+                resetCriteriaDirty();
             }
         }
         return m_graph;
@@ -476,15 +476,23 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     private final Set<Criteria> m_criteria = new LinkedHashSet<Criteria>();
 
+    @Override
+    public void clearCriteria() {
+        m_criteria.clear();
+        setDirty(true);
+    }
+
 	@Override
 	public Criteria[] getCriteria() {
 		return m_criteria.toArray(new Criteria[0]);
 	}
 
 	@Override
-	public void setCriteria(Criteria criteria) {
-		m_criteria.add(criteria);
-        setDirty(true);
+	public void addCriteria(Criteria criteria) {
+        if (criteria != null) {
+		    m_criteria.add(criteria);
+            setDirty(true);
+        }
 	}
 
 	@Override
@@ -590,7 +598,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             case ServiceEvent.REGISTERED:
                 serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
                 criteria = m_bundleContext.getService(serviceReference);
-                setCriteria(criteria);
+                addCriteria(criteria);
                 break;
 
             case ServiceEvent.UNREGISTERING:
@@ -614,33 +622,25 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     private void setDirty(boolean isDirty) {
-        synchronized (m_containerDirty) {
-            m_containerDirty.set(isDirty);
-        }
+        m_containerDirty.set(isDirty);
     }
 
     private boolean isDirty() {
-        synchronized (m_containerDirty) {
-            return m_containerDirty.get();
-        }
+        return m_containerDirty.get();
     }
 
     private boolean isCriteriaDirty() {
-        synchronized (m_criteria) {
-            for (Criteria eachCriteria : m_criteria) {
-                if (eachCriteria.isDirty()) {
-                    return true;
-                }
+        for (Criteria eachCriteria : m_criteria) {
+            if (eachCriteria.isDirty()) {
+                return true;
             }
         }
         return false;
     }
 
-    private void setCriteriaDirty(boolean isDirty) {
-        synchronized (m_criteria) {
-            for (Criteria eachCriteria : m_criteria) {
-                eachCriteria.resetDirty();
-            }
+    private void resetCriteriaDirty() {
+        for (Criteria eachCriteria : m_criteria) {
+            eachCriteria.resetDirty();
         }
     }
 }

@@ -24,7 +24,7 @@ public class AbstractTopologyProviderTest {
             }
 
             @Override
-            public VertexRef getDefaultFocus() {
+            public Criteria getDefaultCriteria() {
                 return null;  // no default
             }
 

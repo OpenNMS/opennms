@@ -205,6 +205,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private Button m_panBtn;
     private Button m_selectBtn;
     private final Label m_refreshCounter = new Label();
+    private Button m_szlOutBtn;
     int m_settingFragment = 0;
 
     private String getHeader(HttpServletRequest request) {
@@ -252,6 +253,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
                 loadVertexHopCriteria(request, m_graphContainer);
                 loadSemanticZoomLevel(request, m_graphContainer);
+                m_graphContainer.redoLayout();
                 return false; // No response was written
             }
         });
@@ -268,6 +270,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // the layout must be created BEFORE loading the hop criteria and the semantic zoom level
         loadVertexHopCriteria(request, m_graphContainer);
         loadSemanticZoomLevel(request, m_graphContainer);
+        m_graphContainer.redoLayout();
 
         // notifiy osgi-listeners, otherwise initialization would not work
         m_graphContainer.addChangeListener(m_verticesUpdateManager);
@@ -323,13 +326,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
                 }
                 // Set the semantic zoom level to 1 by default
-                if (graphContainer.getSemanticZoomLevel() == 1) {
-                    // Manually redo the layout
-                    graphContainer.redoLayout();
-                } else {
-                    // This call will redo the layout
-                    graphContainer.setSemanticZoomLevel(1);
-                }
+                graphContainer.setSemanticZoomLevel(1);
             } else {
                 // Don't do anything... we didn't find any focus nodes in the parameter so don't alter
                 // any existing VertexHopCriteria
@@ -337,24 +334,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         // check if we have a criteria set
-        if (criteria == null || criteria.isEmpty()) { // no criteria or nodes in focus, load defaults
-            VertexRef focus = graphContainer.getBaseTopology().getDefaultFocus();
-            if (focus != null) {
-                VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, true).add(focus);
-                graphContainer.redoLayout();
-            }
+        if (criteria.isEmpty()) { // no criteria or nodes in focus, load defaults
+            graphContainer.removeCriteria(criteria); // it is empty, so we don't need it
+            graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria()); // set default
         }
     }
 
     private static void loadSemanticZoomLevel(VaadinRequest request, GraphContainer graphContainer) {
         String szl = request.getParameter(PARAMETER_SEMANTIC_ZOOM_LEVEL);
-        if (szl == null) {
-            return;
-        }
-        try {
-            graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
-        } catch (NumberFormatException e) {
-            m_log.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+        if (szl != null) {
+            try {
+                graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
+            } catch (NumberFormatException e) {
+                m_log.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+            }
         }
     }
 
@@ -497,28 +490,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         sliderLayout.addComponent(slider);
         sliderLayout.addComponent(demagnifyBtn);
 
-        final Button szlOutBtn = new Button();
-        szlOutBtn.setHtmlContentAllowed(true);
-        szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
-        szlOutBtn.setDescription("Collapse Semantic Zoom Level");
-        szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
-        szlOutBtn.addClickListener(new ClickListener() {
+        m_szlOutBtn = new Button();
+        m_szlOutBtn.setHtmlContentAllowed(true);
+        m_szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
+        m_szlOutBtn.setDescription("Collapse Semantic Zoom Level");
+        m_szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
+        m_szlOutBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 int szl = m_graphContainer.getSemanticZoomLevel();
                 if (szl > 0) {
                     szl--;
-                    m_graphContainer.setSemanticZoomLevel(szl);
-                    setSemanticZoomLevel(szl, true);
+                    setSemanticZoomLevel(szl);
                     saveHistory();
                 }
-
-                szlOutBtn.setEnabled(szl > 0);
             }
         });
-        if( m_graphContainer.getSemanticZoomLevel() == 0){
-           szlOutBtn.setEnabled(false);
-        }
 
         final Button szlInBtn = new Button();
         szlInBtn.setHtmlContentAllowed(true);
@@ -530,10 +517,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             public void buttonClick(ClickEvent event) {
                 int szl = m_graphContainer.getSemanticZoomLevel();
                 szl++;
-                m_graphContainer.setSemanticZoomLevel(szl);
-                setSemanticZoomLevel(szl, true);
+                setSemanticZoomLevel(szl);
                 saveHistory();
-                szlOutBtn.setEnabled(szl > 0);
             }
         });
 
@@ -602,7 +587,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         semanticLayout.setSpacing(true);
         semanticLayout.addComponent(szlInBtn);
         semanticLayout.addComponent(m_zoomLevelLabel);
-        semanticLayout.addComponent(szlOutBtn);
+        semanticLayout.addComponent(m_szlOutBtn);
         semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
 
         VerticalLayout historyCtrlLayout = new VerticalLayout();
@@ -911,19 +896,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public void graphChanged(GraphContainer graphContainer) {
         // are there any vertices to display?
         boolean verticesAvailable = !graphContainer.getGraph().getDisplayVertices().isEmpty();
+
         // toggle view
         if (verticesAvailable == m_noContentWindow.isVisible()) {
             m_noContentWindow.setVisible(!verticesAvailable);
             m_topologyComponent.setEnabled(verticesAvailable);
         }
-        setSemanticZoomLevel(graphContainer.getSemanticZoomLevel(), false);
+
+        m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
+        m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
     }
 
-    private void setSemanticZoomLevel(int semanticZoomLevel, boolean redoLayoutAfterwards) {
+    private void setSemanticZoomLevel(int semanticZoomLevel) {
         m_zoomLevelLabel.setValue(String.valueOf(semanticZoomLevel));
-        if (redoLayoutAfterwards) {
-            m_graphContainer.redoLayout();
-        }
+        m_szlOutBtn.setEnabled(semanticZoomLevel > 0);
+        m_graphContainer.setSemanticZoomLevel(semanticZoomLevel);
+        m_graphContainer.redoLayout();
     }
 
     @Override

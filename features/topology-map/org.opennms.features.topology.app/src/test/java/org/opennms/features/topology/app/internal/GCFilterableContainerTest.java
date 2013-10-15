@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -21,7 +22,7 @@ public class GCFilterableContainerTest {
         GraphProvider provider = new AbstractTopologyProvider("test") {
             @Override public void save() { }
             @Override public void refresh() { }
-            @Override public VertexRef getDefaultFocus() { return null; }
+            @Override public Criteria getDefaultCriteria() { return null; }
 
             @Override public void load(String filename) throws MalformedURLException, JAXBException {
                 resetContainer();

@@ -80,7 +80,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		if (createIfAbsent) {
 			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
-			graphContainer.setCriteria(hopCriteria);
+			graphContainer.addCriteria(hopCriteria);
 			return hopCriteria;
 		} else {
 			return null;
@@ -488,7 +488,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 
     @Override
-    public VertexRef getDefaultFocus() {
-        return m_delegate.getDefaultFocus();
+    public Criteria getDefaultCriteria() {
+        return m_delegate.getDefaultCriteria();
     }
 }

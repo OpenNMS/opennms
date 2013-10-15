@@ -45,6 +45,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -730,16 +731,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    // TODO MVR we have to check if the getVertex(...) will do the trick (see addVertexHopCriteria()) method
-    public VertexRef getDefaultFocus() {
-        OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+    public Criteria getDefaultCriteria() {
+        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
         if (node != null) {
-            for (VertexRef eachRef : getVertices()) {
-                String nodeId = node.getId() != null ? node.getId().toString() : null; // node.getId is integer, but must be String
-                // namespace and id must match
-                if (TOPOLOGY_NAMESPACE_LINKD.equals(eachRef.getNamespace()) && nodeId != null && nodeId.equals(eachRef.getId())) {
-                    return eachRef;
-                }
+            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            if (defaultVertex != null) {
+                VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
+                hopCriteria.add(defaultVertex);
+                return hopCriteria;
             }
         }
         return null; // no default available

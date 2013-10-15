@@ -69,5 +69,5 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
-    VertexRef getDefaultFocus();
+    Criteria getDefaultCriteria();
 }

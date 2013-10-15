@@ -30,8 +30,8 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleGroup;
@@ -133,7 +133,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public VertexRef getDefaultFocus() {
+    public Criteria getDefaultCriteria() {
         return null;  //not supported yet
     }
 

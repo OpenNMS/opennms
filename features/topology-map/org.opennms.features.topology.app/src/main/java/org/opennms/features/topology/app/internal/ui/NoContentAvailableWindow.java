@@ -36,7 +36,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.Criteria;
 
 public class NoContentAvailableWindow extends Window {
 
@@ -74,11 +74,15 @@ public class NoContentAvailableWindow extends Window {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                VertexRef defaultRef = graphContainer.getBaseTopology().getDefaultFocus();
-                if (defaultRef != null) {
-                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, true);
-                    criteria.add(defaultRef);
-                    graphContainer.redoLayout();
+                Criteria defaultCriteria = graphContainer.getBaseTopology().getDefaultCriteria();
+                if (defaultCriteria != null) {
+                    // check if there is already a criteria registered for focus nodes. If so, remove that
+                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
+                    if (criteria != null) {
+                        graphContainer.removeCriteria(criteria);
+                    }
+                    graphContainer.addCriteria(defaultCriteria); // add default criteria
+                    graphContainer.redoLayout(); // we need to redo the layout
                     noDefaultsAvailable.setVisible(false);
                 } else {
                     noDefaultsAvailable.setVisible(true);
