@@ -69,6 +69,9 @@ public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandle
     }
 
     public void onUnload() {
+        m_eventManager.removeHandler(FilterUpdatedEvent.TYPE, this);
+        m_eventManager.removeHandler(MarkersModelUpdatedEvent.TYPE, this);
+        m_eventManager.removeHandler(ApplicationInitializedEvent.TYPE, this);
     }
 
     public int size() {

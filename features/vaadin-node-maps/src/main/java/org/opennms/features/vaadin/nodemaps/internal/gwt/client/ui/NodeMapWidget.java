@@ -54,7 +54,6 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMa
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
 
 import com.google.gwt.core.client.Scheduler;
@@ -70,7 +69,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-@SuppressWarnings("NonJREEmulationClassesInClientCode")
 public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, FilteredMarkersUpdatedEventHandler {
     private final DivElement m_div;
     private Map m_map;
@@ -104,14 +102,6 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
         this.setWidth("100%");
         this.setHeight("100%");
-
-        /*
-        m_overlayPanel.setWidth("100%");
-        m_overlayPanel.setHeight("100%");
-        m_overlayPanel.getElement().getStyle().setZIndex(2000);
-        m_overlayPanel.getElement().setId("node-map-overlay");
-        this.add(m_overlayPanel);
-        */
 
         this.add(m_mapPanel);
         m_div = m_mapPanel.getElement().cast();
@@ -238,7 +228,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         m_searchControl = new SearchControl(m_markerContainer, this, m_eventManager);
         final String id = m_searchControl.getElement().getId();
         if (id == null || "".equals(id)) {
-            m_searchControl.getElement().setId("searchControl");
+            m_searchControl.getElement().setId("search-control");
         } else {
             LOG.info("NodeMapWidget.addSearchControl(): id = " + id);
         }
@@ -253,10 +243,22 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     private void addAlarmControl() {
         LOG.info("NodeMapWidget.addAlarmControl()");
-        final AlarmControlOptions options = new AlarmControlOptions();
-        options.setPosition("topright");
+
         final AlarmControl alarmControl = new AlarmControl(m_eventManager);
-        m_map.addControl(alarmControl);
+        final String id = alarmControl.getElement().getId();
+        if (id == null || "".equals(id)) {
+            alarmControl.getElement().setId("alarm-control");
+        } else {
+            LOG.info("NodeMapWidget.addAlarmControl(): id = " + id);
+        }
+
+        final HTMLPanel mapParent = HTMLPanel.wrap(m_mapPanel.getParent().getElement());
+        final Style searchStyle = alarmControl.getElement().getStyle();
+        searchStyle.setPosition(Position.ABSOLUTE);
+        searchStyle.setTop(5, Unit.PX);
+        searchStyle.setRight(5, Unit.PX);
+        searchStyle.setZIndex(2000);
+        mapParent.add(alarmControl);
     }
 
     private void addZoomControl() {

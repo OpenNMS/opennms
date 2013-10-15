@@ -74,7 +74,7 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
 
     public void setSearchString(final String searchString) {
         if (Util.hasChanged(m_searchString, searchString)) {
-            LOG.info("MarkerFilterImpl.setSearchString(" + searchString + "): search string modified (old = '" + m_searchString + "'");
+            LOG.info("MarkerFilterImpl.setSearchString(" + searchString + "): search string modified (old = '" + m_searchString + "')");
             m_searchString = searchString;
             sendFilterUpdatedEvent();
         } else {

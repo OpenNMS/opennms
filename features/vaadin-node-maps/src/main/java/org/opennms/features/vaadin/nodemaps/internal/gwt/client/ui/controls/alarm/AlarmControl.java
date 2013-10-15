@@ -30,51 +30,53 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.ala
 
 import java.util.logging.Logger;
 
-import org.discotools.gwt.leaflet.client.controls.Control;
-import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.discotools.gwt.leaflet.client.map.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AbstractDomEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 
-public class AlarmControl extends Control implements AlarmSeverityUpdatedEventHandler {
-    Logger logger = Logger.getLogger(getClass().getName());
-
-    private boolean m_listenerInitialized = false;
+public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedEventHandler {
+    private static final Logger LOG = Logger.getLogger(AlarmControl.class.getName());
 
     private ListBox m_severityBox;
     private OpenNMSEventManager m_eventManager;
 
     public AlarmControl(final OpenNMSEventManager eventManager) {
-        super(JSObject.createJSObject());
-        setJSObject(AlarmControlImpl.create(this, new AlarmControlOptions().getJSObject()));
         m_eventManager = eventManager;
+        addAttachHandler(new Handler() {
+            @Override public void onAttachOrDetach(final AttachEvent event) {
+                if (event.isAttached()) {
+                    doOnAdd();
+                } else {
+                    doOnRemove();
+                }
+            }
+        });
     }
 
-    public Element doOnAdd(final JavaScriptObject map) {
-        logger.info("AlarmControl.doOnAdd()");
+    public Element doOnAdd() {
+        LOG.info("AlarmControl.doOnAdd()");
         final AlarmControlCss css = AlarmControlBundle.INSTANCE.css();
         css.ensureInjected();
 
-        final Element element = AlarmControlImpl.createElement("leaflet-control-alarm");
-        element.addClassName("leaflet-control");
+        m_eventManager.addHandler(AlarmSeverityUpdatedEvent.TYPE, this);
+
+        this.setStylePrimaryName("leaflet-control-alarm");
+        this.addStyleName("leaflet-bar");
+        this.addStyleName("leaflet-control");
 
         final Label label = new Label("Show Severity >=");
         label.getElement().setAttribute("for", "alarmControl");
         label.addStyleName(css.label());
-        element.appendChild(label.getElement());
 
         m_severityBox = new ListBox(false);
         m_severityBox.getElement().setId("alarmControl");
@@ -87,66 +89,30 @@ public class AlarmControl extends Control implements AlarmSeverityUpdatedEventHa
         m_severityBox.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(final ChangeEvent event) {
                 final int selected = m_severityBox.getSelectedIndex();
-                logger.info("new selection index = " + selected);
+                LOG.info("new selection index = " + selected);
                 final String value = m_severityBox.getValue(selected);
-                logger.info("new severity = " + value);
+                LOG.info("new severity = " + value);
                 final int intValue = value == null? 0 : Integer.valueOf(value).intValue();
                 m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(intValue));
                 event.stopPropagation();
             }
         });
-        /*
-        m_severityBox.addClickHandler(new ClickHandler() {
-            @Override public void onClick(final ClickEvent event) {
-                logger.info("AlarmControl.severityBox.onClick()");
-                m_severityBox.fireEvent(event);
-                event.stopPropagation();
-            }
-        });
-        */
-
-        DomEvent.addListener(new AbstractDomEventCallback(new String[] {"keydown", "keyup", "keypress", "input", "cut", "paste", "click", "dblclick", "mousedown", "mouseup", "touchstart", "touchend", "scrollstart", "scrollstop"}, m_severityBox) {
-            @Override
-            public void onEvent(final NativeEvent event) {
-                if (!m_listenerInitialized) {
-                    logger.info("Reinitializing event listening for severityBox");
-                    DOM.setEventListener(m_severityBox.getElement(), m_severityBox);
-                    m_listenerInitialized = true;
-                }
-
-                logger.info("Rethrowing event to severity box: " + event.getType());
-                com.google.gwt.event.dom.client.DomEvent.fireNativeEvent(event, m_severityBox);
-                // event.stopPropagation();
-            }
-        });
 
         m_severityBox.addStyleName(css.label());
-        element.appendChild(m_severityBox.getElement());
 
-        logger.info("AlarmControl.doOnAdd(): finished, returning: " + element);
-        
+        this.add(label);
+        this.add(m_severityBox);
+
+        LOG.info("AlarmControl.doOnAdd(): finished, returning: " + this.getElement());
+
         m_eventManager.fireEvent(new ComponentInitializedEvent(AlarmControl.class.getName()));
-        return element;
+        return this.getElement();
     }
 
-    public void doOnRemove(final JavaScriptObject map) {
-        logger.info("doOnRemove() called");
+    public void doOnRemove() {
+        LOG.info("doOnRemove() called");
+        m_eventManager.removeHandler(AlarmSeverityUpdatedEvent.TYPE, this);
         m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(0));
-    }
-
-    @Override
-    public AlarmControl addTo(final Map map) {
-        return (AlarmControl)super.addTo(map);
-    }
-
-    @Override
-    public AlarmControl setPosition(final String position) {
-        return (AlarmControl)super.setPosition(position);
-    }
-
-    @Override
-    public AlarmControl removeFrom(final Map map) {
-        return (AlarmControl)super.removeFrom(map);
     }
 
     @Override
