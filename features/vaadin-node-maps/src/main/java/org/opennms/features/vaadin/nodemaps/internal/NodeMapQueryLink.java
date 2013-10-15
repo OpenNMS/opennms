@@ -88,15 +88,7 @@ public class NodeMapQueryLink implements Operation {
 
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        final Collection<VertexRef> availableNodes = m_geoAssetProvider.getNodesWithCoordinates();
-
-        for (final VertexRef ref : targets) {
-            if (availableNodes.contains(ref)) {
-                return true;
-            }
-        }
-
-        return false;
+        return true;
     }
 
     @Override
