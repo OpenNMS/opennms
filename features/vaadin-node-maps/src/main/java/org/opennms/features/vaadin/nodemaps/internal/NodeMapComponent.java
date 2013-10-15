@@ -68,6 +68,10 @@ public class NodeMapComponent extends AbstractComponent {
         return m_rpc;
     }
 
+    public void setGroupByState(final boolean groupByState) {
+        getState().groupByState = groupByState;
+    }
+
     public void showNodes(final Map<Integer, NodeEntry> nodeEntries) {
         final List<MapNode> nodes = new LinkedList<MapNode>();
         for (final NodeEntry node : nodeEntries.values()) {
@@ -85,7 +89,7 @@ public class NodeMapComponent extends AbstractComponent {
         LOG.debug("setSearchString(" + searchString + ")");
         getState().searchString = searchString;
     }
-    
+
     public void setSelectedNodes(final List<Integer> nodeIds) {
         LOG.debug("setSelectedNodes(" + nodeIds + ")");
         getState().nodeIds = nodeIds;

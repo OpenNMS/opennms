@@ -70,6 +70,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, FilteredMarkersUpdatedEventHandler {
+    private static final Logger LOG = Logger.getLogger(NodeMapWidget.class.getName());
+
     private final DivElement m_div;
     private Map m_map;
     private ILayer m_layer;
@@ -81,13 +83,11 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private SearchControl m_searchControl;
     private MarkerFilterImpl m_filter;
     private NodeIdSelectionRpc m_clientToServerRpc;
+    private boolean m_groupByState;
 
     private OpenNMSEventManager m_eventManager;
 
-    private static final Logger LOG = Logger.getLogger(NodeMapWidget.class.getName());
-
     private SimplePanel m_mapPanel = new SimplePanel();
-    // private AbsolutePanel m_overlayPanel = new AbsolutePanel();
 
     public NodeMapWidget() {
         m_eventManager = new OpenNMSEventManager();
@@ -204,10 +204,11 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         m_markerClusterGroup.on("clusterclick", callback);
         m_markerClusterGroup.on("clustertouchend", callback);
         m_map.addLayer(m_markerClusterGroup);
+
         m_stateClusterGroups = new MarkerClusterGroup[52];
 
         final Options[] stateClusterOptions = new Options[m_stateClusterGroups.length];
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
+        for (int i = 0; i < m_stateClusterGroups.length; i++) {
             //stateClusterOptions[i] = new Options();
             stateClusterOptions[i] = markerClusterOptions;
             stateClusterOptions[i].setProperty("maxClusterRadius", 350);
@@ -294,7 +295,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void clearExistingMarkers() {
         LOG.info("NodeMapWidget.clearExistingMarkers()");
         m_markerClusterGroup.clearLayers();
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
+        for (int i = 0; i < m_stateClusterGroups.length; i++) {
             m_stateClusterGroups[i].clearLayers();
         }
     }
@@ -313,7 +314,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                         LOG.log(Level.WARNING, "NodeMapWidget.addNewMarkers(): no coordinates found for marker! " + marker);
                         return true;
                     }
-                    if (StatesData.inUs(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble(), StatesData.getUsShape())) {
+                    if (m_groupByState && StatesData.inUs(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble(), StatesData.getUsShape())) {
                         final int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
                         if (!m_stateClusterGroups[stateId].hasLayer(marker)) {
                             m_stateClusterGroups[stateId].addLayer(marker);
@@ -349,7 +350,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                         LOG.log(Level.WARNING, "NodeMapWidget.removeDisabledMarkers(): no coordinates found for marker! " + marker);
                         return true;
                     }
-                    if (StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
+                    if (m_groupByState && StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
                         final int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
                         m_stateClusterGroups[stateId].removeLayer(marker);
                     } else {
@@ -428,7 +429,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private final void destroyMap() {
         if (m_markerClusterGroup != null) {
             m_markerClusterGroup.clearLayers();
-            for(int i = 0; i < m_stateClusterGroups.length; i++){
+            for (int i = 0; i < m_stateClusterGroups.length; i++) {
                 m_stateClusterGroups[i].clearLayers();
             }
         }
@@ -450,5 +451,10 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     public OpenNMSEventManager getEventManager() {
         return m_eventManager;
+    }
+
+    public void setGroupByState(final boolean groupByState) {
+        m_groupByState = groupByState;
+        LOG.info("NodeMapWidget.setGroupByState(): group by state: " + (groupByState? "yes":"no"));
     }
 }

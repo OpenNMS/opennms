@@ -85,7 +85,6 @@ public class MapWidgetComponent extends NodeMapComponent {
         m_transaction = tx;
     }
 
-
     public void init() {
         showNodes(getNodeData());
     }
@@ -127,7 +126,7 @@ public class MapWidgetComponent extends NodeMapComponent {
                 } else {
                     m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
                     final Coordinates coordinates = getCoordinates(addressString);
-                    
+
                     if (coordinates == null) {
                         m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
                         continue;

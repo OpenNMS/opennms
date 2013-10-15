@@ -124,6 +124,9 @@ public class NodeMapConnector extends AbstractComponentConnector implements HasH
                 getEventManager().fireEvent(new SearchStringSetEvent(sb.toString()));
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("groupByState")) {
+            getWidget().setGroupByState(getState().groupByState);
+        }
     }
 
     private void updateNodes() {
