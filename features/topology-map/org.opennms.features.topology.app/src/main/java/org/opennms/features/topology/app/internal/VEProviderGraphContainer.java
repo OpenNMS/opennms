@@ -408,17 +408,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_graph.updateLayout(displayVertices, displayEdges);
         }
 
-        unselectVerticesWhichAreNotVisibleAnymore();
+        unselectVerticesWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
     }
 
     // we have to find out if each selected vertex is still displayable,
     // if not we deselect it.
-    private void unselectVerticesWhichAreNotVisibleAnymore() {
-        if (m_selectionManager == null) return;
-        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(m_selectionManager.getSelectedVertexRefs());
+    private static void unselectVerticesWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
+        if (selectionManager == null) return;
+        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
         List<VertexRef> newSelectedVertexRefs = new ArrayList<VertexRef>();
         for (VertexRef eachSelectedVertex : selectedVertexRefs) {
-            for (Vertex eachDisplayableVertex : getGraph().getDisplayVertices()) {
+            for (Vertex eachDisplayableVertex : graph.getDisplayVertices()) {
                 if (eachDisplayableVertex.getNamespace().equals(eachSelectedVertex.getNamespace())
                     && eachDisplayableVertex.getId().equals(eachSelectedVertex.getId())) {
                     newSelectedVertexRefs.add(eachSelectedVertex);
@@ -429,7 +429,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
         // if the selection changed, inform selectionManager
         if (!newSelectedVertexRefs.equals(selectedVertexRefs)) {
-            m_selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+            selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
         }
     }
 
