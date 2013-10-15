@@ -2,8 +2,7 @@ package org.opennms.features.topology.app.internal;
 
 import com.vaadin.server.PaintException;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
 import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
@@ -25,6 +24,7 @@ public class GraphPainter extends BaseGraphVisitor {
     private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
     private final Map<VertexRef,Status> m_statusMap = new HashMap<VertexRef, Status>();
+    private Set<VertexRef> m_focusVertices = new HashSet<VertexRef>();
 
     GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
@@ -40,6 +40,15 @@ public class GraphPainter extends BaseGraphVisitor {
 
     @Override
     public void visitGraph(Graph graph) throws PaintException {
+        m_focusVertices.clear();
+        Criteria[] criterias = m_graphContainer.getCriteria();
+        for(Criteria criteria : criterias){
+            try{
+                VertexHopCriteria c = (VertexHopCriteria) criteria;
+                m_focusVertices.addAll(c.getVertices());
+            }catch(ClassCastException e){}
+        }
+
         if (m_statusProvider != null) {
             Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<VertexRef>((graph.getDisplayVertices())));
             if (newStatusMap != null) {
@@ -77,8 +86,7 @@ public class GraphPainter extends BaseGraphVisitor {
         }
 
         if(m_componentState.isHighlightFocus()) {
-            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_graphContainer);
-            if(!criteria.getVertices().contains(vertex)) {
+            if(!m_focusVertices.contains(vertex)) {
                 style.append(" opacity-50");
             }
         }
