@@ -265,7 +265,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void addZoomControl() {
         LOG.info("NodeMapWidget.addZoomControl()");
         final ZoomOptions options = new ZoomOptions();
-        options.setPosition("bottomleft");
+        options.setPosition("topright");
         m_map.addControl(new Zoom(options));
     }
 

@@ -462,8 +462,6 @@ public abstract class SearchStateManager {
 
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
-                manager.hideAutocomplete();
-                manager.focusInput();
                 manager.updateHistorySearchString();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;

@@ -65,6 +65,14 @@ td.severity.Normal {
 	background-color:rgba(51,102,0,0.8);
 }
 
+.navbar li > div.nav-dropdown > ul {
+	z-index:3000;
+}
+
+.leaflet-container .leaflet-control-zoom {
+	margin-top: 48px;	
+}
+
 #node-map-overlay {
 	pointer-events:none;
 }
@@ -92,7 +100,7 @@ td.severity.Normal {
 	border-radius:4px;
 	height:30px;
 	padding:5px;
-	margin:0;
+	margin:0 0 0 5px;
 }
 
 .leaflet-control-search .search-autocomplete {
@@ -138,5 +146,6 @@ td.severity.Normal {
 	background-color:rgba(255, 255, 255, 0.95);
 	box-shadow:0 0 8px rgba(0,0,0,0.4);
 	padding:5px;
+	margin:0 5px 0 0;
 	color:black;
 }
