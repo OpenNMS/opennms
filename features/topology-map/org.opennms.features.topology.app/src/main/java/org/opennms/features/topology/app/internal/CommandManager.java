@@ -105,15 +105,15 @@ public class CommandManager {
 
             //TODO: Do some implementation here for execute
             if (operation != null) {
-                Collection<VertexRef> selectedVertexRefs = m_opContext.getGraphContainer().getSelectionManager().getSelectedVertexRefs();
-                List<VertexRef> targets;
-                if(selectedVertexRefs.contains((VertexRef)m_topoContextMenu.getTarget())) {
-                    targets = Lists.newArrayList(selectedVertexRefs);
-                } else{
-                    targets = asVertexList(m_topoContextMenu.getTarget());
-                }
+                try {
+                    Collection<VertexRef> selectedVertexRefs = m_opContext.getGraphContainer().getSelectionManager().getSelectedVertexRefs();
+                    List<VertexRef> targets;
+                    if(selectedVertexRefs.contains(m_topoContextMenu.getTarget())) {
+                        targets = Lists.newArrayList(selectedVertexRefs);
+                    } else{
+                        targets = asVertexList(m_topoContextMenu.getTarget());
+                    }
 
-			    try {
 				    operation.execute(targets, m_opContext);
 			    } catch (final RuntimeException e) {
 			        LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);

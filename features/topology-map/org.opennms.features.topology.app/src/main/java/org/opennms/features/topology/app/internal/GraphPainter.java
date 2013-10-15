@@ -87,7 +87,7 @@ public class GraphPainter extends BaseGraphVisitor {
 
         if(m_componentState.isHighlightFocus()) {
             if(!m_focusVertices.contains(vertex)) {
-                style.append(" opacity-50");
+                style.append(" opacity-40");
             }
         }
 
