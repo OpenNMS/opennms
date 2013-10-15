@@ -132,18 +132,18 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
 
         // the vaadin apps are finicky
         clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
-        Thread.sleep(1000);
-        assertTrue(selenium.getHtmlSource().contains("vaadin"));
-        assertTrue(selenium.getHtmlSource().contains("opennmstopology"));
+        waitForHtmlSource("vaadin", 10000, true);
+        waitForHtmlSource("opennmstopology", 10000, true);
+        // Make sure that the alarm browser has loaded
+        waitForText("Select All", 10000, true);
         handleVaadinErrorButtons();
         goBack();
         goBack();
 
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
         clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
-        Thread.sleep(1000);
-        assertTrue(selenium.getHtmlSource().contains("vaadin"));
-        assertTrue(selenium.getHtmlSource().contains("opennmsnodemaps"));
+        waitForHtmlSource("vaadin", 10000, true);
+        waitForHtmlSource("opennmsnodemaps", 10000, true);
         handleVaadinErrorButtons();
 
         clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
