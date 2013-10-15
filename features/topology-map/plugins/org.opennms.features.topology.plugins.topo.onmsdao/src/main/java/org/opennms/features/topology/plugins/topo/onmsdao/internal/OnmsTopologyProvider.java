@@ -133,6 +133,11 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
+    public VertexRef getDefaultFocus() {
+        return null;  //not supported yet
+    }
+
+    @Override
     public void load(String filename) {
 
         OnmsMap map = getMap(Integer.parseInt(filename));

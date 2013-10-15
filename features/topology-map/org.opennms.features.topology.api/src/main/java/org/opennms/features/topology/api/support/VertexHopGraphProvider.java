@@ -34,18 +34,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.xml.bind.JAXBException;
-
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -172,6 +168,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return m_vertices.size();
 		}
 
+        public boolean isEmpty() {
+            return m_vertices.isEmpty();
+        }
+
 		@Override
 		public Set<VertexRef> getVertices() {
 			return Collections.unmodifiableSet(m_vertices);
@@ -182,37 +182,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		}
 	}
 
-	/*
-
-	We don't need this... we'll just use the {@link FocusNodeHopCriteria}
-
-	public static class NcsHopCriteria extends VertexHopCriteria {
-		
-		private final long m_ncsServiceId;	
-		
-		public NcsHopCriteria(long ncsServiceId) {
-			m_ncsServiceId = ncsServiceId;
-		}
-
-		/ **
-		 * TODO: This return value doesn't matter since we just delegate
-		 * to the m_delegate provider.
-		 * /
-		@Override
-		public String getNamespace() {
-			return "nodes";
-		}
-
-		public Set<VertexRef> getVertices() {
-			// TODO Use NCSEdgeProvider to query for vertices that are attached
-			// to the NCS edges for the service ID
-			return Collections.emptySet();
-		}
-	}
-	*/
-
-	private final GraphProvider m_delegate;
-
+    private final GraphProvider m_delegate;
 	private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();
 
 	public VertexHopGraphProvider(GraphProvider delegate) {
@@ -307,6 +277,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		if (focusNodes.size() < 1) {
 			// ...then return an empty list of vertices
 			return Collections.emptyList();
+//            return allVertices;
 		}
 		
 
@@ -511,4 +482,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
 		return m_delegate.connectVertices(sourceVertextId, targetVertextId);
 	}
+
+    @Override
+    public VertexRef getDefaultFocus() {
+        return m_delegate.getDefaultFocus();
+    }
 }

@@ -1,5 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,7 +14,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -40,10 +42,6 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
@@ -367,14 +365,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private void rebuildGraph() {
     	
     	List<Vertex> displayVertices = new ArrayList<Vertex>();
-    	
+
     	for(Vertex v : m_mergedGraphProvider.getVertices(getCriteria())) {
     		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(v);
     		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_mergedGraphProvider.hasChildren(v))) {
     			displayVertices.add(v);
 			}
     	}
-    	
+
     	Set<Edge> displayEdges = new HashSet<Edge>();
 
         final List<Edge> edges = m_mergedGraphProvider.getEdges(getCriteria());

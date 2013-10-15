@@ -75,13 +75,12 @@ public class TopologySelector {
     	
     	private void execute(GraphContainer container) {
     		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}", m_topologyProvider);
-    		boolean redoLayout = true;
-    		if(container.getBaseTopology() == m_topologyProvider) {
-    		    redoLayout = false;
-    		}
     		container.setBaseTopology(m_topologyProvider);
-    		
-    		if(redoLayout) { container.redoLayout(); }
+
+            // only redoLayout if provider changed
+    		if(container.getBaseTopology() != m_topologyProvider) {
+                container.redoLayout();
+            }
     	}
 
     	@Override

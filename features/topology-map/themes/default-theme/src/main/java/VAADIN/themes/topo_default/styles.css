@@ -100,9 +100,10 @@ div.v-table-header-wrap {
 }
 
 .map-controls {
-	background-color: #eeeeee;
+	background-color: #ffffff;
 	border-left: 1px solid #dddddd;
-	
+    width: 100%;
+    height: 100%;
 }
 
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,37 +25,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.dao.api;
 
-package org.opennms.features.topology.api.topo;
+import org.opennms.netmgt.model.OnmsNode;
 
-// TODO rename class because it is not abstract. It can be initialized. Fix this please
-public class AbstractVertexRef extends AbstractRef implements VertexRef {
+public interface TopologyDao {
 
-	public AbstractVertexRef(VertexRef ref) {
-		super(ref);
-	}
-
-	public AbstractVertexRef(String namespace, String id, String label) {
-		super(namespace, id, label);
-	}
-
-	/**
-	 * @deprecated Specify a useful label for the object
-	 */
-	public AbstractVertexRef(String namespace, String id) {
-		super(namespace, id, namespace + ":" + id);
-	}
-
-	@Override
-	public final boolean equals(Object obj) {
-		if (obj instanceof VertexRef) {
-			return super.equals(obj);
-		}
-		return false;
-	}
-
-	
-	@Override
-	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
+    OnmsNode getDefaultFocusPoint();
 
 }

@@ -1,11 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXBException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +21,9 @@ public class GCFilterableContainerTest {
         GraphProvider provider = new AbstractTopologyProvider("test") {
             @Override public void save() { }
             @Override public void refresh() { }
-            @Override public void load(String filename) throws MalformedURLException, JAXBException { 
+            @Override public VertexRef getDefaultFocus() { return null; }
+
+            @Override public void load(String filename) throws MalformedURLException, JAXBException {
                 resetContainer();
                 
                 String vId1 = getNextVertexId();

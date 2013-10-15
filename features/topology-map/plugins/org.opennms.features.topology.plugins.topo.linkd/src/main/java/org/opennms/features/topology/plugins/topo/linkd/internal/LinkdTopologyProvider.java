@@ -28,34 +28,46 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.AbstractSearchSelectionOperation;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.WrappedEdge;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedGroup;
+import org.opennms.features.topology.api.topo.WrappedLeafVertex;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider, SearchProvider {
@@ -247,12 +259,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private boolean addNodeWithoutLink = false;
     
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-    
+
     private NodeDao m_nodeDao;
-    
+
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
     private IpInterfaceDao m_ipInterfaceDao;
+
+    private TopologyDao m_topologyDao;
 
     private String m_configurationFile;
 
@@ -294,6 +308,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
+    }
+
+    public void setTopologyDao(TopologyDao topologyDao) {
+        m_topologyDao = topologyDao;
     }
 
     /**
@@ -709,5 +727,20 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    @Override
+    public VertexRef getDefaultFocus() {
+        OnmsNode node = m_topologyDao.getDefaultFocusPoint();
+        if (node != null) {
+            for (VertexRef eachRef : getVertices()) {
+                String nodeId = node.getId() != null ? node.getId().toString() : null; // node.getId is integer, but must be String
+                // namespace and id must match
+                if (TOPOLOGY_NAMESPACE_LINKD.equals(eachRef.getNamespace()) && nodeId != null && nodeId.equals(eachRef.getId())) {
+                    return eachRef;
+                }
+            }
+        }
+        return null; // no default available
     }
 }

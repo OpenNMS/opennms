@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -66,6 +67,11 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     @Override
     public void refresh() {
         // Do nothing
+    }
+
+    @Override
+    public VertexRef getDefaultFocus() {
+        return null;
     }
 
     @Override

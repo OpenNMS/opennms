@@ -73,10 +73,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     break;
                 }
             }
-
-            /*FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
-            criteria.add(mapToVertexRef(searchSuggestion));
-            m_operationContext.getGraphContainer().redoLayout();*/
         }
 
         @Override
@@ -86,8 +82,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             Multiset<SearchProvider> keys = m_suggestionMap.keys();
             for(SearchProvider key : keys){
                 if(m_suggestionMap.get(key).contains(searchResult)){
-                    //key.onDefocusSearchResult(searchResult, m_operationContext);
-
                     break;
                 }
             }
@@ -106,7 +100,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if(searchResults.contains(searchResult)){
                     key.onFocusSearchResult(searchResult, m_operationContext);
                     key.addVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
-
                     break;
                 }
             }
@@ -130,9 +123,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             }
 
             removeIfSpecialURLCase(searchResult);
-
             m_operationContext.getGraphContainer().redoLayout();
-
         }
 
         @Override
@@ -246,15 +237,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     }
 
-    private List<VertexRef> mapToVertexRefs(List<SearchSuggestion> suggestion){
-        return Lists.transform(suggestion, new Function<SearchSuggestion, VertexRef>(){
-            @Override
-            public VertexRef apply(SearchSuggestion input) {
-                return mapToVertexRef(input);
-            }
-        });
-    }
-
     private VertexRef mapToVertexRef(SearchSuggestion suggestion) {
         return new AbstractVertexRef(suggestion.getNamespace(), suggestion.getId(), suggestion.getLabel());
     }
@@ -275,11 +257,6 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         suggestion.setLabel(vertexRef.getLabel());
 
         return suggestion;
-    }
-
-    private boolean checkIfFocused(VertexRef vertexRef) {
-        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(m_operationContext.getGraphContainer());
-        return criteria.contains(vertexRef);
     }
 
     @Override

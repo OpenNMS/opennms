@@ -68,4 +68,6 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 	void removeEdges(EdgeRef... edges);
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
+
+    VertexRef getDefaultFocus();
 }

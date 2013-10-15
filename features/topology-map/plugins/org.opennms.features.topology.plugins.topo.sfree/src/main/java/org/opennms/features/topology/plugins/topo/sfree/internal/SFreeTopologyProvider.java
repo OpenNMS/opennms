@@ -14,6 +14,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,32 +31,22 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     public SFreeTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_SFREE);
     }
-    
-    
 
     public int getNodeCount() {
 		return m_nodeCount;
 	}
 
-
-
 	public void setNodeCount(int nodeCount) {
 		m_nodeCount = nodeCount;
 	}
-
-
 
 	public double getConnectedness() {
 		return m_connectedness;
 	}
 
-
-
 	public void setConnectedness(double connectedness) {
 		m_connectedness = connectedness;
 	}
-
-
 
 	@Override
     public void save() {
@@ -68,8 +59,12 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public void load(String filename) {
+    public VertexRef getDefaultFocus() {
+        return null; // no default focus
+    }
 
+    @Override
+    public void load(String filename) {
         clearVertices();
         clearEdges();
 
@@ -168,6 +163,5 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
         addVertices(nodes.values().toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
-
     }
 }
