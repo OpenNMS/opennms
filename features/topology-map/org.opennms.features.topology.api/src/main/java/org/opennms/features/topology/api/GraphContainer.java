@@ -28,12 +28,15 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.data.Property;
 import java.util.Collection;
+
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.vaadin.data.Property;
 
 public interface GraphContainer extends DisplayState {
 
@@ -47,7 +50,16 @@ public interface GraphContainer extends DisplayState {
 
     Criteria[] getCriteria();
 
-    void setCriteria(Criteria critiera);
+    void setCriteria(Criteria criteria);
+
+    /**
+     *  This function is a hack for the {@link FocusNodeHopCriteria}. Because
+     *  it is updated in place, we don't call setCriteria() or removeCriteria()
+     *  and we need the same event handling to take place.
+     *  
+     * @param criteria
+     */
+    void criteriaUpdated(Criteria criteria);
 
     void removeCriteria(Criteria criteria);
 

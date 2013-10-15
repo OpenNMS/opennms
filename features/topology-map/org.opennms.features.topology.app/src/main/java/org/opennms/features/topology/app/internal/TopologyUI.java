@@ -318,9 +318,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
                 // Clear the exiting focus node list
                 criteria.clear();
+                graphContainer.criteriaUpdated(criteria);
                 for (Integer ref : refs) {
                     // Add a new focus node reference to the VertexHopCriteria
                     criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
+                    graphContainer.criteriaUpdated(criteria);
                 }
                 // Set the semantic zoom level to 1 by default
                 if (graphContainer.getSemanticZoomLevel() == 1) {
@@ -341,6 +343,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             VertexRef focus = graphContainer.getBaseTopology().getDefaultFocus();
             if (focus != null) {
                 VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, true).add(focus);
+                graphContainer.criteriaUpdated(criteria);
                 graphContainer.redoLayout();
             }
         }

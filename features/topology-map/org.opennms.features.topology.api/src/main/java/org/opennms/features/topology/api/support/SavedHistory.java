@@ -23,7 +23,6 @@ import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -189,6 +188,7 @@ public class SavedHistory {
             criteria.clear();
             // Add focus nodes from history
             criteria.addAll(m_focusVertices);
+            graphContainer.criteriaUpdated(criteria);
         } else {
             // Remove any existing VertexHopCriteria
             FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);

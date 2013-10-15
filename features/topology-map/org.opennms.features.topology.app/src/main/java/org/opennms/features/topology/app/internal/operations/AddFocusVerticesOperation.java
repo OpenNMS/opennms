@@ -50,6 +50,7 @@ public class AddFocusVerticesOperation implements Constants, Operation {
 		for (VertexRef target : targets) {
 			criteria.add(target);
 		}
+		graphContainer.criteriaUpdated(criteria);
 
 		graphContainer.redoLayout();
 		return null;

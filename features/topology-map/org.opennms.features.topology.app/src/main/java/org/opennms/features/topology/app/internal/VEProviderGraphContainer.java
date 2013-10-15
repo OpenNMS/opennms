@@ -483,24 +483,17 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	@Override
 	public void setCriteria(Criteria criteria) {
 		m_criteria.add(criteria);
-		/*
-		Set<Criteria> criterias = m_criteria.get(criteria.getNamespace());
-		if (criterias == null) {
-			criterias = new HashSet<Criteria>();
-			m_criteria.put(criteria.getNamespace(), new TreeSet<Criteria>());
-		}
-		criterias.add(criteria);
-		 */
+		m_graphDirty.set(Boolean.TRUE);
+	}
+
+	@Override
+	public void criteriaUpdated(Criteria criteria) {
 		m_graphDirty.set(Boolean.TRUE);
 	}
 
 	@Override
 	public void removeCriteria(Criteria criteria) {
 		m_criteria.remove(criteria);
-		/*
-		String namespace = criteria.getNamespace();
-		m_criteria.remove(namespace);
-		*/
 		m_graphDirty.set(Boolean.TRUE);
 	}
 

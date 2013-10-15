@@ -312,6 +312,10 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
+        public void criteriaUpdated(Criteria criteria) {
+        }
+
+        @Override
         public void removeCriteria(Criteria critiera) {
            
         }

@@ -635,12 +635,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
         criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
+        container.criteriaUpdated(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
         criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getId()));
+        container.criteriaUpdated(criteria);
     }
 
     @Override
