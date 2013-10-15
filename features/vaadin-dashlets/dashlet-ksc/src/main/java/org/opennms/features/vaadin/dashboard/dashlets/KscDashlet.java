@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
@@ -22,11 +49,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: chris
- * Date: 09.10.13
- * Time: 22:29
- * To change this template use File | Settings | File Templates.
+ * This dashlet class is used to display the reports of a Ksc report.
+ *
+ * @author Christian Pape
  */
 public class KscDashlet extends VerticalLayout implements Dashlet {
     private NodeDao m_nodeDao;
@@ -43,7 +68,7 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
     private DashletSpec m_dashletSpec;
 
     /**
-     *
+     * The grid layout used to layout the graphs
      */
     private GridLayout m_gridLayout;
 
@@ -157,7 +182,6 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
         int height = 0;
 
         /*
-
         try {
             width = Integer.parseInt(m_dashletSpec.getParameters().get("width"));
         } catch (NumberFormatException numberFormatException) {
@@ -270,6 +294,13 @@ public class KscDashlet extends VerticalLayout implements Dashlet {
         }
     }
 
+    /**
+     * Returns a map with graph metadata for a given nodeId.
+     *
+     * @param nodeId     the nodeId
+     * @param resourceId the resourceId
+     * @return a map with meta data, like resourceLabel, resourceTypeLabel
+     */
     public Map<String, String> getDataForResourceId(final String nodeId, final String resourceId) {
         return (Map<String, String>) m_transactionOperations.execute(new TransactionCallback<Object>() {
             @Override

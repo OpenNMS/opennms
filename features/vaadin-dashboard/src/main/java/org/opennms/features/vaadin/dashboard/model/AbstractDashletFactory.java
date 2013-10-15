@@ -143,7 +143,7 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * This method sets the boostable flag.
      */
     public void setBoostable(boolean boostable) {
-        m_boostable=boostable;
+        m_boostable = boostable;
     }
 
     /**
@@ -213,7 +213,14 @@ public abstract class AbstractDashletFactory implements DashletFactory {
         for (Map.Entry<String, String> entry : m_requiredParameters.entrySet()) {
             stringBuilder.append("<tr>");
             stringBuilder.append("<td class='help-table-cell'>" + entry.getKey() + "</td>");
-            stringBuilder.append("<td class='help-table-cell'>'" + entry.getValue() + "'</td>");
+
+            String value = entry.getValue();
+
+            if (value.length() > 20) {
+                value = value.substring(0, 19) + "...";
+            }
+
+            stringBuilder.append("<td class='help-table-cell'>'" + value + "'</td>");
 
             if (getRequiredParameterDescriptions().containsKey(entry.getKey())) {
                 stringBuilder.append("<td class='help-table-cell'>" + getRequiredParameterDescriptions().get(entry.getKey()) + "</td>");

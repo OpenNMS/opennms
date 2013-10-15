@@ -6,12 +6,14 @@
 
         <property name="requiredParameters">
             <map>
-                <entry key="search" value=""/>
+                <entry key="focusNodes" value=""/>
+                <entry key="szl" value="1"/>
             </map>
         </property>
         <property name="requiredParameterDescriptions">
             <map>
-                <entry key="search" value="Parameter passed to the iFrame's URL of the topology map"/>
+                <entry key="focusNodes" value="List of nodes to be in focus of the topology map"/>
+                <entry key="szl" value="Semantic zoom level for the topology map"/>
             </map>
         </property>
     </bean>
