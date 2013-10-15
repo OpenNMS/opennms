@@ -34,11 +34,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -46,6 +53,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider, SearchProvider {
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
@@ -392,6 +401,16 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         GraphContainer graphContainer = operationContext.getGraphContainer();
         VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
         graphContainer.getSelectionManager().deselectVertexRefs(Lists.newArrayList(vertexRef));
+    }
+
+    @Override
+    public void onCenterSearchResult(final SearchResult searchResult, final GraphContainer graphContainer) {
+        // TODO: implement?
+    }
+
+    @Override
+    public String getSearchProviderNamespace() {
+        return "vmware";
     }
 
     @Override
