@@ -31,13 +31,14 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Logger;
 
 import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
@@ -87,9 +88,12 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
             sb.append(getPopupTextForMarker(marker));
             sb.append("</div>");
         } else {
+            final StringBuilder nodeListBuilder = new StringBuilder();
             final StringBuilder nodeBuilder = new StringBuilder();
             int unacked = 0;
-            for (final JSNodeMarker marker : markers) {
+            final ListIterator<JSNodeMarker> iterator = markers.listIterator();
+            while (iterator.hasNext()) {
+                final JSNodeMarker marker = iterator.next();
                 unacked += marker.getUnackedCount();
                 nodeBuilder.append("<tr class=\"node-marker-" + marker.getSeverityLabel() + "\">");
                 nodeBuilder.append("<td class=\"node-marker-label\">");
@@ -102,11 +106,21 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
                 nodeBuilder.append("<a href=\"alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" " + TARGET_BLANK + ">").append(marker.getSeverityLabel()).append("</a>");
                 nodeBuilder.append("</td>");
                 nodeBuilder.append("</tr>");
+
+                nodeListBuilder.append(marker.getNodeId());
+                if (iterator.hasNext()) {
+                    nodeListBuilder.append(",");
+                }
             }
             sb.append("<div class=\"node-marker-multiple\">");
             sb.append("<h2># of nodes: ").append(markers.size()).append(" ");
             sb.append("(").append(unacked).append(" Unacknowledged Alarms)");
             sb.append("</h2>");
+
+            if (nodeListBuilder.length() > 0) {
+                sb.append("<p><a " + TARGET_BLANK + " href=\"topology?focusNodes=" + nodeListBuilder.toString() + "\">View in Topology Map</a>");
+            }
+
             sb.append("<table class=\"node-marker-list\">").append(nodeBuilder).append("</table>");
             sb.append("</div>");
         }
@@ -140,6 +154,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
         sb.append("<h2>Node <a class=\"node\" href=\"element/node.jsp?node=").append(marker.getNodeId()).append("\" " + TARGET_NONE + ">").append(marker.getNodeLabel()).append("</a></h2>");
+        sb.append("<p><a " + TARGET_BLANK + " href=\"topology?focusNodes=" + marker.getNodeId() + "\">View in Topology Map</a>");
         sb.append("<p>");
         sb.append("Description: ").append(marker.getDescription()).append("<br/>");
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");
