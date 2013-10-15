@@ -1,6 +1,11 @@
 @CHARSET "UTF-8";
 @import "../opennms/styles.css";
 
+.opacity-50{
+    opacity: 0.5;
+    -moz-opacity:0.5;
+}
+
 /** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
 .v-app table td {
     font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;

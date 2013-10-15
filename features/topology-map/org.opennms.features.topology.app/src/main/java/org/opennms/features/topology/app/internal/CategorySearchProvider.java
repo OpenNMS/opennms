@@ -33,6 +33,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -47,6 +48,16 @@ public class CategorySearchProvider implements SearchProvider{
     public CategorySearchProvider(CategoryDao categoryDao, NodeDao nodeDao){
         m_categoryDao = categoryDao;
         m_categoryHopFactory = new CategoryHopCriteriaFactory(categoryDao, nodeDao);
+    }
+
+    @Override
+    public String getSearchProviderNamespace() {
+        return "category";
+    }
+
+    @Override
+    public boolean contributesTo(String namespace) {
+        return "nodes".equals(namespace);
     }
 
     @Override
@@ -84,15 +95,21 @@ public class CategorySearchProvider implements SearchProvider{
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        container.setCriteria(m_categoryHopFactory.getCriteria(searchResult.getId()));
+        CategoryHopCriteria criteria = m_categoryHopFactory.getCriteria(searchResult.getId());
+        criteria.setId(searchResult.getId());
+        container.setCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        Criteria[] criterias = container.getCriteria();
-        for(Criteria criteria : criterias){
+        CategoryHopCriteria c = m_categoryHopFactory.getCriteria(searchResult.getId());
+        c.setId(searchResult.getId());
+        container.removeCriteria(c);
+    }
 
-        }
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+
     }
 
     public CategoryDao getCategoryDao() {

@@ -30,9 +30,11 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.discotools.gwt.leaflet.client.types.Icon;
@@ -43,11 +45,20 @@ import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -55,16 +66,25 @@ import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(NodeMapComponent.class)
-public class NodeMapConnector extends AbstractComponentConnector {
-    private static final long serialVersionUID = 1706855732145066131L;
+public class NodeMapConnector extends AbstractComponentConnector implements HasHandlers, ComponentInitializedEventHandler {
+    private static final long serialVersionUID = -3025974041366182552L;
     private Logger LOG = Logger.getLogger(getClass().getName());
 
     private Map<String, Icon> m_icons;
+    private Set<String> m_expectedComponents = new HashSet<String>();
 
     private NodeIdSelectionRpc m_rpc = RpcProxy.create(NodeIdSelectionRpc.class, this);
 
     public NodeMapConnector() {
         initializeIcons();
+
+        m_expectedComponents.add(AlarmControl.class.getName());
+        m_expectedComponents.add(SearchControl.class.getName());
+        m_expectedComponents.add(SearchStateManager.class.getName());
+        m_expectedComponents.add(MarkerContainer.class.getName());
+        m_expectedComponents.add(MarkerFilterImpl.class.getName());
+        m_expectedComponents.add(NodeMapWidget.class.getName());
+        ensureHandlerManager().addHandler(ComponentInitializedEvent.TYPE, this);
     }
 
     private static native final boolean isRetina() /*-{
@@ -81,9 +101,9 @@ public class NodeMapConnector extends AbstractComponentConnector {
             final String searchString = getState().searchString;
             LOG.info("NodeMapConnector.onStateChanged(): searchString is now: " + searchString);
             if (searchString == null) {
-                DomEvent.send(SearchStringSetEvent.createEvent(""));
+                getEventManager().fireEvent(new SearchStringSetEvent(""));
             } else {
-                DomEvent.send(SearchStringSetEvent.createEvent(searchString));
+                getEventManager().fireEvent(new SearchStringSetEvent(searchString));
             }
         }
 
@@ -101,8 +121,11 @@ public class NodeMapConnector extends AbstractComponentConnector {
                     sb.append(i.next());
                     if (i.hasNext()) sb.append(", ");
                 }
-                DomEvent.send(SearchStringSetEvent.createEvent(sb.toString()));
+                getEventManager().fireEvent(new SearchStringSetEvent(sb.toString()));
             }
+        }
+        if (stateChangeEvent.hasPropertyChanged("groupByState")) {
+            getWidget().setGroupByState(getState().groupByState);
         }
     }
 
@@ -185,5 +208,23 @@ public class NodeMapConnector extends AbstractComponentConnector {
                 m_icons.put(severity, icon);
             }
         }
+    }
+
+    @Override
+    public void onComponentInitialized(final ComponentInitializedEvent event) {
+        LOG.info("NodeMapConnector.onComponentInitialized(" + event.getComponentName() + ")");
+        m_expectedComponents.remove(event.getComponentName());
+        LOG.info("NodeMapConnector.onComponentInitialized(): " + m_expectedComponents.size() + " components left: " + m_expectedComponents);
+        if (m_expectedComponents.size() == 0) {
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override public void execute() {
+                    getEventManager().fireEvent(new ApplicationInitializedEvent());
+                }
+            });
+        }
+    }
+
+    private OpenNMSEventManager getEventManager() {
+        return getWidget().getEventManager();
     }
 }

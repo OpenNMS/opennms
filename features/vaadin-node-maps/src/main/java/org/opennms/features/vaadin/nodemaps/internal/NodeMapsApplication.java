@@ -109,8 +109,8 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-    "http://maps.google.com/maps/api/js?sensor=false",
-    "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
+    "//maps.google.com/maps/api/js?sensor=false",
+    "gwt/public/leaflet-0.5.1/leaflet-src.js",
     "gwt/public/openlayers/OpenLayers.js",
     "gwt/public/markercluster/leaflet.markercluster-src.js"
 

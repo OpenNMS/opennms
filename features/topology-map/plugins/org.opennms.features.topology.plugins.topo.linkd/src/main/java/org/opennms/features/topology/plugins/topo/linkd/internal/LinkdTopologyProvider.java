@@ -575,6 +575,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
+    public String getSearchProviderNamespace() {
+        return "nodes";
+    }
+
+    @Override
     public List<SearchResult> query(SearchQuery searchQuery) {
         List<Vertex> vertices = m_vertexProvider.getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
@@ -590,16 +595,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-        GraphContainer m_graphContainer = operationContext.getGraphContainer();
-        VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
-        m_graphContainer.getSelectionManager().setSelectedVertexRefs(Lists.newArrayList(vertexRef));
+
     }
 
     @Override
     public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-        GraphContainer graphContainer = operationContext.getGraphContainer();
-        VertexRef vertexRef = getVertex(searchResult.getNamespace(), searchResult.getId());
-        graphContainer.getSelectionManager().deselectVertexRefs(Lists.newArrayList(vertexRef));
+
     }
 
     @Override
@@ -609,7 +610,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public List<VertexRef> getVertexRefsBy(SearchResult searchResult) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Lists.newArrayList((VertexRef)getVertex(searchResult.getNamespace(), searchResult.getId()));  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -621,7 +622,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
-        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getLabel()));
+        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getId()));
+    }
+
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+
     }
 
     private static String getIfStatusString(int ifStatusNum) {

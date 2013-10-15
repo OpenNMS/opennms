@@ -1,6 +1,8 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
-public class SharedEdge {
+import java.io.Serializable;
+
+public class SharedEdge implements Serializable {
 
     private String m_key;
     private String m_sourceKey;

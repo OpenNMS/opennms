@@ -28,15 +28,10 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
@@ -107,10 +102,19 @@ public class CommandManager {
 		@Override
 		public void contextMenuItemClicked(ContextMenuItemClickEvent event) {
 			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
-			//TODO: Do some implementation here for execute
-			if (operation != null) {
+
+            //TODO: Do some implementation here for execute
+            if (operation != null) {
+                Collection<VertexRef> selectedVertexRefs = m_opContext.getGraphContainer().getSelectionManager().getSelectedVertexRefs();
+                List<VertexRef> targets;
+                if(selectedVertexRefs.contains((VertexRef)m_topoContextMenu.getTarget())) {
+                    targets = Lists.newArrayList(selectedVertexRefs);
+                } else{
+                    targets = asVertexList(m_topoContextMenu.getTarget());
+                }
+
 			    try {
-				operation.execute(asVertexList(m_topoContextMenu.getTarget()), m_opContext);
+				    operation.execute(targets, m_opContext);
 			    } catch (final RuntimeException e) {
 			        LoggerFactory.getLogger(this.getClass()).warn("contextMenuItemClicked: operation failed", e);
 			    }

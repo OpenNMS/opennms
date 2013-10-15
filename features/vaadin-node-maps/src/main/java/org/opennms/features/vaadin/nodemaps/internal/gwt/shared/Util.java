@@ -16,4 +16,11 @@ public abstract class Util {
         return !a.equals(b);
     }
 
+    public static boolean hasChanged(final Boolean a, final Boolean b) {
+        if (a == null && b == null) return false;
+        if (a == null && b != null) return true;
+        if (a != null && b == null) return true;
+        return !a.equals(b);
+    }
+
 }

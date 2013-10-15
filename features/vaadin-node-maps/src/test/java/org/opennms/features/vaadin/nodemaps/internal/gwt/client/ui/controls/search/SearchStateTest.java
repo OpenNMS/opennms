@@ -1,16 +1,19 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.logging.Logger;
 
+import org.easymock.IAnswer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager.State;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,7 +26,6 @@ import com.google.gwt.core.client.impl.SchedulerImpl;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.impl.HistoryImpl;
@@ -52,8 +54,7 @@ public class SearchStateTest {
     private ValueItem m_mockSearchInput = new TestValueItem();
     private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
-
-    private HandlerManager m_mockHandlerManager;
+    private OpenNMSEventManager m_eventManager = new OpenNMSEventManager();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -71,8 +72,7 @@ public class SearchStateTest {
     public void setUp() throws Exception {
         m_mockSearchInput.setValue("");
         m_mockHistory.setValue("");
-        m_mockHandlerManager = new HandlerManager(this);
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_mockHandlerManager);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager);
     }
 
     @Test
@@ -275,7 +275,7 @@ public class SearchStateTest {
     @Test
     public void testInitializingWithHistory() throws Exception {
         m_mockHistory.setValue("search/ae");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_mockHandlerManager);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager);
         assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
 
         typeCharacter(m_searchManager, 'a');
@@ -323,6 +323,14 @@ public class SearchStateTest {
         final NativeEvent event = PowerMock.createMock(NativeEvent.class);
         expect(event.getType()).andReturn(type).anyTimes();
         expect(event.getKeyCode()).andReturn(keyCode).anyTimes();
+        event.stopPropagation();
+        expectLastCall().andAnswer(new IAnswer<Void>() {
+            @Override
+            public Void answer() throws Throwable {
+                LOG.info("stopPropagation() called on event(" + type + ", " + keyCode + ")");
+                return null;
+            }
+        }).anyTimes();
         PowerMock.replay(event);
         return event;
     }
@@ -346,8 +354,8 @@ public class SearchStateTest {
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
-        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final HandlerManager handlerManager) {
-            super(searchString, history);
+        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final OpenNMSEventManager eventManager) {
+            super(searchString, history, eventManager);
         }
 
         private boolean m_autocompleteVisible = false;
@@ -364,7 +372,7 @@ public class SearchStateTest {
             m_autocompleteFocused = false;
         }
 
-        @Override public void focusAutocomplete() {
+        @Override public void focusAutocompleteWidget() {
             System.err.println("focusing autocomplete!");
             m_inputFocused = false;
             m_autocompleteFocused = true;

@@ -32,7 +32,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -99,9 +98,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.NativeButton;
@@ -454,6 +451,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         slider.setImmediate(true);
 
+        final NativeButton showFocusVerticesBtn = new NativeButton(FontAwesomeIcons.Icon.eye_open.variant());
+        showFocusVerticesBtn.setDescription("Toggle Highlight Focus Nodes");
+        showFocusVerticesBtn.setHtmlContentAllowed(true);
+        showFocusVerticesBtn.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if(showFocusVerticesBtn.getCaption().equals(FontAwesomeIcons.Icon.eye_close.variant())){
+                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_open.variant());
+                } else {
+                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
+                }
+                m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
+                m_graphContainer.redoLayout();
+            }
+        });
+
         final NativeButton magnifyBtn = new NativeButton();
         magnifyBtn.setHtmlContentAllowed(true);
         magnifyBtn.setCaption("<i class=\"" + FontAwesomeIcons.Icon.zoom_in.stylename() + "\" ></i>");
@@ -619,6 +632,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
         toolbar.addComponent(historyCtrlLayout);
         toolbar.addComponent(locationToolLayout);
+        toolbar.addComponent(showFocusVerticesBtn);
         toolbar.addComponent(sliderLayout);
         toolbar.addComponent(controlLayout);
         toolbar.addComponent(semanticCtrlLayout);
