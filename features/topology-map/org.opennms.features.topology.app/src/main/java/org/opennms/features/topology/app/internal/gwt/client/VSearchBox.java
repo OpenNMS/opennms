@@ -134,7 +134,11 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_componentHolder.setWidth("245px");
         m_componentHolder.add(m_suggestBox);
 
-        m_focusedContainer = new VerticalPanel();
+
+        if(m_focusedContainer == null){
+            m_focusedContainer = new VerticalPanel();
+        }
+
         m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         m_focusedContainer.setTitle("Focused Vertices");
         m_componentHolder.add(m_focusedContainer);
