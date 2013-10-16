@@ -5,11 +5,6 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
 ">
-<!-- 
-    <bean id="simpleGraphProvider" class="org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider" />
-    
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="simpleGraphProvider"/>
--->    
 
 	<bean id="simpleTopologyFactory" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyFactory">
 		<property name="bundleContext" ref="blueprintBundleContext" />
@@ -20,44 +15,5 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
     	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.simple"/>
     	</service-properties>
     </service>
-    
-<!-- 
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Add Vertex"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation">
-            <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png"/>
-        </bean>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Remove Vertex"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation"/>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Reset"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ResetOperation"/>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Save"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.SaveOperation"/>
-    </service>
--->
 
 </blueprint>

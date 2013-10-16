@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,9 @@ import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.geocoder.TemporaryGeocoderException;
+import org.opennms.features.topology.api.geo.GeoAssetProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -55,15 +59,17 @@ import org.springframework.transaction.support.TransactionOperations;
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
-public class MapWidgetComponent extends NodeMapComponent {
+public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProvider {
     private static final long serialVersionUID = -6364929103619363239L;
-    private Logger m_log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MapWidgetComponent.class);
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
     private TransactionOperations m_transaction;
+
+    private Map<Integer,NodeEntry> m_activeNodes = new HashMap<Integer,NodeEntry>();
 
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
@@ -86,116 +92,135 @@ public class MapWidgetComponent extends NodeMapComponent {
     }
 
     public void init() {
-        showNodes(getNodeData());
+        refreshNodeData();
+        showNodes(m_activeNodes);
     }
 
-    private Map<Integer, NodeEntry> getNodeData() {
-        if (m_nodeDao == null) return new HashMap<Integer, NodeEntry>();
+    @Override
+    public Collection<VertexRef> getNodesWithCoordinates() {
+        final List<VertexRef> nodes = new ArrayList<VertexRef>();
+        for (final Map.Entry<Integer,NodeEntry> entry : m_activeNodes.entrySet()) {
+            nodes.add(new AbstractVertex("nodes", entry.getKey().toString(), entry.getValue().getNodeLabel()));
+        }
+        return nodes;
+    }
 
-        m_log.debug("getting nodes");
+    private void refreshNodeData() {
+        if (m_nodeDao == null) {
+            LOG.warn("No node DAO!  Can't refresh node data.");
+            return;
+        }
+
+        LOG.debug("getting nodes");
+
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
         cb.orderBy("id").asc();
 
-        final Map<Integer, NodeEntry> nodes = new HashMap<Integer, NodeEntry>();
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
+        final Map<Integer, NodeEntry> nodes = new HashMap<Integer, NodeEntry>();
 
-        for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
-            m_log.trace("processing node {}", node.getId());
-
-            final OnmsAssetRecord assets = node.getAssetRecord();
-            if (assets != null && assets.getGeolocation() != null) {
-                final OnmsGeolocation geolocation = assets.getGeolocation();
-                final String addressString = geolocation.asAddressString();
-
-                final Float longitude = geolocation.getLongitude();
-                final Float latitude = geolocation.getLatitude();
-
-                if (longitude != null && latitude != null) {
-                    if (longitude == Float.NEGATIVE_INFINITY || latitude == Float.NEGATIVE_INFINITY) {
-                        // we've already cached it as bad, skip it
-                        continue;
-                    } else {
-                        // we've already got good coordinates, return the node
-                        nodes.put(node.getId(), new NodeEntry(node));
-                        continue;
-                    }
-                } else if (addressString == null || "".equals(addressString)) {
-                    // no real address info, skip it
-                    continue;
-                } else {
-                    m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
-                    final Coordinates coordinates = getCoordinates(addressString);
-
-                    if (coordinates == null) {
-                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
-                        continue;
-                    }
-
-                    geolocation.setLongitude(coordinates.getLongitude());
-                    geolocation.setLatitude(coordinates.getLatitude());
-                    updatedAssets.add(assets);
-
-                    if (coordinates.getLongitude() == Float.NEGATIVE_INFINITY || coordinates.getLatitude() == Float.NEGATIVE_INFINITY) {
-                        // we got bad coordinates
-                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
-                        continue;
-                    } else {
-                        // valid coordinates, add to the list
-                        nodes.put(node.getId(), new NodeEntry(node));
-                    }
-                }
-            } else {
-                // no asset information
-            }
-        }
-
-        int lastId = -1;
-        int unackedCount = 0;
-
-        if (!nodes.isEmpty()) {
-            m_log.debug("getting alarms for nodes");
-            final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
-            ab.alias("node", "node");
-            ab.ge("severity", OnmsSeverity.WARNING);
-            ab.in("node.id", nodes.keySet());
-            ab.orderBy("node.id").asc();
-            ab.orderBy("severity").desc();
-
-            for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
-                final int nodeId = alarm.getNodeId();
-                m_log.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[]{nodeId, lastId, unackedCount});
-                if (nodeId != lastId) {
-                    m_log.debug("  setting severity for node {} to {}", new Object[]{nodeId, alarm.getSeverity().getLabel()});
-                    nodes.get(nodeId).setSeverity(alarm.getSeverity());
-                    if (lastId != -1) {
-                        nodes.get(nodeId).setUnackedCount(unackedCount);
-                        unackedCount = 0;
-                    }
-                }
-                if (alarm.getAckUser() == null) {
-                    unackedCount++;
-                }
-
-                lastId = nodeId;
-            }
-        }
-
-        if (lastId != -1) {
-            nodes.get(lastId).setUnackedCount(unackedCount);
-        }
-
-        m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
         m_transaction.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
+                    LOG.trace("processing node {}", node.getId());
+
+                    // pass 1: get the nodes with asset data
+                    final OnmsAssetRecord assets = node.getAssetRecord();
+                    if (assets != null && assets.getGeolocation() != null) {
+                        final OnmsGeolocation geolocation = assets.getGeolocation();
+                        final String addressString = geolocation.asAddressString();
+
+                        final Float longitude = geolocation.getLongitude();
+                        final Float latitude = geolocation.getLatitude();
+
+                        if (longitude != null && latitude != null) {
+                            if (longitude == Float.NEGATIVE_INFINITY || latitude == Float.NEGATIVE_INFINITY) {
+                                // we've already cached it as bad, skip it
+                                continue;
+                            } else {
+                                // we've already got good coordinates, return the node
+                                nodes.put(node.getId(), new NodeEntry(node));
+                                continue;
+                            }
+                        } else if (addressString == null || "".equals(addressString)) {
+                            // no real address info, skip it
+                            continue;
+                        } else {
+                            LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
+                            final Coordinates coordinates = getCoordinates(addressString);
+
+                            if (coordinates == null) {
+                                LOG.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+                                continue;
+                            }
+
+                            geolocation.setLongitude(coordinates.getLongitude());
+                            geolocation.setLatitude(coordinates.getLatitude());
+                            updatedAssets.add(assets);
+
+                            if (coordinates.getLongitude() == Float.NEGATIVE_INFINITY || coordinates.getLatitude() == Float.NEGATIVE_INFINITY) {
+                                // we got bad coordinates
+                                LOG.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+                                continue;
+                            } else {
+                                // valid coordinates, add to the list
+                                nodes.put(node.getId(), new NodeEntry(node));
+                            }
+                        }
+                    } else {
+                        // no asset information
+                    }
+                }
+
+                int lastId = -1;
+                int unackedCount = 0;
+
+                // pass 2: get alarm data for anything that's been grabbed from the DB
+                if (!m_activeNodes.isEmpty()) {
+                    LOG.debug("getting alarms for nodes");
+                    final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
+                    ab.alias("node", "node");
+                    ab.ge("severity", OnmsSeverity.WARNING);
+                    ab.in("node.id", m_activeNodes.keySet());
+                    ab.orderBy("node.id").asc();
+                    ab.orderBy("severity").desc();
+
+                    for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
+                        final int nodeId = alarm.getNodeId();
+                        LOG.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[]{nodeId, lastId, unackedCount});
+                        if (nodeId != lastId) {
+                            LOG.debug("  setting severity for node {} to {}", new Object[]{nodeId, alarm.getSeverity().getLabel()});
+                            final NodeEntry nodeEntry = m_activeNodes.get(nodeId);
+                            nodeEntry.setSeverity(alarm.getSeverity());
+                            if (lastId != -1) {
+                                nodeEntry.setUnackedCount(unackedCount);
+                                unackedCount = 0;
+                            }
+                        }
+                        if (alarm.getAckUser() == null) {
+                            unackedCount++;
+                        }
+
+                        lastId = nodeId;
+                    }
+                }
+
+                if (lastId != -1) {
+                    m_activeNodes.get(lastId).setUnackedCount(unackedCount);
+                }
+
+                // pass 3: save any asset updates to the database
+                LOG.debug("saving {} updated asset records to the database", updatedAssets.size());
                 for (final OnmsAssetRecord asset : updatedAssets) {
                     m_assetDao.saveOrUpdate(asset);
                 }
             }
         });
 
-        return nodes;
+
+        m_activeNodes = nodes;
     }
 
     /**
@@ -212,9 +237,9 @@ public class MapWidgetComponent extends NodeMapComponent {
                 coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
             }
         } catch (final TemporaryGeocoderException e) {
-            m_log.debug("Failed to find coordinates for address '{}' due to a temporary failure.", address);
+            LOG.debug("Failed to find coordinates for address '{}' due to a temporary failure.", address);
         } catch (final GeocoderException e) {
-            m_log.debug("Failed to find coordinates for address '{}'.", address);
+            LOG.debug("Failed to find coordinates for address '{}'.", address);
             coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
         }
         return coordinates;

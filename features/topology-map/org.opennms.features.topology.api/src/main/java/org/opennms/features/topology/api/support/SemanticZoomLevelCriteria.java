@@ -26,16 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.support;
 
-import java.util.List;
+import org.opennms.features.topology.api.topo.Criteria;
 
-public interface HistoryManager {
+public class SemanticZoomLevelCriteria extends Criteria {
+	private int m_szl;
 
-    public void applyHistory(String userId, String fragmentId, GraphContainer container);
-    public String getHistoryHash(String userId);
-    public String createHistory(String userId, GraphContainer container);
-	void onBind(HistoryOperation operation);
-	void onUnbind(HistoryOperation operation);
-	public List<HistoryOperation> getHistoryOperations();
+	public SemanticZoomLevelCriteria(int szl) {
+		m_szl = szl;
+	}
+
+	@Override
+	public int hashCode() {
+		return getNamespace().hashCode() * 31 + m_szl;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		try {
+			SemanticZoomLevelCriteria other = (SemanticZoomLevelCriteria)o;
+			return getNamespace().equals(other.getNamespace()) && (getSemanticZoomLevel() == other.getSemanticZoomLevel());
+		} catch (ClassCastException e) {
+			return false;
+		}
+	}
+
+	public int getSemanticZoomLevel() {
+		return m_szl;
+	}
+
+	public void setSemanticZoomLevel(int szl) {
+		m_szl = szl;
+        setDirty(true);
+	}
+
+	@Override
+	public ElementType getType() {
+		return ElementType.VERTEX;
+	}
+
+	/**
+	 * TODO This isn't really accurate...
+	 */
+	@Override
+	public String getNamespace() {
+		return "nodes";
+	}
 }

@@ -298,7 +298,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         Graph graph = container.getGraph();
         setGraph(graph);
 
-        getViewManager().setMapBounds(graph.getLayout().getBounds());
         computeBoundsForSelected(m_graphContainer.getSelectionManager());
         updateGraph();
     }

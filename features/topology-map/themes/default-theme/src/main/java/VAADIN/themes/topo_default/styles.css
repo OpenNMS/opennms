@@ -6,6 +6,11 @@
     -moz-opacity:0.5;
 }
 
+.opacity-40{
+    opacity: 0.4;
+    -moz-opacity:0.4;
+}
+
 /** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
 .v-app table td {
     font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
@@ -100,9 +105,10 @@ div.v-table-header-wrap {
 }
 
 .map-controls {
-	background-color: #eeeeee;
+	background-color: #ffffff;
 	border-left: 1px solid #dddddd;
-	
+    width: 100%;
+    height: 100%;
 }
 
 

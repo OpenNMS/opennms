@@ -35,6 +35,10 @@ import java.util.List;
 
 public class SuggestionMenu extends MenuBar {
 
+    public SuggestionMenu() {
+
+    }
+
     public int getSelectedItemIndex() {
         // The index of the currently selected item can only be
         // obtained if the menu is showing.

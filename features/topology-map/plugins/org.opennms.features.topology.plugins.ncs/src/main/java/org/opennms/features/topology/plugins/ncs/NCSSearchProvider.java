@@ -3,7 +3,6 @@ package org.opennms.features.topology.plugins.ncs;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
@@ -149,7 +148,7 @@ public class NCSSearchProvider implements SearchProvider {
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Lists.newArrayList(Long.parseLong(searchResult.getId())));
-        container.setCriteria(new NCSHopCriteria(searchResult.getId(), Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
+        container.addCriteria(new NCSHopCriteria(searchResult.getId(), Sets.newHashSet(getVertexRefsForEdges(criteria)), searchResult.getLabel()));
     }
 
     @Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,17 +25,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.dao.api;
 
-package org.opennms.features.topology.api;
+import org.opennms.netmgt.model.OnmsNode;
 
-import java.util.List;
+public interface TopologyDao {
 
-public interface HistoryManager {
+    OnmsNode getDefaultFocusPoint();
 
-    public void applyHistory(String userId, String fragmentId, GraphContainer container);
-    public String getHistoryHash(String userId);
-    public String createHistory(String userId, GraphContainer container);
-	void onBind(HistoryOperation operation);
-	void onUnbind(HistoryOperation operation);
-	public List<HistoryOperation> getHistoryOperations();
 }

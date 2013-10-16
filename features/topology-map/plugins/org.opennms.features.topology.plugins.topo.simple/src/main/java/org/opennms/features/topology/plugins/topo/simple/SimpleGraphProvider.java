@@ -33,15 +33,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
@@ -61,7 +60,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
 	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
 
-	private static final Logger s_log = LoggerFactory.getLogger(SimpleGraphProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SimpleGraphProvider.class);
 
 	private URI m_topologyLocation = null;
 
@@ -71,11 +70,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
     public SimpleGraphProvider(String namespace) {
         super(namespace);
-        s_log.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
-        
-        //URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
-
-        //setTopologyLocation(defaultGraph);
+        LOG.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
     }
 
 	public URI getTopologyLocation() {
@@ -86,10 +81,10 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null && new File(m_topologyLocation).exists()) {
-			s_log.debug("Loading topology from " + m_topologyLocation);
+			LOG.debug("Loading topology from " + m_topologyLocation);
 			load(m_topologyLocation);
 		} else {
-			s_log.debug("Setting topology location to null");
+			LOG.debug("Setting topology location to null");
 			clearVertices();
 			clearEdges();
 		}
@@ -123,7 +118,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         	Marshaller u = jc.createMarshaller();
         	u.marshal(graph, new File(getTopologyLocation()));
         } catch (JAXBException e) {
-        	s_log.error(e.getMessage(), e);
+        	LOG.error(e.getMessage(), e);
         }
     }
     
@@ -210,10 +205,15 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         try {
             load(getTopologyLocation());
         } catch (JAXBException e) {
-            s_log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         } catch (MalformedURLException e) {
-            s_log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Criteria getDefaultCriteria() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     void load(URI url) throws JAXBException, MalformedURLException {

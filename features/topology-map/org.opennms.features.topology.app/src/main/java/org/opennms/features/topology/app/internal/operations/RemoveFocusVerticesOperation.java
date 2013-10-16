@@ -57,7 +57,7 @@ public class RemoveFocusVerticesOperation implements Constants, Operation {
 
 			// If there are no remaining focus vertices in the criteria, then
 			// just remove it completely.
-			if (criteria.size() == 0) {
+			if (criteria.isEmpty()) {
 				graphContainer.removeCriteria(criteria);
 			}
 

@@ -34,18 +34,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.xml.bind.JAXBException;
-
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Criteria.ElementType;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -84,7 +80,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		if (createIfAbsent) {
 			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
-			graphContainer.setCriteria(hopCriteria);
+			graphContainer.addCriteria(hopCriteria);
 			return hopCriteria;
 		} else {
 			return null;
@@ -154,14 +150,17 @@ public class VertexHopGraphProvider implements GraphProvider {
 
         public void add(VertexRef ref) {
 			m_vertices.add(ref);
+            setDirty(true);
 		}
 
 		public void remove(VertexRef ref) {
 			m_vertices.remove(ref);
+            setDirty(true);
 		}
 
 		public void clear() {
 			m_vertices.clear();
+            setDirty(true);
 		}
 
 		public boolean contains(VertexRef ref) {
@@ -172,6 +171,10 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return m_vertices.size();
 		}
 
+        public boolean isEmpty() {
+            return m_vertices.isEmpty();
+        }
+
 		@Override
 		public Set<VertexRef> getVertices() {
 			return Collections.unmodifiableSet(m_vertices);
@@ -179,40 +182,11 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		public void addAll(Collection<VertexRef> refs) {
 			m_vertices.addAll(refs);
+            setDirty(true);
 		}
-	}
+    }
 
-	/*
-
-	We don't need this... we'll just use the {@link FocusNodeHopCriteria}
-
-	public static class NcsHopCriteria extends VertexHopCriteria {
-		
-		private final long m_ncsServiceId;	
-		
-		public NcsHopCriteria(long ncsServiceId) {
-			m_ncsServiceId = ncsServiceId;
-		}
-
-		/ **
-		 * TODO: This return value doesn't matter since we just delegate
-		 * to the m_delegate provider.
-		 * /
-		@Override
-		public String getNamespace() {
-			return "nodes";
-		}
-
-		public Set<VertexRef> getVertices() {
-			// TODO Use NCSEdgeProvider to query for vertices that are attached
-			// to the NCS edges for the service ID
-			return Collections.emptySet();
-		}
-	}
-	*/
-
-	private final GraphProvider m_delegate;
-
+    private final GraphProvider m_delegate;
 	private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();
 
 	public VertexHopGraphProvider(GraphProvider delegate) {
@@ -282,6 +256,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 	}
 	
 	public int getMaxSemanticZoomLevel(Criteria... criteria) {
+		for (Criteria criterium : criteria) {
+			// See if there is a SemanticZoomLevelCriteria set and if so, use it
+			// to restrict the number of times we iterate over the graph
+			try {
+				SemanticZoomLevelCriteria szlCriteria = (SemanticZoomLevelCriteria)criterium;
+				return szlCriteria.getSemanticZoomLevel();
+			} catch (ClassCastException e) {}
+		}
 		return 100;
 	}
 
@@ -299,6 +281,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		if (focusNodes.size() < 1) {
 			// ...then return an empty list of vertices
 			return Collections.emptyList();
+//            return allVertices;
 		}
 		
 
@@ -326,8 +309,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 		Set<VertexRef> neighbors = new HashSet<VertexRef>();
 		Set<VertexRef> workingSet = new HashSet<VertexRef>(focusNodes);
 		// Put a limit on the SZL in case we infinite loop for some reason
-		while (semanticZoomLevel < maxSemanticZoomLevel && workingSet.size() > 0) {
-			System.err.printf("SZL: %d, hops: %d\n", semanticZoomLevel, workingSet.size());
+		while (semanticZoomLevel <= maxSemanticZoomLevel && workingSet.size() > 0) {
 			neighbors.clear();
 
 			for(VertexRef vertexRef : workingSet) {
@@ -504,4 +486,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
 		return m_delegate.connectVertices(sourceVertextId, targetVertextId);
 	}
+
+    @Override
+    public Criteria getDefaultCriteria() {
+        return m_delegate.getDefaultCriteria();
+    }
 }

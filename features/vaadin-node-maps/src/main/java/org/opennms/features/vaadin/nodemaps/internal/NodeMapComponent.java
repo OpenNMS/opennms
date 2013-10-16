@@ -140,6 +140,14 @@ public class NodeMapComponent extends AbstractComponent {
             }
         }
 
+        public Integer getNodeId() {
+            return m_nodeId;
+        }
+
+        public String getNodeLabel() {
+            return m_nodeLabel;
+        }
+
         public void setSeverity(final OnmsSeverity severity) {
             m_severity = severity;
         }

@@ -29,12 +29,14 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.geo.GeoAssetProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.server.VaadinServlet;
@@ -42,6 +44,11 @@ import com.vaadin.ui.UI;
 
 public class NodeMapQueryLink implements Operation {
     private static final Logger LOG = Logger.getLogger(NodeMapQueryLink.class.getName());
+    private GeoAssetProvider m_geoAssetProvider;
+
+    public void setGeoAssetProvider(final GeoAssetProvider provider) {
+        m_geoAssetProvider = provider;
+    }
 
     @Override
     public String getId() {
@@ -50,13 +57,15 @@ public class NodeMapQueryLink implements Operation {
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+        final Collection<VertexRef> availableNodes = m_geoAssetProvider.getNodesWithCoordinates();
+
         final StringBuilder sb = new StringBuilder();
         sb.append(VaadinServlet.getCurrent().getServletContext().getContextPath());
         sb.append("/node-maps#search/nodeId%20in%20");
 
         final List<String> nodeIds = new ArrayList<String>();
         for (final VertexRef ref : targets) {
-            if ("nodes".equals(ref.getNamespace())) {
+            if (availableNodes.contains(ref)) {
                 nodeIds.add(ref.getId());
             }
         }
@@ -84,11 +93,14 @@ public class NodeMapQueryLink implements Operation {
 
     @Override
     public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
+        final Collection<VertexRef> availableNodes = m_geoAssetProvider.getNodesWithCoordinates();
+
         for (final VertexRef ref : targets) {
-            if ("nodes".equals(ref.getNamespace())) {
+            if (availableNodes.contains(ref)) {
                 return true;
             }
         }
+
         return false;
     }
 

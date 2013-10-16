@@ -31,7 +31,6 @@ package org.opennms.features.topology.app.internal;
 import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory;
@@ -97,7 +96,7 @@ public class CategorySearchProvider implements SearchProvider{
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         CategoryHopCriteria criteria = m_categoryHopFactory.getCriteria(searchResult.getId());
         criteria.setId(searchResult.getId());
-        container.setCriteria(criteria);
+        container.addCriteria(criteria);
     }
 
     @Override
