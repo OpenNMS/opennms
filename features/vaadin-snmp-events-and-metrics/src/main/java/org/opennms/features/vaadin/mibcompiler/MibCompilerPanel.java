@@ -269,16 +269,14 @@ public class MibCompilerPanel extends Panel {
                         final File currentFile = new File(MIBS_PENDING_DIR, fileName);
                         final File suggestedFile = new File(MIBS_COMPILED_DIR, mibFileName);
                         if (suggestedFile.exists()) {
-                            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
-                                                           "Are you sure?",
-                                                           MessageBox.Icon.QUESTION,
-                                                           "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
-                                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"),
-                                                           new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
-                            mb.addStyleName(Runo.WINDOW_DIALOG);
-                            mb.show(new EventListener() {
-                                public void buttonClicked(ButtonType buttonType) {
-                                    if (buttonType == MessageBox.ButtonType.YES) {
+                            ConfirmDialog.show(getUI(),
+                                               "Are you sure?",
+                                                   "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
+                                                   "Yes",
+                                                   "No",
+                                                   new ConfirmDialog.Listener() {
+                                public void onClose(ConfirmDialog dialog) {
+                                    if (dialog.isConfirmed()) {
                                         renameFile(logger, currentFile, suggestedFile);
                                     }
                                 }
