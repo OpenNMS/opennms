@@ -138,7 +138,7 @@ public class CommandManager {
 		updateCommandListeners();
 	}
 
-	private void updateCommandListeners() {
+	protected void updateCommandListeners() {
 		for (CommandUpdateListener listener : m_updateListeners) {
 			listener.menuBarUpdated(this);
 		}
@@ -201,7 +201,7 @@ public class CommandManager {
 		return contextMenu;
 	}
 
-	private void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
+	protected void updateContextCommandToOperationMap(List<TopoContextMenuItem> items) {
 	    for(TopoContextMenuItem item : items) {
 	        if(item.hasChildren() && !item.hasOperation()) {
 	            updateContextCommandToOperationMap(item.getChildren());
@@ -211,7 +211,7 @@ public class CommandManager {
 	    }
 	}
 
-	private void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
+	protected void updateCommandToOperationMap(Command command, MenuBar.Command menuCommand) {
 		m_commandToOperationMap.put(menuCommand, command.getOperation());
 	}
 
@@ -221,7 +221,9 @@ public class CommandManager {
 
 		return new MenuBar.Command() {
 
-                        @Override
+			private static final long serialVersionUID = 1542437659855341046L;
+
+			@Override
 			public void menuSelected(MenuItem selectedItem) {
 				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
@@ -245,7 +247,7 @@ public class CommandManager {
 		return m_commandHistoryList;
 	}
 
-	public Operation getOperationByMenuItemCommand(MenuBar.Command command) {
+	protected Operation getOperationByMenuItemCommand(MenuBar.Command command) {
 		return m_commandToOperationMap.get(command);
 	}
 
@@ -274,7 +276,7 @@ public class CommandManager {
 		removeCommand(operation);
 	}
 
-	private void removeCommand(Operation operation) {
+	protected void removeCommand(Operation operation) {
 		for (Command command : m_commandList) {
 			if (command.getOperation() == operation) {
 				removeCommand(command); 
@@ -282,7 +284,7 @@ public class CommandManager {
 		}
 	}
 
-	private void removeCommand(Command command) {
+	protected void removeCommand(Command command) {
 		m_commandList.remove(command);
 		updateCommandListeners();
 	}
@@ -373,7 +375,7 @@ public class CommandManager {
         }
     }
 
-	private List<VertexRef> asVertexList(Object target) {
+	private static List<VertexRef> asVertexList(Object target) {
 		return (target != null && target instanceof VertexRef) ? Arrays.asList((VertexRef)target) : Collections.<VertexRef>emptyList();
 	}
 
