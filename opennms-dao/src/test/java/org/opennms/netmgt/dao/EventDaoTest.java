@@ -123,6 +123,7 @@ public class EventDaoTest implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testGetEventsAfterDate() {
         List<String> ueiList = new ArrayList<String>();
         ueiList.add("uei/1"); // dummy
