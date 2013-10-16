@@ -15,6 +15,7 @@ xsi:schemaLocation="
   <bean id="severityGenerator" class="org.opennms.features.topology.plugins.browsers.SeverityGenerator" />
   <bean id="nodeIdSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
     <argument value="nodeId" />
+    <argument value="nodeLabel"/>
   </bean>
   <bean id="alarmIdColumnLinkGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
     <argument ref="alarmDao" />
@@ -106,6 +107,7 @@ xsi:schemaLocation="
 
   <bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
     <argument value="id" />
+    <argument value="label"/>
   </bean>
   <bean id="ipInterfaceGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator" />
 

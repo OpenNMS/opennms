@@ -1002,7 +1002,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
         Set<VertexRef> vertexRefs = event.getVertexRefs();
-        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
+        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
     }
