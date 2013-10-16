@@ -486,7 +486,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
                 }
                 m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
-                m_graphContainer.redoLayout();
+                m_topologyComponent.updateGraph();
             }
         });
 

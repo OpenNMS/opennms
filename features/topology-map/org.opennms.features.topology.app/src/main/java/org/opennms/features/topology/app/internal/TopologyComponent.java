@@ -72,7 +72,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void backgroundClicked() {
+            m_blockSelectionEvents = true;
             m_graphContainer.getSelectionManager().deselectAll();
+            m_blockSelectionEvents = false;
         }
 
         @Override
