@@ -220,7 +220,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
-    private int m_semanticZoomLevel = 0;
+    private int m_semanticZoomLevel = 1;
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
