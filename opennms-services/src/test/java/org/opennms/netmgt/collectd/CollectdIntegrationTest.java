@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.api.CollectorConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -180,8 +181,12 @@ public class CollectdIntegrationTest extends TestCase {
         
         m_mockUtils.replayAll();
 
+        final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
+        transTemplate.afterPropertiesSet();
+
         m_collectd.setCollectorConfigDao(m_collectorConfigDao);
         m_collectd.setEventIpcManager(m_eventIpcManager);
+        m_collectd.setTransactionTemplate(transTemplate);
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         
