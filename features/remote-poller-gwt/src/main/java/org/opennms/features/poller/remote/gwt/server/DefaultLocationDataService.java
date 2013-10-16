@@ -46,8 +46,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.features.poller.remote.gwt.client.AppStatusDetailsComputer;
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
@@ -72,15 +70,20 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 /**
@@ -130,6 +133,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     @Autowired
     private LocationMonitorDao m_locationDao;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     @Autowired
     private ApplicationDao m_applicationDao;
@@ -211,6 +217,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * <p>initialize</p>
      */
     public void initialize() {
+        LOG.debug("initialize: starting {}", InitializationThread.class.getName());
         new InitializationThread().start();
     }
 
@@ -220,7 +227,13 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         @Override
         public void run() {
-            updateGeolocations();
+            m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    updateGeolocations();
+                }
+            });
+            LOG.debug("initialize: finishing {}", InitializationThread.class.getName());
         }
     }
 

@@ -54,10 +54,10 @@ import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -96,7 +96,7 @@ public class LocationDataServiceTest implements InitializingBean {
     private LocationDataService m_locationDataService;
 
     @Autowired
-    private LocationMonitorDaoHibernate m_locationMonitorDao;
+    private LocationMonitorDao m_locationMonitorDao;
 
     @Autowired
     private ApplicationDao m_applicationDao;
