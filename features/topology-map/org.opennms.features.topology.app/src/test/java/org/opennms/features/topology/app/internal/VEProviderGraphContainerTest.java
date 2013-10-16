@@ -105,6 +105,7 @@ public class VEProviderGraphContainerTest {
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");
 		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
+		expectEdge("pseudo-ncs", "<nodes:g1>-<nodes:g2>", "ncs edge");
 		
 		graph = m_graphContainer.getGraph();
 		
@@ -114,7 +115,7 @@ public class VEProviderGraphContainerTest {
 		
 		reset();
 		
-		m_graphContainer.setCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
+		m_graphContainer.addCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
 		
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");

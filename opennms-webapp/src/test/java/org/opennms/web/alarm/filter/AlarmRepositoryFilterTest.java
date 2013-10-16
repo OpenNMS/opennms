@@ -197,7 +197,7 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
     @Test
     @Transactional
     public void testNegativeServiceFilter(){
-        AlarmCriteria criteria = getCriteria(new NegativeServiceFilter(12));
+        AlarmCriteria criteria = getCriteria(new NegativeServiceFilter(12, null));
         
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(1, alarms.length);
@@ -250,7 +250,7 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
     @Test
     @Transactional
     public void testServiceFilter(){
-        AlarmCriteria criteria = getCriteria(new ServiceFilter(1));
+        AlarmCriteria criteria = getCriteria(new ServiceFilter(1, null));
         
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
         assertEquals(0, alarms.length);

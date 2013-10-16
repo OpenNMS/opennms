@@ -37,6 +37,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -160,7 +162,14 @@ public class GraphSelectionWindow extends Window {
                         m_tree.setChildrenAllowed(newResourceTypeItemId, true);
 
                         for (OnmsResource onmsResource : resourceTypeMapEntry.getValue()) {
-                            String newResourceItemId = onmsResource.getId();
+
+                            String newResourceItemId = null;
+
+                            try {
+                                newResourceItemId = URLDecoder.decode(onmsResource.getId(), "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
 
                             Item newResourceItem = hierarchicalContainer.addItem(newResourceItemId);
 
@@ -184,10 +193,15 @@ public class GraphSelectionWindow extends Window {
                  */
                 if ("resource".equals(type)) {
                     Map<String, String> map = rrdGraphHelper.getGraphResultsForResourceId(itemToExpandId);
+                    Map<String, String> titleNameMapping = rrdGraphHelper.getGraphTitleNameMappingForResourceId(itemToExpandId);
 
-                    for (Map.Entry<String, String> entry : map.entrySet()) {
+                    for (Map.Entry<String, String> entry : titleNameMapping.entrySet()) {
                         String newGraphItemId = itemToExpandId + "." + entry.getKey();
-
+/*
+                        if (hierarchicalContainer.containsId(newGraphItemId)) {
+                            continue;
+                        }
+*/
                         Item newGraphItem = hierarchicalContainer.addItem(newGraphItemId);
 
                         newGraphItem.getItemProperty("label").setValue(entry.getKey());
@@ -198,9 +212,9 @@ public class GraphSelectionWindow extends Window {
                         newGraphItem.getItemProperty("resourceLabel").setValue(String.valueOf(itemToExpand.getItemProperty("resourceLabel").getValue()));
                         newGraphItem.getItemProperty("resourceTypeId").setValue(String.valueOf(itemToExpand.getItemProperty("resourceTypeId").getValue()));
                         newGraphItem.getItemProperty("resourceTypeLabel").setValue(String.valueOf(itemToExpand.getItemProperty("resourceTypeLabel").getValue()));
-                        newGraphItem.getItemProperty("graphId").setValue(itemToExpandId + "." + entry.getKey());
+                        newGraphItem.getItemProperty("graphId").setValue(newGraphItemId);
                         newGraphItem.getItemProperty("graphLabel").setValue(entry.getKey());
-                        newGraphItem.getItemProperty("graphUrl").setValue(entry.getValue());
+                        newGraphItem.getItemProperty("graphUrl").setValue(map.get(entry.getValue()));
 
                         m_tree.setParent(newGraphItemId, itemToExpandId);
                         m_tree.setChildrenAllowed(newGraphItemId, false);

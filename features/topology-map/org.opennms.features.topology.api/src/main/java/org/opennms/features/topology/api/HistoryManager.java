@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.api;
 
+import java.util.List;
+
 public interface HistoryManager {
 
     public void applyHistory(String userId, String fragmentId, GraphContainer container);
@@ -35,5 +37,5 @@ public interface HistoryManager {
     public String createHistory(String userId, GraphContainer container);
 	void onBind(HistoryOperation operation);
 	void onUnbind(HistoryOperation operation);
-    
+	public List<HistoryOperation> getHistoryOperations();
 }

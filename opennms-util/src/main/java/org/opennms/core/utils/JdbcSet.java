@@ -48,7 +48,6 @@ public class JdbcSet<E> extends AbstractSet<E> {
      * <p>Constructor for JdbcSet.</p>
      *
      * @param c a {@link java.util.Collection} object.
-     * @param <E> a E object.
      */
     public JdbcSet(Collection<E> c) {
         m_entries.addAll(c);

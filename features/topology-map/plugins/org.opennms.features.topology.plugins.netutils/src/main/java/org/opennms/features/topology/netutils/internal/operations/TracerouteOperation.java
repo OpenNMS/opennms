@@ -37,49 +37,39 @@ import org.opennms.features.topology.netutils.internal.Node;
 import org.opennms.features.topology.netutils.internal.TracerouteWindow;
 
 public class TracerouteOperation extends AbstractOperation {
-
-    private String tracerouteURL;
+    private String m_tracerouteURL;
 
     @Override
-    public boolean display(final List<VertexRef> targets, final  OperationContext operationContext) {
-        String ipAddr = "";
-
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
         if (targets != null) {
             for (final VertexRef target : targets) {
                 final String addrValue = getIpAddrValue(operationContext, target);
-                if (addrValue != null) {
-                    ipAddr = addrValue;
-                }
+                if (addrValue != null) return super.display(targets, operationContext);
             }
         }
-        if ("".equals(ipAddr)) {
-            return false;
-        }
-        return super.display(targets, operationContext);
+        return false;
     }
 
     @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        String ipAddr = "";
-        String label = "";
-        int nodeID = -1;
+        final String url = getTracerouteURL();
+        if (url == null) return null;
 
         if (targets != null) {
             for (final VertexRef target : targets) {
-                
                 final String addrValue = getIpAddrValue(operationContext, target);
                 final String labelValue = getLabelValue(operationContext, target);
                 final Integer nodeValue = getNodeIdValue(operationContext, target);
-                
+
                 if (addrValue != null && nodeValue != null && nodeValue > 0) {
-                    ipAddr = addrValue;
-                    label = labelValue == null ? "" : labelValue;
-                    nodeID = nodeValue.intValue();
+                    final Node node = new Node(nodeValue.intValue(), addrValue, labelValue == null? "" : labelValue);
+
+                    final String tracerouteUrl = url.startsWith("/")? url : getFullUrl(url);
+                    operationContext.getMainWindow().addWindow(new TracerouteWindow(node, tracerouteUrl));
+                    return null;
                 }
             }
         }
-        final Node node = new Node(nodeID, ipAddr, label);
-        operationContext.getMainWindow().addWindow(new TracerouteWindow(node, getTracerouteURL()));
         return null;
     }
 
@@ -89,11 +79,11 @@ public class TracerouteOperation extends AbstractOperation {
     }
 
     public void setTracerouteURL(final String url) {
-        tracerouteURL = url;
+        m_tracerouteURL = url;
     }
 
     public String getTracerouteURL() {
-        return tracerouteURL;
+        return m_tracerouteURL;
     }
 
 }

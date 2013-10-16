@@ -28,13 +28,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.Table;
-
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -51,6 +44,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
  *
@@ -64,39 +63,23 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     private String m_lockName;
     private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
-    /**
-     * <p>Constructor for AbstractDaoHibernate.</p>
-     *
-     * @param entityClass a {@link java.lang.Class} object.
-     * @param <T> a T object.
-     * @param <K> a K object.
-     */
     public AbstractDaoHibernate(final Class<T> entityClass) {
         super();
         m_entityClass = entityClass;
         Table table = m_entityClass.getAnnotation(Table.class);
         m_lockName = (table == null || "".equals(table.name()) ? m_entityClass.getSimpleName() : table.name()).toUpperCase() + "_ACCESS";
-        
-        
     }
-    
-    
-    
+
     @Override
     protected void initDao() throws Exception {
         getHibernateTemplate().saveOrUpdate(new AccessLock(m_lockName));
     }
 
-
-
-    /**
-     * This is used to lock the table in order to implement upsert type operations
-     */
+    /** {@inheritDoc} */
     @Override
     public void lock() {
         getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.UPGRADE);
     }
-
 
     /** {@inheritDoc} */
     @Override
@@ -104,36 +87,18 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         getHibernateTemplate().initialize(obj);
     }
 
-    /**
-     * <p>flush</p>
-     */
+    /** {@inheritDoc} */
     @Override
     public void flush() {
         getHibernateTemplate().flush();
     }
 
-    /**
-     * <p>clear</p>
-     */
+    /** {@inheritDoc} */
     @Override
     public void clear() {
         getHibernateTemplate().clear();
     }
 
-    /**
-     * <p>evict</p>
-     *
-     * @param entity a T object.
-     */
-    public void evict(final T entity) {
-        getHibernateTemplate().evict(entity);
-    }
-
-    /**
-     * <p>merge</p>
-     *
-     * @param entity a T object.
-     */
     public void merge(final T entity) {
         getHibernateTemplate().merge(entity);
     }
@@ -216,41 +181,11 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().execute(callback).intValue();
     }
 
-    //TODO: This method duplicates below impl, delete this
-    /**
-     * <p>findUnique</p>
-     *
-     * @param query a {@link java.lang.String} object.
-     * @return a T object.
-     */
-    protected T findUnique(final String query) {
-        return findUnique(m_entityClass, query);
-    }
-
-    /**
-     * <p>findUnique</p>
-     *
-     * @param queryString a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a T object.
-     */
     protected T findUnique(final String queryString, final Object... args) {
-        return findUnique(m_entityClass, queryString, args);
-    }
-    
-    /**
-     * <p>findUnique</p>
-     *
-     * @param type a {@link java.lang.Class} object.
-     * @param queryString a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @param <S> a S object.
-     * @return a S object.
-     */
-    protected <S> S findUnique(final Class <? extends S> type, final String queryString, final Object... args) {
-    	final HibernateCallback<S> callback = new HibernateCallback<S>() {
+        final Class <? extends T> type = m_entityClass;
+    	final HibernateCallback<T> callback = new HibernateCallback<T>() {
             @Override
-            public S doInHibernate(final Session session) throws HibernateException, SQLException {
+            public T doInHibernate(final Session session) throws HibernateException, SQLException {
             	final Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
                     query.setParameter(i, args[i]);
@@ -260,11 +195,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             }
 
         };
-//      logger.debug(String.format("findUnique(%s, %s, %s) = %s", type, queryString, Arrays.toString(args), result));
-//      Assert.isTrue(result == null || type.isInstance(result), "Expected "+result+" to an instance of "+type+" but is "+(result == null ? null : result.getClass()));
         return getHibernateTemplate().execute(callback);
     }
-
 
     /**
      * <p>countAll</p>
@@ -476,7 +408,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             getHibernateTemplate().saveOrUpdate(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
-            // Rethrow the exception
             throw e;
         }
     }
@@ -507,7 +438,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     private void logExtraSaveOrUpdateExceptionInformation(final T entity, final DataAccessException e) {
     	Throwable cause = e;
         while (cause.getCause() != null) {
-            //if (cause.getCause().getClass().getName().equals(PSQLException.class.getName())) {
             if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
             	final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
                 LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName(), EntityMode.POJO));
@@ -516,7 +446,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());
                 break;
             }
-            //}
             cause = cause.getCause();
         }
     }

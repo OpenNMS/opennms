@@ -28,60 +28,55 @@
 
 package org.opennms.features.topology.api;
 
+import com.vaadin.data.Property;
 import java.util.Collection;
-
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Property;
-
 public interface GraphContainer extends DisplayState {
 
-	public interface ChangeListener {
-		public void graphChanged(GraphContainer graphContainer);
-	}
+    public interface ChangeListener {
+        public void graphChanged(GraphContainer graphContainer);
+    }
 
-	GraphProvider getBaseTopology();
+    GraphProvider getBaseTopology();
 
-	void setBaseTopology(GraphProvider graphProvider);
+    void setBaseTopology(GraphProvider graphProvider);
 
-	Criteria[] getCriteria();
+    Criteria[] getCriteria();
 
-	void setCriteria(Criteria criteria);
+    void addCriteria(Criteria criteria);
 
-	void removeCriteria(Criteria criteria);
+    void removeCriteria(Criteria criteria);
 
-	void addChangeListener(ChangeListener listener);
+    // clears all criteria which are currently sets
+    void clearCriteria();
 
-	void removeChangeListener(ChangeListener listener);
+    void addChangeListener(ChangeListener listener);
 
-	SelectionManager getSelectionManager();
+    void removeChangeListener(ChangeListener listener);
 
-	void setSelectionManager(SelectionManager selectionManager);
+    SelectionManager getSelectionManager();
 
-	Graph getGraph();
+    void setSelectionManager(SelectionManager selectionManager);
+
+    Graph getGraph();
 
     AutoRefreshSupport getAutoRefreshSupport();
 
     boolean hasAutoRefreshSupport();
 
-	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
+    Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
     
-	MapViewManager getMapViewManager();
+    MapViewManager getMapViewManager();
 
-	Property<Double> getScaleProperty();
+    Property<Double> getScaleProperty();
 
     StatusProvider getStatusProvider();
 
     void setStatusProvider(StatusProvider statusProvider);
-
-    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
-    String getUserName();
-
-    // TODO move to another location, The user name should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setUserName(String userName);
 
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();

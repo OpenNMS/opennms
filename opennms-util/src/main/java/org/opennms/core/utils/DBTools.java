@@ -30,7 +30,6 @@ package org.opennms.core.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * This class is intended to be group some utility classes related with RDBMS
@@ -51,7 +50,7 @@ public class DBTools {
      * 
      * @see #constructUrl
      */
-    public static final String JDBC_HOST = "OPENNMS_JDBC_HOSTNAME";
+    private static final String JDBC_HOST = "OPENNMS_JDBC_HOSTNAME";
 
     /**
      * Minimal port range
@@ -126,7 +125,7 @@ public class DBTools {
      */
     public int getNumberOfInstances() {
         return _counter;
-    };
+    }
 
     /**
      * Constructs a JDBC url given a set of fragments. The resulting Url will
@@ -154,13 +153,9 @@ public class DBTools {
         if (hostname_ == null) {
             throw new NullPointerException(DBTools.class.getName() + ": hostname cannot be null");
         }
-        try {
-            Matcher match = _pattern.matcher(url_);
-            url = match.replaceFirst(hostname_);
-        } catch (PatternSyntaxException patternExp) {
-            throw patternExp;
-        }
+        Matcher match = _pattern.matcher(url_);
+        url = match.replaceFirst(hostname_);
         return url;
     }
 
-} // End of class
+}

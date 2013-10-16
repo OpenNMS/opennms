@@ -47,13 +47,18 @@
     <dependency>
       <groupId>com.google.code.geocoder-java</groupId>
       <artifactId>geocoder-java</artifactId>
-      <version>0.11</version>
-			<exclusions>
-			  <exclusion>
-			    <groupId>commons-logging</groupId>
-			    <artifactId>commons-logging</artifactId>
-			  </exclusion>
-			</exclusions>
+      <version>0.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

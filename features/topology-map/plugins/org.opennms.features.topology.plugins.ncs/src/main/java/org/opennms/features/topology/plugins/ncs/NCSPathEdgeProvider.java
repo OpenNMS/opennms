@@ -1,9 +1,6 @@
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -21,11 +18,11 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
     
-    public static class NCSServicePathCriteria extends ArrayList<Edge> implements Criteria {
+    public static class NCSServicePathCriteria extends Criteria implements Iterable<Edge> {
         private static final long serialVersionUID = 5833760704861282509L;
-
+        private List<Edge> m_edgeList;
         public NCSServicePathCriteria(List<Edge> edges) {
-            super(edges);
+            m_edgeList = edges;
         }
         
         @Override
@@ -37,7 +34,29 @@ public class NCSPathEdgeProvider implements EdgeProvider {
         public String getNamespace() {
             return "ncsPath";
         }
-        
+
+        @Override
+        public int hashCode() {
+            return m_edgeList.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof NCSServicePathCriteria){
+                NCSServicePathCriteria c = (NCSServicePathCriteria) obj;
+                return c.m_edgeList.equals(m_edgeList);
+            }
+            return false;
+        }
+
+        public List<Edge> getEdges(){
+            return m_edgeList;
+        }
+
+        @Override
+        public Iterator<Edge> iterator() {
+            return m_edgeList.iterator();
+        }
     }
     
     public static class NCSPathEdge extends AbstractEdge {
@@ -104,7 +123,7 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     public List<Edge> getEdges(Criteria... criteria) {
         for (Criteria criterium : criteria) {
             try {
-                return (NCSServicePathCriteria)criterium;
+                return ((NCSServicePathCriteria)criterium).getEdges();
             } catch (ClassCastException e) {}
         }
         return Collections.<Edge>emptyList();

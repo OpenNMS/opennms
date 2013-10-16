@@ -1,6 +1,16 @@
 @CHARSET "UTF-8";
 @import "../opennms/styles.css";
 
+.opacity-50{
+    opacity: 0.5;
+    -moz-opacity:0.5;
+}
+
+.opacity-40{
+    opacity: 0.4;
+    -moz-opacity:0.4;
+}
+
 /** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
 .v-app table td {
     font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
@@ -26,6 +36,9 @@
     margin: 0px;
 }
 
+/**
+* Button Styles
+*/
 div.v-button.v-button-toolbar-button.toolbar-button > span {
 	padding: 4px 4px 0 1px;
 }
@@ -50,6 +63,27 @@ div.v-table-header-wrap {
 	padding: 7px 4px 0 1px;
 }
 
+.v-slot-slider-tool{
+    padding: 0px 0 2px 6px;
+}
+/**
+* End Button styles
+*/
+
+/**
+* Toolbar spacing
+*/
+.v-vertical > .v-spacing {
+    height: 10px;
+}
+
+.v-horizontal > .v-spacing {
+    width: 5px;
+}
+/**
+* End toolbar spacing
+*/
+
 .edge {
 	stroke: #ccc;
 }
@@ -71,166 +105,10 @@ div.v-table-header-wrap {
 }
 
 .map-controls {
-	background-color: #eeeeee;
+	background-color: #ffffff;
 	border-left: 1px solid #dddddd;
-	
-}
-
-
-/**
- * Table row CSS. Coordinate these class names with the values inside:
- *
- * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
- */
-
-/* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
-.v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
-
-.v-table-row-alarm-minor,
-.v-table-row-alarm-minor-noack { 
-  border-top: 2px solid #FF9900 !important;
-}
-.v-table-row-alarm-minor-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-minor.v-table-row,
-.v-table-row-alarm-minor-noack.v-table-row {
-  background-color: #FFEBCD;
-}
-.v-table-row-alarm-minor.v-table-row-odd,
-.v-table-row-alarm-minor-noack.v-table-row-odd {
-  background-color: #F8E4C6;
-}
-.v-table-row-alarm-minor .v-table-cell-content-bright,
-.v-table-row-alarm-minor-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgMinor.png);
-}
-
-.v-table-row-alarm-critical,
-.v-table-row-alarm-critical-noack { 
-  border-top: 2px solid #CC0000 !important;
-}
-.v-table-row-alarm-critical-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-critical.v-table-row,
-.v-table-row-alarm-critical-noack.v-table-row {
-  background-color: #F5CDCD;
-}
-.v-table-row-alarm-critical.v-table-row-odd,
-.v-table-row-alarm-critical-noack.v-table-row-odd {
-  background-color: #EEC6C6;
-}
-.v-table-row-alarm-critical .v-table-cell-content-bright,
-.v-table-row-alarm-critical-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgCritical.png);
-}
-
-.v-table-row-alarm-major,
-.v-table-row-alarm-major-noack { 
-  border-top: 2px solid #FF3300 !important;
-}
-.v-table-row-alarm-major-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-major.v-table-row,
-.v-table-row-alarm-major-noack.v-table-row {
-  background-color: #FFD7CD;
-}
-.v-table-row-alarm-major.v-table-row-odd,
-.v-table-row-alarm-major-noack.v-table-row-odd {
-  background-color: #F8D0C6;
-}
-.v-table-row-alarm-major .v-table-cell-content-bright,
-.v-table-row-alarm-major-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgMajor.png);
-}
-
-.v-table-row-alarm-warning,
-.v-table-row-alarm-warning-noack { 
-  border-top: 2px solid #FFCC00 !important;
-}
-.v-table-row-alarm-warning-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-warning.v-table-row,
-.v-table-row-alarm-warning-noack.v-table-row {
-  background-color: #FFF5CD;
-}
-.v-table-row-alarm-warning.v-table-row-odd,
-.v-table-row-alarm-warning-noack.v-table-row-odd {
-  background-color: #F8EEC6;
-}
-.v-table-row-alarm-warning .v-table-cell-content-bright,
-.v-table-row-alarm-warning-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgWarning.png);
-}
-
-.v-table-row-alarm-indeterminate,
-.v-table-row-alarm-indeterminate-noack { 
-  border-top: 2px solid #999000 !important;
-}
-.v-table-row-alarm-indeterminate-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-indeterminate.v-table-row,
-.v-table-row-alarm-indeterminate-noack.v-table-row {
-  background-color: #EBEBCD;
-}
-.v-table-row-alarm-indeterminate.v-table-row-odd,
-.v-table-row-alarm-indeterminate-noack.v-table-row-odd {
-  background-color: #E4E4C6;
-}
-.v-table-row-alarm-indeterminate .v-table-cell-content-bright,
-.v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgIndeterminate.png);
-}
-
-.v-table-row-alarm-normal,
-.v-table-row-alarm-normal-noack { 
-  border-top: 2px solid #336600 !important;
-}
-.v-table-row-alarm-normal-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-normal.v-table-row,
-.v-table-row-alarm-normal-noack.v-table-row {
-  background-color: #D7E1CD;
-}
-.v-table-row-alarm-normal.v-table-row-odd,
-.v-table-row-alarm-normal-noack.v-table-row-odd {
-  background-color: #D0DAC6;
-}
-.v-table-row-alarm-normal .v-table-cell-content-bright,
-.v-table-row-alarm-normal-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgNormal.png);
-}
-
-.v-table-row-alarm-cleared,
-.v-table-row-alarm-cleared-noack { 
-  border-top: 2px solid #999 !important;
-}
-.v-table-row-alarm-cleared-noack { 
-  font-weight: bold;
-}
-.v-table-row-alarm-cleared.v-table-row,
-.v-table-row-alarm-cleared-noack.v-table-row {
-  background-color: #EEEEEE;
-}
-.v-table-row-alarm-cleared.v-table-row-odd,
-.v-table-row-alarm-cleared-noack.v-table-row-odd {
-  background-color: #E7E7E7;
-}
-.v-table-row-alarm-cleared .v-table-cell-content-bright,
-.v-table-row-alarm-cleared-noack .v-table-cell-content-bright 
-{
-  background-image: url(../../../images/bgCleared.png);
+    width: 100%;
+    height: 100%;
 }
 
 
@@ -303,3 +181,112 @@ div.v-table-header-wrap {
 }
 
 /*** End Vertex Styles***/
+
+/** SearchBox Styles **/
+.search-token-field {
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+    background-color: #00B4F0;
+    color: black;
+	padding: 2px 5px 2px 5px;
+	margin: 1px;
+}
+
+.search-token-field a:hover{
+	color:white;
+}
+
+.search-token-namespace{
+	font-weight: bold;
+}
+
+.gwt-SuggestBox {
+  padding: 2px;
+}
+.gwt-SuggestBoxPopup {
+  margin-left: 3px;
+}
+.gwt-SuggestBoxPopup .item {
+  padding: 2px 6px;
+  color: #424242;
+  cursor: default;
+}
+.gwt-SuggestBoxPopup .item-selected {
+  background: #cdcdcd;
+}
+.gwt-SuggestBoxPopup .suggestPopupContent {
+  background: white;
+}
+.gwt-SuggestBoxPopup .suggestPopupTopCenter {
+  background: url(../images/chrome/hborder.png) repeat-x;
+}
+.gwt-SuggestBoxPopup .suggestPopupBottomCenter {
+  background: url(../images/chrome/hborder.png) repeat-x 0px -4px;
+  -background: url(../images/chrome/hborder_ie6.png) repeat-x 0px -4px;
+}
+.gwt-SuggestBoxPopup .suggestPopupMiddleLeft {
+  background: url(../images/chrome/vborder.png) repeat-y;
+}
+.gwt-SuggestBoxPopup .suggestPopupMiddleRight {
+  background: url(../images/chrome/vborder.png) repeat-y -4px 0px;
+  -background: url(../images/chrome/vborder_ie6.png) repeat-y -4px 0px;
+}
+.gwt-SuggestBoxPopup .suggestPopupTopLeftInner {
+  width: 5px;
+  height: 5px;
+  zoom: 1;
+}
+.gwt-SuggestBoxPopup .suggestPopupTopRightInner {
+  width: 8px;
+  height: 5px;
+  zoom: 1;
+}
+.gwt-SuggestBoxPopup .suggestPopupBottomLeftInner {
+  width: 5px;
+  height: 8px;
+  zoom: 1;
+}
+.gwt-SuggestBoxPopup .suggestPopupBottomRightInner {
+  width: 8px;
+  height: 8px;
+  zoom: 1;
+}
+.gwt-SuggestBoxPopup .suggestPopupTopLeft {
+  background: url(../images/chrome/corner.png) no-repeat 0px -23px;
+  -background: url(../images/chrome/corner_ie6.png) no-repeat 0px -23px;
+}
+.gwt-SuggestBoxPopup .suggestPopupTopRight {
+  background: url(../images/chrome/corner.png) no-repeat -5px -23px;
+  -background: url(../images/chrome/corner_ie6.png) no-repeat -5px -23px;
+}
+.gwt-SuggestBoxPopup .suggestPopupBottomLeft {
+  background: url(../images/chrome/corner.png) no-repeat 0px -28px;
+  -background: url(../images/chrome/corner_ie6.png) no-repeat 0px -28px;
+}
+.gwt-SuggestBoxPopup .suggestPopupBottomRight {
+  background: url(../images/chrome/corner.png) no-repeat -5px -28px;
+  -background: url(../images/chrome/corner_ie6.png) no-repeat -5px -28px;
+}
+* html .gwt-SuggestBoxPopup .suggestPopupTopLeftInner {
+  width: 5px;
+  height: 5px;
+  overflow: hidden;
+}
+* html .gwt-SuggestBoxPopup .suggestPopupTopRightInner {
+  width: 8px;
+  height: 5px;
+  overflow: hidden;
+}
+* html .gwt-SuggestBoxPopup .suggestPopupBottomLeftInner {
+  width: 5px;
+  height: 8px;
+  overflow: hidden;
+}
+* html .gwt-SuggestBoxPopup .suggestPopupBottomRightInner {
+  width: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+
+/** End Search Box Styles **/

@@ -101,7 +101,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     @Override
     public void sessionInitialized(String sessionId) {
-        ; // we don't want to do anything
+        // we don't want to do anything
     }
 
     /**

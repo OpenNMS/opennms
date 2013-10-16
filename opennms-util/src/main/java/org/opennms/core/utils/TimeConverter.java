@@ -82,10 +82,8 @@ public class TimeConverter {
      * @param valueToConvert
      *            The string to convert to milliseconds.
      * @return Returns the string converted to a millisecond value.
-     * @exception java.lang.NumberFormatException
-     *                Thrown if the string is malformed and a number cannot be
-     *                extracted from the value.
-     * @throws java.lang.NumberFormatException if any.
+     * @throws java.lang.NumberFormatException if the string is malformed and a number cannot be
+     *                extracted from the value..
      */
     public static long convertToMillis(String valueToConvert) throws NumberFormatException {
         valueToConvert = valueToConvert.trim();

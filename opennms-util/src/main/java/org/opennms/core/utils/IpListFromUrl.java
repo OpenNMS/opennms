@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Convenience class for generating a list of IP addresses from a file URL.
  */
-public class IpListFromUrl extends Object {
+public class IpListFromUrl {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
 	

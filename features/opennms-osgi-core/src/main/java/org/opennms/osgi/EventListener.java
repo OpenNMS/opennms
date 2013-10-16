@@ -47,8 +47,8 @@ import java.util.Properties;
  * @author Markus von Rüden
  *
  */
-public class EventListener {
-    private static Logger LOG = LoggerFactory.getLogger(EventListener.class);
+class EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(EventListener.class);
 
     /**
      * The EventListener is stored in the OSGi-Container as a service. To get all listeners
@@ -56,7 +56,6 @@ public class EventListener {
      * This method adds a Property "consumingType" to group the EventListeners.
      * 
      * @param consumingType Means this {@link org.opennms.osgi.EventListener} consumes Events of type 'consumingType'
-     * @return
      */
     public static Properties getProperties(Class<?> consumingType) {
         Properties properties = new Properties();

@@ -48,7 +48,7 @@ public class WaterfallExecutor {
      * This function recursively calls the {@link WaterfallCallable} tasks with the given chain of ExecutorServices.
      */
     @SuppressWarnings("unchecked")
-    public static void waterfall(Iterator<ExecutorService> executors, Callable<Callable<?>> callable) throws InterruptedException, ExecutionException {
+    private static void waterfall(Iterator<ExecutorService> executors, Callable<Callable<?>> callable) throws InterruptedException, ExecutionException {
         // Fetch the next ExecutorService
         ExecutorService executor = null;
         try {
@@ -65,12 +65,10 @@ public class WaterfallExecutor {
         Future<Callable<?>> task = executor.submit(callable);
 
         Callable value = task.get();
-        if (value == null) {
-            // The {@link WaterfallCallable} returned null; this terminates the chain of execution
-            return;
-        } else {
+        if (value != null) {
             // Send the return value to the next ExecutorService
             waterfall(executors, value);
         }
+        // The {@link WaterfallCallable} returned null; this terminates the chain of execution
     }
 }

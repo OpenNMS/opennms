@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 public class NoClosePipedInputStreamTest {
 
@@ -136,8 +137,8 @@ public class NoClosePipedInputStreamTest {
                     in.receive(1);
                     latch.countDown();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
 
@@ -169,7 +170,7 @@ public class NoClosePipedInputStreamTest {
                     latch.countDown();
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
                 }
             }
         });
@@ -201,7 +202,7 @@ public class NoClosePipedInputStreamTest {
                     latch.countDown();
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
                 }
             }
         });
@@ -304,8 +305,8 @@ public class NoClosePipedInputStreamTest {
                     in.receive(testByte, 0, 1);
                     latch.countDown();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
         thread.start();
@@ -334,8 +335,8 @@ public class NoClosePipedInputStreamTest {
                     latch.countDown();
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
 
@@ -364,7 +365,7 @@ public class NoClosePipedInputStreamTest {
                     in.receive(testByte, 0, 1);
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
                 } 
             }
         });
@@ -442,8 +443,8 @@ public class NoClosePipedInputStreamTest {
                     in.read();
                     latch.countDown();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
 
@@ -474,8 +475,8 @@ public class NoClosePipedInputStreamTest {
                     latch.countDown();
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
 
@@ -506,8 +507,8 @@ public class NoClosePipedInputStreamTest {
                     latch.countDown();
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } 
+                    LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+                }
             }
         });
 

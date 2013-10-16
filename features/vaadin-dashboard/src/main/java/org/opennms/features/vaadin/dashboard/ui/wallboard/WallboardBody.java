@@ -28,6 +28,7 @@ public class WallboardBody extends VerticalLayout {
     private ProgressIndicator progressIndicator;
     private Label debugLabel = new Label("debug");
     private boolean debugEnabled = false;
+    private boolean paused = false;
 
     public WallboardBody() {
         addStyleName("wallboard-board");
@@ -90,6 +91,22 @@ public class WallboardBody extends VerticalLayout {
         } finally {
             VaadinSession.getCurrent().unlock();
         }
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isPausable() {
+        return dashletSpecs.size() > 0;
     }
 
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
@@ -182,6 +199,10 @@ public class WallboardBody extends VerticalLayout {
     }
 
     private void advanceTimer() {
+
+        if (paused) {
+            return;
+        }
 
         waitFor = (waitFor > 250 ? waitFor - 250 : 0);
 

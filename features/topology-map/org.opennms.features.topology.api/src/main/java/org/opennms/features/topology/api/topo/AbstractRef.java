@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
+// TODO rename class. It is not abstract it is instantiable
 public class AbstractRef implements Ref {
 	
 	private final String m_namespace;
