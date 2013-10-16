@@ -59,7 +59,7 @@ public class GWTVertex extends JavaScriptObject {
     	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
-    	        "severityArray":[], "total": 0, "isGroup": true};
+    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex"};
 	}-*/;
 
     public final native String getId()/*-{
@@ -222,6 +222,14 @@ public class GWTVertex extends JavaScriptObject {
     public final native void setTotal(int newTotal) /*-{
     	this.total = newTotal;
     }-*/;
+
+    public final native void setStyleName(String stylename) /*-{
+        this.stylename = stylename;
+    }-*/;
+
+    public final native String getStyleName() /*-{
+        return this.stylename;
+    }-*/;
     
     
 
@@ -288,7 +296,8 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public String call(GWTVertex datum, int index) {
-                return datum.isSelected() ? "vertex selected" : "vertex";
+                return datum.getStyleName();
+                //return datum.isSelected() ? "vertex selected" : "vertex";
             }};
     }
 
@@ -621,7 +630,7 @@ public class GWTVertex extends JavaScriptObject {
 			    return svg;
     		
     }
-    
-    
+
+
 
 }

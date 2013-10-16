@@ -60,14 +60,12 @@ public abstract class DestinationPathManager {
      * 
      */
     private DestinationPaths allPaths;
+
     /**
      * 
      */
     private Map<String, Path> m_destinationPaths;
-    /**
-     * 
-     */
-    protected InputStream configIn;
+
     /**
      * 
      */

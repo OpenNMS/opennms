@@ -52,6 +52,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
  * 
@@ -135,24 +141,19 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         return (sessionFactory.getCurrentSession().get(AccessLock.class, m_lockName, LockOptions.UPGRADE) != null);
     }
 
-
     /** {@inheritDoc} */
     @Override
     public void initialize(final Object obj) {
         Hibernate.initialize(obj);
     }
 
-    /**
-     * <p>flush</p>
-     */
+    /** {@inheritDoc} */
     @Override
     public void flush() {
         sessionFactory.getCurrentSession().flush();
     }
 
-    /**
-     * <p>clear</p>
-     */
+    /** {@inheritDoc} */
     @Override
     public void clear() {
         sessionFactory.getCurrentSession().clear();
@@ -260,24 +261,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         return ((Number)query.uniqueResult()).intValue();
     }
 
-    //TODO: This method duplicates below impl, delete this
-    /**
-     * <p>findUnique</p>
-     *
-     * @param query a {@link java.lang.String} object.
-     * @return a T object.
-     */
-    protected T findUnique(final String query) {
-        return findUnique(m_entityClass, query);
-    }
-
-    /**
-     * <p>findUnique</p>
-     *
-     * @param queryString a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a T object.
-     */
     protected T findUnique(final String queryString, final Object... args) {
         return findUnique(m_entityClass, queryString, args);
     }
@@ -300,7 +283,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         final Object result = query.uniqueResult();
         return result == null ? null : type.cast(result);
     }
-
 
     /**
      * <p>countAll</p>
@@ -479,7 +461,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
             sessionFactory.getCurrentSession().saveOrUpdate(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
-            // Rethrow the exception
             throw e;
         }
     }
@@ -510,7 +491,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
     private void logExtraSaveOrUpdateExceptionInformation(final T entity, final DataAccessException e) {
     	Throwable cause = e;
         while (cause.getCause() != null) {
-            //if (cause.getCause().getClass().getName().equals(PSQLException.class.getName())) {
             if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
             	final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
                 LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName()));
@@ -519,7 +499,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
                 LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());
                 break;
             }
-            //}
             cause = cause.getCause();
         }
     }

@@ -34,7 +34,7 @@ import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 /**
- * This class implements a {@link Dashlet} for testing purposes and displays a static map image.
+ * This class implements a {@link Dashlet} for displaying the node map application.
  *
  * @author Christian Pape
  */

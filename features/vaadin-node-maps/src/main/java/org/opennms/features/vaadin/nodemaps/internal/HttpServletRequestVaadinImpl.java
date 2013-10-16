@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,14 +28,6 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import com.vaadin.server.VaadinRequest;
-import org.opennms.web.api.OnmsHeaderProvider;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +36,16 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.opennms.web.api.OnmsHeaderProvider;
+
+import com.vaadin.server.VaadinRequest;
 
 /**
  * This class creates an {@link HttpServletRequest} object that delegates all calls to
@@ -54,323 +56,324 @@ import java.util.Map;
  */
 public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 
-	private final VaadinRequest m_request;
-	
-	public HttpServletRequestVaadinImpl(VaadinRequest request) {
-		m_request = request;
-	}
+    private final VaadinRequest m_request;
 
-	@Override
-	public String getAuthType() {
-		return m_request.getAuthType();
-	}
+    public HttpServletRequestVaadinImpl(VaadinRequest request) {
+        m_request = request;
+    }
 
-	@Override
-	public String getContextPath() {
-		return m_request.getContextPath();
-	}
+    @Override
+    public String getAuthType() {
+        return m_request.getAuthType();
+    }
 
-	@Override
-	public Cookie[] getCookies() {
-		return m_request.getCookies();
-	}
+    @Override
+    public String getContextPath() {
+        return m_request.getContextPath();
+    }
 
-	@Override
-	public long getDateHeader(String name) {
-		return m_request.getDateHeader(name);
-	}
+    @Override
+    public Cookie[] getCookies() {
+        return m_request.getCookies();
+    }
 
-	@Override
-	public String getHeader(String name) {
-		return m_request.getHeader(name);
-	}
+    @Override
+    public long getDateHeader(String name) {
+        return m_request.getDateHeader(name);
+    }
 
-	@Override
-	public Enumeration getHeaderNames() {
-		return m_request.getHeaderNames();
-	}
+    @Override
+    public String getHeader(String name) {
+        return m_request.getHeader(name);
+    }
 
-	@Override
-	public Enumeration getHeaders(String name) {
-		return m_request.getHeaders(name);
-	}
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        return m_request.getHeaderNames();
+    }
 
-	@Override
-	public int getIntHeader(String name) {
-		return Integer.parseInt(m_request.getHeader(name));
-	}
+    @Override
+    public Enumeration<String> getHeaders(String name) {
+        return m_request.getHeaders(name);
+    }
 
-	@Override
-	public String getMethod() {
-		return m_request.getMethod();
-	}
+    @Override
+    public int getIntHeader(String name) {
+        return Integer.parseInt(m_request.getHeader(name));
+    }
 
-	@Override
-	public String getPathInfo() {
-		return m_request.getPathInfo();
-	}
+    @Override
+    public String getMethod() {
+        return m_request.getMethod();
+    }
 
-	@Override
-	public String getPathTranslated() {
-		return null;
-	}
+    @Override
+    public String getPathInfo() {
+        return m_request.getPathInfo();
+    }
 
-	@Override
-	public String getQueryString() {
-		return null;
-	}
+    @Override
+    public String getPathTranslated() {
+        return null;
+    }
 
-	@Override
-	public String getRemoteUser() {
-		return m_request.getRemoteUser();
-	}
+    @Override
+    public String getQueryString() {
+        return null;
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getRequestURI() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestURI()");
-	}
+    @Override
+    public String getRemoteUser() {
+        return m_request.getRemoteUser();
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public StringBuffer getRequestURL() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestURL()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getRequestURI() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestURI()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getRequestedSessionId() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestedSessionId()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public StringBuffer getRequestURL() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestURL()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getServletPath() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServletPath()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getRequestedSessionId() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRequestedSessionId()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public HttpSession getSession() {
-		//return VaadinSession.getCurrent();
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getSession()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getServletPath() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServletPath()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public HttpSession getSession(boolean create) {
-		//return VaadinSession.getCurrent();
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getSession()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public HttpSession getSession() {
+        //return VaadinSession.getCurrent();
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getSession()");
+    }
 
-	@Override
-	public Principal getUserPrincipal() {
-		return m_request.getUserPrincipal();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public HttpSession getSession(boolean create) {
+        //return VaadinSession.getCurrent();
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getSession()");
+    }
 
-	@Override
-	public boolean isRequestedSessionIdFromCookie() {
-		return false;
-	}
+    @Override
+    public Principal getUserPrincipal() {
+        return m_request.getUserPrincipal();
+    }
 
-	@Override
-	public boolean isRequestedSessionIdFromURL() {
-		return false;
-	}
+    @Override
+    public boolean isRequestedSessionIdFromCookie() {
+        return false;
+    }
 
-	@Override
-	public boolean isRequestedSessionIdFromUrl() {
-		return false;
-	}
+    @Override
+    public boolean isRequestedSessionIdFromURL() {
+        return false;
+    }
 
-	@Override
-	public boolean isRequestedSessionIdValid() {
-		return false;
-	}
+    @Override
+    public boolean isRequestedSessionIdFromUrl() {
+        return false;
+    }
 
-	@Override
-	public boolean isUserInRole(String role) {
-		return m_request.isUserInRole(role);
-	}
+    @Override
+    public boolean isRequestedSessionIdValid() {
+        return false;
+    }
 
-	@Override
-	public Object getAttribute(String name) {
-		return m_request.getAttribute(name);
-	}
+    @Override
+    public boolean isUserInRole(String role) {
+        return m_request.isUserInRole(role);
+    }
 
-	@Override
-	public Enumeration getAttributeNames() {
-		return m_request.getAttributeNames();
-	}
+    @Override
+    public Object getAttribute(String name) {
+        return m_request.getAttribute(name);
+    }
 
-	@Override
-	public String getCharacterEncoding() {
-		return m_request.getCharacterEncoding();
-	}
+    @Override
+    public Enumeration<String> getAttributeNames() {
+        return m_request.getAttributeNames();
+    }
 
-	@Override
-	public int getContentLength() {
-		return m_request.getContentLength();
-	}
+    @Override
+    public String getCharacterEncoding() {
+        return m_request.getCharacterEncoding();
+    }
 
-	@Override
-	public String getContentType() {
-		return m_request.getContentType();
-	}
+    @Override
+    public int getContentLength() {
+        return m_request.getContentLength();
+    }
 
-	@Override
-	public ServletInputStream getInputStream() throws IOException {
-		throw new IOException("Cannot get input stream from " + this.getClass().getName());
-	}
+    @Override
+    public String getContentType() {
+        return m_request.getContentType();
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getLocalAddr() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalAddr()");
-	}
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        throw new IOException("Cannot get input stream from " + this.getClass().getName());
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getLocalName() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalName()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getLocalAddr() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalAddr()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public int getLocalPort() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalPort()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getLocalName() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalName()");
+    }
 
-	@Override
-	public Locale getLocale() {
-		return m_request.getLocale();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int getLocalPort() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getLocalPort()");
+    }
 
-	@Override
-	public Enumeration getLocales() {
-		return m_request.getLocales();
-	}
+    @Override
+    public Locale getLocale() {
+        return m_request.getLocale();
+    }
 
-	@Override
-	public String getParameter(String name) {
-		return m_request.getParameter(name);
-	}
+    @Override
+    public Enumeration<Locale> getLocales() {
+        return m_request.getLocales();
+    }
 
-	@Override
-	public Map getParameterMap() {
-		return m_request.getParameterMap();
-	}
+    @Override
+    public String getParameter(String name) {
+        return m_request.getParameter(name);
+    }
 
-	@Override
-	public Enumeration getParameterNames() {
-		return Collections.enumeration(Collections.emptyList());
-	}
+    @Override
+    public Map<String,String[]> getParameterMap() {
+        return m_request.getParameterMap();
+    }
 
-	@Override
-	public String[] getParameterValues(String name) {
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Enumeration getParameterNames() {
+        return Collections.enumeration(Collections.emptyList());
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getProtocol() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getProtocol()");
-	}
+    @Override
+    public String[] getParameterValues(String name) {
+        return null;
+    }
 
-	@Override
-	public BufferedReader getReader() throws IOException {
-		return m_request.getReader();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getProtocol() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getProtocol()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getRealPath(String path) {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRealPath()");
-	}
+    @Override
+    public BufferedReader getReader() throws IOException {
+        return m_request.getReader();
+    }
 
-	@Override
-	public String getRemoteAddr() {
-		return m_request.getRemoteAddr();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getRealPath(String path) {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getRealPath()");
+    }
 
-	@Override
-	public String getRemoteHost() {
-		return m_request.getRemoteHost();
-	}
+    @Override
+    public String getRemoteAddr() {
+        return m_request.getRemoteAddr();
+    }
 
-	@Override
-	public int getRemotePort() {
-		return m_request.getRemotePort();
-	}
+    @Override
+    public String getRemoteHost() {
+        return m_request.getRemoteHost();
+    }
 
-	@Override
-	public RequestDispatcher getRequestDispatcher(String path) {
-		return null;
-	}
+    @Override
+    public int getRemotePort() {
+        return m_request.getRemotePort();
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getScheme() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getScheme()");
-	}
+    @Override
+    public RequestDispatcher getRequestDispatcher(String path) {
+        return null;
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public String getServerName() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerName()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getScheme() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getScheme()");
+    }
 
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Override
-	public int getServerPort() {
-		throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerPort()");
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public String getServerName() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerName()");
+    }
 
-	@Override
-	public boolean isSecure() {
-		return m_request.isSecure();
-	}
+    /**
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public int getServerPort() {
+        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerPort()");
+    }
 
-	@Override
-	public void removeAttribute(String name) {
-		m_request.removeAttribute(name);
-	}
+    @Override
+    public boolean isSecure() {
+        return m_request.isSecure();
+    }
 
-	@Override
-	public void setAttribute(String name, Object o) {
-		m_request.setAttribute(name, o);
-	}
+    @Override
+    public void removeAttribute(String name) {
+        m_request.removeAttribute(name);
+    }
 
-	@Override
-	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-		// Do nothing
-	}
+    @Override
+    public void setAttribute(String name, Object o) {
+        m_request.setAttribute(name, o);
+    }
+
+    @Override
+    public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
+        // Do nothing
+    }
 }

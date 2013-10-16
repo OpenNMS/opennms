@@ -1,17 +1,17 @@
 package org.opennms.features.topology.app.internal.gwt.client.view;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Widget;
 import org.opennms.features.topology.app.internal.gwt.client.GWTBoundingBox;
 import org.opennms.features.topology.app.internal.gwt.client.GWTGraph;
+import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.Widget;
-
-public interface TopologyView<T> {
+public interface TopologyView<T extends VTopologyComponent.TopologyViewRenderer> {
     
     public static final int LEFT_MARGIN = 60;
     

@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.ncs;
 
 import java.util.*;
 
+import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -222,24 +223,53 @@ public class NCSEdgeProvider implements EdgeProvider {
 		// TODO: Implement me
 	}
 
-	public static class NCSServiceCriteria extends ArrayList<Long> implements Criteria {
+	public static class NCSServiceCriteria extends Criteria implements Iterable<Long> {
 		
 		private static final long serialVersionUID = 5833460704861282509L;
+        private List<Long> m_ncsServiceList;
 		
 		public NCSServiceCriteria(Collection<Long> serviceIds) {
-			super(serviceIds);
-		}
+            m_ncsServiceList = Lists.newArrayList(serviceIds);
+        }
 
 		@Override
 		public String getNamespace() {
 			return "ncs";
 		}
 
-		@Override
+        @Override
+        public int hashCode() {
+            return m_ncsServiceList.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof NCSServiceCriteria){
+                NCSServiceCriteria c = (NCSServiceCriteria) obj;
+                return c.m_ncsServiceList.equals(m_ncsServiceList);
+            }
+
+            return false;
+        }
+
+        @Override
 		public ElementType getType() {
 			return ElementType.EDGE;
 		}
-	}
+
+        @Override
+        public Iterator<Long> iterator() {
+            return m_ncsServiceList.iterator();
+        }
+
+        public int getServiceCount() {
+            return m_ncsServiceList.size();
+        }
+
+        public List<Long> getServiceIds() {
+            return m_ncsServiceList;
+        }
+    }
 	
 	public static Criteria createCriteria(Collection<Long> selectedIds) {
 		return new NCSServiceCriteria(selectedIds);

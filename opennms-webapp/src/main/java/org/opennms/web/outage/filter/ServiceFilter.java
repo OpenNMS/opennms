@@ -44,14 +44,16 @@ import org.opennms.web.filter.SQLType;
 public class ServiceFilter extends EqualsFilter<Integer> {
     /** Constant <code>TYPE="service"</code> */
     public static final String TYPE = "service";
+    private ServletContext m_servletContext;
 
     /**
      * <p>Constructor for ServiceFilter.</p>
      *
      * @param serviceId a int.
      */
-    public ServiceFilter(int serviceId) {
+    public ServiceFilter(int serviceId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "OUTAGES.SERVICEID", "serviceType.id", serviceId);
+        m_servletContext = servletContext;
     }
 
     /**
@@ -59,11 +61,11 @@ public class ServiceFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTextDescription(ServletContext servletContext) {
+    public String getTextDescription() {
         int serviceId = getServiceId();
         String serviceName = Integer.toString(serviceId);
 
-        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(serviceId);
+        serviceName = NetworkElementFactory.getInstance(m_servletContext).getServiceNameFromId(serviceId);
 
         return (TYPE + " is " + serviceName);
     }

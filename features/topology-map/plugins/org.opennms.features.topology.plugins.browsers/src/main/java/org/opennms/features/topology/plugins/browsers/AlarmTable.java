@@ -28,27 +28,25 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.netmgt.dao.api.AlarmRepository;
-import org.opennms.osgi.EventProxy;
-import org.opennms.osgi.EventProxyAware;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextAware;
-import org.opennms.web.api.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.ArrayUtils;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextAware;
+import org.opennms.web.api.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents, VaadinApplicationContextAware {
@@ -131,20 +129,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
-	private class RefreshLinkButton extends Button {
-	    
-	    private RefreshLinkButton(String caption) {
-	        super(caption);
-	        setStyleName(BaseTheme.BUTTON_LINK);
-	        addClickListener(new ClickListener() {
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    AlarmTable.this.refreshRowCache();
-                }
-	        });
-	    }
-	}
-	
 	private class SelectAllButton extends Button {
 
 		private CheckboxGenerator m_generator;
@@ -187,7 +171,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private final CheckboxButton m_submitButton;
 	private final NativeSelect m_ackCombo;
-	private final Button m_refreshButton = new RefreshLinkButton("Refresh");
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
@@ -243,12 +226,9 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@Override
 	public Component[] getExtraComponents() {
 		if (SecurityContextHolder.getContext().toString().contains(Authentication.ROLE_READONLY)) {
-			return new Component[] {
-				m_refreshButton
-			};
+			return new Component[0];
 		} else {
 			return new Component[] {
-				m_refreshButton,
 				m_selectAllButton,
 				m_resetButton,
 				m_ackCombo,

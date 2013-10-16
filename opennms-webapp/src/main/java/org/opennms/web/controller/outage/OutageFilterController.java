@@ -54,8 +54,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * @version $Id: $
  * @since 1.8.1
  */

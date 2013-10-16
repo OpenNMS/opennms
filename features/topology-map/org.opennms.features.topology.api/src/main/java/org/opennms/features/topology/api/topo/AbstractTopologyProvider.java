@@ -30,7 +30,11 @@ package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
@@ -284,6 +288,24 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
             }
         }
         return retval.toArray(new EdgeRef[0]);
+    }
+
+    @Override
+    public final Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
+        List<Edge> edges = getEdges();
+        Map<VertexRef,Set<EdgeRef>> retval = new HashMap<VertexRef,Set<EdgeRef>>();
+        for (VertexRef vertex : vertices) {
+            if (vertex == null) continue;
+            Set<EdgeRef> edgeSet = new HashSet<EdgeRef>();
+            for (Edge edge : edges) {
+                // If the vertex is connected to the edge then add it
+                if (new RefComparator().compare(edge.getSource().getVertex(), vertex) == 0 || new RefComparator().compare(edge.getTarget().getVertex(), vertex) == 0) {
+                    edgeSet.add(edge);
+                }
+            }
+            retval.put(vertex, edgeSet);
+        }
+        return retval;
     }
 
     @Override

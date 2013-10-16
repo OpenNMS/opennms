@@ -166,7 +166,7 @@ public enum CriteriaRestriction {
      */
     public static CriteriaRestriction valueOfIgnoreCase(String name) {
         for (CriteriaRestriction criteriaRestriction : values()) {
-            if (criteriaRestriction.name().toLowerCase().equals(name.toLowerCase())) {
+            if (criteriaRestriction.name().equalsIgnoreCase(name)) {
                 return criteriaRestriction;
             }
         }

@@ -30,7 +30,7 @@
         </property>
         <property name="requiredParameterDescriptions">
             <map>
-                <entry key="width" value="Widht of the generated graph"/>
+                <entry key="width" value="Width of the generated graph"/>
                 <entry key="height" value="Height of the generated graph"/>
                 <entry key="rows" value="Number of rows"/>
                 <entry key="columns" value="Number of columns"/>

@@ -265,12 +265,25 @@ public class MibCompilerPanel extends Panel {
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
                         // Renaming the file to be sure that the target name is correct and always has a file extension.
-                        String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
-                        logger.info("Renaming file " + fileName + " to " + mibFileName);
-                        mibsTree.removeItem(target);
-                        addTreeItem(mibFileName, COMPILED);
-                        File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, mibFileName));
+                        final String mibFileName = mibParser.getMibName() + MIB_FILE_EXTENTION;
+                        final File currentFile = new File(MIBS_PENDING_DIR, fileName);
+                        final File suggestedFile = new File(MIBS_COMPILED_DIR, mibFileName);
+                        if (suggestedFile.exists()) {
+                            ConfirmDialog.show(getUI(),
+                                               "Are you sure?",
+                                               "The MIB " + mibFileName + " already exist on the compiled directory?<br/>Override the existing file could break other compiled mibs, so proceed with caution.<br/>This cannot be undone.",
+                                               "Yes",
+                                               "No",
+                                               new ConfirmDialog.Listener() {
+                                public void onClose(ConfirmDialog dialog) {
+                                    if (dialog.isConfirmed()) {
+                                        renameFile(logger, currentFile, suggestedFile);
+                                    }
+                                }
+                            });
+                        } else {
+                            renameFile(logger, currentFile, suggestedFile);
+                        }
                     }
                 }
                 if (action == ACTION_EVENTS) {
@@ -281,6 +294,20 @@ public class MibCompilerPanel extends Panel {
                 }
             }
         });
+    }
+
+    /**
+     * Rename file.
+     *
+     * @param logger the logger
+     * @param currentFile the current file
+     * @param suggestedFile the suggested file
+     */
+    private void renameFile(Logger logger, File currentFile, File suggestedFile) {
+        logger.info("Renaming file " + currentFile.getName() + " to " + suggestedFile.getName());
+        mibsTree.removeItem(currentFile.getName());
+        addTreeItem(suggestedFile.getName(), COMPILED);
+        currentFile.renameTo(suggestedFile);
     }
 
     /**

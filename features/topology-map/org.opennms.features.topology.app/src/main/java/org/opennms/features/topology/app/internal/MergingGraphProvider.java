@@ -32,13 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
-
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -387,12 +384,25 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		return m_baseGraphProvider.connectVertices(sourceVertextId, targetVertextId);
 	}
 
-	/**
+    @Override
+    public Criteria getDefaultCriteria() {
+        return m_baseGraphProvider.getDefaultCriteria();
+    }
+
+    /**
 	 * TODO This will miss edges provided by auxiliary edge providers
 	 */
 	@Override
 	public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
 		return m_baseGraphProvider.getEdgeIdsForVertex(vertex);
+	}
+
+	/**
+	 * TODO This will miss edges provided by auxiliary edge providers
+	 */
+	@Override
+	public Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
+		return m_baseGraphProvider.getEdgeIdsForVertices(vertices);
 	}
 
 	@Override
@@ -668,7 +678,12 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 			return null;
 		}
 
-		@Override
+        @Override
+        public Criteria getDefaultCriteria() {
+            return null;
+        }
+
+        @Override
 		public void load(String filename) {
 			// Do nothing
 		}
@@ -706,6 +721,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		@Override
 		public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
 			return new EdgeRef[0];
+		}
+
+		@Override
+		public Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertex) {
+			return Collections.emptyMap();
 		}
 
 		@Override

@@ -74,39 +74,30 @@ public class TestContextMenuBuilder {
 		return new Command() {
 
 			@Override
-			public void doCommand(List<VertexRef> targets,
-					OperationContext operationContext) {
-				// TODO Auto-generated method stub
-				
+			public void doCommand(List<VertexRef> targets, OperationContext operationContext) {
 			}
 
 			@Override
 			public void undoCommand() {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public String getMenuPosition() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			public String getContextMenuPosition() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			public boolean isAction() {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
 			public Action getAction() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
@@ -115,29 +106,24 @@ public class TestContextMenuBuilder {
 				return new Operation() {
 
                     @Override
-                    public Undoer execute(List<VertexRef> targets,
-                            OperationContext operationContext) {
-                        // TODO Auto-generated method stub
+                    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
                         return null;
                     }
 
                     @Override
                     public boolean display(List<VertexRef> targets,
                             OperationContext operationContext) {
-                        // TODO Auto-generated method stub
                         return false;
                     }
 
                     @Override
                     public boolean enabled(List<VertexRef> targets,
                             OperationContext operationContext) {
-                        // TODO Auto-generated method stub
                         return false;
                     }
 
                     @Override
                     public String getId() {
-                        // TODO Auto-generated method stub
                         return null;
                     }};
 			}

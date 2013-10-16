@@ -564,12 +564,12 @@ public class ManagerDefaultImpl implements Manager {
                         } else {
                             DbMap map = dbManager.getMap(vmapsinfo[i].getId());
                             LOG.debug("getDefaultMapsMenu: map: {} mapName: {} Access: {} Group: {}", map.getId(), map.getName(), map.getAccessMode(), map.getGroup());
-                            if (map.getAccessMode().trim().toUpperCase().equals(
-                                                                                MapsConstants.ACCESS_MODE_ADMIN.toUpperCase())
-                                    || map.getAccessMode().trim().toUpperCase().equals(
-                                                                                       MapsConstants.ACCESS_MODE_USER.toUpperCase())
-                                    || (map.getAccessMode().trim().toUpperCase().equals(
-                                                                                        MapsConstants.ACCESS_MODE_GROUP.toUpperCase()) && map.getGroup().equals(
+                            if (map.getAccessMode().trim().equalsIgnoreCase(
+                                                                                MapsConstants.ACCESS_MODE_ADMIN)
+                                    || map.getAccessMode().trim().equalsIgnoreCase(
+                                                                                       MapsConstants.ACCESS_MODE_USER)
+                                    || (map.getAccessMode().trim().equalsIgnoreCase(
+                                                                                        MapsConstants.ACCESS_MODE_GROUP) && map.getGroup().equals(
                                                                                                                                                       group.getName()))) {
                                 LOG.info("getDefaultMapsMenu: found! user: {} has access to map: {} with id: {}", user, map.getName(), map.getId());
                                 return vmapsinfo[i];

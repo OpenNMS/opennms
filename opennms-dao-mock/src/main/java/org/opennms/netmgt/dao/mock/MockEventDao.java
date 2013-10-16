@@ -1,15 +1,12 @@
 package org.opennms.netmgt.dao.mock;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opennms.netmgt.dao.api.CountedObject;
 import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements EventDao, EventCountDao {
     private AtomicInteger m_id = new AtomicInteger(0);
@@ -28,6 +25,18 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements
     @Override
     public int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e) {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<OnmsEvent> getEventsAfterDate(List<String> ueiList, Date date) {
+        List<OnmsEvent> matchingEvents = new ArrayList<OnmsEvent>();
+        List<OnmsEvent> allEvents = findAll();
+        for (OnmsEvent eachEvent : allEvents) {
+            if (ueiList.contains(eachEvent.getEventUei()) && eachEvent.getEventTime().after(date)) {
+                matchingEvents.add(eachEvent);
+            }
+        }
+        return matchingEvents;
     }
 
     @Override

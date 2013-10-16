@@ -185,13 +185,13 @@ public class OnmsStpInterface {
             return null;
         }
         
-        public static StpPortStatus UNKNOWN = new StpPortStatus(STP_PORT_STATUS_UNKNOWN);
-        public static StpPortStatus DISABLED = new StpPortStatus(STP_PORT_STATUS_DISABLED);
-        public static StpPortStatus BLOCKING = new StpPortStatus(STP_PORT_STATUS_BLOCKING);
-        public static StpPortStatus LISTENING = new StpPortStatus(STP_PORT_STATUS_LISTENING);
-        public static StpPortStatus LEARNING = new StpPortStatus(STP_PORT_STATUS_LEARNING);
-        public static StpPortStatus FORWARDING = new StpPortStatus(STP_PORT_STATUS_FORWARDING);
-        public static StpPortStatus BROKEN = new StpPortStatus(STP_PORT_STATUS_BROKEN);
+        public static final StpPortStatus UNKNOWN = new StpPortStatus(STP_PORT_STATUS_UNKNOWN);
+        public static final StpPortStatus DISABLED = new StpPortStatus(STP_PORT_STATUS_DISABLED);
+        public static final StpPortStatus BLOCKING = new StpPortStatus(STP_PORT_STATUS_BLOCKING);
+        public static final StpPortStatus LISTENING = new StpPortStatus(STP_PORT_STATUS_LISTENING);
+        public static final StpPortStatus LEARNING = new StpPortStatus(STP_PORT_STATUS_LEARNING);
+        public static final StpPortStatus FORWARDING = new StpPortStatus(STP_PORT_STATUS_FORWARDING);
+        public static final StpPortStatus BROKEN = new StpPortStatus(STP_PORT_STATUS_BROKEN);
 
 
     }

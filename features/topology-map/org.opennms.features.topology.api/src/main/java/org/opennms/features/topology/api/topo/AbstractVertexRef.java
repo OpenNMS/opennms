@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
+// TODO rename class because it is not abstract. It can be initialized. Fix this please
 public class AbstractVertexRef extends AbstractRef implements VertexRef {
 
 	public AbstractVertexRef(VertexRef ref) {

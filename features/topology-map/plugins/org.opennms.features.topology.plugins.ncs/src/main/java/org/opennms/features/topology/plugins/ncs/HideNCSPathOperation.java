@@ -17,7 +17,7 @@ public class HideNCSPathOperation implements Operation {
         if(m_serviceManager.isCriteriaRegistered("ncsPath", sessionId)) {
             m_serviceManager.unregisterCriteria("ncsPath", sessionId);
         }
-        
+        operationContext.getGraphContainer().redoLayout();
         
         return null;
     }
@@ -43,7 +43,7 @@ public class HideNCSPathOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public NCSCriteriaServiceManager getNcsCriteriaServiceManager() {

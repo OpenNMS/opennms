@@ -81,9 +81,9 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
             m_action = Action.ENABLE_SNMP_POLL;
         } else if (Action.DISABLE_SNMP_POLL.toString().equalsIgnoreCase(action)) {
             m_action = Action.DISABLE_SNMP_POLL;
-        } else if (action != null && action.toUpperCase().equals("ENABLE_COLLECTION")) {
+        } else if (action != null && action.equalsIgnoreCase("ENABLE_COLLECTION")) {
             m_action = Action.ENABLE_COLLECTION;
-        } else if (action != null && action.toUpperCase().equals("DISABLE_COLLECTION")) {
+        } else if (action != null && action.equalsIgnoreCase("DISABLE_COLLECTION")) {
             m_action = Action.DISABLE_COLLECTION;
         } else {
             m_action = Action.DO_NOT_PERSIST;

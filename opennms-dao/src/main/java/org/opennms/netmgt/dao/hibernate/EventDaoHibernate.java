@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Date;
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 
-public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
-		implements EventDao {
+public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventDao {
 
-	/**
-	 * <p>Constructor for EventDaoHibernate.</p>
-	 */
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);
 	}
@@ -48,6 +47,15 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
         String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
         Object[] values = {id, e.getId()};
         return bulkDelete(hql, values);
+    }
+
+    @Override
+    public List<OnmsEvent> getEventsAfterDate(final List<String> ueiList, final Date date) {
+        final String hql = "From OnmsEvent e where e.eventUei in (:eventUei) and e.eventTime > :eventTime order by e.eventTime desc";
+        return sessionFactory.getCurrentSession().createQuery(hql)
+            .setParameterList("eventUei", ueiList)
+            .setParameter("eventTime", date)
+            .list();
     }
 
 }

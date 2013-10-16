@@ -55,7 +55,7 @@ public class ShowNCSPathOperation implements Operation {
         for (Criteria criterium : operationContext.getGraphContainer().getCriteria()) {
             try {
                 NCSServiceCriteria ncsCriterium = (NCSServiceCriteria)criterium;
-                if(ncsCriterium.size() > 0) {
+                if(ncsCriterium.getServiceCount() > 0) {
                     m_storedCriteria = ncsCriterium;
                     break;
                 }
@@ -131,7 +131,7 @@ public class ShowNCSPathOperation implements Operation {
 
                 String deviceZNodeForeignId = m_nodeDao.get(Integer.valueOf(deviceZ)).getForeignId();
 
-                NCSComponent ncsComponent = m_dao.get(m_storedCriteria.get(0));
+                NCSComponent ncsComponent = m_dao.get(m_storedCriteria.getServiceIds().get(0));
                 String foreignSource = ncsComponent.getForeignSource();
                 String foreignId = ncsComponent.getForeignId();
                 String serviceName = ncsComponent.getName();
@@ -238,7 +238,7 @@ public class ShowNCSPathOperation implements Operation {
             }else {
                 for (Criteria criteria : operationContext.getGraphContainer().getCriteria()) {
                     try {
-                        if (criteria != null && ((NCSServiceCriteria)criteria).size() == 1) {
+                        if (criteria != null && ((NCSServiceCriteria)criteria).getServiceCount() == 1) {
                             return true;
                         }
                     } catch (ClassCastException e) {}
@@ -260,7 +260,7 @@ public class ShowNCSPathOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 
     public NCSEdgeProvider getNcsEdgeProvider() {

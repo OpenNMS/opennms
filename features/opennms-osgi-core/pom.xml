@@ -57,11 +57,16 @@
         <dependency>
             <groupId>org.ops4j.pax.vaadin</groupId>
             <artifactId>service</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

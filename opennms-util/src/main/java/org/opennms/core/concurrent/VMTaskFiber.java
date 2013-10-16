@@ -28,12 +28,12 @@
 
 package org.opennms.core.concurrent;
 
+import org.opennms.core.fiber.Fiber;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import org.opennms.core.fiber.Fiber;
 
 /**
  * <p>VMTaskFiber class.</p>
@@ -121,7 +121,7 @@ public class VMTaskFiber implements Fiber, Runnable {
                 //
                 boolean isOK = true;
                 for (int x = 0; isOK && x < args.length; x++) {
-                    if (args[x].getName().equals(MAIN_PARAMETER_TYPES[x]) == false)
+                    if (!args[x].getName().equals(MAIN_PARAMETER_TYPES[x]))
                         isOK = false;
                 }
 

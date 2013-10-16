@@ -1,16 +1,22 @@
 package org.opennms.features.topology.api.support;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public abstract class AbstractHistoryManager implements HistoryManager {
 
     private final List<HistoryOperation> m_operations = new CopyOnWriteArrayList<HistoryOperation>();
+
+    @Override
+    public List<HistoryOperation> getHistoryOperations() {
+        return Collections.unmodifiableList(m_operations);
+    }
 
     @Override
     public void applyHistory(String userId, String fragment, GraphContainer container) {
@@ -21,7 +27,7 @@ public abstract class AbstractHistoryManager implements HistoryManager {
     }
 
     @Override
-    public String create(String userId, GraphContainer graphContainer) {
+    public String createHistory(String userId, GraphContainer graphContainer) {
         SavedHistory history = new SavedHistory(graphContainer, m_operations);
         saveHistory(userId, history);
         return history.getFragment();

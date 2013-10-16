@@ -41,6 +41,11 @@ public class DefaultSelectionManager implements SelectionManager {
 	}
 
 	@Override
+	public Collection<EdgeRef> getSelectedEdgeRefs() {
+		return m_context.getSelectedEdgeRefs();
+	}
+
+	@Override
 	public boolean isEdgeRefSelected(EdgeRef edgeRef) {
 		return m_context.isEdgeRefSelected(edgeRef);
 	}

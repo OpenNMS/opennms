@@ -27,8 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.ui.UI;
-import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.opennms.osgi.OnmsVaadinUIFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 /**
@@ -36,15 +35,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
  *
  * @author Christian Pape
  */
-public class WallboardConfigUIFactory extends AbstractApplicationFactory {
-    /**
-     * The {@link BlueprintContainer} associated with this object
-     */
-    private final BlueprintContainer m_blueprintContainer;
-    /**
-     * The bean name
-     */
-    private final String m_beanName;
+public class WallboardConfigUIFactory extends OnmsVaadinUIFactory {
 
     /**
      * Constructor for instantiating a new instance.
@@ -53,27 +44,6 @@ public class WallboardConfigUIFactory extends AbstractApplicationFactory {
      * @param beanName  the bean name to use
      */
     public WallboardConfigUIFactory(BlueprintContainer container, String beanName) {
-        m_blueprintContainer = container;
-        m_beanName = beanName;
-    }
-
-    /**
-     * Returns the application instance.
-     *
-     * @return the application's instance
-     */
-    @Override
-    public UI getUI() {
-        return (UI) m_blueprintContainer.getComponentInstance(m_beanName);
-    }
-
-    /**
-     * Returns the {@link Class} of the application.
-     *
-     * @return the application's class
-     */
-    @Override
-    public Class<? extends UI> getUIClass() {
-        return WallboardConfigUI.class;
+        super(WallboardConfigUI.class, container, beanName);
     }
 }

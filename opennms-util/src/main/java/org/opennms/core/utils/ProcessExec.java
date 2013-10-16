@@ -28,15 +28,15 @@
 
 package org.opennms.core.utils;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>ProcessExec class.</p>
@@ -45,9 +45,9 @@ public class ProcessExec {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ProcessExec.class);
 	
-    PrintStream m_out = null;
+    private PrintStream m_out = null;
 
-    PrintStream m_err = null;
+    private PrintStream m_err = null;
 
     /**
      * <p>Constructor for ProcessExec.</p>

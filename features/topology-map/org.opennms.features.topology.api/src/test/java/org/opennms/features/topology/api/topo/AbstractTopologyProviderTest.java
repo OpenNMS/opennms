@@ -22,7 +22,12 @@ public class AbstractTopologyProviderTest {
             public void refresh() {
                 ; // nothing to do
             }
-            
+
+            @Override
+            public Criteria getDefaultCriteria() {
+                return null;  // no default
+            }
+
             @Override
             public void load(String filename) throws MalformedURLException, JAXBException {
                 for (int i=0; i<10; i++) 

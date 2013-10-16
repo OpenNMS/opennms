@@ -45,10 +45,11 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.slf4j.LoggerFactory;
 
 @JavaScript({"gwt/public/topologywidget/js/d3.v3.js", "gwt/public/topologywidget/js/d3.interpolate-zoom.v0.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
-    
+
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
 
         private static final long serialVersionUID = 6945103738578953304L;
@@ -92,22 +93,22 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         @Override
         public void contextMenu(String target, String type, int x, int y) {
 
-          Object menuTarget = null;
-          if (type.toLowerCase().equals("vertex")) {
-            String targetKey = target;
-              menuTarget = getGraph().getVertexByKey(targetKey);
-          } else if (type.toLowerCase().equals("edge")) {
-            String targetKey = (String)target;
-              menuTarget = getGraph().getEdgeByKey(targetKey);
-          }
+            Object menuTarget = null;
+            if (type.toLowerCase().equals("vertex")) {
+                String targetKey = target;
+                menuTarget = getGraph().getVertexByKey(targetKey);
+            } else if (type.toLowerCase().equals("edge")) {
+                String targetKey = (String)target;
+                menuTarget = getGraph().getEdgeByKey(targetKey);
+            }
 
-          m_contextMenuHandler.show(menuTarget, x, y);
-            
+            m_contextMenuHandler.show(menuTarget, x, y);
+
         }
 
         @Override
         public void clientCenterPoint(int x, int y) {
-          getViewManager().setCenter(new Point(x, y));
+            getViewManager().setCenter(new Point(x, y));
         }
 
         @Override
@@ -120,7 +121,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             for(String vUpdate : vertices) {
                 updateVertex(vUpdate);
             }
-            
+
             fireVertexUpdated();
             if(vertices.size() > 0) {
                 updateGraph();
@@ -133,14 +134,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
 
     };
-    
+
     public interface VertexUpdateListener{
         public void onVertexUpdate();
     }
-    
+
     private static final long serialVersionUID = 1L;
-    
-	private final GraphContainer m_graphContainer;
+
+    private final GraphContainer m_graphContainer;
     private Graph m_graph;
     private final List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private final ContextMenuHandler m_contextMenuHandler;
@@ -151,69 +152,68 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
     public TopologyComponent(GraphContainer dataSource, IconRepositoryManager iconRepositoryManager, ContextMenuHandler contextMenuHandler) {
-	    m_graphContainer = dataSource;
-	    m_iconRepoManager = iconRepositoryManager;
-	    m_contextMenuHandler = contextMenuHandler;
-	    
-	    registerRpc(m_rpc);
-	    
-	    setGraph(m_graphContainer.getGraph());
-		
-		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+        m_graphContainer = dataSource;
+        m_iconRepoManager = iconRepositoryManager;
+        m_contextMenuHandler = contextMenuHandler;
 
-			@Override
-			public void selectionChanged(SelectionContext selectionContext) {
+        registerRpc(m_rpc);
+
+        setGraph(m_graphContainer.getGraph());
+
+        m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+
+            @Override
+            public void selectionChanged(SelectionContext selectionContext) {
                 if (!m_blockSelectionEvents) {
                     computeBoundsForSelected(selectionContext);
                 }
                 updateGraph();
-                }
-		});
-		
-		m_graphContainer.getMapViewManager().addListener(this);
-		m_graphContainer.addChangeListener(this);
-		
-		setScaleDataSource(m_graphContainer.getScaleProperty());
+            }
+        });
+
+        m_graphContainer.getMapViewManager().addListener(this);
+        m_graphContainer.addChangeListener(this);
+
+        setScaleDataSource(m_graphContainer.getScaleProperty());
 
         getState().setSVGDefFiles(m_iconRepoManager.getSVGIconDefs());
-		updateGraph();
-	}
-	
-	private void setScaleDataSource(Property<Double> scale) {
+        updateGraph();
+    }
+
+    private void setScaleDataSource(Property<Double> scale) {
         // Listens the new data source if possible
         if (scale != null
                 && Property.ValueChangeNotifier.class
-                        .isAssignableFrom(scale.getClass())) {
+                .isAssignableFrom(scale.getClass())) {
             ((Property.ValueChangeNotifier) scale).addValueChangeListener(this);
         }
     }
-	
-	@Override
-	protected TopologyComponentState getState() {
-	    return (TopologyComponentState) super.getState();
-	}
-	
-	public void updateGraph() {
-	    BoundingBox boundingBox = getBoundingBox();
-	    getState().setBoundX(boundingBox.getX());
-	    getState().setBoundY(boundingBox.getY());
-	    getState().setBoundWidth(boundingBox.getWidth());
-	    getState().setBoundHeight(boundingBox.getHeight());
-	    getState().setActiveTool(m_activeTool);
-	    
-	    Graph graph = getGraph();
-		//Set Status provider from the graph container because I may move it later
-	    GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getStatusProvider(), getState());
-	    try {
+
+    @Override
+    protected TopologyComponentState getState() {
+        return (TopologyComponentState) super.getState();
+    }
+
+    public void updateGraph() {
+        BoundingBox boundingBox = getBoundingBox();
+        getState().setBoundX(boundingBox.getX());
+        getState().setBoundY(boundingBox.getY());
+        getState().setBoundWidth(boundingBox.getWidth());
+        getState().setBoundHeight(boundingBox.getHeight());
+        getState().setActiveTool(m_activeTool);
+
+        Graph graph = getGraph();
+        //Set Status provider from the graph container because I may move it later
+        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getStatusProvider(), getState());
+        try {
             graph.visit(painter);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
         }
-	}
-	
+    }
+
     private BoundingBox getBoundingBox() {
-        
+
         return getViewManager().getCurrentBoundingBox();
     }
 
@@ -239,79 +239,79 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         m_blockSelectionEvents = false;
         updateMenuItems();
     }
-    
-	private void selectEdge(String edgeKey) {
-		Edge edge = getGraph().getEdgeByKey(edgeKey);
-		
-		m_graphContainer.getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
 
-	}
+    private void selectEdge(String edgeKey) {
+        Edge edge = getGraph().getEdgeByKey(edgeKey);
+
+        m_graphContainer.getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
+
+    }
 
     private void updateVertex(String vertexUpdate) {
         String[] vertexProps = vertexUpdate.split("\\|");
-        
+
         String id = vertexProps[0].split(",")[1];
         int x = (int) Double.parseDouble(vertexProps[1].split(",")[1]);
         int y = (int) Double.parseDouble(vertexProps[2].split(",")[1]);
         boolean selected = vertexProps[3].split(",")[1].equals("true");
-        
+
         Vertex vertex = getGraph().getVertexByKey(id);
-        
+
         getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
-        	m_graphContainer.getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
+            m_graphContainer.getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	m_graphContainer.getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
+            m_graphContainer.getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
         }
     }
-    
-	protected void setScale(double scale){
-	    m_graphContainer.setScale(scale);
-    }
-    
-    protected Graph getGraph() {
-		return m_graph;
-	}
 
-	private void setGraph(Graph graph) {
-		m_graph = graph;
-		getViewManager().setMapBounds(graph.getLayout().getBounds());
-	}
-	
-	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
+    protected void setScale(double scale){
+        m_graphContainer.setScale(scale);
+    }
+
+    protected Graph getGraph() {
+        return m_graph;
+    }
+
+    private void setGraph(Graph graph) {
+        m_graph = graph;
+        getViewManager().setMapBounds(graph.getLayout().getBounds());
+    }
+
+    public void addMenuItemStateListener(MenuItemUpdateListener listener) {
         m_menuItemStateListener.add(listener);
     }
-	
-	public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
-	    m_menuItemStateListener.remove(listener);
-	}
-	
-	private void updateMenuItems() {
-	    for(MenuItemUpdateListener listener : m_menuItemStateListener) {
-	        listener.updateMenuItems();
-	    }
-	}
+
+    public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
+        m_menuItemStateListener.remove(listener);
+    }
+
+    private void updateMenuItems() {
+        for(MenuItemUpdateListener listener : m_menuItemStateListener) {
+            listener.updateMenuItems();
+        }
+    }
 
     @Override
-	public void graphChanged(GraphContainer container) {
-		Graph graph = container.getGraph();
+    public void graphChanged(GraphContainer container) {
+        Graph graph = container.getGraph();
         setGraph(graph);
-		
-		getViewManager().setMapBounds(graph.getLayout().getBounds());
-		computeBoundsForSelected(m_graphContainer.getSelectionManager());
-	}
-	
-	/**
-	 * ValueChange listener for the scale property
-	 */
+
+        computeBoundsForSelected(m_graphContainer.getSelectionManager());
+        updateGraph();
+    }
+
+    /**
+     * ValueChange listener for the scale property
+     */
     @Override
     public void valueChange(ValueChangeEvent event) {
-        
+
         double scale = (Double) event.getProperty().getValue();
-        
+
         getViewManager().setScale(scale);
-        
+
     }
 
     public void setActiveTool(String toolname) {
@@ -320,6 +320,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             getState().setActiveTool(toolname);
             updateGraph();
         }
+    }
+
+    public void showAllMap(){
+        getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
+    }
+
+    public void centerMapOnSelection(){
+        computeBoundsForSelected(m_graphContainer.getSelectionManager());
     }
 
     private void computeBoundsForSelected(SelectionContext selectionContext) {
@@ -332,9 +340,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                     vRefs.add(vRef);
                 }
             }
-            
+
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
-        	
+
         }else {
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
@@ -345,7 +353,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         setScale(viewManager.getScale());
         updateGraph();
     }
-    
+
     public MapViewManager getViewManager() {
         return m_graphContainer.getMapViewManager();
     }
@@ -353,7 +361,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     public void addVertexUpdateListener(VertexUpdateListener listener) {
         m_vertexUpdateListeners.add(listener);
     }
-    
+
     private void fireVertexUpdated() {
         for(VertexUpdateListener listener : m_vertexUpdateListeners) {
             listener.onVertexUpdate();

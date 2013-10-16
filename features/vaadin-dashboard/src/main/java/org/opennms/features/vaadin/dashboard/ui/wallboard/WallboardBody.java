@@ -1,6 +1,5 @@
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.ClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -12,7 +11,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 import java.util.*;
-import java.util.Timer;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
@@ -30,6 +28,7 @@ public class WallboardBody extends VerticalLayout {
     private ProgressIndicator progressIndicator;
     private Label debugLabel = new Label("debug");
     private boolean debugEnabled = false;
+    private boolean paused = false;
 
     public WallboardBody() {
         addStyleName("wallboard-board");
@@ -92,6 +91,22 @@ public class WallboardBody extends VerticalLayout {
         } finally {
             VaadinSession.getCurrent().unlock();
         }
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isPausable() {
+        return dashletSpecs.size() > 0;
     }
 
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
@@ -184,6 +199,10 @@ public class WallboardBody extends VerticalLayout {
     }
 
     private void advanceTimer() {
+
+        if (paused) {
+            return;
+        }
 
         waitFor = (waitFor > 250 ? waitFor - 250 : 0);
 

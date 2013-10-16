@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+    <g:HTMLPanel styleName="search-token-field">
+        <span ui:field="m_namespace" class="search-token-namespace"></span>: <span class="search-token-label" ui:field="m_label" />
+        <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>
+        <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
+    </g:HTMLPanel>
+
+
+</ui:UiBinder>

@@ -63,7 +63,6 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
-import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -76,8 +75,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 		"classpath:/META-INF/opennms/applicationContext-mock.xml"
 })
 public class LinkdTopologyProviderTest {
-	@Autowired
-	private RefreshOperation m_refreshOperation;
 
 	@Autowired
 	private OperationContext m_operationContext;
@@ -135,12 +132,6 @@ public class LinkdTopologyProviderTest {
 	public void testSave() {
 		m_topologyProvider.setConfigurationFile("target/test-map.xml");
 		m_topologyProvider.save();
-		m_databasePopulator.check(m_topologyProvider);
-	}
-
-	@Test
-	public void testOperationRefresh() {
-		m_refreshOperation.execute(null, m_operationContext);
 		m_databasePopulator.check(m_topologyProvider);
 	}
 

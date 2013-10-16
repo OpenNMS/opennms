@@ -237,7 +237,7 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testNegativeServiceFilter(){
-        NegativeServiceFilter filter = new NegativeServiceFilter(2);
+        NegativeServiceFilter filter = new NegativeServiceFilter(2, null);
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
@@ -295,7 +295,7 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testServiceFilter(){
-        ServiceFilter filter = new ServiceFilter(2);
+        ServiceFilter filter = new ServiceFilter(2, null);
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);

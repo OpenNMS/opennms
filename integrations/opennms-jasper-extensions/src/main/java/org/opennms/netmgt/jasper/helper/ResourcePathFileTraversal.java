@@ -94,7 +94,7 @@ public class ResourcePathFileTraversal{
     }
 
     private void onDirectory(File f, List<String> dirPaths) {
-        if(System.getProperty("org.opennms.rrd.storeByGroup") != null && System.getProperty("org.opennms.rrd.storeByGroup").toLowerCase().equals("true")) {
+        if(System.getProperty("org.opennms.rrd.storeByGroup") != null && System.getProperty("org.opennms.rrd.storeByGroup").equalsIgnoreCase("true")) {
             try {
                 if(validateDataSource(f)) {
                     dirPaths.add(f.getAbsolutePath());

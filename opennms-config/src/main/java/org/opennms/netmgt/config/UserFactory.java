@@ -55,11 +55,6 @@ public class UserFactory extends UserManager {
     private static UserManager instance;
 
     /**
-     * File path of users.xml
-     */
-    protected File usersFile;
-
-    /**
      * Boolean indicating if the init() method has been called
      */
     private static boolean initialized = false;

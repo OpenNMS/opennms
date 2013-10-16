@@ -32,15 +32,15 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.xml.bind.JAXBException;
-
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -63,33 +63,71 @@ import org.slf4j.LoggerFactory;
 public class VertexHopGraphProvider implements GraphProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-	public static class VertexHopCriteria implements Criteria {
+	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer) {
+		return getFocusNodeHopCriteriaForContainer(graphContainer, true);
+	}
 
-		private static final long serialVersionUID = 2904432878716561926L;
-
-		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
-		//private int m_hops;
-
-		public VertexHopCriteria() {
-			super();
-			//m_hops = hops;
+	public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
+		Criteria[] criteria = graphContainer.getCriteria();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					FocusNodeHopCriteria hopCriteria = (FocusNodeHopCriteria)criterium;
+					return hopCriteria;
+				} catch (ClassCastException e) {}
+			}
 		}
 
-		public VertexHopCriteria(List<VertexRef> objects/*, int hops */) {
-			m_vertices.addAll(objects);
-			//m_hops = hops;
+		if (createIfAbsent) {
+			FocusNodeHopCriteria hopCriteria = new FocusNodeHopCriteria();
+			graphContainer.addCriteria(hopCriteria);
+			return hopCriteria;
+		} else {
+			return null;
 		}
+	}
+
+	public abstract static class VertexHopCriteria extends Criteria {
+		private String label = "";
+        private String m_id = "";
 
 		@Override
 		public ElementType getType() {
 			return ElementType.VERTEX;
 		}
 
-		/*
-		public int getHops() {
-			return m_hops;
+		public abstract Set<VertexRef> getVertices();
+
+		public String getLabel() {
+			return label;
 		}
-		 */
+
+		public void setLabel(String label) {
+			this.label = label;
+		}
+
+        public void setId(String id){
+            m_id = id;
+        }
+
+        public String getId(){
+            return m_id;
+        }
+	}
+
+	public static class FocusNodeHopCriteria extends VertexHopCriteria {
+
+		private static final long serialVersionUID = 2904432878716561926L;
+
+		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
+
+		public FocusNodeHopCriteria() {
+			super();
+		}
+
+		public FocusNodeHopCriteria(Collection<VertexRef> objects) {
+			m_vertices.addAll(objects);
+		}
 
 		/**
 		 * TODO: This return value doesn't matter since we just delegate
@@ -100,16 +138,29 @@ public class VertexHopGraphProvider implements GraphProvider {
 			return "nodes";
 		}
 
-		public void add(VertexRef ref) {
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return false;
+        }
+
+        public void add(VertexRef ref) {
 			m_vertices.add(ref);
+            setDirty(true);
 		}
 
 		public void remove(VertexRef ref) {
 			m_vertices.remove(ref);
+            setDirty(true);
 		}
 
-		public void clear(VertexRef ref) {
+		public void clear() {
 			m_vertices.clear();
+            setDirty(true);
 		}
 
 		public boolean contains(VertexRef ref) {
@@ -119,10 +170,23 @@ public class VertexHopGraphProvider implements GraphProvider {
 		public int size() {
 			return m_vertices.size();
 		}
-	}
 
-	private final GraphProvider m_delegate;
+        public boolean isEmpty() {
+            return m_vertices.isEmpty();
+        }
 
+		@Override
+		public Set<VertexRef> getVertices() {
+			return Collections.unmodifiableSet(m_vertices);
+		}
+
+		public void addAll(Collection<VertexRef> refs) {
+			m_vertices.addAll(refs);
+            setDirty(true);
+		}
+    }
+
+    private final GraphProvider m_delegate;
 	private final Map<VertexRef,Integer> m_semanticZoomLevels = new LinkedHashMap<VertexRef,Integer>();
 
 	public VertexHopGraphProvider(GraphProvider delegate) {
@@ -180,92 +244,100 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return szl == null ? 0 : szl;
 	}
 
-	@Override
-	public List<Vertex> getVertices(Criteria... criteria) {
-		List<Vertex> retval = new ArrayList<Vertex>();
-		List<VertexRef> currentHops = new ArrayList<VertexRef>();
-		List<VertexRef> nextHops = new ArrayList<VertexRef>();
-		List<Vertex> allVertices = new ArrayList<Vertex>();
-
-		// Get the entire list of vertices
-		allVertices.addAll(m_delegate.getVertices(criteria));
-
-		// Find the vertices that match a required HopDistanceCriteria
-		for (Criteria criterium : criteria) {
+	public Set<VertexRef> getFocusNodes(Criteria... criteria) {
+		Set<VertexRef> focusNodes = new HashSet<VertexRef>();
+		for(Criteria criterium : criteria) {
 			try {
-				VertexHopCriteria hdCriteria = (VertexHopCriteria)criterium;
-				for (Iterator<Vertex> itr = allVertices.iterator();itr.hasNext();) {
-					Vertex vertex = itr.next();
-					if (hdCriteria.contains(vertex)) {
-						// Put the vertex into the return value and remove it
-						// from the list of all eligible vertices
-						retval.add(vertex);
-						nextHops.add(vertex);
-						itr.remove();
-						LOG.debug("Added {} to selected vertex list", vertex);
-					}
-				}
+				VertexHopCriteria hopCriterium = (VertexHopCriteria)criterium;
+				focusNodes.addAll(hopCriterium.getVertices());
 			} catch (ClassCastException e) {}
 		}
+		return focusNodes;
+	}
+	
+	public int getMaxSemanticZoomLevel(Criteria... criteria) {
+		for (Criteria criterium : criteria) {
+			// See if there is a SemanticZoomLevelCriteria set and if so, use it
+			// to restrict the number of times we iterate over the graph
+			try {
+				SemanticZoomLevelCriteria szlCriteria = (SemanticZoomLevelCriteria)criterium;
+				return szlCriteria.getSemanticZoomLevel();
+			} catch (ClassCastException e) {}
+		}
+		return 100;
+	}
 
+	@Override
+	public List<Vertex> getVertices(Criteria... criteria) {
+
+		Set<VertexRef> focusNodes = getFocusNodes(criteria);
+		int maxSemanticZoomLevel = getMaxSemanticZoomLevel(criteria);
+		
 		// Clear the existing semantic zoom level values
 		m_semanticZoomLevels.clear();
 		int semanticZoomLevel = 0;
 
 		// If we didn't find any matching nodes among the focus nodes...
-		if (nextHops.size() < 1) {
-			// ...then just return the full list of vertices
-			return allVertices;
+		if (focusNodes.size() < 1) {
+			// ...then return an empty list of vertices
+			return Collections.emptyList();
+//            return allVertices;
 		}
+		
 
+		Map<VertexRef, Set<VertexRef>> neighborMap = new HashMap<VertexRef, Set<VertexRef>>();
+		List<Edge> edges = m_delegate.getEdges(criteria);
+		for(Edge edge : edges) {
+			VertexRef src = edge.getSource().getVertex();
+			VertexRef tgt = edge.getTarget().getVertex();
+			Set<VertexRef> srcNeighbors = neighborMap.get(src);
+			if (srcNeighbors == null) {
+				srcNeighbors = new HashSet<VertexRef>();
+				neighborMap.put(src, srcNeighbors);
+			}
+			srcNeighbors.add(tgt);
+			
+			Set<VertexRef> tgtNeighbors = neighborMap.get(tgt);
+			if (tgtNeighbors == null) {
+				tgtNeighbors = new HashSet<VertexRef>();
+				neighborMap.put(tgt, tgtNeighbors);
+			}
+			tgtNeighbors.add(src);
+		}
+		
+		Set<Vertex> processed = new HashSet<Vertex>();
+		Set<VertexRef> neighbors = new HashSet<VertexRef>();
+		Set<VertexRef> workingSet = new HashSet<VertexRef>(focusNodes);
 		// Put a limit on the SZL in case we infinite loop for some reason
-		while (semanticZoomLevel < 100 && nextHops.size() > 0) {
-			currentHops.addAll(nextHops);
-			nextHops.clear();
+		while (semanticZoomLevel <= maxSemanticZoomLevel && workingSet.size() > 0) {
+			neighbors.clear();
 
-			for (VertexRef vertex : currentHops) {
-
-				// Mark the current vertex as belonging to a particular SZL
-				if (m_semanticZoomLevels.get(vertex) != null) {
-					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertex.toString());
+			for(VertexRef vertexRef : workingSet) {
+				if (m_semanticZoomLevels.containsKey(vertexRef)) {
+					throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertexRef.toString());
 				}
-				m_semanticZoomLevels.put(vertex, semanticZoomLevel);
-				// Put the vertex into the full list of vertices that is returned
-				retval.add(getVertex(vertex));
-
-				// Fetch all edges attached to this vertex
-				for (EdgeRef edgeRef : m_delegate.getEdgeIdsForVertex(vertex)) {
-					Edge edge = m_delegate.getEdge(edgeRef);
-
-					// Find everything attached to those edges
-					VertexRef nextVertex = null;
-					if (vertex.equals(edge.getSource().getVertex())) {
-						nextVertex = edge.getTarget().getVertex();
-					} else if (vertex.equals(edge.getTarget().getVertex())) {
-						nextVertex = edge.getSource().getVertex();
-					} else {
-						throw new IllegalStateException(String.format("Vertex %s was not the source or target of edge %s", vertex.toString(), edge.toString()));
-					}
-
-					// If we haven't assigned a SZL to the vertices that were located,
-					// then put the vertex into the next collection of hops
-					if (allVertices.contains(nextVertex)) {
-						nextHops.add(nextVertex);
-						allVertices.remove(nextVertex);
-					}
-				}
+				m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
+                Set<VertexRef> refs = neighborMap.get(vertexRef);
+                if (refs != null) {
+                	neighbors.addAll(refs);
+                }
+                Vertex vertex = getVertex(vertexRef);
+                if (vertex != null) {
+                	processed.add(getVertex(vertexRef));
+                }
 			}
 
-			// Clear the temp list of current hops
-			currentHops.clear();
+			neighbors.removeAll(processed);
+			
+			workingSet.clear();
+			workingSet.addAll(neighbors);
 
 			// Increment the semantic zoom level
 			semanticZoomLevel++;
 		}
 
-		return retval;
+		return new ArrayList<Vertex>(processed);
 	}
-
 	/**
 	 * TODO: OVERRIDE THIS FUNCTION?
 	 */
@@ -392,6 +464,14 @@ public class VertexHopGraphProvider implements GraphProvider {
 		return m_delegate.getEdgeIdsForVertex(vertex);
 	}
 
+	/**
+	 * TODO This will miss edges provided by auxiliary edge providers
+	 */
+	@Override
+	public Map<VertexRef, Set<EdgeRef>> getEdgeIdsForVertices(VertexRef... vertices) {
+		return m_delegate.getEdgeIdsForVertices(vertices);
+	}
+
 	@Override
 	public void addEdges(Edge... edges) {
 		m_delegate.addEdges(edges);
@@ -406,4 +486,9 @@ public class VertexHopGraphProvider implements GraphProvider {
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
 		return m_delegate.connectVertices(sourceVertextId, targetVertextId);
 	}
+
+    @Override
+    public Criteria getDefaultCriteria() {
+        return m_delegate.getDefaultCriteria();
+    }
 }
