@@ -28,10 +28,8 @@
 
 package org.opennms.web.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +44,7 @@ import org.opennms.netmgt.model.OnmsFilterFavorite.Page;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -58,7 +57,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase
+@Transactional
 public class FilterFavoriteServiceTest {
 
 	@Autowired
@@ -107,11 +107,6 @@ public class FilterFavoriteServiceTest {
     	populator.populateDatabase();
     }
 
-    @After
-    public void tearDown() {
-    	populator.resetDatabase();
-    }
-    
     @Test
     public void testGetFavorites() {
         // favorites exist
