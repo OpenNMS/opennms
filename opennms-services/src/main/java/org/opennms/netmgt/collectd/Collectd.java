@@ -76,6 +76,9 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -155,6 +158,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private volatile EventIpcManager m_eventIpcManager;
 
+    private volatile TransactionTemplate m_transTemplate;
+
     private volatile NodeDao m_nodeDao;
 
     /**
@@ -173,6 +178,7 @@ public class Collectd extends AbstractServiceDaemon implements
     protected void onInit() {
         Assert.notNull(m_collectorConfigDao, "collectorConfigDao must not be null");
         Assert.notNull(m_eventIpcManager, "eventIpcManager must not be null");
+        Assert.notNull(m_transTemplate, "transTemplate must not be null");
         Assert.notNull(m_ifaceDao, "ifaceDao must not be null");
         Assert.notNull(m_nodeDao, "nodeDao must not be null");
         
@@ -345,10 +351,20 @@ public class Collectd extends AbstractServiceDaemon implements
         
         instrumentation().beginScheduleExistingInterfaces();
         try {
-            // Loop through collectors and schedule for each one present
-            for(String name : getCollectorNames()) {
-                scheduleInterfacesWithService(name);
-            }
+
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    
+                    // Loop through collectors and schedule for each one present
+                    for(String name : getCollectorNames()) {
+                        scheduleInterfacesWithService(name);
+                    }
+                }
+
+            });
+        
         } finally {
             instrumentation().endScheduleExistingInterfaces();
         }
@@ -644,7 +660,14 @@ public class Collectd extends AbstractServiceDaemon implements
 
             @Override
             public void run() {
-                onEventInTransaction(event);
+                m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+
+                    @Override
+                    public void doInTransactionWithoutResult(TransactionStatus status) {
+                        onEventInTransaction(event);
+                    }
+
+                });
             }
 
         });
@@ -1376,6 +1399,15 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private IpInterfaceDao getIpInterfaceDao() {
         return m_ifaceDao;
+    }
+
+    /**
+     * <p>setTransactionTemplate</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
+    public void setTransactionTemplate(TransactionTemplate transTemplate) {
+        m_transTemplate = transTemplate;
     }
 
     /**

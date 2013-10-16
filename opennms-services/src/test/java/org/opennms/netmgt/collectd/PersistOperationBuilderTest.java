@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -53,6 +54,7 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * JUnit TestCase for PersistOperationBuilder.
@@ -64,6 +66,7 @@ public class PersistOperationBuilderTest {
     private File m_snmpDirectory;
     private OnmsIpInterface m_intf;
     private OnmsNode m_node;
+    private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
 
     private IpInterfaceDao m_ifDao;
 

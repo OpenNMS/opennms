@@ -12,6 +12,7 @@
     	<property name="ipInterfaceDao" ref="ipInterfaceDao"/>
     	<property name="nodeDao" ref="nodeDao"/>
  		<property name="eventIpcManager" ref="eventIpcManager"/>
+ 		<property name="transactionTemplate" ref="transactionTemplate"/>
     </bean>
 
     <tx:annotation-driven/>
