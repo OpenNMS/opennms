@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,17 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.snmp;
-
+package org.opennms.netmgt.snmp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.snmp.AbstractSnmpStore;
-import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.SnmpValueType;
 
 public class SnmpStore extends AbstractSnmpStore {
+    
     private static final Logger LOG = LoggerFactory.getLogger(SnmpStore.class);
     
     /**
@@ -47,16 +43,16 @@ public class SnmpStore extends AbstractSnmpStore {
      * class.
      * </P>
      */
-    protected NamedSnmpVar[] ms_elemList = null;
+    protected final NamedSnmpVar[] ms_elemList;
 
     /**
      * <p>Constructor for SnmpStore.</p>
      *
-     * @param list an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     * @param list an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
      */
-    public SnmpStore(NamedSnmpVar[] list) {
+    public SnmpStore(final NamedSnmpVar[] list) {
         super();
-        ms_elemList = list;
+        ms_elemList = list.clone();
     }
 
     /**
@@ -73,7 +69,7 @@ public class SnmpStore extends AbstractSnmpStore {
     /**
      * <p>getElements</p>
      *
-     * @return an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
      */
     public NamedSnmpVar[] getElements() {
         return ms_elemList;
@@ -81,24 +77,28 @@ public class SnmpStore extends AbstractSnmpStore {
     
     /** {@inheritDoc} */
     @Override
-    public void storeResult(SnmpResult res) {
-        putValue(res.getBase().toString(), res.getValue());
-        for (NamedSnmpVar var : ms_elemList) {
-            if (res.getBase().equals(var.getSnmpObjId())) {
-                if (res.getValue().isError()) {
-                    LOG.error("storeResult: got an error for alias {} [{}].[{}], but we should only be getting non-errors: {}", res.getValue(), var.getAlias(), res.getBase(), res.getInstance());
-                } else if (res.getValue().isEndOfMib()) {
-                    LOG.debug("storeResult: got endOfMib for alias {} [{}].[{}], not storing", var.getAlias(), res.getBase(), res.getInstance());
+    public void storeResult(final SnmpResult res) {
+        final SnmpObjId base = res.getBase();
+        final SnmpValue value = res.getValue();
+
+        putValue(base.toString(), value);
+
+        for (final NamedSnmpVar var : ms_elemList) {
+            if (base.equals(var.getSnmpObjId())) {
+                if (value.isError()) {
+                    LOG.error("storeResult: got an error for alias {} [{}].[{}], but we should only be getting non-errors: {}", var.getAlias(), base, res.getInstance(), value);
+                } else if (value.isEndOfMib()) {
+                    LOG.debug("storeResult: got endOfMib for alias {} [{}].[{}], not storing", var.getAlias(), base, res.getInstance());
                 } else {
-                    SnmpValueType type = SnmpValueType.valueOf(res.getValue().getType());
-                    LOG.debug("Storing Result: alias: {} [{}].[{}] = {}: {}", toLogString(res.getValue()), var.getAlias(), res.getBase(), res.getInstance(), (type == null ? "Unknown" : type.getDisplayString()));
-                    putValue(var.getAlias(), res.getValue());
+                    final SnmpValueType type = SnmpValueType.valueOf(value.getType());
+                    LOG.debug("Storing Result: alias: {} [{}].[{}] = {}: {}", var.getAlias(), base, res.getInstance(), (type == null ? "Unknown" : type.getDisplayString()), toLogString(value));
+                    putValue(var.getAlias(), value);
                 }
             }
         }
     }
     
-    private String toLogString(SnmpValue val) {
+    private String toLogString(final SnmpValue val) {
         if (val.getType() == SnmpValue.SNMP_OCTET_STRING) {
             return val.toDisplayString() + " (" + val.toHexString() + ")";
         }

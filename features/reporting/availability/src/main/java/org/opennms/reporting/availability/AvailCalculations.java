@@ -483,6 +483,8 @@ public class AvailCalculations extends Object {
             int top20Count = 0;
             Rows rows = new Rows();
 
+            final SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
             loop : for(List<OutageSince> list : treeMap.values()) {
                 for(OutageSince outageSince : list) {
                     top20Count++;
@@ -504,7 +506,6 @@ public class AvailCalculations extends Object {
                     value.setType("data");
 
                     Value datevalue = new Value();
-                    SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     datevalue.setContent(fmt.format(new Date(outageSince.getOutTime())));
                     datevalue.setType("other");
 
@@ -735,7 +736,7 @@ public class AvailCalculations extends Object {
         int numdays = 0;
         CalendarTableBuilder calBuilder = new CalendarTableBuilder(endTime);
         TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
-        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
+        final SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         String periodFrom = "";
         while (numdays++ < days) {
@@ -769,13 +770,9 @@ public class AvailCalculations extends Object {
             endTime -= ROLLING_WINDOW;
         }
 
-        Set<Date> keyDates = treeMap.keySet();
-        Iterator<Date> iter = keyDates.iterator();
         int dateSlot = 0;
-        while (iter.hasNext()) {
-            Date key = iter.next();
-            Double percent = treeMap.get(key);
-            LOG.debug("Inserting value {} into date slot {}", dateSlot, percent.doubleValue());
+        for (final Map.Entry<Date,Double> entry : treeMap.entrySet()) {
+            final Double percent = entry.getValue();
             dateSlot++;
             LOG.debug("Inserting value {} into date slot {}", dateSlot, percent.doubleValue());
             calBuilder.setPctValue(dateSlot, percent.doubleValue());
@@ -818,7 +815,7 @@ public class AvailCalculations extends Object {
         int numdays = 0;
         Rows rows = new Rows();
         TreeMap<Date, String> treeMap = new TreeMap<Date, String>();
-        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
+        final SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         String periodFrom = "";
         while (numdays++ < days) {
@@ -845,25 +842,23 @@ public class AvailCalculations extends Object {
             endTime -= ROLLING_WINDOW;
         }
 
-        Set<Date> keyDates = treeMap.keySet();
-        Iterator<Date> iter = keyDates.iterator();
-        while (iter.hasNext()) {
-            Date key = iter.next();
-            Value dateValue = new Value();
-            SimpleDateFormat fmtmp = new SimpleDateFormat("dd");
+        final SimpleDateFormat fmtmp = new SimpleDateFormat("dd");
+        for (final Map.Entry<Date,String> entry : treeMap.entrySet()) {
+            final Date key = entry.getKey();
+            final String percent = entry.getValue();
+
+            final Value dateValue = new Value();
             dateValue.setContent(fmtmp.format(key));
             dateValue.setType("title");
 
-            String percent = treeMap.get(key);
-            Value value = new Value();
+            final Value value = new Value();
             value.setContent(percent);
             value.setType("data");
 
-            Row row = new Row();
+            final Row row = new Row();
             row.addValue(dateValue);
             row.addValue(value);
             rows.addRow(row);
-
         }
 
         Col col = new Col();
@@ -905,7 +900,7 @@ public class AvailCalculations extends Object {
         int serviceCount = 0;
         long outage = 0;
         int numdays = 0;
-        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
+        final SimpleDateFormat fmt = new SimpleDateFormat("dd MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         String periodFrom = "";
         while (numdays++ < days) {
@@ -982,7 +977,7 @@ public class AvailCalculations extends Object {
 
         calendar.set(year, month, numDays, 23, 59, 59);
         endTime = calendar.getTime().getTime();
-        SimpleDateFormat fmt = new SimpleDateFormat("MMM, yyyy");
+        final SimpleDateFormat fmt = new SimpleDateFormat("MMM, yyyy");
         String periodEnd = fmt.format(new java.util.Date(endTime));
         TreeMap<Date, String> treeMap = new TreeMap<Date, String>(); // Holds all the month/percent
         // values to be displayed in order
@@ -1025,21 +1020,20 @@ public class AvailCalculations extends Object {
             endTime = calendar.getTime().getTime();
         }
 
-        Set<Date> keyDates = treeMap.keySet();
-        Iterator<Date> iter = keyDates.iterator();
-        while (iter.hasNext()) {
-            Date key = iter.next();
-            Value dateValue = new Value();
-            SimpleDateFormat fmtmp = new SimpleDateFormat("MMM");
+        final SimpleDateFormat fmtmp = new SimpleDateFormat("MMM");
+        for (final Map.Entry<Date,String> entry : treeMap.entrySet()) {
+            final Date key = entry.getKey();
+            final String percent = entry.getValue();
+
+            final Value dateValue = new Value();
             dateValue.setContent(fmtmp.format(key) + "");
             dateValue.setType("title");
 
-            Value value = new Value();
-            String percent = treeMap.get(key);
+            final Value value = new Value();
             value.setContent(percent);
             value.setType("data");
 
-            Row row = new Row();
+            final Row row = new Row();
             row.addValue(dateValue);
             row.addValue(value);
             rows.addRow(row);
@@ -1128,21 +1122,20 @@ public class AvailCalculations extends Object {
     private void lastNDaysDailyServiceAvailability(int days, long endTime, CatSections catSections, String label, String descr) {
         LOG.debug("Inside lastNDaysDailyServiceAvailability {}", days);
 
+        final SimpleDateFormat fmtmp = new SimpleDateFormat("dd MMM, yyyy");
 
         long outage;
         String periodFrom = "";
-        SimpleDateFormat fmtmp = new SimpleDateFormat("dd MMM, yyyy");
         String periodTo = "";
         periodTo = fmtmp.format(new java.util.Date(endTime));
-        for(String service : m_monitoredServices) {
-            TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
-            Rows rows = new Rows();
+        for(final String service : m_monitoredServices) {
+            final TreeMap<Date, Double> treeMap = new TreeMap<Date, Double>();
+            final Rows rows = new Rows();
             LOG.debug("SERvice {}", service);
 
             long curTime = endTime;
             Map<IfService, OutageSvcTimesList> svcOutages = null;
-            if (m_services != null)
-                svcOutages = m_services.get(service);
+            if (m_services != null) svcOutages = m_services.get(service);
             if (svcOutages == null || svcOutages.size() <= 0) {
                 int daysCnt = 0;
                 while (daysCnt++ < days) {
@@ -1154,32 +1147,32 @@ public class AvailCalculations extends Object {
                     curTime -= ROLLING_WINDOW;
                 }
 
-                Set<Date> keys = treeMap.keySet();
-                Iterator<Date> iter = keys.iterator();
-                while (iter.hasNext()) {
-                    Date tmp = iter.next();
-                    Value dateValue = new Value();
-                    SimpleDateFormat fmt = new SimpleDateFormat("dd");
+                final SimpleDateFormat fmt = new SimpleDateFormat("dd");
+
+                for (final Date tmp : treeMap.keySet()) {
+                    final Value dateValue = new Value();
                     dateValue.setContent(fmt.format(tmp) + "");
                     dateValue.setType("title");
 
-                    Value value = new Value();
+                    final Value value = new Value();
                     value.setContent("100.0");
                     value.setType("data");
 
-                    Row row = new Row();
+                    final Row row = new Row();
                     row.addValue(dateValue);
                     row.addValue(value);
                     rows.addRow(row);
                 }
 
-                Col col = new Col();
+                final Col col = new Col();
                 col.addColTitle(0, "Date");
                 col.addColTitle(1, "Percentage Availability");
-                ClassicTable table = new ClassicTable();
+
+                final ClassicTable table = new ClassicTable();
                 table.setCol(col);
                 table.setRows(rows);
-                Section section = new Section();
+
+                final Section section = new Section();
                 section.setClassicTable(table);
                 section.setPeriod(periodFrom + " to " + periodTo);
                 section.setSectionName(label + " " + service);
@@ -1197,12 +1190,12 @@ public class AvailCalculations extends Object {
                     // For each node in the service table.
                     //
                     // Iterate each svc node for getting the ifservice
-                    Set<IfService> keys = svcOutages.keySet();
-                    Iterator<IfService> iter = keys.iterator();
-                    while (iter.hasNext()) {
-                        IfService ifservice = (IfService) iter.next();
+                    for (final Map.Entry<IfService, OutageSvcTimesList> entry : svcOutages.entrySet()) {
+                        final IfService ifservice = entry.getKey();
+                        final OutageSvcTimesList outageList = entry.getValue();
+
                         LOG.debug(ifservice.toString());
-                        OutageSvcTimesList outageList = (OutageSvcTimesList) svcOutages.get(ifservice);
+
                         if (outageList != null) {
                             outage = outageList.getDownTime(curTime, ROLLING_WINDOW);
                             // Keep track of the number of services being
@@ -1227,22 +1220,21 @@ public class AvailCalculations extends Object {
                     curTime -= ROLLING_WINDOW;
                 }
 
-                Set<Date> keys = treeMap.keySet();
-                Iterator<Date> iter = keys.iterator();
-                while (iter.hasNext()) {
-                    Date tmp = iter.next();
-                    Value dateValue = new Value();
-                    SimpleDateFormat fmt = new SimpleDateFormat("dd");
+                final SimpleDateFormat fmt = new SimpleDateFormat("dd");
+
+                for (final Map.Entry<Date,Double> entry : treeMap.entrySet()) {
+                    final Date tmp = entry.getKey();
+                    final Double val = entry.getValue();
+
+                    final Value dateValue = new Value();
                     dateValue.setContent(fmt.format(tmp) + "");
                     dateValue.setType("title");
 
-                    Double val = treeMap.get(tmp);
-
-                    Value value = new Value();
+                    final Value value = new Value();
                     value.setContent("" + val);
                     value.setType("data");
 
-                    Row row = new Row();
+                    final Row row = new Row();
                     row.addValue(dateValue);
                     row.addValue(value);
                     rows.addRow(row);

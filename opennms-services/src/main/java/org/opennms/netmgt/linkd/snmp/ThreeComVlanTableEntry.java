@@ -30,6 +30,7 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
 import org.opennms.netmgt.model.OnmsVlan.VlanType;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 
 /**
  *<P>The ThreeComVlanTableEntry class is designed to hold all the MIB

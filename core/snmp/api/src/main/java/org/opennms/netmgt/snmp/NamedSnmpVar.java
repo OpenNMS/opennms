@@ -26,14 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd.snmp;
+package org.opennms.netmgt.snmp;
 
-import org.opennms.netmgt.snmp.Collectable;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.ColumnTracker;
-import org.opennms.netmgt.snmp.SingleInstanceTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * The NamedSnmpVar class is used to associate a name for a particular snmp
@@ -44,7 +41,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * Should the instance also be part of a table, then the column number of the
  * instance is also stored in the object.
  */
-public final class NamedSnmpVar implements Collectable {
+public final class NamedSnmpVar {
     /**
      * String which contains the Class name of the expected SNMP data type for
      * the object.
@@ -234,12 +231,19 @@ public final class NamedSnmpVar implements Collectable {
     /**
      * <p>getCollectionTracker</p>
      *
+     * @param instances a {@link java.util.Set} object.
      * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
      */
-    @Override
-    public CollectionTracker getCollectionTracker() {
-        return m_isTabular ? (CollectionTracker)new ColumnTracker(getSnmpObjId()) : 
-                             (CollectionTracker)new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
+    public CollectionTracker getCollectionTracker(final Set<SnmpInstId> instances) {
+        if ( instances == null ) {
+            return m_isTabular ? new ColumnTracker(getSnmpObjId()) : new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
+        } else {
+            final Collection<Collectable> trackers = new ArrayList<Collectable>();
+            for(final SnmpInstId inst : instances) {
+                trackers.add(new SingleInstanceTracker(getSnmpObjId(), inst));
+            }
+            return new AggregateTracker(trackers);
+        }
     }
 
     /**
@@ -255,18 +259,29 @@ public final class NamedSnmpVar implements Collectable {
     /**
      * <p>getTrackersFor</p>
      *
-     * @param columns an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     * @param columns an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
+     * @param instances a {@link java.util.Set} object.
      * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
      */
-    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns) {
+    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns, final Set<SnmpInstId> instances) {
         if (columns == null) {
             return new CollectionTracker[0];
         }
-        CollectionTracker[] trackers = new CollectionTracker[columns.length];
+        final CollectionTracker[] trackers = new CollectionTracker[columns.length];
         for(int i = 0; i < columns.length; i++)
-            trackers[i] = columns[i].getCollectionTracker();
+            trackers[i] = columns[i].getCollectionTracker(instances);
         
          return trackers;
+    }
+
+    /**
+     * <p>getTrackersFor</p>
+     *
+     * @param columns an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
+     */
+    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns) {
+        return getTrackersFor(columns, null);
     }
 
 }

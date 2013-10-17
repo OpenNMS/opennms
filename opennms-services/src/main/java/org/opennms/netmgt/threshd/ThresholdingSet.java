@@ -205,7 +205,7 @@ public class ThresholdingSet {
      * @param attributeName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasThresholds(String resourceTypeName, String attributeName) {
+    public boolean hasThresholds(final String resourceTypeName, final String attributeName) {
         boolean ok = false;
         for (ThresholdGroup group : m_thresholdGroups) {
             Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);

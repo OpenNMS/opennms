@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 
 /**
  * <P>
