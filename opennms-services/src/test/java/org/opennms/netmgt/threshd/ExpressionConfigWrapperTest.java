@@ -159,4 +159,16 @@ public class ExpressionConfigWrapperTest {
         Assert.assertEquals(60.0, wrapper.evaluate(values));
     }
 
+    @Test
+    public void testFunctions() throws Exception {
+        Expression exp = new Expression();
+        exp.setExpression("math.max((ifInOctets*8/ifSpeed), (ifOutOctets*8/ifSpeed))");
+        ExpressionConfigWrapper wrapper = new ExpressionConfigWrapper(exp);
+        Assert.assertEquals(3, wrapper.getRequiredDatasources().size());
+        Map<String, Double> values = new HashMap<String,Double>();
+        values.put("ifInOctets", 100.0);
+        values.put("ifOutOctets", 200.0);
+        values.put("ifSpeed", 10.0);
+        Assert.assertEquals(160.0, wrapper.evaluate(values));
+    }
 }

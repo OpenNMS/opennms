@@ -286,7 +286,7 @@ public class ThresholdingSet {
                             }
                             if(!valueMissing || relaxed) {
                                 log().info("applyThresholds: All attributes found for " + resourceWrapper + ", evaluating");
-                                resourceWrapper.setLabel(thresholdEntity.getDatasourceLabel());
+                                resourceWrapper.setDsLabel(thresholdEntity.getDatasourceLabel());
                                 try {
                                     List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
                                     eventsList.addAll(thresholdEvents);
@@ -328,7 +328,7 @@ public class ThresholdingSet {
             }
             count++;
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = resource.getLabelValue(f.getField());
+            String attr = resource.getFieldValue(f.getField());
             if (attr != null) {
                 try {
                     final Pattern p = Pattern.compile(f.getContent());

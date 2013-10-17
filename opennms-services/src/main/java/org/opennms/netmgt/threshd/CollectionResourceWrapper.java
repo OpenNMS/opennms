@@ -59,7 +59,7 @@ public class CollectionResourceWrapper {
     private final int m_nodeId;
     private final String m_hostAddress;
     private final String m_serviceName;
-    private String m_label;
+    private String m_dsLabel;
     private String m_iflabel;
     private String m_ifindex;
     private final RrdRepository m_repository;
@@ -198,21 +198,21 @@ public class CollectionResourceWrapper {
     }
 
     /**
-     * <p>getLabel</p>
+     * <p>getDsLabel</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getLabel() {
-        return m_label;
+    public String getDsLabel() {
+        return m_dsLabel;
     }
 
     /**
-     * <p>setLabel</p>
+     * <p>setDsLabel</p>
      *
-     * @param label a {@link java.lang.String} object.
+     * @param dsLabel a {@link java.lang.String} object.
      */
-    public void setLabel(String label) {
-        m_label = label;
+    public void setDsLabel(String dsLabel) {
+        m_dsLabel = dsLabel;
     }
 
     /**
@@ -223,7 +223,16 @@ public class CollectionResourceWrapper {
     public String getInstance() {
         return m_resource != null ? m_resource.getInstance() : null;
     }
-    
+
+    /**
+     * <p>getInstanceLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getInstanceLabel() {
+        return m_resource != null ? m_resource.getLabel() : null;
+    }
+
     /**
      * <p>getResourceTypeName</p>
      *
@@ -404,12 +413,12 @@ public class CollectionResourceWrapper {
     }
 
     /**
-     * <p>getLabelValue</p>
+     * <p>getFieldValue</p>
      *
      * @param ds a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getLabelValue(String ds) {
+    public String getFieldValue(String ds) {
         if (ds == null || ds.equals(""))
             return null;
         if (log().isDebugEnabled()) {
