@@ -92,7 +92,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     @UiField
     FlowPanel m_componentHolder;
 
-    VerticalPanel m_selectionContainer;
     VerticalPanel m_focusedContainer;
 
     SuggestBox m_suggestBox;
@@ -103,6 +102,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     @Override
     public void onLoad(){
+        m_componentHolder.clear();
         this.setStyleName("topology-search");
         final TextBoxBase textField = new TextBox();
         textField.setWidth("245px");
@@ -134,10 +134,11 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_componentHolder.setWidth("245px");
         m_componentHolder.add(m_suggestBox);
 
-        m_selectionContainer = new VerticalPanel();
-        m_componentHolder.add(m_selectionContainer);
 
-        m_focusedContainer = new VerticalPanel();
+        if(m_focusedContainer == null){
+            m_focusedContainer = new VerticalPanel();
+        }
+
         m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         m_focusedContainer.setTitle("Focused Vertices");
         m_componentHolder.add(m_focusedContainer);

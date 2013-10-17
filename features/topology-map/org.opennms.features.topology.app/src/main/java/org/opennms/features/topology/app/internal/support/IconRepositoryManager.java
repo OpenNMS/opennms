@@ -112,7 +112,7 @@ public class IconRepositoryManager {
             int lastColon = key.lastIndexOf(':');
             if ("default".equals(key)) {
             	// we got here an no default icon was registered!!
-            	return "generic";
+            	return findSVGIconIdByKey("default");
             } else if (lastColon == -1) {
             	// no colons in key so just return 'default' icon
             	return findSVGIconIdByKey("default");

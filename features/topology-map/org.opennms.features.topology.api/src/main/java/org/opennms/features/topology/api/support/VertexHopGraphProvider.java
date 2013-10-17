@@ -119,15 +119,7 @@ public class VertexHopGraphProvider implements GraphProvider {
 
 		private static final long serialVersionUID = 2904432878716561926L;
 
-		private static final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
-
-		public FocusNodeHopCriteria() {
-			super();
-		}
-
-		public FocusNodeHopCriteria(Collection<VertexRef> objects) {
-			m_vertices.addAll(objects);
-		}
+		private final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
 
 		/**
 		 * TODO: This return value doesn't matter since we just delegate
