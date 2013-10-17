@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -42,19 +43,6 @@ import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField
 import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
-
-    public class DefaultSelectionCallback implements SearchTokenField.SelectionCallback {
-
-        @Override
-        public void onSelection(SearchSuggestion searchSuggestion) {
-            m_connector.selectSuggestion(searchSuggestion);
-        }
-
-        @Override
-        public void onDeselection(SearchSuggestion searchSuggestion) {
-            m_connector.removeSelected(searchSuggestion);
-        }
-    }
 
     public class DefaultCenterOnCallback implements SearchTokenField.CenterOnSuggestionCallback{
 
@@ -137,6 +125,8 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
         if(m_focusedContainer == null){
             m_focusedContainer = new VerticalPanel();
+            m_focusedContainer.setWidth("100%");
+
         }
 
         m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
@@ -171,7 +161,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
-            field.setSelectionCallback(new DefaultSelectionCallback());
 
             m_focusedContainer.add(field);
         }
