@@ -423,6 +423,7 @@ public class CollectionResourceWrapperTest {
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
+        EasyMock.expect(agent.getStorageDir()).andReturn(new File("target/snmp/rrd")).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }

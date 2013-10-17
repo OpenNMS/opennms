@@ -292,9 +292,6 @@ public class CollectionResourceWrapper {
         return true;
     }
 
-    /*
-     * FIXME What happen with numeric fields from strings.properties ?
-     */ 
     /**
      * <p>getAttributeValue</p>
      *
@@ -302,13 +299,23 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.Double} object.
      */
     public Double getAttributeValue(String ds) {
+        if (isAnInterfaceResource() && ("snmpifspeed".equalsIgnoreCase(ds) || "snmpiftype".equalsIgnoreCase(ds))) { // Get Value from ifInfo only for Interface Resource
+            String value = getIfInfoValue(ds);
+            if (value != null) {
+                try {
+                    return Double.parseDouble(value);
+                } catch (Exception e) {
+                    return Double.NaN;
+                }
+            }
+        }
         if (m_attributes == null || m_attributes.get(ds) == null) {
-            log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
+            log().info("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
             return null;
         }
         String numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
-            log().warn("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
+            log().info("getAttributeValue: can't find numeric value for " + ds + " on " + m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
@@ -408,15 +415,15 @@ public class CollectionResourceWrapper {
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         }
-        if ("nodeid".equals(ds))
+        if ("nodeid".equalsIgnoreCase(ds))
             return Integer.toString(m_nodeId);
-        if ("ipaddress".equals(ds))
+        if ("ipaddress".equalsIgnoreCase(ds))
             return m_hostAddress;
-        if ("iflabel".equals(ds))
+        if ("iflabel".equalsIgnoreCase(ds))
             return getIfLabel();
         String value = null;
         File resourceDirectory = m_resource.getResourceDir(m_repository);
-        if ("ID".equals(ds)) {
+        if ("id".equalsIgnoreCase(ds)) {
             return resourceDirectory.getName();
         }
         try {
