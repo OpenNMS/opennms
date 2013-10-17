@@ -73,6 +73,7 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
+// FIXME inner non static class with backreference, bad design, keeps objects alive
 public class NodeScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
