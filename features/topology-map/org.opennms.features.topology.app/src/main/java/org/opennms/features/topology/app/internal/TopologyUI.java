@@ -262,7 +262,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        VerticesUpdateManager verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         // Add a request handler that parses incoming focusNode and szl query parameters
         getSession().addRequestHandler(new RequestHandler() {
