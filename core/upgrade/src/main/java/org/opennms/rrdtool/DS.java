@@ -62,8 +62,8 @@ public class DS {
     /** The maximum value of the data source. Defaults to 'U'. */
     private Double max = null;
 
-    /** The last time stamp of the data source, expressed in seconds since 1970-01-01 UTC. */
-    private Long lastDs;
+    /** The last value. */
+    private Double lastDs = Double.NaN;
 
     /** The value. */
     private Double value = 0.0;
@@ -172,23 +172,22 @@ public class DS {
     }
 
     /**
-     * Gets the last data source time stamp.
-     * <p>Expressed in seconds since 1970-01-01 UTC</p>
+     * Gets the last data source value.
      *
      * @return the last data source time stamp
      */
     @XmlElement(name="last_ds")
-    @XmlJavaTypeAdapter(LongAdapter.class)
-    public Long getLastDs() {
+    @XmlJavaTypeAdapter(DoubleAdapter.class)
+    public Double getLastDs() {
         return lastDs;
     }
 
     /**
-     * Sets the last data source time stamp.
+     * Sets the last data source value.
      *
-     * @param lastDs the new last data source time stamp
+     * @param lastDs the new last data source value
      */
-    public void setLastDs(Long lastDs) {
+    public void setLastDs(Double lastDs) {
         this.lastDs = lastDs;
     }
 

@@ -27,13 +27,12 @@
  *******************************************************************************/
 package org.opennms.upgrade.implementations;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Map;
+import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -101,7 +100,7 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
      * @return the interfaces to merge
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected Map<File,File> getInterfacesToMerge() throws OnmsUpgradeException {
+    protected List<SnmpInterfaceUpgrade> getInterfacesToMerge() throws OnmsUpgradeException {
         updatePhysicalInterfaces();
         return super.getInterfacesToMerge();
     }

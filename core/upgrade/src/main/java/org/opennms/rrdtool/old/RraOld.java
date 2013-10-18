@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.rrdtool;
+package org.opennms.rrdtool.old;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.rrdtool.CFType;
+import org.opennms.rrdtool.Row;
+
 /**
  * The Class RRA (Round Robin Archives).
  * <p>Warning: This representation doesn't support Aberrant Behavior Detection with Holt-Winters Forecasting</p>
@@ -44,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Rra {
+public class RraOld {
 
     /** The consolidation function. */
     private CFType consolidationFunction;
@@ -55,11 +58,11 @@ public class Rra {
     /** The rows. */
     private List<Row> rows = new ArrayList<Row>();
 
-    /** The parameters. */
-    private Parameters parameters = new Parameters();
-
     /** The CDP Data. */
-    private List<RraDS> dataSources = new ArrayList<RraDS>();
+    private List<RraDsOld> dataSources = new ArrayList<RraDsOld>();
+
+    /** The XFF. */
+    private Double xff = 0.5;
 
     /**
      * Gets the consolidation function.
@@ -120,32 +123,13 @@ public class Rra {
     }
 
     /**
-     * Gets the parameters.
-     *
-     * @return the parameters
-     */
-    @XmlElement(name="params")
-    public Parameters getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Sets the parameters.
-     *
-     * @param parameters the new parameters
-     */
-    public void setParameters(Parameters parameters) {
-        this.parameters = parameters;
-    }
-
-    /**
      * Gets the data sources.
      *
      * @return the data sources
      */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
-    public List<RraDS> getDataSources() {
+    public List<RraDsOld> getDataSources() {
         return dataSources;
     }
 
@@ -154,18 +138,40 @@ public class Rra {
      *
      * @param dataSources the new data sources
      */
-    public void setDataSources(List<RraDS> dataSources) {
+    public void setDataSources(List<RraDsOld> dataSources) {
         this.dataSources = dataSources;
     }
 
     /**
+     * Gets the XFF.
+     * 
+     * <p>XFF The xfiles factor defines what part of a consolidation interval may be made up from *UNKNOWN* data while the consolidated
+     * value is still regarded as known. It is given as the ratio of allowed *UNKNOWN* PDPs to the number of PDPs in the interval.
+     * Thus, it ranges from 0 to 1 (exclusive).</p>
+     *
+     * @return the XFF
+     */
+    @XmlElement(name="xff")
+    public Double getXff() {
+        return xff;
+    }
+
+    /**
+     * Sets the XFF.
+     *
+     * @param xff the new XFF
+     */
+    public void setXff(Double xff) {
+        this.xff = xff;
+    }
+
+    /**
      * Format equals.
-     * TODO: Check the parameters and the RRA data sources
      * 
      * @param rra the RRA object
      * @return true, if successful
      */
-    public boolean formatEquals(Rra rra) {
+    public boolean formatEquals(RraOld rra) {
         if (this.consolidationFunction != null) {
             if (rra.consolidationFunction == null) return false;
             else if (!(this.consolidationFunction.equals(rra.consolidationFunction))) 
@@ -180,6 +186,14 @@ public class Rra {
                 return false;
         }
         else if (rra.pdpPerRow != null)
+            return false;
+
+        if (this.xff != null) {
+            if (rra.xff == null) return false;
+            else if (!(this.xff.equals(rra.xff))) 
+                return false;
+        }
+        else if (rra.xff != null)
             return false;
 
         if (this.rows != null) {

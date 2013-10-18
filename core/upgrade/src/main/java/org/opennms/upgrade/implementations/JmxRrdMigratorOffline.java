@@ -269,44 +269,54 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     private void processSingleFiles(File resourceDir, boolean isRrdtool) throws Exception {
         // JRBs
         final String rrdExt = getRrdExtension();
-        for (final File jrbFile : getFiles(resourceDir, rrdExt)) {
-            log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
-            String dsName = jrbFile.getName().replaceFirst(rrdExt, "");
-            String newName = getFixedDsName(dsName);
-            File newFile = new File(jrbFile.getParentFile(), newName + rrdExt);
-            if (!dsName.equals(newName)) {
-                try {
-                    log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                    FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
-                } catch (Exception e) {
-                    log("Warning: Can't move file because: %s", e.getMessage());
-                    continue;
+        File[] jrbFiles = getFiles(resourceDir, rrdExt);
+        if (jrbFiles == null) {
+            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
+        } else {
+            for (final File jrbFile : jrbFiles) {
+                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
+                String dsName = jrbFile.getName().replaceFirst(rrdExt, "");
+                String newName = getFixedDsName(dsName);
+                File newFile = new File(jrbFile.getParentFile(), newName + rrdExt);
+                if (!dsName.equals(newName)) {
+                    try {
+                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
+                        FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
+                    } catch (Exception e) {
+                        log("Warning: Can't move file because: %s", e.getMessage());
+                        continue;
+                    }
                 }
-            }
-            if (!isRrdtool) {
-                updateJrb(newFile);
+                if (!isRrdtool) {
+                    updateJrb(newFile);
+                }
             }
         }
         // META
         final String metaExt = ".meta";
-        for (final File metaFile : getFiles(resourceDir, metaExt))  {
-            log("Processing META %s\n", metaFile);
-            String dsName = metaFile.getName().replaceFirst(metaExt, "");
-            String newName = getFixedDsName(dsName);
-            if (!dsName.equals(newName)) {
-                Properties meta = new Properties();
-                Properties newMeta = new Properties();
-                meta.load(new FileInputStream(metaFile));
-                for (Object k : meta.keySet()) {
-                    String key = (String) k;
-                    String newKey = key.replaceAll(dsName, newName);
-                    newMeta.put(newKey, newName);
+        File[] metaFiles = getFiles(resourceDir, metaExt);
+        if (metaFiles == null) {
+            log("Warning: there are no %s files on %s\n", metaExt, resourceDir);
+        } else {
+            for (final File metaFile : metaFiles)  {
+                log("Processing META %s\n", metaFile);
+                String dsName = metaFile.getName().replaceFirst(metaExt, "");
+                String newName = getFixedDsName(dsName);
+                if (!dsName.equals(newName)) {
+                    Properties meta = new Properties();
+                    Properties newMeta = new Properties();
+                    meta.load(new FileInputStream(metaFile));
+                    for (Object k : meta.keySet()) {
+                        String key = (String) k;
+                        String newKey = key.replaceAll(dsName, newName);
+                        newMeta.put(newKey, newName);
+                    }
+                    File newFile = new File(metaFile.getParentFile(), newName + metaExt);
+                    log("Re-creating META into %s\n", newFile);
+                    newMeta.store(new FileWriter(newFile), null);
+                    if (!metaFile.equals(newFile))
+                        metaFile.delete();
                 }
-                File newFile = new File(metaFile.getParentFile(), newName + metaExt);
-                log("Re-creating META into %s\n", newFile);
-                newMeta.store(new FileWriter(newFile), null);
-                if (!metaFile.equals(newFile))
-                    metaFile.delete();
             }
         }
     }
@@ -323,41 +333,51 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
         updateDsProperties(resourceDir);
         // JRBs
         final String rrdExt = getRrdExtension();
-        for (final File jrbFile : getFiles(resourceDir, rrdExt)) {
-            log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
-            File newFile = new File(jrbFile.getParentFile(), getFixedFileName(jrbFile.getName().replaceFirst(rrdExt, "")) + rrdExt);
-            if (!jrbFile.equals(newFile)) {
-                try {
-                    log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
-                    FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
-                } catch (Exception e) {
-                    log("Warning: Can't move file because: %s", e.getMessage());
-                    continue;
+        File[] jrbFiles = getFiles(resourceDir, rrdExt);
+        if (jrbFiles == null) {
+            log("Warning: there are no %s files on %s\n", rrdExt, resourceDir);
+        } else {
+            for (final File jrbFile : jrbFiles) {
+                log("Processing %s %s\n", rrdExt.toUpperCase(), jrbFile);
+                File newFile = new File(jrbFile.getParentFile(), getFixedFileName(jrbFile.getName().replaceFirst(rrdExt, "")) + rrdExt);
+                if (!jrbFile.equals(newFile)) {
+                    try {
+                        log("Renaming %s to %s\n", rrdExt.toUpperCase(), newFile);
+                        FileUtils.moveFile(jrbFile, newFile); // TODO It should be copyFile in order to do a roll-back
+                    } catch (Exception e) {
+                        log("Warning: Can't move file because: %s", e.getMessage());
+                        continue;
+                    }
                 }
-            }
-            if (!isRrdtool) {
-                updateJrb(newFile);
+                if (!isRrdtool) {
+                    updateJrb(newFile);
+                }
             }
         }
         // META
         final String metaExt = ".meta";
-        for (final File metaFile : getFiles(resourceDir, metaExt))  {
-            log("Processing META %s\n", metaFile);
-            Properties meta = new Properties();
-            Properties newMeta = new Properties();
-            meta.load(new FileInputStream(metaFile));
-            for (Object k : meta.keySet()) {
-                String key = (String) k;
-                String dsName = meta.getProperty(key);
-                String newName = getFixedDsName(dsName);
-                String newKey = key.replaceAll(dsName, newName);
-                newMeta.put(newKey, newName);
+        File[] metaFiles = getFiles(resourceDir, metaExt);
+        if (metaFiles == null) {
+            log("Warning: there are no %s files on %s\n", metaExt, resourceDir);
+        } else {
+            for (final File metaFile : metaFiles)  {
+                log("Processing META %s\n", metaFile);
+                Properties meta = new Properties();
+                Properties newMeta = new Properties();
+                meta.load(new FileInputStream(metaFile));
+                for (Object k : meta.keySet()) {
+                    String key = (String) k;
+                    String dsName = meta.getProperty(key);
+                    String newName = getFixedDsName(dsName);
+                    String newKey = key.replaceAll(dsName, newName);
+                    newMeta.put(newKey, newName);
+                }
+                File newFile = new File(metaFile.getParentFile(), getFixedFileName(metaFile.getName().replaceFirst(metaExt, "")) + metaExt);
+                log("Recreating META into %s\n", newFile);
+                newMeta.store(new FileWriter(newFile), null);
+                if (!metaFile.equals(newFile))
+                    metaFile.delete();
             }
-            File newFile = new File(metaFile.getParentFile(), getFixedFileName(metaFile.getName().replaceFirst(metaExt, "")) + metaExt);
-            log("Recreating META into %s\n", newFile);
-            newMeta.store(new FileWriter(newFile), null);
-            if (!metaFile.equals(newFile))
-                metaFile.delete();
         }
     }
 

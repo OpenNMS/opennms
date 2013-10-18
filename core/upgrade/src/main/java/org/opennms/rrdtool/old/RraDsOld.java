@@ -25,50 +25,64 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.rrdtool.old;
 
-package org.opennms.jrobin;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class RrdArchiveException.
- * <p>Copied from opennms-tools/opennms-rrd-converter.</p>
+ * The Class RraDS (RRA CDP Data Source).
+ * 
+ * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RrdArchiveException extends Exception {
-    
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -3615680233537592259L;
+@XmlRootElement(name="ds")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class RraDsOld {
+
+    /** The unknown data points. */
+    @XmlElement(name="unknown_datapoints")
+    private Long unknownDataPoints = 0L;
+
+    /** The value. */
+    @XmlElement(name="value")
+    private Double value;
 
     /**
-     * Instantiates a new rrd archive exception.
+     * Gets the unknown data points.
+     *
+     * @return the unknown data points
      */
-    public RrdArchiveException() {
+    public Long getUnknownDataPoints() {
+        return unknownDataPoints;
     }
 
     /**
-     * Instantiates a new rrd archive exception.
+     * Sets the unknown data points.
      *
-     * @param message the message
+     * @param unknownDataPoints the new unknown data points
      */
-    public RrdArchiveException(final String message) {
-        super(message);
+    public void setUnknownDataPoints(Long unknownDataPoints) {
+        this.unknownDataPoints = unknownDataPoints;
     }
 
     /**
-     * Instantiates a new rrd archive exception.
+     * Gets the value.
      *
-     * @param cause the cause
+     * @return the value
      */
-    public RrdArchiveException(final Throwable cause) {
-        super(cause);
+    public Double getValue() {
+        return value;
     }
 
     /**
-     * Instantiates a new rrd archive exception.
+     * Sets the value.
      *
-     * @param message the message
-     * @param cause the cause
+     * @param value the new value
      */
-    public RrdArchiveException(final String message, final Throwable cause) {
-        super(message, cause);
+    public void setValue(Double value) {
+        this.value = value;
     }
 
 }
