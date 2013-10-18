@@ -28,31 +28,23 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.util.List;
+import java.net.InetAddress;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Map;
-import java.util.TreeMap;
 
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.RrdLabelUtils;
+import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.service.snmp.IfTable;
 import org.opennms.netmgt.provision.service.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * The Class RRD/JRB Migrator for SNMP Interfaces Data (Offline Version)
@@ -67,7 +59,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class SnmpInterfaceRrdMigratorOffline extends AbstractSnmpInterfaceRrdMigrator {
+@Ignore
+public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnline {
 
     /**
      * Instantiates a new SNMP interface RRD migrator offline.
@@ -83,7 +76,7 @@ public class SnmpInterfaceRrdMigratorOffline extends AbstractSnmpInterfaceRrdMig
      */
     @Override
     public int getOrder() {
-        return 2;
+        return 3;
     }
 
     /* (non-Javadoc)
@@ -109,53 +102,61 @@ public class SnmpInterfaceRrdMigratorOffline extends AbstractSnmpInterfaceRrdMig
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Map<File,File> getInterfacesToMerge() throws OnmsUpgradeException {
-        final NodeDao nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-        final IpInterfaceDao ipInterfaceDao = BeanUtils.getBean("daoContext", "ipInterfaceDao", IpInterfaceDao.class);
-        final TransactionTemplate transactionTemplate = BeanUtils.getBean("daoContext", "transactionTemplate", TransactionTemplate.class);
-        return transactionTemplate.execute(new TransactionCallback<Map<File,File>>() {
-            @Override
-            public  Map<File,File> doInTransaction(TransactionStatus status) {
-                Map<File,File> interfacesToMerge = new TreeMap<File,File>();
-                CriteriaBuilder b = new CriteriaBuilder(OnmsIpInterface.class);
-                b.alias("monitoredServices", "service", JoinType.LEFT_JOIN);
-                b.alias("service.serviceType", "serviceType", JoinType.LEFT_JOIN);
-                b.eq("isSnmpPrimary", PrimaryType.PRIMARY);
-                b.eq("serviceType.name", "SNMP");
-                List<OnmsIpInterface> interfaces = ipInterfaceDao.findMatching(b.toCriteria());
-                for (OnmsIpInterface ip : interfaces) {
-                    OnmsNode node = ip.getNode();
-                    IfTable ifTable = null;
-                    try {
-                        log("Retrieving IF-MIB::ifTable for node %s using IP %s\n", node.getLabel(), ip.getIpAddress().getHostAddress());
-                        final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ip.getIpAddress());
-                        ifTable = new IfTable(ip.getIpAddress());
-                        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable", ifTable);
-                        walker.start();
-                        walker.waitFor();
-                    } catch (Exception e) {
-                        log("Can't retrieve SNMP data from %s\n", ip.getIpAddress().getHostAddress());
-                        continue;
-                    }
-                    if (ifTable != null) {
-                        log("Updating the SNMP Interfaces for node %s\n", node.getLabel());
-                        ifTable.updateSnmpInterfaceData(node);
-                        nodeDao.update(node);
-                        for (IfTableEntry entry : ifTable.getEntries()) {
-                            OnmsSnmpInterface snmpIface = node.getSnmpInterfaceWithIfIndex(entry.getIfIndex());
-                            String oldId = RrdLabelUtils.computeLabelForRRD(snmpIface.getIfName(), snmpIface.getIfDescr(), null);
-                            String newId = RrdLabelUtils.computeLabelForRRD(snmpIface.getIfName(), snmpIface.getIfDescr(), snmpIface.getPhysAddr());
-                            if (!oldId.equals(newId)) {
-                                File nodeDir = getNodeDirectory(node);
-                                File oldFile = new File(nodeDir, oldId);
-                                File newFile = new File(nodeDir, newId);
-                                interfacesToMerge.put(oldFile, newFile);
-                            }
-                        }
-                    }
-                }
-                return interfacesToMerge;
-            }
-        });
+        updatePhysicalInterfaces();
+        return super.getInterfacesToMerge();
     }
 
+    /**
+     * Update physical interfaces.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void updatePhysicalInterfaces() throws OnmsUpgradeException {
+        Connection conn = getDbConnection();
+        final DBUtils d = new DBUtils(getClass());
+        try {
+            conn.setAutoCommit(false);
+            Statement st = conn.createStatement();
+            d.watch(st);
+            String query = "select n.nodeid, n.nodelabel, i.ipaddr from node n, ipinterface i, ifservices s where n.nodeid = i.nodeid and n.nodeid = s.nodeid and i.issnmpprimary='P' and s.serviceid in (select serviceid from service where servicename='SNMP')";
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()) {
+                int nodeId = rs.getInt("nodeid");
+                String nodeLabel = rs.getString("nodelabel");
+                String ipAddress = rs.getString("ipaddr");
+                IfTable ifTable = null;
+                try {
+                    log("Retrieving IF-MIB::ifTable for node %s using IP %s\n", nodeLabel, ipAddress);
+                    InetAddress address = InetAddressUtils.addr(ipAddress);
+                    final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
+                    ifTable = new IfTable(address);
+                    SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable", ifTable);
+                    walker.start();
+                    walker.waitFor();
+                } catch (Exception e) {
+                    log("Can't retrieve SNMP data from %s\n", ipAddress);
+                    continue;
+                }
+                if (ifTable != null) {
+                    log("Updating the SNMP Interfaces for node %s\n", nodeLabel);
+                    String update = "update snmpinterface set snmpphysaddr=? where nodeid=? and snmpifindex=?";
+                    for (IfTableEntry entry : ifTable.getEntries()) {
+                        if (entry.getPhysAddr() == null) {
+                            continue;
+                        }
+                        PreparedStatement upt = conn.prepareStatement(update);
+                        d.watch(upt);
+                        upt.setString(1, entry.getPhysAddr());
+                        upt.setInt(2, nodeId);
+                        upt.setInt(3, entry.getIfIndex());
+                        upt.executeUpdate();
+                    }
+                }
+            }
+            conn.commit();
+            conn.close();
+        } catch (Exception e) {
+            d.cleanUp();
+        }
+    }
 }

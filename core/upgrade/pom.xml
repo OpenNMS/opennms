@@ -35,12 +35,8 @@
       <artifactId>jrobin-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- SNMP Interface Upgrade Dependencies -->
+    <!-- SNMP Interface Upgrade Dependencies: Offline Version -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-    </dependency>
-    <dependency> <!-- Offline version -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provisiond</artifactId>
     </dependency>

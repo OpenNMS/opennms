@@ -37,7 +37,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.jrobin.core.RrdDb;
-
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
@@ -46,6 +45,7 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
+import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
@@ -66,6 +66,7 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+@Ignore
 public class JmxRrdMigrator extends AbstractOnmsUpgrade {
 
     /** The JMX resource directories. */

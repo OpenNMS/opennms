@@ -27,22 +27,38 @@
  *******************************************************************************/
 package org.opennms.upgrade.implementations;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.RrdLabelUtils;
-import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.core.utils.StringUtils;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.jrobin.RrdMerge;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.rrdtool.RRD;
+import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * The Class RRD/JRB Migrator for SNMP Interfaces Data (Online Version)
@@ -57,7 +73,10 @@ import org.springframework.transaction.support.TransactionTemplate;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class SnmpInterfaceRrdMigratorOnline extends AbstractSnmpInterfaceRrdMigrator {
+public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
+
+    /** The interfaces to merge. */
+    private Map<File,File> interfacesToMerge;
 
     /**
      * Instantiates a new SNMP interface RRD migrator online.
@@ -71,15 +90,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractSnmpInterfaceRrdMigr
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#getOrder()
      */
-    @Override
     public int getOrder() {
-        return 3;
+        return 2;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#getDescription()
      */
-    @Override
     public String getDescription() {
         return "Merge SNMP Interface directories (Online Version): NMS-6056";
     }
@@ -87,9 +104,67 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractSnmpInterfaceRrdMigr
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#requiresOnmsRunning()
      */
-    @Override
     public boolean requiresOnmsRunning() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.api.OnmsUpgrade#preExecute()
+     */
+    public void preExecute() throws OnmsUpgradeException {
+        try {
+            DataCollectionConfigFactory.init();
+        } catch (IOException e) {
+            throw new OnmsUpgradeException("Can't initialize datacollection-config.xml because " + e.getMessage());
+        }
+        interfacesToMerge = getInterfacesToMerge();
+        for (File target : interfacesToMerge.values()) {
+            if (target.exists()) {
+                log("Backing up %s\n", target);
+                zipDir(target.getAbsolutePath() + ".zip", target);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.api.OnmsUpgrade#postExecute()
+     */
+    public void postExecute() throws OnmsUpgradeException {
+        for (File target : interfacesToMerge.values()) {
+            File zip = new File(target.getAbsolutePath() + ".zip");
+            if (zip.exists()) {
+                log("Removing backup %s\n", zip);
+                zip.delete();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.api.OnmsUpgrade#rollback()
+     */
+    @Override
+    public void rollback() throws OnmsUpgradeException {
+        try {
+            for (File target : interfacesToMerge.values()) {
+                File zip = new File(target.getAbsolutePath() + ".zip");
+                FileUtils.deleteDirectory(target);
+                target.mkdirs();
+                unzipDir(zip, target);
+                zip.delete();
+            }
+        } catch (IOException e) {
+            throw new OnmsUpgradeException("Can't restore the backup files because " + e.getMessage());
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.api.OnmsUpgrade#execute()
+     */
+    @Override
+    public void execute() throws OnmsUpgradeException {
+        for (Entry<File,File> entry : interfacesToMerge.entrySet()) {
+            merge(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -99,29 +174,206 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractSnmpInterfaceRrdMigr
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Map<File,File> getInterfacesToMerge() throws OnmsUpgradeException {
-        final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean("daoContext", "snmpInterfaceDao", SnmpInterfaceDao.class);
-        final TransactionTemplate transactionTemplate = BeanUtils.getBean("daoContext", "transactionTemplate", TransactionTemplate.class);
-        return transactionTemplate.execute(new TransactionCallback<Map<File,File>>() {
-            @Override
-            public  Map<File,File> doInTransaction(TransactionStatus status) {
-                Map<File,File> interfacesToMerge = new TreeMap<File,File>();
-                CriteriaBuilder b = new CriteriaBuilder(OnmsSnmpInterface.class);
-                b.isNotNull("physAddr");
-                List<OnmsSnmpInterface> interfaces = snmpInterfaceDao.findMatching(b.toCriteria());
-                for (OnmsSnmpInterface snmpIface : interfaces) {
-                    OnmsNode node = snmpIface.getNode();
-                    String oldId = RrdLabelUtils.computeLabelForRRD(snmpIface.getIfName(), snmpIface.getIfDescr(), null);
-                    String newId = RrdLabelUtils.computeLabelForRRD(snmpIface.getIfName(), snmpIface.getIfDescr(), snmpIface.getPhysAddr());
-                    if (!oldId.equals(newId)) {
-                        File nodeDir = getNodeDirectory(node);
-                        File oldFile = new File(nodeDir, oldId);
-                        File newFile = new File(nodeDir, newId);
-                        interfacesToMerge.put(oldFile, newFile);
-                    }
+        Connection conn = getDbConnection();
+        final DBUtils d = new DBUtils(getClass());
+        Map<File,File> interfacesToMerge = new TreeMap<File,File>();
+        try {
+            Statement st = conn.createStatement();
+            d.watch(st);
+            String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpphysaddr is not null";
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()) {
+                int nodeId = rs.getInt("nodeid");
+                String foreignSource = rs.getString("foreignsource");
+                String foreignId = rs.getString("foreignid");
+                String ifDescr = rs.getString("snmpifdescr");
+                String ifName = rs.getString("snmpifname");
+                String physAddr = rs.getString("snmpphysaddr");
+                String oldId = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, null);
+                String newId = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, physAddr);
+                if (!oldId.equals(newId)) {
+                    File nodeDir = getNodeDirectory(nodeId, foreignSource, foreignId);
+                    File oldFile = new File(nodeDir, oldId);
+                    File newFile = new File(nodeDir, newId);
+                    interfacesToMerge.put(oldFile, newFile);
                 }
-                return interfacesToMerge;
             }
-        });
+            conn.close();
+        } catch (Exception e) {
+            d.cleanUp();
+        }
+        return interfacesToMerge;
+    }
+
+    /**
+     * Merge.
+     *
+     * @param oldDir the old directory
+     * @param newDir the new directory
+     */
+    protected void merge(File oldDir, File newDir) {
+        log("Merging data from %s to %s\n", oldDir, newDir);
+        if (newDir.exists()) {
+            for (File source : getFiles(oldDir, getRrdExtension())) {
+                File dest = new File(newDir, source.getName());
+                if (dest.exists()) {
+                    if (isRrdToolEnabled()) {
+                        mergeRrd(source, dest);
+                    } else {
+                        mergeJrb(source, dest);
+                    }
+                } else {
+                    log("  Warning: %s doesn't exist\n", dest);
+                }
+            }
+        } else {
+            log("  renaming %s to %s\n", oldDir.getName(), newDir.getName());
+            oldDir.renameTo(newDir);
+        }
+    }
+
+    /**
+     * Merge RRDs.
+     *
+     * @param source the source RRD
+     * @param dest the destination RRD
+     */
+    protected void mergeRrd(File source, File dest) {
+        log("  merging RRD %s into %s\n", source, dest);
+        try {
+            RRD rrdSrc = dumpRrd(source);
+            RRD rrdDst = dumpRrd(dest);
+            if (rrdSrc == null || rrdDst == null) {
+                log("  Warning: can't load RRDs (ingoring merge).\n");
+            }
+            rrdDst.merge(rrdSrc);
+            File xmlDest = new File(dest + ".xml");
+            JaxbUtils.marshal(rrdDst, new FileWriter(xmlDest));
+            final File outputFile = new File(dest.getCanonicalPath() + ".merged");
+            restoreRrd(xmlDest, outputFile);
+            dest.delete();
+            outputFile.renameTo(dest);
+        } catch (Exception e) {
+            log("  Warning: ignoring merge because %s.\n", e.getMessage());
+        }
+    }
+
+    /**
+     * Merge JRBs.
+     *
+     * @param source the source JRB
+     * @param dest the destination JRB
+     */
+    protected void mergeJrb(File source, File dest) {
+        log("  merging JRB %s into %s\n", source, dest);
+        try {
+            RrdMerge merge = new RrdMerge();
+            File outputFile = merge.mergeJrbs(source, dest);
+            dest.delete();
+            outputFile.renameTo(dest);
+        } catch (Exception e) {
+            log("  Warning: ignoring merge because %s.\n", e.getMessage());
+        }
+    }
+
+    /**
+     * Dumps the RRD.
+     *
+     * @param rrdFile the RRD file
+     * @return the RRD
+     * 
+     * @throws Exception the exception
+     */
+    protected RRD dumpRrd(File rrdFile) throws Exception {
+        String rrdBinary = System.getProperty("rrd.binary");
+        if (rrdBinary == null) {
+            throw new IllegalArgumentException("rrd.binary property must be set");
+        }
+        String command = rrdBinary + " dump " + rrdFile.getAbsolutePath();
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
+        RRD rrd = null;
+        Process process = Runtime.getRuntime().exec(commandArray);
+        byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
+        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        if (errors.length() > 0) {
+            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+        }
+        BufferedReader reader = null;
+        try {
+            InputStream is = new ByteArrayInputStream(byteArray);
+            reader = new BufferedReader(new InputStreamReader(is));
+            rrd = JaxbUtils.unmarshal(RRD.class, reader);
+        } finally {
+            reader.close();
+        }
+        return rrd;
+    }
+
+    /**
+     * Restores the RRD.
+     *
+     * @param xmlFile the XML file
+     * @param targetFile the target file
+     * 
+     * @throws Exception the exception
+     */
+    protected void restoreRrd(File xmlFile, File targetFile) throws Exception {
+        String rrdBinary = System.getProperty("rrd.binary");
+        if (rrdBinary == null) {
+            throw new IllegalArgumentException("rrd.binary property must be set");
+        }
+        String command = rrdBinary + " restore " + xmlFile.getAbsolutePath() + " " + targetFile.getAbsolutePath();
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
+        Process process = Runtime.getRuntime().exec(commandArray);
+        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
+        if (errors.length() > 0) {
+            throw new OnmsUpgradeException("RRDtool command fail: " + errors);
+        }
+    }
+
+    /**
+     * Gets the node directory.
+     *
+     * @param nodeId the node id
+     * @param foreignSource the foreign source
+     * @param foreignId the foreign id
+     * @return the node directory
+     */
+    protected File getNodeDirectory(int nodeId, String foreignSource, String foreignId) {
+        File dir = new File(DataCollectionConfigFactory.getInstance().getRrdPath(), String.valueOf(nodeId));
+        if (Boolean.getBoolean("org.opennms.rrd.storeByForeignSource") && !(foreignSource == null) && !(foreignId == null)) {
+            File fsDir = new File("fs", foreignSource);
+            dir = new File(fsDir, foreignId);
+        }
+        return dir;
+    }
+
+    /**
+     * Gets the DB connection.
+     *
+     * @return the DB connection
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected Connection getDbConnection() throws OnmsUpgradeException {
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+            DataSourceConfiguration dsc = null;
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(cfgFile);
+                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
+            } finally {
+                IOUtils.closeQuietly(fileInputStream);
+            } 
+            for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
+                if (ds.getName().equals("opennms")) {
+                    return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
+                }
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't connect to OpenNMS Database");
+        }
+        throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
 
 }
