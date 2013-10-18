@@ -62,7 +62,7 @@ public class PrefabGraphDumper {
             sb.append(name).append(".description=").append(graph.getDescription()).append("\n");
             sb.append(name).append(".command=").append(graph.getCommand());
         }
-        writer.write("reports=" + StringUtils.join(templates, ",\\\n") + "\n\n");
+        writer.write("reports=" + StringUtils.join(templates, ", \\\n") + "\n\n");
         writer.write(sb.toString());
     }
 
