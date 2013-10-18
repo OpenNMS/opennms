@@ -32,21 +32,62 @@
     -->
     <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
-  
+
   <!-- 
-    DataSourceFactory has been changed to return TransactionAwareDataSources so
-    legacy code can participate in transactions properly.
-  -->
+  ######################################################
+  Legacy dataSource configuration
+  ######################################################
   <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
 
-  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <property name="dataSource" ref="dataSource" />
+  ######################################################
+  Legacy Hibernate 4 transaction manager
+  ######################################################
+  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nestedTransactionAllowed" value="true"/>
+  </bean>
+  -->
+
+  <!--
+    XADataSource that is wrapped with an AtomikosDataSourceBean which provides
+    pooling and JTA compatibility.
+  -->
+  <bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" destroy-method="close">
+    <property name="uniqueResourceName" value="opennms"/>
+    <property name="xaDataSource">
+      <bean class="org.opennms.core.db.XADataSourceFactoryBean" />
+    </property>
+    <property name="poolSize" value="30"/>
   </bean>
 
-  <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+  <!-- Atomikos JTA TransactionManager -->
+  <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+    <property name="forceShutdown" value="true"/>
+    <property name="transactionTimeout" value="300" />
+  </bean>
 
+  <!-- Atomikos JTA UserTransaction -->
+  <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp"/>
+
+  <!-- Construct a Spring JtaTransactionManager that uses Atomikos JTA -->
+  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+    <constructor-arg ref="atomikosUserTransaction"/>
+    <constructor-arg ref="atomikosTransactionManager"/>
+    <!-- <property name="allowCustomIsolationLevels" value="true"/> -->
+  </bean>
+
+  <!-- Create a Hibernate 4 LocalSessionFactoryBean that will provide thread-local sessions -->
   <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />
+    <!-- 
+      You MUST set this property or the SessionFactory will not communicate correctly with 
+      the JTA transaction manager and Spring and Hibernate will not coordinate transactions
+      properly.
+
+      https://jira.springsource.org/browse/SPR-9404
+      https://jira.springsource.org/browse/SPR-9480
+    -->
+    <property name="jtaTransactionManager" ref="transactionManager" />
     <property name="packagesToScan">
       <list>
         <value>org.opennms.netmgt.dao.hibernate</value>
@@ -63,21 +104,28 @@
     </property>
     <property name="hibernateProperties">
       <value>
-        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-        hibernate.cache.use_second_level_cache=false
-        hibernate.cache=false
+        <!-- Dialect for PostgreSQL 8.2+ -->
+        hibernate.dialect=org.hibernate.dialect.PostgreSQL82Dialect
+
         hibernate.cache.use_query_cache=false
+        hibernate.cache.use_second_level_cache=false
+
+        <!-- Configure Hibernate to use JTA factories -->
+        hibernate.transaction.factory_class=org.hibernate.engine.transaction.internal.jta.JtaTransactionFactory
+        <!--hibernate.transaction.jta.platform=[No specific value for Atomikos]-->
+
         hibernate.jdbc.batch_size=0
         <!-- hibernate.format_sql=true -->
       </value>
     </property>
   </bean>
 
-  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory" />
-    <property name="nestedTransactionAllowed" value="true"/>
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="dataSource" />
   </bean>
-  
+
+  <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
     <property name="transactionManager" ref="transactionManager" />
   </bean>
