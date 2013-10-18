@@ -28,5 +28,8 @@
     <feature name="dashlet-topology" version="${pom.version}">
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
     </feature>
+    <feature name="dashlet-surveillance" version="${pom.version}">
+        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-surveillance/${pom.version}</bundle>
+    </feature>
 
 </features>
