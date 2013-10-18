@@ -45,11 +45,14 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.postgresql.xa.PGXADataSource;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
@@ -73,6 +76,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
+    private PGXADataSource m_xaDataSource;
+    private PGXADataSource m_adminXaDataSource;
 
     private InstallerDb m_installerDb;
 
@@ -266,6 +271,16 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         try {
             setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
             setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1", m_adminUser, m_adminPassword));
+            m_xaDataSource = new PGXADataSource();
+            m_xaDataSource.setServerName("localhost");
+            m_xaDataSource.setDatabaseName(getTestDatabase());
+            m_xaDataSource.setUser(m_adminUser);
+            m_xaDataSource.setPassword(m_adminPassword);
+            m_adminXaDataSource = new PGXADataSource();
+            m_adminXaDataSource.setServerName("localhost");
+            m_adminXaDataSource.setDatabaseName("template1");
+            m_adminXaDataSource.setUser(m_adminUser);
+            m_adminXaDataSource.setPassword(m_adminPassword);
         } catch (final ClassNotFoundException e) {
             throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver, e);
         }
@@ -534,12 +549,20 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return m_adminDataSource;
     }
 
+    public XADataSource getAdminXADataSource() {
+        return m_adminXaDataSource;
+    }
+
     public void setAdminDataSource(DataSource adminDataSource) {
         m_adminDataSource = adminDataSource;
     }
 
     public DataSource getDataSource() {
         return m_dataSource;
+    }
+
+    public XADataSource getXADataSource() {
+        return m_xaDataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
@@ -613,5 +636,15 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             .append("adminDataSource", m_adminDataSource)
             .append("adminUser", m_adminUser)
             .toString();
+    }
+
+    @Override
+    public XAConnection getXAConnection() throws SQLException {
+        return m_xaDataSource.getXAConnection();
+    }
+
+    @Override
+    public XAConnection getXAConnection(String user, String password) throws SQLException {
+        return m_xaDataSource.getXAConnection(user, password);
     }
 }

@@ -1,10 +1,11 @@
 package org.opennms.core.test.db;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-public interface TemporaryDatabase extends DataSource {
+public interface TemporaryDatabase extends DataSource, XADataSource {
     public static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     public static final String URL_PROPERTY = "mock.db.url";
     public static final String ADMIN_USER_PROPERTY = "mock.db.adminUser";
