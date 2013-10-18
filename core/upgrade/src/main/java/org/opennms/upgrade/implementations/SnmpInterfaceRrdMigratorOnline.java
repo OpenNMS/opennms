@@ -230,8 +230,12 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                 }
             }
         } else {
-            log("  renaming %s to %s\n", oldDir.getName(), newDir.getName());
-            oldDir.renameTo(newDir);
+            try {
+                log("  moving %s to %s\n", oldDir.getName(), newDir.getName());
+                FileUtils.moveFile(oldDir, newDir);
+            } catch (IOException e) {
+                log("  Warning: can't move file because %s", e.getMessage());
+            }
         }
     }
 
@@ -252,8 +256,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
             RrdtoolUtils.restoreRrd(rrdDst, outputFile);
-            dest.delete();
-            outputFile.renameTo(dest);
+            FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -265,18 +268,6 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @param source the source JRB
      * @param dest the destination JRB
      */
-    /*
-    protected void mergeJrb(File source, File dest) {
-        log("  merging JRB %s into %s\n", source, dest);
-        try {
-            RrdMerge merge = new RrdMerge();
-            File outputFile = merge.mergeJrbs(source, dest);
-            dest.delete();
-            outputFile.renameTo(dest);
-        } catch (Exception e) {
-            log("  Warning: ignoring merge because %s.\n", e.getMessage());
-        }
-    }*/
     protected void mergeJrb(File source, File dest) {
         log("  merging JRB %s into %s\n", source, dest);
         try {
@@ -294,9 +285,8 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             final File outputXmlFile = new File(outputFile + ".xml");
             RrdDb targetJrb = new RrdDb(outputFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
             targetJrb.close();
-            dest.delete();
-            outputFile.renameTo(dest);
             outputXmlFile.delete();
+            FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
