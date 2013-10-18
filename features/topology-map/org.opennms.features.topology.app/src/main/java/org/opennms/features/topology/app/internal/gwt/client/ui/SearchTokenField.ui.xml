@@ -2,10 +2,21 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui">
 
-    <g:HTMLPanel styleName="search-token-field">
-        <span ui:field="m_namespace" class="search-token-namespace"></span>: <span class="search-token-label" ui:field="m_label" />
-        <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>
-        <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
+    <g:HTMLPanel >
+        <g:HorizontalPanel styleName="search-token-field" ui:field="m_tokenContainer">
+            <g:cell>
+                <g:FlowPanel ui:field="m_namespace" styleName="search-token-namespace"></g:FlowPanel>
+            </g:cell>
+            <g:cell>
+                <g:FlowPanel styleName="search-token-label" ui:field="m_label" />
+            </g:cell>
+            <g:cell>
+                <g:HTMLPanel styleName="search-token-ctrls">
+                    <g:Anchor ui:field="m_centerSuggestionBtn" styleName="icon-location-arrow"></g:Anchor>
+                    <g:Anchor ui:field="m_closeBtn" styleName="icon-remove" ></g:Anchor>
+                </g:HTMLPanel>
+            </g:cell>
+        </g:HorizontalPanel>
     </g:HTMLPanel>
 
 

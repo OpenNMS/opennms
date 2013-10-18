@@ -188,7 +188,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private static final long serialVersionUID = 6837501987137310938L;
-    private static Logger m_log = LoggerFactory.getLogger(TopologyUI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyUI.class);
 
     private TopologyComponent m_topologyComponent;
     private Window m_noContentWindow;
@@ -262,7 +262,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 return context;
             }
         });
-        VerticesUpdateManager verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
+        m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
 
         // Add a request handler that parses incoming focusNode and szl query parameters
         getSession().addRequestHandler(new RequestHandler() {
@@ -321,7 +321,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 try {
                     refs.add(Integer.parseInt(nodeId));
                 } catch (NumberFormatException e) {
-                    m_log.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
+                    LOG.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
                 }
             }
             // If we found valid node IDs in the list...
@@ -367,7 +367,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             try {
                 graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
             } catch (NumberFormatException e) {
-                m_log.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+                LOG.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
             }
         }
     }
@@ -402,14 +402,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         addContentLayout();
     }
 
-    private static void setupErrorHandler() {
-        
-        UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
+    private void setupErrorHandler() {
+        setErrorHandler(new DefaultErrorHandler() {
 
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
-                LoggerFactory.getLogger(this.getClass()).warn("An Exception Occured: in the TopologyUI", event.getThrowable());
+                LOG.warn("An Exception Occured: in the TopologyUI", event.getThrowable());
                 super.error(event);
             }
         });
@@ -437,9 +436,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 try {
                     is.close();
                 } catch (final IOException closeE) {
-                    m_log.debug("failed to close HTML input stream", closeE);
+                    LOG.debug("failed to close HTML input stream", closeE);
                 }
-                m_log.debug("failed to get header layout data", e);
+                LOG.debug("failed to get header layout data", e);
             }
         }
     }
@@ -495,7 +494,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
                 }
                 m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
-                m_graphContainer.redoLayout();
+                m_topologyComponent.updateGraph();
             }
         });
 
@@ -1011,7 +1010,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
         Set<VertexRef> vertexRefs = event.getVertexRefs();
-        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()){
+        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
     }

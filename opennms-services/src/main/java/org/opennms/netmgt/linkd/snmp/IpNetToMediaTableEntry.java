@@ -32,6 +32,8 @@ import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

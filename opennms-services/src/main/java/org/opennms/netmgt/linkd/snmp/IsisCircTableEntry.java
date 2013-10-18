@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 public class IsisCircTableEntry extends SnmpStore {
 

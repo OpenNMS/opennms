@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+
 /**
  *<P>The IpRouteTableEntry class is designed to hold all the MIB-II
  * information for one entry in the ipRouteTable. The table effectively

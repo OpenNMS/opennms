@@ -30,6 +30,8 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 /**
  *<P>The Dot1dStpPortTableEntry class is designed to hold all the MIB-II

@@ -33,6 +33,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.geocoder.Coordinates;
@@ -63,6 +67,12 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private static final long serialVersionUID = -6364929103619363239L;
     private static final Logger LOG = LoggerFactory.getLogger(MapWidgetComponent.class);
 
+    private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+        @Override public Thread newThread(final Runnable runnable) {
+            return new Thread(runnable, "NodeMapUpdater-Thread");
+        }
+    });
+
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
@@ -71,16 +81,32 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
     private Map<Integer,NodeEntry> m_activeNodes = new HashMap<Integer,NodeEntry>();
 
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    public AssetRecordDao getAssetRecordDao() {
+        return m_assetDao;
     }
 
     public void setAssetRecordDao(final AssetRecordDao assetDao) {
         m_assetDao = assetDao;
     }
 
+    public AlarmDao getAlarmDao() {
+        return m_alarmDao;
+    }
+
     public void setAlarmDao(final AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
+    }
+
+    public GeocoderService getGeocoderService() {
+        return m_geocoderService;
     }
 
     public void setGeocoderService(final GeocoderService geocoderService) {
@@ -92,8 +118,11 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     }
 
     public void init() {
-        refreshNodeData();
-        showNodes(m_activeNodes);
+        m_executor.scheduleWithFixedDelay(new Runnable() {
+            @Override public void run() {
+                refreshNodeData();
+            }
+        }, 0, 5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -106,12 +135,12 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     }
 
     private void refreshNodeData() {
-        if (m_nodeDao == null) {
+        if (getNodeDao() == null) {
             LOG.warn("No node DAO!  Can't refresh node data.");
             return;
         }
 
-        LOG.debug("getting nodes");
+        LOG.debug("Refreshing node data.");
 
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
@@ -123,7 +152,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         m_transaction.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
+                for (final OnmsNode node : getNodeDao().findMatching(cb.toCriteria())) {
                     LOG.trace("processing node {}", node.getId());
 
                     // pass 1: get the nodes with asset data
@@ -187,7 +216,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                     ab.orderBy("node.id").asc();
                     ab.orderBy("severity").desc();
 
-                    for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
+                    for (final OnmsAlarm alarm : getAlarmDao().findMatching(ab.toCriteria())) {
                         final int nodeId = alarm.getNodeId();
                         LOG.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[]{nodeId, lastId, unackedCount});
                         if (nodeId != lastId) {
@@ -214,13 +243,14 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                 // pass 3: save any asset updates to the database
                 LOG.debug("saving {} updated asset records to the database", updatedAssets.size());
                 for (final OnmsAssetRecord asset : updatedAssets) {
-                    m_assetDao.saveOrUpdate(asset);
+                    getAssetRecordDao().saveOrUpdate(asset);
                 }
             }
         });
 
 
         m_activeNodes = nodes;
+        showNodes(nodes);
     }
 
     /**
@@ -232,7 +262,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private Coordinates getCoordinates(final String address) {
         Coordinates coordinates = null;
         try {
-            coordinates = m_geocoderService.getCoordinates(address);
+            coordinates = getGeocoderService().getCoordinates(address);
             if (coordinates == null) {
                 coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
             }

@@ -422,7 +422,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      * <p>onInit</p>
      */
     @Override
-    protected void onInit() {
+    protected synchronized void onInit() {
 
         // load the rtc configuration
         RTCConfigFactory rFactory = null;

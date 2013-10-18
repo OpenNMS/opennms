@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -42,19 +43,6 @@ import org.opennms.features.topology.app.internal.gwt.client.ui.SearchTokenField
 import java.util.*;
 
 public class VSearchBox extends Composite implements SelectionHandler<SuggestOracle.Suggestion>,KeyUpHandler {
-
-    public class DefaultSelectionCallback implements SearchTokenField.SelectionCallback {
-
-        @Override
-        public void onSelection(SearchSuggestion searchSuggestion) {
-            m_connector.selectSuggestion(searchSuggestion);
-        }
-
-        @Override
-        public void onDeselection(SearchSuggestion searchSuggestion) {
-            m_connector.removeSelected(searchSuggestion);
-        }
-    }
 
     public class DefaultCenterOnCallback implements SearchTokenField.CenterOnSuggestionCallback{
 
@@ -92,7 +80,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
     @UiField
     FlowPanel m_componentHolder;
 
-    VerticalPanel m_selectionContainer;
     VerticalPanel m_focusedContainer;
 
     SuggestBox m_suggestBox;
@@ -103,6 +90,7 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
 
     @Override
     public void onLoad(){
+        m_componentHolder.clear();
         this.setStyleName("topology-search");
         final TextBoxBase textField = new TextBox();
         textField.setWidth("245px");
@@ -134,10 +122,13 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
         m_componentHolder.setWidth("245px");
         m_componentHolder.add(m_suggestBox);
 
-        m_selectionContainer = new VerticalPanel();
-        m_componentHolder.add(m_selectionContainer);
 
-        m_focusedContainer = new VerticalPanel();
+        if(m_focusedContainer == null){
+            m_focusedContainer = new VerticalPanel();
+            m_focusedContainer.setWidth("100%");
+
+        }
+
         m_focusedContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         m_focusedContainer.setTitle("Focused Vertices");
         m_componentHolder.add(m_focusedContainer);
@@ -170,7 +161,6 @@ public class VSearchBox extends Composite implements SelectionHandler<SuggestOra
                 }
             });
             field.setCenterOnCallback(new DefaultCenterOnCallback());
-            field.setSelectionCallback(new DefaultSelectionCallback());
 
             m_focusedContainer.add(field);
         }

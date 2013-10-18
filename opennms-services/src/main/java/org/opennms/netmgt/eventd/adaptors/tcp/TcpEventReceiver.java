@@ -369,7 +369,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     /** {@inheritDoc} */
     @Override
-    public void setLogPrefix(String prefix) {
+    public synchronized void setLogPrefix(final String prefix) {
         m_logPrefix = prefix;
     }
 
@@ -381,7 +381,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * terminated after an event receipt is generated, if one is required.
      */
     @Override
-    public void setEventsPerConnection(Integer number) {
+    public synchronized void setEventsPerConnection(final Integer number) {
         assertNotRunning();
 
         m_recsPerConn = number.intValue();

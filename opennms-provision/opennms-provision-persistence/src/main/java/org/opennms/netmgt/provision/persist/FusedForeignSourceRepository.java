@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -84,8 +85,8 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
      * @return a {@link java.util.Set} object.
      */
     @Override
-    public Set<String> getActiveForeignSourceNames() {
-        Set<String> fsNames = m_pendingForeignSourceRepository.getActiveForeignSourceNames();
+    public synchronized Set<String> getActiveForeignSourceNames() {
+        final Set<String> fsNames = new HashSet<String>(m_pendingForeignSourceRepository.getActiveForeignSourceNames());
         fsNames.addAll(m_deployedForeignSourceRepository.getActiveForeignSourceNames());
         return fsNames;
     }

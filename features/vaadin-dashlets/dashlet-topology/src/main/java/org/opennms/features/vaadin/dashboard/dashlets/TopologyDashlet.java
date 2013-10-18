@@ -67,7 +67,8 @@ public class TopologyDashlet extends VerticalLayout implements Dashlet {
         setSizeFull();
 
         String focusNodes = "";
-        String szl = "1";
+        String szl = "";
+        String provider = "";
 
         if (m_dashletSpec.getParameters().containsKey("focusNodes")) {
             focusNodes = m_dashletSpec.getParameters().get("focusNodes");
@@ -77,10 +78,27 @@ public class TopologyDashlet extends VerticalLayout implements Dashlet {
             szl = m_dashletSpec.getParameters().get("szl");
         }
 
+        if (m_dashletSpec.getParameters().containsKey("provider")) {
+            provider = m_dashletSpec.getParameters().get("provider");
+        }
+
+        String query = "";
+
+        if (!"".equals(focusNodes)) {
+            query += "focusNodes=" + focusNodes + "&";
+        }
+
+        if (!"".equals(szl)) {
+            query += "szl=" + szl + "&";
+        }
+
+        if (!"".equals(provider)) {
+            query += "provider=" + provider + "&";
+        }
         /**
          * creating browser frame to display node-maps
          */
-        BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?szl=" + szl + "&focusNodes=" + focusNodes));
+        BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?" + query));
         browserFrame.setSizeFull();
         addComponent(browserFrame);
     }

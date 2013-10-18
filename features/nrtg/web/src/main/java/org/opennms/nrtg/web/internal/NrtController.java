@@ -223,19 +223,23 @@ public class NrtController {
         resultDestinations.add(nrtCollectionTaskId);
         //resultDestinations.add("NrtPersistMe");
 
-        for (String protocol : metricsByProtocol.keySet()) {
-            CollectionJob collectionJob = new DefaultCollectionJob();
+        for (final Map.Entry<String,List<MetricTuple>> entry : metricsByProtocol.entrySet()) {
+            final String protocol = entry.getKey();
+            final List<MetricTuple> tuples = entry.getValue();
+
+            final CollectionJob collectionJob = new DefaultCollectionJob();
             collectionJob.setService(protocol);
             collectionJob.setNodeId(nodeId);
             collectionJob.setCreationTimestamp(createTimestamp);
 
-            for (MetricTuple metricTuple : metricsByProtocol.get(protocol)) {
+            for (final MetricTuple metricTuple : tuples) {
                 collectionJob.addMetric(metricTuple.getMetricId(), resultDestinations, metricTuple.getOnmsLogicMetricId());
             }
+
             //I know....
             if (protocol.equals("SNMP") || protocol.equals("TCA")) {
                 collectionJob.setNetInterface(protocol);
-                SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
+                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
                 collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
                 collectionJobs.add(collectionJob);
@@ -289,9 +293,12 @@ public class NrtController {
 
     private Map<String, String> getRrdGraphAttributesToMetricIds(Map<String, String> onmsResourceNamesToMetaDataLines) {
         Map<String, String> rrdGraphAttributesToMetricIds = new HashMap<String, String>();
-        for (String onmsResouceName : onmsResourceNamesToMetaDataLines.keySet()) {
-            String rrdGraphAttributeName = onmsResouceName.toString().substring(onmsResouceName.lastIndexOf(".") +1);
-            rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(onmsResourceNamesToMetaDataLines.get(onmsResouceName)));
+        for (final Map.Entry<String,String> entry : onmsResourceNamesToMetaDataLines.entrySet()) {
+            final String onmsResouceName = entry.getKey();
+            final String value = entry.getValue();
+
+            final String rrdGraphAttributeName = onmsResouceName.substring(onmsResouceName.lastIndexOf(".") +1);
+            rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(value));
         }
         return rrdGraphAttributesToMetricIds;
     }

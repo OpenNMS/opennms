@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpStore;
 
 /**
  * The Class TcaDataEntry.

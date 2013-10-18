@@ -16,7 +16,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
+    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" filter="(label=Linkd)"  availability="mandatory"/>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="commandManager"/>
@@ -115,7 +115,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
-                    <entry key="default" value="generic" />
+                    <entry key="default" value="test" />
                     <entry key="group" value="cloud"/>
                     
                     <!--  TODO: move these into VMWare ToPr -->

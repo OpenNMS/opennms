@@ -89,7 +89,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void setInterval(final String interval) {
+    public synchronized void setInterval(final String interval) {
         m_interval = TimeConverter.convertToMillis(interval);
     }
 
