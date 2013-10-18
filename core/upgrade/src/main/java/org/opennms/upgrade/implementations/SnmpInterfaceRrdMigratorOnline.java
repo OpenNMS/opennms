@@ -60,6 +60,9 @@ import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.util.FileCopyUtils;
 
+/*
+ * FIXME The KSC Reports must be updated too.
+ */
 /**
  * The Class RRD/JRB Migrator for SNMP Interfaces Data (Online Version)
  * 
@@ -164,6 +167,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     public void execute() throws OnmsUpgradeException {
         for (Entry<File,File> entry : interfacesToMerge.entrySet()) {
             merge(entry.getKey(), entry.getValue());
+            // FIXME Fix the KSC Reports
         }
     }
 

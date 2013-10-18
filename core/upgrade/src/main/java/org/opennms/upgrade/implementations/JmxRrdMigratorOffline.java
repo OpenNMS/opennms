@@ -67,12 +67,12 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @Ignore
-public class JmxRrdMigrator extends AbstractOnmsUpgrade {
+public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
 
-    public JmxRrdMigrator() throws OnmsUpgradeException {
+    public JmxRrdMigratorOffline() throws OnmsUpgradeException {
         super();
     }
 
