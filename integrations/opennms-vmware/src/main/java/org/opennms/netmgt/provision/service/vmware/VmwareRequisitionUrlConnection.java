@@ -695,7 +695,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
                     // add memory
                     try {
-                        node.putAsset(new RequisitionAsset("memory", Math.floor(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
+                        node.putAsset(new RequisitionAsset("memory", Math.round(hostSystem.getHardware().getMemorySize()/1000000f) + " MB"));
                     } catch (Exception e) {
                         logger.debug("Can't find Memory information for {}", hostSystem.getName());
                     }

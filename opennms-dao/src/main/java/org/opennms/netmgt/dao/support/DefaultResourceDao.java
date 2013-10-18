@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -94,6 +95,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private File m_rrdDirectory;
     private CollectdConfigFactory m_collectdConfig;
     private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private Date m_lastUpdateDataCollectionConfig;
 
     private Map<String, OnmsResourceType> m_resourceTypes;
     private NodeResourceType m_nodeResourceType;
@@ -267,6 +269,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceTypes.put(m_nodeSourceResourceType.getName(), m_nodeSourceResourceType);
 
         m_resourceTypes = resourceTypes;
+        m_lastUpdateDataCollectionConfig = m_dataCollectionConfigDao.getLastUpdate();
     }
 
     private Map<String, GenericIndexResourceType> getGenericIndexResourceTypes() {
@@ -321,9 +324,25 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      */
     @Override
     public Collection<OnmsResourceType> getResourceTypes() {
+        if (isDataCollectionConfigChanged()) {
+            try {
+                initResourceTypes();
+            } catch (IOException e) {
+                log().error("Can't reload resource types.", e);
+            }
+        }
         return m_resourceTypes.values();
     }
     
+    private boolean isDataCollectionConfigChanged() {
+        Date current = m_dataCollectionConfigDao.getLastUpdate();
+        if (current.after(m_lastUpdateDataCollectionConfig)) {
+            m_lastUpdateDataCollectionConfig = current;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Fetch a specific resource by string ID.
      * @return Resource or null if resource cannot be found.
