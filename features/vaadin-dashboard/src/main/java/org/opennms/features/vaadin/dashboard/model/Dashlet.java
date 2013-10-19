@@ -34,13 +34,15 @@ import com.vaadin.ui.Component;
  *
  * @author Christian Pape
  */
-public interface Dashlet extends Component {
+public interface Dashlet {
     /**
      * This method returns the name of this dashlet.
      *
      * @return the dashlet's name
      */
     public String getName();
+
+    public DashletSpec getDashletSpec();
 
     /**
      * Checks whether this dashlet is boosted.
@@ -52,5 +54,11 @@ public interface Dashlet extends Component {
     /**
      * Updates the dashlet contents and computes new boosted state
      */
-    public void update();
+    public void updateWallboard();
+
+    public void updateDashboard();
+
+    public Component getWallboardComponent();
+
+    public Component getDashboardComponent();
 }

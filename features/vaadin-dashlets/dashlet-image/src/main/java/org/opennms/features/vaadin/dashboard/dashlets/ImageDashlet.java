@@ -28,28 +28,28 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 /**
  * This class implements a {@link Dashlet} for displaying an image.
  */
-public class ImageDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
+public class ImageDashlet extends AbstractDashlet {
     /**
      * the image URL
      */
     private String m_imageUrl = null;
+
     /**
-     * The {@link DashletSpec} for this instance
+     * the wallboard view
      */
-    private DashletSpec m_dashletSpec;
+    private VerticalLayout m_wallboardLayout;
 
     /**
      * Constructor for instantiating new objects.
@@ -62,31 +62,34 @@ public class ImageDashlet extends VerticalLayout implements Dashlet {
          */
         m_name = name;
         m_dashletSpec = dashletSpec;
-
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
-
-        update();
     }
 
     @Override
-    public String getName() {
-        return m_name;
+    public Component getWallboardComponent() {
+        if (m_wallboardLayout == null) {
+            m_wallboardLayout = new VerticalLayout();
+            m_wallboardLayout.setCaption(getName());
+            m_wallboardLayout.setSizeFull();
+        }
+
+        return m_wallboardLayout;
     }
 
     @Override
-    public boolean isBoosted() {
-        return false;
+    public Component getDashboardComponent() {
+        return getWallboardComponent();
+    }
+
+    @Override
+    public void updateDashboard() {
+        updateWallboard();
     }
 
     /**
      * Updates the dashlet contents and computes new boosted state
      */
     @Override
-    public void update() {
+    public void updateWallboard() {
         String newImage = m_dashletSpec.getParameters().get("imageUrl");
 
         String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
@@ -97,20 +100,20 @@ public class ImageDashlet extends VerticalLayout implements Dashlet {
 
         if (!newImage.equals(m_imageUrl)) {
             m_imageUrl = newImage;
-            removeAllComponents();
+            m_wallboardLayout.removeAllComponents();
             Image image = new Image(null, new ExternalResource(m_imageUrl));
             if (maximizeHeight && maximizeWidth) {
                 image.setSizeFull();
             } else {
                 if (maximizeHeight) {
-                    image.setHeight(100, Unit.PERCENTAGE);
+                    image.setHeight(100, Sizeable.Unit.PERCENTAGE);
                 }
                 if (maximizeWidth) {
-                    image.setWidth(100, Unit.PERCENTAGE);
+                    image.setWidth(100, Sizeable.Unit.PERCENTAGE);
                 }
             }
-            addComponent(image);
-            setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+            m_wallboardLayout.addComponent(image);
+            m_wallboardLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
         }
     }
 }

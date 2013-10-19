@@ -29,7 +29,9 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
@@ -38,17 +40,10 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  *
  * @author Christian Pape
  */
-public class RtcDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
-    /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
+public class RtcDashlet extends AbstractDashlet {
 
     BrowserFrame m_browserFrame;
+    VerticalLayout m_verticalLayout;
 
     /**
      * Constructor for instantiating new objects.
@@ -61,36 +56,25 @@ public class RtcDashlet extends VerticalLayout implements Dashlet {
          */
         m_name = name;
         m_dashletSpec = dashletSpec;
-
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
-
-        m_browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/rtc/fullscreen-categories-box.jsp"));
-        m_browserFrame.setSizeFull();
-        addComponent(m_browserFrame);
     }
 
     @Override
-    public String getName() {
-        return m_name;
+    public Component getDashboardComponent() {
+        return getWallboardComponent();
     }
 
     @Override
-    public boolean isBoosted() {
-        return false;
-    }
+    public Component getWallboardComponent() {
+        if (m_verticalLayout == null) {
+            m_verticalLayout = new VerticalLayout();
+            m_verticalLayout.setCaption(getName());
+            m_verticalLayout.setSizeFull();
 
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void update() {
-        /**
-         * creating browser frame to display the RTC console
-         */
-        m_browserFrame.setSource(new ExternalResource("/opennms/rtc/fullscreen-categories-box.jsp"));
+            m_browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/rtc/fullscreen-categories-box.jsp"));
+            m_browserFrame.setSizeFull();
+            m_verticalLayout.addComponent(m_browserFrame);
+        }
+
+        return m_verticalLayout;
     }
 }

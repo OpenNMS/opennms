@@ -101,7 +101,7 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
-                        <bundle>wrap:mvn:org.vaadin.addon/PortalLayout/2.0.alpha5</bundle>
+                        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.0.0.alpha4</bundle>
                     </bundles>
                     <features>
                         <feature>vaadin</feature>
@@ -131,7 +131,7 @@
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
         </repository>
     </repositories>
 
@@ -158,17 +158,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>dragdroplayouts</artifactId>
+            <version>1.0.0.alpha4</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <scope>provided</scope>
         </dependency>
-
+<!--
         <dependency>
             <groupId>org.vaadin.addon</groupId>
             <artifactId>PortalLayout</artifactId>
             <version>2.0.alpha5</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

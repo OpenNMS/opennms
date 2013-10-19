@@ -3,6 +3,7 @@
     <bean id="surveillanceDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.SurveillanceDashletFactory" scope="singleton">
         <property name="name" value="Surveillance"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

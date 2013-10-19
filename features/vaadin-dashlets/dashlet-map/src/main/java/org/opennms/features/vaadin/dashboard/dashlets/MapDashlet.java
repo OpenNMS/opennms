@@ -29,7 +29,9 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
@@ -38,15 +40,11 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  *
  * @author Christian Pape
  */
-public class MapDashlet extends VerticalLayout implements Dashlet {
+public class MapDashlet extends AbstractDashlet {
     /**
-     * the dashlet's name
+     * wallboard view
      */
-    private String m_name;
-    /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
+    private VerticalLayout m_wallboardLayout;
 
     /**
      * Constructor for instantiating new objects.
@@ -59,44 +57,32 @@ public class MapDashlet extends VerticalLayout implements Dashlet {
          */
         m_name = name;
         m_dashletSpec = dashletSpec;
+    }
 
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
+    @Override
+    public Component getDashboardComponent() {
+        return getWallboardComponent();
+    }
 
-        String searchString = "";
+    @Override
+    public Component getWallboardComponent() {
+        if (m_wallboardLayout == null) {
+            m_wallboardLayout = new VerticalLayout();
+            m_wallboardLayout.setCaption(getName());
+            m_wallboardLayout.setSizeFull();
 
-        if (m_dashletSpec.getParameters().containsKey("search")) {
-            searchString = m_dashletSpec.getParameters().get("search");
+            String searchString = "";
+
+            if (m_dashletSpec.getParameters().containsKey("search")) {
+                searchString = m_dashletSpec.getParameters().get("search");
+            }
+
+
+            BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/node-maps#search/" + searchString));
+            browserFrame.setSizeFull();
+            m_wallboardLayout.addComponent(browserFrame);
         }
 
-        /**
-         * creating browser frame to display node-maps
-         */
-        BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/node-maps#search/" + searchString));
-        browserFrame.setSizeFull();
-        addComponent(browserFrame);
-    }
-
-    @Override
-    public String getName() {
-        return m_name;
-    }
-
-    @Override
-    public boolean isBoosted() {
-        return false;
-    }
-
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
-    @Override
-    public void update() {
-        /**
-         * do nothing
-         */
+        return m_wallboardLayout;
     }
 }
