@@ -51,11 +51,7 @@ public class RtcDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public RtcDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
     }
 
     @Override

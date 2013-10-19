@@ -65,11 +65,10 @@ public class RrdDashlet extends AbstractDashlet {
      * @param rrdGraphHelper the rrd graph helper instance
      */
     public RrdDashlet(String name, DashletSpec dashletSpec, RrdGraphHelper rrdGraphHelper) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_rrdGraphHelper = rrdGraphHelper;
     }
 
@@ -117,25 +116,25 @@ public class RrdDashlet extends AbstractDashlet {
         int height = 0;
 
         try {
-            columns = Integer.parseInt(m_dashletSpec.getParameters().get("columns"));
+            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
         } catch (NumberFormatException numberFormatException) {
             columns = 1;
         }
 
         try {
-            rows = Integer.parseInt(m_dashletSpec.getParameters().get("rows"));
+            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
         } catch (NumberFormatException numberFormatException) {
             rows = 1;
         }
 
         try {
-            width = Integer.parseInt(m_dashletSpec.getParameters().get("width"));
+            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
         } catch (NumberFormatException numberFormatException) {
             width = 400;
         }
 
         try {
-            height = Integer.parseInt(m_dashletSpec.getParameters().get("height"));
+            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
         } catch (NumberFormatException numberFormatException) {
             height = 100;
         }
@@ -147,13 +146,13 @@ public class RrdDashlet extends AbstractDashlet {
         int timeFrameType;
 
         try {
-            timeFrameValue = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameValue"));
+            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameValue = 1;
         }
 
         try {
-            timeFrameType = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameType"));
+            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameType = Calendar.HOUR;
         }
@@ -166,52 +165,68 @@ public class RrdDashlet extends AbstractDashlet {
 
         Accordion accordion = new Accordion();
         accordion.setSizeFull();
-        m_dashboardLayout.addComponent(accordion);
+
         /**
          * adding the components
          */
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
-                String graphUrl = m_dashletSpec.getParameters().get("graphUrl" + i);
+                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
 
                 if (graphUrl != null && !"".equals(graphUrl)) {
-                    Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(m_dashletSpec.getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
-                    VerticalLayout verticalLayout = new VerticalLayout();
-
-                    HorizontalLayout horizontalLayout = new HorizontalLayout();
-                    horizontalLayout.addStyleName("box");
-                    horizontalLayout.setWidth("100%");
-                    horizontalLayout.setHeight("42px");
-
-                    VerticalLayout leftLayout = new VerticalLayout();
-                    leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-                    leftLayout.addStyleName("margin");
-
-                    Label labelFrom = new Label(m_dashletSpec.getParameters().get("nodeLabel" + i));
-                    labelFrom.addStyleName("text");
-
-                    Label labelTo = new Label(m_dashletSpec.getParameters().get("resourceTypeLabel" + i) + ": " + m_dashletSpec.getParameters().get("resourceLabel" + i));
-                    labelTo.addStyleName("text");
-
-                    leftLayout.addComponent(labelFrom);
-                    leftLayout.addComponent(labelTo);
-
-                    horizontalLayout.addComponent(leftLayout);
-                    horizontalLayout.setExpandRatio(leftLayout, 1.0f);
-
-                    verticalLayout.addComponent(horizontalLayout);
-                    verticalLayout.addComponent(image);
-                    verticalLayout.setWidth(image.getWidth() + "px");
-
-                    accordion.addTab(verticalLayout, m_dashletSpec.getParameters().get("nodeLabel" + i) + "/" + m_dashletSpec.getParameters().get("resourceTypeLabel" + i) + ": " + m_dashletSpec.getParameters().get("resourceLabel" + i));
-
-                    verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                    verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
-                    verticalLayout.setMargin(true);
+                    accordion.addTab(getGraphComponent(i, width, height, timeFrameType, timeFrameValue), getDashletSpec().getParameters().get("nodeLabel" + i) + "/" + getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
                 }
                 i++;
             }
         }
+
+        m_dashboardLayout.addComponent(accordion);
+    }
+
+    /**
+     * Returns the graph component for a given graph of the {@link DashletSpec}.
+     *
+     * @param i              the entry id
+     * @param width          the width
+     * @param height         the height
+     * @param timeFrameType  the timeframe type
+     * @param timeFrameValue the timeframe value
+     * @return the component
+     */
+    private Component getGraphComponent(int i, int width, int height, int timeFrameType, int timeFrameValue) {
+        Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getDashletSpec().getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
+        VerticalLayout verticalLayout = new VerticalLayout();
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.addStyleName("box");
+        horizontalLayout.setWidth("100%");
+        horizontalLayout.setHeight("42px");
+
+        VerticalLayout leftLayout = new VerticalLayout();
+        leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        leftLayout.addStyleName("margin");
+
+        Label labelFrom = new Label(getDashletSpec().getParameters().get("nodeLabel" + i));
+        labelFrom.addStyleName("text");
+
+        Label labelTo = new Label(getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
+        labelTo.addStyleName("text");
+
+        leftLayout.addComponent(labelFrom);
+        leftLayout.addComponent(labelTo);
+
+        horizontalLayout.addComponent(leftLayout);
+        horizontalLayout.setExpandRatio(leftLayout, 1.0f);
+
+        verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.addComponent(image);
+        verticalLayout.setWidth(image.getWidth() + "px");
+
+        verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
+        verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+        verticalLayout.setMargin(true);
+
+        return verticalLayout;
     }
 
     /**
@@ -233,25 +248,25 @@ public class RrdDashlet extends AbstractDashlet {
         int height = 0;
 
         try {
-            columns = Integer.parseInt(m_dashletSpec.getParameters().get("columns"));
+            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
         } catch (NumberFormatException numberFormatException) {
             columns = 1;
         }
 
         try {
-            rows = Integer.parseInt(m_dashletSpec.getParameters().get("rows"));
+            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
         } catch (NumberFormatException numberFormatException) {
             rows = 1;
         }
 
         try {
-            width = Integer.parseInt(m_dashletSpec.getParameters().get("width"));
+            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
         } catch (NumberFormatException numberFormatException) {
             width = 400;
         }
 
         try {
-            height = Integer.parseInt(m_dashletSpec.getParameters().get("height"));
+            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
         } catch (NumberFormatException numberFormatException) {
             height = 100;
         }
@@ -263,13 +278,13 @@ public class RrdDashlet extends AbstractDashlet {
         int timeFrameType;
 
         try {
-            timeFrameValue = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameValue"));
+            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameValue = 1;
         }
 
         try {
-            timeFrameType = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameType"));
+            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameType = Calendar.HOUR;
         }
@@ -291,42 +306,12 @@ public class RrdDashlet extends AbstractDashlet {
          */
         for (int y = 0; y < m_gridLayout.getRows(); y++) {
             for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-                String graphUrl = m_dashletSpec.getParameters().get("graphUrl" + i);
+                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
 
                 if (graphUrl != null && !"".equals(graphUrl)) {
-                    Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(m_dashletSpec.getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
-                    VerticalLayout verticalLayout = new VerticalLayout();
-
-                    HorizontalLayout horizontalLayout = new HorizontalLayout();
-                    horizontalLayout.addStyleName("box");
-                    horizontalLayout.setWidth("100%");
-                    horizontalLayout.setHeight("42px");
-
-                    VerticalLayout leftLayout = new VerticalLayout();
-                    leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-                    leftLayout.addStyleName("margin");
-
-                    Label labelFrom = new Label(m_dashletSpec.getParameters().get("nodeLabel" + i));
-                    labelFrom.addStyleName("text");
-
-                    Label labelTo = new Label(m_dashletSpec.getParameters().get("resourceTypeLabel" + i) + ": " + m_dashletSpec.getParameters().get("resourceLabel" + i));
-                    labelTo.addStyleName("text");
-
-                    leftLayout.addComponent(labelFrom);
-                    leftLayout.addComponent(labelTo);
-
-                    horizontalLayout.addComponent(leftLayout);
-                    horizontalLayout.setExpandRatio(leftLayout, 1.0f);
-
-                    verticalLayout.addComponent(horizontalLayout);
-                    verticalLayout.addComponent(image);
-                    verticalLayout.setWidth(image.getWidth() + "px");
-
-                    m_gridLayout.addComponent(verticalLayout, x, y);
-
-                    verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                    verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
-                    m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
+                    Component component = getGraphComponent(i, width, height, timeFrameType, timeFrameValue);
+                    m_gridLayout.addComponent(component, x, y);
+                    m_gridLayout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
                 }
                 i++;
             }

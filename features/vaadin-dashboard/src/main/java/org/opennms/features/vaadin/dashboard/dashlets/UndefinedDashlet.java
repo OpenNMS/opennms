@@ -51,10 +51,7 @@ public class UndefinedDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to use
      */
     public UndefinedDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the name
-         */
-        m_name = name;
+        super(name, dashletSpec);
     }
 
     @Override

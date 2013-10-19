@@ -52,11 +52,7 @@ public class MapDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public MapDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
     }
 
     @Override
@@ -73,8 +69,8 @@ public class MapDashlet extends AbstractDashlet {
 
             String searchString = "";
 
-            if (m_dashletSpec.getParameters().containsKey("search")) {
-                searchString = m_dashletSpec.getParameters().get("search");
+            if (getDashletSpec().getParameters().containsKey("search")) {
+                searchString = getDashletSpec().getParameters().get("search");
             }
 
 

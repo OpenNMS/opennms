@@ -67,8 +67,7 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        Dashlet dashlet =  new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao);
-        return dashlet;
+        return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao);
     }
 
     /**

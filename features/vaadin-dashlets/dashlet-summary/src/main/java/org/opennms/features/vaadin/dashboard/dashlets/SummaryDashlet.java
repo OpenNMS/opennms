@@ -53,11 +53,11 @@ public class SummaryDashlet extends AbstractDashlet {
     /**
      * Timeslot to use
      */
-    private long timeslot = 3600;
+    private long m_timeslot = 3600;
     /**
      * boosted value
      */
-    private boolean boosted = false;
+    private boolean m_boosted = false;
     /**
      * Trend identifiers
      */
@@ -83,11 +83,10 @@ public class SummaryDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public SummaryDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
     }
 
@@ -232,8 +231,8 @@ public class SummaryDashlet extends AbstractDashlet {
             horizontalLayout.addStyleName("summary");
             horizontalLayout.addStyleName(onmsSeverity.name().toLowerCase());
 
-            int acknowledged = countBySeverity(true, timeslot, onmsSeverity);
-            int notAcknowledged = countBySeverity(false, timeslot, onmsSeverity);
+            int acknowledged = countBySeverity(true, m_timeslot, onmsSeverity);
+            int notAcknowledged = countBySeverity(false, m_timeslot, onmsSeverity);
 
             Label labelSeverity = new Label(onmsSeverity.getLabel());
             labelSeverity.addStyleName("summary-font");
@@ -269,7 +268,7 @@ public class SummaryDashlet extends AbstractDashlet {
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(width*8, Sizeable.Unit.PIXELS);
+        image.setWidth(width * 8, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);
@@ -281,7 +280,7 @@ public class SummaryDashlet extends AbstractDashlet {
         labelTitle.addStyleName("summary-font");
         labelTitle.setSizeUndefined();
 
-        Label labelTimeslot = new Label("(" + getHumanReadableFormat(timeslot) + ")");
+        Label labelTimeslot = new Label("(" + getHumanReadableFormat(m_timeslot) + ")");
         labelTimeslot.addStyleName("summary-font");
         labelTimeslot.setSizeUndefined();
 
@@ -299,7 +298,7 @@ public class SummaryDashlet extends AbstractDashlet {
 
         verticalLayout.addComponent(globalTrendLayout, 0);
 
-        boosted = (globalTrend > 2);
+        m_boosted = (globalTrend > 2);
 
         return verticalLayout;
     }
@@ -335,8 +334,8 @@ public class SummaryDashlet extends AbstractDashlet {
                 }
             }
 
-            int acknowledged = countByUei(true, timeslot, uei);
-            int notAcknowledged = countByUei(false, timeslot, uei);
+            int acknowledged = countByUei(true, m_timeslot, uei);
+            int notAcknowledged = countByUei(false, m_timeslot, uei);
 
             Label labelSeverity = new Label(uei.replace("uei.opennms.org/nodes/", ""));
             labelSeverity.addStyleName("summary-font");
@@ -372,7 +371,7 @@ public class SummaryDashlet extends AbstractDashlet {
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(width*8, Sizeable.Unit.PIXELS);
+        image.setWidth(width * 8, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);
@@ -384,7 +383,7 @@ public class SummaryDashlet extends AbstractDashlet {
         labelTitle.addStyleName("summary-font");
         labelTitle.setSizeUndefined();
 
-        Label labelTimeslot = new Label("(" + getHumanReadableFormat(timeslot) + ")");
+        Label labelTimeslot = new Label("(" + getHumanReadableFormat(m_timeslot) + ")");
         labelTimeslot.addStyleName("summary-font");
         labelTimeslot.setSizeUndefined();
 
@@ -402,17 +401,17 @@ public class SummaryDashlet extends AbstractDashlet {
 
         verticalLayout.addComponent(globalTrendLayout, 0);
 
-        boosted = (globalTrend > 2);
+        m_boosted = (globalTrend > 2);
 
         return verticalLayout;
     }
 
     @Override
     public void updateDashboard() {
-        timeslot = 3600;
+        m_timeslot = 3600;
 
         try {
-            timeslot = Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("timeslot")));
+            m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
         } catch (NumberFormatException numberFormatException) {
             /**
              * Just ignore
@@ -449,10 +448,10 @@ public class SummaryDashlet extends AbstractDashlet {
      */
     @Override
     public void updateWallboard() {
-        timeslot = 3600;
+        m_timeslot = 3600;
 
         try {
-            timeslot = Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("timeslot")));
+            m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
         } catch (NumberFormatException numberFormatException) {
             /**
              * Just ignore
@@ -578,4 +577,8 @@ public class SummaryDashlet extends AbstractDashlet {
         return m_wallboardLayout;
     }
 
+    @Override
+    public boolean isBoosted() {
+        return m_boosted;
+    }
 }

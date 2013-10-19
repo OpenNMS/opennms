@@ -28,10 +28,7 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
@@ -86,11 +83,10 @@ public class AlarmsDashlet extends AbstractDashlet {
      * @param nodeDao     the {@link NodeDao} to be used
      */
     public AlarmsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
     }
@@ -130,7 +126,7 @@ public class AlarmsDashlet extends AbstractDashlet {
         alarmCb.alias("node.categories", "category");
         alarmCb.alias("lastEvent", "event");
 
-        String criteria = m_dashletSpec.getParameters().get("criteria");
+        String criteria = getDashletSpec().getParameters().get("criteria");
 
         m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
 
@@ -142,28 +138,17 @@ public class AlarmsDashlet extends AbstractDashlet {
         return m_alarmDao.findMatching(alarmCb.toCriteria());
     }
 
-
     /**
-     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
+     * Adds the alarms components to a {@link com.vaadin.ui.AbstractOrderedLayout}
      *
-     * @return true, if boosted, false otherwise
+     * @param component the component to add alarms to
+     * @param alarms    the alarms list
      */
-    @Override
-    public void updateDashboard() {
-        List<OnmsAlarm> alarms = getAlarms();
-
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
-
-        m_dashboardLayout.removeAllComponents();
-
-        injectDashboardStyles();
-
-        boosted = false;
-
+    private void addComponents(AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
         if (alarms.size() == 0) {
             Label label = new Label("No alarms found!");
             label.addStyleName("alerts-noalarms-font");
-            m_dashboardLayout.addComponent(label);
+            component.addComponent(label);
         } else {
             for (OnmsAlarm onmsAlarm : alarms) {
                 OnmsNode onmsNode = null;
@@ -178,7 +163,9 @@ public class AlarmsDashlet extends AbstractDashlet {
                         onmsNode = nodes.get(0);
                     }
                 }
-                m_dashboardLayout.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+                component.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+
+                OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
 
                 if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
                     boosted = true;
@@ -193,10 +180,28 @@ public class AlarmsDashlet extends AbstractDashlet {
      * @return true, if boosted, false otherwise
      */
     @Override
+    public void updateDashboard() {
+        List<OnmsAlarm> alarms = getAlarms();
+
+        m_dashboardLayout.removeAllComponents();
+
+        injectDashboardStyles();
+
+        boosted = false;
+
+        addComponents(m_dashboardLayout, alarms);
+    }
+
+    /**
+     * Updates the alarm data using the associated {@link AlarmDao} and {@link NodeDao} instances.
+     *
+     * @return true, if boosted, false otherwise
+     */
+    @Override
     public void updateWallboard() {
         List<OnmsAlarm> alarms = getAlarms();
 
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
+        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
 
         m_wallboardLayout.removeAllComponents();
 
@@ -204,31 +209,7 @@ public class AlarmsDashlet extends AbstractDashlet {
 
         boosted = false;
 
-        if (alarms.size() == 0) {
-            Label label = new Label("No alarms found!");
-            label.addStyleName("alerts-noalarms-font");
-            m_wallboardLayout.addComponent(label);
-        } else {
-            for (OnmsAlarm onmsAlarm : alarms) {
-                OnmsNode onmsNode = null;
-
-                if (onmsAlarm.getNodeId() != null) {
-                    CriteriaBuilder nodeCb = new CriteriaBuilder(OnmsNode.class);
-                    nodeCb.eq("id", onmsAlarm.getNodeId());
-
-                    List<OnmsNode> nodes = m_nodeDao.findMatching(nodeCb.toCriteria());
-
-                    if (nodes.size() == 1) {
-                        onmsNode = nodes.get(0);
-                    }
-                }
-                m_wallboardLayout.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
-
-                if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
-                    boosted = true;
-                }
-            }
-        }
+        addComponents(m_wallboardLayout, alarms);
     }
 
     /**

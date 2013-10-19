@@ -4,27 +4,32 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 public class AbstractDashlet implements Dashlet {
-    protected String m_name;
+    private String m_name;
     /**
      * The {@link DashletSpec} to be used
      */
-    protected DashletSpec m_dashletSpec;
+    private DashletSpec m_dashletSpec;
+
+    public AbstractDashlet(String name, DashletSpec dashletSpec) {
+        m_name = name;
+        m_dashletSpec = dashletSpec;
+    }
 
     @Override
-    public String getName() {
+    final public String getName() {
         return m_name;
     }
 
-    public void setName(String name) {
+    final public void setName(String name) {
         m_name = name;
     }
 
     @Override
-    public DashletSpec getDashletSpec() {
+    final public DashletSpec getDashletSpec() {
         return m_dashletSpec;
     }
 
-    public void setDashletSpec(DashletSpec dashletSpec) {
+    final public void setDashletSpec(DashletSpec dashletSpec) {
         m_dashletSpec = dashletSpec;
     }
 

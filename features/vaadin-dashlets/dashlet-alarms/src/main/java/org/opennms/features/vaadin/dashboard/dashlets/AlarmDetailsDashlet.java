@@ -28,10 +28,7 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
@@ -84,11 +81,11 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param nodeDao     the {@link NodeDao} to be used
      */
     public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao) {
+        super(name, dashletSpec);
+
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
     }
@@ -131,7 +128,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         alarmCb.alias("node.categories", "category");
         alarmCb.alias("lastEvent", "event");
 
-        String criteria = m_dashletSpec.getParameters().get("criteria");
+        String criteria = getDashletSpec().getParameters().get("criteria");
 
         m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
 
@@ -150,16 +147,26 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     public void updateDashboard() {
         List<OnmsAlarm> alarms = getAlarms();
 
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
-
         m_dashboardLayout.removeAllComponents();
 
         injectDashboardStyles();
 
+        boosted = false;
+
+        addComponents(m_dashboardLayout, alarms);
+    }
+
+    /**
+     * Adds the alarms components to a {@link AbstractOrderedLayout}
+     *
+     * @param component the component to add alarms to
+     * @param alarms    the alarms list
+     */
+    private void addComponents(AbstractOrderedLayout component, List<OnmsAlarm> alarms) {
         if (alarms.size() == 0) {
             Label label = new Label("No alarms found!");
             label.addStyleName("alert-details-noalarms-font");
-            m_dashboardLayout.addComponent(label);
+            component.addComponent(label);
         } else {
             for (OnmsAlarm onmsAlarm : alarms) {
                 OnmsNode onmsNode = null;
@@ -174,7 +181,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                         onmsNode = nodes.get(0);
                     }
                 }
-                m_dashboardLayout.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+                component.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
+
+                OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
 
                 if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
                     boosted = true;
@@ -190,54 +199,28 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     public void updateWallboard() {
         List<OnmsAlarm> alarms = getAlarms();
 
-        OnmsSeverity boostSeverity = OnmsSeverity.valueOf(m_dashletSpec.getParameters().get("boostSeverity"));
-
         m_wallboardLayout.removeAllComponents();
 
         injectWallboardStyles();
 
         boosted = false;
 
-        if (alarms.size() == 0) {
-            Label label = new Label("No alarms found!");
-            label.addStyleName("alert-details-noalarms-font");
-            m_wallboardLayout.addComponent(label);
-        } else {
-            for (OnmsAlarm onmsAlarm : alarms) {
-                OnmsNode onmsNode = null;
-
-                if (onmsAlarm.getNodeId() != null) {
-                    CriteriaBuilder nodeCb = new CriteriaBuilder(OnmsNode.class);
-                    nodeCb.eq("id", onmsAlarm.getNodeId());
-
-                    List<OnmsNode> nodes = m_nodeDao.findMatching(nodeCb.toCriteria());
-
-                    if (nodes.size() == 1) {
-                        onmsNode = nodes.get(0);
-                    }
-                }
-                m_wallboardLayout.addComponent(createAlarmComponent(onmsAlarm, onmsNode));
-
-                if (onmsAlarm.getSeverity().isGreaterThanOrEqual(boostSeverity)) {
-                    boosted = true;
-                }
-            }
-        }
+        addComponents(m_wallboardLayout, alarms);
     }
 
     /**
      * Injects CSS styles on current page for this dashlet
      */
     private void injectDashboardStyles() {
-        Page.getCurrent().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 8px solid #858585; }");
-        Page.getCurrent().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 8px solid #336600; }");
-        Page.getCurrent().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 8px solid #999; }");
-        Page.getCurrent().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 8px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 8px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 8px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 8px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".alert-details-font {color: #000000; font-size: 11px; line-height: normal; }");
-        Page.getCurrent().getStyles().add(".alert-details-noalarms-font { font-size: 11px; line-height: normal; }");
+        Page.getCurrent().getStyles().add(".alert-details.cleared { background: #AAAAAA; border-left: 7px solid #858585; }");
+        Page.getCurrent().getStyles().add(".alert-details.normal { background: #AAAAAA; border-left: 7px solid #336600; }");
+        Page.getCurrent().getStyles().add(".alert-details.indeterminate { background: #AAAAAA; border-left: 7px solid #999; }");
+        Page.getCurrent().getStyles().add(".alert-details.warning { background: #AAAAAA; border-left: 7px solid #FFCC00; }");
+        Page.getCurrent().getStyles().add(".alert-details.minor { background: #AAAAAA; border-left: 7px solid #FF9900; }");
+        Page.getCurrent().getStyles().add(".alert-details.major { background: #AAAAAA; border-left: 7px solid #FF3300; }");
+        Page.getCurrent().getStyles().add(".alert-details.critical { background: #AAAAAA; border-left: 7px solid #CC0000; }");
+        Page.getCurrent().getStyles().add(".alert-details-font {color: #000000; font-size: 10px; line-height: normal; }");
+        Page.getCurrent().getStyles().add(".alert-details-noalarms-font { font-size: 10px; line-height: normal; }");
         Page.getCurrent().getStyles().add(".alert-details { padding: 5px 5px; margin: 1px; }");
     }
 

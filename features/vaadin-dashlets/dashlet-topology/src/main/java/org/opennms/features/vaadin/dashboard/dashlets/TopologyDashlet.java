@@ -50,11 +50,7 @@ public class TopologyDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public TopologyDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
     }
 
     @Override
@@ -65,7 +61,7 @@ public class TopologyDashlet extends AbstractDashlet {
     @Override
     public Component getWallboardComponent() {
         if (m_verticalLayout == null) {
-            m_verticalLayout=new VerticalLayout();
+            m_verticalLayout = new VerticalLayout();
             /**
              * Setting up the layout
              */
@@ -76,16 +72,16 @@ public class TopologyDashlet extends AbstractDashlet {
             String szl = "";
             String provider = "";
 
-            if (m_dashletSpec.getParameters().containsKey("focusNodes")) {
-                focusNodes = m_dashletSpec.getParameters().get("focusNodes");
+            if (getDashletSpec().getParameters().containsKey("focusNodes")) {
+                focusNodes = getDashletSpec().getParameters().get("focusNodes");
             }
 
-            if (m_dashletSpec.getParameters().containsKey("szl")) {
-                szl = m_dashletSpec.getParameters().get("szl");
+            if (getDashletSpec().getParameters().containsKey("szl")) {
+                szl = getDashletSpec().getParameters().get("szl");
             }
 
-            if (m_dashletSpec.getParameters().containsKey("provider")) {
-                provider = m_dashletSpec.getParameters().get("provider");
+            if (getDashletSpec().getParameters().containsKey("provider")) {
+                provider = getDashletSpec().getParameters().get("provider");
             }
 
             String query = "";

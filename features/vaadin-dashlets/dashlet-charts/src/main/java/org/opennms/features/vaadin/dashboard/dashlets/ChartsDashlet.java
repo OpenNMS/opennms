@@ -56,11 +56,7 @@ public class ChartsDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public ChartsDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
     }
 
     @Override
@@ -89,10 +85,10 @@ public class ChartsDashlet extends AbstractDashlet {
      */
     @Override
     public void updateWallboard() {
-        String newImage = "/opennms/charts?chart-name=" + m_dashletSpec.getParameters().get("chart");
+        String newImage = "/opennms/charts?chart-name=" + getDashletSpec().getParameters().get("chart");
 
-        String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
-        String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
+        String maximizeHeightString = getDashletSpec().getParameters().get("maximizeHeight");
+        String maximizeWidthString = getDashletSpec().getParameters().get("maximizeWidth");
 
         boolean maximizeHeight = ("true".equals(maximizeHeightString) || "yes".equals(maximizeHeightString) || "1".equals(maximizeHeightString));
         boolean maximizeWidth = ("true".equals(maximizeWidthString) || "yes".equals(maximizeWidthString) || "1".equals(maximizeWidthString));

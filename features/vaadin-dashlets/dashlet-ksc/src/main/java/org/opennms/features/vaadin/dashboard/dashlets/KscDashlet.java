@@ -75,11 +75,10 @@ public class KscDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public KscDashlet(String name, DashletSpec dashletSpec, NodeDao nodeDao, ResourceDao resourceDao, TransactionOperations transactionOperations) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_nodeDao = nodeDao;
         m_resourceDao = resourceDao;
         m_transactionOperations = transactionOperations;
@@ -120,7 +119,7 @@ public class KscDashlet extends AbstractDashlet {
 
         m_dashboardLayout.removeAllComponents();
 
-        String kscReportName = m_dashletSpec.getParameters().get("kscReport");
+        String kscReportName = getDashletSpec().getParameters().get("kscReport");
 
         if (kscReportName == null || "".equals(kscReportName)) {
             return;
@@ -248,7 +247,7 @@ public class KscDashlet extends AbstractDashlet {
         int columns = 0;
         int rows = 0;
 
-        String kscReportName = m_dashletSpec.getParameters().get("kscReport");
+        String kscReportName = getDashletSpec().getParameters().get("kscReport");
 
         if (kscReportName == null || "".equals(kscReportName)) {
             return;

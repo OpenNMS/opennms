@@ -28,7 +28,6 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -50,11 +49,7 @@ public class SurveillanceDashlet extends AbstractDashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public SurveillanceDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
+        super(name, dashletSpec);
     }
 
     @Override
@@ -71,8 +66,8 @@ public class SurveillanceDashlet extends AbstractDashlet {
 
             String viewName = "default";
 
-            if (m_dashletSpec.getParameters().containsKey("viewName")) {
-                viewName = m_dashletSpec.getParameters().get("viewName");
+            if (getDashletSpec().getParameters().containsKey("viewName")) {
+                viewName = getDashletSpec().getParameters().get("viewName");
             }
 
             /**
