@@ -8,6 +8,7 @@
         <argument ref="nodeDao"/>
         <property name="name" value="Alarms"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>
@@ -28,6 +29,7 @@
         <argument ref="nodeDao"/>
         <property name="name" value="Alarm Details"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

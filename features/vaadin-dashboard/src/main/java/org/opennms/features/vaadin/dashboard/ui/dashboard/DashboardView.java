@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Pape
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
-public class DashboardView extends DashboardLayout implements View {
+public class DashboardView extends DashboardBody implements View {
 
     /**
      * Default constructor.

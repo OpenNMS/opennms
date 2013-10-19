@@ -44,7 +44,7 @@
     -->
     <set-configuration-property name="devModeRedirectEnabled" value="true"/>
 
-    <inherits name="org.vaadin.addon.portallayout.gwt.PortalLayoutWidgetSet"/>
+    
 
     
 
@@ -59,4 +59,6 @@
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 
     <collapse-all-properties/>
+
+    <inherits name="fi.jasoft.dragdroplayouts.DragDropLayoutsWidgetSet" />
 </module>

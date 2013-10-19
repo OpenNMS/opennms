@@ -3,6 +3,7 @@
     <bean id="topologyDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.TopologyDashletFactory" scope="singleton">
         <property name="name" value="Topology"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

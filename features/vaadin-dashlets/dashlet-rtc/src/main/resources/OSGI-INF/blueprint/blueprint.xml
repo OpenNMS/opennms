@@ -3,6 +3,7 @@
     <bean id="rtcDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.RtcDashletFactory" scope="singleton">
         <property name="name" value="RTC"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
     </bean>
 
     <service ref="rtcDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>

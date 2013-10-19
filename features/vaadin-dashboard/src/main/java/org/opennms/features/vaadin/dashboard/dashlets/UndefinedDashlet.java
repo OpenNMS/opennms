@@ -28,8 +28,10 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
@@ -39,11 +41,9 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
  *
  * @author Christian Pape
  */
-public class UndefinedDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
+public class UndefinedDashlet extends AbstractDashlet {
+
+    VerticalLayout m_verticalLayout;
 
     /**
      * Constructor for instantiating this {@link Dashlet}
@@ -51,46 +51,24 @@ public class UndefinedDashlet extends VerticalLayout implements Dashlet {
      * @param dashletSpec the {@link DashletSpec} to use
      */
     public UndefinedDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the name
-         */
-        m_name = name;
-        /**
-         * Setting error message
-         */
-        Label label = new Label("The defined dashlet could not be found!");
-
-        addComponent(label);
-        setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-        setCaption(getName());
+        super(name, dashletSpec);
     }
 
-    /**
-     * This method returns the name of the {@link Dashlet}
-     *
-     * @return the dashlet's name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Checks whether this {@link Dashlet} is boosted.
-     *
-     * @return true, if boosted, false otherwise
-     */
     @Override
-    public boolean isBoosted() {
-        return false;
+    public Component getWallboardComponent() {
+        if (m_verticalLayout == null) {
+            m_verticalLayout = new VerticalLayout();
+            Label label = new Label("The defined dashlet could not be found!");
+            m_verticalLayout.addComponent(label);
+            m_verticalLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+            m_verticalLayout.setCaption(getName());
+
+        }
+        return m_verticalLayout;
     }
 
-    /**
-     * Updates the dashlet contents and computes new boosted state
-     */
     @Override
-    public void update() {
-        /**
-         * do nothing
-         */
+    public Component getDashboardComponent() {
+        return getWallboardComponent();
     }
 }

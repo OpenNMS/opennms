@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
@@ -40,26 +41,21 @@ import java.util.Calendar;
  *
  * @author Christian Pape
  */
-public class RrdDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
-
-    /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
-
+public class RrdDashlet extends AbstractDashlet {
     /**
      * The Rrd helper instance
      */
     RrdGraphHelper m_rrdGraphHelper;
 
     /**
-     *
+     * wallboard layout
      */
     private GridLayout m_gridLayout;
+
+    /**
+     * dashboard layout
+     */
+    private VerticalLayout m_dashboardLayout;
 
     /**
      * Constructor for instantiating new objects.
@@ -69,50 +65,175 @@ public class RrdDashlet extends VerticalLayout implements Dashlet {
      * @param rrdGraphHelper the rrd graph helper instance
      */
     public RrdDashlet(String name, DashletSpec dashletSpec, RrdGraphHelper rrdGraphHelper) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_rrdGraphHelper = rrdGraphHelper;
-
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
-
-        /**
-         * creating the grid layout
-         */
-        m_gridLayout = new GridLayout();
-        m_gridLayout.setSizeFull();
-        m_gridLayout.setColumns(1);
-        m_gridLayout.setRows(1);
-
-        addComponent(m_gridLayout);
-
-        /**
-         * initial update call
-         */
-        update();
     }
 
     @Override
-    public String getName() {
-        return m_name;
+    public Component getDashboardComponent() {
+        if (m_dashboardLayout == null) {
+            m_dashboardLayout = new VerticalLayout();
+            m_dashboardLayout.setCaption(getName());
+            m_dashboardLayout.setSizeFull();
+        }
+
+        return m_dashboardLayout;
     }
 
+
     @Override
-    public boolean isBoosted() {
-        return false;
+    public Component getWallboardComponent() {
+        if (m_gridLayout == null) {
+            m_gridLayout = new GridLayout();
+            m_gridLayout.setCaption(getName());
+            m_gridLayout.setSizeFull();
+            m_gridLayout.setColumns(1);
+            m_gridLayout.setRows(1);
+        }
+
+        return m_gridLayout;
     }
 
     /**
      * Updates the dashlet contents and computes new boosted state
      */
     @Override
-    public void update() {
+    public void updateDashboard() {
+        /**
+         * removing old components
+         */
+        m_dashboardLayout.removeAllComponents();
+
+        /**
+         * iniatizing the parameters
+         */
+        int columns = 0;
+        int rows = 0;
+        int width = 0;
+        int height = 0;
+
+        try {
+            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
+        } catch (NumberFormatException numberFormatException) {
+            columns = 1;
+        }
+
+        try {
+            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
+        } catch (NumberFormatException numberFormatException) {
+            rows = 1;
+        }
+
+        try {
+            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
+        } catch (NumberFormatException numberFormatException) {
+            width = 400;
+        }
+
+        try {
+            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
+        } catch (NumberFormatException numberFormatException) {
+            height = 100;
+        }
+
+        /**
+         * getting the timeframe values
+         */
+        int timeFrameValue;
+        int timeFrameType;
+
+        try {
+            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
+        } catch (NumberFormatException numberFormatException) {
+            timeFrameValue = 1;
+        }
+
+        try {
+            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
+        } catch (NumberFormatException numberFormatException) {
+            timeFrameType = Calendar.HOUR;
+        }
+
+        int i = 0;
+
+        Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+        Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
+        Page.getCurrent().getStyles().add(".margin { margin:5px; }");
+
+        Accordion accordion = new Accordion();
+        accordion.setSizeFull();
+
+        /**
+         * adding the components
+         */
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
+                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
+
+                if (graphUrl != null && !"".equals(graphUrl)) {
+                    accordion.addTab(getGraphComponent(i, width, height, timeFrameType, timeFrameValue), getDashletSpec().getParameters().get("nodeLabel" + i) + "/" + getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
+                }
+                i++;
+            }
+        }
+
+        m_dashboardLayout.addComponent(accordion);
+    }
+
+    /**
+     * Returns the graph component for a given graph of the {@link DashletSpec}.
+     *
+     * @param i              the entry id
+     * @param width          the width
+     * @param height         the height
+     * @param timeFrameType  the timeframe type
+     * @param timeFrameValue the timeframe value
+     * @return the component
+     */
+    private Component getGraphComponent(int i, int width, int height, int timeFrameType, int timeFrameValue) {
+        Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getDashletSpec().getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
+        VerticalLayout verticalLayout = new VerticalLayout();
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.addStyleName("box");
+        horizontalLayout.setWidth("100%");
+        horizontalLayout.setHeight("42px");
+
+        VerticalLayout leftLayout = new VerticalLayout();
+        leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        leftLayout.addStyleName("margin");
+
+        Label labelFrom = new Label(getDashletSpec().getParameters().get("nodeLabel" + i));
+        labelFrom.addStyleName("text");
+
+        Label labelTo = new Label(getDashletSpec().getParameters().get("resourceTypeLabel" + i) + ": " + getDashletSpec().getParameters().get("resourceLabel" + i));
+        labelTo.addStyleName("text");
+
+        leftLayout.addComponent(labelFrom);
+        leftLayout.addComponent(labelTo);
+
+        horizontalLayout.addComponent(leftLayout);
+        horizontalLayout.setExpandRatio(leftLayout, 1.0f);
+
+        verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.addComponent(image);
+        verticalLayout.setWidth(image.getWidth() + "px");
+
+        verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
+        verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+        verticalLayout.setMargin(true);
+
+        return verticalLayout;
+    }
+
+    /**
+     * Updates the dashlet contents and computes new boosted state
+     */
+    @Override
+    public void updateWallboard() {
         /**
          * removing old components
          */
@@ -127,25 +248,25 @@ public class RrdDashlet extends VerticalLayout implements Dashlet {
         int height = 0;
 
         try {
-            columns = Integer.parseInt(m_dashletSpec.getParameters().get("columns"));
+            columns = Integer.parseInt(getDashletSpec().getParameters().get("columns"));
         } catch (NumberFormatException numberFormatException) {
             columns = 1;
         }
 
         try {
-            rows = Integer.parseInt(m_dashletSpec.getParameters().get("rows"));
+            rows = Integer.parseInt(getDashletSpec().getParameters().get("rows"));
         } catch (NumberFormatException numberFormatException) {
             rows = 1;
         }
 
         try {
-            width = Integer.parseInt(m_dashletSpec.getParameters().get("width"));
+            width = Integer.parseInt(getDashletSpec().getParameters().get("width"));
         } catch (NumberFormatException numberFormatException) {
             width = 400;
         }
 
         try {
-            height = Integer.parseInt(m_dashletSpec.getParameters().get("height"));
+            height = Integer.parseInt(getDashletSpec().getParameters().get("height"));
         } catch (NumberFormatException numberFormatException) {
             height = 100;
         }
@@ -157,13 +278,13 @@ public class RrdDashlet extends VerticalLayout implements Dashlet {
         int timeFrameType;
 
         try {
-            timeFrameValue = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameValue"));
+            timeFrameValue = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameValue"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameValue = 1;
         }
 
         try {
-            timeFrameType = Integer.parseInt(m_dashletSpec.getParameters().get("timeFrameType"));
+            timeFrameType = Integer.parseInt(getDashletSpec().getParameters().get("timeFrameType"));
         } catch (NumberFormatException numberFormatException) {
             timeFrameType = Calendar.HOUR;
         }
@@ -185,42 +306,12 @@ public class RrdDashlet extends VerticalLayout implements Dashlet {
          */
         for (int y = 0; y < m_gridLayout.getRows(); y++) {
             for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-                String graphUrl = m_dashletSpec.getParameters().get("graphUrl" + i);
+                String graphUrl = getDashletSpec().getParameters().get("graphUrl" + i);
 
                 if (graphUrl != null && !"".equals(graphUrl)) {
-                    Image image = new Image(null, new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(m_dashletSpec.getParameters().get("graphUrl" + i), width, height, timeFrameType, timeFrameValue)));
-                    VerticalLayout verticalLayout = new VerticalLayout();
-
-                    HorizontalLayout horizontalLayout = new HorizontalLayout();
-                    horizontalLayout.addStyleName("box");
-                    horizontalLayout.setWidth("100%");
-                    horizontalLayout.setHeight("42px");
-
-                    VerticalLayout leftLayout = new VerticalLayout();
-                    leftLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-                    leftLayout.addStyleName("margin");
-
-                    Label labelFrom = new Label(m_dashletSpec.getParameters().get("nodeLabel" + i));
-                    labelFrom.addStyleName("text");
-
-                    Label labelTo = new Label(m_dashletSpec.getParameters().get("resourceTypeLabel" + i) + ": " + m_dashletSpec.getParameters().get("resourceLabel" + i));
-                    labelTo.addStyleName("text");
-
-                    leftLayout.addComponent(labelFrom);
-                    leftLayout.addComponent(labelTo);
-
-                    horizontalLayout.addComponent(leftLayout);
-                    horizontalLayout.setExpandRatio(leftLayout, 1.0f);
-
-                    verticalLayout.addComponent(horizontalLayout);
-                    verticalLayout.addComponent(image);
-                    verticalLayout.setWidth(image.getWidth() + "px");
-
-                    m_gridLayout.addComponent(verticalLayout, x, y);
-
-                    verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                    verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
-                    m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
+                    Component component = getGraphComponent(i, width, height, timeFrameType, timeFrameValue);
+                    m_gridLayout.addComponent(component, x, y);
+                    m_gridLayout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
                 }
                 i++;
             }

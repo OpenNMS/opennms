@@ -44,7 +44,7 @@ import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
 public class HeaderLayout extends HorizontalLayout implements ViewChangeListener {
 
     WallboardView wallboardView = null;
-    Button pauseButton, wallboardButton;
+    Button pauseButton, wallboardButton, dashboardButton;
 
     /**
      * Default constructor.
@@ -79,17 +79,17 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
                 wallboardButton.setEnabled(true);
+                dashboardButton.setEnabled(true);
             }
         });
 
-        /*
-        Button dashboardButton = new Button("Dashboard", new Button.ClickListener() {
+        dashboardButton = new Button("Dashboard", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                UI.getCurrent().getNavigator().addViewChangeListener(HeaderLayout.this);
                 UI.getCurrent().getNavigator().navigateTo("dashboard/" + nativeSelect.getContainerProperty(nativeSelect.getValue(), "title"));
             }
         });
-        */
 
         /**
          * Adding the wallboard button
@@ -120,10 +120,11 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
 
         pauseButton.setEnabled(false);
         wallboardButton.setEnabled(false);
+        dashboardButton.setEnabled(false);
 
-        addComponents(nativeSelect, /*dashboardButton,*/ wallboardButton, pauseButton);
+        addComponents(nativeSelect, dashboardButton, wallboardButton, pauseButton);
         setComponentAlignment(nativeSelect, Alignment.MIDDLE_CENTER);
-        //setComponentAlignment(dashboardButton, Alignment.MIDDLE_CENTER);
+        setComponentAlignment(dashboardButton, Alignment.MIDDLE_CENTER);
         setComponentAlignment(wallboardButton, Alignment.MIDDLE_CENTER);
         setComponentAlignment(pauseButton, Alignment.MIDDLE_CENTER);
     }
@@ -154,6 +155,9 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
             wallboardView = (WallboardView) viewChangeEvent.getNewView();
 
             updatePauseButton();
+        } else {
+            pauseButton.setCaption("Pause");
+            pauseButton.setEnabled(false);
         }
     }
 }

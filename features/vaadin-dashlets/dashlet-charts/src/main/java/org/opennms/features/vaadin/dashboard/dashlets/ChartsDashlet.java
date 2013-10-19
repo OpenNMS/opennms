@@ -28,28 +28,27 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
 /**
  * This class implements a {@link Dashlet} for displaying charts.
  */
-public class ChartsDashlet extends VerticalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
+public class ChartsDashlet extends AbstractDashlet {
     /**
      * the image URL
      */
     private String m_imageUrl = null;
     /**
-     * The {@link DashletSpec} for this instance
+     * wallboard view
      */
-    private DashletSpec m_dashletSpec;
+    VerticalLayout m_verticalLayout = null;
 
     /**
      * Constructor for instantiating new objects.
@@ -57,60 +56,59 @@ public class ChartsDashlet extends VerticalLayout implements Dashlet {
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public ChartsDashlet(String name, DashletSpec dashletSpec) {
-        /**
-         * Setting the member fields
-         */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
-
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setSizeFull();
-
-        update();
+        super(name, dashletSpec);
     }
 
     @Override
-    public String getName() {
-        return m_name;
+    public Component getWallboardComponent() {
+        if (m_verticalLayout == null) {
+            m_verticalLayout = new VerticalLayout();
+            m_verticalLayout.setCaption(getName());
+            m_verticalLayout.setSizeFull();
+        }
+
+        return m_verticalLayout;
     }
 
     @Override
-    public boolean isBoosted() {
-        return false;
+    public Component getDashboardComponent() {
+        return getWallboardComponent();
+    }
+
+    @Override
+    public void updateDashboard() {
+        updateWallboard();
     }
 
     /**
      * Updates the dashlet contents and computes new boosted state
      */
     @Override
-    public void update() {
-        String newImage = "/opennms/charts?chart-name=" + m_dashletSpec.getParameters().get("chart");
+    public void updateWallboard() {
+        String newImage = "/opennms/charts?chart-name=" + getDashletSpec().getParameters().get("chart");
 
-        String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
-        String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
+        String maximizeHeightString = getDashletSpec().getParameters().get("maximizeHeight");
+        String maximizeWidthString = getDashletSpec().getParameters().get("maximizeWidth");
 
         boolean maximizeHeight = ("true".equals(maximizeHeightString) || "yes".equals(maximizeHeightString) || "1".equals(maximizeHeightString));
         boolean maximizeWidth = ("true".equals(maximizeWidthString) || "yes".equals(maximizeWidthString) || "1".equals(maximizeWidthString));
 
         if (!newImage.equals(m_imageUrl)) {
             m_imageUrl = newImage;
-            removeAllComponents();
+            m_verticalLayout.removeAllComponents();
             Image image = new Image(null, new ExternalResource(m_imageUrl));
             if (maximizeHeight && maximizeWidth) {
                 image.setSizeFull();
             } else {
                 if (maximizeHeight) {
-                    image.setHeight(100, Unit.PERCENTAGE);
+                    image.setHeight(100, Sizeable.Unit.PERCENTAGE);
                 }
                 if (maximizeWidth) {
-                    image.setWidth(100, Unit.PERCENTAGE);
+                    image.setWidth(100, Sizeable.Unit.PERCENTAGE);
                 }
             }
-            addComponent(image);
-            setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+            m_verticalLayout.addComponent(image);
+            m_verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
         }
     }
 }
