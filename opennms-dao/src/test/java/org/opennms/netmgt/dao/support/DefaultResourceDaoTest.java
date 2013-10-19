@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -111,6 +112,7 @@ public class DefaultResourceDaoTest extends TestCase {
         RrdUtils.setStrategy(new JRobinRrdStrategy());
         
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis() - 86400000l));
         
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -476,6 +478,7 @@ public class DefaultResourceDaoTest extends TestCase {
 
         expect(m_nodeDao.get(1)).andReturn(ip.getNode()).times(2);
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(new ArrayList<LocationMonitorIpInterface>());
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis() - 86400000l));
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip);
@@ -533,6 +536,8 @@ public class DefaultResourceDaoTest extends TestCase {
 
         expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces).times(2);
+        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis() - 86400000l)).anyTimes();
+        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);
