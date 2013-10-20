@@ -34,8 +34,10 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.rrdtool.old.RrdOld;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.util.FileCopyUtils;
 
@@ -47,9 +49,23 @@ import org.springframework.util.FileCopyUtils;
 public class RrdtoolUtils {
 
     /**
-     * Instantiates a new rrdtool utils.
+     * Instantiates a new RRDtool Utils.
      */
     private RrdtoolUtils() {}
+
+    /**
+     * Dumps a JRB.
+     *
+     * @param sourceFile the source file
+     * @return the RRD Object (old version)
+     * @throws Exception the exception
+     */
+    public static RrdOld dumpJrb(File sourceFile) throws Exception {
+        RrdDb jrb = new RrdDb(sourceFile, true);
+        RrdOld rrd = JaxbUtils.unmarshal(RrdOld.class, jrb.getXml());
+        jrb.close();
+        return rrd;
+    }
 
     /**
      * Dumps a RRD.
@@ -81,6 +97,21 @@ public class RrdtoolUtils {
             reader.close();
         }
         return rrd;
+    }
+
+    /**
+     * Restore a JRB.
+     *
+     * @param rrd the RRD object (old version)
+     * @param targetFile the target file
+     * @throws Exception the exception
+     */
+    public static void restoreJrb(RrdOld rrd, File targetFile) throws Exception {
+        final File outputXmlFile = new File(targetFile + ".xml");
+        JaxbUtils.marshal(rrd, new FileWriter(outputXmlFile));
+        RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
+        targetJrb.close();
+        outputXmlFile.delete();
     }
 
     /**

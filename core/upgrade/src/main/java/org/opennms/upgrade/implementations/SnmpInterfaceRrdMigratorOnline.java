@@ -39,11 +39,9 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.jrobin.core.RrdDb;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -271,21 +269,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     protected void mergeJrb(File source, File dest) {
         log("  merging JRB %s into %s\n", source, dest);
         try {
-            RrdDb jrbSrcFile = new RrdDb(source, true);
-            RrdOld rrdSrc = JaxbUtils.unmarshal(RrdOld.class, jrbSrcFile.getXml());
-            jrbSrcFile.close();
-            RrdDb jrbDstFile = new RrdDb(dest, true);
-            RrdOld rrdDst = JaxbUtils.unmarshal(RrdOld.class, jrbDstFile.getXml());
-            jrbDstFile.close();
+            RrdOld rrdSrc = RrdtoolUtils.dumpJrb(source);
+            RrdOld rrdDst = RrdtoolUtils.dumpJrb(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load JRBs (ingoring merge).\n");
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
-            final File outputXmlFile = new File(outputFile + ".xml");
-            RrdDb targetJrb = new RrdDb(outputFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
-            targetJrb.close();
-            outputXmlFile.delete();
+            RrdtoolUtils.restoreJrb(rrdDst, outputFile);
             FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
