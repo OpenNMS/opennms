@@ -27,9 +27,6 @@
  *******************************************************************************/
 package org.opennms.netmgt.rrd.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -42,15 +39,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="row")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XRow {
+public class XRow extends Row {
 
     /** The time stamp expressed in seconds since 1970-01-01 UTC. */
     @XmlElement(name="t")
     private Long timestamp;
-    
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
 
     /**
      * Gets the time stamp.
@@ -69,24 +62,6 @@ public class XRow {
      */
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    /**
-     * Gets the values.
-     *
-     * @return the values
-     */
-    public List<Double> getValues() {
-        return values;
-    }
-
-    /**
-     * Sets the values.
-     *
-     * @param values the new values
-     */
-    public void setValues(List<Double> values) {
-        this.values = values;
     }
 
 }

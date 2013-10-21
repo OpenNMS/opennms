@@ -32,14 +32,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 /**
  * The Abstract class for OpenNMS Upgrade Implementations.
@@ -196,6 +201,34 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
         } catch (Exception e) {
             return ".jrb";
         }
+    }
+
+    /**
+     * Gets the DB connection.
+     *
+     * @return the DB connection
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected Connection getDbConnection() throws OnmsUpgradeException {
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+            DataSourceConfiguration dsc = null;
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(cfgFile);
+                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
+            } finally {
+                IOUtils.closeQuietly(fileInputStream);
+            } 
+            for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
+                if (ds.getName().equals("opennms")) {
+                    return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
+                }
+            }
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't connect to OpenNMS Database");
+        }
+        throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
 
     /**

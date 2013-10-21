@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
+@XmlRootElement(name="row")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Row {
 

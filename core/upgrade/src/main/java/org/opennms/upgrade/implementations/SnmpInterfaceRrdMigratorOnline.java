@@ -28,23 +28,16 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
-import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.rrd.model.RrdParseUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
@@ -298,34 +291,6 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             dir = new File(fsDir, foreignId);
         }
         return dir;
-    }
-
-    /**
-     * Gets the DB connection.
-     *
-     * @return the DB connection
-     * @throws OnmsUpgradeException the OpenNMS upgrade exception
-     */
-    protected Connection getDbConnection() throws OnmsUpgradeException {
-        try {
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            DataSourceConfiguration dsc = null;
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(cfgFile);
-                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            } 
-            for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
-                if (ds.getName().equals("opennms")) {
-                    return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
-                }
-            }
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't connect to OpenNMS Database");
-        }
-        throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
 
 }
