@@ -28,6 +28,7 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,6 +39,9 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.kscReports.Graph;
+import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.rrd.model.RrdParseUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
@@ -98,8 +102,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     public void preExecute() throws OnmsUpgradeException {
         try {
             DataCollectionConfigFactory.init();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new OnmsUpgradeException("Can't initialize datacollection-config.xml because " + e.getMessage());
+        }
+        try {
+            KSC_PerformanceReportFactory.init();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't initialize ksc-performance-reports.xml because " + e.getMessage());
         }
         interfacesToMerge = getInterfacesToMerge();
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
@@ -151,19 +160,36 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     public void execute() throws OnmsUpgradeException {
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
             merge(intf.getOldInterfaceDir(), intf.getNewInterfaceDir());
-            fixKscReports(intf);
         }
+        fixKscReports();
     }
 
     /**
      * Fix KSC reports.
-     *
-     * @param intf the interface object
      */
-    protected void fixKscReports(SnmpInterfaceUpgrade intf) {
-        log("FIXME: Fixing the KSC Reports is not implemented yet (sorry about that).");
-        // FIXME Auto-generated method stub
-
+    protected void fixKscReports()  throws OnmsUpgradeException {
+        log("Fixing KSC Reports.\n");
+        boolean changed = false;
+        for (Integer reportId : KSC_PerformanceReportFactory.getInstance().getReportList().keySet()) {
+            Report report = KSC_PerformanceReportFactory.getInstance().getReportByIndex(reportId);
+            log("  Checking report %s\n", report.getTitle());
+            for (Graph graph : report.getGraphCollection()) {
+                for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
+                    if (intf.getOldResourceId().equals(graph.getResourceId())) {
+                        changed = true;
+                        graph.setResourceId(intf.getNewResourceId());
+                    }
+                }
+            }
+        }
+        if (changed) {
+            log("Updating KSC reports.");
+            try {
+                KSC_PerformanceReportFactory.getInstance().saveCurrent();
+            } catch (Exception e) {
+                log("Warning: can't save KSC Reports because %s\n", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -223,7 +249,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         } else {
             try {
                 log("  moving %s to %s\n", oldDir.getName(), newDir.getName());
-                FileUtils.moveFile(oldDir, newDir);
+                FileUtils.moveDirectory(oldDir, newDir);
             } catch (IOException e) {
                 log("  Warning: can't move file because %s", e.getMessage());
             }
@@ -243,11 +269,12 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             RRDv3 rrdDst = RrdParseUtils.dumpRrd(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load RRDs (ingoring merge).\n");
+                return;
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
             RrdParseUtils.restoreRrd(rrdDst, outputFile);
-            FileUtils.moveFile(outputFile, dest);
+            moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -266,11 +293,12 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             RRDv1 rrdDst = RrdParseUtils.dumpJrb(dest);
             if (rrdSrc == null || rrdDst == null) {
                 log("  Warning: can't load JRBs (ingoring merge).\n");
+                return;
             }
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
             RrdParseUtils.restoreJrb(rrdDst, outputFile);
-            FileUtils.moveFile(outputFile, dest);
+            moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -293,4 +321,39 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         return dir;
     }
 
+    /**
+     * Move file.
+     * <p>This is a special version of FileUtils.moveFile() that ignore the fact that the destination exist or not.</p>
+     * <p>If the destination exists, it will be overridden.</p>
+     * 
+     * @param srcFile the souce file
+     * @param destFile the destination file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    protected void moveFile(File srcFile, File destFile) throws IOException {
+        if (srcFile == null) {
+            throw new NullPointerException("Source must not be null");
+        }
+        if (destFile == null) {
+            throw new NullPointerException("Destination must not be null");
+        }
+        if (!srcFile.exists()) {
+            throw new FileNotFoundException("Source '" + srcFile + "' does not exist");
+        }
+        if (srcFile.isDirectory()) {
+            throw new IOException("Source '" + srcFile + "' is a directory");
+        }
+        if (destFile.isDirectory()) {
+            throw new IOException("Destination '" + destFile + "' is a directory");
+        }
+        boolean rename = srcFile.renameTo(destFile);
+        if (!rename) {
+            FileUtils.copyFile( srcFile, destFile );
+            if (!srcFile.delete()) {
+                FileUtils.deleteQuietly(destFile);
+                throw new IOException("Failed to delete original file '" + srcFile +
+                                      "' after copy to '" + destFile + "'");
+            }
+        }
+    }
 }

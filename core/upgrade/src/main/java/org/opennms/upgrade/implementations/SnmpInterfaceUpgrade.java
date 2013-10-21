@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import org.opennms.core.utils.RrdLabelUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.model.OnmsResource;
 
 /**
  * The Class SnmpInterfaceUpgrade.
@@ -113,7 +114,6 @@ public class SnmpInterfaceUpgrade {
         return new File(getNodeDir(), getNewRrdLabel());
     }
 
-
     /**
      * Gets the node id.
      *
@@ -122,7 +122,6 @@ public class SnmpInterfaceUpgrade {
     public int getNodeId() {
         return nodeId;
     }
-
 
     /**
      * Gets the foreign id.
@@ -133,7 +132,6 @@ public class SnmpInterfaceUpgrade {
         return foreignId;
     }
 
-
     /**
      * Gets the foreign source.
      *
@@ -142,7 +140,6 @@ public class SnmpInterfaceUpgrade {
     public String getForeignSource() {
         return foreignSource;
     }
-
 
     /**
      * Gets the interface name.
@@ -153,7 +150,6 @@ public class SnmpInterfaceUpgrade {
         return ifName;
     }
 
-
     /**
      * Gets the interface description.
      *
@@ -162,7 +158,6 @@ public class SnmpInterfaceUpgrade {
     public String getIfDescr() {
         return ifDescr;
     }
-
 
     /**
      * Gets the physical address.
@@ -173,7 +168,6 @@ public class SnmpInterfaceUpgrade {
         return physAddr;
     }
 
-
     /**
      * Gets the old RRD label.
      *
@@ -182,7 +176,6 @@ public class SnmpInterfaceUpgrade {
     public String getOldRrdLabel() {
         return oldRrdLabel;
     }
-
 
     /**
      * Gets the new RRD label.
@@ -193,7 +186,6 @@ public class SnmpInterfaceUpgrade {
         return newRrdLabel;
     }
 
-
     /**
      * Checks the should merge flag.
      *
@@ -201,6 +193,24 @@ public class SnmpInterfaceUpgrade {
      */
     public boolean shouldMerge() {
         return !oldRrdLabel.equals(newRrdLabel);
+    }
+
+    /**
+     * Gets the old resource id.
+     *
+     * @return the old resource id
+     */
+    public String getOldResourceId() {
+        return OnmsResource.createResourceId(Integer.toString(getNodeId()), "interfaceSnmp", getOldRrdLabel());
+    }
+
+    /**
+     * Gets the new resource id.
+     *
+     * @return the new resource id
+     */
+    public String getNewResourceId() {
+        return OnmsResource.createResourceId(Integer.toString(getNodeId()), "interfaceSnmp", getNewRrdLabel());
     }
 
     /**
