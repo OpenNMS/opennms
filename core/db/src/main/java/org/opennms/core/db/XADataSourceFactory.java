@@ -324,7 +324,6 @@ public final class XADataSourceFactory implements XADataSource {
 	}
 
 	/** {@inheritDoc} */
-	@Override
 	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException("getParentLogger not supported");
 	}
