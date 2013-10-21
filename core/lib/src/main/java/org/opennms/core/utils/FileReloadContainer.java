@@ -107,6 +107,7 @@ public class FileReloadContainer<T> {
     private FileReloadCallback<T> m_callback;
     private long m_reloadCheckInterval = DEFAULT_RELOAD_CHECK_INTERVAL;
     private long m_lastReloadCheck;
+    private long m_lastUpdate;
     
     /**
      * Creates a new container with an object and a file underlying that
@@ -229,6 +230,7 @@ public class FileReloadContainer<T> {
         } else {
             m_object = object;
         }
+        m_lastUpdate = System.currentTimeMillis();
     }
 
     /**
@@ -261,5 +263,14 @@ public class FileReloadContainer<T> {
      */
     public void setReloadCheckInterval(final long reloadCheckInterval) {
         m_reloadCheckInterval = reloadCheckInterval;
+    }
+
+    /**
+     * Get the timestamp in milliseconds of the last time the file was reloaded.
+     * 
+     * @return the timestamp
+     */
+    public long getLastUpdate() {
+        return m_lastUpdate;
     }
 }
