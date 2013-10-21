@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,7 +46,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,6 +143,7 @@ public class UpsertTest implements InitializingBean {
     
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testConcurrentInsert() throws InterruptedException {
         assertEquals(1, countIfs(m_populator.getNode1().getId(), 1, "atm0"));
         assertEquals(1, countIfs(m_populator.getNode1().getId(), 2, "eth0"));

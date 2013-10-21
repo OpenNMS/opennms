@@ -32,6 +32,7 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -141,6 +142,9 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
      */
     public T execute() {
         TransactionTemplate template = new TransactionTemplate(m_transactionManager);
+        // Make sure that the upsert operation takes place in a new 
+        // transaction, even if one is currently in progress
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return template.execute(new TransactionCallback<T>() {
 
             @Override
