@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +41,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
+@XmlRootElement(name="meta")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Meta {
+public class XMeta {
 
     /** The start time expressed in seconds since 1970-01-01 UTC. */
     @XmlElement

@@ -25,76 +25,64 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.opennms.netmgt.rrd.model.v1;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.rrd.model.AbstractRRD;
-
 /**
- * The Class RRD (Round Robin Database) version 3.
+ * The Class RraDS (RRA CDP Data Source).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="rrd")
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class RRDv3 extends AbstractRRD {
+@XmlRootElement(name="ds")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class RRADS {
 
-    /** The Constant VERSION. */
-    public static final String VERSION = "0003";
+    /** The unknown data points. */
+    @XmlElement(name="unknown_datapoints")
+    private Long unknownDataPoints = 0L;
 
-    /** The RRAs. */
-    public List<RRA> rras = new ArrayList<RRA>();
+    /** The value. */
+    @XmlElement(name="value")
+    private Double value;
 
-    /** The data sources. */
-    public List<DS> dataSources = new ArrayList<DS>();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()
+    /**
+     * Gets the unknown data points.
+     *
+     * @return the unknown data points
      */
-    @XmlElement(name="rra")
-    public List<RRA> getRras() {
-        return rras;
+    public Long getUnknownDataPoints() {
+        return unknownDataPoints;
     }
 
     /**
-     * Sets the RRAs.
+     * Sets the unknown data points.
      *
-     * @param rras the new RRAs
+     * @param unknownDataPoints the new unknown data points
      */
-    public void setRras(List<RRA> rras) {
-        this.rras = rras;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getDataSources()
-     */
-    @XmlElement(name="ds")
-    public List<DS> getDataSources() {
-        return dataSources;
+    public void setUnknownDataPoints(Long unknownDataPoints) {
+        this.unknownDataPoints = unknownDataPoints;
     }
 
     /**
-     * Sets the data sources.
+     * Gets the value.
      *
-     * @param dataSources the new data sources
+     * @return the value
      */
-    public void setDataSources(List<DS> dataSources) {
-        this.dataSources = dataSources;
+    public Double getValue() {
+        return value;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRequiredVersion()
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
      */
-    @Override
-    protected String getRequiredVersion() {
-        return VERSION;
+    public void setValue(Double value) {
+        this.value = value;
     }
 
 }

@@ -25,32 +25,48 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.netmgt.rrd.model.v1;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
 /**
- * The Class LongAdapter.
- * <p>The null representation of some integer values inside the XML version of an RRD is expressed as 'U'</p>
+ * The Enumeration DSType (Data Source Type).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class LongAdapter extends XmlAdapter<String, Long> {
+@XmlEnum
+@XmlType(name = "type")
+public enum DSType {
 
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+    /** The gauge data source. */
+    GAUGE,
+
+    /** The counter data source. */
+    COUNTER,
+
+    /** The derive data source. */
+    DERIVE,
+
+    /** The absolute data source. */
+    ABSOLUTE;
+
+    /**
+     * Gets the DS Value.
+     *
+     * @return the string representation of the data source
      */
-    @Override
-    public String marshal(Long value) throws Exception {
-        return value == null ? "U" : value.toString();
+    public String value() {
+        return name();
     }
 
-    /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+    /**
+     * From value.
+     *
+     * @param v the string name of the DS
+     * @return the data source type
      */
-    @Override
-    public Long unmarshal(String value) throws Exception {
-        return value.equals("U") ? null : new Long(value);
+    public static DSType fromValue(String v) {
+        return v == null ? null : valueOf(v.trim());
     }
-
 }

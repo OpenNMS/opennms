@@ -25,58 +25,36 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.rrdtool;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.rrd.model.RrdXport;
 
 /**
- * The Class Row.
+ * The Class RRD Export Test.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Row {
-
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
+public class RrdXportTest {
 
     /**
-     * Gets the values.
+     * Parses the Xport.
      *
-     * @return the values
+     * @throws Exception the exception
      */
-    public List<Double> getValues() {
-        return values;
-    }
-
-    /**
-     * Sets the values.
-     *
-     * @param values the new values
-     */
-    public void setValues(List<Double> values) {
-        this.values = values;
-    }
-
-    /**
-     * Checks if is all the values are NaN.
-     *
-     * @return true, if all the values are NaN.
-     */
-    public boolean isNan() {
-        for (Double v : values) {
-            if (!v.isNaN()) {
-                return false;
-            }
-        }
-        return true;
+    @Test
+    public void parseXport() throws Exception {
+        RrdXport xport = JaxbUtils.unmarshal(RrdXport.class, new File("src/test/resources/rrd-xport.xml"));
+        Assert.assertNotNull(xport);
+        Assert.assertEquals(new Integer(300), xport.getMeta().getStep());
+        Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
+        Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
+        Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));
+        Assert.assertEquals(new Long(1206312900), xport.getRows().get(0).getTimestamp());
+        Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
     }
 }

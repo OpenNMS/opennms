@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.netmgt.rrd.model.AbstractDS;
+
 /**
  * The Class DS (Data Source).
  * <ul>
@@ -43,57 +45,16 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
+@XmlRootElement(name="ds")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class DS {
-
-    /** The name of the database. */
-    private String name;
+public class DS extends AbstractDS {
 
     /** The type of the datasource. */
     private DSType type;
 
-    /** The minimum heartbeat. */
-    private Integer minHeartbeat = 0;
-
-    /** The minimum value of the data source. Defaults to 'U' */
-    private Double min = null;
-
-    /** The maximum value of the data source. Defaults to 'U'. */
-    private Double max = null;
-
-    /** The last value. */
-    private Double lastDs = Double.NaN;
-
-    /** The value. */
-    private Double value = 0.0;
-
-    /** The unknown seconds. */
-    private Integer unknownSec = 0;
-
     /** The CDEF (Computed Datasource). */
     private String cdef;
-
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
-    @XmlElement
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the name.
-     * <p>The XML may contain spaces that must be removed.</p>
-     *
-     * @param name the new name
-     */
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
+  
     /**
      * Gets the type.
      *
@@ -112,121 +73,6 @@ public class DS {
      */
     public void setType(DSType type) {
         this.type = type;
-    }
-
-    /**
-     * Gets the minimum heartbeat.
-     *
-     * @return the minimum heartbeat
-     */
-    @XmlElement(name="minimal_heartbeat")
-    public Integer getMinHeartbeat() {
-        return minHeartbeat;
-    }
-
-    /**
-     * Sets the minimum heartbeat.
-     *
-     * @param minHeartbeat the new minimum heartbeat
-     */
-    public void setMinHeartbeat(Integer minHeartbeat) {
-        this.minHeartbeat = minHeartbeat;
-    }
-
-    /**
-     * Gets the minimum value.
-     *
-     * @return the minimum value
-     */
-    @XmlElement
-    public Double getMin() {
-        return min;
-    }
-
-    /**
-     * Sets the minimum value.
-     *
-     * @param min the new minimum value
-     */
-    public void setMin(Double min) {
-        this.min = min;
-    }
-
-    /**
-     * Gets the maximum value.
-     *
-     * @return the maximum value
-     */
-    @XmlElement
-    public Double getMax() {
-        return max;
-    }
-
-    /**
-     * Sets the maximum value.
-     *
-     * @param max the new maximum value
-     */
-    public void setMax(Double max) {
-        this.max = max;
-    }
-
-    /**
-     * Gets the last data source value.
-     *
-     * @return the last data source time stamp
-     */
-    @XmlElement(name="last_ds")
-    @XmlJavaTypeAdapter(DoubleAdapter.class)
-    public Double getLastDs() {
-        return lastDs;
-    }
-
-    /**
-     * Sets the last data source value.
-     *
-     * @param lastDs the new last data source value
-     */
-    public void setLastDs(Double lastDs) {
-        this.lastDs = lastDs;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    @XmlElement
-    public Double getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value.
-     *
-     * @param value the new value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    /**
-     * Gets the unknown seconds.
-     *
-     * @return the unknown seconds
-     */
-    @XmlElement(name="unknown_sec")
-    public Integer getUnknownSec() {
-        return unknownSec;
-    }
-
-    /**
-     * Sets the unknown seconds.
-     *
-     * @param unknownSec the new unknown seconds
-     */
-    public void setUnknownSec(Integer unknownSec) {
-        this.unknownSec = unknownSec;
     }
 
     /**
@@ -255,44 +101,12 @@ public class DS {
      * @return true, if successful
      */
     public boolean formatEquals(DS ds) {
-        if (this.name != null) {
-            if (ds.name == null) return false;
-            else if (!(this.name.equals(ds.name))) 
-                return false;
-        }
-        else if (ds.name != null)
-            return false;
-
         if (this.type != null) {
             if (ds.type == null) return false;
             else if (!(this.type.equals(ds.type))) 
                 return false;
         }
         else if (ds.type != null)
-            return false;
-
-        if (this.minHeartbeat != null) {
-            if (ds.minHeartbeat == null) return false;
-            else if (!(this.minHeartbeat.equals(ds.minHeartbeat))) 
-                return false;
-        }
-        else if (ds.minHeartbeat != null)
-            return false;
-
-        if (this.min != null) {
-            if (ds.min == null) return false;
-            else if (!(this.min.equals(ds.min))) 
-                return false;
-        }
-        else if (ds.min != null)
-            return false;
-
-        if (this.max != null) {
-            if (ds.max == null) return false;
-            else if (!(this.max.equals(ds.max))) 
-                return false;
-        }
-        else if (ds.max != null)
             return false;
 
         if (this.cdef != null) {
@@ -303,6 +117,6 @@ public class DS {
         else if (ds.cdef != null)
             return false;
 
-        return true;
+        return super.formatEquals(ds);
     }
 }

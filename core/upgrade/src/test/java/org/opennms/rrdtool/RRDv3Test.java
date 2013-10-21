@@ -35,14 +35,13 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v3.CFType;
 import org.opennms.netmgt.rrd.model.v3.DSType;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
-import org.opennms.netmgt.rrd.model.v3.Xport;
 
 /**
  * The Class RRD Parsing Test.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RrdParsingTest {
+public class RRDv3Test {
 
     /**
      * Parses a simple RRD.
@@ -92,20 +91,4 @@ public class RrdParsingTest {
         Assert.assertNotNull(rrd);
     }
 
-    /**
-     * Parses the Xport.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void parseXport() throws Exception {
-        Xport xport = JaxbUtils.unmarshal(Xport.class, new File("src/test/resources/rrd-xport.xml"));
-        Assert.assertNotNull(xport);
-        Assert.assertEquals(new Integer(300), xport.getMeta().getStep());
-        Assert.assertEquals(new Long(1206312900), xport.getMeta().getStart());
-        Assert.assertEquals(new Long(1206316500), xport.getMeta().getEnd());
-        Assert.assertEquals("load average 5min", xport.getMeta().getLegends().get(0));
-        Assert.assertEquals(new Long(1206312900), xport.getRows().get(0).getTimestamp());
-        Assert.assertEquals(new Double(19.86), xport.getRows().get(0).getValues().get(0));
-    }
 }

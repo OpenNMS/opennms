@@ -27,62 +27,47 @@
  *******************************************************************************/
 package org.opennms.netmgt.rrd.model.v1;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * The Class RraDS (RRA CDP Data Source).
- * 
- * @author Alejandro Galue <agalue@opennms.org>
+ * The Enumeration CFType (Consolidation Function Type)
  */
-@XmlRootElement(name="ds")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class RRADSv1 {
-
-    /** The unknown data points. */
-    @XmlElement(name="unknown_datapoints")
-    private Long unknownDataPoints = 0L;
-
-    /** The value. */
-    @XmlElement(name="value")
-    private Double value;
+public enum CFType {
 
     /**
-     * Gets the unknown data points.
-     *
-     * @return the unknown data points
+     * RRA:AVERAGE:xff:steps:rows
      */
-    public Long getUnknownDataPoints() {
-        return unknownDataPoints;
+    AVERAGE,
+
+    /**
+     * RRA:MIN:xff:steps:rows
+     */
+    MIN,
+
+    /**
+     * RRA:MAX:xff:steps:rows
+     */
+    MAX,
+
+    /**
+     * RRA:LAST:xff:steps:rows
+     */
+    LAST;
+
+    /**
+     * Gets the CF Value.
+     *
+     * @return the string representation of the consolidation function
+     */
+    public String value() {
+        return name();
     }
 
     /**
-     * Sets the unknown data points.
+     * From value.
      *
-     * @param unknownDataPoints the new unknown data points
+     * @param v the string name of the CF
+     * @return the consolidation function type
      */
-    public void setUnknownDataPoints(Long unknownDataPoints) {
-        this.unknownDataPoints = unknownDataPoints;
+    public static CFType fromValue(String v) {
+        return v == null ? null : valueOf(v.trim());
     }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public Double getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value.
-     *
-     * @param value the new value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
 }

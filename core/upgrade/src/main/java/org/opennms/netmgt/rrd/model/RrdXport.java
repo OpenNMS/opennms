@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,60 +33,61 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The Class XRow (XPort Row).
+ * The Class XPort (the XML representation of the 'rrdtool xport' command).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="row")
+@XmlRootElement(name="xport")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XRow {
+public class RrdXport {
 
-    /** The time stamp expressed in seconds since 1970-01-01 UTC. */
-    @XmlElement(name="t")
-    private Long timestamp;
-    
-    /** The values. */
-    @XmlElement(name="v")
-    private List<Double> values = new ArrayList<Double>();
+    /** The meta data. */
+    @XmlElement(name="meta")
+    private XMeta meta;
+
+    /** The rows. */
+    @XmlElement(name="row")
+    @XmlElementWrapper(name="data")
+    private List<XRow> rows = new ArrayList<XRow>();
 
     /**
-     * Gets the time stamp.
-     * <p>Expressed in seconds since 1970-01-01 UTC</p>
-     * 
-     * @return the time stamp
+     * Gets the meta data.
+     *
+     * @return the meta data
      */
-    public Long getTimestamp() {
-        return timestamp;
+    public XMeta getMeta() {
+        return meta;
     }
 
     /**
-     * Sets the time stamp.
+     * Sets the meta data.
      *
-     * @param timestamp the new time stamp
+     * @param meta the new meta data
      */
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
+    public void setMeta(XMeta meta) {
+        this.meta = meta;
     }
 
     /**
-     * Gets the values.
+     * Gets the rows.
      *
-     * @return the values
+     * @return the rows
      */
-    public List<Double> getValues() {
-        return values;
+    public List<XRow> getRows() {
+        return rows;
     }
 
     /**
-     * Sets the values.
+     * Sets the rows.
      *
-     * @param values the new values
+     * @param rows the new rows
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    public void setRows(List<XRow> rows) {
+        this.rows = rows;
     }
 
 }

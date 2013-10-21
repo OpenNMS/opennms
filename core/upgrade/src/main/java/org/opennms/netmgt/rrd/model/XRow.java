@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,66 +35,58 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.rrd.model.AbstractRRD;
-
 /**
- * The Class RRD (Round Robin Database) version 3.
+ * The Class XRow (XPort Row).
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="rrd")
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class RRDv3 extends AbstractRRD {
+@XmlRootElement(name="row")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class XRow {
 
-    /** The Constant VERSION. */
-    public static final String VERSION = "0003";
+    /** The time stamp expressed in seconds since 1970-01-01 UTC. */
+    @XmlElement(name="t")
+    private Long timestamp;
+    
+    /** The values. */
+    @XmlElement(name="v")
+    private List<Double> values = new ArrayList<Double>();
 
-    /** The RRAs. */
-    public List<RRA> rras = new ArrayList<RRA>();
-
-    /** The data sources. */
-    public List<DS> dataSources = new ArrayList<DS>();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()
+    /**
+     * Gets the time stamp.
+     * <p>Expressed in seconds since 1970-01-01 UTC</p>
+     * 
+     * @return the time stamp
      */
-    @XmlElement(name="rra")
-    public List<RRA> getRras() {
-        return rras;
+    public Long getTimestamp() {
+        return timestamp;
     }
 
     /**
-     * Sets the RRAs.
+     * Sets the time stamp.
      *
-     * @param rras the new RRAs
+     * @param timestamp the new time stamp
      */
-    public void setRras(List<RRA> rras) {
-        this.rras = rras;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getDataSources()
-     */
-    @XmlElement(name="ds")
-    public List<DS> getDataSources() {
-        return dataSources;
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     /**
-     * Sets the data sources.
+     * Gets the values.
      *
-     * @param dataSources the new data sources
+     * @return the values
      */
-    public void setDataSources(List<DS> dataSources) {
-        this.dataSources = dataSources;
+    public List<Double> getValues() {
+        return values;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRequiredVersion()
+    /**
+     * Sets the values.
+     *
+     * @param values the new values
      */
-    @Override
-    protected String getRequiredVersion() {
-        return VERSION;
+    public void setValues(List<Double> values) {
+        this.values = values;
     }
 
 }

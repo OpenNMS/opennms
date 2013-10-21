@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
+package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,66 +35,48 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.rrd.model.AbstractRRD;
-
 /**
- * The Class RRD (Round Robin Database) version 3.
+ * The Class Row.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="rrd")
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class RRDv3 extends AbstractRRD {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Row {
 
-    /** The Constant VERSION. */
-    public static final String VERSION = "0003";
+    /** The values. */
+    @XmlElement(name="v")
+    private List<Double> values = new ArrayList<Double>();
 
-    /** The RRAs. */
-    public List<RRA> rras = new ArrayList<RRA>();
-
-    /** The data sources. */
-    public List<DS> dataSources = new ArrayList<DS>();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()
+    /**
+     * Gets the values.
+     *
+     * @return the values
      */
-    @XmlElement(name="rra")
-    public List<RRA> getRras() {
-        return rras;
+    public List<Double> getValues() {
+        return values;
     }
 
     /**
-     * Sets the RRAs.
+     * Sets the values.
      *
-     * @param rras the new RRAs
+     * @param values the new values
      */
-    public void setRras(List<RRA> rras) {
-        this.rras = rras;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getDataSources()
-     */
-    @XmlElement(name="ds")
-    public List<DS> getDataSources() {
-        return dataSources;
+    public void setValues(List<Double> values) {
+        this.values = values;
     }
 
     /**
-     * Sets the data sources.
+     * Checks if is all the values are NaN.
      *
-     * @param dataSources the new data sources
+     * @return true, if all the values are NaN.
      */
-    public void setDataSources(List<DS> dataSources) {
-        this.dataSources = dataSources;
+    public boolean isNan() {
+        for (Double v : values) {
+            if (!v.isNaN()) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRequiredVersion()
-     */
-    @Override
-    protected String getRequiredVersion() {
-        return VERSION;
-    }
-
 }

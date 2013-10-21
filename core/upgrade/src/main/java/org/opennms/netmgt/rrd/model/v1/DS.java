@@ -25,76 +25,66 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.rrd.model.v3;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.opennms.netmgt.rrd.model.v1;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.netmgt.rrd.model.AbstractRRD;
+import org.opennms.netmgt.rrd.model.AbstractDS;
 
 /**
- * The Class RRD (Round Robin Database) version 3.
+ * The Class DS (Data Source).
+ * <ul>
+ * <li><b>ds.decl:</b> name, type, minimal_heartbeat, min, max, last_ds, value, unknown_sec</li>
+ * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="rrd")
+@XmlRootElement(name="ds")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class RRDv3 extends AbstractRRD {
+public class DS extends AbstractDS {
 
-    /** The Constant VERSION. */
-    public static final String VERSION = "0003";
+    /** The type of the datasource. */
+    private DSType type;
 
-    /** The RRAs. */
-    public List<RRA> rras = new ArrayList<RRA>();
-
-    /** The data sources. */
-    public List<DS> dataSources = new ArrayList<DS>();
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()
+    /**
+     * Gets the type.
+     *
+     * @return the type
      */
-    @XmlElement(name="rra")
-    public List<RRA> getRras() {
-        return rras;
+    @XmlElement(required=true)
+    @XmlJavaTypeAdapter(DSAdapter.class)
+    public DSType getType() {
+        return type;
     }
 
     /**
-     * Sets the RRAs.
+     * Sets the type.
      *
-     * @param rras the new RRAs
+     * @param type the new type
      */
-    public void setRras(List<RRA> rras) {
-        this.rras = rras;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getDataSources()
-     */
-    @XmlElement(name="ds")
-    public List<DS> getDataSources() {
-        return dataSources;
+    public void setType(DSType type) {
+        this.type = type;
     }
 
     /**
-     * Sets the data sources.
+     * Format equals.
      *
-     * @param dataSources the new data sources
+     * @param ds the DS object
+     * @return true, if successful
      */
-    public void setDataSources(List<DS> dataSources) {
-        this.dataSources = dataSources;
-    }
+    public boolean formatEquals(DS ds) {
+        if (this.type != null) {
+            if (ds.type == null) return false;
+            else if (!(this.type.equals(ds.type))) 
+                return false;
+        }
+        else if (ds.type != null)
+            return false;
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRequiredVersion()
-     */
-    @Override
-    protected String getRequiredVersion() {
-        return VERSION;
+        return super.formatEquals(ds);
     }
-
 }

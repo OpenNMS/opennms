@@ -36,8 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.rrd.model.v3.CFType;
-import org.opennms.netmgt.rrd.model.v3.Row;
+import org.opennms.netmgt.rrd.model.AbstractRRA;
 
 /**
  * The Class RRA (Round Robin Archives).
@@ -45,21 +44,15 @@ import org.opennms.netmgt.rrd.model.v3.Row;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement
+@XmlRootElement(name="rra")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class RRAv1 {
+public class RRA extends AbstractRRA {
 
     /** The consolidation function. */
     private CFType consolidationFunction;
 
-    /** The PDP (Primary Data Points) per row. */
-    private Integer pdpPerRow;
-
-    /** The rows. */
-    private List<Row> rows = new ArrayList<Row>();
-
     /** The CDP Data. */
-    private List<RRADSv1> dataSources = new ArrayList<RRADSv1>();
+    private List<RRADS> dataSources = new ArrayList<RRADS>();
 
     /** The XFF. */
     private Double xff = 0.5;
@@ -84,52 +77,13 @@ public class RRAv1 {
     }
 
     /**
-     * Gets the PDP (Primary Data Points) per row.
-     *
-     * @return the PDP (Primary Data Points) per row
-     */
-    @XmlElement(name="pdp_per_row")
-    public Integer getPdpPerRow() {
-        return pdpPerRow;
-    }
-
-    /**
-     * Sets the PDP (Primary Data Points) per row.
-     *
-     * @param pdpPerRow the new PDP (Primary Data Points) per row
-     */
-    public void setPdpPerRow(Integer pdpPerRow) {
-        this.pdpPerRow = pdpPerRow;
-    }
-
-    /**
-     * Gets the rows.
-     *
-     * @return the rows
-     */
-    @XmlElement(name="row")
-    @XmlElementWrapper(name="database")
-    public List<Row> getRows() {
-        return rows;
-    }
-
-    /**
-     * Sets the rows.
-     *
-     * @param rows the new rows
-     */
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
-    }
-
-    /**
      * Gets the data sources.
      *
      * @return the data sources
      */
     @XmlElement(name="ds")
     @XmlElementWrapper(name="cdp_prep")
-    public List<RRADSv1> getDataSources() {
+    public List<RRADS> getDataSources() {
         return dataSources;
     }
 
@@ -138,7 +92,7 @@ public class RRAv1 {
      *
      * @param dataSources the new data sources
      */
-    public void setDataSources(List<RRADSv1> dataSources) {
+    public void setDataSources(List<RRADS> dataSources) {
         this.dataSources = dataSources;
     }
 
@@ -171,21 +125,13 @@ public class RRAv1 {
      * @param rra the RRA object
      * @return true, if successful
      */
-    public boolean formatEquals(RRAv1 rra) {
+    public boolean formatEquals(RRA rra) {
         if (this.consolidationFunction != null) {
             if (rra.consolidationFunction == null) return false;
             else if (!(this.consolidationFunction.equals(rra.consolidationFunction))) 
                 return false;
         }
         else if (rra.consolidationFunction != null)
-            return false;
-
-        if (this.pdpPerRow != null) {
-            if (rra.pdpPerRow == null) return false;
-            else if (!(this.pdpPerRow.equals(rra.pdpPerRow))) 
-                return false;
-        }
-        else if (rra.pdpPerRow != null)
             return false;
 
         if (this.xff != null) {
@@ -196,15 +142,7 @@ public class RRAv1 {
         else if (rra.xff != null)
             return false;
 
-        if (this.rows != null) {
-            if (rra.rows == null) return false;
-            else if (!(this.rows.size() == rra.rows.size())) 
-                return false;
-        }
-        else if (rra.rows != null)
-            return false;
-
-        return true;
+        return super.formatEquals(rra);
     }
 
 }
