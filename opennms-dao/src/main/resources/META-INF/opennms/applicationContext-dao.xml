@@ -121,7 +121,13 @@
   </bean>
 
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <property name="dataSource" ref="dataSource" />
+    <property name="dataSource">
+      <!-- Use a data source bean that will reuse existing thread-local Hibernate database connections -->
+      <bean class="org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource">
+        <property name="targetDataSource" ref="dataSource"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+      </bean>
+    </property>
   </bean>
 
   <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
