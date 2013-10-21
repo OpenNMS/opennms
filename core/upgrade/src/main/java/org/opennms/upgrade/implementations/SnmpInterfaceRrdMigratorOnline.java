@@ -255,12 +255,17 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                     }
                 }
             }
+            try {
+                FileUtils.deleteDirectory(oldDir);
+            } catch (Exception e) {
+                log("  Warning: can't delete old directory because %s", e.getMessage());
+            }
         } else {
             try {
                 log("  moving %s to %s\n", oldDir.getName(), newDir.getName());
                 FileUtils.moveDirectory(oldDir, newDir);
-            } catch (IOException e) {
-                log("  Warning: can't move file because %s", e.getMessage());
+            } catch (Exception e) {
+                log("  Warning: can't rename directory because %s", e.getMessage());
             }
         }
     }
