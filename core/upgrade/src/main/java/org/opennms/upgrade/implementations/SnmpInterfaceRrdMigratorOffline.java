@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
@@ -127,13 +128,15 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
      */
     private void updatePhysicalInterfaces() throws OnmsUpgradeException {
         Connection conn = getDbConnection();
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils db = new DBUtils(getClass());
+        db.watch(conn);
         try {
             conn.setAutoCommit(false);
             Statement st = conn.createStatement();
-            d.watch(st);
+            db.watch(st);
             String query = "select n.nodeid, n.nodelabel, i.ipaddr from node n, ipinterface i, ifservices s where n.nodeid = i.nodeid and n.nodeid = s.nodeid and i.issnmpprimary='P' and s.serviceid in (select serviceid from service where servicename='SNMP')";
             ResultSet rs = st.executeQuery(query);
+            db.watch(rs);
             while (rs.next()) {
                 int nodeId = rs.getInt("nodeid");
                 String nodeLabel = rs.getString("nodelabel");
@@ -143,12 +146,15 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
                     InetAddress address = InetAddressUtils.addr(ipAddress);
                     final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
                     Map<SnmpInstId, SnmpValue> values = SnmpUtils.getOidValues(agentConfig, "ifPhysAddress", SnmpObjId.get(".1.3.6.1.2.1.2.2.1.6"));
-                    if (values != null && !values.isEmpty()) {
+                    if (values == null || values.isEmpty()) {
+                        log("Warning: there is no ifPhysAddress data for %s using IP %s\n", nodeLabel, ipAddress);
+                    } else {
                         for (Entry<SnmpInstId,SnmpValue> entry : values.entrySet()) {
                             final String mac = getPhysAddr(entry.getValue());
                             if (mac != null) {
+                                log("Updating the snmpPhysAddress to '%s' for ifIndex %s on node %s (id %s) using IP %s\n", mac, entry.getKey().toInt(), nodeLabel, nodeId, ipAddress);
                                 PreparedStatement upt = conn.prepareStatement("update snmpinterface set snmpphysaddr=? where nodeid=? and snmpifindex=?");
-                                d.watch(upt);
+                                db.watch(upt);
                                 upt.setString(1, mac);
                                 upt.setInt(2, nodeId);
                                 upt.setInt(3, entry.getKey().toInt());
@@ -157,13 +163,18 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
                         }
                     }
                 } catch (Exception e) {
-                    log("Warning: can't update the ifPhysAddress entries for node with ID " + nodeId + " (IP " + ipAddress + ") because " + e.getMessage());
+                    log("Warning: can't update the ifPhysAddress entries on node " + nodeLabel + " (IP " + ipAddress + ") because " + e.getMessage());
                 }
             }
             conn.commit();
-            conn.close();
         } catch (Exception e) {
-            d.cleanUp();
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                log("Error: can't rollback changes because " + ex.getMessage());
+            }
+        } finally {
+            db.cleanUp();
         }
     }
 

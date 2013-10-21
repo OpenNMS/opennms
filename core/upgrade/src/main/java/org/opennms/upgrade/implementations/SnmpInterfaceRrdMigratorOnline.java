@@ -207,23 +207,26 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected List<SnmpInterfaceUpgrade> getInterfacesToMerge() throws OnmsUpgradeException {
-        Connection conn = getDbConnection();
-        final DBUtils d = new DBUtils(getClass());
         List<SnmpInterfaceUpgrade> interfacesToMerge = new ArrayList<SnmpInterfaceUpgrade>();
+        Connection conn = getDbConnection();
+        final DBUtils db = new DBUtils(getClass());
+        db.watch(conn);
         try {
             Statement st = conn.createStatement();
-            d.watch(st);
+            db.watch(st);
             String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpphysaddr is not null";
             ResultSet rs = st.executeQuery(query);
+            db.watch(rs);
             while (rs.next()) {
                 SnmpInterfaceUpgrade intf = new SnmpInterfaceUpgrade(rs);
                 if (intf.shouldMerge()) {
                     interfacesToMerge.add(intf);
                 }
             }
-            conn.close();
         } catch (Exception e) {
-            d.cleanUp();
+            log("Error: can't retrieve data from the OpenNMS Database because " + e.getMessage());
+        } finally {
+            db.cleanUp();
         }
         return interfacesToMerge;
     }
