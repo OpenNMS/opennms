@@ -33,15 +33,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.provision.service.snmp.IfTable;
-import org.opennms.netmgt.provision.service.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.upgrade.api.Ignore;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
@@ -94,6 +96,19 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.implementations.SnmpInterfaceRrdMigratorOnline#preExecute()
+     */
+    @Override
+    public void preExecute() throws OnmsUpgradeException {
+        try {
+            SnmpPeerFactory.init();
+        } catch (Exception e) {
+            throw new OnmsUpgradeException("Can't initialize SNMP Peer Factory because " + e.getMessage());
+        }
+        super.preExecute();
+    }
+
     /**
      * Gets the interfaces to merge.
      *
@@ -123,33 +138,26 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
                 int nodeId = rs.getInt("nodeid");
                 String nodeLabel = rs.getString("nodelabel");
                 String ipAddress = rs.getString("ipaddr");
-                IfTable ifTable = null;
                 try {
-                    log("Retrieving IF-MIB::ifTable for node %s using IP %s\n", nodeLabel, ipAddress);
+                    log("Retrieving IF-MIB::ifPhysAddress for node %s using IP %s\n", nodeLabel, ipAddress);
                     InetAddress address = InetAddressUtils.addr(ipAddress);
                     final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
-                    ifTable = new IfTable(address);
-                    SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable", ifTable);
-                    walker.start();
-                    walker.waitFor();
-                } catch (Exception e) {
-                    log("Can't retrieve SNMP data from %s\n", ipAddress);
-                    continue;
-                }
-                if (ifTable != null) {
-                    log("Updating the SNMP Interfaces for node %s\n", nodeLabel);
-                    String update = "update snmpinterface set snmpphysaddr=? where nodeid=? and snmpifindex=?";
-                    for (IfTableEntry entry : ifTable.getEntries()) {
-                        if (entry.getPhysAddr() == null) {
-                            continue;
+                    Map<SnmpInstId, SnmpValue> values = SnmpUtils.getOidValues(agentConfig, "ifPhysAddress", SnmpObjId.get(".1.3.6.1.2.1.2.2.1.6"));
+                    if (values != null && !values.isEmpty()) {
+                        for (Entry<SnmpInstId,SnmpValue> entry : values.entrySet()) {
+                            final String mac = getPhysAddr(entry.getValue());
+                            if (mac != null) {
+                                PreparedStatement upt = conn.prepareStatement("update snmpinterface set snmpphysaddr=? where nodeid=? and snmpifindex=?");
+                                d.watch(upt);
+                                upt.setString(1, mac);
+                                upt.setInt(2, nodeId);
+                                upt.setInt(3, entry.getKey().toInt());
+                                upt.executeUpdate();
+                            }
                         }
-                        PreparedStatement upt = conn.prepareStatement(update);
-                        d.watch(upt);
-                        upt.setString(1, entry.getPhysAddr());
-                        upt.setInt(2, nodeId);
-                        upt.setInt(3, entry.getIfIndex());
-                        upt.executeUpdate();
                     }
+                } catch (Exception e) {
+                    log("Warning: can't update the ifPhysAddress entries for node with ID " + nodeId + " (IP " + ipAddress + ") because " + e.getMessage());
                 }
             }
             conn.commit();
@@ -158,4 +166,28 @@ public class SnmpInterfaceRrdMigratorOffline extends SnmpInterfaceRrdMigratorOnl
             d.cleanUp();
         }
     }
+
+    /**
+     * Gets the physical address.
+     *
+     * @param value the value
+     * @return the physical address
+     */
+    public String getPhysAddr(SnmpValue value) {
+        String hexString = value.toHexString();
+        if (hexString != null) {
+            if (hexString.length() == 12) {
+                return hexString;
+            } else {
+                try {
+                    String displayString = value.toDisplayString();
+                    return displayString == null || displayString.trim().isEmpty() ? null : InetAddressUtils.normalizeMacAddress(displayString);
+                } catch (IllegalArgumentException e) {
+                    return value.toDisplayString();
+                }
+            }
+        }
+        return value.toDisplayString();
+    }
+
 }
