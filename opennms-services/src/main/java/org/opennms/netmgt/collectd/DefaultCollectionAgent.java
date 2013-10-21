@@ -63,7 +63,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @param ifaceId a {@link java.lang.Integer} object.
      * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
     public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao) {

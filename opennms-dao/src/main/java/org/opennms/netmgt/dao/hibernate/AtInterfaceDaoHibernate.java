@@ -31,25 +31,20 @@ package org.opennms.netmgt.dao.hibernate;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
 
 public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterface, Integer>  implements AtInterfaceDao {
     
@@ -57,9 +52,6 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
 
     public AtInterfaceDaoHibernate() {
         super(OnmsAtInterface.class);

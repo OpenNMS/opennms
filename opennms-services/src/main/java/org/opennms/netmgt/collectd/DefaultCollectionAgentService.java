@@ -61,7 +61,6 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @param ifaceId a {@link java.lang.Integer} object.
      * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
      */
     public static CollectionAgentService create(Integer ifaceId, final IpInterfaceDao ifaceDao) {

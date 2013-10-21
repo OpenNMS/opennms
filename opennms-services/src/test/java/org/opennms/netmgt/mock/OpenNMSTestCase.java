@@ -67,9 +67,10 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 
+/**
+ * @deprecated Use regular Spring context-based unit tests instead.
+ */
 public class OpenNMSTestCase extends TestCase {
     protected static MockDatabase m_db;
     protected static MockNetwork m_network;
@@ -128,8 +129,6 @@ public class OpenNMSTestCase extends TestCase {
 
     private EventProxy m_eventProxy;
 
-    protected PlatformTransactionManager m_transMgr;
-    
     public void setVersion(int version) {
         m_version = version;
     }
@@ -225,9 +224,6 @@ public class OpenNMSTestCase extends TestCase {
             }
         
         }
-        
-        m_transMgr = new DataSourceTransactionManager(DataSourceFactory.getInstance());
-
     }
 
     protected void populateDatabase() throws Exception {

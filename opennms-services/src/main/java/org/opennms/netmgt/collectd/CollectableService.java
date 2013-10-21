@@ -117,7 +117,6 @@ final class CollectableService implements ReadyRunnable {
      * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
      * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
-     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) throws CollectionInitializationException {
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao);

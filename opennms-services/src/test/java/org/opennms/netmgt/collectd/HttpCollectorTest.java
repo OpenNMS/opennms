@@ -71,7 +71,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -97,9 +96,6 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class HttpCollectorTest implements TestContextAware, InitializingBean {
-
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
 
     @Autowired
     private NodeDao m_nodeDao;

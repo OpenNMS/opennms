@@ -82,7 +82,6 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -133,9 +132,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Autowired
     private CategoryDao m_categoryDao;
     
-	@Autowired
-	private PlatformTransactionManager m_transactionManager;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
