@@ -28,7 +28,6 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -288,7 +287,10 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
             RrdParseUtils.restoreRrd(rrdDst, outputFile);
-            moveFile(outputFile, dest);
+            if (dest.exists()) {
+                FileUtils.deleteQuietly(dest);
+            }
+            FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -312,7 +314,10 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             rrdDst.merge(rrdSrc);
             final File outputFile = new File(dest.getCanonicalPath() + ".merged");
             RrdParseUtils.restoreJrb(rrdDst, outputFile);
-            moveFile(outputFile, dest);
+            if (dest.exists()) {
+                FileUtils.deleteQuietly(dest);
+            }
+            FileUtils.moveFile(outputFile, dest);
         } catch (Exception e) {
             log("  Warning: ignoring merge because %s.\n", e.getMessage());
         }
@@ -335,39 +340,4 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         return dir;
     }
 
-    /**
-     * Move file.
-     * <p>This is a special version of FileUtils.moveFile() that ignore the fact that the destination exist or not.</p>
-     * <p>If the destination exists, it will be overridden.</p>
-     * 
-     * @param srcFile the souce file
-     * @param destFile the destination file
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    protected void moveFile(File srcFile, File destFile) throws IOException {
-        if (srcFile == null) {
-            throw new NullPointerException("Source must not be null");
-        }
-        if (destFile == null) {
-            throw new NullPointerException("Destination must not be null");
-        }
-        if (!srcFile.exists()) {
-            throw new FileNotFoundException("Source '" + srcFile + "' does not exist");
-        }
-        if (srcFile.isDirectory()) {
-            throw new IOException("Source '" + srcFile + "' is a directory");
-        }
-        if (destFile.isDirectory()) {
-            throw new IOException("Destination '" + destFile + "' is a directory");
-        }
-        boolean rename = srcFile.renameTo(destFile);
-        if (!rename) {
-            FileUtils.copyFile( srcFile, destFile );
-            if (!srcFile.delete()) {
-                FileUtils.deleteQuietly(destFile);
-                throw new IOException("Failed to delete original file '" + srcFile +
-                                      "' after copy to '" + destFile + "'");
-            }
-        }
-    }
 }
